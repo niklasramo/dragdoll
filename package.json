@@ -1,13 +1,15 @@
 {
-  "name": "dragpack",
-  "private": true,
-  "version": "1.0.0-alpha",
-  "description": "Drag and drop simplified.",
+  "name": "dragdoll",
+  "version": "0.0.1",
+  "description": "Modular and extensible drag & drop system.",
   "keywords": [
     "drag",
-    "dnd"
+    "drop",
+    "dnd",
+    "draggable",
+    "droppable"
   ],
-  "license": "UNLICENSED",
+  "license": "MIT",
   "author": {
     "name": "Niklas Rämö",
     "email": "inramo@gmail.com",
@@ -15,11 +17,9 @@
   },
   "type": "module",
   "source": "src/index.ts",
-  "exports": "./dist/dragpack.modern.js",
-  "main": "./dist/dragpack.cjs",
-  "module": "./dist/dragpack.module.js",
-  "unpkg": "./dist/dragpack.umd.js",
-  "types": "./dist/types/index.d.ts",
+  "main": "./dist/dragdoll.js",
+  "umd:main": "./dist/dragdoll.umd.js",
+  "types": "./dist/dragdoll.d.ts",
   "files": [
     "package.json",
     "tsconfig.json",
@@ -29,19 +29,42 @@
     "LICENSE.md"
   ],
   "scripts": {
-    "dev": "microbundle watch",
-    "build": "npm run ts-check && npm run format && npm run bundle && npm run docs",
-    "bundle": "del ./dist && microbundle --strict --name DragPack",
-    "docs": "del ./docs && $(npm bin)/typedoc --out docs src/index.ts --name DragPack --includeVersion --disableSources --hideGenerator --theme minimal --readme none",
+    "test": "npm run ts-check && npm run test-node && npm run test-browser",
+    "test-browser": "$(npm bin)/karma start karma.conf.cjs",
+    "test-node": "$(npm bin)/mocha tests/dist/tests.node.js",
+    "build": "npm run del-dist && npm run ts-check && npm run format && npm run bundle && npm run minify && npm run size",
+    "bundle": "$(npm bin)/rollup -c",
     "ts-check": "$(npm bin)/tsc --noEmit",
-    "format": "$(npm bin)/prettier --write ./src/**/*.ts",
-    "format-validate": "$(npm bin)/prettier --list-different ./src/**/*.ts"
+    "del-dist": "del ./dist && del ./tests/dist",
+    "format": "npm run format-source && npm run format-tests",
+    "format-source": "$(npm bin)/prettier --write ./src/",
+    "format-tests": "$(npm bin)/prettier --write ./tests/src/",
+    "validate": "$(npm bin)/prettier --list-different ./src/",
+    "size": "for file in ./dist/*.js; do echo $file && $(npm bin)/gzip-size $file --include-original; done",
+    "minify": "for file in ./dist/*.js; do $(npm bin)/terser $file -o $file --compress --mangle --comments false; done"
   },
   "devDependencies": {
-    "del-cli": "4.0.0",
-    "microbundle": "0.13.3",
-    "prettier": "2.3.2",
-    "typedoc": "0.21.2",
-    "typescript": "4.2.4"
+    "@rollup/plugin-typescript": "8.4.0",
+    "@types/chai": "4.3.3",
+    "@types/mocha": "9.1.1",
+    "chai": "4.3.6",
+    "del-cli": "5.0.0",
+    "dotenv": "16.0.1",
+    "eventti": "3.0.0",
+    "gzip-size-cli": "5.1.0",
+    "karma": "6.4.0",
+    "karma-browserstack-launcher": "1.6.0",
+    "karma-mocha": "2.0.1",
+    "karma-mocha-reporter": "2.2.5",
+    "mocha": "10.0.0",
+    "prettier": "2.7.1",
+    "rollup": "2.78.1",
+    "rollup-plugin-dts": "4.2.2",
+    "terser": "5.15.0",
+    "typescript": "4.8.2"
+  },
+  "peerDependencies": {
+    "eventti": "^3.0.0",
+    "tikki": "^2.0.0"
   }
 }

@@ -14,6 +14,10 @@ export const HAS_PASSIVE_EVENTS = (() => {
   return isPassiveEventsSupported;
 })();
 
+export const HAS_TOUCH_EVENTS = 'ontouchstart' in window;
+
+export const HAS_POINTER_EVENTS = !!window.PointerEvent;
+
 export const IS_SAFARI = !!(
   navigator.vendor &&
   navigator.vendor.indexOf('Apple') > -1 &&

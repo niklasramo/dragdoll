@@ -1,25 +1,26 @@
 export class Pool<T> {
-  protected _pool: T[];
+  protected _data: T[];
   protected _createObject: () => T;
-  protected _onRelease: ((object: T) => void) | undefined;
+  protected _onPut: ((object: T) => void) | undefined;
 
-  constructor(createObject: () => T, onRelease?: (object: T) => void) {
-    this._pool = [];
+  constructor(createObject: () => T, onPut?: (object: T) => void) {
+    this._data = [];
     this._createObject = createObject;
-    this._onRelease = onRelease;
+    this._onPut = onPut;
   }
 
   pick() {
-    return this._pool.pop() || this._createObject();
+    return this._data.length ? (this._data.pop() as T) : this._createObject();
   }
 
-  drop(object: T) {
-    if (this._pool.indexOf(object) !== -1) return;
-    this._onRelease && this._onRelease(object);
-    this._pool.push(object);
+  put(object: T) {
+    if (this._data.indexOf(object) === -1) {
+      this._onPut && this._onPut(object);
+      this._data.push(object);
+    }
   }
 
   reset() {
-    this._pool.length = 0;
+    this._data.length = 0;
   }
 }

@@ -1,2 +1,0 @@
-- Rename `DragEmitter` to `DragSensor` and let it be abstract class.
-- The default sensor (current `DragEmitter`) should be the divided into: `MouseSensor`, `TouchSensor` and`PointerSensor`. However, while doing that let's make sure they use the same Base class beneath them to keep things dry.

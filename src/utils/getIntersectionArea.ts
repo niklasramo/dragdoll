@@ -4,10 +4,6 @@ import { Rect } from '../types';
 
 /**
  * Calculate intersection area between two rectangle.
- *
- * @param {Object} a
- * @param {Object} b
- * @returns {number}
  */
 export function getIntersectionArea(a: Rect, b: Rect) {
   if (!isRectsOverlapping(a, b)) return 0;

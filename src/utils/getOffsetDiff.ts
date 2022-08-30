@@ -5,9 +5,6 @@ const offsetB = { left: 0, top: 0 };
 
 /**
  * Calculate the offset difference two elements.
- * @param {(HTMLElement|Document)} elemA
- * @param {(HTMLElement|Document)} elemB
- * @returns {object}
  */
 export function getOffsetDiff(
   elemA: HTMLElement | Document,

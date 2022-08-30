@@ -5,9 +5,6 @@ import { IS_SAFARI } from '../constants';
 /**
  * Check is the provided is a containing block for an _absolute_ positioned
  * element.
- *
- * @param {HTMLElement} element
- * @returns {boolean}
  */
 export function isContainingBlock(element: HTMLElement) {
   // The first thing to check is the element's position. If it's anything else

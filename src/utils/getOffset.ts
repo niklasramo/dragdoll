@@ -5,9 +5,6 @@ import { getStyleAsFloat } from './getStyleAsFloat';
  * and horizontal distance between the element's northwest corner and the
  * document's northwest corner. Note that this function always returns the same
  * object so be sure to read the data from it instead using it as a reference.
- * @param {(HTMLElement|Document|Window)} element
- * @param {Object} [result]
- * @returns {Object}
  */
 export function getOffset(
   element: HTMLElement | Document | Window,

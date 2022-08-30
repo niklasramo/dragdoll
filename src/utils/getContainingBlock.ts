@@ -5,9 +5,6 @@ import { isContainingBlock } from './isContainingBlock';
  * considered to be the closest ancestor element that the target element's
  * positioning is relative to. Disclaimer: this only works as intended for
  * absolute positioned elements.
- *
- * @param {HTMLElement} element
- * @returns {(Document|Element)}
  */
 export function getContainingBlock(element: HTMLElement | Document) {
   // As long as the containing block is an element, static and not

@@ -1,4 +1,4 @@
-export function getPointerById(
+export function getPointerEventData(
   e: PointerEvent | TouchEvent | MouseEvent,
   id: number
 ): PointerEvent | MouseEvent | Touch | null {

@@ -1,9 +1,7 @@
 import { Rect } from '../types';
 
 /**
- * @param {Object} a
- * @param {Object} b
- * @returns {boolean}
+ * Check if two rectangles are overlapping.
  */
 export function isRectsOverlapping(a: Rect, b: Rect) {
   return !(

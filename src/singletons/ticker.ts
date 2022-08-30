@@ -1,7 +1,18 @@
-import { Ticker, TickerQueue } from '../Ticker';
+import { Ticker, FrameCallback } from 'tikki';
+import { EventName } from 'eventti';
 
-export const ticker = new Ticker();
+export let tickerReadPhase: EventName = Symbol();
 
-export const readQueue = new TickerQueue(ticker);
+export let tickerWritePhase: EventName = Symbol();
 
-export const writeQueue = new TickerQueue(ticker);
+export let ticker = new Ticker<EventName>({ phases: [tickerReadPhase, tickerWritePhase] });
+
+export function setTicker(
+  newTicker: Ticker<EventName, FrameCallback>,
+  readPhase: EventName,
+  writePhase: EventName
+) {
+  tickerReadPhase = readPhase;
+  tickerWritePhase = writePhase;
+  ticker = newTicker;
+}

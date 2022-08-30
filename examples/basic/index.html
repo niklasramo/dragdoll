@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>DragPack</title>
+    <title>DragDoll - PointerSensor</title>
     <meta
       name="viewport"
       content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
@@ -41,23 +41,34 @@
         width: 100px;
         height: 100px;
         background-color: #ff0000;
+        transform: translateX(20px) translateY(10px);
+      }
+      .draggable:focus {
+        background-color: #fbff00;
       }
     </style>
   </head>
   <body>
     <div class="dragContainer"></div>
     <div class="container">
-      <div class="draggable"></div>
+      <div class="draggable" tabindex="0"></div>
     </div>
-    <script src="../../dist/dragpack.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/eventti@3.0.0/dist/eventti.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tikki@2.0.0/dist/tikki.umd.js"></script>
+    <script src="../../dist/dragdoll.umd.js"></script>
     <script>
-      const draggable = document.querySelector('.draggable');
+      const element = document.querySelector('.draggable');
       const dragContainer = document.querySelector('.dragContainer');
-      const pointerSensor = new DragPack.PointerSensor(draggable);
-      const dragMover = new DragPack.DragMover(draggable, pointerSensor, {
-        axis: 'xy',
+      const pointerSensor = new DragDoll.PointerSensor(element);
+      const keyboardSensor = new DragDoll.KeyboardMotionSensor();
+      const draggable = new DragDoll.Draggable([pointerSensor, keyboardSensor], {
         container: dragContainer,
-        autoScroll: { targets: [{ element: window }] },
+        getElements: () => [element],
+        startPredicate: DragDoll.createPointerSensorStartPredicate(),
+        autoScroll: {
+          instance: DragDoll.autoScroll,
+          targets: [{ element: window, threshold: 100 }],
+        },
       });
     </script>
   </body>
