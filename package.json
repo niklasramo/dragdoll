@@ -15,16 +15,19 @@
     "email": "inramo@gmail.com",
     "url": "https://github.com/niklasramo"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:niklasramo/dragdoll.git"
+  },
   "type": "module",
   "source": "src/index.ts",
   "main": "./dist/dragdoll.js",
   "umd:main": "./dist/dragdoll.umd.js",
   "types": "./dist/dragdoll.d.ts",
   "files": [
-    "package.json",
-    "tsconfig.json",
     "src",
     "dist",
+    "package.json",
     "README.md",
     "LICENSE.md"
   ],
