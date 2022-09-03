@@ -10,6 +10,8 @@ export * from './Sensors/KeyboardMotionSensor';
 
 export * from './Draggable/Draggable';
 
+export * from './Draggable/DraggableAutoScroll';
+
 export * from './AutoScroll/AutoScroll';
 
 export * from './singletons/autoScroll';

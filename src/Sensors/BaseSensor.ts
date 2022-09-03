@@ -64,15 +64,15 @@ export class BaseSensor<T extends SensorEvents = SensorEvents> implements Sensor
   }
 
   on<K extends keyof T>(
-    eventType: K,
+    eventName: K,
     listener: (e: T[K]) => void,
     listenerId?: EventListenerId
   ): EventListenerId {
-    return this._emitter.on(eventType, listener, listenerId);
+    return this._emitter.on(eventName, listener, listenerId);
   }
 
-  off<K extends keyof T>(eventType?: K, listener?: ((e: T[K]) => void) | EventListenerId): void {
-    this._emitter.off(eventType, listener);
+  off<K extends keyof T>(eventName: K, listener: ((e: T[K]) => void) | EventListenerId): void {
+    this._emitter.off(eventName, listener);
   }
 
   cancel() {
@@ -80,8 +80,8 @@ export class BaseSensor<T extends SensorEvents = SensorEvents> implements Sensor
     this._isActive = false;
     this._emitter.emit(SensorEventType.cancel, {
       type: SensorEventType.cancel,
-      clientX: this.clientX as number,
-      clientY: this.clientY as number,
+      clientX: this.clientX!,
+      clientY: this.clientY!,
     });
   }
 

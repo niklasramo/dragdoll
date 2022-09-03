@@ -11,7 +11,7 @@ describe('foo', () => {
     const pointerSensor = new PointerSensor(document.createElement('div'));
     const keyboardSensor = new KeyboardSensor();
     const draggable = new Draggable([keyboardSensor, pointerSensor], {
-      getElementPositionChange: (_element, _startEvent, _prevEvent, _nextEvent) => {
+      getPositionChange: (_element, _startEvent, _prevEvent, _nextEvent) => {
         return { x: 0, y: 0 };
       },
       startPredicate: createPointerSensorStartPredicate(),

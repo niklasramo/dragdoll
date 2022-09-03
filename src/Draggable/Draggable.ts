@@ -2,21 +2,7 @@ import { HAS_PASSIVE_EVENTS } from '../constants';
 
 import { Emitter, EventListenerId } from 'eventti';
 
-import { DraggableDrag } from './DraggableDrag';
-
-import { DraggableItem } from './DraggableItem';
-
-import { DraggableAutoScrollProxy } from './DraggableAutoScrollProxy';
-
 import { Sensor, SensorEvents } from '../Sensors/Sensor';
-
-import {
-  AutoScroll,
-  AutoScrollItemSpeedCallback,
-  AutoScrollItemEventCallback,
-  AutoScrollItemTarget,
-  autoScrollSmoothSpeed,
-} from '../AutoScroll/AutoScroll';
 
 import { ticker, tickerReadPhase, tickerWritePhase } from '../singletons/ticker';
 
@@ -36,221 +22,139 @@ const TRANSLATE_POSITION = { x: 0, y: 0 };
 
 const POSITION_CHANGE = { x: 0, y: 0 };
 
-const AUTOSCROLL_POSITION = { x: 0, y: 0 };
+enum StartPredicateState {
+  PENDING = 0,
+  RESOLVED = 1,
+  REJECTED = 2,
+}
 
-const AUTOSCROLL_CLIENT_RECT = { left: 0, top: 0, width: 0, height: 0 };
+class DraggableItem {
+  element: HTMLElement | null;
+  rootParent: HTMLElement | null;
+  rootContainingBlock: HTMLElement | Document | null;
+  dragParent: HTMLElement | null;
+  dragContainingBlock: HTMLElement | Document | null;
+  x: number;
+  y: number;
+  clientX: number;
+  clientY: number;
+  syncDiffX: number;
+  syncDiffY: number;
+  moveDiffX: number;
+  moveDiffY: number;
+  containerDiffX: number;
+  containerDiffY: number;
 
-const DEFAULT_SETTINGS: DraggableSettings<any> = {
+  constructor() {
+    this.element = null;
+    this.rootParent = null;
+    this.rootContainingBlock = null;
+    this.dragParent = null;
+    this.dragContainingBlock = null;
+    this.x = 0;
+    this.y = 0;
+    this.clientX = 0;
+    this.clientY = 0;
+    this.syncDiffX = 0;
+    this.syncDiffY = 0;
+    this.moveDiffX = 0;
+    this.moveDiffY = 0;
+    this.containerDiffX = 0;
+    this.containerDiffY = 0;
+  }
+}
+
+class DraggableDrag<S extends Sensor[], E extends S[number]['events'] = S[number]['events']> {
+  sensor: S[number] | null;
+  isStarted: boolean;
+  isEnded: boolean;
+  startEvent: E['start'] | E['move'] | null;
+  nextMoveEvent: E['move'] | null;
+  prevMoveEvent: E['move'] | null;
+  endEvent: E['end'] | E['cancel'] | E['destroy'] | null;
+  items: DraggableItem[];
+
+  constructor() {
+    this.sensor = null;
+    this.isEnded = false;
+    this.isStarted = false;
+    this.startEvent = null;
+    this.nextMoveEvent = null;
+    this.prevMoveEvent = null;
+    this.endEvent = null;
+    this.items = [];
+  }
+}
+
+export const DRAGGABLE_DEFAULT_SETTINGS: DraggableSettings<Sensor[]> = {
   container: null,
   startPredicate: () => true,
   getElements: () => null,
-  destroyElements: () => {},
-  getElementPosition: (element) => getTranslate(element, TRANSLATE_POSITION),
-  getElementPositionChange: (_element, _startEvent, prevEvent, nextEvent) => {
+  releaseElements: () => {},
+  getPosition: (element) => getTranslate(element, TRANSLATE_POSITION),
+  getPositionChange: (_element, _startEvent, prevEvent, nextEvent) => {
     POSITION_CHANGE.x = nextEvent.clientX - prevEvent.clientX;
     POSITION_CHANGE.y = nextEvent.clientY - prevEvent.clientY;
     return POSITION_CHANGE;
   },
-  renderElementPosition: (element, x, y) => {
+  renderPosition: (element, x, y) => {
     element.style.transform = `translate3d(${x}px, ${y}px, 0px)`;
-  },
-  autoScroll: {
-    instance: null,
-    targets: [],
-    staticAreaSize: 0.2,
-    speed: autoScrollSmoothSpeed(1000, 2000, 2500),
-    smoothStop: false,
-    getPosition: autoScrollGetPosition,
-    getClientRect: autoScrollGetClientRect,
-    onStart: null,
-    onStop: null,
   },
 };
 
-enum StartPredicateState {
-  Pending = 0,
-  Resolved = 1,
-  Rejected = 2,
-}
-
-interface DraggableEventCallbacks<E extends SensorEvents> {
+export interface DraggableEventCallbacks<E extends SensorEvents> {
   beforestart(event: E['start'] | E['move']): void;
   start(event: E['start'] | E['move']): void;
   beforemove(event: E['move']): void;
   move(event: E['move']): void;
   beforeend(event: E['end'] | E['cancel'] | E['destroy'] | null): void;
   end(event: E['end'] | E['cancel'] | E['destroy'] | null): void;
+  destroy(): void;
 }
 
-interface AutoScrollSettings<S extends Sensor[]> {
-  instance: AutoScroll | null;
-  targets: AutoScrollItemTarget[] | ((draggable: Draggable<S>) => AutoScrollItemTarget[]);
-  staticAreaSize: number;
-  speed: number | AutoScrollItemSpeedCallback;
-  smoothStop: boolean;
-  getPosition: ((draggable: Draggable<S>) => { x: number; y: number }) | null;
-  getClientRect:
-    | ((draggable: Draggable<S>) => { left: number; top: number; width: number; height: number })
-    | null;
-  onStart: AutoScrollItemEventCallback | null;
-  onStop: AutoScrollItemEventCallback | null;
-}
-
-interface DraggableSettings<
+export interface DraggableSettings<
   S extends Sensor[],
-  T extends S[number]['events'] = S[number]['events']
+  E extends S[number]['events'] = S[number]['events']
 > {
   container: HTMLElement | null;
   startPredicate: (
-    e: T['start'] | T['move'],
+    e: E['start'] | E['move'],
     sensor: S[number],
     draggable: Draggable<S>
   ) => boolean | undefined | void;
-  getElements: (startEvent: T['start'] | T['move']) => HTMLElement[] | null | void;
-  getElementPosition: (element: HTMLElement) => { x: number; y: number };
-  getElementPositionChange: (
+  getElements: (startEvent: E['start'] | E['move']) => HTMLElement[] | null | void;
+  releaseElements: (elements: HTMLElement[]) => void;
+  getPosition: (element: HTMLElement) => { x: number; y: number };
+  getPositionChange: (
     element: HTMLElement,
-    startEvent: T['start'] | T['move'],
-    prevEvent: T['start'] | T['move'],
-    nextEvent: T['move']
+    startEvent: E['start'] | E['move'],
+    prevEvent: E['start'] | E['move'],
+    nextEvent: E['move']
   ) => { x: number; y: number };
-  renderElementPosition: (element: HTMLElement, x: number, y: number) => void;
-  destroyElements: (elements: HTMLElement[]) => void;
-  autoScroll: AutoScrollSettings<S>;
+  renderPosition: (element: HTMLElement, x: number, y: number) => void;
 }
 
-interface DraggableOptions<S extends Sensor[]> {
-  container?: DraggableSettings<S>['container'];
-  startPredicate?: DraggableSettings<S>['startPredicate'];
-  getElements?: DraggableSettings<S>['getElements'];
-  getElementPosition?: DraggableSettings<S>['getElementPosition'];
-  getElementPositionChange?: DraggableSettings<S>['getElementPositionChange'];
-  renderElementPosition?: DraggableSettings<S>['renderElementPosition'];
-  destroyElements?: DraggableSettings<S>['destroyElements'];
-  autoScroll?: Partial<AutoScrollSettings<S>> | null;
-}
+export type DraggableOptions<S extends Sensor[]> = Partial<DraggableSettings<S>>;
 
-function autoScrollGetPosition<S extends Sensor[]>(draggable: Draggable<S>) {
-  const drag = draggable.getDragData();
-  const primaryItem = drag?.items[0];
-
-  // Try to use the first item for the autoscroll data.
-  if (primaryItem) {
-    AUTOSCROLL_POSITION.x = primaryItem.x;
-    AUTOSCROLL_POSITION.y = primaryItem.y;
-  }
-  // Fallback to the sensor's clientX/clientY values.
-  else {
-    const e = drag && (drag.nextMoveEvent || drag.startEvent);
-    AUTOSCROLL_POSITION.x = e ? e.clientX : 0;
-    AUTOSCROLL_POSITION.y = e ? e.clientY : 0;
-  }
-
-  return AUTOSCROLL_POSITION;
-}
-
-function autoScrollGetClientRect<S extends Sensor[]>(draggable: Draggable<S>) {
-  const drag = draggable.getDragData();
-  const primaryItem = drag?.items[0];
-
-  // Try to use the first item for the autoscroll data.
-  if (primaryItem && primaryItem.element) {
-    const { left, top, width, height } = primaryItem.element.getBoundingClientRect();
-    AUTOSCROLL_CLIENT_RECT.left = left;
-    AUTOSCROLL_CLIENT_RECT.top = top;
-    AUTOSCROLL_CLIENT_RECT.width = width;
-    AUTOSCROLL_CLIENT_RECT.height = height;
-  }
-  // Fallback to the sensor's clientX/clientY values and a static size of
-  // 50px x 50px.
-  else {
-    const e = drag && (drag.nextMoveEvent || drag.startEvent);
-    AUTOSCROLL_CLIENT_RECT.left = e ? e.clientX - 25 : 0;
-    AUTOSCROLL_CLIENT_RECT.top = e ? e.clientY - 25 : 0;
-    AUTOSCROLL_CLIENT_RECT.width = e ? 50 : 0;
-    AUTOSCROLL_CLIENT_RECT.height = e ? 50 : 0;
-  }
-
-  return AUTOSCROLL_CLIENT_RECT;
-}
-
-function parseAutoScrollSettings<S extends Sensor[]>(
-  autoScrollOptions: Partial<AutoScrollSettings<S>> | null
-) {
-  const {
-    instance = null,
-    targets = [],
-    staticAreaSize = 0.2,
-    speed = autoScrollSmoothSpeed(),
-    smoothStop = false,
-    getPosition = autoScrollGetPosition,
-    getClientRect = autoScrollGetClientRect,
-    onStart = null,
-    onStop = null,
-  } = (autoScrollOptions || {}) as Partial<AutoScrollSettings<S>>;
-
-  return {
-    instance,
-    targets,
-    staticAreaSize,
-    speed,
-    smoothStop,
-    getPosition,
-    getClientRect,
-    onStart,
-    onStop,
-  };
-}
-
-function parseSettings<S extends Sensor[]>(
-  options: DraggableOptions<S>,
-  defaults: DraggableSettings<S> = DEFAULT_SETTINGS
-) {
-  const {
-    container = defaults.container,
-    startPredicate = defaults.startPredicate,
-    getElements = defaults.getElements,
-    getElementPosition = defaults.getElementPosition,
-    getElementPositionChange = defaults.getElementPositionChange,
-    renderElementPosition = defaults.renderElementPosition,
-    destroyElements = defaults.destroyElements,
-    autoScroll = defaults.autoScroll,
-  } = options;
-
-  return {
-    container,
-    startPredicate,
-    getElements,
-    getElementPosition,
-    getElementPositionChange,
-    renderElementPosition,
-    destroyElements,
-    autoScroll: parseAutoScrollSettings<S>(autoScroll),
-  };
-}
-
-export class Draggable<S extends Sensor[], E extends S[number]['events'] = S[number]['events']> {
+export class Draggable<
+  S extends Sensor[] = Sensor[],
+  E extends S[number]['events'] = S[number]['events']
+> {
   readonly sensors: S;
   readonly settings: DraggableSettings<S>;
-  protected _sensorListeners: Map<
+  protected _sensorData: Map<
     S[number],
     {
-      onMove: (e: Parameters<Draggable<S>['_onMove']>[1]) => void;
-      onEnd: (e: Parameters<Draggable<S>['_onEnd']>[1]) => void;
-    }
-  >;
-  protected _sensorStartPredicates: Map<
-    S[number],
-    {
-      state: StartPredicateState;
-      event: E['start'] | E['move'] | null;
+      predicateState: StartPredicateState;
+      predicateEvent: E['start'] | E['move'] | null;
+      onMove: (e: Parameters<Draggable<S>['_onMove']>[0]) => void;
+      onEnd: (e: Parameters<Draggable<S>['_onEnd']>[0]) => void;
     }
   >;
   protected _emitter: Emitter<{
     [K in keyof DraggableEventCallbacks<E>]: DraggableEventCallbacks<E>[K];
   }>;
   protected _drag: DraggableDrag<S> | null;
-  protected _autoScrollProxy: DraggableAutoScrollProxy<S> | null;
   protected _startId: symbol;
   protected _moveId: symbol;
   protected _syncId: symbol;
@@ -258,13 +162,11 @@ export class Draggable<S extends Sensor[], E extends S[number]['events'] = S[num
 
   constructor(sensors: S, options: DraggableOptions<S> = {}) {
     this.sensors = sensors;
-    this.settings = parseSettings<S>(options);
+    this.settings = this._parseSettings(options);
 
-    this._sensorListeners = new Map();
-    this._sensorStartPredicates = new Map();
+    this._sensorData = new Map();
     this._emitter = new Emitter();
     this._drag = null;
-    this._autoScrollProxy = null;
     this._startId = Symbol();
     this._moveId = Symbol();
     this._syncId = Symbol();
@@ -283,21 +185,44 @@ export class Draggable<S extends Sensor[], E extends S[number]['events'] = S[num
 
     // Bind drag sensor events.
     this.sensors.forEach((sensor) => {
-      this._sensorStartPredicates.set(sensor, {
-        state: StartPredicateState.Pending,
-        event: null,
+      this._sensorData.set(sensor, {
+        predicateState: StartPredicateState.PENDING,
+        predicateEvent: null,
+        onMove: (e) => this._onMove(e, sensor),
+        onEnd: (e) => this._onEnd(e, sensor),
       });
-      this._sensorListeners.set(sensor, {
-        onMove: (e) => this._onMove(sensor, e),
-        onEnd: (e) => this._onEnd(sensor, e),
-      });
-      const { onMove, onEnd } = this._sensorListeners.get(sensor)!;
+      const { onMove, onEnd } = this._sensorData.get(sensor)!;
       sensor.on('start', onMove);
       sensor.on('move', onMove);
       sensor.on('cancel', onEnd);
       sensor.on('end', onEnd);
       sensor.on('destroy', onEnd);
     });
+  }
+
+  protected _parseSettings(
+    options?: DraggableOptions<S>,
+    defaults: DraggableSettings<S> = DRAGGABLE_DEFAULT_SETTINGS as unknown as DraggableSettings<S>
+  ): DraggableSettings<S> {
+    const {
+      container = defaults.container,
+      startPredicate = defaults.startPredicate,
+      getElements = defaults.getElements,
+      releaseElements = defaults.releaseElements,
+      getPosition = defaults.getPosition,
+      getPositionChange = defaults.getPositionChange,
+      renderPosition = defaults.renderPosition,
+    } = options || {};
+
+    return {
+      container,
+      startPredicate,
+      getElements,
+      releaseElements,
+      getPosition,
+      getPositionChange,
+      renderPosition,
+    };
   }
 
   protected _emit<K extends keyof DraggableEventCallbacks<E>>(
@@ -307,13 +232,13 @@ export class Draggable<S extends Sensor[], E extends S[number]['events'] = S[num
     this._emitter.emit(type, ...e);
   }
 
-  protected _onMove(sensor: S[number], e: E['start'] | E['move']) {
-    const startPredicate = this._sensorStartPredicates.get(sensor);
-    if (!startPredicate) return;
+  protected _onMove(e: E['start'] | E['move'], sensor: S[number]) {
+    const sensorData = this._sensorData.get(sensor);
+    if (!sensorData) return;
 
-    switch (startPredicate.state) {
-      case StartPredicateState.Pending: {
-        startPredicate.event = e;
+    switch (sensorData.predicateState) {
+      case StartPredicateState.PENDING: {
+        sensorData.predicateEvent = e;
 
         // Check if drag should start.
         const shouldStart = this.settings.startPredicate(e, sensor, this);
@@ -328,7 +253,7 @@ export class Draggable<S extends Sensor[], E extends S[number]['events'] = S[num
         }
         break;
       }
-      case StartPredicateState.Resolved: {
+      case StartPredicateState.RESOLVED: {
         // Move the element if dragging is active.
         if (this._drag) {
           this._drag.nextMoveEvent = e as E['move'];
@@ -344,23 +269,23 @@ export class Draggable<S extends Sensor[], E extends S[number]['events'] = S[num
     this.synchronize();
   }
 
-  protected _onEnd(sensor: S[number], e: E['end'] | E['cancel'] | E['destroy']) {
-    const startPredicate = this._sensorStartPredicates.get(sensor);
-    if (!startPredicate) return;
+  protected _onEnd(e: E['end'] | E['cancel'] | E['destroy'], sensor: S[number]) {
+    const sensorData = this._sensorData.get(sensor);
+    if (!sensorData) return;
 
     // If there is no active drag yet, let's reset the sensor's start predicate
     // so that it can try starting drag again.
     if (!this._drag) {
-      startPredicate.state = StartPredicateState.Pending;
-      startPredicate.event = null;
+      sensorData.predicateState = StartPredicateState.PENDING;
+      sensorData.predicateEvent = null;
     }
     // Otherwise, if drag is active AND the sensor is the one that triggered the
     // drag process, let's reset all sensors' start preidcate states.
-    else if (startPredicate.state === StartPredicateState.Resolved) {
+    else if (sensorData.predicateState === StartPredicateState.RESOLVED) {
       this._drag.endEvent = e;
-      this._sensorStartPredicates.forEach((p) => {
-        p.state = StartPredicateState.Pending;
-        p.event = null;
+      this._sensorData.forEach((data) => {
+        data.predicateState = StartPredicateState.PENDING;
+        data.predicateEvent = null;
       });
       this.stop();
     }
@@ -409,7 +334,7 @@ export class Draggable<S extends Sensor[], E extends S[number]['events'] = S[num
       item.dragContainingBlock = dragContainingBlock;
 
       // Compute element's current elementX/Y.
-      const { x, y } = this.settings.getElementPosition(element);
+      const { x, y } = this.settings.getPosition(element);
       item.x = x;
       item.y = y;
 
@@ -450,19 +375,13 @@ export class Draggable<S extends Sensor[], E extends S[number]['events'] = S[num
           container.appendChild(item.element);
           item.x += item.containerDiffX;
           item.y += item.containerDiffY;
-          this.settings.renderElementPosition(item.element, item.x, item.y);
+          this.settings.renderPosition(item.element, item.x, item.y);
         }
       }
     }
 
     // Bind scroll listeners.
     window.addEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
-
-    // Register drag mover instance to auto-scroller.
-    if (!this._autoScrollProxy) {
-      this._autoScrollProxy = new DraggableAutoScrollProxy(this);
-      this.settings.autoScroll.instance?.addItem(this._autoScrollProxy);
-    }
 
     // Mark drag as started.
     drag.isStarted = true;
@@ -485,7 +404,7 @@ export class Draggable<S extends Sensor[], E extends S[number]['events'] = S[num
       if (!item.element) continue;
 
       // Compute how much x and y needs to be transformed.
-      const { x: changeX, y: changeY } = this.settings.getElementPositionChange(
+      const { x: changeX, y: changeY } = this.settings.getPositionChange(
         item.element,
         drag.startEvent,
         prevEvent,
@@ -531,7 +450,7 @@ export class Draggable<S extends Sensor[], E extends S[number]['events'] = S[num
     // Move the element.
     for (const item of drag.items) {
       if (!item.element) continue;
-      this.settings.renderElementPosition(item.element, item.x, item.y);
+      this.settings.renderPosition(item.element, item.x, item.y);
     }
 
     // Emit move event.
@@ -578,7 +497,7 @@ export class Draggable<S extends Sensor[], E extends S[number]['events'] = S[num
       if (!item.element) continue;
       item.syncDiffX = 0;
       item.syncDiffY = 0;
-      this.settings.renderElementPosition(item.element, item.x, item.y);
+      this.settings.renderPosition(item.element, item.x, item.y);
     }
   }
 
@@ -591,44 +510,50 @@ export class Draggable<S extends Sensor[], E extends S[number]['events'] = S[num
   }
 
   on<K extends keyof DraggableEventCallbacks<E>>(
-    eventType: K,
-    listener: DraggableEventCallbacks<E>[K]
+    eventName: K,
+    listener: DraggableEventCallbacks<E>[K],
+    listenerId?: EventListenerId
   ): EventListenerId {
-    return this._emitter.on(eventType, listener);
+    return this._emitter.on(eventName, listener, listenerId);
   }
 
   off<K extends keyof DraggableEventCallbacks<E>>(
-    eventType: K,
+    eventName: K,
     listener: DraggableEventCallbacks<E>[K] | EventListenerId
   ): void {
-    this._emitter.off(eventType, listener);
+    this._emitter.off(eventName, listener);
   }
 
-  synchronize() {
+  synchronize(syncImmediately = false) {
     if (!this._drag) return;
-    ticker.once(tickerReadPhase, this._prepareSynchronize, this._syncId);
-    ticker.once(tickerWritePhase, this._applySynchronize, this._syncId);
+    if (syncImmediately) {
+      this._prepareSynchronize();
+      this._applySynchronize();
+    } else {
+      ticker.once(tickerReadPhase, this._prepareSynchronize, this._syncId);
+      ticker.once(tickerWritePhase, this._applySynchronize, this._syncId);
+    }
   }
 
   resolveStartPredicate(sensor: S[number], e?: E['start'] | E['move']) {
-    const startPredicate = this._sensorStartPredicates.get(sensor);
-    if (!startPredicate) return;
+    const sensorData = this._sensorData.get(sensor);
+    if (!sensorData) return;
 
-    const startEvent = e || startPredicate.event;
+    const startEvent = e || sensorData.predicateEvent;
 
-    if (startPredicate.state === StartPredicateState.Pending && startEvent) {
+    if (sensorData.predicateState === StartPredicateState.PENDING && startEvent) {
       // Resolve the provided sensor's start predicate.
-      startPredicate.state = StartPredicateState.Resolved;
+      sensorData.predicateState = StartPredicateState.RESOLVED;
+      sensorData.predicateEvent = null;
       this._drag = new DraggableDrag();
       this._drag.sensor = sensor;
       this._drag.startEvent = startEvent;
-      startPredicate.event = null;
 
       // Reject other sensors' start predicates.
-      this._sensorStartPredicates.forEach((p, s) => {
+      this._sensorData.forEach((data, s) => {
         if (s === sensor) return;
-        p.state = StartPredicateState.Rejected;
-        p.event = null;
+        data.predicateState = StartPredicateState.REJECTED;
+        data.predicateEvent = null;
       });
 
       // Queue drag start.
@@ -638,10 +563,10 @@ export class Draggable<S extends Sensor[], E extends S[number]['events'] = S[num
   }
 
   rejectStartPredicate(sensor: S[number]) {
-    const startPredicate = this._sensorStartPredicates.get(sensor);
-    if (startPredicate?.state === StartPredicateState.Pending) {
-      startPredicate.state = StartPredicateState.Rejected;
-      startPredicate.event = null;
+    const sensorData = this._sensorData.get(sensor);
+    if (sensorData?.predicateState === StartPredicateState.PENDING) {
+      sensorData.predicateState = StartPredicateState.REJECTED;
+      sensorData.predicateEvent = null;
     }
   }
 
@@ -654,12 +579,6 @@ export class Draggable<S extends Sensor[], E extends S[number]['events'] = S[num
 
     // Emit beforeend event.
     this._emit('beforeend', drag.endEvent);
-
-    // Destroy auto scroll proxy.
-    if (this._autoScrollProxy) {
-      this.settings.autoScroll.instance?.removeItem(this._autoScrollProxy);
-      this._autoScrollProxy = null;
-    }
 
     // Cancel all queued ticks.
     ticker.off(tickerReadPhase, this._startId);
@@ -686,13 +605,13 @@ export class Draggable<S extends Sensor[], E extends S[number]['events'] = S[num
           item.containerDiffX = 0;
           item.containerDiffY = 0;
           item.rootParent.appendChild(item.element);
-          this.settings.renderElementPosition(item.element, item.x, item.y);
+          this.settings.renderPosition(item.element, item.x, item.y);
         }
       }
 
-      // Call "destroyElements" callback.
+      // Call "releaseElements" callback.
       if (elements.length) {
-        this.settings.destroyElements(elements);
+        this.settings.releaseElements(elements);
       }
     }
 
@@ -704,8 +623,7 @@ export class Draggable<S extends Sensor[], E extends S[number]['events'] = S[num
   }
 
   updateSettings(options: DraggableOptions<S> = {}) {
-    // TODO: Should we add some special handling for autoscroll instance?
-    (this as Writeable<this>).settings = parseSettings<S>(options, this.settings);
+    (this as Writeable<this>).settings = this._parseSettings(options, this.settings);
   }
 
   destroy() {
@@ -714,7 +632,7 @@ export class Draggable<S extends Sensor[], E extends S[number]['events'] = S[num
 
     this.stop();
 
-    this._sensorListeners.forEach(({ onMove, onEnd }, sensor) => {
+    this._sensorData.forEach(({ onMove, onEnd }, sensor) => {
       sensor.off('start', onMove);
       sensor.off('move', onMove);
       sensor.off('cancel', onEnd);
@@ -722,8 +640,10 @@ export class Draggable<S extends Sensor[], E extends S[number]['events'] = S[num
       sensor.off('destroy', onEnd);
     });
 
-    this._sensorListeners.clear();
-    this._sensorStartPredicates.clear();
+    this._sensorData.clear();
+
+    this._emit('destroy');
+
     this._emitter.off();
   }
 }

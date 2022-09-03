@@ -315,8 +315,8 @@ export class KeyboardMotionSensor
       e.preventDefault();
       this._stopTicking();
       this._cancel({
-        clientX: this.clientX as number,
-        clientY: this.clientY as number,
+        clientX: this.clientX!,
+        clientY: this.clientY!,
       });
       return;
     }
@@ -326,8 +326,8 @@ export class KeyboardMotionSensor
       e.preventDefault();
       this._stopTicking();
       this._end({
-        clientX: this.clientX as number,
-        clientY: this.clientY as number,
+        clientX: this.clientX!,
+        clientY: this.clientY!,
       });
       return;
     }
@@ -417,8 +417,8 @@ export class KeyboardMotionSensor
     if (!this._isActive) return;
     this._stopTicking();
     this._cancel({
-      clientX: this.clientX as number,
-      clientY: this.clientY as number,
+      clientX: this.clientX!,
+      clientY: this.clientY!,
     });
   }
 

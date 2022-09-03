@@ -76,26 +76,26 @@ export class KeyboardSensor
         switch (e.key) {
           case 'ArrowLeft': {
             return {
-              x: (sensor.clientX as number) - DEFAULT_MOVE_DISTANCE,
-              y: sensor.clientY as number,
+              x: sensor.clientX! - DEFAULT_MOVE_DISTANCE,
+              y: sensor.clientY!,
             };
           }
           case 'ArrowRight': {
             return {
-              x: (sensor.clientX as number) + DEFAULT_MOVE_DISTANCE,
-              y: sensor.clientY as number,
+              x: sensor.clientX! + DEFAULT_MOVE_DISTANCE,
+              y: sensor.clientY!,
             };
           }
           case 'ArrowUp': {
             return {
-              x: sensor.clientX as number,
-              y: (sensor.clientY as number) - DEFAULT_MOVE_DISTANCE,
+              x: sensor.clientX!,
+              y: sensor.clientY! - DEFAULT_MOVE_DISTANCE,
             };
           }
           case 'ArrowDown': {
             return {
-              x: sensor.clientX as number,
-              y: (sensor.clientY as number) + DEFAULT_MOVE_DISTANCE,
+              x: sensor.clientX!,
+              y: sensor.clientY! + DEFAULT_MOVE_DISTANCE,
             };
           }
           default: {
@@ -105,13 +105,13 @@ export class KeyboardSensor
       },
       cancelPredicate = (e, sensor) => {
         if (e.key === 'Escape') {
-          return { x: sensor.clientX as number, y: sensor.clientY as number };
+          return { x: sensor.clientX!, y: sensor.clientY! };
         }
         return null;
       },
       endPredicate = (e, sensor) => {
         if (e.key === 'Enter' || e.key === 'Space' || e.key === ' ') {
-          return { x: sensor.clientX as number, y: sensor.clientY as number };
+          return { x: sensor.clientX!, y: sensor.clientY! };
         }
         return null;
       },

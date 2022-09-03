@@ -42,7 +42,7 @@ interface SensorEvents {
 interface Sensor<T extends SensorEvents = SensorEvents> {
     events: T;
     on<K extends keyof T>(eventName: K, listener: (eventData: T[K]) => void, listenerId?: EventListenerId): EventListenerId;
-    off<K extends keyof T>(eventName?: K, listener?: ((eventData: T[K]) => void) | EventListenerId): void;
+    off<K extends keyof T>(eventName: K, listener: ((eventData: T[K]) => void) | EventListenerId): void;
     cancel(): void;
     destroy(): void;
 }
@@ -59,8 +59,8 @@ declare class BaseSensor<T extends SensorEvents = SensorEvents> implements Senso
     protected _move(data: Omit<T['move'], 'type'>): void;
     protected _end(data: Omit<T['end'], 'type'>): void;
     protected _cancel(data: Omit<T['cancel'], 'type'>): void;
-    on<K extends keyof T>(eventType: K, listener: (e: T[K]) => void, listenerId?: EventListenerId): EventListenerId;
-    off<K extends keyof T>(eventType?: K, listener?: ((e: T[K]) => void) | EventListenerId): void;
+    on<K extends keyof T>(eventName: K, listener: (e: T[K]) => void, listenerId?: EventListenerId): EventListenerId;
+    off<K extends keyof T>(eventName: K, listener: ((e: T[K]) => void) | EventListenerId): void;
     cancel(): void;
     destroy(): void;
 }
@@ -165,8 +165,8 @@ declare class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
     protected _reset(): void;
     cancel(): void;
     updateSettings(options: PointerSensorOptions): void;
-    on<K extends keyof T>(eventType: K, listener: (e: T[K]) => void, listenerId?: EventListenerId): EventListenerId;
-    off<K extends keyof T>(eventType?: K, listener?: ((e: T[K]) => void) | EventListenerId): void;
+    on<K extends keyof T>(eventName: K, listener: (e: T[K]) => void, listenerId?: EventListenerId): EventListenerId;
+    off<K extends keyof T>(eventName: K, listener: ((e: T[K]) => void) | EventListenerId): void;
     destroy(): void;
 }
 
@@ -287,6 +287,11 @@ declare class KeyboardMotionSensor extends BaseSensor<KeyboardMotionSensorEvents
     destroy(): void;
 }
 
+declare enum StartPredicateState {
+    PENDING = 0,
+    RESOLVED = 1,
+    REJECTED = 2
+}
 declare class DraggableItem {
     element: HTMLElement | null;
     rootParent: HTMLElement | null;
@@ -305,7 +310,6 @@ declare class DraggableItem {
     containerDiffY: number;
     constructor();
 }
-
 declare class DraggableDrag<S extends Sensor[], E extends S[number]['events'] = S[number]['events']> {
     sensor: S[number] | null;
     isStarted: boolean;
@@ -316,6 +320,72 @@ declare class DraggableDrag<S extends Sensor[], E extends S[number]['events'] = 
     endEvent: E['end'] | E['cancel'] | E['destroy'] | null;
     items: DraggableItem[];
     constructor();
+}
+declare const DRAGGABLE_DEFAULT_SETTINGS: DraggableSettings<Sensor[]>;
+interface DraggableEventCallbacks<E extends SensorEvents> {
+    beforestart(event: E['start'] | E['move']): void;
+    start(event: E['start'] | E['move']): void;
+    beforemove(event: E['move']): void;
+    move(event: E['move']): void;
+    beforeend(event: E['end'] | E['cancel'] | E['destroy'] | null): void;
+    end(event: E['end'] | E['cancel'] | E['destroy'] | null): void;
+    destroy(): void;
+}
+interface DraggableSettings<S extends Sensor[], E extends S[number]['events'] = S[number]['events']> {
+    container: HTMLElement | null;
+    startPredicate: (e: E['start'] | E['move'], sensor: S[number], draggable: Draggable<S>) => boolean | undefined | void;
+    getElements: (startEvent: E['start'] | E['move']) => HTMLElement[] | null | void;
+    releaseElements: (elements: HTMLElement[]) => void;
+    getPosition: (element: HTMLElement) => {
+        x: number;
+        y: number;
+    };
+    getPositionChange: (element: HTMLElement, startEvent: E['start'] | E['move'], prevEvent: E['start'] | E['move'], nextEvent: E['move']) => {
+        x: number;
+        y: number;
+    };
+    renderPosition: (element: HTMLElement, x: number, y: number) => void;
+}
+declare type DraggableOptions<S extends Sensor[]> = Partial<DraggableSettings<S>>;
+declare class Draggable<S extends Sensor[] = Sensor[], E extends S[number]['events'] = S[number]['events']> {
+    readonly sensors: S;
+    readonly settings: DraggableSettings<S>;
+    protected _sensorData: Map<S[number], {
+        predicateState: StartPredicateState;
+        predicateEvent: E['start'] | E['move'] | null;
+        onMove: (e: Parameters<Draggable<S>['_onMove']>[0]) => void;
+        onEnd: (e: Parameters<Draggable<S>['_onEnd']>[0]) => void;
+    }>;
+    protected _emitter: Emitter<{
+        [K in keyof DraggableEventCallbacks<E>]: DraggableEventCallbacks<E>[K];
+    }>;
+    protected _drag: DraggableDrag<S> | null;
+    protected _startId: symbol;
+    protected _moveId: symbol;
+    protected _syncId: symbol;
+    protected _isDestroyed: boolean;
+    constructor(sensors: S, options?: DraggableOptions<S>);
+    protected _parseSettings(options?: DraggableOptions<S>, defaults?: DraggableSettings<S>): DraggableSettings<S>;
+    protected _emit<K extends keyof DraggableEventCallbacks<E>>(type: K, ...e: Parameters<DraggableEventCallbacks<E>[K]>): void;
+    protected _onMove(e: E['start'] | E['move'], sensor: S[number]): void;
+    protected _onScroll(): void;
+    protected _onEnd(e: E['end'] | E['cancel'] | E['destroy'], sensor: S[number]): void;
+    protected _prepareStart(): void;
+    protected _applyStart(): void;
+    protected _prepareMove(): void;
+    protected _applyMove(): void;
+    protected _prepareSynchronize(): void;
+    protected _applySynchronize(): void;
+    isActive(): boolean;
+    getDragData(): Readonly<DraggableDrag<S, S[number]["events"]>> | null;
+    on<K extends keyof DraggableEventCallbacks<E>>(eventName: K, listener: DraggableEventCallbacks<E>[K], listenerId?: EventListenerId): EventListenerId;
+    off<K extends keyof DraggableEventCallbacks<E>>(eventName: K, listener: DraggableEventCallbacks<E>[K] | EventListenerId): void;
+    synchronize(syncImmediately?: boolean): void;
+    resolveStartPredicate(sensor: S[number], e?: E['start'] | E['move']): void;
+    rejectStartPredicate(sensor: S[number]): void;
+    stop(): void;
+    updateSettings(options?: DraggableOptions<S>): void;
+    destroy(): void;
 }
 
 declare class Pool<T> {
@@ -383,10 +453,10 @@ interface AutoScrollItem {
     readonly onPrepareScrollEffect?: AutoScrollItemEffectCallback | null;
     readonly onApplyScrollEffect?: AutoScrollItemEffectCallback | null;
 }
-interface AutoScrollSettings$1 {
+interface AutoScrollSettings {
     overlapCheckInterval: number;
 }
-interface AutoScrollOptions extends Partial<AutoScrollSettings$1> {
+interface AutoScrollOptions extends Partial<AutoScrollSettings> {
 }
 interface AutoScrollEventCallbacks {
     beforescroll(): void;
@@ -449,7 +519,7 @@ declare class AutoScrollRequest {
 declare function autoScrollSmoothSpeed(maxSpeed?: number, accelerationFactor?: number, decelerationFactor?: number): AutoScrollItemSpeedCallback;
 declare class AutoScroll {
     readonly items: AutoScrollItem[];
-    readonly settings: AutoScrollSettings$1;
+    readonly settings: AutoScrollSettings;
     protected _isDestroyed: boolean;
     protected _isTicking: boolean;
     protected _tickTime: number;
@@ -481,8 +551,8 @@ declare class AutoScroll {
     protected _requestAction(request: AutoScrollRequest, axis: AutoScrollAxis): void;
     protected _updateActions(): void;
     protected _applyActions(): void;
-    on<T extends keyof AutoScrollEventCallbacks>(event: T, listener: AutoScrollEventCallbacks[T]): EventListenerId;
-    off<T extends keyof AutoScrollEventCallbacks>(event: T, listener: AutoScrollEventCallbacks[T] | EventListenerId): void;
+    on<T extends keyof AutoScrollEventCallbacks>(eventName: T, listener: AutoScrollEventCallbacks[T]): EventListenerId;
+    off<T extends keyof AutoScrollEventCallbacks>(eventName: T, listener: AutoScrollEventCallbacks[T] | EventListenerId): void;
     addItem(item: AutoScrollItem): void;
     removeItem(item: AutoScrollItem): void;
     isDestroyed(): boolean;
@@ -493,11 +563,13 @@ declare class AutoScroll {
     destroy(): void;
 }
 
+declare const AUTOSCROLL_DRAGGABLE_DEFAULT_SETTINGS: DraggableAutoScrollSettings<Sensor[]>;
 declare class DraggableAutoScrollProxy<S extends Sensor<SensorEvents>[]> implements AutoScrollItem {
-    protected _draggable: Draggable<S>;
+    protected _draggable: DraggableAutoScroll<S>;
     protected _position: AutoScrollItem['position'];
     protected _clientRect: AutoScrollItem['clientRect'];
-    constructor(draggable: Draggable<S>);
+    constructor(draggable: DraggableAutoScroll<S>);
+    private _getSettings;
     get targets(): AutoScrollItemTarget[];
     get position(): {
         x: number;
@@ -512,106 +584,34 @@ declare class DraggableAutoScrollProxy<S extends Sensor<SensorEvents>[]> impleme
     onPrepareScrollEffect(): void;
     onApplyScrollEffect(): void;
 }
-
-declare enum StartPredicateState {
-    Pending = 0,
-    Resolved = 1,
-    Rejected = 2
-}
-interface DraggableEventCallbacks<E extends SensorEvents> {
-    beforestart(event: E['start'] | E['move']): void;
-    start(event: E['start'] | E['move']): void;
-    beforemove(event: E['move']): void;
-    move(event: E['move']): void;
-    beforeend(event: E['end'] | E['cancel'] | E['destroy'] | null): void;
-    end(event: E['end'] | E['cancel'] | E['destroy'] | null): void;
-}
-interface AutoScrollSettings<S extends Sensor[]> {
-    instance: AutoScroll | null;
-    targets: AutoScrollItemTarget[] | ((draggable: Draggable<S>) => AutoScrollItemTarget[]);
-    staticAreaSize: number;
-    speed: number | AutoScrollItemSpeedCallback;
-    smoothStop: boolean;
-    getPosition: ((draggable: Draggable<S>) => {
-        x: number;
-        y: number;
-    }) | null;
-    getClientRect: ((draggable: Draggable<S>) => {
-        left: number;
-        top: number;
-        width: number;
-        height: number;
-    }) | null;
-    onStart: AutoScrollItemEventCallback | null;
-    onStop: AutoScrollItemEventCallback | null;
-}
-interface DraggableSettings<S extends Sensor[], T extends S[number]['events'] = S[number]['events']> {
-    container: HTMLElement | null;
-    startPredicate: (e: T['start'] | T['move'], sensor: S[number], draggable: Draggable<S>) => boolean | undefined | void;
-    getElements: (startEvent: T['start'] | T['move']) => HTMLElement[] | null | void;
-    getElementPosition: (element: HTMLElement) => {
-        x: number;
-        y: number;
+interface DraggableAutoScrollSettings<S extends Sensor[]> extends DraggableSettings<S> {
+    autoScroll: {
+        targets: AutoScrollItemTarget[] | ((draggable: Draggable<S>) => AutoScrollItemTarget[]);
+        staticAreaSize: number;
+        speed: number | AutoScrollItemSpeedCallback;
+        smoothStop: boolean;
+        getPosition: ((draggable: Draggable<S>) => {
+            x: number;
+            y: number;
+        }) | null;
+        getClientRect: ((draggable: Draggable<S>) => {
+            left: number;
+            top: number;
+            width: number;
+            height: number;
+        }) | null;
+        onStart: AutoScrollItemEventCallback | null;
+        onStop: AutoScrollItemEventCallback | null;
     };
-    getElementPositionChange: (element: HTMLElement, startEvent: T['start'] | T['move'], prevEvent: T['start'] | T['move'], nextEvent: T['move']) => {
-        x: number;
-        y: number;
-    };
-    renderElementPosition: (element: HTMLElement, x: number, y: number) => void;
-    destroyElements: (elements: HTMLElement[]) => void;
-    autoScroll: AutoScrollSettings<S>;
 }
-interface DraggableOptions<S extends Sensor[]> {
-    container?: DraggableSettings<S>['container'];
-    startPredicate?: DraggableSettings<S>['startPredicate'];
-    getElements?: DraggableSettings<S>['getElements'];
-    getElementPosition?: DraggableSettings<S>['getElementPosition'];
-    getElementPositionChange?: DraggableSettings<S>['getElementPositionChange'];
-    renderElementPosition?: DraggableSettings<S>['renderElementPosition'];
-    destroyElements?: DraggableSettings<S>['destroyElements'];
-    autoScroll?: Partial<AutoScrollSettings<S>> | null;
-}
-declare class Draggable<S extends Sensor[], E extends S[number]['events'] = S[number]['events']> {
-    readonly sensors: S;
-    readonly settings: DraggableSettings<S>;
-    protected _sensorListeners: Map<S[number], {
-        onMove: (e: Parameters<Draggable<S>['_onMove']>[1]) => void;
-        onEnd: (e: Parameters<Draggable<S>['_onEnd']>[1]) => void;
-    }>;
-    protected _sensorStartPredicates: Map<S[number], {
-        state: StartPredicateState;
-        event: E['start'] | E['move'] | null;
-    }>;
-    protected _emitter: Emitter<{
-        [K in keyof DraggableEventCallbacks<E>]: DraggableEventCallbacks<E>[K];
-    }>;
-    protected _drag: DraggableDrag<S> | null;
+declare type DraggableAutoScrollOptions<S extends Sensor[]> = Partial<DraggableAutoScrollSettings<S>>;
+declare class DraggableAutoScroll<S extends Sensor[], E extends S[number]['events'] = S[number]['events']> extends Draggable<S, E> {
+    readonly settings: DraggableAutoScrollSettings<S>;
     protected _autoScrollProxy: DraggableAutoScrollProxy<S> | null;
-    protected _startId: symbol;
-    protected _moveId: symbol;
-    protected _syncId: symbol;
-    protected _isDestroyed: boolean;
-    constructor(sensors: S, options?: DraggableOptions<S>);
-    protected _emit<K extends keyof DraggableEventCallbacks<E>>(type: K, ...e: Parameters<DraggableEventCallbacks<E>[K]>): void;
-    protected _onMove(sensor: S[number], e: E['start'] | E['move']): void;
-    protected _onScroll(): void;
-    protected _onEnd(sensor: S[number], e: E['end'] | E['cancel'] | E['destroy']): void;
-    protected _prepareStart(): void;
-    protected _applyStart(): void;
-    protected _prepareMove(): void;
-    protected _applyMove(): void;
-    protected _prepareSynchronize(): void;
-    protected _applySynchronize(): void;
-    isActive(): boolean;
-    getDragData(): Readonly<DraggableDrag<S, S[number]["events"]>> | null;
-    on<K extends keyof DraggableEventCallbacks<E>>(eventType: K, listener: DraggableEventCallbacks<E>[K]): EventListenerId;
-    off<K extends keyof DraggableEventCallbacks<E>>(eventType: K, listener: DraggableEventCallbacks<E>[K] | EventListenerId): void;
-    synchronize(): void;
-    resolveStartPredicate(sensor: S[number], e?: E['start'] | E['move']): void;
-    rejectStartPredicate(sensor: S[number]): void;
-    stop(): void;
-    updateSettings(options?: DraggableOptions<S>): void;
-    destroy(): void;
+    constructor(sensors: S, options?: DraggableAutoScrollOptions<S>);
+    protected _parseAutoScrollSettings(options?: DraggableAutoScrollOptions<S>['autoScroll'], defaults?: DraggableAutoScrollSettings<S>['autoScroll']): DraggableAutoScrollSettings<S>['autoScroll'];
+    protected _parseSettings(options?: DraggableAutoScrollOptions<S>, defaults?: DraggableAutoScrollSettings<S>): DraggableAutoScrollSettings<S>;
+    updateSettings(options?: DraggableAutoScrollOptions<S>): void;
 }
 
 declare const autoScroll: AutoScroll;
@@ -626,4 +626,4 @@ declare function createPointerSensorStartPredicate<S extends (Sensor | PointerSe
     fallback?: D['settings']['startPredicate'];
 }): D["settings"]["startPredicate"];
 
-export { AUTO_SCROLL_AXIS, AUTO_SCROLL_AXIS_DIRECTION, AUTO_SCROLL_DIRECTION, AutoScroll, AutoScrollEventCallbacks, AutoScrollItem, AutoScrollItemEffectCallback, AutoScrollItemEventCallback, AutoScrollItemSpeedCallback, AutoScrollItemTarget, AutoScrollOptions, AutoScrollSettings$1 as AutoScrollSettings, BaseSensor, Draggable, KeyboardMotionSensor, KeyboardMotionSensorCancelEvent, KeyboardMotionSensorDestroyEvent, KeyboardMotionSensorEndEvent, KeyboardMotionSensorEvents, KeyboardMotionSensorMoveEvent, KeyboardMotionSensorOptions, KeyboardMotionSensorSpeed, KeyboardMotionSensorStartEvent, KeyboardMotionSensorStartPredicate, KeyboardSensor, KeyboardSensorCancelEvent, KeyboardSensorDestroyEvent, KeyboardSensorEndEvent, KeyboardSensorEvents, KeyboardSensorMoveEvent, KeyboardSensorOptions, KeyboardSensorPredicate, KeyboardSensorStartEvent, PointerSensor, PointerSensorCancelEvent, PointerSensorDestroyEvent, PointerSensorEndEvent, PointerSensorEvents, PointerSensorMoveEvent, PointerSensorOptions, PointerSensorStartEvent, Sensor, SensorCancelEvent, SensorDestroyEvent, SensorEndEvent, SensorEventType, SensorEvents, SensorMoveEvent, SensorStartEvent, autoScroll, autoScrollSmoothSpeed, createPointerSensorStartPredicate, keyboardMotionSensorSmoothSpeed, setTicker, ticker, tickerReadPhase, tickerWritePhase };
+export { AUTOSCROLL_DRAGGABLE_DEFAULT_SETTINGS, AUTO_SCROLL_AXIS, AUTO_SCROLL_AXIS_DIRECTION, AUTO_SCROLL_DIRECTION, AutoScroll, AutoScrollEventCallbacks, AutoScrollItem, AutoScrollItemEffectCallback, AutoScrollItemEventCallback, AutoScrollItemSpeedCallback, AutoScrollItemTarget, AutoScrollOptions, AutoScrollSettings, BaseSensor, DRAGGABLE_DEFAULT_SETTINGS, Draggable, DraggableAutoScroll, DraggableAutoScrollOptions, DraggableAutoScrollSettings, DraggableEventCallbacks, DraggableOptions, DraggableSettings, KeyboardMotionSensor, KeyboardMotionSensorCancelEvent, KeyboardMotionSensorDestroyEvent, KeyboardMotionSensorEndEvent, KeyboardMotionSensorEvents, KeyboardMotionSensorMoveEvent, KeyboardMotionSensorOptions, KeyboardMotionSensorSpeed, KeyboardMotionSensorStartEvent, KeyboardMotionSensorStartPredicate, KeyboardSensor, KeyboardSensorCancelEvent, KeyboardSensorDestroyEvent, KeyboardSensorEndEvent, KeyboardSensorEvents, KeyboardSensorMoveEvent, KeyboardSensorOptions, KeyboardSensorPredicate, KeyboardSensorStartEvent, PointerSensor, PointerSensorCancelEvent, PointerSensorDestroyEvent, PointerSensorEndEvent, PointerSensorEvents, PointerSensorMoveEvent, PointerSensorOptions, PointerSensorStartEvent, Sensor, SensorCancelEvent, SensorDestroyEvent, SensorEndEvent, SensorEventType, SensorEvents, SensorMoveEvent, SensorStartEvent, autoScroll, autoScrollSmoothSpeed, createPointerSensorStartPredicate, keyboardMotionSensorSmoothSpeed, setTicker, ticker, tickerReadPhase, tickerWritePhase };

@@ -1007,20 +1007,20 @@ export class AutoScroll {
    * Bind a listener.
    */
   on<T extends keyof AutoScrollEventCallbacks>(
-    event: T,
+    eventName: T,
     listener: AutoScrollEventCallbacks[T]
   ): EventListenerId {
-    return this._emitter.on(event, listener);
+    return this._emitter.on(eventName, listener);
   }
 
   /**
    * Unbind a listener.
    */
   off<T extends keyof AutoScrollEventCallbacks>(
-    event: T,
+    eventName: T,
     listener: AutoScrollEventCallbacks[T] | EventListenerId
   ): void {
-    this._emitter.off(event, listener);
+    this._emitter.off(eventName, listener);
   }
 
   addItem(item: AutoScrollItem) {

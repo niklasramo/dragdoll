@@ -51,11 +51,11 @@
             this._isActive = false;
             this._emitter.emit(SensorEventType.cancel, Object.assign({ type: SensorEventType.cancel }, data));
         }
-        on(eventType, listener, listenerId) {
-            return this._emitter.on(eventType, listener, listenerId);
+        on(eventName, listener, listenerId) {
+            return this._emitter.on(eventName, listener, listenerId);
         }
-        off(eventType, listener) {
-            this._emitter.off(eventType, listener);
+        off(eventName, listener) {
+            this._emitter.off(eventName, listener);
         }
         cancel() {
             if (!this._isActive)
@@ -356,11 +356,11 @@
                 this.element.addEventListener(SOURCE_EVENTS[this._sourceEvents].start, this._onStart, this._listenerOptions);
             }
         }
-        on(eventType, listener, listenerId) {
-            return this._emitter.on(eventType, listener, listenerId);
+        on(eventName, listener, listenerId) {
+            return this._emitter.on(eventName, listener, listenerId);
         }
-        off(eventType, listener) {
-            this._emitter.off(eventType, listener);
+        off(eventName, listener) {
+            this._emitter.off(eventName, listener);
         }
         destroy() {
             if (this._isDestroyed)
@@ -506,19 +506,133 @@
     let tickerWritePhase = Symbol();
     let ticker = new tikki.Ticker({ phases: [tickerReadPhase, tickerWritePhase] });
 
-    class DraggableDrag {
-        constructor() {
-            this.sensor = null;
-            this.isEnded = false;
-            this.isStarted = false;
-            this.startEvent = null;
-            this.nextMoveEvent = null;
-            this.prevMoveEvent = null;
-            this.endEvent = null;
-            this.items = [];
+    const STYLES_CACHE = new WeakMap();
+    function getStyle(element, prop) {
+        if (!prop)
+            return '';
+        let styleDeclaration = STYLES_CACHE.get(element);
+        if (!styleDeclaration) {
+            styleDeclaration = window.getComputedStyle(element, null);
+            STYLES_CACHE.set(element, styleDeclaration);
         }
+        return styleDeclaration.getPropertyValue(prop);
     }
 
+    function isContainingBlock(element) {
+        if (getStyle(element, 'position') !== 'static') {
+            return true;
+        }
+        const display = getStyle(element, 'display');
+        if (display === 'inline' || display === 'none') {
+            return false;
+        }
+        const transform = getStyle(element, 'transform');
+        if (transform && transform !== 'none') {
+            return true;
+        }
+        const perspective = getStyle(element, 'perspective');
+        if (perspective && perspective !== 'none') {
+            return true;
+        }
+        const contentVisibility = getStyle(element, 'content-visibility');
+        if (contentVisibility && (contentVisibility === 'auto' || contentVisibility === 'hidden')) {
+            return true;
+        }
+        const contain = getStyle(element, 'contain');
+        if (contain &&
+            (contain === 'strict' ||
+                contain === 'content' ||
+                contain.indexOf('paint') > -1 ||
+                contain.indexOf('layout') > -1)) {
+            return true;
+        }
+        if (!IS_SAFARI) {
+            const filter = getStyle(element, 'filter');
+            if (filter && filter !== 'none') {
+                return true;
+            }
+            const willChange = getStyle(element, 'will-change');
+            if (willChange &&
+                (willChange.indexOf('transform') > -1 || willChange.indexOf('perspective') > -1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function getContainingBlock(element) {
+        let res = element || document;
+        while (res && res !== document && !isContainingBlock(element)) {
+            res = res.parentElement || document;
+        }
+        return res;
+    }
+
+    function getStyleAsFloat(el, styleProp) {
+        return parseFloat(getStyle(el, styleProp)) || 0;
+    }
+
+    function getOffset(element, result = { left: 0, top: 0 }) {
+        result.left = 0;
+        result.top = 0;
+        if (element === document)
+            return result;
+        result.left = window.pageXOffset || 0;
+        result.top = window.pageYOffset || 0;
+        if ('self' in element && element.self === window.self)
+            return result;
+        const { left, top } = element.getBoundingClientRect();
+        result.left += left;
+        result.top += top;
+        result.left += getStyleAsFloat(element, 'border-left-width');
+        result.top += getStyleAsFloat(element, 'border-top-width');
+        return result;
+    }
+
+    const offsetA = { left: 0, top: 0 };
+    const offsetB = { left: 0, top: 0 };
+    function getOffsetDiff(elemA, elemB, result = { left: 0, top: 0 }) {
+        result.left = 0;
+        result.top = 0;
+        if (elemA === elemB)
+            return result;
+        getOffset(elemA, offsetA);
+        getOffset(elemB, offsetB);
+        result.left = offsetB.left - offsetA.left;
+        result.top = offsetB.top - offsetA.top;
+        return result;
+    }
+
+    const transformNone = 'none';
+    const rxMat3d = /^matrix3d/;
+    const rxMatTx = /([^,]*,){4}/;
+    const rxMat3dTx = /([^,]*,){12}/;
+    const rxNextItem = /[^,]*,/;
+    function getTranslate(element, result = { x: 0, y: 0 }) {
+        const transform = getStyle(element, 'transform');
+        if (!transform || transform === transformNone) {
+            result.x = 0;
+            result.y = 0;
+            return result;
+        }
+        const isMat3d = rxMat3d.test(transform);
+        const tX = transform.replace(isMat3d ? rxMat3dTx : rxMatTx, '');
+        const tY = tX.replace(rxNextItem, '');
+        result.x = parseFloat(tX) || 0;
+        result.y = parseFloat(tY) || 0;
+        return result;
+    }
+
+    const SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
+    const OFFSET_DIFF = { left: 0, top: 0 };
+    const TRANSLATE_POSITION = { x: 0, y: 0 };
+    const POSITION_CHANGE = { x: 0, y: 0 };
+    var StartPredicateState;
+    (function (StartPredicateState) {
+        StartPredicateState[StartPredicateState["PENDING"] = 0] = "PENDING";
+        StartPredicateState[StartPredicateState["RESOLVED"] = 1] = "RESOLVED";
+        StartPredicateState[StartPredicateState["REJECTED"] = 2] = "REJECTED";
+    })(StartPredicateState || (StartPredicateState = {}));
     class DraggableItem {
         constructor() {
             this.element = null;
@@ -538,74 +652,372 @@
             this.containerDiffY = 0;
         }
     }
-
-    class DraggableAutoScrollProxy {
-        constructor(draggable) {
-            this._draggable = draggable;
-            this._position = { x: 0, y: 0 };
-            this._clientRect = { left: 0, top: 0, width: 0, height: 0 };
+    class DraggableDrag {
+        constructor() {
+            this.sensor = null;
+            this.isEnded = false;
+            this.isStarted = false;
+            this.startEvent = null;
+            this.nextMoveEvent = null;
+            this.prevMoveEvent = null;
+            this.endEvent = null;
+            this.items = [];
         }
-        get targets() {
-            let { targets } = this._draggable.settings.autoScroll;
-            if (typeof targets === 'function') {
-                targets = targets(this._draggable);
+    }
+    const DRAGGABLE_DEFAULT_SETTINGS = {
+        container: null,
+        startPredicate: () => true,
+        getElements: () => null,
+        releaseElements: () => { },
+        getPosition: (element) => getTranslate(element, TRANSLATE_POSITION),
+        getPositionChange: (_element, _startEvent, prevEvent, nextEvent) => {
+            POSITION_CHANGE.x = nextEvent.clientX - prevEvent.clientX;
+            POSITION_CHANGE.y = nextEvent.clientY - prevEvent.clientY;
+            return POSITION_CHANGE;
+        },
+        renderPosition: (element, x, y) => {
+            element.style.transform = `translate3d(${x}px, ${y}px, 0px)`;
+        },
+    };
+    class Draggable {
+        constructor(sensors, options = {}) {
+            this.sensors = sensors;
+            this.settings = this._parseSettings(options);
+            this._sensorData = new Map();
+            this._emitter = new eventti.Emitter();
+            this._drag = null;
+            this._startId = Symbol();
+            this._moveId = Symbol();
+            this._syncId = Symbol();
+            this._isDestroyed = false;
+            this._onMove = this._onMove.bind(this);
+            this._onScroll = this._onScroll.bind(this);
+            this._onEnd = this._onEnd.bind(this);
+            this._prepareStart = this._prepareStart.bind(this);
+            this._applyStart = this._applyStart.bind(this);
+            this._prepareMove = this._prepareMove.bind(this);
+            this._applyMove = this._applyMove.bind(this);
+            this._prepareSynchronize = this._prepareSynchronize.bind(this);
+            this._applySynchronize = this._applySynchronize.bind(this);
+            this.sensors.forEach((sensor) => {
+                this._sensorData.set(sensor, {
+                    predicateState: StartPredicateState.PENDING,
+                    predicateEvent: null,
+                    onMove: (e) => this._onMove(e, sensor),
+                    onEnd: (e) => this._onEnd(e, sensor),
+                });
+                const { onMove, onEnd } = this._sensorData.get(sensor);
+                sensor.on('start', onMove);
+                sensor.on('move', onMove);
+                sensor.on('cancel', onEnd);
+                sensor.on('end', onEnd);
+                sensor.on('destroy', onEnd);
+            });
+        }
+        _parseSettings(options, defaults = DRAGGABLE_DEFAULT_SETTINGS) {
+            const { container = defaults.container, startPredicate = defaults.startPredicate, getElements = defaults.getElements, releaseElements = defaults.releaseElements, getPosition = defaults.getPosition, getPositionChange = defaults.getPositionChange, renderPosition = defaults.renderPosition, } = options || {};
+            return {
+                container,
+                startPredicate,
+                getElements,
+                releaseElements,
+                getPosition,
+                getPositionChange,
+                renderPosition,
+            };
+        }
+        _emit(type, ...e) {
+            this._emitter.emit(type, ...e);
+        }
+        _onMove(e, sensor) {
+            const sensorData = this._sensorData.get(sensor);
+            if (!sensorData)
+                return;
+            switch (sensorData.predicateState) {
+                case StartPredicateState.PENDING: {
+                    sensorData.predicateEvent = e;
+                    const shouldStart = this.settings.startPredicate(e, sensor, this);
+                    if (shouldStart === true) {
+                        this.resolveStartPredicate(sensor);
+                    }
+                    else if (shouldStart === false) {
+                        this.rejectStartPredicate(sensor);
+                    }
+                    break;
+                }
+                case StartPredicateState.RESOLVED: {
+                    if (this._drag) {
+                        this._drag.nextMoveEvent = e;
+                        ticker.once(tickerReadPhase, this._prepareMove, this._moveId);
+                        ticker.once(tickerWritePhase, this._applyMove, this._moveId);
+                    }
+                    break;
+                }
             }
-            return targets;
         }
-        get position() {
-            let { getPosition } = this._draggable.settings.autoScroll;
-            if (typeof getPosition === 'function') {
-                const position = getPosition(this._draggable);
-                this._position.x = position.x;
-                this._position.y = position.y;
+        _onScroll() {
+            this.synchronize();
+        }
+        _onEnd(e, sensor) {
+            const sensorData = this._sensorData.get(sensor);
+            if (!sensorData)
+                return;
+            if (!this._drag) {
+                sensorData.predicateState = StartPredicateState.PENDING;
+                sensorData.predicateEvent = null;
+            }
+            else if (sensorData.predicateState === StartPredicateState.RESOLVED) {
+                this._drag.endEvent = e;
+                this._sensorData.forEach((data) => {
+                    data.predicateState = StartPredicateState.PENDING;
+                    data.predicateEvent = null;
+                });
+                this.stop();
+            }
+        }
+        _prepareStart() {
+            const drag = this._drag;
+            if (!drag || !drag.startEvent)
+                return;
+            const elements = this.settings.getElements(drag.startEvent) || [];
+            drag.items = elements.map((element) => {
+                const item = new DraggableItem();
+                item.element = element;
+                if (!element.isConnected) {
+                    if (this.settings.container) {
+                        this.settings.container.appendChild(element);
+                    }
+                    else {
+                        document.body.appendChild(element);
+                    }
+                }
+                const rootParent = element.parentNode;
+                item.rootParent = rootParent;
+                const rootContainingBlock = getContainingBlock(rootParent);
+                item.rootContainingBlock = rootContainingBlock;
+                const dragParent = this.settings.container || rootParent;
+                item.dragParent = dragParent;
+                const dragContainingBlock = dragParent === rootParent ? rootContainingBlock : getContainingBlock(dragParent);
+                item.dragContainingBlock = dragContainingBlock;
+                const { x, y } = this.settings.getPosition(element);
+                item.x = x;
+                item.y = y;
+                const clientRect = element.getBoundingClientRect();
+                item.clientX = clientRect.left;
+                item.clientY = clientRect.top;
+                if (rootContainingBlock !== dragContainingBlock) {
+                    const { left, top } = getOffsetDiff(dragContainingBlock, rootContainingBlock, OFFSET_DIFF);
+                    item.containerDiffX = left;
+                    item.containerDiffY = top;
+                }
+                return item;
+            });
+        }
+        _applyStart() {
+            let drag = this._drag;
+            if (!drag || !drag.startEvent)
+                return;
+            this._emit('beforestart', drag.startEvent);
+            drag = this._drag;
+            if (!drag || !drag.startEvent)
+                return;
+            const { container } = this.settings;
+            if (container) {
+                for (const item of drag.items) {
+                    if (item.element && item.element.parentNode !== container) {
+                        container.appendChild(item.element);
+                        item.x += item.containerDiffX;
+                        item.y += item.containerDiffY;
+                        this.settings.renderPosition(item.element, item.x, item.y);
+                    }
+                }
+            }
+            window.addEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
+            drag.isStarted = true;
+            this._emit('start', drag.startEvent);
+        }
+        _prepareMove() {
+            const drag = this._drag;
+            if (!drag || !drag.startEvent)
+                return;
+            const nextEvent = drag.nextMoveEvent;
+            const prevEvent = drag.prevMoveEvent || drag.startEvent;
+            if (!nextEvent || nextEvent === prevEvent)
+                return;
+            for (const item of drag.items) {
+                if (!item.element)
+                    continue;
+                const { x: changeX, y: changeY } = this.settings.getPositionChange(item.element, drag.startEvent, prevEvent, nextEvent);
+                if (changeX) {
+                    item.x = item.x - item.moveDiffX + changeX;
+                    item.clientX = item.clientX - item.moveDiffX + changeX;
+                    item.moveDiffX = changeX;
+                }
+                if (changeY) {
+                    item.y = item.y - item.moveDiffY + changeY;
+                    item.clientY = item.clientY - item.moveDiffY + changeY;
+                    item.moveDiffY = changeY;
+                }
+            }
+            drag.prevMoveEvent = nextEvent;
+        }
+        _applyMove() {
+            let drag = this._drag;
+            if (!drag || !drag.nextMoveEvent)
+                return;
+            for (const item of drag.items) {
+                item.moveDiffX = 0;
+                item.moveDiffY = 0;
+            }
+            this._emit('beforemove', drag.nextMoveEvent);
+            drag = this._drag;
+            if (!drag || !drag.nextMoveEvent)
+                return;
+            for (const item of drag.items) {
+                if (!item.element)
+                    continue;
+                this.settings.renderPosition(item.element, item.x, item.y);
+            }
+            this._emit('move', drag.nextMoveEvent);
+        }
+        _prepareSynchronize() {
+            const drag = this._drag;
+            if (!drag)
+                return;
+            for (const item of drag.items) {
+                if (!item.element)
+                    continue;
+                if (item.rootContainingBlock !== item.dragContainingBlock) {
+                    const { left, top } = getOffsetDiff(item.dragContainingBlock, item.rootContainingBlock, OFFSET_DIFF);
+                    item.containerDiffX = left;
+                    item.containerDiffY = top;
+                }
+                const { left, top } = item.element.getBoundingClientRect();
+                const syncDiffX = item.clientX - item.moveDiffX - left;
+                item.x = item.x - item.syncDiffX + syncDiffX;
+                item.syncDiffX = syncDiffX;
+                const syncDiffY = item.clientY - item.moveDiffY - top;
+                item.y = item.y - item.syncDiffY + syncDiffY;
+                item.syncDiffY = syncDiffY;
+            }
+        }
+        _applySynchronize() {
+            const drag = this._drag;
+            if (!drag)
+                return;
+            for (const item of drag.items) {
+                if (!item.element)
+                    continue;
+                item.syncDiffX = 0;
+                item.syncDiffY = 0;
+                this.settings.renderPosition(item.element, item.x, item.y);
+            }
+        }
+        isActive() {
+            return !!this._drag;
+        }
+        getDragData() {
+            return this._drag;
+        }
+        on(eventName, listener, listenerId) {
+            return this._emitter.on(eventName, listener, listenerId);
+        }
+        off(eventName, listener) {
+            this._emitter.off(eventName, listener);
+        }
+        synchronize(syncImmediately = false) {
+            if (!this._drag)
+                return;
+            if (syncImmediately) {
+                this._prepareSynchronize();
+                this._applySynchronize();
             }
             else {
-                this._position.x = 0;
-                this._position.y = 0;
+                ticker.once(tickerReadPhase, this._prepareSynchronize, this._syncId);
+                ticker.once(tickerWritePhase, this._applySynchronize, this._syncId);
             }
-            return this._position;
         }
-        get clientRect() {
-            let { getClientRect } = this._draggable.settings.autoScroll;
-            if (typeof getClientRect === 'function') {
-                const { left, top, width, height } = getClientRect(this._draggable);
-                this._clientRect.left = left;
-                this._clientRect.top = top;
-                this._clientRect.width = width;
-                this._clientRect.height = height;
+        resolveStartPredicate(sensor, e) {
+            const sensorData = this._sensorData.get(sensor);
+            if (!sensorData)
+                return;
+            const startEvent = e || sensorData.predicateEvent;
+            if (sensorData.predicateState === StartPredicateState.PENDING && startEvent) {
+                sensorData.predicateState = StartPredicateState.RESOLVED;
+                sensorData.predicateEvent = null;
+                this._drag = new DraggableDrag();
+                this._drag.sensor = sensor;
+                this._drag.startEvent = startEvent;
+                this._sensorData.forEach((data, s) => {
+                    if (s === sensor)
+                        return;
+                    data.predicateState = StartPredicateState.REJECTED;
+                    data.predicateEvent = null;
+                });
+                ticker.once(tickerReadPhase, this._prepareStart, this._startId);
+                ticker.once(tickerWritePhase, this._applyStart, this._startId);
             }
-            else {
-                this._clientRect.left = 0;
-                this._clientRect.top = 0;
-                this._clientRect.width = 0;
-                this._clientRect.height = 0;
+        }
+        rejectStartPredicate(sensor) {
+            const sensorData = this._sensorData.get(sensor);
+            if ((sensorData === null || sensorData === void 0 ? void 0 : sensorData.predicateState) === StartPredicateState.PENDING) {
+                sensorData.predicateState = StartPredicateState.REJECTED;
+                sensorData.predicateEvent = null;
             }
-            return this._clientRect;
         }
-        get staticAreaSize() {
-            return this._draggable.settings.autoScroll.staticAreaSize;
+        stop() {
+            const drag = this._drag;
+            if (!drag || drag.isEnded)
+                return;
+            drag.isEnded = true;
+            this._emit('beforeend', drag.endEvent);
+            ticker.off(tickerReadPhase, this._startId);
+            ticker.off(tickerWritePhase, this._startId);
+            ticker.off(tickerReadPhase, this._moveId);
+            ticker.off(tickerWritePhase, this._moveId);
+            ticker.off(tickerReadPhase, this._syncId);
+            ticker.off(tickerWritePhase, this._syncId);
+            if (drag.isStarted) {
+                window.removeEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
+                const elements = [];
+                for (const item of drag.items) {
+                    if (!item.element)
+                        continue;
+                    elements.push(item.element);
+                    if (item.rootParent && item.element.parentNode !== item.rootParent) {
+                        item.x -= item.containerDiffX;
+                        item.y -= item.containerDiffY;
+                        item.containerDiffX = 0;
+                        item.containerDiffY = 0;
+                        item.rootParent.appendChild(item.element);
+                        this.settings.renderPosition(item.element, item.x, item.y);
+                    }
+                }
+                if (elements.length) {
+                    this.settings.releaseElements(elements);
+                }
+            }
+            this._emit('end', drag.endEvent);
+            this._drag = null;
         }
-        get smoothStop() {
-            return this._draggable.settings.autoScroll.smoothStop;
+        updateSettings(options = {}) {
+            this.settings = this._parseSettings(options, this.settings);
         }
-        get speed() {
-            return this._draggable.settings.autoScroll.speed;
-        }
-        get onStart() {
-            return this._draggable.settings.autoScroll.onStart;
-        }
-        get onStop() {
-            return this._draggable.settings.autoScroll.onStop;
-        }
-        onPrepareScrollEffect() {
-            const { _draggable } = this;
-            const syncId = _draggable['_syncId'];
-            ticker.off(tickerReadPhase, syncId);
-            ticker.off(tickerWritePhase, syncId);
-            _draggable['_prepareSynchronize']();
-        }
-        onApplyScrollEffect() {
-            this._draggable['_applySynchronize']();
+        destroy() {
+            if (this._isDestroyed)
+                return;
+            this._isDestroyed = true;
+            this.stop();
+            this._sensorData.forEach(({ onMove, onEnd }, sensor) => {
+                sensor.off('start', onMove);
+                sensor.off('move', onMove);
+                sensor.off('cancel', onEnd);
+                sensor.off('end', onEnd);
+                sensor.off('destroy', onEnd);
+            });
+            this._sensorData.clear();
+            this._emit('destroy');
+            this._emitter.off();
         }
     }
 
@@ -654,22 +1066,6 @@
 
     function isWindow(value) {
         return value === window;
-    }
-
-    const STYLES_CACHE = new WeakMap();
-    function getStyle(element, prop) {
-        if (!prop)
-            return '';
-        let styleDeclaration = STYLES_CACHE.get(element);
-        if (!styleDeclaration) {
-            styleDeclaration = window.getComputedStyle(element, null);
-            STYLES_CACHE.set(element, styleDeclaration);
-        }
-        return styleDeclaration.getPropertyValue(prop);
-    }
-
-    function getStyleAsFloat(el, styleProp) {
-        return parseFloat(getStyle(el, styleProp)) || 0;
     }
 
     function getContentRect(element, result = { width: 0, height: 0, left: 0, right: 0, top: 0, bottom: 0 }) {
@@ -1398,11 +1794,11 @@
             }
             this._emitter.emit('afterscroll');
         }
-        on(event, listener) {
-            return this._emitter.on(event, listener);
+        on(eventName, listener) {
+            return this._emitter.on(eventName, listener);
         }
-        off(event, listener) {
-            this._emitter.off(event, listener);
+        off(eventName, listener) {
+            this._emitter.off(eventName, listener);
         }
         addItem(item) {
             if (this._isDestroyed || this._itemData.has(item))
@@ -1473,544 +1869,51 @@
         }
     }
 
-    function isContainingBlock(element) {
-        if (getStyle(element, 'position') !== 'static') {
-            return true;
-        }
-        const display = getStyle(element, 'display');
-        if (display === 'inline' || display === 'none') {
-            return false;
-        }
-        const transform = getStyle(element, 'transform');
-        if (transform && transform !== 'none') {
-            return true;
-        }
-        const perspective = getStyle(element, 'perspective');
-        if (perspective && perspective !== 'none') {
-            return true;
-        }
-        const contentVisibility = getStyle(element, 'content-visibility');
-        if (contentVisibility && (contentVisibility === 'auto' || contentVisibility === 'hidden')) {
-            return true;
-        }
-        const contain = getStyle(element, 'contain');
-        if (contain &&
-            (contain === 'strict' ||
-                contain === 'content' ||
-                contain.indexOf('paint') > -1 ||
-                contain.indexOf('layout') > -1)) {
-            return true;
-        }
-        if (!IS_SAFARI) {
-            const filter = getStyle(element, 'filter');
-            if (filter && filter !== 'none') {
-                return true;
-            }
-            const willChange = getStyle(element, 'will-change');
-            if (willChange &&
-                (willChange.indexOf('transform') > -1 || willChange.indexOf('perspective') > -1)) {
-                return true;
-            }
-        }
-        return false;
-    }
+    new AutoScroll();
 
-    function getContainingBlock(element) {
-        let res = element || document;
-        while (res && res !== document && !isContainingBlock(element)) {
-            res = res.parentElement || document;
-        }
-        return res;
-    }
-
-    function getOffset(element, result = { left: 0, top: 0 }) {
-        result.left = 0;
-        result.top = 0;
-        if (element === document)
-            return result;
-        result.left = window.pageXOffset || 0;
-        result.top = window.pageYOffset || 0;
-        if ('self' in element && element.self === window.self)
-            return result;
-        const { left, top } = element.getBoundingClientRect();
-        result.left += left;
-        result.top += top;
-        result.left += getStyleAsFloat(element, 'border-left-width');
-        result.top += getStyleAsFloat(element, 'border-top-width');
-        return result;
-    }
-
-    const offsetA = { left: 0, top: 0 };
-    const offsetB = { left: 0, top: 0 };
-    function getOffsetDiff(elemA, elemB, result = { left: 0, top: 0 }) {
-        result.left = 0;
-        result.top = 0;
-        if (elemA === elemB)
-            return result;
-        getOffset(elemA, offsetA);
-        getOffset(elemB, offsetB);
-        result.left = offsetB.left - offsetA.left;
-        result.top = offsetB.top - offsetA.top;
-        return result;
-    }
-
-    const transformNone = 'none';
-    const rxMat3d = /^matrix3d/;
-    const rxMatTx = /([^,]*,){4}/;
-    const rxMat3dTx = /([^,]*,){12}/;
-    const rxNextItem = /[^,]*,/;
-    function getTranslate(element, result = { x: 0, y: 0 }) {
-        const transform = getStyle(element, 'transform');
-        if (!transform || transform === transformNone) {
-            result.x = 0;
-            result.y = 0;
-            return result;
-        }
-        const isMat3d = rxMat3d.test(transform);
-        const tX = transform.replace(isMat3d ? rxMat3dTx : rxMatTx, '');
-        const tY = tX.replace(rxNextItem, '');
-        result.x = parseFloat(tX) || 0;
-        result.y = parseFloat(tY) || 0;
-        return result;
-    }
-
-    const SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
-    const OFFSET_DIFF = { left: 0, top: 0 };
-    const TRANSLATE_POSITION = { x: 0, y: 0 };
-    const POSITION_CHANGE = { x: 0, y: 0 };
     const AUTOSCROLL_POSITION = { x: 0, y: 0 };
     const AUTOSCROLL_CLIENT_RECT = { left: 0, top: 0, width: 0, height: 0 };
-    const DEFAULT_SETTINGS = {
-        container: null,
-        startPredicate: () => true,
-        getElements: () => null,
-        destroyElements: () => { },
-        getElementPosition: (element) => getTranslate(element, TRANSLATE_POSITION),
-        getElementPositionChange: (_element, _startEvent, prevEvent, nextEvent) => {
-            POSITION_CHANGE.x = nextEvent.clientX - prevEvent.clientX;
-            POSITION_CHANGE.y = nextEvent.clientY - prevEvent.clientY;
-            return POSITION_CHANGE;
-        },
-        renderElementPosition: (element, x, y) => {
-            element.style.transform = `translate3d(${x}px, ${y}px, 0px)`;
-        },
-        autoScroll: {
-            instance: null,
+    Object.assign(Object.assign({}, DRAGGABLE_DEFAULT_SETTINGS), { autoScroll: {
             targets: [],
             staticAreaSize: 0.2,
-            speed: autoScrollSmoothSpeed(1000, 2000, 2500),
+            speed: autoScrollSmoothSpeed(),
             smoothStop: false,
-            getPosition: autoScrollGetPosition,
-            getClientRect: autoScrollGetClientRect,
+            getPosition: (draggable) => {
+                const drag = draggable.getDragData();
+                const primaryItem = drag === null || drag === void 0 ? void 0 : drag.items[0];
+                if (primaryItem) {
+                    AUTOSCROLL_POSITION.x = primaryItem.x;
+                    AUTOSCROLL_POSITION.y = primaryItem.y;
+                }
+                else {
+                    const e = drag && (drag.nextMoveEvent || drag.startEvent);
+                    AUTOSCROLL_POSITION.x = e ? e.clientX : 0;
+                    AUTOSCROLL_POSITION.y = e ? e.clientY : 0;
+                }
+                return AUTOSCROLL_POSITION;
+            },
+            getClientRect: (draggable) => {
+                const drag = draggable.getDragData();
+                const primaryItem = drag === null || drag === void 0 ? void 0 : drag.items[0];
+                if (primaryItem && primaryItem.element) {
+                    const { left, top, width, height } = primaryItem.element.getBoundingClientRect();
+                    AUTOSCROLL_CLIENT_RECT.left = left;
+                    AUTOSCROLL_CLIENT_RECT.top = top;
+                    AUTOSCROLL_CLIENT_RECT.width = width;
+                    AUTOSCROLL_CLIENT_RECT.height = height;
+                }
+                else {
+                    const e = drag && (drag.nextMoveEvent || drag.startEvent);
+                    AUTOSCROLL_CLIENT_RECT.left = e ? e.clientX - 25 : 0;
+                    AUTOSCROLL_CLIENT_RECT.top = e ? e.clientY - 25 : 0;
+                    AUTOSCROLL_CLIENT_RECT.width = e ? 50 : 0;
+                    AUTOSCROLL_CLIENT_RECT.height = e ? 50 : 0;
+                }
+                return AUTOSCROLL_CLIENT_RECT;
+            },
             onStart: null,
             onStop: null,
-        },
-    };
-    var StartPredicateState;
-    (function (StartPredicateState) {
-        StartPredicateState[StartPredicateState["Pending"] = 0] = "Pending";
-        StartPredicateState[StartPredicateState["Resolved"] = 1] = "Resolved";
-        StartPredicateState[StartPredicateState["Rejected"] = 2] = "Rejected";
-    })(StartPredicateState || (StartPredicateState = {}));
-    function autoScrollGetPosition(draggable) {
-        const drag = draggable.getDragData();
-        const primaryItem = drag === null || drag === void 0 ? void 0 : drag.items[0];
-        if (primaryItem) {
-            AUTOSCROLL_POSITION.x = primaryItem.x;
-            AUTOSCROLL_POSITION.y = primaryItem.y;
-        }
-        else {
-            const e = drag && (drag.nextMoveEvent || drag.startEvent);
-            AUTOSCROLL_POSITION.x = e ? e.clientX : 0;
-            AUTOSCROLL_POSITION.y = e ? e.clientY : 0;
-        }
-        return AUTOSCROLL_POSITION;
-    }
-    function autoScrollGetClientRect(draggable) {
-        const drag = draggable.getDragData();
-        const primaryItem = drag === null || drag === void 0 ? void 0 : drag.items[0];
-        if (primaryItem && primaryItem.element) {
-            const { left, top, width, height } = primaryItem.element.getBoundingClientRect();
-            AUTOSCROLL_CLIENT_RECT.left = left;
-            AUTOSCROLL_CLIENT_RECT.top = top;
-            AUTOSCROLL_CLIENT_RECT.width = width;
-            AUTOSCROLL_CLIENT_RECT.height = height;
-        }
-        else {
-            const e = drag && (drag.nextMoveEvent || drag.startEvent);
-            AUTOSCROLL_CLIENT_RECT.left = e ? e.clientX - 25 : 0;
-            AUTOSCROLL_CLIENT_RECT.top = e ? e.clientY - 25 : 0;
-            AUTOSCROLL_CLIENT_RECT.width = e ? 50 : 0;
-            AUTOSCROLL_CLIENT_RECT.height = e ? 50 : 0;
-        }
-        return AUTOSCROLL_CLIENT_RECT;
-    }
-    function parseAutoScrollSettings(autoScrollOptions) {
-        const { instance = null, targets = [], staticAreaSize = 0.2, speed = autoScrollSmoothSpeed(), smoothStop = false, getPosition = autoScrollGetPosition, getClientRect = autoScrollGetClientRect, onStart = null, onStop = null, } = (autoScrollOptions || {});
-        return {
-            instance,
-            targets,
-            staticAreaSize,
-            speed,
-            smoothStop,
-            getPosition,
-            getClientRect,
-            onStart,
-            onStop,
-        };
-    }
-    function parseSettings(options, defaults = DEFAULT_SETTINGS) {
-        const { container = defaults.container, startPredicate = defaults.startPredicate, getElements = defaults.getElements, getElementPosition = defaults.getElementPosition, getElementPositionChange = defaults.getElementPositionChange, renderElementPosition = defaults.renderElementPosition, destroyElements = defaults.destroyElements, autoScroll = defaults.autoScroll, } = options;
-        return {
-            container,
-            startPredicate,
-            getElements,
-            getElementPosition,
-            getElementPositionChange,
-            renderElementPosition,
-            destroyElements,
-            autoScroll: parseAutoScrollSettings(autoScroll),
-        };
-    }
-    class Draggable {
-        constructor(sensors, options = {}) {
-            this.sensors = sensors;
-            this.settings = parseSettings(options);
-            this._sensorListeners = new Map();
-            this._sensorStartPredicates = new Map();
-            this._emitter = new eventti.Emitter();
-            this._drag = null;
-            this._autoScrollProxy = null;
-            this._startId = Symbol();
-            this._moveId = Symbol();
-            this._syncId = Symbol();
-            this._isDestroyed = false;
-            this._onMove = this._onMove.bind(this);
-            this._onScroll = this._onScroll.bind(this);
-            this._onEnd = this._onEnd.bind(this);
-            this._prepareStart = this._prepareStart.bind(this);
-            this._applyStart = this._applyStart.bind(this);
-            this._prepareMove = this._prepareMove.bind(this);
-            this._applyMove = this._applyMove.bind(this);
-            this._prepareSynchronize = this._prepareSynchronize.bind(this);
-            this._applySynchronize = this._applySynchronize.bind(this);
-            this.sensors.forEach((sensor) => {
-                this._sensorStartPredicates.set(sensor, {
-                    state: StartPredicateState.Pending,
-                    event: null,
-                });
-                this._sensorListeners.set(sensor, {
-                    onMove: (e) => this._onMove(sensor, e),
-                    onEnd: (e) => this._onEnd(sensor, e),
-                });
-                const { onMove, onEnd } = this._sensorListeners.get(sensor);
-                sensor.on('start', onMove);
-                sensor.on('move', onMove);
-                sensor.on('cancel', onEnd);
-                sensor.on('end', onEnd);
-                sensor.on('destroy', onEnd);
-            });
-        }
-        _emit(type, ...e) {
-            this._emitter.emit(type, ...e);
-        }
-        _onMove(sensor, e) {
-            const startPredicate = this._sensorStartPredicates.get(sensor);
-            if (!startPredicate)
-                return;
-            switch (startPredicate.state) {
-                case StartPredicateState.Pending: {
-                    startPredicate.event = e;
-                    const shouldStart = this.settings.startPredicate(e, sensor, this);
-                    if (shouldStart === true) {
-                        this.resolveStartPredicate(sensor);
-                    }
-                    else if (shouldStart === false) {
-                        this.rejectStartPredicate(sensor);
-                    }
-                    break;
-                }
-                case StartPredicateState.Resolved: {
-                    if (this._drag) {
-                        this._drag.nextMoveEvent = e;
-                        ticker.once(tickerReadPhase, this._prepareMove, this._moveId);
-                        ticker.once(tickerWritePhase, this._applyMove, this._moveId);
-                    }
-                    break;
-                }
-            }
-        }
-        _onScroll() {
-            this.synchronize();
-        }
-        _onEnd(sensor, e) {
-            const startPredicate = this._sensorStartPredicates.get(sensor);
-            if (!startPredicate)
-                return;
-            if (!this._drag) {
-                startPredicate.state = StartPredicateState.Pending;
-                startPredicate.event = null;
-            }
-            else if (startPredicate.state === StartPredicateState.Resolved) {
-                this._drag.endEvent = e;
-                this._sensorStartPredicates.forEach((p) => {
-                    p.state = StartPredicateState.Pending;
-                    p.event = null;
-                });
-                this.stop();
-            }
-        }
-        _prepareStart() {
-            const drag = this._drag;
-            if (!drag || !drag.startEvent)
-                return;
-            const elements = this.settings.getElements(drag.startEvent) || [];
-            drag.items = elements.map((element) => {
-                const item = new DraggableItem();
-                item.element = element;
-                if (!element.isConnected) {
-                    if (this.settings.container) {
-                        this.settings.container.appendChild(element);
-                    }
-                    else {
-                        document.body.appendChild(element);
-                    }
-                }
-                const rootParent = element.parentNode;
-                item.rootParent = rootParent;
-                const rootContainingBlock = getContainingBlock(rootParent);
-                item.rootContainingBlock = rootContainingBlock;
-                const dragParent = this.settings.container || rootParent;
-                item.dragParent = dragParent;
-                const dragContainingBlock = dragParent === rootParent ? rootContainingBlock : getContainingBlock(dragParent);
-                item.dragContainingBlock = dragContainingBlock;
-                const { x, y } = this.settings.getElementPosition(element);
-                item.x = x;
-                item.y = y;
-                const clientRect = element.getBoundingClientRect();
-                item.clientX = clientRect.left;
-                item.clientY = clientRect.top;
-                if (rootContainingBlock !== dragContainingBlock) {
-                    const { left, top } = getOffsetDiff(dragContainingBlock, rootContainingBlock, OFFSET_DIFF);
-                    item.containerDiffX = left;
-                    item.containerDiffY = top;
-                }
-                return item;
-            });
-        }
-        _applyStart() {
-            var _a;
-            let drag = this._drag;
-            if (!drag || !drag.startEvent)
-                return;
-            this._emit('beforestart', drag.startEvent);
-            drag = this._drag;
-            if (!drag || !drag.startEvent)
-                return;
-            const { container } = this.settings;
-            if (container) {
-                for (const item of drag.items) {
-                    if (item.element && item.element.parentNode !== container) {
-                        container.appendChild(item.element);
-                        item.x += item.containerDiffX;
-                        item.y += item.containerDiffY;
-                        this.settings.renderElementPosition(item.element, item.x, item.y);
-                    }
-                }
-            }
-            window.addEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
-            if (!this._autoScrollProxy) {
-                this._autoScrollProxy = new DraggableAutoScrollProxy(this);
-                (_a = this.settings.autoScroll.instance) === null || _a === void 0 ? void 0 : _a.addItem(this._autoScrollProxy);
-            }
-            drag.isStarted = true;
-            this._emit('start', drag.startEvent);
-        }
-        _prepareMove() {
-            const drag = this._drag;
-            if (!drag || !drag.startEvent)
-                return;
-            const nextEvent = drag.nextMoveEvent;
-            const prevEvent = drag.prevMoveEvent || drag.startEvent;
-            if (!nextEvent || nextEvent === prevEvent)
-                return;
-            for (const item of drag.items) {
-                if (!item.element)
-                    continue;
-                const { x: changeX, y: changeY } = this.settings.getElementPositionChange(item.element, drag.startEvent, prevEvent, nextEvent);
-                if (changeX) {
-                    item.x = item.x - item.moveDiffX + changeX;
-                    item.clientX = item.clientX - item.moveDiffX + changeX;
-                    item.moveDiffX = changeX;
-                }
-                if (changeY) {
-                    item.y = item.y - item.moveDiffY + changeY;
-                    item.clientY = item.clientY - item.moveDiffY + changeY;
-                    item.moveDiffY = changeY;
-                }
-            }
-            drag.prevMoveEvent = nextEvent;
-        }
-        _applyMove() {
-            let drag = this._drag;
-            if (!drag || !drag.nextMoveEvent)
-                return;
-            for (const item of drag.items) {
-                item.moveDiffX = 0;
-                item.moveDiffY = 0;
-            }
-            this._emit('beforemove', drag.nextMoveEvent);
-            drag = this._drag;
-            if (!drag || !drag.nextMoveEvent)
-                return;
-            for (const item of drag.items) {
-                if (!item.element)
-                    continue;
-                this.settings.renderElementPosition(item.element, item.x, item.y);
-            }
-            this._emit('move', drag.nextMoveEvent);
-        }
-        _prepareSynchronize() {
-            const drag = this._drag;
-            if (!drag)
-                return;
-            for (const item of drag.items) {
-                if (!item.element)
-                    continue;
-                if (item.rootContainingBlock !== item.dragContainingBlock) {
-                    const { left, top } = getOffsetDiff(item.dragContainingBlock, item.rootContainingBlock, OFFSET_DIFF);
-                    item.containerDiffX = left;
-                    item.containerDiffY = top;
-                }
-                const { left, top } = item.element.getBoundingClientRect();
-                const syncDiffX = item.clientX - item.moveDiffX - left;
-                item.x = item.x - item.syncDiffX + syncDiffX;
-                item.syncDiffX = syncDiffX;
-                const syncDiffY = item.clientY - item.moveDiffY - top;
-                item.y = item.y - item.syncDiffY + syncDiffY;
-                item.syncDiffY = syncDiffY;
-            }
-        }
-        _applySynchronize() {
-            const drag = this._drag;
-            if (!drag)
-                return;
-            for (const item of drag.items) {
-                if (!item.element)
-                    continue;
-                item.syncDiffX = 0;
-                item.syncDiffY = 0;
-                this.settings.renderElementPosition(item.element, item.x, item.y);
-            }
-        }
-        isActive() {
-            return !!this._drag;
-        }
-        getDragData() {
-            return this._drag;
-        }
-        on(eventType, listener) {
-            return this._emitter.on(eventType, listener);
-        }
-        off(eventType, listener) {
-            this._emitter.off(eventType, listener);
-        }
-        synchronize() {
-            if (!this._drag)
-                return;
-            ticker.once(tickerReadPhase, this._prepareSynchronize, this._syncId);
-            ticker.once(tickerWritePhase, this._applySynchronize, this._syncId);
-        }
-        resolveStartPredicate(sensor, e) {
-            const startPredicate = this._sensorStartPredicates.get(sensor);
-            if (!startPredicate)
-                return;
-            const startEvent = e || startPredicate.event;
-            if (startPredicate.state === StartPredicateState.Pending && startEvent) {
-                startPredicate.state = StartPredicateState.Resolved;
-                this._drag = new DraggableDrag();
-                this._drag.sensor = sensor;
-                this._drag.startEvent = startEvent;
-                startPredicate.event = null;
-                this._sensorStartPredicates.forEach((p, s) => {
-                    if (s === sensor)
-                        return;
-                    p.state = StartPredicateState.Rejected;
-                    p.event = null;
-                });
-                ticker.once(tickerReadPhase, this._prepareStart, this._startId);
-                ticker.once(tickerWritePhase, this._applyStart, this._startId);
-            }
-        }
-        rejectStartPredicate(sensor) {
-            const startPredicate = this._sensorStartPredicates.get(sensor);
-            if ((startPredicate === null || startPredicate === void 0 ? void 0 : startPredicate.state) === StartPredicateState.Pending) {
-                startPredicate.state = StartPredicateState.Rejected;
-                startPredicate.event = null;
-            }
-        }
-        stop() {
-            var _a;
-            const drag = this._drag;
-            if (!drag || drag.isEnded)
-                return;
-            drag.isEnded = true;
-            this._emit('beforeend', drag.endEvent);
-            if (this._autoScrollProxy) {
-                (_a = this.settings.autoScroll.instance) === null || _a === void 0 ? void 0 : _a.removeItem(this._autoScrollProxy);
-                this._autoScrollProxy = null;
-            }
-            ticker.off(tickerReadPhase, this._startId);
-            ticker.off(tickerWritePhase, this._startId);
-            ticker.off(tickerReadPhase, this._moveId);
-            ticker.off(tickerWritePhase, this._moveId);
-            ticker.off(tickerReadPhase, this._syncId);
-            ticker.off(tickerWritePhase, this._syncId);
-            if (drag.isStarted) {
-                window.removeEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
-                const elements = [];
-                for (const item of drag.items) {
-                    if (!item.element)
-                        continue;
-                    elements.push(item.element);
-                    if (item.rootParent && item.element.parentNode !== item.rootParent) {
-                        item.x -= item.containerDiffX;
-                        item.y -= item.containerDiffY;
-                        item.containerDiffX = 0;
-                        item.containerDiffY = 0;
-                        item.rootParent.appendChild(item.element);
-                        this.settings.renderElementPosition(item.element, item.x, item.y);
-                    }
-                }
-                if (elements.length) {
-                    this.settings.destroyElements(elements);
-                }
-            }
-            this._emit('end', drag.endEvent);
-            this._drag = null;
-        }
-        updateSettings(options = {}) {
-            this.settings = parseSettings(options, this.settings);
-        }
-        destroy() {
-            if (this._isDestroyed)
-                return;
-            this._isDestroyed = true;
-            this.stop();
-            this._sensorListeners.forEach(({ onMove, onEnd }, sensor) => {
-                sensor.off('start', onMove);
-                sensor.off('move', onMove);
-                sensor.off('cancel', onEnd);
-                sensor.off('end', onEnd);
-                sensor.off('destroy', onEnd);
-            });
-            this._sensorListeners.clear();
-            this._sensorStartPredicates.clear();
-            this._emitter.off();
-        }
-    }
-
-    new AutoScroll();
+        } });
 
     const SCROLLABLE_OVERFLOWS = new Set(['auto', 'scroll', 'overlay']);
     function isScrollable(element) {
@@ -2137,7 +2040,7 @@
             const pointerSensor = new PointerSensor(document.createElement('div'));
             const keyboardSensor = new KeyboardSensor();
             const draggable = new Draggable([keyboardSensor, pointerSensor], {
-                getElementPositionChange: (_element, _startEvent, _prevEvent, _nextEvent) => {
+                getPositionChange: (_element, _startEvent, _prevEvent, _nextEvent) => {
                     return { x: 0, y: 0 };
                 },
                 startPredicate: createPointerSensorStartPredicate(),
