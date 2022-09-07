@@ -77,11 +77,11 @@ pointerSensor.destroy();
 
 A sensor is basically a constrained event emitter, which implements the [`Sensor`](src/Sensors/Sensor.ts) interface. The point of sensors is to normalize any kind of signals/events (e.g. DOM events) into unified drag events, which can then be used as input for other systems that need to implement drag behavior.
 
-#### Sensor Interface
+### Sensor Interface
 
 DragDoll provides a TypeScript interface for validating base functionality of a sensor.
 
-##### sensor.on( eventName, listener )
+#### `sensor.on( eventName, listener )`
 
 Adds a listener to a sensor event.
 
@@ -92,7 +92,7 @@ Adds a listener to a sensor event.
 - **listener** &nbsp;&mdash;&nbsp; _(e: {type: eventName, clientX?: number, clientY?: number }) => void_
   - The event listener, which's only argument is an event data object which must contain `clientX` and `clientY` values for all event types except for `"destroy"` (which must only contain the `type` property).
 
-##### sensor.off( eventName, listener )
+#### `sensor.off( eventName, listener )`
 
 Removes a listener from a sensor event.
 
@@ -103,15 +103,15 @@ Removes a listener from a sensor event.
 - **listener** &nbsp;&mdash;&nbsp; _(e: {type: eventName, clientX?: number, clientY?: number }) => void_
   - The event listener to remove.
 
-##### sensor.cancel()
+#### `sensor.cancel()`
 
 Forcefully cancel the sensor's current drag process. The purpose of this method is to have a manual way of aborting the drag procedure at all times.
 
-##### sensor.destroy()
+#### `sensor.destroy()`
 
 Destroy's the sensor. Disposes all allocated memory and removes all bound event listeners.
 
-#### BaseSensor
+### BaseSensor
 
 BaseSensor is an extendable base class to ease the process of creating custom sensors. It does not do anything by itself, but it does implement the Sensor API and provides you some _protected_ helper methods for triggering drag events. It's used by `KeyboardSensor` and `KeyboardMotionSensor` so you can check out implementation tips from those sensors.
 
@@ -119,17 +119,17 @@ BaseSensor is an extendable base class to ease the process of creating custom se
 
 `new BaseSensor()`
 
-##### baseSensor.clientX
+#### `baseSensor.clientX`
 
 - Current client x-position of the drag input, `null` when drag is not active.
 - Read-only instance property.
 
-##### baseSensor.clientY
+#### `baseSensor.clientY`
 
 - Current client y-position of the drag input, `null` when drag is not active.
 - Read-only instance property.
 
-##### baseSensor.on( eventName, listener, [listenerId] )
+#### `baseSensor.on( eventName, listener, [listenerId] )`
 
 Adds a listener to a sensor event.
 
@@ -151,7 +151,7 @@ Adds a listener to a sensor event.
 
 A listener id, which can be used to remove this specific listener. By default this will always be a symbol unless manually provided.
 
-##### baseSensor.off( eventName, target )
+#### `baseSensor.off( eventName, target )`
 
 Removes a listener (based on listener or listener id) from a sensor event.
 
@@ -162,15 +162,15 @@ Removes a listener (based on listener or listener id) from a sensor event.
 - **target** &nbsp;&mdash;&nbsp; _Function | string | number | symbol_
   - The event listener or listener id to remove.
 
-##### baseSensor.cancel()
+#### `baseSensor.cancel()`
 
 Forcefully cancel the sensor's current drag process. The purpose of this method is to have a manual way of aborting the drag procedure at all times.
 
-##### baseSensor.destroy()
+#### `baseSensor.destroy()`
 
 Destroy's the sensor. Disposes all allocated memory and removes all bound event listeners.
 
-##### baseSensor.\_start( startEventData )
+#### `baseSensor._start( startEventData )`
 
 Emits drag start event with the provided data.
 
@@ -181,7 +181,7 @@ Emits drag start event with the provided data.
   - Note that you don't need to provide the `type` property here as it's automatically added to the final event data by the method.
   - You can provide other properties in addition to `clientX` and `clientY`.
 
-##### baseSensor.\_move( moveEventData )
+#### `baseSensor._move( moveEventData )`
 
 Emits drag move event with the provided data.
 
@@ -192,7 +192,7 @@ Emits drag move event with the provided data.
   - Note that you don't need to provide the `type` property here as it's automatically added to the final event data by the method.
   - You can provide other properties in addition to `clientX` and `clientY`.
 
-##### baseSensor.\_end( endEventData )
+#### `baseSensor._end( endEventData )`
 
 Emits drag end event with the provided data.
 
@@ -203,7 +203,7 @@ Emits drag end event with the provided data.
   - Note that you don't need to provide the `type` property here as it's automatically added to the final event data by the method.
   - You can provide other properties in addition to `clientX` and `clientY`.
 
-##### baseSensor.\_cancel( cancelEventData )
+#### `baseSensor._cancel( cancelEventData )`
 
 Emits drag cancel event with the provided data.
 
@@ -214,7 +214,7 @@ Emits drag cancel event with the provided data.
   - Note that you don't need to provide the `type` property here as it's automatically added to the final event data by the method.
   - You can provide other properties in addition to `clientX` and `clientY`.
 
-#### PointerSensor
+### PointerSensor
 
 PointerSensor listens to pointer events, touch events and mouse events and normalizes them into unified drag events.
 
@@ -242,32 +242,32 @@ PointerSensor listens to pointer events, touch events and mouse events and norma
     - This function is called when drag process is starting up with the initial event as the argument. You can use it to define whether the drag process should be allowed to start (return `true`) or not (return `false`).
     - Optional. Default: `(e) => ('button' in e && e.button > 0 ? false : true)`
 
-##### pointerSensor.element
+#### `pointerSensor.element`
 
 - The observed element or window.
 - Read-only instance property.
 
-##### pointerSensor.pointerId
+#### `pointerSensor.pointerId`
 
 - Pointer id of the current drag process, `null` when the element is not being dragged.
 - Read-only instance property.
 
-##### pointerSensor.pointerType
+#### `pointerSensor.pointerType`
 
 - Pointer type ("mouse" | "pen" | "touch") of the current drag process, `null` when the element is not being dragged.
 - Read-only instance property.
 
-##### pointerSensor.clientX
+#### `pointerSensor.clientX`
 
 - Current client x-position of the drag input, `null` when the element is not being dragged.
 - Read-only instance property.
 
-##### pointerSensor.clientY
+#### `pointerSensor.clientY`
 
 - Current client y-position of the drag input, `null` when the element is not being dragged.
 - Read-only instance property.
 
-##### pointerSensor.on( eventName, listener, [listenerId] )
+#### `pointerSensor.on( eventName, listener, [listenerId] )`
 
 Adds a listener to a sensor event.
 
@@ -293,7 +293,7 @@ Adds a listener to a sensor event.
 
 A listener id, which can be used to remove this specific listener. By default this will always be a symbol unless manually provided.
 
-##### pointerSensor.off( eventName, target )
+#### `pointerSensor.off( eventName, target )`
 
 Removes a listener (based on listener or listener id) from a sensor event.
 
@@ -304,15 +304,15 @@ Removes a listener (based on listener or listener id) from a sensor event.
 - **target** &nbsp;&mdash;&nbsp; _Function | string | number | symbol_
   - The event listener or listener id to remove.
 
-##### pointerSensor.updateSettings( options )
+#### `pointerSensor.updateSettings( options )`
 
 Updates the the instance's settings.
 
-##### pointerSensor.cancel()
+#### `pointerSensor.cancel()`
 
 Forcefully cancel the sensor's current drag process. The purpose of this method is to have a manual way of aborting the drag procedure at all times.
 
-##### pointerSensor.destroy()
+#### `pointerSensor.destroy()`
 
 Destroy's the sensor. Disposes all allocated memory and removes all bound event listeners.
 
@@ -321,11 +321,11 @@ Destroy's the sensor. Disposes all allocated memory and removes all bound event 
 - **options** &nbsp;&mdash;&nbsp; _object_
   - You can provide the same options here as in the constructor. Only the options you provide will be updated.
 
-#### KeyboardSensor
+### KeyboardSensor
 
 KeyboardSensor listens to specific keystrokes, which you can define yourself, and normalizes them into unified drag events. The implementation is kept as simple as possible and you can't customize the smoothness of the movement much.
 
-#### KeyboardMotionSensor
+### KeyboardMotionSensor
 
 KeyboardMotionSensor works similarly to KeyboardSensor with the exception that you _can_ customize the smoothness of the movement. Think of this more as a 2D game character controller which's movement you can customize to a high degreee.
 
