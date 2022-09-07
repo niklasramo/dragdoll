@@ -101,7 +101,7 @@ export class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
   declare events: T;
 
   /**
-   * The observed element or window, `null` if the instance is destroyed.
+   * The observed element or window.
    */
   readonly element: HTMLElement | Window;
 
@@ -118,12 +118,14 @@ export class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
   readonly pointerType: PointerType | null;
 
   /**
-   * Current client x-position of the drag input.
+   * Current client x-position of the drag input, , `null` when the element is
+   * not being dragged.
    */
   readonly clientX: number | null;
 
   /**
-   * Current client y-position of the drag input.
+   * Current client y-position of the drag input, , `null` when the element is
+   * not being dragged.
    */
   readonly clientY: number | null;
 
@@ -477,10 +479,9 @@ export class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
     this.cancel();
 
     // Emit destroy event.
-    const eventData: PointerSensorDestroyEvent = {
+    this._emitter.emit(SensorEventType.destroy, {
       type: SensorEventType.destroy,
-    };
-    this._emitter.emit(eventData.type, eventData);
+    });
 
     // Destroy emitter.
     this._emitter.off();

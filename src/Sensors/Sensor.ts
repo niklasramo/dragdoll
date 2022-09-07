@@ -1,5 +1,3 @@
-import { EventListenerId } from 'eventti';
-
 export const SensorEventType = {
   start: 'start',
   move: 'move',
@@ -46,15 +44,8 @@ export interface SensorEvents {
 
 export interface Sensor<T extends SensorEvents = SensorEvents> {
   events: T;
-  on<K extends keyof T>(
-    eventName: K,
-    listener: (eventData: T[K]) => void,
-    listenerId?: EventListenerId
-  ): EventListenerId;
-  off<K extends keyof T>(
-    eventName: K,
-    listener: ((eventData: T[K]) => void) | EventListenerId
-  ): void;
+  on<K extends keyof T>(eventName: K, listener: (eventData: T[K]) => void): void;
+  off<K extends keyof T>(eventName: K, listener: (eventData: T[K]) => void): void;
   cancel(): void;
   destroy(): void;
 }
