@@ -375,7 +375,12 @@ Removes a listener (based on listener or listener id) from a sensor event.
 
 #### `pointerSensor.updateSettings( options )`
 
-Updates the the instance's settings.
+Updates the the sensor's settings.
+
+**Arguments**
+
+- **options** &nbsp;&mdash;&nbsp; `object`
+  - You can provide the same options here as in the constructor. Only the options you provide will be updated.
 
 #### `pointerSensor.cancel()`
 
@@ -384,11 +389,6 @@ Forcefully cancel the sensor's current drag process. The purpose of this method 
 #### `pointerSensor.destroy()`
 
 Destroy the sensor. Disposes all allocated memory and removes all bound event listeners.
-
-**Arguments**
-
-- **options** &nbsp;&mdash;&nbsp; `object`
-  - You can provide the same options here as in the constructor. Only the options you provide will be updated.
 
 ### KeyboardSensor
 
