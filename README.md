@@ -74,12 +74,15 @@ pointerSensor.destroy();
 ## API
 
 - [Sensors](#sensors)
-- [Sensor Interface](#sensor-interface)
-- [BaseSensor](#basesensor)
-- [PointerSensor](#pointersensor)
-- [KeyboardSensor](#keyboardsensor)
-- [KeyboardMotionSensor](#keyboardmotionsensor)
+  - [Sensor Interface](#sensor-interface)
+  - [BaseSensor](#basesensor)
+  - [PointerSensor](#pointersensor)
+  - [KeyboardSensor](#keyboardsensor)
+  - [KeyboardMotionSensor](#keyboardmotionsensor)
 - [Draggable](#draggable)
+- [DraggableAutoScroll](#draggableautoscroll)
+- [AutoScroll](#autoscroll)
+- [Ticker configuration](#ticker-configuration)
 
 ### Sensors
 
@@ -88,6 +91,14 @@ A sensor is basically a constrained event emitter, which implements the [`Sensor
 ### Sensor Interface
 
 DragDoll provides a TypeScript interface for validating base functionality of a sensor.
+
+```typescript
+import { Sensor } from 'dragdoll';
+
+class CustomSensor implements Sensor {
+  // ...
+}
+```
 
 #### `sensor.on( eventName, listener )`
 
@@ -103,9 +114,9 @@ Adds a listener to a sensor event.
     - **type** &nbsp;&mdash;&nbsp; `"start" | "move" | "end" | "cancel"`
       - Type of the event.
     - **clientX** &nbsp;&mdash;&nbsp; `number`
-      - Current client x-position of the drag input.
+      - Current horizontal coordinate within the application's viewport at which the event occurred.
     - **clientY** &nbsp;&mdash;&nbsp; `number`
-      - Current client y-position of the drag input.
+      - Current vertical coordinate within the application's viewport at which the event occurred.
   - For `"destroy"` event the `eventData` contains _only_ the `type` property.
 
 #### `sensor.off( eventName, listener )`
@@ -125,7 +136,7 @@ Forcefully cancel the sensor's current drag process. The purpose of this method 
 
 #### `sensor.destroy()`
 
-Destroy's the sensor. Disposes all allocated memory and removes all bound event listeners.
+Destroy the sensor. Disposes all allocated memory and removes all bound event listeners.
 
 ### BaseSensor
 
@@ -133,12 +144,14 @@ BaseSensor is an extendable base class to ease the process of creating custom se
 
 #### `baseSensor.clientX`
 
-- Current client x-position of the drag input, `null` when drag is not active.
+- Current horizontal coordinate of the drag within the application's viewport.
+- `number` when drag is active, `null` when drag is inactive.
 - Read-only instance property.
 
 #### `baseSensor.clientY`
 
-- Current client y-position of the drag input, `null` when drag is not active.
+- Current vertical coordinate of the drag within the application's viewport.
+- `number` when drag is active, `null` when drag is inactive.
 - Read-only instance property.
 
 #### `baseSensor.on( eventName, listener, [listenerId] )`
@@ -155,9 +168,9 @@ Adds a listener to a sensor event.
     - **type** &nbsp;&mdash;&nbsp; `"start" | "move" | "end" | "cancel"`
       - Type of the event.
     - **clientX** &nbsp;&mdash;&nbsp; `number`
-      - Current client x-position of the drag input.
+      - Current horizontal coordinate within the application's viewport at which the event occurred.
     - **clientY** &nbsp;&mdash;&nbsp; `number`
-      - Current client y-position of the drag input.
+      - Current vertical coordinate within the application's viewport at which the event occurred.
   - For `"destroy"` event the `eventData` contains _only_ the `type` property.
 - **listenerId** &nbsp;&mdash;&nbsp; _string | number | symbol_
   - Optionally provide listener id manually.
@@ -183,11 +196,11 @@ Forcefully cancel the sensor's current drag process. The purpose of this method 
 
 #### `baseSensor.destroy()`
 
-Destroy's the sensor. Disposes all allocated memory and removes all bound event listeners.
+Destroy the sensor. Disposes all allocated memory and removes all bound event listeners.
 
 #### `baseSensor._start( startEventData )`
 
-Emits drag start event with the provided data.
+Protected method, which emits drag start event with the provided data.
 
 **Arguments**
 
@@ -198,7 +211,7 @@ Emits drag start event with the provided data.
 
 #### `baseSensor._move( moveEventData )`
 
-Emits drag move event with the provided data.
+Protected method, which emits drag move event with the provided data.
 
 **Arguments**
 
@@ -209,7 +222,7 @@ Emits drag move event with the provided data.
 
 #### `baseSensor._end( endEventData )`
 
-Emits drag end event with the provided data.
+Protected method, which emits drag end event with the provided data.
 
 **Arguments**
 
@@ -220,7 +233,7 @@ Emits drag end event with the provided data.
 
 #### `baseSensor._cancel( cancelEventData )`
 
-Emits drag cancel event with the provided data.
+Protected method, which emits drag cancel event with the provided data.
 
 **Arguments**
 
@@ -233,19 +246,15 @@ Emits drag cancel event with the provided data.
 
 PointerSensor listens to pointer events, touch events and mouse events and normalizes them into unified drag events.
 
-**Syntax**
-
-`new PointerSensor( element, [options] )`
-
 **Constructor arguments**
 
 - **element** &nbsp;&mdash;&nbsp; `HTMLElement | Window`
   - The element (or window) which's events will be tracked.
 - **options** &nbsp;&mdash;&nbsp; `object`
   - Optional.
-  - **listenerOptions** &nbsp;&mdash;&nbsp; `{ capture?: boolean, passive?: boolean }`
+  - **listenerOptions** &nbsp;&mdash;&nbsp; `{capture?: boolean, passive?: boolean}`
     - This object will be propagated to the source even listeners [listener options](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener). You can use it to define whether the source event listeners should be passive and/or use capture.
-    - Optional. Default: `{ capture: true, passive: true }`.
+    - Optional. Default: `{capture: true, passive: true}`.
   - **sourceEvents** &nbsp;&mdash;&nbsp; `"pointer" | "touch" | "mouse" | "auto"`
     - Define which type of events will be listened and used as source events:
       - `"pointer"` -> [`PointerEvents`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent)
@@ -256,6 +265,41 @@ PointerSensor listens to pointer events, touch events and mouse events and norma
   - **startPredicate** &nbsp;&mdash;&nbsp; `(e: PointerEvent | TouchEvent | MouseEvent) => boolean`
     - This function is called when drag process is starting up with the initial event as the argument. You can use it to define whether the drag process should be allowed to start (return `true`) or not (return `false`).
     - Optional. Default: `(e) => ('button' in e && e.button > 0 ? false : true)`
+
+**Example**
+
+```typescript
+import { PointerSensor } from 'dragdoll';
+
+// Track dragging on the window using pointer events.
+// Note that we are providing the default options here
+// to the constructor which you don't need to do. You can
+// just provide the options which differ from the defaults.
+const pointerSensor = new PointerSensor(window, {
+  listenerOptions: {
+    capture: true,
+    passive: true,
+  },
+  sourceEvents: 'auto',
+  startPredicate: (e) => ('button' in e && e.button > 0 ? false : true),
+});
+
+pointerSensor.on('start', (e) => {
+  console.log('drag started', e);
+});
+
+pointerSensor.on('move', (e) => {
+  console.log('drag moved', e);
+});
+
+pointerSensor.on('end', (e) => {
+  console.log('drag ended', e);
+});
+
+pointerSensor.on('cancel', (e) => {
+  console.log('drag canceled', e);
+});
+```
 
 #### `pointerSensor.element`
 
@@ -274,12 +318,14 @@ PointerSensor listens to pointer events, touch events and mouse events and norma
 
 #### `pointerSensor.clientX`
 
-- Current client x-position of the drag input, `null` when the element is not being dragged.
+- Current horizontal coordinate of the drag within the application's viewport.
+- `number` when drag is active, `null` when drag is inactive.
 - Read-only instance property.
 
 #### `pointerSensor.clientY`
 
-- Current client y-position of the drag input, `null` when the element is not being dragged.
+- Current vertical coordinate of the drag within the application's viewport.
+- `number` when drag is active, `null` when drag is inactive.
 - Read-only instance property.
 
 #### `pointerSensor.on( eventName, listener, [listenerId] )`
@@ -294,12 +340,20 @@ Adds a listener to a sensor event.
   - The event listener, which's only argument is an event data object.
   - The `eventData` containts the following properties for all types except `"destroy"`:
     - **type** &nbsp;&mdash;&nbsp; `"start" | "move" | "end" | "cancel"`
+      - Type of the event.
     - **clientX** &nbsp;&mdash;&nbsp; `number`
+      - Current horizontal coordinate within the application's viewport at which the event occurred.
     - **clientY** &nbsp;&mdash;&nbsp; `number`
+      - Current vertical coordinate within the application's viewport at which the event occurred.
     - **pointerId** &nbsp;&mdash;&nbsp; `number`
+      - Pointer id.
     - **pointerType** &nbsp;&mdash;&nbsp; `"mouse" | "pen" | "touch"`
-    - **srcEvent** &nbsp;&mdash;&nbsp; `PointerEvent | TouchEvent | MouseEvent`
+      - Pointer type.
+    - **srcEvent** &nbsp;&mdash;&nbsp; `PointerEvent | TouchEvent | MouseEvent | null`
+      - The source event which triggered the drag event.
+      - In the special case when `pointerSensor.cancel()` is called `srcEvent` will be `null`.
     - **target** &nbsp;&mdash;&nbsp; `EventTarget | null`
+      - Event target.
   - For `"destroy"` event the `eventData` contains _only_ the `type` property.
 - **listenerId** &nbsp;&mdash;&nbsp; `string | number | symbol`
   - Optionally provide listener id manually.
@@ -329,7 +383,7 @@ Forcefully cancel the sensor's current drag process. The purpose of this method 
 
 #### `pointerSensor.destroy()`
 
-Destroy's the sensor. Disposes all allocated memory and removes all bound event listeners.
+Destroy the sensor. Disposes all allocated memory and removes all bound event listeners.
 
 **Arguments**
 
@@ -338,15 +392,193 @@ Destroy's the sensor. Disposes all allocated memory and removes all bound event 
 
 ### KeyboardSensor
 
-KeyboardSensor listens to specific keystrokes, which you can define yourself, and normalizes them into unified drag events. The implementation is kept as simple as possible and you can't customize the smoothness of the movement much.
+KeyboardSensor listens to `document`'s `keydown` events and normalizes them into unified drag events. You can configure start/end/move/cancel predicate functions, which determine the drag's movement and the keys that control the drag. Note that this sensor is designed to be as simple and as customizable as possible with minimal API interface, but it is very limited if you need to move elements _smoothly_ by keeping a key pressed down. For that kind of scenario you should use [`KeyboardMotionSensor`](#keyboardmotionsensor).
+
+**Constructor arguments**
+
+- **startPredicate** &nbsp;&mdash;&nbsp; `(e: KeyboardEvent, sensor: KeyboardSensor) => { x: number; y: number } | null | void`
+  - Start predicate function which determines if drag should start as well as the initial horizontal and vertical coordinates within the application's viewport.
+  - The predicate function is called on `keydown` event in `document` while drag is not active.
+  - Should return coordinates (e.g. `{x: 10, y: 10}`) to trigger start, otherwise should return `null` or `undefined` to indicate no action.
+  - If drag should start this function should return horizontal and vertical coordinates of active drag within the application's viewport (e.g. `{x: 10, y: 10}`), otherwise this should return `null` or `undefined` to indicate that drag should not start.
+- **movePredicate** &nbsp;&mdash;&nbsp; `(e: KeyboardEvent, sensor: KeyboardSensor) => { x: number; y: number } | null | void`
+  - Move predicate function which triggers move event and determines the next horizontal and vertical coordinates within the application's viewport.
+  - The predicate function is called on `keydown` event in `document` while drag is active.
+  - Should return coordinates (e.g. `{x: 10, y: 10}`) to trigger movement, otherwise should return `null` or `undefined` to indicate no action.
+- **endPredicate** &nbsp;&mdash;&nbsp; `(e: KeyboardEvent, sensor: KeyboardSensor) => { x: number; y: number } | null | void`
+  - End predicate function which ends active drag and determines the final horizontal and vertical coordinates within the application's viewport.
+  - The predicate function is called on `keydown` event in `document` while drag is active.
+  - Should return coordinates (e.g. `{x: 10, y: 10}`) to end active drag, otherwise should return `null` or `undefined` to indicate no action.
+- **cancelPredicate** &nbsp;&mdash;&nbsp; `(e: KeyboardEvent, sensor: KeyboardSensor) => { x: number; y: number } | null | void`
+  - Cancel predicate function which cancels active drag and determines the final horizontal and vertical coordinates within the application's viewport.
+  - The predicate function is called on `keydown` event in `document` while drag is active.
+  - Should return coordinates (e.g. `{x: 10, y: 10}`) to cancel active drag, otherwise should return `null` or `undefined` to indicate no action.
+
+**Example**
+
+```typescript
+import { KeyboardSensor } from 'dragdoll';
+
+const DEFAULT_MOVE_DISTANCE = 25;
+const keyboardSensor = new KeyboardSensor(window, {
+  // Default start predicate, which starts the drag for the currently focued
+  // element (if any) when Enter or Space is pressed.
+  startPredicate: (e) => {
+    if (e.key === 'Enter' || e.key === 'Space' || e.key === ' ') {
+      if (document.activeElement) {
+        const { left, top } = document.activeElement.getBoundingClientRect();
+        return { x: left, y: top };
+      }
+    }
+    return null;
+  },
+  // Default move predicate, which triggers "move" events when arrow keys
+  // are pressed.
+  movePredicate: (e, sensor) => {
+    switch (e.key) {
+      case 'ArrowLeft': {
+        return {
+          x: sensor.clientX! - DEFAULT_MOVE_DISTANCE,
+          y: sensor.clientY!,
+        };
+      }
+      case 'ArrowRight': {
+        return {
+          x: sensor.clientX! + DEFAULT_MOVE_DISTANCE,
+          y: sensor.clientY!,
+        };
+      }
+      case 'ArrowUp': {
+        return {
+          x: sensor.clientX!,
+          y: sensor.clientY! - DEFAULT_MOVE_DISTANCE,
+        };
+      }
+      case 'ArrowDown': {
+        return {
+          x: sensor.clientX!,
+          y: sensor.clientY! + DEFAULT_MOVE_DISTANCE,
+        };
+      }
+      default: {
+        return null;
+      }
+    }
+  },
+  // Default cancel predicate, which cancels the drag with Escape key.
+  cancelPredicate: (e, sensor) => {
+    if (e.key === 'Escape') {
+      return { x: sensor.clientX!, y: sensor.clientY! };
+    }
+    return null;
+  },
+  // Default end predicate, which ends the drag with Enter and Space keys.
+  endPredicate: (e, sensor) => {
+    if (e.key === 'Enter' || e.key === 'Space' || e.key === ' ') {
+      return { x: sensor.clientX!, y: sensor.clientY! };
+    }
+    return null;
+  },
+});
+
+keyboardSensor.on('start', (e) => {
+  console.log('drag started', e);
+});
+
+keyboardSensor.on('move', (e) => {
+  console.log('drag moved', e);
+});
+
+keyboardSensor.on('end', (e) => {
+  console.log('drag ended', e);
+});
+
+keyboardSensor.on('cancel', (e) => {
+  console.log('drag canceled', e);
+});
+```
+
+#### `keyboardSensor.clientX`
+
+- Current horizontal coordinate of the drag within the application's viewport.
+- `number` when drag is active, `null` when drag is inactive.
+- Read-only instance property.
+
+#### `keyboardSensor.clientY`
+
+- Current vertical coordinate of the drag within the application's viewport.
+- `number` when drag is active, `null` when drag is inactive.
+- Read-only instance property.
+
+#### `keyboardSensor.on( eventName, listener, [listenerId] )`
+
+Adds a listener to a sensor event.
+
+**Arguments**
+
+- **eventName** &nbsp;&mdash;&nbsp; `"start" | "move" | "end" | "cancel" | "destroy"`
+  - The event name.
+- **listener** &nbsp;&mdash;&nbsp; `(eventData) => void`
+  - The event listener.
+  - The `eventData` containts the following properties for all types except `"destroy"`:
+    - **type** &nbsp;&mdash;&nbsp; `"start" | "move" | "end" | "cancel"`
+      - Type of the event.
+    - **clientX** &nbsp;&mdash;&nbsp; `number`
+      - Current horizontal coordinate within the application's viewport at which the event occurred.
+    - **clientY** &nbsp;&mdash;&nbsp; `number`
+      - Current vertical coordinate within the application's viewport at which the event occurred.
+  - For `"destroy"` event the `eventData` contains _only_ the `type` property.
+- **listenerId** &nbsp;&mdash;&nbsp; _string | number | symbol_
+  - Optionally provide listener id manually.
+
+**Returns** &nbsp;&mdash;&nbsp; `string | number | symbol`
+
+A listener id, which can be used to remove this specific listener. By default this will always be a symbol unless manually provided.
+
+#### `keyboardSensor.off( eventName, target )`
+
+Removes a listener (based on listener or listener id) from a sensor event.
+
+**Arguments**
+
+- **eventName** &nbsp;&mdash;&nbsp; `"start" | "move" | "end" | "cancel" | "destroy"`
+  - The event name.
+- **target** &nbsp;&mdash;&nbsp; `Function | string | number | symbol`
+  - The event listener or listener id to remove.
+
+#### `keyboardSensor.cancel()`
+
+Forcefully cancel the sensor's current drag process.
+
+#### `keyboardSensor.destroy()`
+
+Destroy the sensor. Disposes all allocated memory and removes all bound event listeners.
 
 ### KeyboardMotionSensor
 
 KeyboardMotionSensor works similarly to KeyboardSensor with the exception that you _can_ customize the smoothness of the movement. Think of this more as a 2D game character controller which's movement you can customize to a high degreee.
 
+TODO...
+
 ### Draggable
 
 Draggable is a class which acts as an orchestrator for any amount of sensors and moves DOM elements based on events emitted by the sensors.
+
+TODO...
+
+### DraggableAutoScroll
+
+DraggableAutoScroll extends Draggable with auto-scrolling superpowers.
+
+TODO...
+
+### AutoScroll
+
+TODO...
+
+### Ticker configuration
+
+TODO...
 
 ## Copyright
 
