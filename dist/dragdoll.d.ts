@@ -1,4 +1,4 @@
-import { EventListenerId, Emitter, Events, EventName } from 'eventti';
+import { Emitter, Events, EventListenerId, EventName } from 'eventti';
 import * as tikki from 'tikki';
 import { Ticker, FrameCallback } from 'tikki';
 
@@ -41,27 +41,57 @@ interface SensorEvents {
 }
 interface Sensor<T extends SensorEvents = SensorEvents> {
     events: T;
-    on<K extends keyof T>(eventName: K, listener: (eventData: T[K]) => void, listenerId?: EventListenerId): EventListenerId;
-    off<K extends keyof T>(eventName: K, listener: ((eventData: T[K]) => void) | EventListenerId): void;
+    on<K extends keyof T>(eventName: K, listener: (eventData: T[K]) => void): void;
+    off<K extends keyof T>(eventName: K, listener: (eventData: T[K]) => void): void;
     cancel(): void;
     destroy(): void;
 }
 
 declare class BaseSensor<T extends SensorEvents = SensorEvents> implements Sensor<T> {
     events: T;
-    readonly clientX: number | null;
-    readonly clientY: number | null;
-    protected _isActive: boolean;
-    protected _isDestroyed: boolean;
+    readonly clientX: number;
+    readonly clientY: number;
+    readonly isActive: boolean;
+    readonly isDestroyed: boolean;
     protected _emitter: Emitter<Events>;
     constructor();
-    protected _start(data: Omit<T['start'], 'type'>): void;
-    protected _move(data: Omit<T['move'], 'type'>): void;
-    protected _end(data: Omit<T['end'], 'type'>): void;
-    protected _cancel(data: Omit<T['cancel'], 'type'>): void;
+    protected _start(data: T['start']): void;
+    protected _move(data: T['move']): void;
+    protected _end(data: T['end']): void;
+    protected _cancel(data: T['cancel']): void;
     on<K extends keyof T>(eventName: K, listener: (e: T[K]) => void, listenerId?: EventListenerId): EventListenerId;
     off<K extends keyof T>(eventName: K, listener: ((e: T[K]) => void) | EventListenerId): void;
     cancel(): void;
+    destroy(): void;
+}
+
+interface BaseControllerSensorOptions<T extends BaseControllerSensorEvents = BaseControllerSensorEvents> {
+    onTick?: ((sensor: BaseControllerSensor<T>) => void) | null;
+}
+interface BaseControllerSensorTickEvent {
+    type: 'tick';
+}
+interface BaseControllerSensorEvents extends SensorEvents {
+    tick: BaseControllerSensorTickEvent;
+}
+declare class BaseControllerSensor<T extends BaseControllerSensorEvents = BaseControllerSensorEvents> extends BaseSensor<T> implements Sensor<T> {
+    events: T;
+    direction: {
+        x: number;
+        y: number;
+    };
+    speed: number;
+    readonly tickTime: number;
+    readonly tickDeltaTime: number;
+    protected _onTickCallback: Exclude<BaseControllerSensorOptions<T>['onTick'], undefined> | null;
+    constructor(options?: BaseControllerSensorOptions<T>);
+    protected _start(data: T['start']): void;
+    protected _end(data: T['end']): void;
+    protected _cancel(data: T['cancel']): void;
+    protected _onTickCallbacks(): void;
+    protected _onTick(time: number): void;
+    updateSettings(options?: BaseControllerSensorOptions<T>): void;
+    tick(time: number): void;
     destroy(): void;
 }
 
@@ -147,8 +177,8 @@ declare class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
     readonly pointerType: PointerType | null;
     readonly clientX: number | null;
     readonly clientY: number | null;
-    protected _isActive: boolean;
-    protected _isDestroyed: boolean;
+    readonly isActive: boolean;
+    readonly isDestroyed: boolean;
     protected _startPredicate: (e: PointerSensorSourceEvent) => boolean;
     protected _listenerOptions: ListenerOptions;
     protected _sourceEvents: keyof typeof SOURCE_EVENTS;
@@ -175,6 +205,7 @@ declare type KeyboardSensorPredicate = (e: KeyboardEvent, sensor: KeyboardSensor
     y: number;
 } | null | void;
 interface KeyboardSensorOptions {
+    moveDistance?: number;
     startPredicate?: KeyboardSensorPredicate;
     movePredicate?: KeyboardSensorPredicate;
     cancelPredicate?: KeyboardSensorPredicate;
@@ -201,8 +232,9 @@ interface KeyboardSensorEvents {
     end: KeyboardSensorEndEvent;
     destroy: KeyboardSensorDestroyEvent;
 }
-declare class KeyboardSensor extends BaseSensor<KeyboardSensorEvents> implements Sensor<KeyboardSensorEvents> {
-    events: KeyboardSensorEvents;
+declare class KeyboardSensor<T extends KeyboardSensorEvents = KeyboardSensorEvents> extends BaseSensor<T> implements Sensor<T> {
+    events: T;
+    protected _moveDistance: number;
     protected _startPredicate: KeyboardSensorPredicate;
     protected _movePredicate: KeyboardSensorPredicate;
     protected _cancelPredicate: KeyboardSensorPredicate;
@@ -213,17 +245,12 @@ declare class KeyboardSensor extends BaseSensor<KeyboardSensorEvents> implements
     destroy(): void;
 }
 
-declare type KeyboardMotionSensorStartPredicate = (e: KeyboardEvent, sensor: KeyboardMotionSensor) => {
-    x: number;
-    y: number;
-} | null | void;
-declare type KeyboardMotionSensorSpeed = ((sensor: KeyboardMotionSensor) => {
-    x: number;
-    y: number;
-}) | number;
-interface KeyboardMotionSensorOptions {
-    startPredicate?: KeyboardMotionSensorStartPredicate;
-    speed?: KeyboardMotionSensorSpeed;
+interface KeyboardControllerSensorOptions<T extends KeyboardControllerSensorEvents = KeyboardControllerSensorEvents> extends BaseControllerSensorOptions<T> {
+    startPredicate?: (e: KeyboardEvent, sensor: KeyboardControllerSensor<T>) => {
+        x: number;
+        y: number;
+    } | null | void;
+    computeSpeed?: (sensor: KeyboardControllerSensor<T>) => number;
     startKeys?: string[];
     moveLeftKeys?: string[];
     moveRightKeys?: string[];
@@ -232,36 +259,12 @@ interface KeyboardMotionSensorOptions {
     cancelKeys?: string[];
     endKeys?: string[];
 }
-interface KeyboardMotionSensorStartEvent extends SensorStartEvent {
+interface KeyboardControllerSensorEvents extends BaseControllerSensorEvents {
 }
-interface KeyboardMotionSensorMoveEvent extends SensorMoveEvent {
-}
-interface KeyboardMotionSensorCancelEvent extends SensorCancelEvent {
-}
-interface KeyboardMotionSensorEndEvent extends SensorEndEvent {
-}
-interface KeyboardMotionSensorDestroyEvent extends SensorDestroyEvent {
-}
-interface KeyboardMotionSensorEvents {
-    start: KeyboardMotionSensorStartEvent;
-    move: KeyboardMotionSensorMoveEvent;
-    cancel: KeyboardMotionSensorCancelEvent;
-    end: KeyboardMotionSensorEndEvent;
-    destroy: KeyboardMotionSensorDestroyEvent;
-}
-declare function keyboardMotionSensorSmoothSpeed(maxSpeed?: number, accelerationFactor?: number, decelerationFactor?: number): (sensor: KeyboardMotionSensor) => {
-    x: number;
-    y: number;
-};
-declare class KeyboardMotionSensor extends BaseSensor<KeyboardMotionSensorEvents> implements Sensor<KeyboardMotionSensorEvents> {
-    events: KeyboardMotionSensorEvents;
-    readonly directionX: -1 | 0 | 1;
-    readonly directionY: -1 | 0 | 1;
-    readonly speedX: number;
-    readonly speedY: number;
-    readonly tickTime: number;
-    readonly tickDeltaTime: number;
-    protected _isTicking: boolean;
+declare class KeyboardControllerSensor<T extends KeyboardControllerSensorEvents = KeyboardControllerSensorEvents> extends BaseControllerSensor<T> implements Sensor<T> {
+    events: T;
+    protected _startPredicate: Exclude<KeyboardControllerSensorOptions<T>['startPredicate'], undefined>;
+    protected _computeSpeed: Exclude<KeyboardControllerSensorOptions<T>['computeSpeed'], undefined>;
     protected _moveKeys: Set<string>;
     protected _moveKeyTimestamps: Map<string, number>;
     protected _startKeys: Set<string>;
@@ -271,19 +274,14 @@ declare class KeyboardMotionSensor extends BaseSensor<KeyboardMotionSensorEvents
     protected _moveDownKeys: Set<string>;
     protected _cancelKeys: Set<string>;
     protected _endKeys: Set<string>;
-    protected _startPredicate: KeyboardMotionSensorStartPredicate;
-    protected _speed: KeyboardMotionSensorSpeed;
-    constructor(options?: KeyboardMotionSensorOptions);
-    protected _onTick(time: number): void;
-    protected _startTicking(): void;
-    protected _stopTicking(): void;
+    constructor(options?: KeyboardControllerSensorOptions<T>);
+    protected _end(data: T['end']): void;
+    protected _cancel(data: T['cancel']): void;
+    protected _onTickCallbacks(): void;
     protected _updateDirection(): void;
-    protected _updateSpeed(): void;
     protected _onKeyUp(e: KeyboardEvent): void;
     protected _onKeyDown(e: KeyboardEvent): void;
-    updateSettings(options?: KeyboardMotionSensorOptions): void;
-    tick(time: number): void;
-    cancel(): void;
+    updateSettings(options?: KeyboardControllerSensorOptions<T>): void;
     destroy(): void;
 }
 
@@ -626,4 +624,4 @@ declare function createPointerSensorStartPredicate<S extends (Sensor | PointerSe
     fallback?: D['settings']['startPredicate'];
 }): D["settings"]["startPredicate"];
 
-export { AUTOSCROLL_DRAGGABLE_DEFAULT_SETTINGS, AUTO_SCROLL_AXIS, AUTO_SCROLL_AXIS_DIRECTION, AUTO_SCROLL_DIRECTION, AutoScroll, AutoScrollEventCallbacks, AutoScrollItem, AutoScrollItemEffectCallback, AutoScrollItemEventCallback, AutoScrollItemSpeedCallback, AutoScrollItemTarget, AutoScrollOptions, AutoScrollSettings, BaseSensor, DRAGGABLE_DEFAULT_SETTINGS, Draggable, DraggableAutoScroll, DraggableAutoScrollOptions, DraggableAutoScrollSettings, DraggableEventCallbacks, DraggableOptions, DraggableSettings, KeyboardMotionSensor, KeyboardMotionSensorCancelEvent, KeyboardMotionSensorDestroyEvent, KeyboardMotionSensorEndEvent, KeyboardMotionSensorEvents, KeyboardMotionSensorMoveEvent, KeyboardMotionSensorOptions, KeyboardMotionSensorSpeed, KeyboardMotionSensorStartEvent, KeyboardMotionSensorStartPredicate, KeyboardSensor, KeyboardSensorCancelEvent, KeyboardSensorDestroyEvent, KeyboardSensorEndEvent, KeyboardSensorEvents, KeyboardSensorMoveEvent, KeyboardSensorOptions, KeyboardSensorPredicate, KeyboardSensorStartEvent, PointerSensor, PointerSensorCancelEvent, PointerSensorDestroyEvent, PointerSensorEndEvent, PointerSensorEvents, PointerSensorMoveEvent, PointerSensorOptions, PointerSensorStartEvent, Sensor, SensorCancelEvent, SensorDestroyEvent, SensorEndEvent, SensorEventType, SensorEvents, SensorMoveEvent, SensorStartEvent, autoScroll, autoScrollSmoothSpeed, createPointerSensorStartPredicate, keyboardMotionSensorSmoothSpeed, setTicker, ticker, tickerReadPhase, tickerWritePhase };
+export { AUTOSCROLL_DRAGGABLE_DEFAULT_SETTINGS, AUTO_SCROLL_AXIS, AUTO_SCROLL_AXIS_DIRECTION, AUTO_SCROLL_DIRECTION, AutoScroll, AutoScrollEventCallbacks, AutoScrollItem, AutoScrollItemEffectCallback, AutoScrollItemEventCallback, AutoScrollItemSpeedCallback, AutoScrollItemTarget, AutoScrollOptions, AutoScrollSettings, BaseControllerSensor, BaseControllerSensorEvents, BaseControllerSensorOptions, BaseControllerSensorTickEvent, BaseSensor, DRAGGABLE_DEFAULT_SETTINGS, Draggable, DraggableAutoScroll, DraggableAutoScrollOptions, DraggableAutoScrollSettings, DraggableEventCallbacks, DraggableOptions, DraggableSettings, KeyboardControllerSensor, KeyboardControllerSensorEvents, KeyboardControllerSensorOptions, KeyboardSensor, KeyboardSensorCancelEvent, KeyboardSensorDestroyEvent, KeyboardSensorEndEvent, KeyboardSensorEvents, KeyboardSensorMoveEvent, KeyboardSensorOptions, KeyboardSensorPredicate, KeyboardSensorStartEvent, PointerSensor, PointerSensorCancelEvent, PointerSensorDestroyEvent, PointerSensorEndEvent, PointerSensorEvents, PointerSensorMoveEvent, PointerSensorOptions, PointerSensorStartEvent, Sensor, SensorCancelEvent, SensorDestroyEvent, SensorEndEvent, SensorEventType, SensorEvents, SensorMoveEvent, SensorStartEvent, autoScroll, autoScrollSmoothSpeed, createPointerSensorStartPredicate, setTicker, ticker, tickerReadPhase, tickerWritePhase };

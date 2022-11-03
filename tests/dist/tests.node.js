@@ -12,42 +12,42 @@ const SensorEventType = {
 
 class BaseSensor {
     constructor() {
-        this.clientX = null;
-        this.clientY = null;
-        this._isActive = false;
-        this._isDestroyed = false;
+        this.clientX = 0;
+        this.clientY = 0;
+        this.isActive = false;
+        this.isDestroyed = false;
         this._emitter = new Emitter();
     }
     _start(data) {
-        if (this._isDestroyed || this._isActive)
+        if (this.isDestroyed || this.isActive)
             return;
         this.clientX = data.clientX;
         this.clientY = data.clientY;
-        this._isActive = true;
-        this._emitter.emit(SensorEventType.start, Object.assign({ type: SensorEventType.start }, data));
+        this.isActive = true;
+        this._emitter.emit(SensorEventType.start, data);
     }
     _move(data) {
-        if (!this._isActive)
+        if (!this.isActive)
             return;
         this.clientX = data.clientX;
         this.clientY = data.clientY;
-        this._emitter.emit(SensorEventType.move, Object.assign({ type: SensorEventType.move }, data));
+        this._emitter.emit(SensorEventType.move, data);
     }
     _end(data) {
-        if (!this._isActive)
+        if (!this.isActive)
             return;
         this.clientX = data.clientX;
         this.clientY = data.clientY;
-        this._isActive = false;
-        this._emitter.emit(SensorEventType.end, Object.assign({ type: SensorEventType.end }, data));
+        this.isActive = false;
+        this._emitter.emit(SensorEventType.end, data);
     }
     _cancel(data) {
-        if (!this._isActive)
+        if (!this.isActive)
             return;
         this.clientX = data.clientX;
         this.clientY = data.clientY;
-        this._isActive = false;
-        this._emitter.emit(SensorEventType.cancel, Object.assign({ type: SensorEventType.cancel }, data));
+        this.isActive = false;
+        this._emitter.emit(SensorEventType.cancel, data);
     }
     on(eventName, listener, listenerId) {
         return this._emitter.on(eventName, listener, listenerId);
@@ -56,9 +56,9 @@ class BaseSensor {
         this._emitter.off(eventName, listener);
     }
     cancel() {
-        if (!this._isActive)
+        if (!this.isActive)
             return;
-        this._isActive = false;
+        this.isActive = false;
         this._emitter.emit(SensorEventType.cancel, {
             type: SensorEventType.cancel,
             clientX: this.clientX,
@@ -66,16 +66,20 @@ class BaseSensor {
         });
     }
     destroy() {
-        if (this._isDestroyed)
+        if (this.isDestroyed)
             return;
         this.cancel();
-        this._isDestroyed = true;
+        this.isDestroyed = true;
         this._emitter.emit(SensorEventType.destroy, {
             type: SensorEventType.destroy,
         });
         this._emitter.off();
     }
 }
+
+let tickerReadPhase = Symbol();
+let tickerWritePhase = Symbol();
+let ticker = new Ticker({ phases: [tickerReadPhase, tickerWritePhase] });
 
 function getPointerEventData(e, id) {
     if ('pointerId' in e) {
@@ -178,8 +182,8 @@ class PointerSensor {
         this.pointerType = null;
         this.clientX = null;
         this.clientY = null;
-        this._isActive = false;
-        this._isDestroyed = false;
+        this.isActive = false;
+        this.isDestroyed = false;
         this._areWindowListenersBound = false;
         this._startPredicate = startPredicate;
         this._listenerOptions = parseListenerOptions(listenerOptions);
@@ -197,7 +201,7 @@ class PointerSensor {
         return getPointerEventData(e, this.pointerId);
     }
     _onStart(e) {
-        if (this._isDestroyed)
+        if (this.isDestroyed)
             return;
         if (this.pointerId !== null)
             return;
@@ -213,7 +217,7 @@ class PointerSensor {
         this.pointerType = getPointerType(e);
         this.clientX = pointerEventData.clientX;
         this.clientY = pointerEventData.clientY;
-        this._isActive = true;
+        this.isActive = true;
         const eventData = {
             type: SensorEventType.start,
             clientX: this.clientX,
@@ -224,13 +228,13 @@ class PointerSensor {
             target: pointerEventData.target,
         };
         this._emitter.emit(eventData.type, eventData);
-        if (this.pointerId !== null && this._isActive) {
+        if (this.pointerId !== null && this.isActive) {
             this._bindWindowListeners();
         }
     }
     _onMove(e) {
         const pointerEventData = this._getTrackedPointerEventData(e);
-        if (!pointerEventData || !this._isActive)
+        if (!pointerEventData || !this.isActive)
             return;
         this.clientX = pointerEventData.clientX;
         this.clientY = pointerEventData.clientY;
@@ -247,9 +251,9 @@ class PointerSensor {
     }
     _onCancel(e) {
         const pointerEventData = this._getTrackedPointerEventData(e);
-        if (!pointerEventData || !this._isActive)
+        if (!pointerEventData || !this.isActive)
             return;
-        this._isActive = false;
+        this.isActive = false;
         this.clientX = pointerEventData.clientX;
         this.clientY = pointerEventData.clientY;
         const eventData = {
@@ -266,9 +270,9 @@ class PointerSensor {
     }
     _onEnd(e) {
         const pointerEventData = this._getTrackedPointerEventData(e);
-        if (!pointerEventData || !this._isActive)
+        if (!pointerEventData || !this.isActive)
             return;
-        this._isActive = false;
+        this.isActive = false;
         this.clientX = pointerEventData.clientX;
         this.clientY = pointerEventData.clientY;
         const eventData = {
@@ -310,13 +314,13 @@ class PointerSensor {
         this.pointerType = null;
         this.clientX = null;
         this.clientY = null;
-        this._isActive = false;
+        this.isActive = false;
         this._unbindWindowListeners();
     }
     cancel() {
-        if (!this.pointerId || !this._isActive)
+        if (!this.pointerId || !this.isActive)
             return;
-        this._isActive = false;
+        this.isActive = false;
         const eventData = {
             type: SensorEventType.cancel,
             clientX: this.clientX,
@@ -330,7 +334,7 @@ class PointerSensor {
         this._reset();
     }
     updateSettings(options) {
-        if (this._isDestroyed)
+        if (this.isDestroyed)
             return;
         const { listenerOptions, sourceEvents, startPredicate } = options;
         const nextSourceEvents = parseSourceEvents(sourceEvents);
@@ -361,24 +365,22 @@ class PointerSensor {
         this._emitter.off(eventName, listener);
     }
     destroy() {
-        if (this._isDestroyed)
+        if (this.isDestroyed)
             return;
-        this._isDestroyed = true;
+        this.isDestroyed = true;
         this.cancel();
-        const eventData = {
+        this._emitter.emit(SensorEventType.destroy, {
             type: SensorEventType.destroy,
-        };
-        this._emitter.emit(eventData.type, eventData);
+        });
         this._emitter.off();
         this.element.removeEventListener(SOURCE_EVENTS[this._sourceEvents].start, this._onStart, this._listenerOptions);
     }
 }
 
-const DEFAULT_MOVE_DISTANCE = 25;
 class KeyboardSensor extends BaseSensor {
     constructor(options = {}) {
         super();
-        const { startPredicate = (e) => {
+        const { moveDistance = 25, startPredicate = (e) => {
             if (e.key === 'Enter' || e.key === 'Space' || e.key === ' ') {
                 if (document.activeElement) {
                     const { left, top } = document.activeElement.getBoundingClientRect();
@@ -390,26 +392,26 @@ class KeyboardSensor extends BaseSensor {
             switch (e.key) {
                 case 'ArrowLeft': {
                     return {
-                        x: sensor.clientX - DEFAULT_MOVE_DISTANCE,
+                        x: sensor.clientX - sensor._moveDistance,
                         y: sensor.clientY,
                     };
                 }
                 case 'ArrowRight': {
                     return {
-                        x: sensor.clientX + DEFAULT_MOVE_DISTANCE,
+                        x: sensor.clientX + sensor._moveDistance,
                         y: sensor.clientY,
                     };
                 }
                 case 'ArrowUp': {
                     return {
                         x: sensor.clientX,
-                        y: sensor.clientY - DEFAULT_MOVE_DISTANCE,
+                        y: sensor.clientY - sensor._moveDistance,
                     };
                 }
                 case 'ArrowDown': {
                     return {
                         x: sensor.clientX,
-                        y: sensor.clientY + DEFAULT_MOVE_DISTANCE,
+                        y: sensor.clientY + sensor._moveDistance,
                     };
                 }
                 default: {
@@ -427,19 +429,24 @@ class KeyboardSensor extends BaseSensor {
             }
             return null;
         }, } = options;
+        this._moveDistance = moveDistance;
         this._startPredicate = startPredicate;
         this._movePredicate = movePredicate;
         this._cancelPredicate = cancelPredicate;
         this._endPredicate = endPredicate;
+        this.cancel = this.cancel.bind(this);
         this._onKeyDown = this._onKeyDown.bind(this);
         document.addEventListener('keydown', this._onKeyDown);
+        window.addEventListener('blur', this.cancel);
+        window.addEventListener('visibilitychange', this.cancel);
     }
     _onKeyDown(e) {
-        if (!this._isActive) {
+        if (!this.isActive) {
             const startPosition = this._startPredicate(e, this);
             if (startPosition) {
                 e.preventDefault();
                 this._start({
+                    type: 'start',
                     clientX: startPosition.x,
                     clientY: startPosition.y,
                     srcEvent: e,
@@ -451,6 +458,7 @@ class KeyboardSensor extends BaseSensor {
         if (cancelPosition) {
             e.preventDefault();
             this._cancel({
+                type: 'cancel',
                 clientX: cancelPosition.x,
                 clientY: cancelPosition.y,
                 srcEvent: e,
@@ -461,6 +469,7 @@ class KeyboardSensor extends BaseSensor {
         if (endPosition) {
             e.preventDefault();
             this._end({
+                type: 'end',
                 clientX: endPosition.x,
                 clientY: endPosition.y,
                 srcEvent: e,
@@ -471,6 +480,7 @@ class KeyboardSensor extends BaseSensor {
         if (movePosition) {
             e.preventDefault();
             this._move({
+                type: 'move',
                 clientX: movePosition.x,
                 clientY: movePosition.y,
                 srcEvent: e,
@@ -479,6 +489,9 @@ class KeyboardSensor extends BaseSensor {
         }
     }
     updateSettings(options = {}) {
+        if (options.moveDistance !== undefined) {
+            this._moveDistance = options.moveDistance;
+        }
         if (options.startPredicate !== undefined) {
             this._startPredicate = options.startPredicate;
         }
@@ -493,16 +506,14 @@ class KeyboardSensor extends BaseSensor {
         }
     }
     destroy() {
-        if (this._isDestroyed)
+        if (this.isDestroyed)
             return;
         document.removeEventListener('keydown', this._onKeyDown);
+        window.removeEventListener('blur', this.cancel);
+        window.removeEventListener('visibilitychange', this.cancel);
         super.destroy();
     }
 }
-
-let tickerReadPhase = Symbol();
-let tickerWritePhase = Symbol();
-let ticker = new Ticker({ phases: [tickerReadPhase, tickerWritePhase] });
 
 const STYLES_CACHE = new WeakMap();
 function getStyle(element, prop) {

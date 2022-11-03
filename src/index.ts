@@ -2,11 +2,13 @@ export * from './Sensors/Sensor';
 
 export * from './Sensors/BaseSensor';
 
+export * from './Sensors/BaseControllerSensor';
+
 export * from './Sensors/PointerSensor';
 
 export * from './Sensors/KeyboardSensor';
 
-export * from './Sensors/KeyboardMotionSensor';
+export * from './Sensors/KeyboardControllerSensor';
 
 export * from './Draggable/Draggable';
 

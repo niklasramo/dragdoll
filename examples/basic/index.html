@@ -60,7 +60,7 @@
       const element = document.querySelector('.draggable');
       const dragContainer = document.querySelector('.dragContainer');
       const pointerSensor = new DragDoll.PointerSensor(element);
-      const keyboardSensor = new DragDoll.KeyboardMotionSensor();
+      const keyboardSensor = new DragDoll.KeyboardControllerSensor();
       const draggable = new DragDoll.Draggable([pointerSensor, keyboardSensor], {
         container: dragContainer,
         getElements: () => [element],

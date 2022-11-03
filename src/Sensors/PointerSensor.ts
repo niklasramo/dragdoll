@@ -133,12 +133,12 @@ export class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
    * Indicator if a drag process is active. Will be set to `false` just before
    * emitting the final event.
    */
-  protected _isActive: boolean;
+  readonly isActive: boolean;
 
   /**
    * Indicator if the instance is destroyed.
    */
-  protected _isDestroyed: boolean;
+  readonly isDestroyed: boolean;
 
   /**
    * The options object to be used for `addEventListener`.
@@ -177,9 +177,9 @@ export class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
     this.pointerType = null;
     this.clientX = null;
     this.clientY = null;
+    this.isActive = false;
+    this.isDestroyed = false;
 
-    this._isActive = false;
-    this._isDestroyed = false;
     this._areWindowListenersBound = false;
     this._startPredicate = startPredicate;
     this._listenerOptions = parseListenerOptions(listenerOptions);
@@ -215,7 +215,7 @@ export class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
    * Listener for start event.
    */
   protected _onStart(e: PointerEvent | TouchEvent | MouseEvent) {
-    if (this._isDestroyed) return;
+    if (this.isDestroyed) return;
 
     // If pointer id is already assigned let's return early.
     if (this.pointerId !== null) return;
@@ -236,7 +236,7 @@ export class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
     (this as Writeable<this>).pointerType = getPointerType(e);
     (this as Writeable<this>).clientX = pointerEventData.clientX;
     (this as Writeable<this>).clientY = pointerEventData.clientY;
-    this._isActive = true;
+    (this as Writeable<this>).isActive = true;
 
     // Emit start event.
     const eventData: PointerSensorStartEvent = {
@@ -252,7 +252,7 @@ export class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
 
     // If the drag procedure was not reset within the start procedure let's
     // activate the instance (start listening to move/cancel/end events).
-    if (this.pointerId !== null && this._isActive) {
+    if (this.pointerId !== null && this.isActive) {
       this._bindWindowListeners();
     }
   }
@@ -262,7 +262,7 @@ export class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
    */
   protected _onMove(e: PointerEvent | TouchEvent | MouseEvent) {
     const pointerEventData = this._getTrackedPointerEventData(e);
-    if (!pointerEventData || !this._isActive) return;
+    if (!pointerEventData || !this.isActive) return;
 
     (this as Writeable<this>).clientX = pointerEventData.clientX;
     (this as Writeable<this>).clientY = pointerEventData.clientY;
@@ -285,9 +285,9 @@ export class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
    */
   protected _onCancel(e: PointerEvent | TouchEvent) {
     const pointerEventData = this._getTrackedPointerEventData(e);
-    if (!pointerEventData || !this._isActive) return;
+    if (!pointerEventData || !this.isActive) return;
 
-    this._isActive = false;
+    (this as Writeable<this>).isActive = false;
     (this as Writeable<this>).clientX = pointerEventData.clientX;
     (this as Writeable<this>).clientY = pointerEventData.clientY;
 
@@ -311,9 +311,9 @@ export class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
    */
   protected _onEnd(e: PointerEvent | TouchEvent | MouseEvent) {
     const pointerEventData = this._getTrackedPointerEventData(e);
-    if (!pointerEventData || !this._isActive) return;
+    if (!pointerEventData || !this.isActive) return;
 
-    this._isActive = false;
+    (this as Writeable<this>).isActive = false;
     (this as Writeable<this>).clientX = pointerEventData.clientX;
     (this as Writeable<this>).clientY = pointerEventData.clientY;
 
@@ -369,7 +369,7 @@ export class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
     (this as Writeable<this>).pointerType = null;
     (this as Writeable<this>).clientX = null;
     (this as Writeable<this>).clientY = null;
-    this._isActive = false;
+    (this as Writeable<this>).isActive = false;
     this._unbindWindowListeners();
   }
 
@@ -377,9 +377,9 @@ export class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
    * Forcefully cancel the drag process.
    */
   cancel() {
-    if (!this.pointerId || !this._isActive) return;
+    if (!this.pointerId || !this.isActive) return;
 
-    this._isActive = false;
+    (this as Writeable<this>).isActive = false;
 
     const eventData: PointerSensorCancelEvent = {
       type: SensorEventType.cancel,
@@ -400,7 +400,7 @@ export class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
    * Update the instance's settings.
    */
   updateSettings(options: PointerSensorOptions) {
-    if (this._isDestroyed) return;
+    if (this.isDestroyed) return;
 
     const { listenerOptions, sourceEvents, startPredicate } = options;
     const nextSourceEvents = parseSourceEvents(sourceEvents);
@@ -470,10 +470,10 @@ export class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
    * Destroy the instance and unbind all drag event listeners.
    */
   destroy() {
-    if (this._isDestroyed) return;
+    if (this.isDestroyed) return;
 
     // Mark as destroyed.
-    this._isDestroyed = true;
+    (this as Writeable<this>).isDestroyed = true;
 
     // Cancel any ongoing drag process.
     this.cancel();

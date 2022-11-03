@@ -6,61 +6,49 @@ import { Writeable } from '../types';
 
 export class BaseSensor<T extends SensorEvents = SensorEvents> implements Sensor<T> {
   declare events: T;
-  readonly clientX: number | null;
-  readonly clientY: number | null;
-  protected _isActive: boolean;
-  protected _isDestroyed: boolean;
+  readonly clientX: number;
+  readonly clientY: number;
+  readonly isActive: boolean;
+  readonly isDestroyed: boolean;
   protected _emitter: Emitter<Events>;
 
   constructor() {
-    this.clientX = null;
-    this.clientY = null;
-    this._isActive = false;
-    this._isDestroyed = false;
+    this.clientX = 0;
+    this.clientY = 0;
+    this.isActive = false;
+    this.isDestroyed = false;
     this._emitter = new Emitter();
   }
 
-  protected _start(data: Omit<T['start'], 'type'>) {
-    if (this._isDestroyed || this._isActive) return;
+  protected _start(data: T['start']) {
+    if (this.isDestroyed || this.isActive) return;
     (this as Writeable<this>).clientX = data.clientX;
     (this as Writeable<this>).clientY = data.clientY;
-    this._isActive = true;
-    this._emitter.emit(SensorEventType.start, {
-      type: SensorEventType.start,
-      ...data,
-    });
+    (this as Writeable<this>).isActive = true;
+    this._emitter.emit(SensorEventType.start, data);
   }
 
-  protected _move(data: Omit<T['move'], 'type'>) {
-    if (!this._isActive) return;
+  protected _move(data: T['move']) {
+    if (!this.isActive) return;
     (this as Writeable<this>).clientX = data.clientX;
     (this as Writeable<this>).clientY = data.clientY;
-    this._emitter.emit(SensorEventType.move, {
-      type: SensorEventType.move,
-      ...data,
-    });
+    this._emitter.emit(SensorEventType.move, data);
   }
 
-  protected _end(data: Omit<T['end'], 'type'>) {
-    if (!this._isActive) return;
+  protected _end(data: T['end']) {
+    if (!this.isActive) return;
     (this as Writeable<this>).clientX = data.clientX;
     (this as Writeable<this>).clientY = data.clientY;
-    this._isActive = false;
-    this._emitter.emit(SensorEventType.end, {
-      type: SensorEventType.end,
-      ...data,
-    });
+    (this as Writeable<this>).isActive = false;
+    this._emitter.emit(SensorEventType.end, data);
   }
 
-  protected _cancel(data: Omit<T['cancel'], 'type'>) {
-    if (!this._isActive) return;
+  protected _cancel(data: T['cancel']) {
+    if (!this.isActive) return;
     (this as Writeable<this>).clientX = data.clientX;
     (this as Writeable<this>).clientY = data.clientY;
-    this._isActive = false;
-    this._emitter.emit(SensorEventType.cancel, {
-      type: SensorEventType.cancel,
-      ...data,
-    });
+    (this as Writeable<this>).isActive = false;
+    this._emitter.emit(SensorEventType.cancel, data);
   }
 
   on<K extends keyof T>(
@@ -76,8 +64,8 @@ export class BaseSensor<T extends SensorEvents = SensorEvents> implements Sensor
   }
 
   cancel() {
-    if (!this._isActive) return;
-    this._isActive = false;
+    if (!this.isActive) return;
+    (this as Writeable<this>).isActive = false;
     this._emitter.emit(SensorEventType.cancel, {
       type: SensorEventType.cancel,
       clientX: this.clientX!,
@@ -86,9 +74,9 @@ export class BaseSensor<T extends SensorEvents = SensorEvents> implements Sensor
   }
 
   destroy() {
-    if (this._isDestroyed) return;
+    if (this.isDestroyed) return;
     this.cancel();
-    this._isDestroyed = true;
+    (this as Writeable<this>).isDestroyed = true;
     this._emitter.emit(SensorEventType.destroy, {
       type: SensorEventType.destroy,
     });

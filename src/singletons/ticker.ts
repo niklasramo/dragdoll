@@ -1,4 +1,5 @@
 import { Ticker, FrameCallback } from 'tikki';
+
 import { EventName } from 'eventti';
 
 export let tickerReadPhase: EventName = Symbol();

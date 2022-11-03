@@ -1,0 +1,26 @@
+:root {
+  --vp-c-brand: #ff5555;
+  --vp-c-brand-light: #ff5555;
+  --vp-c-brand-lighter: #fe6868;
+  --vp-c-green-dark: #d52929;
+  --vp-button-brand-bg: #ff5555;
+}
+.VPImage.logo {
+  height: 40px;
+}
+.VPFeatures .VPFeature {
+  position: relative;
+  padding-left: 60px;
+  background-color: transparent;
+  border-color: var(--vp-c-divider-light);
+}
+.VPFeatures .VPFeature .icon {
+  position: absolute;
+  align-items: baseline;
+  margin: 0;
+  margin-left: -60px;
+  border-radius: 0px;
+  background-color: transparent;
+  width: 60px;
+  font-size: 24px;
+}
