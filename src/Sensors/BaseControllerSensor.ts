@@ -8,6 +8,8 @@ import { ticker, tickerReadPhase } from '../singletons/ticker';
 
 export interface BaseControllerSensorTickEvent {
   type: 'tick';
+  time: number;
+  deltaTime: number;
 }
 
 export interface BaseControllerSensorEvents extends SensorEvents {
@@ -58,14 +60,22 @@ export class BaseControllerSensor<T extends BaseControllerSensorEvents = BaseCon
   }
 
   protected _tick(time: number) {
-    if (this.isDestroyed || !this.isActive) return;
+    if (!this.isActive) return;
     if (time && this.time) {
       // Update tick time and delta time.
       (this as Writeable<this>).deltaTime = time - this.time;
       (this as Writeable<this>).time = time;
 
       // Emit tick event.
-      this._emitter.emit('tick', { type: 'tick' });
+      const tickEvent: BaseControllerSensorTickEvent = {
+        type: 'tick',
+        time: this.time,
+        deltaTime: this.deltaTime,
+      };
+      this._emitter.emit('tick', tickEvent);
+
+      // Make sure the sensor is still active.
+      if (!this.isActive) return;
 
       // Compute the movement offset (delta) by applying time factor to
       // the speed. The speed is assumed to be provided as pixels-per-second.

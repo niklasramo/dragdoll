@@ -43,7 +43,7 @@ export default {
 
 function nav() {
   return [
-    { text: 'Home', link: '/', },
+    { text: 'Home', link: '/' },
     { text: 'Docs', link: '/docs/getting-started', activeMatch: '/docs/' },
     {
       text: version,
@@ -71,7 +71,7 @@ function sidebarGuide() {
       ],
     },
     {
-      text: 'API',
+      text: 'Sensors',
       collapsible: false,
       items: [
         { text: 'Sensor', link: '/docs/sensor' },
@@ -80,9 +80,14 @@ function sidebarGuide() {
         { text: 'PointerSensor', link: '/docs/pointer-sensor' },
         { text: 'KeyboardSensor', link: '/docs/keyboard-sensor' },
         { text: 'KeyboardControllerSensor', link: '/docs/keyboard-controller-sensor' },
+      ],
+    },
+    {
+      text: 'Draggable',
+      collapsible: false,
+      items: [
         { text: 'Draggable', link: '/docs/draggable' },
-        { text: 'DraggableAutoScroll', link: '/docs/draggable-auto-scroll' },
-        { text: 'AutoScroll', link: '/docs/auto-scroll' },
+        { text: 'AutoScroll Plugin', link: '/docs/draggable-auto-scroll-plugin' },
       ],
     },
   ];

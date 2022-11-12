@@ -22,7 +22,7 @@ Access the library via `window.DragDoll` in browser context.
 
 ## Usage
 
-```typescript
+```ts
 import {
   PointerSensor,
   KeyboardSensor,

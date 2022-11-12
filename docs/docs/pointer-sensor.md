@@ -4,7 +4,7 @@ PointerSensor listens to pointer events, touch events and mouse events and norma
 
 ## Example
 
-```typescript
+```ts
 import { PointerSensor, Draggable } from 'dragdoll';
 
 // Create a pointer sensor instance which tracks pointer/touch/mouse events in
@@ -26,160 +26,205 @@ const draggable = new Draggable([pointerSensor], {
 
 ## Constructor
 
-- **element** &nbsp;&mdash;&nbsp; `HTMLElement | Window`
-  - The element (or window) which's events will be tracked.
-- **options** &nbsp;&mdash;&nbsp; `object`
-  - Optional.
-  - **listenerOptions** &nbsp;&mdash;&nbsp; `{capture?: boolean, passive?: boolean}`
-    - This object will be propagated to the source even listeners [listener options](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener). You can use it to define whether the source event listeners should be passive and/or use capture.
-    - Optional. Default: `{capture: true, passive: true}`.
-  - **sourceEvents** &nbsp;&mdash;&nbsp; `"pointer" | "touch" | "mouse" | "auto"`
-    - Define which type of events will be listened and used as source events:
-      - `"pointer"` -> [`PointerEvents`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent)
-      - `"touch"` -> [`TouchEvents`](https://developer.mozilla.org/en-US/docs/Web/API/TouchEvent)
-      - `"mouse"`-> [`MouseEvents`](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent)
-      - `"auto"` -> Detect the best choice automatically (pointer > touch > mouse) based on what browser supports.
-    - Optional. Default: `"auto"`.
-  - **startPredicate** &nbsp;&mdash;&nbsp; `(e: PointerEvent | TouchEvent | MouseEvent) => boolean`
-    - This function is called when drag process is starting up with the initial event as the argument. You can use it to define whether the drag process should be allowed to start (return `true`) or not (return `false`).
-    - Optional. Default: `(e) => ('button' in e && e.button > 0 ? false : true)`
+```ts
+class PointerSensor {
+  constructor(element: HTMLElement | Window, options?: Partial<PointerSensorSettings>) {}
+}
+```
+
+The constuctor accepts two arguments: `element` and `options`. The first argument is the element (or window) which's events will be tracked. The second argument is an optional [Settings](#settings) object, which you can also change later via [`updateSettings`](#updatesettings) method.
+
+## Settings
+
+### listenerOptions
+
+```ts
+type listenerOptions = {
+  capture?: boolean;
+  passive?: boolean;
+};
+```
+
+This object will be propagated to the source event listeners' [options](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener). You can use it to define whether the source event listeners should be passive and/or use capture.
+
+Defaults to `{ capture: true, passive: true }`.
+
+### sourceEvents
+
+```ts
+type sourceEvents = 'pointer' | 'touch' | 'mouse' | 'auto';
+```
+
+Define which type of events will be listened and used as source events:
+
+- `"pointer"` -> [`PointerEvents`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent)
+- `"touch"` -> [`TouchEvents`](https://developer.mozilla.org/en-US/docs/Web/API/TouchEvent)
+- `"mouse"` -> [`MouseEvents`](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent)
+- `"auto"` -> Detect the best choice automatically (pointer > touch > mouse) based on what browser supports.
+
+Defaults to `"auto"`.
+
+### startPredicate
+
+```ts
+type startPredicate = (e: PointerEvent | TouchEvent | MouseEvent) => boolean;
+```
+
+This function is called when drag process is starting up with the initial event as the argument. You can use it to define whether the drag process should be allowed to start (return `true`) or not (return `false`).
+
+Defaults to `(e) => ('button' in e && e.button > 0 ? false : true)`.
 
 ## Properties
 
 ### element
 
-- The observed element or window.
-- Type: `HTMLElement | Window`.
-- Read-only.
+```ts
+type element = HTMLElement | Window;
+```
+
+The observed element or window. Read-only.
 
 ### pointerId
 
-- Pointer id of the current drag process, `null` when the element is not being dragged.
-- Type: `number | null`.
-- Read-only.
+```ts
+type pointerId = number | null;
+```
+
+Pointer id of the current drag process, `null` when the element is not being dragged. Read-only.
 
 ### pointerType
 
-- Pointer type of the current drag process, `null` when the element is not being dragged.
-- Type: `"mouse" | "pen" | "touch" | null`.
-- Read-only.
+```ts
+type pointerId = 'mouse' | 'pen' | 'touch' | null;
+```
+
+Pointer type of the current drag process, `null` when the element is not being dragged. Read-only.
 
 ### clientX
 
-- Current horizontal coordinate of the drag within the application's viewport, `null` when the element is not being dragged.
-- Type: `number | null`.
-- Read-only.
+```ts
+type clientX = number | null;
+```
+
+Current horizontal coordinate of the drag within the application's viewport, `null` when the element is not being dragged. Read-only.
 
 ### clientY
 
-- Current vertical coordinate of the drag within the application's viewport, `null` when the element is not being dragged.
-- Type: `number | null`.
-- Read-only.
+```ts
+type clientY = number | null;
+```
+
+Current vertical coordinate of the drag within the application's viewport, `null` when the element is not being dragged. Read-only.
 
 ### isActive
 
-- Is dragging active or not?
-- Type: `boolean`.
-- Read-only.
+```ts
+type isActive = boolean;
+```
+
+Is dragging active or not? Read-only.
 
 ### isDestroyed
 
-- Is sensor destroyed or not?
-- Type: `boolean`.
-- Read-only.
+```ts
+type isDestroyed = boolean;
+```
+
+Is sensor destroyed or not? Read-only.
 
 ## Methods
 
 ### on
 
-`pointerSensor.on( eventName, listener, [listenerId] )`
+```ts
+// Type
+type on = (
+  eventName: 'start' | 'move' | 'cancel' | 'end' | 'destroy',
+  listener: (
+    e:
+      | {
+          type: 'start' | 'move' | 'end';
+          clientX: number;
+          clientY: number;
+          pointerId: number;
+          pointerType: 'mouse' | 'pen' | 'touch';
+          srcEvent: PointerEvent | TouchEvent | MouseEvent;
+          target: EventTarget | null;
+        }
+      | {
+          type: 'cancel';
+          clientX: number;
+          clientY: number;
+          pointerId: number;
+          pointerType: 'mouse' | 'pen' | 'touch';
+          srcEvent: PointerEvent | TouchEvent | MouseEvent | null;
+          target: EventTarget | null;
+        }
+      | {
+          type: 'destroy';
+        }
+  ) => void,
+  listenerId?: string | number | symbol
+) => string | number | symbol;
 
-Adds a listener to a sensor event.
+// Usage
+pointerSensor.on('start', (e) => {
+  console.log('start', e);
+});
+```
 
-**Parameters**
-
-- **eventName** &nbsp;&mdash;&nbsp; `"start" | "move" | "end" | "cancel" | "destroy"`
-  - The event name.
-- **listener** &nbsp;&mdash;&nbsp; `(eventData) => void`
-  - The event listener, which receives [`EventData`](#event-data) object as its argument.
-- **listenerId** &nbsp;&mdash;&nbsp; `string | number | symbol`
-  - Optionally provide listener id manually.
-
-**Returns** &nbsp;&mdash;&nbsp; `string | number | symbol`
-
-A listener id, which can be used to remove this specific listener. By default this will always be a symbol unless manually provided.
+Adds a listener to a sensor event. Returns a listener id, which can be used to remove this specific listener. By default this will always be a symbol unless manually provided.
 
 ### off
 
-`pointerSensor.off( eventName, target )`
+```ts
+// Type
+type off = (
+  eventName: 'start' | 'move' | 'cancel' | 'end' | 'destroy',
+  target: Function | string | number | symbol
+) => void;
+
+// Usage
+const id = pointerSensor.on('start', (e) => console.log('start', e));
+pointerSensor.off('start', id);
+```
 
 Removes a listener (based on listener or listener id) from a sensor event.
 
-**Parameters**
-
-- **eventName** &nbsp;&mdash;&nbsp; `"start" | "move" | "end" | "cancel" | "destroy"`
-  - The event name.
-- **target** &nbsp;&mdash;&nbsp; `Function | string | number | symbol`
-  - The event listener or listener id to remove.
-
 ### updateSettings
 
-`pointerSensor.updateSettings( options )`
+```ts
+// Type
+type updateSettings = (options?: Partial<PointerSensorSettings>) => void;
 
-Updates the the sensor's settings.
+// Usage
+pointerSensor.updateSettings({
+  startPredicate: () => Math.random() > 0.5,
+});
+```
 
-**Parameters**
-
-- **options** &nbsp;&mdash;&nbsp; `object`
-  - You can provide the same options here as in the constructor. Only the options you provide will be updated.
+Updates the the sensor's settings. Accepts [Settings](#settings) as the first argument, only the options you provide will be updated.
 
 ### cancel
 
-`pointerSensor.cancel()`
+```ts
+// Type
+type cancel = () => void;
+
+// Usage
+pointerSensor.cancel();
+```
 
 Forcefully cancel the sensor's current drag process. The purpose of this method is to have a manual way of aborting the drag procedure at all times.
 
 ### destroy
 
-`pointerSensor.destroy()`
+```ts
+// Type
+type destroy = () => void;
+
+// Usage
+pointerSensor.destroy();
+```
 
 Destroy the sensor. Disposes all allocated memory and removes all bound event listeners.
-
-## Event Data
-
-The event data is a plain object which contains `type`, `clientX`, `clientY`, `pointerId`, `pointerType`, `srcEvent` and `target` properties. For `"destroy"` event the event data contains _only_ the `type` property.
-
-### type
-
-- Type of the event.
-- Type: `"start" | "move" | "end" | "cancel" | "destroy"`.
-
-### clientX
-
-- Current horizontal coordinate within the application's viewport at which the event occurred.
-- Type: `number`.
-
-### clientY
-
-- Current vertical coordinate within the application's viewport at which the event occurred.
-- Type: `number`.
-
-### pointerId
-
-- Pointer id.
-- Type: `number`.
-
-### pointerType
-
-- Pointer type.
-- Type: `"mouse" | "pen" | "touch"`.
-
-### srcEvent
-
-- The source event which triggered the drag event. In the special case when `pointerSensor.cancel()` is called `srcEvent` will be `null`.
-- Type: `PointerEvent | TouchEvent | MouseEvent | null`.
-
-### target
-
-- Event target.
-- Type: `EventTarget | null`.

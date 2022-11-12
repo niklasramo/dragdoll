@@ -12,14 +12,14 @@ import { BaseSensor } from './BaseSensor';
 export type KeyboardSensorPredicate = (
   e: KeyboardEvent,
   sensor: KeyboardSensor
-) => { x: number; y: number } | null | void;
+) => { x: number; y: number } | null | undefined;
 
-export interface KeyboardSensorOptions {
-  moveDistance?: number;
-  startPredicate?: KeyboardSensorPredicate;
-  movePredicate?: KeyboardSensorPredicate;
-  cancelPredicate?: KeyboardSensorPredicate;
-  endPredicate?: KeyboardSensorPredicate;
+export interface KeyboardSensorSettings {
+  moveDistance: number;
+  startPredicate: KeyboardSensorPredicate;
+  movePredicate: KeyboardSensorPredicate;
+  cancelPredicate: KeyboardSensorPredicate;
+  endPredicate: KeyboardSensorPredicate;
 }
 
 export interface KeyboardSensorStartEvent extends SensorStartEvent {
@@ -59,7 +59,7 @@ export class KeyboardSensor<T extends KeyboardSensorEvents = KeyboardSensorEvent
   protected _cancelPredicate: KeyboardSensorPredicate;
   protected _endPredicate: KeyboardSensorPredicate;
 
-  constructor(options: KeyboardSensorOptions = {}) {
+  constructor(options: Partial<KeyboardSensorSettings> = {}) {
     super();
 
     const {
@@ -188,7 +188,7 @@ export class KeyboardSensor<T extends KeyboardSensorEvents = KeyboardSensorEvent
     }
   }
 
-  updateSettings(options: KeyboardSensorOptions = {}) {
+  updateSettings(options: Partial<KeyboardSensorSettings> = {}) {
     if (options.moveDistance !== undefined) {
       this._moveDistance = options.moveDistance;
     }

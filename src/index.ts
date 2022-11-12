@@ -12,7 +12,7 @@ export * from './Sensors/KeyboardControllerSensor';
 
 export * from './Draggable/Draggable';
 
-export * from './Draggable/DraggableAutoScroll';
+export * from './Draggable/plugins/autoScroll';
 
 export * from './AutoScroll/AutoScroll';
 

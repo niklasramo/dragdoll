@@ -1,10 +1,12 @@
+[BaseSensor](/docs/base-sensor) →
+
 # BaseControllerSensor
 
-BaseControllerSensor is a tailor-made _base_ sensor for scenarios where you want to smoothly move an object, e.g. a car or a character in a 2D game, based on custom inputs. It extends [BaseSensor](/docs/base-sensor) and provides functionality for controlling the drag movement on every frame via speed and direction.
+BaseControllerSensor is a tailor-made base sensor for scenarios where you want to smoothly move an object, e.g. a car or a character in a 2D game, based on custom inputs. It extends [BaseSensor](/docs/base-sensor) and provides functionality for controlling the drag movement on every frame via speed and direction.
 
 ## Example
 
-```typescript
+```ts
 import { BaseControllerSensor, Draggable } from 'dragdoll';
 
 // Create a custom controller sensor which starts moving the provided
@@ -101,173 +103,83 @@ const draggable = new Draggable([customSensor], {
 
 ### direction
 
-- 2D direction vector which indicates the drag direction. This is assumed to be a unit vector (length 1) if there should be movement, otherwise x and y components should be 0.
-- You can manually modify this anytime you want.
-- Type: `{ x: number, y: number }`.
+```ts
+type direction = { x: number; y: number };
+```
+
+2D direction vector which indicates the drag direction. This is assumed to be a unit vector (length 1) if there should be movement, otherwise x and y components should be 0. You can manually modify this anytime you want.
 
 ### speed
 
-- The speed of the drag as pixels-per-second.
-- You can manually modify this anytime you want.
-- Type: `number`.
+```ts
+type speed = number;
+```
+
+The speed of the drag as pixels-per-second. You can manually modify this anytime you want.
 
 ### time
 
-- Current frame's timestamp in milliseconds.
-- Type: `number`.
-- Read-only.
+```ts
+type time = DOMHighResTimeStamp;
+```
 
-### tickDeltaTime
+The latest [`high resolution timestamp`](https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp) in milliseconds. Note that this is only updated while drag is active. Read-only.
 
-- Current frame's delta time in milliseconds.
-- Type: `number`.
-- Read-only.
+### deltaTime
 
-### clientX
+```ts
+type time = number;
+```
 
-- Current horizontal coordinate of the drag within the application's viewport, `null` when drag is inactive.
-- Type: `number | null`.
-- Read-only.
-
-### clientY
-
-- Current vertical coordinate of the drag within the application's viewport, `null` when drag is inactive.
-- Type: `number | null`.
-- Read-only.
-
-### isActive
-
-- Is dragging active or not?
-- Type: `boolean`.
-- Read-only.
-
-### isDestroyed
-
-- Is sensor destroyed or not?
-- Type: `boolean`.
-- Read-only.
+Current frame's delta time in milliseconds. Note that this is only updated while drag is active. Read-only.
 
 ## Methods
 
 ### on
 
-`baseControllerSensor.on( eventName, listener, [listenerId] )`
+```ts
+// Type
+type on = (
+  eventName: 'start' | 'move' | 'cancel' | 'end' | 'destroy' | 'tick',
+  listener: (
+    e:
+      | {
+          type: 'start' | 'move' | 'end' | 'cancel';
+          clientX: number;
+          clientY: number;
+        }
+      | {
+          type: 'tick';
+          time: number;
+          deltaTime: number;
+        }
+      | {
+          type: 'destroy';
+        }
+  ) => void,
+  listenerId?: string | number | symbol
+) => string | number | symbol;
 
-Adds a listener to a sensor event.
+// Usage
+baseControllerSensor.on('start', (e) => {
+  console.log('start', e);
+});
+```
 
-**Parameters**
-
-- **eventName** &nbsp;&mdash;&nbsp; `"start" | "move" | "tick" | "end" | "cancel" | "destroy"`
-  - The event name.
-- **listener** &nbsp;&mdash;&nbsp; `( e?: EventData ) => void`
-  - The event listener, which receives [`EventData`](#event-data) object as its argument for all events except `"tick"`.
-- **listenerId** &nbsp;&mdash;&nbsp; _string | number | symbol_
-  - Optionally provide listener id manually.
-
-**Returns** &nbsp;&mdash;&nbsp; `string | number | symbol`
-
-A listener id, which can be used to remove this specific listener. By default this will always be a symbol unless manually provided.
+Adds a listener to a sensor event. Returns a listener id, which can be used to remove this specific listener. By default this will always be a symbol unless manually provided.
 
 ### off
 
-`baseControllerSensor.off( eventName, target )`
+```ts
+// Type
+type off = (
+  eventName: 'start' | 'move' | 'cancel' | 'end' | 'destroy' | 'tick',
+  target: Function | string | number | symbol
+) => void;
+
+// Usage
+const id = baseControllerSensor.on('start', (e) => console.log('start', e));
+baseControllerSensor.off('start', id);
+```
 
 Removes a listener (based on listener or listener id) from a sensor event.
-
-**Parameters**
-
-- **eventName** &nbsp;&mdash;&nbsp; `"start" | "move" | "tick" | "end" | "cancel" | "destroy"`
-  - The event name.
-- **target** &nbsp;&mdash;&nbsp; `Function | string | number | symbol`
-  - The event listener or listener id to remove.
-
-### cancel
-
-`baseControllerSensor.cancel()`
-
-Forcefully cancel the sensor's current drag process. The purpose of this method is to have a manual way of aborting the drag procedure at all times.
-
-### destroy
-
-`baseControllerSensor.destroy()`
-
-Destroy the sensor. Disposes all allocated memory and removes all bound event listeners.
-
-## Protected Methods
-
-These protected methods are inherited by any class that extends this class and can be used to control the drag process.
-
-### \_start
-
-`baseControllerSensor._start( startEventData )`
-
-Protected method, which emits drag start event with the provided data.
-
-**Parameters**
-
-- **startEventData** &nbsp;&mdash;&nbsp; `object`
-  - Start event data (see [`EventData`](#event-data)).
-  - **type** &nbsp;&mdash;&nbsp; `"start"`
-  - **clientX** &nbsp;&mdash;&nbsp; `number`
-  - **clientY** &nbsp;&mdash;&nbsp; `number`
-
-### \_move
-
-`baseControllerSensor._move( moveEventData )`
-
-Protected method, which emits drag move event with the provided data.
-
-**Parameters**
-
-- **moveEventData** &nbsp;&mdash;&nbsp; `object`
-  - Move event data (see [`EventData`](#event-data)).
-  - **type** &nbsp;&mdash;&nbsp; `"move"`
-  - **clientX** &nbsp;&mdash;&nbsp; `number`
-  - **clientY** &nbsp;&mdash;&nbsp; `number`
-
-### \_end
-
-`baseControllerSensor._end( endEventData )`
-
-Protected method, which emits drag end event with the provided data.
-
-**Parameters**
-
-- **endEventData** &nbsp;&mdash;&nbsp; `object`
-  - End event data (see [`EventData`](#event-data)).
-  - **type** &nbsp;&mdash;&nbsp; `"end"`
-  - **clientX** &nbsp;&mdash;&nbsp; `number`
-  - **clientY** &nbsp;&mdash;&nbsp; `number`
-
-### \_cancel
-
-`baseControllerSensor._cancel( cancelEventData )`
-
-Protected method, which emits drag cancel event with the provided data.
-
-**Parameters**
-
-- **cancelEventData** &nbsp;&mdash;&nbsp; `object`
-  - Cancel event data (see [`EventData`](#event-data)).
-  - **type** &nbsp;&mdash;&nbsp; `"cancel"`
-  - **clientX** &nbsp;&mdash;&nbsp; `number`
-  - **clientY** &nbsp;&mdash;&nbsp; `number`
-
-## Event Data
-
-The event data is a plain object which contains `type`, `clientX` and `clientY` properties. For `"destroy"` event the event data contains _only_ the `type` property.
-
-### type
-
-- Type of the event.
-- Type: `"start" | "move" | "end" | "cancel" | "destroy"`.
-
-### clientX
-
-- Current horizontal coordinate within the application's viewport at which the event occurred.
-- Type: `number`.
-
-### clientY
-
-- Current vertical coordinate within the application's viewport at which the event occurred.
-- Type: `number`.

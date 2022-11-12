@@ -2,21 +2,21 @@ import { Sensor } from './Sensor';
 
 import { BaseControllerSensor, BaseControllerSensorEvents } from './BaseControllerSensor';
 
-export interface KeyboardControllerSensorOptions<
+export interface KeyboardControllerSensorSettings<
   T extends KeyboardControllerSensorEvents = KeyboardControllerSensorEvents
 > {
-  startPredicate?: (
+  startPredicate: (
     e: KeyboardEvent,
     sensor: KeyboardControllerSensor<T>
-  ) => { x: number; y: number } | null | void;
-  computeSpeed?: (sensor: KeyboardControllerSensor<T>) => number;
-  startKeys?: string[];
-  moveLeftKeys?: string[];
-  moveRightKeys?: string[];
-  moveUpKeys?: string[];
-  moveDownKeys?: string[];
-  cancelKeys?: string[];
-  endKeys?: string[];
+  ) => { x: number; y: number } | null | undefined;
+  computeSpeed: (sensor: KeyboardControllerSensor<T>) => number;
+  startKeys: string[];
+  moveLeftKeys: string[];
+  moveRightKeys: string[];
+  moveUpKeys: string[];
+  moveDownKeys: string[];
+  cancelKeys: string[];
+  endKeys: string[];
 }
 
 export interface KeyboardControllerSensorEvents extends BaseControllerSensorEvents {}
@@ -51,10 +51,10 @@ export class KeyboardControllerSensor<
 {
   declare events: T;
   protected _startPredicate: Exclude<
-    KeyboardControllerSensorOptions<T>['startPredicate'],
+    KeyboardControllerSensorSettings<T>['startPredicate'],
     undefined
   >;
-  protected _computeSpeed: Exclude<KeyboardControllerSensorOptions<T>['computeSpeed'], undefined>;
+  protected _computeSpeed: Exclude<KeyboardControllerSensorSettings<T>['computeSpeed'], undefined>;
   protected _moveKeys: Set<string>;
   protected _moveKeyTimestamps: Map<string, number>;
   protected _startKeys: Set<string>;
@@ -65,7 +65,7 @@ export class KeyboardControllerSensor<
   protected _cancelKeys: Set<string>;
   protected _endKeys: Set<string>;
 
-  constructor(options: KeyboardControllerSensorOptions<T> = {}) {
+  constructor(options: Partial<KeyboardControllerSensorSettings<T>> = {}) {
     super();
 
     const {
@@ -203,7 +203,7 @@ export class KeyboardControllerSensor<
     }
   }
 
-  updateSettings(options: KeyboardControllerSensorOptions<T> = {}) {
+  updateSettings(options: Partial<KeyboardControllerSensorSettings<T>> = {}) {
     let moveKeysMayNeedUpdate = false;
 
     if (options.startPredicate !== undefined) {

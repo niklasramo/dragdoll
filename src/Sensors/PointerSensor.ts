@@ -51,10 +51,10 @@ const SOURCE_EVENTS = {
 
 type PointerSensorSourceEvent = PointerEvent | TouchEvent | MouseEvent;
 
-export interface PointerSensorOptions {
-  listenerOptions?: ListenerOptions;
-  sourceEvents?: keyof typeof SOURCE_EVENTS | 'auto';
-  startPredicate?: (e: PointerSensorSourceEvent) => boolean;
+export interface PointerSensorSettings {
+  listenerOptions: ListenerOptions;
+  sourceEvents: keyof typeof SOURCE_EVENTS | 'auto';
+  startPredicate: (e: PointerSensorSourceEvent) => boolean;
 }
 
 export interface PointerSensorStartEvent extends SensorStartEvent {
@@ -118,13 +118,13 @@ export class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
   readonly pointerType: PointerType | null;
 
   /**
-   * Current client x-position of the drag input, , `null` when the element is
+   * Current client x-position of the drag input, `null` when the element is
    * not being dragged.
    */
   readonly clientX: number | null;
 
   /**
-   * Current client y-position of the drag input, , `null` when the element is
+   * Current client y-position of the drag input, `null` when the element is
    * not being dragged.
    */
   readonly clientY: number | null;
@@ -165,7 +165,7 @@ export class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
    */
   protected _emitter: Emitter<Events>;
 
-  constructor(element: HTMLElement | Window, options: PointerSensorOptions = {}) {
+  constructor(element: HTMLElement | Window, options: Partial<PointerSensorSettings> = {}) {
     const {
       listenerOptions = {},
       sourceEvents = 'auto',
@@ -399,7 +399,7 @@ export class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
   /**
    * Update the instance's settings.
    */
-  updateSettings(options: PointerSensorOptions) {
+  updateSettings(options: Partial<PointerSensorSettings>) {
     if (this.isDestroyed) return;
 
     const { listenerOptions, sourceEvents, startPredicate } = options;

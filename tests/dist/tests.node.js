@@ -612,29 +612,10 @@ function getOffsetDiff(elemA, elemB, result = { left: 0, top: 0 }) {
     return result;
 }
 
-const transformNone = 'none';
-const rxMat3d = /^matrix3d/;
-const rxMatTx = /([^,]*,){4}/;
-const rxMat3dTx = /([^,]*,){12}/;
-const rxNextItem = /[^,]*,/;
-function getTranslate(element, result = { x: 0, y: 0 }) {
-    const transform = getStyle(element, 'transform');
-    if (!transform || transform === transformNone) {
-        result.x = 0;
-        result.y = 0;
-        return result;
-    }
-    const isMat3d = rxMat3d.test(transform);
-    const tX = transform.replace(isMat3d ? rxMat3dTx : rxMatTx, '');
-    const tY = tX.replace(rxNextItem, '');
-    result.x = parseFloat(tX) || 0;
-    result.y = parseFloat(tY) || 0;
-    return result;
-}
-
+const IDENTITY_MATRIX = 'matrix(1, 0, 0, 1, 0, 0)';
+const IDENTITY_MATRIX_3D = 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)';
 const SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
 const OFFSET_DIFF = { left: 0, top: 0 };
-const TRANSLATE_POSITION = { x: 0, y: 0 };
 const POSITION_CHANGE = { x: 0, y: 0 };
 var StartPredicateState;
 (function (StartPredicateState) {
@@ -642,7 +623,7 @@ var StartPredicateState;
     StartPredicateState[StartPredicateState["RESOLVED"] = 1] = "RESOLVED";
     StartPredicateState[StartPredicateState["REJECTED"] = 2] = "REJECTED";
 })(StartPredicateState || (StartPredicateState = {}));
-class DraggableItem {
+class DraggableDragItem {
     constructor() {
         this.element = null;
         this.rootParent = null;
@@ -661,7 +642,7 @@ class DraggableItem {
         this.containerDiffY = 0;
     }
 }
-class DraggableDrag {
+class DraggableDragData {
     constructor() {
         this.sensor = null;
         this.isEnded = false;
@@ -671,34 +652,55 @@ class DraggableDrag {
         this.prevMoveEvent = null;
         this.endEvent = null;
         this.items = [];
+        this.extraData = {};
     }
 }
-const DRAGGABLE_DEFAULT_SETTINGS = {
-    container: null,
-    startPredicate: () => true,
-    getElements: () => null,
-    releaseElements: () => { },
-    getPosition: (element) => getTranslate(element, TRANSLATE_POSITION),
-    getPositionChange: (_element, _startEvent, prevEvent, nextEvent) => {
-        POSITION_CHANGE.x = nextEvent.clientX - prevEvent.clientX;
-        POSITION_CHANGE.y = nextEvent.clientY - prevEvent.clientY;
-        return POSITION_CHANGE;
-    },
-    renderPosition: (element, x, y) => {
-        element.style.transform = `translate3d(${x}px, ${y}px, 0px)`;
-    },
-};
+function getDefaultSettings() {
+    return {
+        container: null,
+        startPredicate: () => true,
+        getElements: () => null,
+        releaseElements: () => { },
+        getElementStartPosition: ({ element, draggable }) => {
+            const { drag } = draggable;
+            if (drag) {
+                const transformMap = drag.extraData.transformMap || new Map();
+                drag.extraData.transformMap = transformMap;
+                const t = getStyle(element, 'transform');
+                if (t && t !== 'none' && t !== IDENTITY_MATRIX && t !== IDENTITY_MATRIX_3D) {
+                    transformMap.set(element, t);
+                }
+                else {
+                    transformMap.set(element, '');
+                }
+            }
+            return { x: 0, y: 0 };
+        },
+        setElementPosition: ({ draggable, element, x, y }) => {
+            const { drag } = draggable;
+            const transformMap = drag === null || drag === void 0 ? void 0 : drag.extraData.transformMap;
+            const initTransform = (transformMap === null || transformMap === void 0 ? void 0 : transformMap.get(element)) || '';
+            element.style.transform = `translate(${x}px, ${y}px) ${initTransform}`;
+        },
+        getElementPositionChange: ({ event, prevEvent }) => {
+            POSITION_CHANGE.x = event.clientX - prevEvent.clientX;
+            POSITION_CHANGE.y = event.clientY - prevEvent.clientY;
+            return POSITION_CHANGE;
+        },
+    };
+}
 class Draggable {
     constructor(sensors, options = {}) {
         this.sensors = sensors;
         this.settings = this._parseSettings(options);
+        this.drag = null;
+        this.plugins = new Map();
+        this.isDestroyed = false;
         this._sensorData = new Map();
         this._emitter = new Emitter();
-        this._drag = null;
         this._startId = Symbol();
         this._moveId = Symbol();
         this._syncId = Symbol();
-        this._isDestroyed = false;
         this._onMove = this._onMove.bind(this);
         this._onScroll = this._onScroll.bind(this);
         this._onEnd = this._onEnd.bind(this);
@@ -723,16 +725,16 @@ class Draggable {
             sensor.on('destroy', onEnd);
         });
     }
-    _parseSettings(options, defaults = DRAGGABLE_DEFAULT_SETTINGS) {
-        const { container = defaults.container, startPredicate = defaults.startPredicate, getElements = defaults.getElements, releaseElements = defaults.releaseElements, getPosition = defaults.getPosition, getPositionChange = defaults.getPositionChange, renderPosition = defaults.renderPosition, } = options || {};
+    _parseSettings(options, defaults = getDefaultSettings()) {
+        const { container = defaults.container, startPredicate = defaults.startPredicate, getElements = defaults.getElements, releaseElements = defaults.releaseElements, getElementStartPosition = defaults.getElementStartPosition, setElementPosition = defaults.setElementPosition, getElementPositionChange = defaults.getElementPositionChange, } = options || {};
         return {
             container,
             startPredicate,
             getElements,
             releaseElements,
-            getPosition,
-            getPositionChange,
-            renderPosition,
+            getElementStartPosition,
+            setElementPosition,
+            getElementPositionChange,
         };
     }
     _emit(type, ...e) {
@@ -745,7 +747,11 @@ class Draggable {
         switch (sensorData.predicateState) {
             case StartPredicateState.PENDING: {
                 sensorData.predicateEvent = e;
-                const shouldStart = this.settings.startPredicate(e, sensor, this);
+                const shouldStart = this.settings.startPredicate({
+                    draggable: this,
+                    sensor,
+                    event: e,
+                });
                 if (shouldStart === true) {
                     this.resolveStartPredicate(sensor);
                 }
@@ -755,8 +761,8 @@ class Draggable {
                 break;
             }
             case StartPredicateState.RESOLVED: {
-                if (this._drag) {
-                    this._drag.nextMoveEvent = e;
+                if (this.drag) {
+                    this.drag.nextMoveEvent = e;
                     ticker.once(tickerReadPhase, this._prepareMove, this._moveId);
                     ticker.once(tickerWritePhase, this._applyMove, this._moveId);
                 }
@@ -771,12 +777,12 @@ class Draggable {
         const sensorData = this._sensorData.get(sensor);
         if (!sensorData)
             return;
-        if (!this._drag) {
+        if (!this.drag) {
             sensorData.predicateState = StartPredicateState.PENDING;
             sensorData.predicateEvent = null;
         }
         else if (sensorData.predicateState === StartPredicateState.RESOLVED) {
-            this._drag.endEvent = e;
+            this.drag.endEvent = e;
             this._sensorData.forEach((data) => {
                 data.predicateState = StartPredicateState.PENDING;
                 data.predicateEvent = null;
@@ -785,21 +791,20 @@ class Draggable {
         }
     }
     _prepareStart() {
-        const drag = this._drag;
+        const { drag } = this;
         if (!drag || !drag.startEvent)
             return;
-        const elements = this.settings.getElements(drag.startEvent) || [];
+        const elements = this.settings.getElements({
+            draggable: this,
+            sensor: drag.sensor,
+            startEvent: drag.startEvent,
+        }) || [];
         drag.items = elements.map((element) => {
-            const item = new DraggableItem();
-            item.element = element;
             if (!element.isConnected) {
-                if (this.settings.container) {
-                    this.settings.container.appendChild(element);
-                }
-                else {
-                    document.body.appendChild(element);
-                }
+                throw new Error('Element is not connected');
             }
+            const item = new DraggableDragItem();
+            item.element = element;
             const rootParent = element.parentNode;
             item.rootParent = rootParent;
             const rootContainingBlock = getContainingBlock(rootParent);
@@ -808,7 +813,11 @@ class Draggable {
             item.dragParent = dragParent;
             const dragContainingBlock = dragParent === rootParent ? rootContainingBlock : getContainingBlock(dragParent);
             item.dragContainingBlock = dragContainingBlock;
-            const { x, y } = this.settings.getPosition(element);
+            const { x, y } = this.settings.getElementStartPosition({
+                draggable: this,
+                sensor: drag.sensor,
+                element,
+            });
             item.x = x;
             item.y = y;
             const clientRect = element.getBoundingClientRect();
@@ -823,22 +832,30 @@ class Draggable {
         });
     }
     _applyStart() {
-        let drag = this._drag;
+        const drag = this.drag;
         if (!drag || !drag.startEvent)
             return;
         this._emit('beforestart', drag.startEvent);
-        drag = this._drag;
-        if (!drag || !drag.startEvent)
+        if (this.drag !== drag)
             return;
         const { container } = this.settings;
         if (container) {
             for (const item of drag.items) {
-                if (item.element && item.element.parentNode !== container) {
+                if (!item.element)
+                    continue;
+                if (item.element.parentNode !== container) {
                     container.appendChild(item.element);
                     item.x += item.containerDiffX;
                     item.y += item.containerDiffY;
-                    this.settings.renderPosition(item.element, item.x, item.y);
                 }
+                this.settings.setElementPosition({
+                    phase: 'start',
+                    draggable: this,
+                    sensor: drag.sensor,
+                    element: item.element,
+                    x: item.x,
+                    y: item.y,
+                });
             }
         }
         window.addEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
@@ -846,7 +863,7 @@ class Draggable {
         this._emit('start', drag.startEvent);
     }
     _prepareMove() {
-        const drag = this._drag;
+        const { drag } = this;
         if (!drag || !drag.startEvent)
             return;
         const nextEvent = drag.nextMoveEvent;
@@ -856,7 +873,14 @@ class Draggable {
         for (const item of drag.items) {
             if (!item.element)
                 continue;
-            const { x: changeX, y: changeY } = this.settings.getPositionChange(item.element, drag.startEvent, prevEvent, nextEvent);
+            const { x: changeX, y: changeY } = this.settings.getElementPositionChange({
+                draggable: this,
+                sensor: drag.sensor,
+                element: item.element,
+                startEvent: drag.startEvent,
+                prevEvent,
+                event: nextEvent,
+            });
             if (changeX) {
                 item.x = item.x - item.moveDiffX + changeX;
                 item.clientX = item.clientX - item.moveDiffX + changeX;
@@ -871,7 +895,7 @@ class Draggable {
         drag.prevMoveEvent = nextEvent;
     }
     _applyMove() {
-        let drag = this._drag;
+        const { drag } = this;
         if (!drag || !drag.nextMoveEvent)
             return;
         for (const item of drag.items) {
@@ -879,18 +903,24 @@ class Draggable {
             item.moveDiffY = 0;
         }
         this._emit('beforemove', drag.nextMoveEvent);
-        drag = this._drag;
-        if (!drag || !drag.nextMoveEvent)
+        if (this.drag !== drag)
             return;
         for (const item of drag.items) {
             if (!item.element)
                 continue;
-            this.settings.renderPosition(item.element, item.x, item.y);
+            this.settings.setElementPosition({
+                phase: 'move',
+                draggable: this,
+                sensor: drag.sensor,
+                element: item.element,
+                x: item.x,
+                y: item.y,
+            });
         }
         this._emit('move', drag.nextMoveEvent);
     }
     _prepareSynchronize() {
-        const drag = this._drag;
+        const { drag } = this;
         if (!drag)
             return;
         for (const item of drag.items) {
@@ -911,7 +941,7 @@ class Draggable {
         }
     }
     _applySynchronize() {
-        const drag = this._drag;
+        const { drag } = this;
         if (!drag)
             return;
         for (const item of drag.items) {
@@ -919,14 +949,15 @@ class Draggable {
                 continue;
             item.syncDiffX = 0;
             item.syncDiffY = 0;
-            this.settings.renderPosition(item.element, item.x, item.y);
+            this.settings.setElementPosition({
+                phase: 'move',
+                draggable: this,
+                sensor: drag.sensor,
+                element: item.element,
+                x: item.x,
+                y: item.y,
+            });
         }
-    }
-    isActive() {
-        return !!this._drag;
-    }
-    getDragData() {
-        return this._drag;
     }
     on(eventName, listener, listenerId) {
         return this._emitter.on(eventName, listener, listenerId);
@@ -935,7 +966,7 @@ class Draggable {
         this._emitter.off(eventName, listener);
     }
     synchronize(syncImmediately = false) {
-        if (!this._drag)
+        if (!this.drag)
             return;
         if (syncImmediately) {
             this._prepareSynchronize();
@@ -954,9 +985,9 @@ class Draggable {
         if (sensorData.predicateState === StartPredicateState.PENDING && startEvent) {
             sensorData.predicateState = StartPredicateState.RESOLVED;
             sensorData.predicateEvent = null;
-            this._drag = new DraggableDrag();
-            this._drag.sensor = sensor;
-            this._drag.startEvent = startEvent;
+            this.drag = new DraggableDragData();
+            this.drag.sensor = sensor;
+            this.drag.startEvent = startEvent;
             this._sensorData.forEach((data, s) => {
                 if (s === sensor)
                     return;
@@ -975,7 +1006,7 @@ class Draggable {
         }
     }
     stop() {
-        const drag = this._drag;
+        const { drag } = this;
         if (!drag || drag.isEnded)
             return;
         drag.isEnded = true;
@@ -999,23 +1030,45 @@ class Draggable {
                     item.containerDiffX = 0;
                     item.containerDiffY = 0;
                     item.rootParent.appendChild(item.element);
-                    this.settings.renderPosition(item.element, item.x, item.y);
                 }
+                this.settings.setElementPosition({
+                    phase: 'end',
+                    draggable: this,
+                    sensor: drag.sensor,
+                    element: item.element,
+                    x: item.x,
+                    y: item.y,
+                });
             }
             if (elements.length) {
-                this.settings.releaseElements(elements);
+                this.settings.releaseElements({
+                    draggable: this,
+                    sensor: drag.sensor,
+                    elements,
+                });
             }
         }
         this._emit('end', drag.endEvent);
-        this._drag = null;
+        this.drag = null;
     }
     updateSettings(options = {}) {
         this.settings = this._parseSettings(options, this.settings);
     }
+    use(plugin) {
+        const pluginInstance = plugin(this);
+        if (!pluginInstance.name) {
+            throw new Error('Plugin has no name.');
+        }
+        if (this.plugins.has(pluginInstance.name)) {
+            throw new Error(`${pluginInstance.name} plugin is already added.`);
+        }
+        this.plugins.set(pluginInstance.name, pluginInstance);
+        return this;
+    }
     destroy() {
-        if (this._isDestroyed)
+        if (this.isDestroyed)
             return;
-        this._isDestroyed = true;
+        this.isDestroyed = true;
         this.stop();
         this._sensorData.forEach(({ onMove, onEnd }, sensor) => {
             sensor.off('start', onMove);
@@ -1349,34 +1402,6 @@ class AutoScrollRequest {
             onStop(this.element, this.direction);
         }
     }
-}
-function autoScrollSmoothSpeed(maxSpeed = 500, accelerationFactor = 0.5, decelerationFactor = 0.25) {
-    const acceleration = maxSpeed * (accelerationFactor > 0 ? 1 / accelerationFactor : Infinity);
-    const deceleration = maxSpeed * (decelerationFactor > 0 ? 1 / decelerationFactor : Infinity);
-    return function (_element, data) {
-        let targetSpeed = 0;
-        if (!data.isEnding) {
-            if (data.threshold > 0) {
-                const factor = data.threshold - Math.max(0, data.distance);
-                targetSpeed = (maxSpeed / data.threshold) * factor;
-            }
-            else {
-                targetSpeed = maxSpeed;
-            }
-        }
-        const currentSpeed = data.speed;
-        if (currentSpeed === targetSpeed)
-            return targetSpeed;
-        let nextSpeed = targetSpeed;
-        if (currentSpeed < targetSpeed) {
-            nextSpeed = currentSpeed + acceleration * (data.deltaTime / 1000);
-            return Math.min(targetSpeed, nextSpeed);
-        }
-        else {
-            nextSpeed = currentSpeed - deceleration * (data.deltaTime / 1000);
-            return Math.max(targetSpeed, nextSpeed);
-        }
-    };
 }
 class AutoScroll {
     constructor(options = {}) {
@@ -1880,50 +1905,6 @@ class AutoScroll {
 
 new AutoScroll();
 
-const AUTOSCROLL_POSITION = { x: 0, y: 0 };
-const AUTOSCROLL_CLIENT_RECT = { left: 0, top: 0, width: 0, height: 0 };
-Object.assign(Object.assign({}, DRAGGABLE_DEFAULT_SETTINGS), { autoScroll: {
-        targets: [],
-        staticAreaSize: 0.2,
-        speed: autoScrollSmoothSpeed(),
-        smoothStop: false,
-        getPosition: (draggable) => {
-            const drag = draggable.getDragData();
-            const primaryItem = drag === null || drag === void 0 ? void 0 : drag.items[0];
-            if (primaryItem) {
-                AUTOSCROLL_POSITION.x = primaryItem.x;
-                AUTOSCROLL_POSITION.y = primaryItem.y;
-            }
-            else {
-                const e = drag && (drag.nextMoveEvent || drag.startEvent);
-                AUTOSCROLL_POSITION.x = e ? e.clientX : 0;
-                AUTOSCROLL_POSITION.y = e ? e.clientY : 0;
-            }
-            return AUTOSCROLL_POSITION;
-        },
-        getClientRect: (draggable) => {
-            const drag = draggable.getDragData();
-            const primaryItem = drag === null || drag === void 0 ? void 0 : drag.items[0];
-            if (primaryItem && primaryItem.element) {
-                const { left, top, width, height } = primaryItem.element.getBoundingClientRect();
-                AUTOSCROLL_CLIENT_RECT.left = left;
-                AUTOSCROLL_CLIENT_RECT.top = top;
-                AUTOSCROLL_CLIENT_RECT.width = width;
-                AUTOSCROLL_CLIENT_RECT.height = height;
-            }
-            else {
-                const e = drag && (drag.nextMoveEvent || drag.startEvent);
-                AUTOSCROLL_CLIENT_RECT.left = e ? e.clientX - 25 : 0;
-                AUTOSCROLL_CLIENT_RECT.top = e ? e.clientY - 25 : 0;
-                AUTOSCROLL_CLIENT_RECT.width = e ? 50 : 0;
-                AUTOSCROLL_CLIENT_RECT.height = e ? 50 : 0;
-            }
-            return AUTOSCROLL_CLIENT_RECT;
-        },
-        onStart: null,
-        onStop: null,
-    } });
-
 const SCROLLABLE_OVERFLOWS = new Set(['auto', 'scroll', 'overlay']);
 function isScrollable(element) {
     return !!(SCROLLABLE_OVERFLOWS.has(getStyle(element, 'overflow')) ||
@@ -1979,15 +1960,16 @@ function createPointerSensorStartPredicate(options = {}) {
             }
         }
     };
-    const pointerSensorStartPredicate = (e, sensor, draggable) => {
-        if (!(sensor instanceof PointerSensor)) {
-            return fallback(e, sensor, draggable);
+    const pointerSensorStartPredicate = (data) => {
+        if (!(data.sensor instanceof PointerSensor)) {
+            return fallback(data);
         }
-        const _e = e;
-        if (_e.pointerType === 'touch') {
-            if (_e.type === 'start' &&
-                (_e.srcEvent.type === 'pointerdown' || _e.srcEvent.type === 'touchstart')) {
-                targetElement = _e.target;
+        const { draggable, sensor, event } = data;
+        const e = event;
+        if (e.pointerType === 'touch') {
+            if (e.type === 'start' &&
+                (e.srcEvent.type === 'pointerdown' || e.srcEvent.type === 'touchstart')) {
+                targetElement = e.target;
                 const scrollables = targetElement ? getScrollables(targetElement) : [];
                 scrollables.forEach((scrollable) => {
                     scrollable.addEventListener('touchmove', onTouchMove, {
@@ -2016,7 +1998,7 @@ function createPointerSensorStartPredicate(options = {}) {
                     timer = void window.clearTimeout(timer);
                 };
                 dragAllowed = undefined;
-                startTimeStamp = _e.srcEvent.timeStamp;
+                startTimeStamp = e.srcEvent.timeStamp;
                 targetElement === null || targetElement === void 0 ? void 0 : targetElement.addEventListener('contextmenu', onContextMenu);
                 draggable.on('beforeend', dragEndListener);
                 draggable.sensors.forEach((sensor) => {
@@ -2034,7 +2016,7 @@ function createPointerSensorStartPredicate(options = {}) {
             }
             return dragAllowed;
         }
-        if (_e.type === 'start' && !_e.srcEvent.button) {
+        if (e.type === 'start' && !e.srcEvent.button) {
             return true;
         }
         else {
@@ -2049,7 +2031,7 @@ describe('foo', () => {
         const pointerSensor = new PointerSensor(document.createElement('div'));
         const keyboardSensor = new KeyboardSensor();
         const draggable = new Draggable([keyboardSensor, pointerSensor], {
-            getPositionChange: (_element, _startEvent, _prevEvent, _nextEvent) => {
+            getElementPositionChange: () => {
                 return { x: 0, y: 0 };
             },
             startPredicate: createPointerSensorStartPredicate(),

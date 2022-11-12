@@ -1,10 +1,12 @@
+[BaseSensor](/docs/base-sensor) →
+
 # KeyboardSensor
 
 KeyboardSensor listens to `document`'s `keydown` events and normalizes them into unified drag events. You can configure start/end/move/cancel predicate functions, which determine the drag's movement and the keys that control the drag. Note that this sensor is designed to be as simple and as customizable as possible with minimal API interface.
 
 ## Example
 
-```typescript
+```ts
 import { KeyboardSensor, Draggable } from 'dragdoll';
 
 // Create a keyboard sensor instance. Note that you should not need more than
@@ -26,116 +28,87 @@ const draggable = new Draggable([keyboardSensor], {
 
 ## Constructor
 
-- **options** &nbsp;&mdash;&nbsp; `object`
-  - Optional.
-  - **moveDistance** &nbsp;&mdash;&nbsp; `number`
-    - The number of pixels the `clientX` and/or `clientY` values are shifted per `"move"` event.
-    - Default: `25`.
-  - **startPredicate** &nbsp;&mdash;&nbsp; [`KeyboardSensorPredicate`](#keyboardsensorpredicate)
-    - Start predicate function which determines if drag should start as well as the initial horizontal and vertical coordinates within the application's viewport.
-  - **movePredicate** &nbsp;&mdash;&nbsp; [`KeyboardSensorPredicate`](#keyboardsensorpredicate)
-    - Move predicate function which triggers move event and determines the next horizontal and vertical coordinates within the application's viewport.
-  - **endPredicate** &nbsp;&mdash;&nbsp; [`KeyboardSensorPredicate`](#keyboardsensorpredicate)
-    - End predicate function which ends active drag and determines the final horizontal and vertical coordinates within the application's viewport.
-  - **cancelPredicate** &nbsp;&mdash;&nbsp; [`KeyboardSensorPredicate`](#keyboardsensorpredicate)
-    - Cancel predicate function which cancels active drag and determines the final horizontal and vertical coordinates within the application's viewport.
+```ts
+class KeyboardSensor {
+  constructor(options?: KeyboardSensorSettings) {}
+}
+```
 
-## Properties
+The constuctor accepts one argument, an optional [Settings](#settings) object, which you can also change later via [`updateSettings`](#updatesettings) method.
 
-### clientX
+## Settings
 
-- Current horizontal coordinate of the drag within the application's viewport, `null` when drag is inactive.
-- Type: `number | null`.
-- Read-only.
+### moveDistance
 
-### clientY
+```ts
+type moveDistance = number;
+```
 
-- Current vertical coordinate of the drag within the application's viewport, `null` when drag is inactive.
-- Type: `number | null`.
-- Read-only.
+The number of pixels the `clientX` and/or `clientY` values are shifted per `"move"` event.
 
-### isActive
+Defaults to `25`.
 
-- Is dragging active or not?
-- Type: `boolean`.
-- Read-only.
+### startPredicate
 
-### isDestroyed
+```ts
+type startPredicate = (
+  e: KeyboardEvent,
+  sensor: KeyboardSensor
+) => { x: number; y: number } | null | undefined;
+```
 
-- Is sensor destroyed or not?
-- Type: `boolean`.
-- Read-only.
+Start predicate function which should return drag start coordinates (client `x` and `y`) if drag should start and otherwise return `null` or `undefined` to indicate no action. Called on `keydown` event in `document` when drag is not active.
+
+### movePredicate
+
+```ts
+type movePredicate = (
+  e: KeyboardEvent,
+  sensor: KeyboardSensor
+) => { x: number; y: number } | null | undefined;
+```
+
+Move predicate function which should return drag's next coordinates (client `x` and `y`) if drag movement is needed and otherwise return `null` or `undefined` to indicate no action. Called on `keydown` event in `document` when drag is active.
+
+### endPredicate
+
+```ts
+type endPredicate = (
+  e: KeyboardEvent,
+  sensor: KeyboardSensor
+) => { x: number; y: number } | null | undefined;
+```
+
+End predicate function which should return drag's end coordinates (client `x` and `y`) if drag needs to end and otherwise return `null` or `undefined` to indicate no action. Called on `keydown` event in `document` when drag is active.
+
+### cancelPredicate
+
+```ts
+type cancelPredicate = (
+  e: KeyboardEvent,
+  sensor: KeyboardSensor
+) => { x: number; y: number } | null | undefined;
+```
+
+Cancel predicate function which should return drag's end coordinates (client `x` and `y`) if drag needs to be canceled and otherwise return `null` or `undefined` to indicate no action. Called on `keydown` event in `document` when drag is active.
+
 
 ## Methods
 
-### on
+### updateSettings
 
-`keyboardSensor.on( eventName, listener, [listenerId] )`
+```ts
+// Type
+type updateSettings = (options?: Partial<KeyboardSensorSettings>) => void;
 
-Adds a listener to a sensor event.
+// Usage
+keyboardSensor.updateSettings({
+  startPredicate: () => {
+    if (Math.random() > 0.5) {
+      return { x: 0, y: 0 };
+    }
+  },
+});
+```
 
-**Parameters**
-
-- **eventName** &nbsp;&mdash;&nbsp; `"start" | "move" | "end" | "cancel" | "destroy"`
-  - The event name.
-- **listener** &nbsp;&mdash;&nbsp; `(eventData) => void`
-  - The event listener, which receives [`EventData`](#event-data) object as its argument.
-- **listenerId** &nbsp;&mdash;&nbsp; _string | number | symbol_
-  - Optionally provide listener id manually.
-
-**Returns** &nbsp;&mdash;&nbsp; `string | number | symbol`
-
-A listener id, which can be used to remove this specific listener. By default this will always be a symbol unless manually provided.
-
-### off
-
-`keyboardSensor.off( eventName, target )`
-
-Removes a listener (based on listener or listener id) from a sensor event.
-
-**Parameters**
-
-- **eventName** &nbsp;&mdash;&nbsp; `"start" | "move" | "end" | "cancel" | "destroy"`
-  - The event name.
-- **target** &nbsp;&mdash;&nbsp; `Function | string | number | symbol`
-  - The event listener or listener id to remove.
-
-### cancel
-
-`keyboardSensor.cancel()`
-
-Forcefully cancel the sensor's current drag process.
-
-### destroy
-
-`keyboardSensor.destroy()`
-
-Destroy the sensor. Disposes all allocated memory and removes all bound event listeners.
-
-## Event Data
-
-The event data is a plain object which contains `type`, `clientX` and `clientY` properties. For `"destroy"` event the event data contains _only_ the `type` property.
-
-### type
-
-- Type of the event.
-- Type: `"start" | "move" | "end" | "cancel" | "destroy"`.
-
-### clientX
-
-- Current horizontal coordinate within the application's viewport at which the event occurred.
-- Type: `number`.
-
-### clientY
-
-- Current vertical coordinate within the application's viewport at which the event occurred.
-- Type: `number`.
-
-## Types
-
-### KeyboardSensorPredicate
-
-`(e: KeyboardEvent, sensor: KeyboardSensor) => { x: number; y: number } | null | void`
-
-- A predicate function that is called on `keydown` event in `document` while drag is not active.
-- Should return coordinates (e.g. `{x: 10, y: 10}`) to trigger start/move/cancel/end actions, otherwise should return `null` or `undefined` to indicate no action.
+Updates the the sensor's settings. Accepts [Settings](#settings) object as the first argument, only the options you provide will be updated.

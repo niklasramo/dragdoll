@@ -59,22 +59,24 @@ export function createPointerSensorStartPredicate<
     }
   };
 
-  const pointerSensorStartPredicate: D['settings']['startPredicate'] = (e, sensor, draggable) => {
-    if (!(sensor instanceof PointerSensor)) {
-      return fallback(e, sensor, draggable);
+  const pointerSensorStartPredicate: D['settings']['startPredicate'] = (data) => {
+    if (!(data.sensor instanceof PointerSensor)) {
+      return fallback(data);
     }
 
-    const _e = e as PointerSensorEvents['start'] | PointerSensorEvents['move'];
-    if (_e.pointerType === 'touch') {
+    const { draggable, sensor, event } = data;
+    const e = event as PointerSensorEvents['start'] | PointerSensorEvents['move'];
+
+    if (e.pointerType === 'touch') {
       // On first event (touchstart/pointerdown) we need to store the drag start
       // data and bind listeners for touchmove and contextmenu.
       if (
-        _e.type === 'start' &&
-        (_e.srcEvent.type === 'pointerdown' || _e.srcEvent.type === 'touchstart')
+        e.type === 'start' &&
+        (e.srcEvent.type === 'pointerdown' || e.srcEvent.type === 'touchstart')
       ) {
         // Prevent potentially scrollable nodes from scrolling to make sure
         // native scrolling does not interfere with dragging.
-        targetElement = _e.target as HTMLElement | null;
+        targetElement = e.target as HTMLElement | null;
         const scrollables = targetElement ? getScrollables(targetElement) : [];
         scrollables.forEach((scrollable) => {
           scrollable.addEventListener('touchmove', onTouchMove as EventListener, {
@@ -109,7 +111,7 @@ export function createPointerSensorStartPredicate<
 
         // Set start state.
         dragAllowed = undefined;
-        startTimeStamp = _e.srcEvent.timeStamp;
+        startTimeStamp = e.srcEvent.timeStamp;
 
         // Prevent context menu popping up.
         targetElement?.addEventListener('contextmenu', onContextMenu);
@@ -145,7 +147,7 @@ export function createPointerSensorStartPredicate<
 
     // On mouse/pen let's allow starting drag immediately if mouse's left button
     // is pressed down.
-    if (_e.type === 'start' && !(_e.srcEvent as MouseEvent | PointerEvent).button) {
+    if (e.type === 'start' && !(e.srcEvent as MouseEvent | PointerEvent).button) {
       return true;
     } else {
       return false;
