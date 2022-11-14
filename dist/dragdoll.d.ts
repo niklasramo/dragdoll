@@ -452,12 +452,13 @@ declare const AUTO_SCROLL_DIRECTION: {
     readonly left: 9;
     readonly right: 5;
 };
+declare function getDirectionAsString(direction: number): "none" | "left" | "right" | "up" | "down";
 declare type AutoScrollAxis = typeof AUTO_SCROLL_AXIS[keyof typeof AUTO_SCROLL_AXIS];
 declare type AutoScrollDirectionX = typeof AUTO_SCROLL_DIRECTION_X[keyof typeof AUTO_SCROLL_DIRECTION_X];
 declare type AutoScrollDirectionY = typeof AUTO_SCROLL_DIRECTION_Y[keyof typeof AUTO_SCROLL_DIRECTION_Y];
 declare type AutoScrollDirection = typeof AUTO_SCROLL_DIRECTION[keyof typeof AUTO_SCROLL_DIRECTION];
 interface AutoScrollSpeedData {
-    direction: AutoScrollDirection;
+    direction: ReturnType<typeof getDirectionAsString>;
     threshold: number;
     distance: number;
     value: number;
@@ -474,7 +475,7 @@ interface AutoScrollItem {
         x: number;
         y: number;
     };
-    readonly staticAreaSize: number;
+    readonly inertAreaSize: number;
     readonly smoothStop: boolean;
     readonly speed: number | AutoScrollItemSpeedCallback;
     readonly onStart?: AutoScrollItemEventCallback | null;
@@ -497,7 +498,7 @@ interface AutoScrollItemTarget {
     priority?: number;
     threshold?: number;
 }
-declare type AutoScrollItemEventCallback = (scrollElement: Window | HTMLElement, scrollDirection: AutoScrollDirection) => void;
+declare type AutoScrollItemEventCallback = (scrollElement: Window | HTMLElement, scrollDirection: ReturnType<typeof getDirectionAsString>) => void;
 declare type AutoScrollItemEffectCallback = () => void;
 declare type AutoScrollItemSpeedCallback = (scrollElement: Window | HTMLElement, scrollData: AutoScrollSpeedData) => number;
 declare class AutoScrollItemData {
@@ -597,7 +598,6 @@ declare class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['
     protected _draggable: Draggable<S, E>;
     protected _position: AutoScrollItem['position'];
     protected _clientRect: AutoScrollItem['clientRect'];
-    static pluginName: "autoscroll";
     constructor(draggableAutoScroll: DraggableAutoScroll<S, E>);
     private _getSettings;
     get targets(): AutoScrollItemTarget[];
@@ -606,7 +606,7 @@ declare class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['
         y: number;
     };
     get clientRect(): Rect;
-    get staticAreaSize(): number;
+    get inertAreaSize(): number;
     get smoothStop(): boolean;
     get speed(): number | AutoScrollItemSpeedCallback;
     get onStart(): AutoScrollItemEventCallback | null;
@@ -616,7 +616,7 @@ declare class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['
 }
 interface DraggableAutoScrollSettings<S extends Sensor[], E extends S[number]['events']> {
     targets: AutoScrollItemTarget[] | ((draggable: Draggable<S, E>) => AutoScrollItemTarget[]);
-    staticAreaSize: number;
+    inertAreaSize: number;
     speed: number | AutoScrollItemSpeedCallback;
     smoothStop: boolean;
     getPosition: ((draggable: Draggable<S, E>) => {

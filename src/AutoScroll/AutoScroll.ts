@@ -1,3 +1,6 @@
+// TODO: Add option to keep scroll active even if you go over the boundaries and
+// the elements are not intersecting. This is crucial especially for window.
+
 import { Emitter, EventListenerId } from 'eventti';
 
 import { Rect, RectExtended } from '../types';
@@ -38,7 +41,7 @@ const R2: RectExtended = { ...R1 };
 const DEFAULT_THRESHOLD = 50;
 
 const SPEED_DATA: AutoScrollSpeedData = {
-  direction: 0,
+  direction: 'none',
   threshold: 0,
   distance: 0,
   value: 0,
@@ -76,6 +79,24 @@ export const AUTO_SCROLL_DIRECTION = {
   ...AUTO_SCROLL_DIRECTION_Y,
 } as const;
 
+function getDirectionAsString(direction: number) {
+  switch (direction) {
+    case AUTO_SCROLL_DIRECTION_X.none:
+    case AUTO_SCROLL_DIRECTION_Y.none:
+      return 'none';
+    case AUTO_SCROLL_DIRECTION_X.left:
+      return 'left';
+    case AUTO_SCROLL_DIRECTION_X.right:
+      return 'right';
+    case AUTO_SCROLL_DIRECTION_Y.up:
+      return 'up';
+    case AUTO_SCROLL_DIRECTION_Y.down:
+      return 'down';
+    default:
+      throw new Error(`Unknown direction value: ${direction}`);
+  }
+}
+
 //
 // PRIVATE TYPES
 //
@@ -89,7 +110,7 @@ type AutoScrollDirectionY = typeof AUTO_SCROLL_DIRECTION_Y[keyof typeof AUTO_SCR
 type AutoScrollDirection = typeof AUTO_SCROLL_DIRECTION[keyof typeof AUTO_SCROLL_DIRECTION];
 
 interface AutoScrollSpeedData {
-  direction: AutoScrollDirection;
+  direction: ReturnType<typeof getDirectionAsString>;
   threshold: number;
   distance: number;
   value: number;
@@ -108,7 +129,7 @@ export interface AutoScrollItem {
   readonly targets: AutoScrollItemTarget[];
   readonly clientRect: Rect;
   readonly position: { x: number; y: number };
-  readonly staticAreaSize: number;
+  readonly inertAreaSize: number;
   readonly smoothStop: boolean;
   readonly speed: number | AutoScrollItemSpeedCallback;
   readonly onStart?: AutoScrollItemEventCallback | null;
@@ -137,7 +158,7 @@ export interface AutoScrollItemTarget {
 
 export type AutoScrollItemEventCallback = (
   scrollElement: Window | HTMLElement,
-  scrollDirection: AutoScrollDirection
+  scrollDirection: ReturnType<typeof getDirectionAsString>
 ) => void;
 
 export type AutoScrollItemEffectCallback = () => void;
@@ -157,11 +178,11 @@ function computeThreshold(idealThreshold: number, targetSize: number) {
 
 function computeEdgeOffset(
   threshold: number,
-  staticAreaSize: number,
+  inertAreaSize: number,
   itemSize: number,
   targetSize: number
 ) {
-  return Math.max(0, itemSize + threshold * 2 + targetSize * staticAreaSize - targetSize) / 2;
+  return Math.max(0, itemSize + threshold * 2 + targetSize * inertAreaSize - targetSize) / 2;
 }
 
 class AutoScrollItemData {
@@ -321,7 +342,7 @@ class AutoScrollRequest {
     if (!this.item || !this.element) return 0;
     const { speed } = this.item;
     if (typeof speed === 'function') {
-      SPEED_DATA.direction = this.direction;
+      SPEED_DATA.direction = getDirectionAsString(this.direction);
       SPEED_DATA.threshold = this.threshold;
       SPEED_DATA.distance = this.distance;
       SPEED_DATA.value = this.value;
@@ -353,7 +374,7 @@ class AutoScrollRequest {
     if (!this.item || !this.element) return;
     const { onStart } = this.item;
     if (typeof onStart === 'function') {
-      onStart(this.element, this.direction);
+      onStart(this.element, getDirectionAsString(this.direction));
     }
   }
 
@@ -361,7 +382,7 @@ class AutoScrollRequest {
     if (!this.item || !this.element) return;
     const { onStop } = this.item;
     if (typeof onStop === 'function') {
-      onStop(this.element, this.direction);
+      onStop(this.element, getDirectionAsString(this.direction));
     }
   }
 }
@@ -551,7 +572,7 @@ export class AutoScroll {
   }
 
   protected _checkItemOverlap(item: AutoScrollItem, checkX: boolean, checkY: boolean) {
-    const { staticAreaSize, targets } = item;
+    const { inertAreaSize, targets } = item;
     if (!targets.length) {
       checkX && this._cancelItemScroll(item, AUTO_SCROLL_AXIS.x);
       checkY && this._cancelItemScroll(item, AUTO_SCROLL_AXIS.y);
@@ -625,7 +646,7 @@ export class AutoScroll {
         const testThreshold = computeThreshold(targetThreshold, testRect.width);
         const testEdgeOffset = computeEdgeOffset(
           testThreshold,
-          staticAreaSize,
+          inertAreaSize,
           itemRect.width,
           testRect.width
         );
@@ -665,7 +686,7 @@ export class AutoScroll {
         const testThreshold = computeThreshold(targetThreshold, testRect.height);
         const testEdgeOffset = computeEdgeOffset(
           testThreshold,
-          staticAreaSize,
+          inertAreaSize,
           itemRect.height,
           testRect.height
         );
@@ -731,7 +752,7 @@ export class AutoScroll {
 
   protected _updateScrollRequest(scrollRequest: AutoScrollRequest) {
     const item = scrollRequest.item as AutoScrollItem;
-    const { staticAreaSize, smoothStop, targets } = item;
+    const { inertAreaSize, smoothStop, targets } = item;
     const itemRect = this._getItemClientRect(item, R1);
     let hasReachedEnd = null;
 
@@ -779,7 +800,7 @@ export class AutoScroll {
       // Compute edge offset.
       const testEdgeOffset = computeEdgeOffset(
         testThreshold,
-        staticAreaSize,
+        inertAreaSize,
         testIsAxisX ? itemRect.width : itemRect.height,
         testIsAxisX ? testRect.width : testRect.height
       );

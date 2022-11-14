@@ -23,7 +23,7 @@ const AUTOSCROLL_CLIENT_RECT = { left: 0, top: 0, width: 0, height: 0 };
 function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>() {
   return {
     targets: [],
-    staticAreaSize: 0.2,
+    inertAreaSize: 0.2,
     speed: autoScrollSmoothSpeed(),
     smoothStop: false,
     getPosition: (draggable: Draggable<S, E>) => {
@@ -57,7 +57,7 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
         AUTOSCROLL_CLIENT_RECT.height = height;
       }
       // Fallback to the sensor's clientX/clientY values and a static size of
-      // 50px x 50px.
+      // 50x50px.
       else {
         const e = drag && (drag.nextMoveEvent || drag.startEvent);
         AUTOSCROLL_CLIENT_RECT.left = e ? e.clientX - 25 : 0;
@@ -80,8 +80,6 @@ class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['events']
   protected _draggable: Draggable<S, E>;
   protected _position: AutoScrollItem['position'];
   protected _clientRect: AutoScrollItem['clientRect'];
-
-  static pluginName = 'autoscroll' as const;
 
   constructor(draggableAutoScroll: DraggableAutoScroll<S, E>) {
     this._draggableAutoScroll = draggableAutoScroll;
@@ -132,8 +130,8 @@ class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['events']
     return this._clientRect;
   }
 
-  get staticAreaSize() {
-    return this._getSettings().staticAreaSize;
+  get inertAreaSize() {
+    return this._getSettings().inertAreaSize;
   }
 
   get smoothStop() {
@@ -166,7 +164,7 @@ class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['events']
 
 export interface DraggableAutoScrollSettings<S extends Sensor[], E extends S[number]['events']> {
   targets: AutoScrollItemTarget[] | ((draggable: Draggable<S, E>) => AutoScrollItemTarget[]);
-  staticAreaSize: number;
+  inertAreaSize: number;
   speed: number | AutoScrollItemSpeedCallback;
   smoothStop: boolean;
   getPosition: ((draggable: Draggable<S, E>) => { x: number; y: number }) | null;
@@ -216,7 +214,7 @@ export class DraggableAutoScroll<S extends Sensor[], E extends S[number]['events
   ): DraggableAutoScrollSettings<S, E> {
     const {
       targets = defaults.targets,
-      staticAreaSize = defaults.staticAreaSize,
+      inertAreaSize = defaults.inertAreaSize,
       speed = defaults.speed,
       smoothStop = defaults.smoothStop,
       getPosition = defaults.getPosition,
@@ -227,7 +225,7 @@ export class DraggableAutoScroll<S extends Sensor[], E extends S[number]['events
 
     return {
       targets,
-      staticAreaSize,
+      inertAreaSize,
       speed,
       smoothStop,
       getPosition,

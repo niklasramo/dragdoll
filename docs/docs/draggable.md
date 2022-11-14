@@ -12,11 +12,11 @@ import {
   createPointerSensorStartPredicate,
 } from 'dragdoll';
 
-const element = document.querySelector('.draggable');
-const pointerSensor = new PointerSensor(element);
+const dragElement = document.querySelector('.dragElement');
+const pointerSensor = new PointerSensor(dragElement);
 const keyboardSensor = new KeyboardSensor();
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
-  getElements: () => [element],
+  getElements: () => [dragElement],
   startPredicate: createPointerSensorStartPredicate(),
 });
 ```
@@ -340,7 +340,7 @@ type DraggablePlugin = (draggable: Draggable) => {
 };
 
 // Usage
-draggable.use(myPlugin);
+draggable.use(myPlugin).use(myOtherlugin);
 ```
 
 Registers a plugin to the Draggable instance. Returns the Draggable instance so you can chain the method. Check out the [plugin guide](#creating-plugins) to learn how to build custom plugins.
@@ -428,9 +428,9 @@ function loggerPlugin<S extends Sensor[], E extends S[number]['events']>(
 }
 
 // Now let's put the plugin to use.
-const element = document.querySelector('.draggable');
+const dragElement = document.querySelector('.dragElement');
 const keyboardSensor = new KeyboardSensor();
 const draggable = new Draggable([keyboardSensor], {
-  getElements: () => [element],
+  getElements: () => [dragElement],
 }).use(loggerPlugin({ events: ['start', 'end'] }));
 ```

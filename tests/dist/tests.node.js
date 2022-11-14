@@ -1199,7 +1199,7 @@ const R1 = {
 const R2 = Object.assign({}, R1);
 const DEFAULT_THRESHOLD = 50;
 const SPEED_DATA = {
-    direction: 0,
+    direction: 'none',
     threshold: 0,
     distance: 0,
     value: 0,
@@ -1228,11 +1228,28 @@ const AUTO_SCROLL_DIRECTION_Y = {
     down: (AUTO_SCROLL_AXIS.y | AUTO_SCROLL_AXIS_DIRECTION.forward),
 };
 const AUTO_SCROLL_DIRECTION = Object.assign(Object.assign({}, AUTO_SCROLL_DIRECTION_X), AUTO_SCROLL_DIRECTION_Y);
+function getDirectionAsString(direction) {
+    switch (direction) {
+        case AUTO_SCROLL_DIRECTION_X.none:
+        case AUTO_SCROLL_DIRECTION_Y.none:
+            return 'none';
+        case AUTO_SCROLL_DIRECTION_X.left:
+            return 'left';
+        case AUTO_SCROLL_DIRECTION_X.right:
+            return 'right';
+        case AUTO_SCROLL_DIRECTION_Y.up:
+            return 'up';
+        case AUTO_SCROLL_DIRECTION_Y.down:
+            return 'down';
+        default:
+            throw new Error(`Unknown direction value: ${direction}`);
+    }
+}
 function computeThreshold(idealThreshold, targetSize) {
     return Math.min(targetSize / 2, idealThreshold);
 }
-function computeEdgeOffset(threshold, staticAreaSize, itemSize, targetSize) {
-    return Math.max(0, itemSize + threshold * 2 + targetSize * staticAreaSize - targetSize) / 2;
+function computeEdgeOffset(threshold, inertAreaSize, itemSize, targetSize) {
+    return Math.max(0, itemSize + threshold * 2 + targetSize * inertAreaSize - targetSize) / 2;
 }
 class AutoScrollItemData {
     constructor() {
@@ -1359,7 +1376,7 @@ class AutoScrollRequest {
             return 0;
         const { speed } = this.item;
         if (typeof speed === 'function') {
-            SPEED_DATA.direction = this.direction;
+            SPEED_DATA.direction = getDirectionAsString(this.direction);
             SPEED_DATA.threshold = this.threshold;
             SPEED_DATA.distance = this.distance;
             SPEED_DATA.value = this.value;
@@ -1391,7 +1408,7 @@ class AutoScrollRequest {
             return;
         const { onStart } = this.item;
         if (typeof onStart === 'function') {
-            onStart(this.element, this.direction);
+            onStart(this.element, getDirectionAsString(this.direction));
         }
     }
     onStop() {
@@ -1399,7 +1416,7 @@ class AutoScrollRequest {
             return;
         const { onStop } = this.item;
         if (typeof onStop === 'function') {
-            onStop(this.element, this.direction);
+            onStop(this.element, getDirectionAsString(this.direction));
         }
     }
 }
@@ -1502,7 +1519,7 @@ class AutoScroll {
         reqMap.delete(item);
     }
     _checkItemOverlap(item, checkX, checkY) {
-        const { staticAreaSize, targets } = item;
+        const { inertAreaSize, targets } = item;
         if (!targets.length) {
             checkX && this._cancelItemScroll(item, AUTO_SCROLL_AXIS.x);
             checkY && this._cancelItemScroll(item, AUTO_SCROLL_AXIS.y);
@@ -1557,7 +1574,7 @@ class AutoScroll {
                 let testDistance = 0;
                 let testDirection = AUTO_SCROLL_DIRECTION.none;
                 const testThreshold = computeThreshold(targetThreshold, testRect.width);
-                const testEdgeOffset = computeEdgeOffset(testThreshold, staticAreaSize, itemRect.width, testRect.width);
+                const testEdgeOffset = computeEdgeOffset(testThreshold, inertAreaSize, itemRect.width, testRect.width);
                 if (moveDirectionX === AUTO_SCROLL_DIRECTION.right) {
                     testDistance = testRect.right + testEdgeOffset - itemRect.right;
                     if (testDistance <= testThreshold && getScrollLeft(testElement) < testMaxScrollX) {
@@ -1587,7 +1604,7 @@ class AutoScroll {
                 let testDistance = 0;
                 let testDirection = AUTO_SCROLL_DIRECTION_Y.none;
                 const testThreshold = computeThreshold(targetThreshold, testRect.height);
-                const testEdgeOffset = computeEdgeOffset(testThreshold, staticAreaSize, itemRect.height, testRect.height);
+                const testEdgeOffset = computeEdgeOffset(testThreshold, inertAreaSize, itemRect.height, testRect.height);
                 if (moveDirectionY === AUTO_SCROLL_DIRECTION.down) {
                     testDistance = testRect.bottom + testEdgeOffset - itemRect.bottom;
                     if (testDistance <= testThreshold && getScrollTop(testElement) < testMaxScrollY) {
@@ -1630,7 +1647,7 @@ class AutoScroll {
     }
     _updateScrollRequest(scrollRequest) {
         const item = scrollRequest.item;
-        const { staticAreaSize, smoothStop, targets } = item;
+        const { inertAreaSize, smoothStop, targets } = item;
         const itemRect = this._getItemClientRect(item, R1);
         let hasReachedEnd = null;
         let i = 0;
@@ -1661,7 +1678,7 @@ class AutoScroll {
             }
             const targetThreshold = typeof target.threshold === 'number' ? target.threshold : DEFAULT_THRESHOLD;
             const testThreshold = computeThreshold(targetThreshold, testIsAxisX ? testRect.width : testRect.height);
-            const testEdgeOffset = computeEdgeOffset(testThreshold, staticAreaSize, testIsAxisX ? itemRect.width : itemRect.height, testIsAxisX ? testRect.width : testRect.height);
+            const testEdgeOffset = computeEdgeOffset(testThreshold, inertAreaSize, testIsAxisX ? itemRect.width : itemRect.height, testIsAxisX ? testRect.width : testRect.height);
             let testDistance = 0;
             if (scrollRequest.direction === AUTO_SCROLL_DIRECTION.left) {
                 testDistance = itemRect.left - (testRect.left - testEdgeOffset);
