@@ -1,6 +1,3 @@
-// TODO: Add option to keep scroll active even if you go over the boundaries and
-// the elements are not intersecting. This is crucial especially for window.
-
 import { Emitter, EventListenerId } from 'eventti';
 
 import { Rect, RectExtended } from '../types';
@@ -13,15 +10,19 @@ import { getIntersectionScore } from '../utils/getIntersectionScore';
 
 import { getContentRect } from '../utils/getContentRect';
 
+import { getDistanceBetweenRects } from '../utils/getDistanceBetweenRects';
+
 import { getScrollElement } from '../utils/getScrollElement';
 
 import { getScrollLeft } from '../utils/getScrollLeft';
 
-import { getScrollTop } from '../utils/getScrollTop';
-
 import { getScrollLeftMax } from '../utils/getScrollLeftMax';
 
+import { getScrollTop } from '../utils/getScrollTop';
+
 import { getScrollTopMax } from '../utils/getScrollTopMax';
+
+import { isRectsOverlapping } from '../utils/isRectsOverlapping';
 
 //
 // CONSTANTS
@@ -37,6 +38,8 @@ const R1: RectExtended = {
 };
 
 const R2: RectExtended = { ...R1 };
+
+const R3: RectExtended = { ...R1 };
 
 const DEFAULT_THRESHOLD = 50;
 
@@ -97,6 +100,25 @@ function getDirectionAsString(direction: number) {
   }
 }
 
+function getPaddedRect(rect: RectExtended, padding: AutoScrollTargetPadding, result: RectExtended) {
+  let { left = 0, right = 0, top = 0, bottom = 0 } = padding;
+
+  // Don't allow negative padding.
+  left = Math.max(0, left);
+  right = Math.max(0, right);
+  top = Math.max(0, top);
+  bottom = Math.max(0, bottom);
+
+  result.width = rect.width + left + right;
+  result.height = rect.height + top + bottom;
+  result.left = rect.left - left;
+  result.top = rect.top - top;
+  result.right = rect.right + right;
+  result.bottom = rect.bottom + bottom;
+
+  return result;
+}
+
 //
 // PRIVATE TYPES
 //
@@ -120,6 +142,13 @@ interface AutoScrollSpeedData {
   deltaTime: number;
   isEnding: boolean;
 }
+
+type AutoScrollTargetPadding = {
+  left?: number;
+  right?: number;
+  top?: number;
+  bottom?: number;
+};
 
 //
 // PUBLIC TYPES
@@ -154,6 +183,8 @@ export interface AutoScrollItemTarget {
   axis?: 'x' | 'y' | 'xy';
   priority?: number;
   threshold?: number;
+  padding?: AutoScrollTargetPadding;
+  scrollPadding?: AutoScrollTargetPadding;
 }
 
 export type AutoScrollItemEventCallback = (
@@ -593,7 +624,7 @@ export class AutoScroll {
     let xElement: Window | HTMLElement | null = null;
     let xPriority = -Infinity;
     let xThreshold = 0;
-    let xScore = 0;
+    let xScore = -Infinity;
     let xDirection: AutoScrollDirectionX = AUTO_SCROLL_DIRECTION.none;
     let xDistance = 0;
     let xMaxScroll = 0;
@@ -601,7 +632,7 @@ export class AutoScroll {
     let yElement: Window | HTMLElement | null = null;
     let yPriority = -Infinity;
     let yThreshold = 0;
-    let yScore = 0;
+    let yScore = -Infinity;
     let yDirection: AutoScrollDirectionY = AUTO_SCROLL_DIRECTION.none;
     let yDistance = 0;
     let yMaxScroll = 0;
@@ -629,10 +660,24 @@ export class AutoScroll {
       if (!testMaxScrollX && !testMaxScrollY) continue;
 
       const testRect = getContentRect(testElement, R2);
-      const testScore = getIntersectionScore(itemRect, testRect);
+      let testScore = getIntersectionScore(itemRect, testRect) || -Infinity;
 
-      // Ignore this item if it's not overlapping at all with the dragged item.
-      if (testScore <= 0) continue;
+      // If the item has no overlap with the target.
+      if (testScore === -Infinity) {
+        // If the target has virtual extra padding defined and it's padded
+        // version overlaps with item then let's compute the shortest distance
+        // between item and target and use that value (negated) as testScore.
+        if (
+          target.padding &&
+          isRectsOverlapping(itemRect, getPaddedRect(testRect, target.padding, R3))
+        ) {
+          testScore = -getDistanceBetweenRects(itemRect, testRect);
+        }
+        // Otherwise let's ignore this target.
+        else {
+          continue;
+        }
+      }
 
       // Test x-axis.
       if (
@@ -781,12 +826,15 @@ export class AutoScroll {
       }
 
       const testRect = getContentRect(testElement, R2);
-      const testScore = getIntersectionScore(itemRect, testRect);
+      const testScore = getIntersectionScore(itemRect, testRect) || -Infinity;
 
-      // Stop scrolling if dragged item is not overlapping with the scroll
-      // element anymore.
-      if (testScore <= 0) {
-        break;
+      // If the item has no overlap with the target nor the padded target rect
+      // let's stop scrolling.
+      if (testScore === -Infinity) {
+        const padding = target.scrollPadding || target.padding;
+        if (!(padding && isRectsOverlapping(itemRect, getPaddedRect(testRect, padding, R3)))) {
+          break;
+        }
       }
 
       // Compute threshold.
@@ -828,9 +876,7 @@ export class AutoScroll {
         AUTO_SCROLL_AXIS_DIRECTION.forward & scrollRequest.direction
           ? testScroll >= testMaxScroll
           : testScroll <= 0;
-      if (hasReachedEnd) {
-        break;
-      }
+      if (hasReachedEnd) break;
 
       // Scrolling can continue, let's update the values.
       scrollRequest.maxValue = testMaxScroll;

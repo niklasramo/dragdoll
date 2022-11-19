@@ -1,13 +1,13 @@
 import { isRectsOverlapping } from './isRectsOverlapping';
 
-import { Rect } from '../types';
+import { RectExtended } from '../types';
 
 /**
  * Calculate intersection area between two rectangle.
  */
-export function getIntersectionArea(a: Rect, b: Rect) {
+export function getIntersectionArea(a: RectExtended, b: RectExtended) {
   if (!isRectsOverlapping(a, b)) return 0;
-  const width = Math.min(a.left + a.width, b.left + b.width) - Math.max(a.left, b.left);
-  const height = Math.min(a.top + a.height, b.top + b.height) - Math.max(a.top, b.top);
+  const width = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+  const height = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
   return width * height;
 }

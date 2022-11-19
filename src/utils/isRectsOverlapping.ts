@@ -1,13 +1,8 @@
-import { Rect } from '../types';
+import { RectExtended } from '../types';
 
 /**
  * Check if two rectangles are overlapping.
  */
-export function isRectsOverlapping(a: Rect, b: Rect) {
-  return !(
-    a.left + a.width <= b.left ||
-    b.left + b.width <= a.left ||
-    a.top + a.height <= b.top ||
-    b.top + b.height <= a.top
-  );
+export function isRectsOverlapping(a: RectExtended, b: RectExtended) {
+  return !(a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top);
 }

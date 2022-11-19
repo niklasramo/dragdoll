@@ -46,10 +46,26 @@
       .draggable:focus {
         background-color: #fbff00;
       }
+      .scroller {
+        position: absolute;
+        left: 25vw;
+        top: 25vh;
+        height: 50vh;
+        width: 50vw;
+        overflow: auto;
+        background-color: #fff;
+      }
+      .scroller-content {
+        width: 10000px;
+        height: 10000px;
+      }
     </style>
   </head>
   <body>
     <div class="dragContainer"></div>
+    <div class="scroller">
+      <div class="scroller-content"></div>
+    </div>
     <div class="container">
       <div class="draggable" tabindex="0"></div>
     </div>
@@ -58,6 +74,7 @@
     <script src="../../dist/dragdoll.umd.js"></script>
     <script>
       const element = document.querySelector('.draggable');
+      const scroller = document.querySelector('.scroller');
       const dragContainer = document.querySelector('.dragContainer');
       const pointerSensor = new DragDoll.PointerSensor(element);
       const keyboardSensor = new DragDoll.KeyboardControllerSensor();
@@ -65,10 +82,26 @@
         container: dragContainer,
         getElements: () => [element],
         startPredicate: DragDoll.createPointerSensorStartPredicate(),
-        autoScroll: {
-          targets: [{ element: window, threshold: 100 }],
-        },
-      });
+      }).use(
+        DragDoll.autoScrollPlugin({
+          targets: [
+            /*
+            {
+              element: window,
+              threshold: 100,
+              startPadding: { y: Infinity, x: Infinity },
+              scrollPadding: { y: Infinity, x: Infinity },
+            },
+            {
+              element: scroller,
+              threshold: 100,
+              startPadding: { y: 100, x: 0 },
+              scrollPadding: { y: 100, x: 0 },
+            },
+            */
+          ],
+        })
+      );
     </script>
   </body>
 </html>

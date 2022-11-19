@@ -2,10 +2,6 @@
 
 BaseSensor is an extendable base class to ease the process of creating custom sensors. It does not do anything by itself, but it does implement the Sensor API and provides you some protected helper methods for controlling the state of the drag process. It's used by [`KeyboardSensor`](/docs/keyboard-sensor) so you can check out implementation tips there.
 
-## Example
-
-TODO
-
 ## Constructor
 
 ```ts

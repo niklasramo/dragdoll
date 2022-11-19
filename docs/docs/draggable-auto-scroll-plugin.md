@@ -2,7 +2,7 @@
 
 # AutoScroll Plugin
 
-Adds auto scrolling superpowers to a Draggable instance.
+Adds autoscrolling superpowers to a Draggable instance.
 
 ## Example
 
@@ -25,7 +25,7 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
   autoScrollPlugin({
     targets: [
       {
-        // Auto scroll the window.
+        // Autoscroll the window.
         element: window,
         // Vertically only.
         axis: 'y',
@@ -39,6 +39,18 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
 ```
 
 ## Usage
+
+```ts
+type autoScrollPlugin = (options?: Partial<DraggableAutoScrollSettings>) => (
+  draggable: Draggable
+) => {
+  readonly name: 'autoscroll';
+  readonly version: string;
+  readonly draggable: Draggable;
+  readonly settings: DraggableAutoScrollSettings;
+  updateSettings: (options?: Partial<DraggableAutoScrollSettings>) => void;
+};
+```
 
 Using the AutoScroll plugin very is simple:
 
@@ -82,6 +94,18 @@ type AutoScrollTarget = {
   axis?: 'x' | 'y' | 'xy';
   priority?: number;
   threshold?: number;
+  startPadding?: {
+    left?: number;
+    right?: number;
+    top?: number;
+    bottom?: number;
+  };
+  scrollPadding?: {
+    left?: number;
+    right?: number;
+    top?: number;
+    bottom?: number;
+  };
 };
 ```
 
@@ -102,8 +126,13 @@ Define the autoscroll targets that should be scrolled during drag. This can eith
   - Default: `0`.
   - Optional.
 - **`threshold`**
-  - Defines the distance (in pixels) from the edge of the autoscroll element when autoscrolling should start. If this value is `0` the scrolling will start when the dragged element reaches the autoscroll element's edge. Do note that the autoscroll element's edge is adjusted dynamically for the calculations in some scenarios, so this value is not always used as an absolute measure.
+  - Defines the distance (in pixels) from the edge of the target element when autoscrolling should start. If this value is `0` the scrolling will start when the dragged element reaches the target element's edge. Do note that the target element's edge is adjusted dynamically for the calculations in some scenarios, so this value is not always used as an absolute measure.
   - Default: `50`.
+  - Optional.
+- **`padding`**
+  - By default the dragged element needs to overlap the target element for autoscrolling to start/continue. However, sometimes you might want to start/continue autoscrolling even if the dragged element is outside the target element, and this option allows you to do just that. Here you can define additional **virtual** padding for the target element, which is added to the element's dimensions when considering if it overlaps the dragged element or not. One practical use case for this is when you want to scroll the window, you most likely want to have infinite (use `Infinity` as padding value) padding on all side for the window element.
+  - Negative padding is not allowed.
+  - Default: `{ left: 0, right: 0, top: 0, bottom: 0 }`.
   - Optional.
 
 Defaults to `[]`.
@@ -114,9 +143,9 @@ Defaults to `[]`.
 type inertAreaSize = number;
 ```
 
-Defines the size of the minimum area in the center of the autoscroll element that will be guaranteed not trigger autoscrolling regardless of autoscroll target's threshold size and the dragged item's size. This value is a percentage of the autoscroll element's size (width and/or height depending on the scroll axes), and should be something between `0` and `1`. So in practice, if you set this to e.g `0.5` the inert area would be 50% of the scrollable element's width and/or height.
+Defines the size of the minimum area in the center of the target element that will be guaranteed not trigger autoscrolling regardless of autoscroll target's threshold size and the dragged item's size. This value is a percentage of the target element's size (width and/or height depending on the scroll axes), and should be something between `0` and `1`. So in practice, if you set this to e.g `0.5` the inert area would be 50% of the scrollable element's width and/or height.
 
-The main reason an inert area is needed in first place is to balance the autoscrolling UX when having different sized autoscroll elements, and especially really small ones. Without this there would be a good chance that the smaller autoscroll elements would not have a neutral zone at all and would always autoscroll to some direction. However, if you completely want to disable this feature just the value to `0`.
+The main reason an inert area is needed in first place is to balance the autoscrolling UX when having different sized target elements, and especially really small ones. Without this there would be a good chance that the smaller target elements would not have a neutral zone at all and would always autoscroll to some direction. However, if you completely want to disable this feature just the value to `0`.
 
 Defaults to `0.2`.
 
@@ -151,11 +180,11 @@ Defines the scrolling speed in pixels per second. You can provide either static 
   - **`threshold`**
     - The current threshold in pixels.
   - **`distance`**
-    - The dragged element's current distance from the edge of the autoscroll element.
+    - The dragged element's current distance from the edge of the target element.
   - **`value`**
-    - The autoscroll element's current scroll value on the scrolled axis.
+    - The target element's current scroll value on the scrolled axis.
   - **`maxValue`**
-    - The autoscroll element's maximum scroll value on the scrolled axis.
+    - The target element's maximum scroll value on the scrolled axis.
   - **`duration`**
     - How long (in ms) this specific autoscroll operation has lasted so far.
   - **`speed`**

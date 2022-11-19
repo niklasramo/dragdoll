@@ -468,6 +468,12 @@ interface AutoScrollSpeedData {
     deltaTime: number;
     isEnding: boolean;
 }
+declare type AutoScrollTargetPadding = {
+    left?: number;
+    right?: number;
+    top?: number;
+    bottom?: number;
+};
 interface AutoScrollItem {
     readonly targets: AutoScrollItemTarget[];
     readonly clientRect: Rect;
@@ -497,6 +503,8 @@ interface AutoScrollItemTarget {
     axis?: 'x' | 'y' | 'xy';
     priority?: number;
     threshold?: number;
+    padding?: AutoScrollTargetPadding;
+    scrollPadding?: AutoScrollTargetPadding;
 }
 declare type AutoScrollItemEventCallback = (scrollElement: Window | HTMLElement, scrollDirection: ReturnType<typeof getDirectionAsString>) => void;
 declare type AutoScrollItemEffectCallback = () => void;
