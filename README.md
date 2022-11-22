@@ -2,31 +2,33 @@
 
 DragDoll is a modular and highly extensible drag & drop system written in TypeScript. It's originally based on [Muuri's](https://github.com/haltu/muuri) internal drag & drop system, but fully redesigned to be used as a general purpose drag & drop system.
 
-**Features**
+📡 &nbsp; **Sweet Sensors**
 
-- 📡 &nbsp; **Sweet Sensors**
+A well documented and extendable Sensor system that normalizes any inputs into unified drag events.
 
-  A well documented and extendable Sensor system that normalizes any inputs into unified drag events.
+🤏 &nbsp; **Dynamic Draggables**
 
-- 🤏 &nbsp; **Dynamic Draggables**
+A highly customizable and pluggable Draggable system with autoscrolling superpowers.
 
-  A highly customizable and pluggable Draggable system with autoscrolling superpowers.
+🧘 &nbsp; **Blissful DX**
 
-- 🧘 &nbsp; **Blissful DX**
+Comes with strong types, smart defaults and prebaked solutions for common use cases.
 
-  Comes with strong types, smart defaults and prebaked solutions for common use cases.
+🎁 &nbsp; **Tiny and Modular**
 
-- 🎁 &nbsp; **Tiny and Modular**
+Weighs around 11kB gzipped all in all, but you can use only the bits and pieces you need.
 
-  Weighs around 11kB gzipped all in all, but you can use only the bits and pieces you need.
+🍦 &nbsp; **Vanilla Flavour**
 
-- 🍦 &nbsp; **Vanilla Flavour**
+No frameworks were abused while writing this library. It's all vanilla framework-free TS down to the core.
 
-  No frameworks were abused while writing this library. It's all vanilla framework-free TS down to the core.
+💝 &nbsp; **Free & Open Source**
 
-- 💝 &nbsp; **Free & Open Source**
+100% MIT licensed, spread the love.
 
-  100% MIT licensed, spread the love.
+## Docs
+
+https://niklasramo.github.io/dragdoll/docs/getting-started.html
 
 ## Copyright
 
