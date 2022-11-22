@@ -85,20 +85,17 @@
       }).use(
         DragDoll.autoScrollPlugin({
           targets: [
-            /*
             {
               element: window,
               threshold: 100,
-              startPadding: { y: Infinity, x: Infinity },
-              scrollPadding: { y: Infinity, x: Infinity },
+              padding: { top: Infinity, bottom: Infinity, left: Infinity, right: Infinity },
             },
             {
               element: scroller,
               threshold: 100,
-              startPadding: { y: 100, x: 0 },
-              scrollPadding: { y: 100, x: 0 },
+              padding: { top: 100, bottom: 100 },
+              priority: 1,
             },
-            */
           ],
         })
       );

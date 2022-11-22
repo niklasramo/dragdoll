@@ -15,7 +15,7 @@ $ npm install dragdoll eventti tikki
 ```html
 <script src="https://cdn.jsdelivr.net/npm/eventti@3.0.0/dist/eventti.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tikki@2.0.0/dist/tikki.umd.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dragdoll@0.0.1/dist/dragdoll.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dragdoll@0.0.2/dist/dragdoll.umd.js"></script>
 ```
 
 Access the library via `window.DragDoll` in browser context.

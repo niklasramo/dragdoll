@@ -89,11 +89,11 @@ declare class BaseControllerSensor<T extends BaseControllerSensorEvents = BaseCo
     protected _tick(time: number): void;
 }
 
-declare type ListenerOptions = {
+type ListenerOptions = {
     capture?: boolean;
     passive?: boolean;
 };
-declare type PointerType = 'mouse' | 'pen' | 'touch';
+type PointerType = 'mouse' | 'pen' | 'touch';
 interface Rect {
     left: number;
     top: number;
@@ -125,7 +125,7 @@ declare const SOURCE_EVENTS: {
         readonly end: "mouseup";
     };
 };
-declare type PointerSensorSourceEvent = PointerEvent | TouchEvent | MouseEvent;
+type PointerSensorSourceEvent = PointerEvent | TouchEvent | MouseEvent;
 interface PointerSensorSettings {
     listenerOptions: ListenerOptions;
     sourceEvents: keyof typeof SOURCE_EVENTS | 'auto';
@@ -194,7 +194,7 @@ declare class PointerSensor<T extends PointerSensorEvents = PointerSensorEvents>
     destroy(): void;
 }
 
-declare type KeyboardSensorPredicate = (e: KeyboardEvent, sensor: KeyboardSensor) => {
+type KeyboardSensorPredicate = (e: KeyboardEvent, sensor: KeyboardSensor) => {
     x: number;
     y: number;
 } | null | undefined;
@@ -325,7 +325,7 @@ interface DraggableEventCallbacks<E extends SensorEvents> {
     end(event: E['end'] | E['cancel'] | E['destroy'] | null): void;
     destroy(): void;
 }
-declare type DraggablePlugin<S extends Sensor[], E extends S[number]['events']> = (draggable: Draggable<S, E>) => {
+type DraggablePlugin<S extends Sensor[], E extends S[number]['events']> = (draggable: Draggable<S, E>) => {
     name: string;
     version: string;
     [key: string]: any;
@@ -375,7 +375,7 @@ interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
         y: number;
     };
 }
-declare type DraggableOptions<S extends Sensor[], E extends S[number]['events']> = Partial<DraggableSettings<S, E>>;
+type DraggableOptions<S extends Sensor[], E extends S[number]['events']> = Partial<DraggableSettings<S, E>>;
 declare class Draggable<S extends Sensor[] = Sensor[], E extends S[number]['events'] = S[number]['events']> {
     readonly sensors: S;
     readonly settings: DraggableSettings<S, E>;
@@ -453,10 +453,10 @@ declare const AUTO_SCROLL_DIRECTION: {
     readonly right: 5;
 };
 declare function getDirectionAsString(direction: number): "none" | "left" | "right" | "up" | "down";
-declare type AutoScrollAxis = typeof AUTO_SCROLL_AXIS[keyof typeof AUTO_SCROLL_AXIS];
-declare type AutoScrollDirectionX = typeof AUTO_SCROLL_DIRECTION_X[keyof typeof AUTO_SCROLL_DIRECTION_X];
-declare type AutoScrollDirectionY = typeof AUTO_SCROLL_DIRECTION_Y[keyof typeof AUTO_SCROLL_DIRECTION_Y];
-declare type AutoScrollDirection = typeof AUTO_SCROLL_DIRECTION[keyof typeof AUTO_SCROLL_DIRECTION];
+type AutoScrollAxis = typeof AUTO_SCROLL_AXIS[keyof typeof AUTO_SCROLL_AXIS];
+type AutoScrollDirectionX = typeof AUTO_SCROLL_DIRECTION_X[keyof typeof AUTO_SCROLL_DIRECTION_X];
+type AutoScrollDirectionY = typeof AUTO_SCROLL_DIRECTION_Y[keyof typeof AUTO_SCROLL_DIRECTION_Y];
+type AutoScrollDirection = typeof AUTO_SCROLL_DIRECTION[keyof typeof AUTO_SCROLL_DIRECTION];
 interface AutoScrollSpeedData {
     direction: ReturnType<typeof getDirectionAsString>;
     threshold: number;
@@ -468,7 +468,7 @@ interface AutoScrollSpeedData {
     deltaTime: number;
     isEnding: boolean;
 }
-declare type AutoScrollTargetPadding = {
+type AutoScrollTargetPadding = {
     left?: number;
     right?: number;
     top?: number;
@@ -506,9 +506,9 @@ interface AutoScrollItemTarget {
     padding?: AutoScrollTargetPadding;
     scrollPadding?: AutoScrollTargetPadding;
 }
-declare type AutoScrollItemEventCallback = (scrollElement: Window | HTMLElement, scrollDirection: ReturnType<typeof getDirectionAsString>) => void;
-declare type AutoScrollItemEffectCallback = () => void;
-declare type AutoScrollItemSpeedCallback = (scrollElement: Window | HTMLElement, scrollData: AutoScrollSpeedData) => number;
+type AutoScrollItemEventCallback = (scrollElement: Window | HTMLElement, scrollDirection: ReturnType<typeof getDirectionAsString>) => void;
+type AutoScrollItemEffectCallback = () => void;
+type AutoScrollItemSpeedCallback = (scrollElement: Window | HTMLElement, scrollData: AutoScrollSpeedData) => number;
 declare class AutoScrollItemData {
     positionX: number;
     positionY: number;
@@ -640,7 +640,7 @@ interface DraggableAutoScrollSettings<S extends Sensor[], E extends S[number]['e
     onStart: AutoScrollItemEventCallback | null;
     onStop: AutoScrollItemEventCallback | null;
 }
-declare type DraggableAutoScrollOptions<S extends Sensor[], E extends S[number]['events']> = Partial<DraggableAutoScrollSettings<S, E>>;
+type DraggableAutoScrollOptions<S extends Sensor[], E extends S[number]['events']> = Partial<DraggableAutoScrollSettings<S, E>>;
 declare class DraggableAutoScroll<S extends Sensor[], E extends S[number]['events']> {
     readonly name: string;
     readonly version: string;

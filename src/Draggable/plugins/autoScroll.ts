@@ -188,7 +188,7 @@ export class DraggableAutoScroll<S extends Sensor[], E extends S[number]['events
 
   constructor(draggable: Draggable<S, E>, options: DraggableAutoScrollOptions<S, E> = {}) {
     this.name = 'autoscroll';
-    this.version = '0.0.1';
+    this.version = '0.0.2';
     this.draggable = draggable;
     this.settings = this._parseSettings(options);
     this._autoScrollProxy = null;

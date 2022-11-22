@@ -1,6 +1,3 @@
-// TODO: Support dragging proxy/virtual HTMLElements too, this would be great
-// for e.g. testing purposes in non-browser context.
-
 import { HAS_PASSIVE_EVENTS } from '../constants';
 
 import { Emitter, EventListenerId } from 'eventti';
