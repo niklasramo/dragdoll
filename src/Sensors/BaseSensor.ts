@@ -75,8 +75,8 @@ export class BaseSensor<T extends SensorEvents = SensorEvents> implements Sensor
 
   destroy() {
     if (this.isDestroyed) return;
-    this.cancel();
     (this as Writeable<this>).isDestroyed = true;
+    this.cancel();
     this._emitter.emit(SensorEventType.destroy, {
       type: SensorEventType.destroy,
     });

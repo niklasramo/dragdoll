@@ -5,7 +5,12 @@ module.exports = function (config) {
     basePath: '',
     frameworks: ['mocha'],
     plugins: ['karma-mocha', 'karma-mocha-reporter', 'karma-browserstack-launcher'],
-    files: ['./node_modules/chai/chai.js', './tests/dist/tests.browser.js'],
+    files: [
+      './node_modules/chai/chai.js',
+      './node_modules/eventti/dist/eventti.umd.js',
+      './node_modules/tikki/dist/tikki.umd.js',
+      './tests/dist/tests.browser.js',
+    ],
     reporters: ['mocha', 'BrowserStack'],
     logLevel: config.LOG_INFO,
     colors: true,

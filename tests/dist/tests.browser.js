@@ -70,8 +70,8 @@
         destroy() {
             if (this.isDestroyed)
                 return;
-            this.cancel();
             this.isDestroyed = true;
+            this.cancel();
             this._emitter.emit(SensorEventType.destroy, {
                 type: SensorEventType.destroy,
             });
@@ -83,35 +83,8 @@
     let tickerWritePhase = Symbol();
     let ticker = new tikki.Ticker({ phases: [tickerReadPhase, tickerWritePhase] });
 
-    function getPointerEventData(e, id) {
-        if ('pointerId' in e) {
-            return e.pointerId === id ? e : null;
-        }
-        if ('changedTouches' in e) {
-            let i = 0;
-            for (; i < e.changedTouches.length; i++) {
-                if (e.changedTouches[i].identifier === id) {
-                    return e.changedTouches[i];
-                }
-            }
-            return null;
-        }
-        return e;
-    }
-
-    function getPointerType(e) {
-        return 'pointerType' in e ? e.pointerType : 'touches' in e ? 'touch' : 'mouse';
-    }
-
-    function getPointerId(e) {
-        if ('pointerId' in e)
-            return e.pointerId;
-        if ('changedTouches' in e)
-            return e.changedTouches[0] ? e.changedTouches[0].identifier : null;
-        return -1;
-    }
-
-    const HAS_PASSIVE_EVENTS = (() => {
+    const IS_BROWSER = typeof window !== 'undefined' && typeof window.document !== 'undefined';
+    (() => {
         let isPassiveEventsSupported = false;
         try {
             const passiveOpts = Object.defineProperty({}, 'passive', {
@@ -125,397 +98,12 @@
         catch (e) { }
         return isPassiveEventsSupported;
     })();
-    const HAS_TOUCH_EVENTS = 'ontouchstart' in window;
-    const HAS_POINTER_EVENTS = !!window.PointerEvent;
-    const IS_SAFARI = !!(navigator.vendor &&
+    !!(IS_BROWSER &&
+        navigator.vendor &&
         navigator.vendor.indexOf('Apple') > -1 &&
         navigator.userAgent &&
         navigator.userAgent.indexOf('CriOS') == -1 &&
         navigator.userAgent.indexOf('FxiOS') == -1);
-
-    function parseListenerOptions(options = {}) {
-        const { capture = true, passive = true } = options;
-        if (HAS_PASSIVE_EVENTS) {
-            return { capture, passive };
-        }
-        else {
-            return { capture };
-        }
-    }
-
-    function parseSourceEvents(sourceEvents) {
-        return sourceEvents === 'auto' || sourceEvents === undefined
-            ? HAS_POINTER_EVENTS
-                ? 'pointer'
-                : HAS_TOUCH_EVENTS
-                    ? 'touch'
-                    : 'mouse'
-            : sourceEvents;
-    }
-
-    const POINTER_EVENTS = {
-        start: 'pointerdown',
-        move: 'pointermove',
-        cancel: 'pointercancel',
-        end: 'pointerup',
-    };
-    const TOUCH_EVENTS = {
-        start: 'touchstart',
-        move: 'touchmove',
-        cancel: 'touchcancel',
-        end: 'touchend',
-    };
-    const MOUSE_EVENTS = {
-        start: 'mousedown',
-        move: 'mousemove',
-        cancel: '',
-        end: 'mouseup',
-    };
-    const SOURCE_EVENTS = {
-        pointer: POINTER_EVENTS,
-        touch: TOUCH_EVENTS,
-        mouse: MOUSE_EVENTS,
-    };
-    class PointerSensor {
-        constructor(element, options = {}) {
-            const { listenerOptions = {}, sourceEvents = 'auto', startPredicate = (e) => ('button' in e && e.button > 0 ? false : true), } = options;
-            this.element = element;
-            this.pointerId = null;
-            this.pointerType = null;
-            this.clientX = null;
-            this.clientY = null;
-            this.isActive = false;
-            this.isDestroyed = false;
-            this._areWindowListenersBound = false;
-            this._startPredicate = startPredicate;
-            this._listenerOptions = parseListenerOptions(listenerOptions);
-            this._sourceEvents = parseSourceEvents(sourceEvents);
-            this._emitter = new eventti.Emitter();
-            this._onStart = this._onStart.bind(this);
-            this._onMove = this._onMove.bind(this);
-            this._onCancel = this._onCancel.bind(this);
-            this._onEnd = this._onEnd.bind(this);
-            element.addEventListener(SOURCE_EVENTS[this._sourceEvents].start, this._onStart, this._listenerOptions);
-        }
-        _getTrackedPointerEventData(e) {
-            if (this.pointerId === null)
-                return null;
-            return getPointerEventData(e, this.pointerId);
-        }
-        _onStart(e) {
-            if (this.isDestroyed)
-                return;
-            if (this.pointerId !== null)
-                return;
-            if (!this._startPredicate(e))
-                return;
-            const pointerId = getPointerId(e);
-            if (pointerId === null)
-                return;
-            const pointerEventData = getPointerEventData(e, pointerId);
-            if (pointerEventData === null)
-                return;
-            this.pointerId = pointerId;
-            this.pointerType = getPointerType(e);
-            this.clientX = pointerEventData.clientX;
-            this.clientY = pointerEventData.clientY;
-            this.isActive = true;
-            const eventData = {
-                type: SensorEventType.start,
-                clientX: this.clientX,
-                clientY: this.clientY,
-                pointerId: this.pointerId,
-                pointerType: this.pointerType,
-                srcEvent: e,
-                target: pointerEventData.target,
-            };
-            this._emitter.emit(eventData.type, eventData);
-            if (this.pointerId !== null && this.isActive) {
-                this._bindWindowListeners();
-            }
-        }
-        _onMove(e) {
-            const pointerEventData = this._getTrackedPointerEventData(e);
-            if (!pointerEventData || !this.isActive)
-                return;
-            this.clientX = pointerEventData.clientX;
-            this.clientY = pointerEventData.clientY;
-            const eventData = {
-                type: SensorEventType.move,
-                clientX: this.clientX,
-                clientY: this.clientY,
-                pointerId: this.pointerId,
-                pointerType: this.pointerType,
-                srcEvent: e,
-                target: pointerEventData.target,
-            };
-            this._emitter.emit(eventData.type, eventData);
-        }
-        _onCancel(e) {
-            const pointerEventData = this._getTrackedPointerEventData(e);
-            if (!pointerEventData || !this.isActive)
-                return;
-            this.isActive = false;
-            this.clientX = pointerEventData.clientX;
-            this.clientY = pointerEventData.clientY;
-            const eventData = {
-                type: SensorEventType.cancel,
-                clientX: this.clientX,
-                clientY: this.clientY,
-                pointerId: this.pointerId,
-                pointerType: this.pointerType,
-                srcEvent: e,
-                target: pointerEventData.target,
-            };
-            this._emitter.emit(eventData.type, eventData);
-            this._reset();
-        }
-        _onEnd(e) {
-            const pointerEventData = this._getTrackedPointerEventData(e);
-            if (!pointerEventData || !this.isActive)
-                return;
-            this.isActive = false;
-            this.clientX = pointerEventData.clientX;
-            this.clientY = pointerEventData.clientY;
-            const eventData = {
-                type: SensorEventType.end,
-                clientX: this.clientX,
-                clientY: this.clientY,
-                pointerId: this.pointerId,
-                pointerType: this.pointerType,
-                srcEvent: e,
-                target: pointerEventData.target,
-            };
-            this._emitter.emit(eventData.type, eventData);
-            this._reset();
-        }
-        _bindWindowListeners() {
-            if (this._areWindowListenersBound)
-                return;
-            const { move, end, cancel } = SOURCE_EVENTS[this._sourceEvents];
-            window.addEventListener(move, this._onMove, this._listenerOptions);
-            window.addEventListener(end, this._onEnd, this._listenerOptions);
-            if (cancel) {
-                window.addEventListener(cancel, this._onCancel, this._listenerOptions);
-            }
-            this._areWindowListenersBound = true;
-        }
-        _unbindWindowListeners() {
-            if (this._areWindowListenersBound) {
-                const { move, end, cancel } = SOURCE_EVENTS[this._sourceEvents];
-                window.removeEventListener(move, this._onMove, this._listenerOptions);
-                window.removeEventListener(end, this._onEnd, this._listenerOptions);
-                if (cancel) {
-                    window.removeEventListener(cancel, this._onCancel, this._listenerOptions);
-                }
-                this._areWindowListenersBound = false;
-            }
-        }
-        _reset() {
-            this.pointerId = null;
-            this.pointerType = null;
-            this.clientX = null;
-            this.clientY = null;
-            this.isActive = false;
-            this._unbindWindowListeners();
-        }
-        cancel() {
-            if (!this.pointerId || !this.isActive)
-                return;
-            this.isActive = false;
-            const eventData = {
-                type: SensorEventType.cancel,
-                clientX: this.clientX,
-                clientY: this.clientY,
-                pointerId: this.pointerId,
-                pointerType: this.pointerType,
-                srcEvent: null,
-                target: null,
-            };
-            this._emitter.emit(eventData.type, eventData);
-            this._reset();
-        }
-        updateSettings(options) {
-            if (this.isDestroyed)
-                return;
-            const { listenerOptions, sourceEvents, startPredicate } = options;
-            const nextSourceEvents = parseSourceEvents(sourceEvents);
-            const nextListenerOptions = parseListenerOptions(listenerOptions);
-            if (startPredicate && this._startPredicate !== startPredicate) {
-                this._startPredicate = startPredicate;
-            }
-            if ((listenerOptions &&
-                (this._listenerOptions.capture !== nextListenerOptions.capture ||
-                    this._listenerOptions.passive === nextListenerOptions.passive)) ||
-                (sourceEvents && this._sourceEvents !== nextSourceEvents)) {
-                this.element.removeEventListener(SOURCE_EVENTS[this._sourceEvents].start, this._onStart, this._listenerOptions);
-                this._unbindWindowListeners();
-                this.cancel();
-                if (sourceEvents) {
-                    this._sourceEvents = nextSourceEvents;
-                }
-                if (listenerOptions && nextListenerOptions) {
-                    this._listenerOptions = nextListenerOptions;
-                }
-                this.element.addEventListener(SOURCE_EVENTS[this._sourceEvents].start, this._onStart, this._listenerOptions);
-            }
-        }
-        on(eventName, listener, listenerId) {
-            return this._emitter.on(eventName, listener, listenerId);
-        }
-        off(eventName, listener) {
-            this._emitter.off(eventName, listener);
-        }
-        destroy() {
-            if (this.isDestroyed)
-                return;
-            this.isDestroyed = true;
-            this.cancel();
-            this._emitter.emit(SensorEventType.destroy, {
-                type: SensorEventType.destroy,
-            });
-            this._emitter.off();
-            this.element.removeEventListener(SOURCE_EVENTS[this._sourceEvents].start, this._onStart, this._listenerOptions);
-        }
-    }
-
-    class KeyboardSensor extends BaseSensor {
-        constructor(options = {}) {
-            super();
-            const { moveDistance = 25, startPredicate = (e) => {
-                if (e.key === 'Enter' || e.key === 'Space' || e.key === ' ') {
-                    if (document.activeElement) {
-                        const { left, top } = document.activeElement.getBoundingClientRect();
-                        return { x: left, y: top };
-                    }
-                }
-                return null;
-            }, movePredicate = (e, sensor) => {
-                switch (e.key) {
-                    case 'ArrowLeft': {
-                        return {
-                            x: sensor.clientX - sensor._moveDistance,
-                            y: sensor.clientY,
-                        };
-                    }
-                    case 'ArrowRight': {
-                        return {
-                            x: sensor.clientX + sensor._moveDistance,
-                            y: sensor.clientY,
-                        };
-                    }
-                    case 'ArrowUp': {
-                        return {
-                            x: sensor.clientX,
-                            y: sensor.clientY - sensor._moveDistance,
-                        };
-                    }
-                    case 'ArrowDown': {
-                        return {
-                            x: sensor.clientX,
-                            y: sensor.clientY + sensor._moveDistance,
-                        };
-                    }
-                    default: {
-                        return null;
-                    }
-                }
-            }, cancelPredicate = (e, sensor) => {
-                if (e.key === 'Escape') {
-                    return { x: sensor.clientX, y: sensor.clientY };
-                }
-                return null;
-            }, endPredicate = (e, sensor) => {
-                if (e.key === 'Enter' || e.key === 'Space' || e.key === ' ') {
-                    return { x: sensor.clientX, y: sensor.clientY };
-                }
-                return null;
-            }, } = options;
-            this._moveDistance = moveDistance;
-            this._startPredicate = startPredicate;
-            this._movePredicate = movePredicate;
-            this._cancelPredicate = cancelPredicate;
-            this._endPredicate = endPredicate;
-            this.cancel = this.cancel.bind(this);
-            this._onKeyDown = this._onKeyDown.bind(this);
-            document.addEventListener('keydown', this._onKeyDown);
-            window.addEventListener('blur', this.cancel);
-            window.addEventListener('visibilitychange', this.cancel);
-        }
-        _onKeyDown(e) {
-            if (!this.isActive) {
-                const startPosition = this._startPredicate(e, this);
-                if (startPosition) {
-                    e.preventDefault();
-                    this._start({
-                        type: 'start',
-                        clientX: startPosition.x,
-                        clientY: startPosition.y,
-                        srcEvent: e,
-                    });
-                }
-                return;
-            }
-            const cancelPosition = this._cancelPredicate(e, this);
-            if (cancelPosition) {
-                e.preventDefault();
-                this._cancel({
-                    type: 'cancel',
-                    clientX: cancelPosition.x,
-                    clientY: cancelPosition.y,
-                    srcEvent: e,
-                });
-                return;
-            }
-            const endPosition = this._endPredicate(e, this);
-            if (endPosition) {
-                e.preventDefault();
-                this._end({
-                    type: 'end',
-                    clientX: endPosition.x,
-                    clientY: endPosition.y,
-                    srcEvent: e,
-                });
-                return;
-            }
-            const movePosition = this._movePredicate(e, this);
-            if (movePosition) {
-                e.preventDefault();
-                this._move({
-                    type: 'move',
-                    clientX: movePosition.x,
-                    clientY: movePosition.y,
-                    srcEvent: e,
-                });
-                return;
-            }
-        }
-        updateSettings(options = {}) {
-            if (options.moveDistance !== undefined) {
-                this._moveDistance = options.moveDistance;
-            }
-            if (options.startPredicate !== undefined) {
-                this._startPredicate = options.startPredicate;
-            }
-            if (options.movePredicate !== undefined) {
-                this._movePredicate = options.movePredicate;
-            }
-            if (options.cancelPredicate !== undefined) {
-                this._cancelPredicate = options.cancelPredicate;
-            }
-            if (options.endPredicate !== undefined) {
-                this._endPredicate = options.endPredicate;
-            }
-        }
-        destroy() {
-            if (this.isDestroyed)
-                return;
-            document.removeEventListener('keydown', this._onKeyDown);
-            window.removeEventListener('blur', this.cancel);
-            window.removeEventListener('visibilitychange', this.cancel);
-            super.destroy();
-        }
-    }
 
     const STYLES_CACHE = new WeakMap();
     function getStyle(element, prop) {
@@ -529,561 +117,16 @@
         return styleDeclaration.getPropertyValue(prop);
     }
 
-    function isContainingBlock(element) {
-        if (getStyle(element, 'position') !== 'static') {
-            return true;
-        }
-        const display = getStyle(element, 'display');
-        if (display === 'inline' || display === 'none') {
-            return false;
-        }
-        const transform = getStyle(element, 'transform');
-        if (transform && transform !== 'none') {
-            return true;
-        }
-        const perspective = getStyle(element, 'perspective');
-        if (perspective && perspective !== 'none') {
-            return true;
-        }
-        const contentVisibility = getStyle(element, 'content-visibility');
-        if (contentVisibility && (contentVisibility === 'auto' || contentVisibility === 'hidden')) {
-            return true;
-        }
-        const contain = getStyle(element, 'contain');
-        if (contain &&
-            (contain === 'strict' ||
-                contain === 'content' ||
-                contain.indexOf('paint') > -1 ||
-                contain.indexOf('layout') > -1)) {
-            return true;
-        }
-        if (!IS_SAFARI) {
-            const filter = getStyle(element, 'filter');
-            if (filter && filter !== 'none') {
-                return true;
-            }
-            const willChange = getStyle(element, 'will-change');
-            if (willChange &&
-                (willChange.indexOf('transform') > -1 || willChange.indexOf('perspective') > -1)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function getContainingBlock(element) {
-        let res = element || document;
-        while (res && res !== document && !isContainingBlock(element)) {
-            res = res.parentElement || document;
-        }
-        return res;
-    }
-
     function getStyleAsFloat(el, styleProp) {
         return parseFloat(getStyle(el, styleProp)) || 0;
     }
 
-    function getOffset(element, result = { left: 0, top: 0 }) {
-        result.left = 0;
-        result.top = 0;
-        if (element === document)
-            return result;
-        result.left = window.pageXOffset || 0;
-        result.top = window.pageYOffset || 0;
-        if ('self' in element && element.self === window.self)
-            return result;
-        const { left, top } = element.getBoundingClientRect();
-        result.left += left;
-        result.top += top;
-        result.left += getStyleAsFloat(element, 'border-left-width');
-        result.top += getStyleAsFloat(element, 'border-top-width');
-        return result;
-    }
-
-    const offsetA = { left: 0, top: 0 };
-    const offsetB = { left: 0, top: 0 };
-    function getOffsetDiff(elemA, elemB, result = { left: 0, top: 0 }) {
-        result.left = 0;
-        result.top = 0;
-        if (elemA === elemB)
-            return result;
-        getOffset(elemA, offsetA);
-        getOffset(elemB, offsetB);
-        result.left = offsetB.left - offsetA.left;
-        result.top = offsetB.top - offsetA.top;
-        return result;
-    }
-
-    const IDENTITY_MATRIX = 'matrix(1, 0, 0, 1, 0, 0)';
-    const IDENTITY_MATRIX_3D = 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)';
-    const SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
-    const OFFSET_DIFF = { left: 0, top: 0 };
-    const POSITION_CHANGE = { x: 0, y: 0 };
     var StartPredicateState;
     (function (StartPredicateState) {
         StartPredicateState[StartPredicateState["PENDING"] = 0] = "PENDING";
         StartPredicateState[StartPredicateState["RESOLVED"] = 1] = "RESOLVED";
         StartPredicateState[StartPredicateState["REJECTED"] = 2] = "REJECTED";
     })(StartPredicateState || (StartPredicateState = {}));
-    class DraggableDragItem {
-        constructor() {
-            this.element = null;
-            this.rootParent = null;
-            this.rootContainingBlock = null;
-            this.dragParent = null;
-            this.dragContainingBlock = null;
-            this.x = 0;
-            this.y = 0;
-            this.clientX = 0;
-            this.clientY = 0;
-            this.syncDiffX = 0;
-            this.syncDiffY = 0;
-            this.moveDiffX = 0;
-            this.moveDiffY = 0;
-            this.containerDiffX = 0;
-            this.containerDiffY = 0;
-        }
-    }
-    class DraggableDragData {
-        constructor() {
-            this.sensor = null;
-            this.isEnded = false;
-            this.isStarted = false;
-            this.startEvent = null;
-            this.nextMoveEvent = null;
-            this.prevMoveEvent = null;
-            this.endEvent = null;
-            this.items = [];
-            this.extraData = {};
-        }
-    }
-    function getDefaultSettings() {
-        return {
-            container: null,
-            startPredicate: () => true,
-            getElements: () => null,
-            releaseElements: () => { },
-            getElementStartPosition: ({ element, draggable }) => {
-                const { drag } = draggable;
-                if (drag) {
-                    const transformMap = drag.extraData.transformMap || new Map();
-                    drag.extraData.transformMap = transformMap;
-                    const t = getStyle(element, 'transform');
-                    if (t && t !== 'none' && t !== IDENTITY_MATRIX && t !== IDENTITY_MATRIX_3D) {
-                        transformMap.set(element, t);
-                    }
-                    else {
-                        transformMap.set(element, '');
-                    }
-                }
-                return { x: 0, y: 0 };
-            },
-            setElementPosition: ({ draggable, element, x, y }) => {
-                const { drag } = draggable;
-                const transformMap = drag === null || drag === void 0 ? void 0 : drag.extraData.transformMap;
-                const initTransform = (transformMap === null || transformMap === void 0 ? void 0 : transformMap.get(element)) || '';
-                element.style.transform = `translate(${x}px, ${y}px) ${initTransform}`;
-            },
-            getElementPositionChange: ({ event, prevEvent }) => {
-                POSITION_CHANGE.x = event.clientX - prevEvent.clientX;
-                POSITION_CHANGE.y = event.clientY - prevEvent.clientY;
-                return POSITION_CHANGE;
-            },
-        };
-    }
-    class Draggable {
-        constructor(sensors, options = {}) {
-            this.sensors = sensors;
-            this.settings = this._parseSettings(options);
-            this.drag = null;
-            this.plugins = new Map();
-            this.isDestroyed = false;
-            this._sensorData = new Map();
-            this._emitter = new eventti.Emitter();
-            this._startId = Symbol();
-            this._moveId = Symbol();
-            this._syncId = Symbol();
-            this._onMove = this._onMove.bind(this);
-            this._onScroll = this._onScroll.bind(this);
-            this._onEnd = this._onEnd.bind(this);
-            this._prepareStart = this._prepareStart.bind(this);
-            this._applyStart = this._applyStart.bind(this);
-            this._prepareMove = this._prepareMove.bind(this);
-            this._applyMove = this._applyMove.bind(this);
-            this._prepareSynchronize = this._prepareSynchronize.bind(this);
-            this._applySynchronize = this._applySynchronize.bind(this);
-            this.sensors.forEach((sensor) => {
-                this._sensorData.set(sensor, {
-                    predicateState: StartPredicateState.PENDING,
-                    predicateEvent: null,
-                    onMove: (e) => this._onMove(e, sensor),
-                    onEnd: (e) => this._onEnd(e, sensor),
-                });
-                const { onMove, onEnd } = this._sensorData.get(sensor);
-                sensor.on('start', onMove);
-                sensor.on('move', onMove);
-                sensor.on('cancel', onEnd);
-                sensor.on('end', onEnd);
-                sensor.on('destroy', onEnd);
-            });
-        }
-        _parseSettings(options, defaults = getDefaultSettings()) {
-            const { container = defaults.container, startPredicate = defaults.startPredicate, getElements = defaults.getElements, releaseElements = defaults.releaseElements, getElementStartPosition = defaults.getElementStartPosition, setElementPosition = defaults.setElementPosition, getElementPositionChange = defaults.getElementPositionChange, } = options || {};
-            return {
-                container,
-                startPredicate,
-                getElements,
-                releaseElements,
-                getElementStartPosition,
-                setElementPosition,
-                getElementPositionChange,
-            };
-        }
-        _emit(type, ...e) {
-            this._emitter.emit(type, ...e);
-        }
-        _onMove(e, sensor) {
-            const sensorData = this._sensorData.get(sensor);
-            if (!sensorData)
-                return;
-            switch (sensorData.predicateState) {
-                case StartPredicateState.PENDING: {
-                    sensorData.predicateEvent = e;
-                    const shouldStart = this.settings.startPredicate({
-                        draggable: this,
-                        sensor,
-                        event: e,
-                    });
-                    if (shouldStart === true) {
-                        this.resolveStartPredicate(sensor);
-                    }
-                    else if (shouldStart === false) {
-                        this.rejectStartPredicate(sensor);
-                    }
-                    break;
-                }
-                case StartPredicateState.RESOLVED: {
-                    if (this.drag) {
-                        this.drag.nextMoveEvent = e;
-                        ticker.once(tickerReadPhase, this._prepareMove, this._moveId);
-                        ticker.once(tickerWritePhase, this._applyMove, this._moveId);
-                    }
-                    break;
-                }
-            }
-        }
-        _onScroll() {
-            this.synchronize();
-        }
-        _onEnd(e, sensor) {
-            const sensorData = this._sensorData.get(sensor);
-            if (!sensorData)
-                return;
-            if (!this.drag) {
-                sensorData.predicateState = StartPredicateState.PENDING;
-                sensorData.predicateEvent = null;
-            }
-            else if (sensorData.predicateState === StartPredicateState.RESOLVED) {
-                this.drag.endEvent = e;
-                this._sensorData.forEach((data) => {
-                    data.predicateState = StartPredicateState.PENDING;
-                    data.predicateEvent = null;
-                });
-                this.stop();
-            }
-        }
-        _prepareStart() {
-            const { drag } = this;
-            if (!drag || !drag.startEvent)
-                return;
-            const elements = this.settings.getElements({
-                draggable: this,
-                sensor: drag.sensor,
-                startEvent: drag.startEvent,
-            }) || [];
-            drag.items = elements.map((element) => {
-                if (!element.isConnected) {
-                    throw new Error('Element is not connected');
-                }
-                const item = new DraggableDragItem();
-                item.element = element;
-                const rootParent = element.parentNode;
-                item.rootParent = rootParent;
-                const rootContainingBlock = getContainingBlock(rootParent);
-                item.rootContainingBlock = rootContainingBlock;
-                const dragParent = this.settings.container || rootParent;
-                item.dragParent = dragParent;
-                const dragContainingBlock = dragParent === rootParent ? rootContainingBlock : getContainingBlock(dragParent);
-                item.dragContainingBlock = dragContainingBlock;
-                const { x, y } = this.settings.getElementStartPosition({
-                    draggable: this,
-                    sensor: drag.sensor,
-                    element,
-                });
-                item.x = x;
-                item.y = y;
-                const clientRect = element.getBoundingClientRect();
-                item.clientX = clientRect.left;
-                item.clientY = clientRect.top;
-                if (rootContainingBlock !== dragContainingBlock) {
-                    const { left, top } = getOffsetDiff(dragContainingBlock, rootContainingBlock, OFFSET_DIFF);
-                    item.containerDiffX = left;
-                    item.containerDiffY = top;
-                }
-                return item;
-            });
-        }
-        _applyStart() {
-            const drag = this.drag;
-            if (!drag || !drag.startEvent)
-                return;
-            this._emit('beforestart', drag.startEvent);
-            if (this.drag !== drag)
-                return;
-            const { container } = this.settings;
-            if (container) {
-                for (const item of drag.items) {
-                    if (!item.element)
-                        continue;
-                    if (item.element.parentNode !== container) {
-                        container.appendChild(item.element);
-                        item.x += item.containerDiffX;
-                        item.y += item.containerDiffY;
-                    }
-                    this.settings.setElementPosition({
-                        phase: 'start',
-                        draggable: this,
-                        sensor: drag.sensor,
-                        element: item.element,
-                        x: item.x,
-                        y: item.y,
-                    });
-                }
-            }
-            window.addEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
-            drag.isStarted = true;
-            this._emit('start', drag.startEvent);
-        }
-        _prepareMove() {
-            const { drag } = this;
-            if (!drag || !drag.startEvent)
-                return;
-            const nextEvent = drag.nextMoveEvent;
-            const prevEvent = drag.prevMoveEvent || drag.startEvent;
-            if (!nextEvent || nextEvent === prevEvent)
-                return;
-            for (const item of drag.items) {
-                if (!item.element)
-                    continue;
-                const { x: changeX, y: changeY } = this.settings.getElementPositionChange({
-                    draggable: this,
-                    sensor: drag.sensor,
-                    element: item.element,
-                    startEvent: drag.startEvent,
-                    prevEvent,
-                    event: nextEvent,
-                });
-                if (changeX) {
-                    item.x = item.x - item.moveDiffX + changeX;
-                    item.clientX = item.clientX - item.moveDiffX + changeX;
-                    item.moveDiffX = changeX;
-                }
-                if (changeY) {
-                    item.y = item.y - item.moveDiffY + changeY;
-                    item.clientY = item.clientY - item.moveDiffY + changeY;
-                    item.moveDiffY = changeY;
-                }
-            }
-            drag.prevMoveEvent = nextEvent;
-        }
-        _applyMove() {
-            const { drag } = this;
-            if (!drag || !drag.nextMoveEvent)
-                return;
-            for (const item of drag.items) {
-                item.moveDiffX = 0;
-                item.moveDiffY = 0;
-            }
-            this._emit('beforemove', drag.nextMoveEvent);
-            if (this.drag !== drag)
-                return;
-            for (const item of drag.items) {
-                if (!item.element)
-                    continue;
-                this.settings.setElementPosition({
-                    phase: 'move',
-                    draggable: this,
-                    sensor: drag.sensor,
-                    element: item.element,
-                    x: item.x,
-                    y: item.y,
-                });
-            }
-            this._emit('move', drag.nextMoveEvent);
-        }
-        _prepareSynchronize() {
-            const { drag } = this;
-            if (!drag)
-                return;
-            for (const item of drag.items) {
-                if (!item.element)
-                    continue;
-                if (item.rootContainingBlock !== item.dragContainingBlock) {
-                    const { left, top } = getOffsetDiff(item.dragContainingBlock, item.rootContainingBlock, OFFSET_DIFF);
-                    item.containerDiffX = left;
-                    item.containerDiffY = top;
-                }
-                const { left, top } = item.element.getBoundingClientRect();
-                const syncDiffX = item.clientX - item.moveDiffX - left;
-                item.x = item.x - item.syncDiffX + syncDiffX;
-                item.syncDiffX = syncDiffX;
-                const syncDiffY = item.clientY - item.moveDiffY - top;
-                item.y = item.y - item.syncDiffY + syncDiffY;
-                item.syncDiffY = syncDiffY;
-            }
-        }
-        _applySynchronize() {
-            const { drag } = this;
-            if (!drag)
-                return;
-            for (const item of drag.items) {
-                if (!item.element)
-                    continue;
-                item.syncDiffX = 0;
-                item.syncDiffY = 0;
-                this.settings.setElementPosition({
-                    phase: 'move',
-                    draggable: this,
-                    sensor: drag.sensor,
-                    element: item.element,
-                    x: item.x,
-                    y: item.y,
-                });
-            }
-        }
-        on(eventName, listener, listenerId) {
-            return this._emitter.on(eventName, listener, listenerId);
-        }
-        off(eventName, listener) {
-            this._emitter.off(eventName, listener);
-        }
-        synchronize(syncImmediately = false) {
-            if (!this.drag)
-                return;
-            if (syncImmediately) {
-                this._prepareSynchronize();
-                this._applySynchronize();
-            }
-            else {
-                ticker.once(tickerReadPhase, this._prepareSynchronize, this._syncId);
-                ticker.once(tickerWritePhase, this._applySynchronize, this._syncId);
-            }
-        }
-        resolveStartPredicate(sensor, e) {
-            const sensorData = this._sensorData.get(sensor);
-            if (!sensorData)
-                return;
-            const startEvent = e || sensorData.predicateEvent;
-            if (sensorData.predicateState === StartPredicateState.PENDING && startEvent) {
-                sensorData.predicateState = StartPredicateState.RESOLVED;
-                sensorData.predicateEvent = null;
-                this.drag = new DraggableDragData();
-                this.drag.sensor = sensor;
-                this.drag.startEvent = startEvent;
-                this._sensorData.forEach((data, s) => {
-                    if (s === sensor)
-                        return;
-                    data.predicateState = StartPredicateState.REJECTED;
-                    data.predicateEvent = null;
-                });
-                ticker.once(tickerReadPhase, this._prepareStart, this._startId);
-                ticker.once(tickerWritePhase, this._applyStart, this._startId);
-            }
-        }
-        rejectStartPredicate(sensor) {
-            const sensorData = this._sensorData.get(sensor);
-            if ((sensorData === null || sensorData === void 0 ? void 0 : sensorData.predicateState) === StartPredicateState.PENDING) {
-                sensorData.predicateState = StartPredicateState.REJECTED;
-                sensorData.predicateEvent = null;
-            }
-        }
-        stop() {
-            const { drag } = this;
-            if (!drag || drag.isEnded)
-                return;
-            drag.isEnded = true;
-            this._emit('beforeend', drag.endEvent);
-            ticker.off(tickerReadPhase, this._startId);
-            ticker.off(tickerWritePhase, this._startId);
-            ticker.off(tickerReadPhase, this._moveId);
-            ticker.off(tickerWritePhase, this._moveId);
-            ticker.off(tickerReadPhase, this._syncId);
-            ticker.off(tickerWritePhase, this._syncId);
-            if (drag.isStarted) {
-                window.removeEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
-                const elements = [];
-                for (const item of drag.items) {
-                    if (!item.element)
-                        continue;
-                    elements.push(item.element);
-                    if (item.rootParent && item.element.parentNode !== item.rootParent) {
-                        item.x -= item.containerDiffX;
-                        item.y -= item.containerDiffY;
-                        item.containerDiffX = 0;
-                        item.containerDiffY = 0;
-                        item.rootParent.appendChild(item.element);
-                    }
-                    this.settings.setElementPosition({
-                        phase: 'end',
-                        draggable: this,
-                        sensor: drag.sensor,
-                        element: item.element,
-                        x: item.x,
-                        y: item.y,
-                    });
-                }
-                if (elements.length) {
-                    this.settings.releaseElements({
-                        draggable: this,
-                        sensor: drag.sensor,
-                        elements,
-                    });
-                }
-            }
-            this._emit('end', drag.endEvent);
-            this.drag = null;
-        }
-        updateSettings(options = {}) {
-            this.settings = this._parseSettings(options, this.settings);
-        }
-        use(plugin) {
-            const pluginInstance = plugin(this);
-            if (!pluginInstance.name) {
-                throw new Error('Plugin has no name.');
-            }
-            if (this.plugins.has(pluginInstance.name)) {
-                throw new Error(`${pluginInstance.name} plugin is already added.`);
-            }
-            this.plugins.set(pluginInstance.name, pluginInstance);
-            return this;
-        }
-        destroy() {
-            if (this.isDestroyed)
-                return;
-            this.isDestroyed = true;
-            this.stop();
-            this._sensorData.forEach(({ onMove, onEnd }, sensor) => {
-                sensor.off('start', onMove);
-                sensor.off('move', onMove);
-                sensor.off('cancel', onEnd);
-                sensor.off('end', onEnd);
-                sensor.off('destroy', onEnd);
-            });
-            this._sensorData.clear();
-            this._emit('destroy');
-            this._emitter.off();
-        }
-    }
 
     class Pool {
         constructor(createObject, onPut) {
@@ -1983,139 +1026,469 @@
 
     new AutoScroll();
 
-    const SCROLLABLE_OVERFLOWS = new Set(['auto', 'scroll', 'overlay']);
-    function isScrollable(element) {
-        return !!(SCROLLABLE_OVERFLOWS.has(getStyle(element, 'overflow')) ||
-            SCROLLABLE_OVERFLOWS.has(getStyle(element, 'overflow-x')) ||
-            SCROLLABLE_OVERFLOWS.has(getStyle(element, 'overflow-y')));
-    }
-
-    function getScrollableAncestors(element, result = []) {
-        let parent = null;
-        while (element) {
-            parent = element.parentNode;
-            if (!parent || parent instanceof Document) {
-                break;
-            }
-            element = 'host' in parent ? parent.host : parent;
-            if (isScrollable(element)) {
-                result.push(element);
-            }
-        }
-        result.push(window);
-        return result;
-    }
-
-    function getScrollables(element) {
-        const scrollables = [];
-        if (isScrollable(element)) {
-            scrollables.push(element);
-        }
-        getScrollableAncestors(element, scrollables);
-        return scrollables;
-    }
-    function createPointerSensorStartPredicate(options = {}) {
-        let dragAllowed = undefined;
-        let startTimeStamp = 0;
-        let targetElement = null;
-        let timer = undefined;
-        const { timeout = 250, fallback = () => true } = options;
-        const onContextMenu = (e) => e.preventDefault();
-        const onTouchMove = (e) => {
-            if (!startTimeStamp)
-                return;
-            if (dragAllowed) {
-                e.cancelable && e.preventDefault();
-                return;
-            }
-            if (dragAllowed === undefined) {
-                if (e.cancelable && e.timeStamp - startTimeStamp > timeout) {
-                    dragAllowed = true;
-                    e.preventDefault();
-                }
-                else {
-                    dragAllowed = false;
-                }
-            }
-        };
-        const pointerSensorStartPredicate = (data) => {
-            if (!(data.sensor instanceof PointerSensor)) {
-                return fallback(data);
-            }
-            const { draggable, sensor, event } = data;
-            const e = event;
-            if (e.pointerType === 'touch') {
-                if (e.type === 'start' &&
-                    (e.srcEvent.type === 'pointerdown' || e.srcEvent.type === 'touchstart')) {
-                    targetElement = e.target;
-                    const scrollables = targetElement ? getScrollables(targetElement) : [];
-                    scrollables.forEach((scrollable) => {
-                        scrollable.addEventListener('touchmove', onTouchMove, {
-                            passive: false,
-                            capture: true,
-                        });
-                    });
-                    const dragEndListener = () => {
-                        if (!startTimeStamp)
-                            return;
-                        draggable.off('beforeend', dragEndListener);
-                        draggable.sensors.forEach((sensor) => {
-                            if (sensor instanceof PointerSensor) {
-                                sensor.off('end', dragEndListener);
-                            }
-                        });
-                        targetElement === null || targetElement === void 0 ? void 0 : targetElement.removeEventListener('contextmenu', onContextMenu);
-                        scrollables.forEach((scrollable) => {
-                            scrollable.removeEventListener('touchmove', onTouchMove, {
-                                capture: true,
-                            });
-                        });
-                        startTimeStamp = 0;
-                        dragAllowed = undefined;
-                        targetElement = null;
-                        timer = void window.clearTimeout(timer);
-                    };
-                    dragAllowed = undefined;
-                    startTimeStamp = e.srcEvent.timeStamp;
-                    targetElement === null || targetElement === void 0 ? void 0 : targetElement.addEventListener('contextmenu', onContextMenu);
-                    draggable.on('beforeend', dragEndListener);
-                    draggable.sensors.forEach((sensor) => {
-                        if (sensor instanceof PointerSensor) {
-                            sensor.off('end', dragEndListener);
-                        }
-                    });
-                    if (timeout > 0) {
-                        timer = window.setTimeout(() => {
-                            draggable.resolveStartPredicate(sensor);
-                            dragAllowed = true;
-                            timer = undefined;
-                        }, timeout);
-                    }
-                }
-                return dragAllowed;
-            }
-            if (e.type === 'start' && !e.srcEvent.button) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        };
-        return pointerSensorStartPredicate;
-    }
-
-    describe('foo', () => {
-        it(`bar`, () => {
-            const pointerSensor = new PointerSensor(document.createElement('div'));
-            const keyboardSensor = new KeyboardSensor();
-            const draggable = new Draggable([keyboardSensor, pointerSensor], {
-                getElementPositionChange: () => {
-                    return { x: 0, y: 0 };
-                },
-                startPredicate: createPointerSensorStartPredicate(),
+    describe('BaseSensor', () => {
+        describe('isActive property', () => {
+            it(`should be false on init`, function () {
+                const s = new BaseSensor();
+                chai.assert.equal(s.isActive, false);
+                s.destroy();
             });
-            console.log(PointerSensor, Draggable, draggable);
-            chai.assert.equal(1, 1);
+        });
+        describe('isDestroyed property', () => {
+            it(`should be false on init`, function () {
+                const s = new BaseSensor();
+                chai.assert.equal(s.isDestroyed, false);
+                s.destroy();
+            });
+        });
+        describe('clientX property', () => {
+            it(`should be 0 on init`, function () {
+                const s = new BaseSensor();
+                chai.assert.equal(s.clientX, 0);
+                s.destroy();
+            });
+        });
+        describe('clientY property', () => {
+            it(`should be 0 on init`, function () {
+                const s = new BaseSensor();
+                chai.assert.equal(s.clientY, 0);
+                s.destroy();
+            });
+        });
+        describe('_emitter', () => {
+            it('should allow duplicate listeners by default', () => {
+                const s = new BaseSensor();
+                chai.assert.equal(s['_emitter'].allowDuplicateListeners, true);
+            });
+            it('should replace event listeners with duplicate ids by default', () => {
+                const s = new BaseSensor();
+                chai.assert.equal(s['_emitter'].idDedupeMode, 'replace');
+            });
+        });
+        describe('_start method', () => {
+            it(`should update clientX/Y properties to reflect the provided coordinates`, function () {
+                const s = new BaseSensor();
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                chai.assert.equal(s.clientX, 1);
+                chai.assert.equal(s.clientY, 2);
+                s.destroy();
+            });
+            it(`should set isActive property to true`, function () {
+                const s = new BaseSensor();
+                chai.assert.equal(s.isActive, false);
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                chai.assert.equal(s.isActive, true);
+                s.destroy();
+            });
+            it(`should not modify isDestroyed property`, function () {
+                const s = new BaseSensor();
+                chai.assert.equal(s.isDestroyed, false);
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                chai.assert.equal(s.isDestroyed, false);
+                s.destroy();
+            });
+            it(`should emit "start" event with correct arguments after updating instance properties`, function () {
+                const s = new BaseSensor();
+                const startArgs = { type: 'start', clientX: 1, clientY: 2 };
+                let emitCount = 0;
+                s.on('start', (data) => {
+                    chai.assert.equal(s.clientX, data.clientX);
+                    chai.assert.equal(s.clientY, data.clientY);
+                    chai.assert.equal(s.isActive, true);
+                    chai.assert.equal(s.isDestroyed, false);
+                    chai.assert.deepEqual(data, startArgs);
+                    ++emitCount;
+                });
+                s['_start'](startArgs);
+                chai.assert.equal(emitCount, 1);
+                s.destroy();
+            });
+            it(`should not do anything if drag is already active (isActive is true)`, function () {
+                const s = new BaseSensor();
+                let emitCount = 0;
+                s.on('start', () => void ++emitCount);
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                const { clientX, clientY, isActive, isDestroyed } = s;
+                s['_start']({ type: 'start', clientX: 3, clientY: 4 });
+                chai.assert.equal(s.clientX, clientX);
+                chai.assert.equal(s.clientY, clientY);
+                chai.assert.equal(s.isActive, isActive);
+                chai.assert.equal(s.isDestroyed, isDestroyed);
+                chai.assert.equal(emitCount, 1);
+                s.destroy();
+            });
+            it(`should not do anything if instance is destroyed (isDestroyed is true)`, function () {
+                const s = new BaseSensor();
+                let emitCount = 0;
+                s.on('start', () => void ++emitCount);
+                s.destroy();
+                const { clientX, clientY, isActive, isDestroyed } = s;
+                s['_start']({ type: 'start', clientX: 3, clientY: 4 });
+                chai.assert.equal(s.clientX, clientX);
+                chai.assert.equal(s.clientY, clientY);
+                chai.assert.equal(s.isActive, isActive);
+                chai.assert.equal(s.isDestroyed, isDestroyed);
+                chai.assert.equal(emitCount, 0);
+                s.destroy();
+            });
+        });
+        describe('_move method', () => {
+            it(`should update clientX/Y properties to reflect the provided coordinates`, function () {
+                const s = new BaseSensor();
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                s['_move']({ type: 'move', clientX: 3, clientY: 4 });
+                chai.assert.equal(s.clientX, 3);
+                chai.assert.equal(s.clientY, 4);
+                s.destroy();
+            });
+            it(`should not modify isActive/isDestroyed properties`, function () {
+                const s = new BaseSensor();
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                chai.assert.equal(s.isActive, true);
+                chai.assert.equal(s.isDestroyed, false);
+                s['_move']({ type: 'move', clientX: 3, clientY: 4 });
+                chai.assert.equal(s.isActive, true);
+                chai.assert.equal(s.isDestroyed, false);
+                s.destroy();
+            });
+            it(`should emit "move" event with correct arguments after updating instance properties`, function () {
+                const s = new BaseSensor();
+                const moveArgs = { type: 'move', clientX: 3, clientY: 4 };
+                let emitCount = 0;
+                s.on('move', (data) => {
+                    chai.assert.equal(s.clientX, data.clientX);
+                    chai.assert.equal(s.clientY, data.clientY);
+                    chai.assert.equal(s.isActive, true);
+                    chai.assert.equal(s.isDestroyed, false);
+                    chai.assert.deepEqual(data, moveArgs);
+                    ++emitCount;
+                });
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                s['_move'](moveArgs);
+                chai.assert.equal(emitCount, 1);
+                s.destroy();
+            });
+            it(`should not do anything if drag is not active`, function () {
+                const s = new BaseSensor();
+                const { clientX, clientY, isActive, isDestroyed } = s;
+                let emitCount = 0;
+                s.on('move', () => void ++emitCount);
+                s['_move']({ type: 'move', clientX: 3, clientY: 4 });
+                chai.assert.equal(s.clientX, clientX);
+                chai.assert.equal(s.clientY, clientY);
+                chai.assert.equal(s.isActive, isActive);
+                chai.assert.equal(s.isDestroyed, isDestroyed);
+                chai.assert.equal(emitCount, 0);
+                s.destroy();
+            });
+        });
+        describe('_cancel method', () => {
+            it(`should update clientX/Y properties to reflect the provided coordinates`, function () {
+                const s = new BaseSensor();
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                s['_cancel']({ type: 'cancel', clientX: 5, clientY: 6 });
+                chai.assert.equal(s.clientX, 5);
+                chai.assert.equal(s.clientY, 6);
+                s.destroy();
+            });
+            it(`should set isActive property to false`, function () {
+                const s = new BaseSensor();
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                chai.assert.equal(s.isActive, true);
+                s['_cancel']({ type: 'cancel', clientX: 5, clientY: 6 });
+                chai.assert.equal(s.isActive, false);
+                s.destroy();
+            });
+            it(`should not modify isDestroyed property`, function () {
+                const s = new BaseSensor();
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                chai.assert.equal(s.isDestroyed, false);
+                s['_cancel']({ type: 'cancel', clientX: 5, clientY: 6 });
+                chai.assert.equal(s.isDestroyed, false);
+                s.destroy();
+            });
+            it(`should emit "cancel" event with correct arguments after updating instance properties`, function () {
+                const s = new BaseSensor();
+                const cancelArgs = { type: 'cancel', clientX: 5, clientY: 6 };
+                let emitCount = 0;
+                s.on('cancel', (data) => {
+                    chai.assert.equal(s.clientX, data.clientX);
+                    chai.assert.equal(s.clientY, data.clientY);
+                    chai.assert.equal(s.isActive, false);
+                    chai.assert.equal(s.isDestroyed, false);
+                    chai.assert.deepEqual(data, cancelArgs);
+                    ++emitCount;
+                });
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                s['_cancel'](cancelArgs);
+                chai.assert.equal(emitCount, 1);
+                s.destroy();
+            });
+            it(`should not do anything if drag is not active`, function () {
+                const s = new BaseSensor();
+                const { clientX, clientY, isActive, isDestroyed } = s;
+                let emitCount = 0;
+                s.on('cancel', () => void ++emitCount);
+                s['_cancel']({ type: 'cancel', clientX: 5, clientY: 6 });
+                chai.assert.equal(s.clientX, clientX);
+                chai.assert.equal(s.clientY, clientY);
+                chai.assert.equal(s.isActive, isActive);
+                chai.assert.equal(s.isDestroyed, isDestroyed);
+                chai.assert.equal(emitCount, 0);
+                s.destroy();
+            });
+        });
+        describe('_end method', () => {
+            it(`should update clientX/Y properties to reflect the provided coordinates`, function () {
+                const s = new BaseSensor();
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                s['_end']({ type: 'end', clientX: 5, clientY: 6 });
+                chai.assert.equal(s.clientX, 5);
+                chai.assert.equal(s.clientY, 6);
+                s.destroy();
+            });
+            it(`should set isActive property to false`, function () {
+                const s = new BaseSensor();
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                chai.assert.equal(s.isActive, true);
+                s['_end']({ type: 'end', clientX: 5, clientY: 6 });
+                chai.assert.equal(s.isActive, false);
+                s.destroy();
+            });
+            it(`should not modify isDestroyed property`, function () {
+                const s = new BaseSensor();
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                chai.assert.equal(s.isDestroyed, false);
+                s['_end']({ type: 'end', clientX: 5, clientY: 6 });
+                chai.assert.equal(s.isDestroyed, false);
+                s.destroy();
+            });
+            it(`should emit "end" event with correct arguments after updating instance properties`, function () {
+                const s = new BaseSensor();
+                const endArgs = { type: 'end', clientX: 5, clientY: 6 };
+                let emitCount = 0;
+                s.on('end', (data) => {
+                    chai.assert.equal(s.clientX, data.clientX);
+                    chai.assert.equal(s.clientY, data.clientY);
+                    chai.assert.equal(s.isActive, false);
+                    chai.assert.equal(s.isDestroyed, false);
+                    chai.assert.deepEqual(data, endArgs);
+                    ++emitCount;
+                });
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                s['_end'](endArgs);
+                chai.assert.equal(emitCount, 1);
+                s.destroy();
+            });
+            it(`should not do anything if drag is not active`, function () {
+                const s = new BaseSensor();
+                const { clientX, clientY, isActive, isDestroyed } = s;
+                let emitCount = 0;
+                s.on('end', () => void ++emitCount);
+                s['_end']({ type: 'end', clientX: 5, clientY: 6 });
+                chai.assert.equal(s.clientX, clientX);
+                chai.assert.equal(s.clientY, clientY);
+                chai.assert.equal(s.isActive, isActive);
+                chai.assert.equal(s.isDestroyed, isDestroyed);
+                chai.assert.equal(emitCount, 0);
+                s.destroy();
+            });
+        });
+        describe('cancel method', () => {
+            it(`should not update clientX/clientY/isDestroyed properties`, function () {
+                const s = new BaseSensor();
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                chai.assert.equal(s.clientX, 1);
+                chai.assert.equal(s.clientY, 2);
+                chai.assert.equal(s.isDestroyed, false);
+                s.cancel();
+                chai.assert.equal(s.clientX, 1);
+                chai.assert.equal(s.clientY, 2);
+                chai.assert.equal(s.isDestroyed, false);
+                s.destroy();
+            });
+            it(`should set isActive property to false`, function () {
+                const s = new BaseSensor();
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                chai.assert.equal(s.isActive, true);
+                s.cancel();
+                chai.assert.equal(s.isActive, false);
+                s.destroy();
+            });
+            it(`should not modify isDestroyed property`, function () {
+                const s = new BaseSensor();
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                chai.assert.equal(s.isDestroyed, false);
+                s.cancel();
+                chai.assert.equal(s.isDestroyed, false);
+                s.destroy();
+            });
+            it(`should emit "cancel" event with correct arguments after updating instance properties`, function () {
+                const s = new BaseSensor();
+                let emitCount = 0;
+                s.on('cancel', (data) => {
+                    chai.assert.equal(s.clientX, data.clientX);
+                    chai.assert.equal(s.clientY, data.clientY);
+                    chai.assert.equal(s.isActive, false);
+                    chai.assert.equal(s.isDestroyed, false);
+                    chai.assert.deepEqual(data, {
+                        type: 'cancel',
+                        clientX: 1,
+                        clientY: 2,
+                    });
+                    ++emitCount;
+                });
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                s.cancel();
+                chai.assert.equal(emitCount, 1);
+                s.destroy();
+            });
+            it(`should not do anything if drag is not active`, function () {
+                const s = new BaseSensor();
+                const { clientX, clientY, isActive, isDestroyed } = s;
+                let emitCount = 0;
+                s.on('cancel', () => void ++emitCount);
+                s.cancel();
+                chai.assert.equal(s.clientX, clientX);
+                chai.assert.equal(s.clientY, clientY);
+                chai.assert.equal(s.isActive, isActive);
+                chai.assert.equal(s.isDestroyed, isDestroyed);
+                chai.assert.equal(emitCount, 0);
+                s.destroy();
+            });
+        });
+        describe('on method', () => {
+            it('should return a symbol (by default) which acts as an id for removing the event listener', () => {
+                const s = new BaseSensor();
+                const idA = s.on('start', () => { });
+                chai.assert.equal(typeof idA, 'symbol');
+            });
+            it('should allow defining a custom id (string/symbol/number) for the event listener via third argument', () => {
+                const s = new BaseSensor();
+                const idA = Symbol();
+                chai.assert.equal(s.on('start', () => { }, idA), idA);
+                const idB = 1;
+                chai.assert.equal(s.on('start', () => { }, idB), idB);
+                const idC = 'foo';
+                chai.assert.equal(s.on('start', () => { }, idC), idC);
+            });
+        });
+        describe('off method', () => {
+            it('should remove an event listener based on id', () => {
+                const s = new BaseSensor();
+                let msg = '';
+                const idA = s.on('start', () => void (msg += 'a'));
+                s.on('start', () => void (msg += 'b'));
+                s.off('start', idA);
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                chai.assert.equal(msg, 'b');
+            });
+            it('should remove event listeners based on the listener callback', () => {
+                const s = new BaseSensor();
+                let msg = '';
+                const listenerA = () => void (msg += 'a');
+                const listenerB = () => void (msg += 'b');
+                s.on('start', listenerA);
+                s.on('start', listenerB);
+                s.on('start', listenerB);
+                s.on('start', listenerA);
+                s.off('start', listenerA);
+                s['_start']({ type: 'start', clientX: 1, clientY: 2 });
+                chai.assert.equal(msg, 'bb');
+            });
+        });
+        describe('destroy method', () => {
+            it(`should (if drag is active):
+          1. set isDestroyed property to true
+          2. set isActive property to false
+          3. emit "cancel" event with the current clientX/Y coordinates
+          4. emit "destroy" event
+          5. remove all listeners from the internal emitter
+       `, function () {
+                const s = new BaseSensor();
+                const startArgs = { type: 'start', clientX: 1, clientY: 2 };
+                let events = [];
+                s['_start'](startArgs);
+                s.on('start', (data) => void events.push(data.type));
+                s.on('move', (data) => void events.push(data.type));
+                s.on('end', (data) => void events.push(data.type));
+                s.on('cancel', (data) => {
+                    chai.assert.equal(s.clientX, startArgs.clientX);
+                    chai.assert.equal(s.clientY, startArgs.clientY);
+                    chai.assert.equal(s.isActive, false);
+                    chai.assert.equal(s.isDestroyed, true);
+                    chai.assert.deepEqual(data, {
+                        type: 'cancel',
+                        clientX: startArgs.clientX,
+                        clientY: startArgs.clientY,
+                    });
+                    events.push(data.type);
+                });
+                s.on('destroy', (data) => {
+                    chai.assert.equal(s.clientX, startArgs.clientX);
+                    chai.assert.equal(s.clientY, startArgs.clientY);
+                    chai.assert.equal(s.isActive, false);
+                    chai.assert.equal(s.isDestroyed, true);
+                    chai.assert.deepEqual(data, {
+                        type: 'destroy',
+                    });
+                    events.push(data.type);
+                });
+                chai.assert.equal(s['_emitter'].listenerCount(), 5);
+                s.destroy();
+                chai.assert.equal(s.clientX, startArgs.clientX);
+                chai.assert.equal(s.clientY, startArgs.clientY);
+                chai.assert.equal(s.isActive, false);
+                chai.assert.equal(s.isDestroyed, true);
+                chai.assert.deepEqual(events, ['cancel', 'destroy']);
+                chai.assert.equal(s['_emitter'].listenerCount(), 0);
+            });
+            it(`should (if drag is not active):
+          1. set isDestroyed property to true
+          2. emit "destroy" event
+          3. remove all listeners from the internal emitter
+       `, function () {
+                const s = new BaseSensor();
+                let events = [];
+                s.on('start', (data) => void events.push(data.type));
+                s.on('move', (data) => void events.push(data.type));
+                s.on('end', (data) => void events.push(data.type));
+                s.on('cancel', (data) => void events.push(data.type));
+                s.on('destroy', (data) => {
+                    chai.assert.equal(s.clientX, 0);
+                    chai.assert.equal(s.clientY, 0);
+                    chai.assert.equal(s.isActive, false);
+                    chai.assert.equal(s.isDestroyed, true);
+                    chai.assert.deepEqual(data, {
+                        type: 'destroy',
+                    });
+                    events.push(data.type);
+                });
+                chai.assert.equal(s['_emitter'].listenerCount(), 5);
+                s.destroy();
+                chai.assert.equal(s.clientX, 0);
+                chai.assert.equal(s.clientY, 0);
+                chai.assert.equal(s.isActive, false);
+                chai.assert.equal(s.isDestroyed, true);
+                chai.assert.deepEqual(events, ['destroy']);
+                chai.assert.equal(s['_emitter'].listenerCount(), 0);
+            });
+            it('should not do anything if the sensor is already destroyed', () => {
+                const s = new BaseSensor();
+                s.destroy();
+                let events = [];
+                s.on('start', (data) => void events.push(data.type));
+                s.on('move', (data) => void events.push(data.type));
+                s.on('end', (data) => void events.push(data.type));
+                s.on('cancel', (data) => void events.push(data.type));
+                s.on('destroy', (data) => void events.push(data.type));
+                s.destroy();
+                chai.assert.equal(s.clientX, 0);
+                chai.assert.equal(s.clientY, 0);
+                chai.assert.equal(s.isActive, false);
+                chai.assert.equal(s.isDestroyed, true);
+                chai.assert.deepEqual(events, []);
+            });
         });
     });
 

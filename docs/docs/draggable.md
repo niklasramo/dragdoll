@@ -398,7 +398,7 @@ function loggerPlugin<S extends Sensor[], E extends S[number]['events']>(
     // In case our plugin depended on some other plugin we could check it's
     // existence here.
     /*
-    const fooPlugin = draggable.get('foo');
+    const fooPlugin = draggable.plugins.get('foo');
     if (!fooplugin || fooPlugin.version < '1.0.0') {
       throw new Error('logger plugin requires foo plugin v1.0.0 or newer');
     }

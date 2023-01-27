@@ -212,9 +212,9 @@ export class KeyboardSensor<T extends KeyboardSensorEvents = KeyboardSensorEvent
 
   destroy() {
     if (this.isDestroyed) return;
+    super.destroy();
     document.removeEventListener('keydown', this._onKeyDown);
     window.removeEventListener('blur', this.cancel);
     window.removeEventListener('visibilitychange', this.cancel);
-    super.destroy();
   }
 }

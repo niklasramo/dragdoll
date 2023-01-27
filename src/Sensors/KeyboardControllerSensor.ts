@@ -248,11 +248,11 @@ export class KeyboardControllerSensor<
 
   destroy() {
     if (this.isDestroyed) return;
+    super.destroy();
     this.off('tick', this._onTick);
     document.removeEventListener('keydown', this._onKeyDown);
     document.removeEventListener('keyup', this._onKeyUp);
     window.removeEventListener('blur', this.cancel);
     window.removeEventListener('visibilitychange', this.cancel);
-    super.destroy();
   }
 }
