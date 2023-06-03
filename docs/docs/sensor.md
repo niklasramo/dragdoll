@@ -23,8 +23,8 @@ type on = (
     e:
       | {
           type: 'start' | 'move' | 'end' | 'cancel';
-          clientX: number;
-          clientY: number;
+          x: number;
+          y: number;
         }
       | {
           type: 'destroy';

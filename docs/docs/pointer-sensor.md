@@ -84,45 +84,18 @@ type element = HTMLElement | Window;
 
 The observed element or window. Read-only.
 
-### pointerId
+### drag
 
 ```ts
-type pointerId = number | null;
+type drag = {
+  readonly pointerId: number;
+  readonly pointerType: 'mouse' | 'pen' | 'touch' | null;
+  readonly x: number;
+  readonly y: number;
+} | null;
 ```
 
-Pointer id of the current drag process, `null` when the element is not being dragged. Read-only.
-
-### pointerType
-
-```ts
-type pointerId = 'mouse' | 'pen' | 'touch' | null;
-```
-
-Pointer type of the current drag process, `null` when the element is not being dragged. Read-only.
-
-### clientX
-
-```ts
-type clientX = number | null;
-```
-
-Current horizontal coordinate of the drag within the application's viewport, `null` when the element is not being dragged. Read-only.
-
-### clientY
-
-```ts
-type clientY = number | null;
-```
-
-Current vertical coordinate of the drag within the application's viewport, `null` when the element is not being dragged. Read-only.
-
-### isActive
-
-```ts
-type isActive = boolean;
-```
-
-Is dragging active or not? Read-only.
+Current drag data or `null` when drag is inactive. Read-only.
 
 ### isDestroyed
 
@@ -144,8 +117,8 @@ type on = (
     e:
       | {
           type: 'start' | 'move' | 'end';
-          clientX: number;
-          clientY: number;
+          x: number;
+          y: number;
           pointerId: number;
           pointerType: 'mouse' | 'pen' | 'touch';
           srcEvent: PointerEvent | TouchEvent | MouseEvent;
@@ -153,8 +126,8 @@ type on = (
         }
       | {
           type: 'cancel';
-          clientX: number;
-          clientY: number;
+          x: number;
+          y: number;
           pointerId: number;
           pointerType: 'mouse' | 'pen' | 'touch';
           srcEvent: PointerEvent | TouchEvent | MouseEvent | null;

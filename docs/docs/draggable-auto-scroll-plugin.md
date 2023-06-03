@@ -36,27 +36,21 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
     ],
   })
 );
+
+// Update settings later if need be.
+draggable.plugins.autoscroll.updateSettings({
+  axis: 'x',
+  threshold: 200,
+});
 ```
 
 ## Usage
-
-```ts
-type autoScrollPlugin = (options?: Partial<DraggableAutoScrollSettings>) => (
-  draggable: Draggable
-) => {
-  readonly name: 'autoscroll';
-  readonly version: string;
-  readonly draggable: Draggable;
-  readonly settings: DraggableAutoScrollSettings;
-  updateSettings: (options?: Partial<DraggableAutoScrollSettings>) => void;
-};
-```
 
 Using the AutoScroll plugin very is simple:
 
 1. Import and invoke the plugin with the [options](#settings) you wish.
 2. Provide the return value to Draggable instance's [use](/docs/draggable#use) method.
-3. The plugin will get registered to Draggable instance as `"autoscroll"`.
+3. The plugin will get registered to Draggable instance as `"autoscroll"` (accessible via `draggable.plugins.autoscroll`).
 
 ```ts
 import { autoScrollPlugin } from 'dragdoll';
@@ -68,18 +62,16 @@ draggable.use(
 );
 ```
 
-After you have registered the plugin you can access it via [plugins](/docs/draggable#plugins) map and update the initial settings anytime you wish.
+You can read and update the plugin's settings anytime you want.
 
 ```ts
-draggable.plugins.get('autoscroll').updateSettings({
+// Read current speed setting.
+const currentSpeed = draggable.plugins.autoscroll.settings.speed;
+
+// Update current speed setting.
+draggable.plugins.autoscroll.updateSettings({
   speed: 1000,
 });
-```
-
-You can also read the current settings anytime you want.
-
-```ts
-const currentSettings = draggable.plugins.get('autoscroll').settings;
 ```
 
 ## Settings

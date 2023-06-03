@@ -76,10 +76,10 @@ function sidebarGuide() {
       items: [
         { text: 'Sensor', link: '/docs/sensor' },
         { text: 'BaseSensor', link: '/docs/base-sensor' },
-        { text: 'BaseControllerSensor', link: '/docs/base-controller-sensor' },
+        { text: 'BaseMotionSensor', link: '/docs/base-motion-sensor' },
         { text: 'PointerSensor', link: '/docs/pointer-sensor' },
         { text: 'KeyboardSensor', link: '/docs/keyboard-sensor' },
-        { text: 'KeyboardControllerSensor', link: '/docs/keyboard-controller-sensor' },
+        { text: 'KeyboardMotionSensor', link: '/docs/keyboard-motion-sensor' },
       ],
     },
     {

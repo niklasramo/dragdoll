@@ -1,15 +1,15 @@
 import { Sensor } from './Sensor';
 
-import { BaseControllerSensor, BaseControllerSensorEvents } from './BaseControllerSensor';
+import { BaseMotionSensor, BaseMotionSensorEvents } from './BaseMotionSensor';
 
-export interface KeyboardControllerSensorSettings<
-  T extends KeyboardControllerSensorEvents = KeyboardControllerSensorEvents
+export interface KeyboardMotionSensorSettings<
+  E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents
 > {
   startPredicate: (
     e: KeyboardEvent,
-    sensor: KeyboardControllerSensor<T>
+    sensor: KeyboardMotionSensor<E>
   ) => { x: number; y: number } | null | undefined;
-  computeSpeed: (sensor: KeyboardControllerSensor<T>) => number;
+  computeSpeed: (sensor: KeyboardMotionSensor<E>) => number;
   startKeys: string[];
   moveLeftKeys: string[];
   moveRightKeys: string[];
@@ -19,7 +19,7 @@ export interface KeyboardControllerSensorSettings<
   endKeys: string[];
 }
 
-export interface KeyboardControllerSensorEvents extends BaseControllerSensorEvents {}
+export interface KeyboardMotionSensorEvents extends BaseMotionSensorEvents {}
 
 const KEY_TYPES = [
   'start',
@@ -43,18 +43,13 @@ function getEarliestTimestamp(keys: Set<string>, timestamps: Map<string, number>
   return result;
 }
 
-export class KeyboardControllerSensor<
-    T extends KeyboardControllerSensorEvents = KeyboardControllerSensorEvents
-  >
-  extends BaseControllerSensor<T>
-  implements Sensor<T>
+export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents>
+  extends BaseMotionSensor<E>
+  implements Sensor<E>
 {
-  declare events: T;
-  protected _startPredicate: Exclude<
-    KeyboardControllerSensorSettings<T>['startPredicate'],
-    undefined
-  >;
-  protected _computeSpeed: Exclude<KeyboardControllerSensorSettings<T>['computeSpeed'], undefined>;
+  declare events: E;
+  protected _startPredicate: Exclude<KeyboardMotionSensorSettings<E>['startPredicate'], undefined>;
+  protected _computeSpeed: Exclude<KeyboardMotionSensorSettings<E>['computeSpeed'], undefined>;
   protected _moveKeys: Set<string>;
   protected _moveKeyTimestamps: Map<string, number>;
   protected _startKeys: Set<string>;
@@ -65,7 +60,7 @@ export class KeyboardControllerSensor<
   protected _cancelKeys: Set<string>;
   protected _endKeys: Set<string>;
 
-  constructor(options: Partial<KeyboardControllerSensorSettings<T>> = {}) {
+  constructor(options: Partial<KeyboardMotionSensorSettings<E>> = {}) {
     super();
 
     const {
@@ -109,14 +104,14 @@ export class KeyboardControllerSensor<
     window.addEventListener('visibilitychange', this.cancel);
   }
 
-  protected _end(data: T['end']) {
-    if (!this.isActive) return;
+  protected _end(data: E['end']) {
+    if (!this.drag) return;
     this._moveKeyTimestamps.clear();
     super._end(data);
   }
 
-  protected _cancel(data: T['cancel']) {
-    if (!this.isActive) return;
+  protected _cancel(data: E['cancel']) {
+    if (!this.drag) return;
     this._moveKeyTimestamps.clear();
     super._cancel(data);
   }
@@ -138,12 +133,12 @@ export class KeyboardControllerSensor<
       y *= normFactor;
     }
 
-    this.direction.x = x;
-    this.direction.y = y;
+    this._direction.x = x;
+    this._direction.y = y;
   }
 
   protected _onTick() {
-    this.speed = this._computeSpeed(this);
+    this._speed = this._computeSpeed(this);
   }
 
   protected _onKeyUp(e: KeyboardEvent) {
@@ -155,15 +150,15 @@ export class KeyboardControllerSensor<
 
   protected _onKeyDown(e: KeyboardEvent) {
     // Handle start.
-    if (!this.isActive) {
+    if (!this.drag) {
       if (this._startKeys.has(e.key)) {
         const startPosition = this._startPredicate(e, this);
         if (startPosition) {
           e.preventDefault();
           this._start({
             type: 'start',
-            clientX: startPosition.x,
-            clientY: startPosition.y,
+            x: startPosition.x,
+            y: startPosition.y,
           });
         }
       }
@@ -175,8 +170,8 @@ export class KeyboardControllerSensor<
       e.preventDefault();
       this._cancel({
         type: 'cancel',
-        clientX: this.clientX!,
-        clientY: this.clientY!,
+        x: this.drag.x,
+        y: this.drag.y,
       });
       return;
     }
@@ -186,8 +181,8 @@ export class KeyboardControllerSensor<
       e.preventDefault();
       this._end({
         type: 'end',
-        clientX: this.clientX!,
-        clientY: this.clientY!,
+        x: this.drag.x,
+        y: this.drag.y,
       });
       return;
     }
@@ -203,7 +198,7 @@ export class KeyboardControllerSensor<
     }
   }
 
-  updateSettings(options: Partial<KeyboardControllerSensorSettings<T>> = {}) {
+  updateSettings(options: Partial<KeyboardMotionSensorSettings<E>> = {}) {
     let moveKeysMayNeedUpdate = false;
 
     if (options.startPredicate !== undefined) {

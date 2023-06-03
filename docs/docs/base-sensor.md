@@ -1,6 +1,6 @@
 # BaseSensor
 
-BaseSensor is an extendable base class to ease the process of creating custom sensors. It does not do anything by itself, but it does implement the Sensor API and provides you some protected helper methods for controlling the state of the drag process. It's used by [`KeyboardSensor`](/docs/keyboard-sensor) so you can check out implementation tips there.
+BaseSensor is an extendable base class to ease the process of creating custom sensors. It does not do anything by itself, but it does implement the [Sensor](/docs/sensor) API and provides you some protected helper methods for controlling the state of the drag process. It's used by [`KeyboardSensor`](/docs/keyboard-sensor) so you can check out implementation tips there.
 
 ## Constructor
 
@@ -14,29 +14,17 @@ The constuctor accepts no arguments.
 
 ## Properties
 
-### clientX
+### drag
 
 ```ts
-type clientX = number | null;
+type drag = {
+  // Coordinates of the drag within the viewport.
+  readonly x: number;
+  readonly y: number;
+} | null;
 ```
 
-Current horizontal coordinate of the drag within the application's viewport, `null` when drag is inactive. Read-only.
-
-### clientY
-
-```ts
-type clientY = number | null;
-```
-
-Current vertical coordinate of the drag within the application's viewport, `null` when drag is inactive. Read-only.
-
-### isActive
-
-```ts
-type isActive = boolean;
-```
-
-Is dragging active or not? Read-only.
+Current drag data or `null` when drag is inactive. Read-only.
 
 ### isDestroyed
 
@@ -45,6 +33,12 @@ type isDestroyed = boolean;
 ```
 
 Is sensor destroyed or not? Read-only.
+
+## Protected Properties
+
+### \_emitter
+
+An event emitter, instance of [Eventti Emitter](https://github.com/niklasramo/eventti#api).
 
 ## Methods
 
@@ -58,8 +52,8 @@ type on = (
     e:
       | {
           type: 'start' | 'move' | 'end' | 'cancel';
-          clientX: number;
-          clientY: number;
+          x: number;
+          y: number;
         }
       | {
           type: 'destroy';
@@ -124,10 +118,10 @@ These protected methods are inherited by any class that extends this class and s
 
 ```ts
 // Type
-type _start = (data: { type: 'start'; clientX: number; clientY: number }) => void;
+type _start = (data: { type: 'start'; x: number; y: number }) => void;
 
 // Usage
-baseSensor._start({ type: 'start', clientX: 100, clientY: 200 });
+baseSensor._start({ type: 'start', x: 100, y: 200 });
 ```
 
 Protected method, which starts the drag process and emits drag start event with the provided data.
@@ -136,10 +130,10 @@ Protected method, which starts the drag process and emits drag start event with 
 
 ```ts
 // Type
-type _move = (data: { type: 'move'; clientX: number; clientY: number }) => void;
+type _move = (data: { type: 'move'; x: number; y: number }) => void;
 
 // Usage
-baseSensor._move({ type: 'move', clientX: 100, clientY: 200 });
+baseSensor._move({ type: 'move', x: 100, y: 200 });
 ```
 
 Protected method, which emits drag move event with the provided data.
@@ -148,10 +142,10 @@ Protected method, which emits drag move event with the provided data.
 
 ```ts
 // Type
-type _end = (data: { type: 'end'; clientX: number; clientY: number }) => void;
+type _end = (data: { type: 'end'; x: number; y: number }) => void;
 
 // Usage
-baseSensor._end({ type: 'end', clientX: 100, clientY: 200 });
+baseSensor._end({ type: 'end', x: 100, y: 200 });
 ```
 
 Protected method, which ends the drag process and emits drag end event with the provided data.
@@ -160,10 +154,10 @@ Protected method, which ends the drag process and emits drag end event with the 
 
 ```ts
 // Type
-type _cancel = (data: { type: 'cancel'; clientX: number; clientY: number }) => void;
+type _cancel = (data: { type: 'cancel'; x: number; y: number }) => void;
 
 // Usage
-baseSensor._cancel({ type: 'cancel', clientX: 100, clientY: 200 });
+baseSensor._cancel({ type: 'cancel', x: 100, y: 200 });
 ```
 
 Protected method, which cancels the drag process and emits drag cancel event with the provided data.

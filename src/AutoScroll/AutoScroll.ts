@@ -119,6 +119,15 @@ function getPaddedRect(rect: RectExtended, padding: AutoScrollTargetPadding, res
   return result;
 }
 
+function isScrolledToMax(scrollValue: number, maxScrollValue: number) {
+  // In some scenarios the scrollValue and/or maxScrollValue can be a float
+  // with subpixel values which might cause some funky scenarios where the
+  // element tries to scroll to the end but never actually reaches it. In such
+  // cases we want to do some rounding to detect that the element has actually
+  // reached the end of the scroll.
+  return Math.ceil(scrollValue) >= Math.floor(maxScrollValue);
+}
+
 //
 // PRIVATE TYPES
 //
@@ -346,7 +355,7 @@ class AutoScrollRequest {
 
   hasReachedEnd() {
     return AUTO_SCROLL_AXIS_DIRECTION.forward & this.direction
-      ? this.value >= this.maxValue
+      ? isScrolledToMax(this.value, this.maxValue)
       : this.value <= 0;
   }
 
@@ -657,7 +666,7 @@ export class AutoScroll {
       const testMaxScrollY = testAxisY ? getScrollTopMax(testElement) : -1;
 
       // Ignore this item if there is no possibility to scroll.
-      if (!testMaxScrollX && !testMaxScrollY) continue;
+      if (testMaxScrollX <= 0 && testMaxScrollY <= 0) continue;
 
       const testRect = getContentRect(testElement, R2);
       let testScore = getIntersectionScore(itemRect, testRect) || -Infinity;
@@ -698,7 +707,10 @@ export class AutoScroll {
 
         if (moveDirectionX === AUTO_SCROLL_DIRECTION.right) {
           testDistance = testRect.right + testEdgeOffset - itemRect.right;
-          if (testDistance <= testThreshold && getScrollLeft(testElement) < testMaxScrollX) {
+          if (
+            testDistance <= testThreshold &&
+            !isScrolledToMax(getScrollLeft(testElement), testMaxScrollX)
+          ) {
             testDirection = AUTO_SCROLL_DIRECTION.right;
           }
         } else if (moveDirectionX === AUTO_SCROLL_DIRECTION.left) {
@@ -738,7 +750,10 @@ export class AutoScroll {
 
         if (moveDirectionY === AUTO_SCROLL_DIRECTION.down) {
           testDistance = testRect.bottom + testEdgeOffset - itemRect.bottom;
-          if (testDistance <= testThreshold && getScrollTop(testElement) < testMaxScrollY) {
+          if (
+            testDistance <= testThreshold &&
+            !isScrolledToMax(getScrollTop(testElement), testMaxScrollY)
+          ) {
             testDirection = AUTO_SCROLL_DIRECTION.down;
           }
         } else if (moveDirectionY === AUTO_SCROLL_DIRECTION.up) {
@@ -817,7 +832,7 @@ export class AutoScroll {
         if (target.axis === 'x') continue;
       }
 
-      // Stop scrolling if there is no room to scroll anymore.
+      // Make sure the element is still scrollable.
       const testMaxScroll = testIsAxisX
         ? getScrollLeftMax(testElement)
         : getScrollTopMax(testElement);
@@ -870,11 +885,11 @@ export class AutoScroll {
         break;
       }
 
-      // Stop scrolling if we have reached the end of the scroll value.
+      // Stop scrolling if we have reached max scroll value.
       const testScroll = testIsAxisX ? getScrollLeft(testElement) : getScrollTop(testElement);
       hasReachedEnd =
         AUTO_SCROLL_AXIS_DIRECTION.forward & scrollRequest.direction
-          ? testScroll >= testMaxScroll
+          ? isScrolledToMax(testScroll, testMaxScroll)
           : testScroll <= 0;
       if (hasReachedEnd) break;
 

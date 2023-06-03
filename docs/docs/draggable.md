@@ -93,31 +93,31 @@ A clean up function that should handle disposing the dragged elements, if necess
 
 Default is `() => {}`.
 
-### getElementStartPosition
+### getStartPosition
 
 ```ts
-type getElementStartPosition = (data: {
+type getStartPosition = (data: {
   draggable: Draggable;
   sensor: Sensor;
-  element: HTMLElement;
+  item: DraggableDragItem;
 }) => {
   x: number;
   y: number;
 };
 ```
 
-A function that should return a dragged element's initial drag position. The value is stored to drag data and updated on sensor's events. Any container offsets, when the element is appended to drag container, are automatically added to the drag position. The drag position is provided to [`setElementPosition`](#setelementposition) function where you can apply the position to the element. In short, this function's return value is relative to your custom logic and only meaningful in the context of [`setElementPosition`](#setelementposition).
+A function that should return a dragged element's initial drag position. The value is stored to drag data and updated on sensor's events. Any container offsets, when the element is appended to drag container, are automatically added to the drag position. The drag position is provided to [`setPosition`](#setposition) function where you can apply the position to the element. In short, this function's return value is relative to your custom logic and only meaningful in the context of [`setPosition`](#setposition).
 
 Default is a function that stores the element's current computed transform and returns `{ x: 0, y: 0 }`.
 
-### setElementPosition
+### setPosition
 
 ```ts
-type setElementPosition = (data: {
+type setPosition = (data: {
   phase: 'start' | 'move' | 'end';
   draggable: Draggable;
   sensor: Sensor;
-  element: HTMLElement;
+  item: DraggableDragItem;
   x: number;
   y: number;
 }) => void;
@@ -127,13 +127,13 @@ A function that should apply the current drag position (`x` and `y` coordinates)
 
 Default is a function that applies the `x` and `y` coordinates to the element's transform, while respecting the element's original transform value.
 
-### getElementPositionChange
+### getPositionChange
 
 ```ts
-type getElementPositionChange = (data: {
+type getPositionChange = (data: {
   draggable: Draggable;
   sensor: Sensor;
-  element: HTMLElement;
+  item: DraggableDragItem;
   event: SensorMoveEvent;
   prevEvent: SensorStartEvent | SensorMoveEvent;
   startEvent: SensorStartEvent | SensorMoveEvent;
@@ -142,7 +142,7 @@ type getElementPositionChange = (data: {
 
 A function that should return the position change of a dragged element. This function is called on every "move" event emitted by the currently tracked sensor during drag. Note that you can get creative here and build any kind of custom logic (e.g. snap to grid) you might need.
 
-Default is a function that returns the diff between event.clientX/Y and prevEvent.clientX/Y.
+Default is a function that returns the diff between (client) x and y coordinates of `event` and `prevEvent`.
 
 ## Properties
 
@@ -165,9 +165,9 @@ Current settings ([DraggableSettings](#settings)) of the Draggable instance. Rea
 ### drag
 
 ```ts
-type drag = DraggableDragData | null;
+type drag = DraggableDrag | null;
 
-type DraggableDragData = {
+type DraggableDrag = {
   // The sensor that is tracked for this drag process.
   readonly sensor: Sensor | null;
   // Has drag started?
@@ -185,35 +185,26 @@ type DraggableDragData = {
   // Drag items constructed from the drag elements as provided via getElements
   // option.
   readonly items: DraggableDragItem[];
-  // Custom data object you can use to store temporary data for the duration of
-  // the drag.
-  extraData: { [key: string]: any };
 };
 
 type DraggableDragItem = {
   // Drag element.
-  readonly element: HTMLElement | null;
+  readonly element: HTMLElement;
   // Element's original parent node before the drag starts.
-  readonly rootParent: HTMLElement | null;
+  readonly rootParent: HTMLElement;
   // rootParent's containing block.
-  readonly rootContainingBlock: HTMLElement | Document | null;
+  readonly rootContainingBlock: HTMLElement | Document;
   // Element's parent node during the drag.
-  readonly dragParent: HTMLElement | null;
+  readonly dragParent: HTMLElement;
   // dragParent's containing block.
-  readonly dragContainingBlock: HTMLElement | Document | null;
-  // Element's internal position during the drag.
+  readonly dragContainingBlock: HTMLElement | Document;
+  // Element's current position relative to the viewport (a.k.a client position).
   readonly x: number;
   readonly y: number;
-  // Element's current position relative to the viewport.
-  readonly clientX: number;
-  readonly clientY: number;
-  // Internal data you should not care about.
-  readonly syncDiffX: number;
-  readonly syncDiffY: number;
-  readonly moveDiffX: number;
-  readonly moveDiffY: number;
-  readonly containerDiffX: number;
-  readonly containerDiffY: number;
+  // Element's internal position during the drag. By default this reflects the
+  // element's translate position.
+  readonly pX: number;
+  readonly pY: number;
 };
 ```
 
@@ -222,17 +213,16 @@ Current drag data or `null` if drag is not active.
 ### plugins
 
 ```ts
-type plugins = Map<
+type plugins = Record<
   string,
   {
     name: string;
     version: string;
-    [key: string]: any;
   }
 >;
 ```
 
-A map of Draggable instance's plugins.
+An object containing all of the Draggable instance's plugins.
 
 ### isDestroyed
 
@@ -331,19 +321,27 @@ Updates the the draggable's settings. Accepts [DraggableSettings](#settings) as 
 
 ```ts
 // Type
-type use = (plugin: DraggablePlugin) => Draggable;
-
-type DraggablePlugin = (draggable: Draggable) => {
-  name: string;
-  version: string;
-  [key: string]: any;
-};
+type use = (plugin: (draggable: Draggable) => Draggable) => Draggable;
 
 // Usage
-draggable.use(myPlugin).use(myOtherlugin);
+const draggable = new Draggable(
+  [
+    // Sensors here...
+  ],
+  {
+    // Options here...
+  }
+)
+  // Plugins here...
+  .use(myPlugin)
+  .use(myOtherlugin);
 ```
 
-Registers a plugin to the Draggable instance. Returns the Draggable instance so you can chain the method. Check out the [plugin guide](#creating-plugins) to learn how to build custom plugins.
+Registers a plugin to the Draggable instance. Returns the Draggable instance so you can chain the method and get updated typings for the instance based on how the plugin(s) extend the Draggable type.
+
+The plugin system is designed to be used so that you register the plugins right away when you instantiate the Draggable. This way you'll get the correct typings to the variable holding the instance. Also, there's no mechanism to unregister a plugin because there really should be no need for that.
+
+Check out the [plugin guide](#creating-plugins) to learn how to build custom plugins.
 
 ### destroy
 
@@ -359,7 +357,7 @@ Destroy the draggable. Disposes all allocated memory and removes all bound event
 
 ## Creating Plugins
 
-Draggable has a very simple plugin system, which allows you to extend the default functionality. Plugins are added to a Draggable instance via [`use`](#use) method, one by one.
+Draggable has a very simple plugin system, which allows you to extend the default functionality. Plugins are added to a Draggable instance via [`use`](#use) method, one by one, preferably at the same time when instantiating the Draggable.
 
 Note that you can't remove a plugin from a Draggable instance and can't add a plugin with the same name twice. If your plugin depends on a specific version of a specific plugin you need to do the checking manually yourself during plugin instantiation and e.g. throw and error if conditions are not met. All the plugins are added to [draggable.plugins](#plugins) property, which you can use to do such checking.
 
@@ -379,7 +377,7 @@ const DRAGGABLE_EVENTS = [
 ] as const;
 
 type LoggerPluginOptions = {
-  events?: typeof DRAGGABLE_EVENTS[number][];
+  events?: (typeof DRAGGABLE_EVENTS)[number][];
 };
 
 // The actual plugin is wrapped in a function via which we can pass user
@@ -387,18 +385,25 @@ type LoggerPluginOptions = {
 function loggerPlugin<S extends Sensor[], E extends S[number]['events']>(
   options: LoggerPluginOptions = {}
 ) {
-  // This is the actual Draggable plugin, a function that receives the
-  // Draggable instance as it's argument, and which should return plugin data
-  // object, which Draggable then uses to register in it's plugins list.
+  // This is the actual Draggable plugin, a function which:
+  // 1. Receives the Draggable instance as it's argument.
+  // 2. Creates the plugin instance and adds it to the draggable.plugins
+  //    object.
+  // 3. Listens to Draggable instance's events and does whatever else it needs
+  //    to implement the plugin functionality.
+  // 4. Extends the Draggable instance's type in any way that's needed.
+  // 5. Returns the extended Draggable instance.
   return (draggable: Draggable<S, E>) => {
-    // Here we can define the actual logic of the plugin. We now have access
-    // to both the options and the Draggable instance, and can build our logic
-    // based on the data.
+    // Create the plugin instance.
+    const pluginInstance = {
+      name: 'logger',
+      version: '1.0.0',
+    } as const;
 
     // In case our plugin depended on some other plugin we could check it's
     // existence here.
     /*
-    const fooPlugin = draggable.plugins.get('foo');
+    const fooPlugin = draggable.plugins['foo'];
     if (!fooplugin || fooPlugin.version < '1.0.0') {
       throw new Error('logger plugin requires foo plugin v1.0.0 or newer');
     }
@@ -410,20 +415,25 @@ function loggerPlugin<S extends Sensor[], E extends S[number]['events']>(
       draggable.on(eventName, (e: any) => console.log(e));
     });
 
-    // If you need to dispose anything when e.g. the draggable is destroyed
+    // If you need to dispose anything when e.g. the Draggable is destroyed
     // you can do it via the events. Note that Draggable automatically removes
     // all listeners on destroy so you don't have to do that explicitly.
     draggable.on('destroy', () => {
       // Dispose anything you need.
     });
 
-    // Finally we return the minimum required data for the plugin so Draggable
-    // can add it to the list of plugins. This object can have other properties
-    // too or it can be a class instance, the choice is yours.
-    return {
-      name: 'logger',
-      version: '1.0.0',
+    // Extend the Draggable instance's type to include this plugin in it.
+    // Note that you can extend the Draggable type in other ways too here, e.g.
+    // add new properties or whatever your is needed for your plugin.
+    const extendedDraggable = draggable as typeof draggable & {
+      plugins: { [pluginInstance.name]: typeof pluginInstance };
     };
+
+    // Add the plugin to the Draggable instance.
+    extendedDraggable.plugins[pluginInstance.name] = pluginInstance;
+
+    // Finally, return the extended Draggable instance.
+    return extendedDraggable;
   };
 }
 
@@ -433,4 +443,7 @@ const keyboardSensor = new KeyboardSensor();
 const draggable = new Draggable([keyboardSensor], {
   getElements: () => [dragElement],
 }).use(loggerPlugin({ events: ['start', 'end'] }));
+
+// You can also access the logger plugin instance any time you want.
+console.log(draggable.plugins.logger.name);
 ```

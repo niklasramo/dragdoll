@@ -9,7 +9,7 @@ module.exports = function (config) {
       './node_modules/chai/chai.js',
       './node_modules/eventti/dist/eventti.umd.js',
       './node_modules/tikki/dist/tikki.umd.js',
-      './tests/dist/tests.browser.js',
+      './tests/dist/tests.umd.js',
     ],
     reporters: ['mocha', 'BrowserStack'],
     logLevel: config.LOG_INFO,

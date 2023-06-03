@@ -35,13 +35,13 @@ export default [
     input: './tests/src/tests.ts',
     output: [
       {
-        file: './tests/dist/tests.node.js',
+        file: './tests/dist/tests.js',
         format: 'es',
       },
       {
-        file: './tests/dist/tests.browser.js',
+        file: './tests/dist/tests.umd.js',
         format: 'umd',
-        name: `${pkg.name}_testsuite`,
+        name: `${pkg.name}_tests`,
         globals: { chai: 'chai', eventti: 'eventti', tikki: 'tikki' },
       },
     ],

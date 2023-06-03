@@ -8,26 +8,26 @@ export const SensorEventType = {
 
 export interface SensorStartEvent {
   type: typeof SensorEventType.start;
-  clientX: number;
-  clientY: number;
+  x: number;
+  y: number;
 }
 
 export interface SensorMoveEvent {
   type: typeof SensorEventType.move;
-  clientX: number;
-  clientY: number;
+  x: number;
+  y: number;
 }
 
 export interface SensorCancelEvent {
   type: typeof SensorEventType.cancel;
-  clientX: number;
-  clientY: number;
+  x: number;
+  y: number;
 }
 
 export interface SensorEndEvent {
   type: typeof SensorEventType.end;
-  clientX: number;
-  clientY: number;
+  x: number;
+  y: number;
 }
 
 export interface SensorDestroyEvent {
@@ -42,10 +42,10 @@ export interface SensorEvents {
   destroy: SensorDestroyEvent;
 }
 
-export interface Sensor<T extends SensorEvents = SensorEvents> {
-  events: T;
-  on<K extends keyof T>(eventName: K, listener: (eventData: T[K]) => void): void;
-  off<K extends keyof T>(eventName: K, listener: (eventData: T[K]) => void): void;
+export interface Sensor<E extends SensorEvents = SensorEvents> {
+  events: E;
+  on<K extends keyof E>(eventName: K, listener: (eventData: E[K]) => void): void;
+  off<K extends keyof E>(eventName: K, listener: (eventData: E[K]) => void): void;
   cancel(): void;
   destroy(): void;
 }

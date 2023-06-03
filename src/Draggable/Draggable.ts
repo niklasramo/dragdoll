@@ -24,51 +24,57 @@ const OFFSET_DIFF = { left: 0, top: 0 };
 
 const POSITION_CHANGE = { x: 0, y: 0 };
 
-enum StartPredicateState {
+enum DraggableStartPredicateState {
   PENDING = 0,
   RESOLVED = 1,
   REJECTED = 2,
 }
 
-type TransformMap = Map<HTMLElement, string>;
-
 class DraggableDragItem {
-  readonly element: HTMLElement | null;
-  readonly rootParent: HTMLElement | null;
-  readonly rootContainingBlock: HTMLElement | Document | null;
-  readonly dragParent: HTMLElement | null;
-  readonly dragContainingBlock: HTMLElement | Document | null;
+  readonly element: HTMLElement;
+  readonly rootParent: HTMLElement;
+  readonly rootContainingBlock: HTMLElement | Document;
+  readonly dragParent: HTMLElement;
+  readonly dragContainingBlock: HTMLElement | Document;
   readonly x: number;
   readonly y: number;
-  readonly clientX: number;
-  readonly clientY: number;
-  readonly syncDiffX: number;
-  readonly syncDiffY: number;
-  readonly moveDiffX: number;
-  readonly moveDiffY: number;
-  readonly containerDiffX: number;
-  readonly containerDiffY: number;
+  readonly pX: number;
+  readonly pY: number;
+  readonly _syncDiffX: number;
+  readonly _syncDiffY: number;
+  readonly _moveDiffX: number;
+  readonly _moveDiffY: number;
+  readonly _containerDiffX: number;
+  readonly _containerDiffY: number;
+  readonly _transform: string;
 
-  constructor() {
-    this.element = null;
-    this.rootParent = null;
-    this.rootContainingBlock = null;
-    this.dragParent = null;
-    this.dragContainingBlock = null;
+  constructor(
+    element: HTMLElement,
+    rootParent: HTMLElement,
+    rootContainingBlock: HTMLElement | Document,
+    dragParent: HTMLElement,
+    dragContainingBlock: HTMLElement | Document
+  ) {
+    this.element = element;
+    this.rootParent = rootParent;
+    this.rootContainingBlock = rootContainingBlock;
+    this.dragParent = dragParent;
+    this.dragContainingBlock = dragContainingBlock;
     this.x = 0;
     this.y = 0;
-    this.clientX = 0;
-    this.clientY = 0;
-    this.syncDiffX = 0;
-    this.syncDiffY = 0;
-    this.moveDiffX = 0;
-    this.moveDiffY = 0;
-    this.containerDiffX = 0;
-    this.containerDiffY = 0;
+    this.pX = 0;
+    this.pY = 0;
+    this._syncDiffX = 0;
+    this._syncDiffY = 0;
+    this._moveDiffX = 0;
+    this._moveDiffY = 0;
+    this._containerDiffX = 0;
+    this._containerDiffY = 0;
+    this._transform = '';
   }
 }
 
-class DraggableDragData<S extends Sensor[], E extends S[number]['events']> {
+class DraggableDrag<S extends Sensor[], E extends S[number]['events']> {
   readonly sensor: S[number] | null;
   readonly isStarted: boolean;
   readonly isEnded: boolean;
@@ -77,7 +83,6 @@ class DraggableDragData<S extends Sensor[], E extends S[number]['events']> {
   readonly prevMoveEvent: E['move'] | null;
   readonly endEvent: E['end'] | E['cancel'] | E['destroy'] | null;
   readonly items: DraggableDragItem[];
-  extraData: { [key: string]: any };
 
   constructor() {
     this.sensor = null;
@@ -88,7 +93,6 @@ class DraggableDragData<S extends Sensor[], E extends S[number]['events']> {
     this.prevMoveEvent = null;
     this.endEvent = null;
     this.items = [];
-    this.extraData = {};
   }
 }
 
@@ -101,52 +105,26 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
     startPredicate: () => true,
     getElements: () => null,
     releaseElements: () => {},
-    getElementStartPosition: ({ element, draggable }) => {
-      const { drag } = draggable;
-      if (drag) {
-        const transformMap: TransformMap = drag.extraData.transformMap || new Map();
-        drag.extraData.transformMap = transformMap;
-        const t = getStyle(element, 'transform');
-        if (t && t !== 'none' && t !== IDENTITY_MATRIX && t !== IDENTITY_MATRIX_3D) {
-          transformMap.set(element, t);
-        } else {
-          transformMap.set(element, '');
-        }
+    getStartPosition: ({ item }) => {
+      // Store item element's initial transform.
+      const t = getStyle(item.element, 'transform');
+      if (t && t !== 'none' && t !== IDENTITY_MATRIX && t !== IDENTITY_MATRIX_3D) {
+        (item as Writeable<typeof item>)._transform = t;
+      } else {
+        (item as Writeable<typeof item>)._transform = '';
       }
       return { x: 0, y: 0 };
     },
-    setElementPosition: ({ draggable, element, x, y }) => {
-      const { drag } = draggable;
-      const transformMap: TransformMap | undefined = drag?.extraData.transformMap;
-      const initTransform = transformMap?.get(element) || '';
-
-      element.style.transform = `translate(${x}px, ${y}px) ${initTransform}`;
+    setPosition: ({ item, x, y }) => {
+      item.element.style.transform = `translate(${x}px, ${y}px) ${item._transform}`;
     },
-    getElementPositionChange: ({ event, prevEvent }) => {
-      POSITION_CHANGE.x = event.clientX - prevEvent.clientX;
-      POSITION_CHANGE.y = event.clientY - prevEvent.clientY;
+    getPositionChange: ({ event, prevEvent }) => {
+      POSITION_CHANGE.x = event.x - prevEvent.x;
+      POSITION_CHANGE.y = event.y - prevEvent.y;
       return POSITION_CHANGE;
     },
   };
 }
-
-export interface DraggableEventCallbacks<E extends SensorEvents> {
-  beforestart(event: E['start'] | E['move']): void;
-  start(event: E['start'] | E['move']): void;
-  beforemove(event: E['move']): void;
-  move(event: E['move']): void;
-  beforeend(event: E['end'] | E['cancel'] | E['destroy'] | null): void;
-  end(event: E['end'] | E['cancel'] | E['destroy'] | null): void;
-  destroy(): void;
-}
-
-export type DraggablePlugin<S extends Sensor[], E extends S[number]['events']> = (
-  draggable: Draggable<S, E>
-) => {
-  name: string;
-  version: string;
-  [key: string]: any;
-};
 
 export interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
   container: HTMLElement | null;
@@ -165,49 +143,63 @@ export interface DraggableSettings<S extends Sensor[], E extends S[number]['even
     sensor: S[number];
     elements: HTMLElement[];
   }) => void;
-  getElementStartPosition: (data: {
+  getStartPosition: (data: {
     draggable: Draggable<S, E>;
     sensor: S[number];
-    element: HTMLElement;
+    item: DraggableDragItem;
   }) => { x: number; y: number };
-  setElementPosition: (data: {
+  setPosition: (data: {
     draggable: Draggable<S, E>;
     sensor: S[number];
     phase: 'start' | 'move' | 'end';
-    element: HTMLElement;
+    item: DraggableDragItem;
     x: number;
     y: number;
   }) => void;
-  getElementPositionChange: (data: {
+  getPositionChange: (data: {
     draggable: Draggable<S, E>;
     sensor: S[number];
-    element: HTMLElement;
+    item: DraggableDragItem;
     event: E['move'];
     prevEvent: E['start'] | E['move'];
     startEvent: E['start'] | E['move'];
   }) => { x: number; y: number };
 }
 
-export type DraggableOptions<S extends Sensor[], E extends S[number]['events']> = Partial<
-  DraggableSettings<S, E>
->;
+export interface DraggablePlugin {
+  name: string;
+  version: string;
+}
+
+export type DraggablePluginMap = Record<string, DraggablePlugin | undefined>;
+
+export interface DraggableEventCallbacks<E extends SensorEvents> {
+  beforestart(event: E['start'] | E['move']): void;
+  start(event: E['start'] | E['move']): void;
+  beforemove(event: E['move']): void;
+  move(event: E['move']): void;
+  beforeend(event: E['end'] | E['cancel'] | E['destroy'] | null): void;
+  end(event: E['end'] | E['cancel'] | E['destroy'] | null): void;
+  destroy(): void;
+}
 
 export class Draggable<
   S extends Sensor[] = Sensor[],
-  E extends S[number]['events'] = S[number]['events']
+  E extends S[number]['events'] = S[number]['events'],
+  P extends DraggablePluginMap = {}
 > {
   readonly sensors: S;
   readonly settings: DraggableSettings<S, E>;
-  readonly drag: DraggableDragData<S, E> | null;
-  readonly plugins: Map<string, ReturnType<DraggablePlugin<S, E>>>;
+  readonly plugins: P;
+  readonly drag: DraggableDrag<S, E> | null;
   readonly isDestroyed: boolean;
   protected _sensorData: Map<
     S[number],
     {
-      predicateState: StartPredicateState;
+      predicateState: DraggableStartPredicateState;
       predicateEvent: E['start'] | E['move'] | null;
-      onMove: (e: Parameters<Draggable<S, E>['_onMove']>[0]) => void;
-      onEnd: (e: Parameters<Draggable<S, E>['_onEnd']>[0]) => void;
+      onMove: (e: Parameters<Draggable<S, E, P>['_onMove']>[0]) => void;
+      onEnd: (e: Parameters<Draggable<S, E, P>['_onEnd']>[0]) => void;
     }
   >;
   protected _emitter: Emitter<{
@@ -217,11 +209,11 @@ export class Draggable<
   protected _moveId: symbol;
   protected _syncId: symbol;
 
-  constructor(sensors: S, options: DraggableOptions<S, E> = {}) {
+  constructor(sensors: S, options: Partial<DraggableSettings<S, E>> = {}) {
     this.sensors = sensors;
     this.settings = this._parseSettings(options);
+    this.plugins = {} as P;
     this.drag = null;
-    this.plugins = new Map();
     this.isDestroyed = false;
 
     this._sensorData = new Map();
@@ -238,13 +230,13 @@ export class Draggable<
     this._applyStart = this._applyStart.bind(this);
     this._prepareMove = this._prepareMove.bind(this);
     this._applyMove = this._applyMove.bind(this);
-    this._prepareSynchronize = this._prepareSynchronize.bind(this);
-    this._applySynchronize = this._applySynchronize.bind(this);
+    this._prepareSync = this._prepareSync.bind(this);
+    this._applySync = this._applySync.bind(this);
 
     // Bind drag sensor events.
     this.sensors.forEach((sensor) => {
       this._sensorData.set(sensor, {
-        predicateState: StartPredicateState.PENDING,
+        predicateState: DraggableStartPredicateState.PENDING,
         predicateEvent: null,
         onMove: (e) => this._onMove(e, sensor),
         onEnd: (e) => this._onEnd(e, sensor),
@@ -259,17 +251,17 @@ export class Draggable<
   }
 
   protected _parseSettings(
-    options?: DraggableOptions<S, E>,
-    defaults: DraggableSettings<S, E> = getDefaultSettings()
-  ): DraggableSettings<S, E> {
+    options?: Partial<this['settings']>,
+    defaults: this['settings'] = getDefaultSettings()
+  ): this['settings'] {
     const {
       container = defaults.container,
       startPredicate = defaults.startPredicate,
       getElements = defaults.getElements,
       releaseElements = defaults.releaseElements,
-      getElementStartPosition = defaults.getElementStartPosition,
-      setElementPosition = defaults.setElementPosition,
-      getElementPositionChange = defaults.getElementPositionChange,
+      getStartPosition = defaults.getStartPosition,
+      setPosition = defaults.setPosition,
+      getPositionChange = defaults.getPositionChange,
     } = options || {};
 
     return {
@@ -277,9 +269,9 @@ export class Draggable<
       startPredicate,
       getElements,
       releaseElements,
-      getElementStartPosition,
-      setElementPosition,
-      getElementPositionChange,
+      getStartPosition,
+      setPosition,
+      getPositionChange,
     };
   }
 
@@ -295,7 +287,7 @@ export class Draggable<
     if (!sensorData) return;
 
     switch (sensorData.predicateState) {
-      case StartPredicateState.PENDING: {
+      case DraggableStartPredicateState.PENDING: {
         sensorData.predicateEvent = e;
 
         // Check if drag should start.
@@ -315,10 +307,10 @@ export class Draggable<
         }
         break;
       }
-      case StartPredicateState.RESOLVED: {
+      case DraggableStartPredicateState.RESOLVED: {
         // Move the element if dragging is active.
         if (this.drag) {
-          (this.drag as Writeable<DraggableDragData<S, E>>).nextMoveEvent = e as E['move'];
+          (this.drag as Writeable<DraggableDrag<S, E>>).nextMoveEvent = e as E['move'];
           ticker.once(tickerReadPhase, this._prepareMove, this._moveId);
           ticker.once(tickerWritePhase, this._applyMove, this._moveId);
         }
@@ -328,7 +320,7 @@ export class Draggable<
   }
 
   protected _onScroll() {
-    this.synchronize();
+    this.fixLayoutShift();
   }
 
   protected _onEnd(e: E['end'] | E['cancel'] | E['destroy'], sensor: S[number]) {
@@ -338,15 +330,15 @@ export class Draggable<
     // If there is no active drag yet, let's reset the sensor's start predicate
     // so that it can try starting drag again.
     if (!this.drag) {
-      sensorData.predicateState = StartPredicateState.PENDING;
+      sensorData.predicateState = DraggableStartPredicateState.PENDING;
       sensorData.predicateEvent = null;
     }
     // Otherwise, if drag is active AND the sensor is the one that triggered the
     // drag process, let's reset all sensors' start preidcate states.
-    else if (sensorData.predicateState === StartPredicateState.RESOLVED) {
-      (this.drag as Writeable<DraggableDragData<S, E>>).endEvent = e;
+    else if (sensorData.predicateState === DraggableStartPredicateState.RESOLVED) {
+      (this.drag as Writeable<DraggableDrag<S, E>>).endEvent = e;
       this._sensorData.forEach((data) => {
-        data.predicateState = StartPredicateState.PENDING;
+        data.predicateState = DraggableStartPredicateState.PENDING;
         data.predicateEvent = null;
       });
       this.stop();
@@ -368,57 +360,57 @@ export class Draggable<
       }) || [];
 
     // Create drag items.
-    (drag as Writeable<DraggableDragData<S, E>>).items = elements.map((element) => {
+    (drag as Writeable<DraggableDrag<S, E>>).items = elements.map((element) => {
       // Make sure element is in connected (to DOM or shadow DOM).
       // https://developer.mozilla.org/en-US/docs/Web/API/Node/isConnected
       if (!element.isConnected) {
         throw new Error('Element is not connected');
       }
 
-      const item: Writeable<DraggableDragItem> = new DraggableDragItem();
-
-      // Store item element.
-      item.element = element;
-
       // Get element's parent.
       const rootParent = element.parentNode as HTMLElement;
-      item.rootParent = rootParent;
 
       // Get parent's containing block.
       const rootContainingBlock = getContainingBlock(rootParent);
-      item.rootContainingBlock = rootContainingBlock;
 
       // Get element's drag parent.
       const dragParent = this.settings.container || rootParent;
-      item.dragParent = dragParent;
 
       // Get drag container's containing block.
       const dragContainingBlock =
         dragParent === rootParent ? rootContainingBlock : getContainingBlock(dragParent);
-      item.dragContainingBlock = dragContainingBlock;
 
-      // Compute element's current elementX/Y.
-      const { x, y } = this.settings.getElementStartPosition({
-        draggable: this,
-        sensor: drag.sensor!,
+      // Create drag item.
+      const item: Writeable<DraggableDragItem> = new DraggableDragItem(
         element,
-      });
-      item.x = x;
-      item.y = y;
+        rootParent,
+        rootContainingBlock,
+        dragParent,
+        dragContainingBlock
+      );
 
       // Compute the element's current clientX/Y.
       const clientRect = element.getBoundingClientRect();
-      item.clientX = clientRect.left;
-      item.clientY = clientRect.top;
+      item.x = clientRect.left;
+      item.y = clientRect.top;
 
       // If parent's containing block is different than drag container's
       // containing block let's compute the offset difference between the
       // containing blocks.
       if (rootContainingBlock !== dragContainingBlock) {
         const { left, top } = getOffsetDiff(dragContainingBlock, rootContainingBlock, OFFSET_DIFF);
-        item.containerDiffX = left;
-        item.containerDiffY = top;
+        item._containerDiffX = left;
+        item._containerDiffY = top;
       }
+
+      // Lastly, compute element's current elementX/Y.
+      const { x, y } = this.settings.getStartPosition({
+        draggable: this,
+        sensor: drag.sensor!,
+        item,
+      });
+      item.pX = x;
+      item.pY = y;
 
       return item;
     });
@@ -441,16 +433,16 @@ export class Draggable<
         if (!item.element) continue;
         if (item.element.parentNode !== container) {
           container.appendChild(item.element);
-          (item as Writeable<typeof item>).x += item.containerDiffX;
-          (item as Writeable<typeof item>).y += item.containerDiffY;
+          (item as Writeable<typeof item>).pX += item._containerDiffX;
+          (item as Writeable<typeof item>).pY += item._containerDiffY;
         }
-        this.settings.setElementPosition({
+        this.settings.setPosition({
           phase: 'start',
           draggable: this,
           sensor: drag.sensor!,
-          element: item.element,
-          x: item.x,
-          y: item.y,
+          item,
+          x: item.pX,
+          y: item.pY,
         });
       }
     }
@@ -459,7 +451,7 @@ export class Draggable<
     window.addEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
 
     // Mark drag as started.
-    (drag as Writeable<DraggableDragData<S, E>>).isStarted = true;
+    (drag as Writeable<DraggableDrag<S, E>>).isStarted = true;
 
     // Emit start event.
     this._emit('start', drag.startEvent);
@@ -479,10 +471,10 @@ export class Draggable<
       if (!item.element) continue;
 
       // Compute how much x and y needs to be transformed.
-      const { x: changeX, y: changeY } = this.settings.getElementPositionChange({
+      const { x: changeX, y: changeY } = this.settings.getPositionChange({
         draggable: this,
         sensor: drag.sensor!,
-        element: item.element,
+        item,
         startEvent: drag.startEvent,
         prevEvent,
         event: nextEvent,
@@ -490,21 +482,21 @@ export class Draggable<
 
       // Update horizontal position data.
       if (changeX) {
-        (item as Writeable<typeof item>).x = item.x - item.moveDiffX + changeX;
-        (item as Writeable<typeof item>).clientX = item.clientX - item.moveDiffX + changeX;
-        (item as Writeable<typeof item>).moveDiffX = changeX;
+        (item as Writeable<typeof item>).pX = item.pX - item._moveDiffX + changeX;
+        (item as Writeable<typeof item>).x = item.x - item._moveDiffX + changeX;
+        (item as Writeable<typeof item>)._moveDiffX = changeX;
       }
 
       // Update vertical position data.
       if (changeY) {
-        (item as Writeable<typeof item>).y = item.y - item.moveDiffY + changeY;
-        (item as Writeable<typeof item>).clientY = item.clientY - item.moveDiffY + changeY;
-        (item as Writeable<typeof item>).moveDiffY = changeY;
+        (item as Writeable<typeof item>).pY = item.pY - item._moveDiffY + changeY;
+        (item as Writeable<typeof item>).y = item.y - item._moveDiffY + changeY;
+        (item as Writeable<typeof item>)._moveDiffY = changeY;
       }
     }
 
     // Store next event as previous event.
-    (drag as Writeable<DraggableDragData<S, E>>).prevMoveEvent = nextEvent;
+    (drag as Writeable<DraggableDrag<S, E>>).prevMoveEvent = nextEvent;
   }
 
   protected _applyMove() {
@@ -513,8 +505,8 @@ export class Draggable<
 
     // Reset movement diff.
     for (const item of drag.items) {
-      (item as Writeable<typeof item>).moveDiffX = 0;
-      (item as Writeable<typeof item>).moveDiffY = 0;
+      (item as Writeable<typeof item>)._moveDiffX = 0;
+      (item as Writeable<typeof item>)._moveDiffY = 0;
     }
 
     // Emit beforemove event.
@@ -526,13 +518,13 @@ export class Draggable<
     // Move the element.
     for (const item of drag.items) {
       if (!item.element) continue;
-      this.settings.setElementPosition({
+      this.settings.setPosition({
         phase: 'move',
         draggable: this,
         sensor: drag.sensor!,
-        element: item.element,
-        x: item.x,
-        y: item.y,
+        item,
+        x: item.pX,
+        y: item.pY,
       });
     }
 
@@ -540,7 +532,7 @@ export class Draggable<
     this._emit('move', drag.nextMoveEvent);
   }
 
-  protected _prepareSynchronize() {
+  protected _prepareSync() {
     const { drag } = this;
     if (!drag) return;
 
@@ -554,39 +546,39 @@ export class Draggable<
           item.rootContainingBlock as HTMLElement | Document,
           OFFSET_DIFF
         );
-        (item as Writeable<typeof item>).containerDiffX = left;
-        (item as Writeable<typeof item>).containerDiffY = top;
+        (item as Writeable<typeof item>)._containerDiffX = left;
+        (item as Writeable<typeof item>)._containerDiffY = top;
       }
 
       const { left, top } = item.element.getBoundingClientRect();
 
       // Update horizontal position data.
-      const syncDiffX = item.clientX - item.moveDiffX - left;
-      (item as Writeable<typeof item>).x = item.x - item.syncDiffX + syncDiffX;
-      (item as Writeable<typeof item>).syncDiffX = syncDiffX;
+      const _syncDiffX = item.x - item._moveDiffX - left;
+      (item as Writeable<typeof item>).pX = item.pX - item._syncDiffX + _syncDiffX;
+      (item as Writeable<typeof item>)._syncDiffX = _syncDiffX;
 
       // Update vertical position data.
-      const syncDiffY = item.clientY - item.moveDiffY - top;
-      (item as Writeable<typeof item>).y = item.y - item.syncDiffY + syncDiffY;
-      (item as Writeable<typeof item>).syncDiffY = syncDiffY;
+      const _syncDiffY = item.y - item._moveDiffY - top;
+      (item as Writeable<typeof item>).pY = item.pY - item._syncDiffY + _syncDiffY;
+      (item as Writeable<typeof item>)._syncDiffY = _syncDiffY;
     }
   }
 
-  protected _applySynchronize() {
+  protected _applySync() {
     const { drag } = this;
     if (!drag) return;
 
     for (const item of drag.items) {
       if (!item.element) continue;
-      (item as Writeable<typeof item>).syncDiffX = 0;
-      (item as Writeable<typeof item>).syncDiffY = 0;
-      this.settings.setElementPosition({
+      (item as Writeable<typeof item>)._syncDiffX = 0;
+      (item as Writeable<typeof item>)._syncDiffY = 0;
+      this.settings.setPosition({
         phase: 'move',
         draggable: this,
         sensor: drag.sensor!,
-        element: item.element,
-        x: item.x,
-        y: item.y,
+        item,
+        x: item.pX,
+        y: item.pY,
       });
     }
   }
@@ -606,14 +598,14 @@ export class Draggable<
     this._emitter.off(eventName, listener);
   }
 
-  synchronize(syncImmediately = false) {
+  fixLayoutShift(synchronously = false) {
     if (!this.drag) return;
-    if (syncImmediately) {
-      this._prepareSynchronize();
-      this._applySynchronize();
+    if (synchronously) {
+      this._prepareSync();
+      this._applySync();
     } else {
-      ticker.once(tickerReadPhase, this._prepareSynchronize, this._syncId);
-      ticker.once(tickerWritePhase, this._applySynchronize, this._syncId);
+      ticker.once(tickerReadPhase, this._prepareSync, this._syncId);
+      ticker.once(tickerWritePhase, this._applySync, this._syncId);
     }
   }
 
@@ -623,18 +615,18 @@ export class Draggable<
 
     const startEvent = e || sensorData.predicateEvent;
 
-    if (sensorData.predicateState === StartPredicateState.PENDING && startEvent) {
+    if (sensorData.predicateState === DraggableStartPredicateState.PENDING && startEvent) {
       // Resolve the provided sensor's start predicate.
-      sensorData.predicateState = StartPredicateState.RESOLVED;
+      sensorData.predicateState = DraggableStartPredicateState.RESOLVED;
       sensorData.predicateEvent = null;
-      (this as Writeable<this>).drag = new DraggableDragData();
-      (this.drag as Writeable<DraggableDragData<S, E>>).sensor = sensor;
-      (this.drag as Writeable<DraggableDragData<S, E>>).startEvent = startEvent;
+      (this as Writeable<this>).drag = new DraggableDrag();
+      (this.drag as Writeable<DraggableDrag<S, E>>).sensor = sensor;
+      (this.drag as Writeable<DraggableDrag<S, E>>).startEvent = startEvent;
 
       // Reject other sensors' start predicates.
       this._sensorData.forEach((data, s) => {
         if (s === sensor) return;
-        data.predicateState = StartPredicateState.REJECTED;
+        data.predicateState = DraggableStartPredicateState.REJECTED;
         data.predicateEvent = null;
       });
 
@@ -646,8 +638,8 @@ export class Draggable<
 
   rejectStartPredicate(sensor: S[number]) {
     const sensorData = this._sensorData.get(sensor);
-    if (sensorData?.predicateState === StartPredicateState.PENDING) {
-      sensorData.predicateState = StartPredicateState.REJECTED;
+    if (sensorData?.predicateState === DraggableStartPredicateState.PENDING) {
+      sensorData.predicateState = DraggableStartPredicateState.REJECTED;
       sensorData.predicateEvent = null;
     }
   }
@@ -657,7 +649,7 @@ export class Draggable<
     if (!drag || drag.isEnded) return;
 
     // Mark drag process as ended.
-    (drag as Writeable<DraggableDragData<S, E>>).isEnded = true;
+    (drag as Writeable<DraggableDrag<S, E>>).isEnded = true;
 
     // Emit beforeend event.
     this._emit('beforeend', drag.endEvent);
@@ -682,19 +674,19 @@ export class Draggable<
         if (!item.element) continue;
         elements.push(item.element);
         if (item.rootParent && item.element.parentNode !== item.rootParent) {
-          (item as Writeable<typeof item>).x -= item.containerDiffX;
-          (item as Writeable<typeof item>).y -= item.containerDiffY;
-          (item as Writeable<typeof item>).containerDiffX = 0;
-          (item as Writeable<typeof item>).containerDiffY = 0;
+          (item as Writeable<typeof item>).pX -= item._containerDiffX;
+          (item as Writeable<typeof item>).pY -= item._containerDiffY;
+          (item as Writeable<typeof item>)._containerDiffX = 0;
+          (item as Writeable<typeof item>)._containerDiffY = 0;
           item.rootParent.appendChild(item.element);
         }
-        this.settings.setElementPosition({
+        this.settings.setPosition({
           phase: 'end',
           draggable: this,
           sensor: drag.sensor!,
-          element: item.element,
-          x: item.x,
-          y: item.y,
+          item,
+          x: item.pX,
+          y: item.pY,
         });
       }
 
@@ -715,24 +707,14 @@ export class Draggable<
     (this as Writeable<this>).drag = null;
   }
 
-  updateSettings(options: DraggableOptions<S, E> = {}) {
+  updateSettings(options: Partial<this['settings']> = {}) {
     (this as Writeable<this>).settings = this._parseSettings(options, this.settings);
   }
 
-  use(plugin: DraggablePlugin<S, E>) {
-    const pluginInstance = plugin(this);
-
-    if (!pluginInstance.name) {
-      throw new Error('Plugin has no name.');
-    }
-
-    if (this.plugins.has(pluginInstance.name)) {
-      throw new Error(`${pluginInstance.name} plugin is already added.`);
-    }
-
-    this.plugins.set(pluginInstance.name, pluginInstance);
-
-    return this;
+  use<SS extends S, EE extends SS[number]['events'], PP extends P>(
+    plugin: (draggable: this) => Draggable<SS, EE, PP>
+  ) {
+    return plugin(this);
   }
 
   destroy() {
