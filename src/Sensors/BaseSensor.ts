@@ -67,7 +67,7 @@ export class BaseSensor<E extends SensorEvents = SensorEvents> implements Sensor
   on<K extends keyof E>(
     eventName: K,
     listener: (e: E[K]) => void,
-    listenerId?: EventListenerId
+    listenerId?: EventListenerId,
   ): EventListenerId {
     return this._emitter.on(eventName, listener, listenerId);
   }

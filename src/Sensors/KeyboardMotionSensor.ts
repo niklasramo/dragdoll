@@ -3,11 +3,11 @@ import { Sensor } from './Sensor';
 import { BaseMotionSensor, BaseMotionSensorEvents } from './BaseMotionSensor';
 
 export interface KeyboardMotionSensorSettings<
-  E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents
+  E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents,
 > {
   startPredicate: (
     e: KeyboardEvent,
-    sensor: KeyboardMotionSensor<E>
+    sensor: KeyboardMotionSensor<E>,
   ) => { x: number; y: number } | null | undefined;
   computeSpeed: (sensor: KeyboardMotionSensor<E>) => number;
   startKeys: string[];
@@ -229,7 +229,7 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
 
       // Check if the next move keys are equal to the current ones.
       const areMoveKeysEqual = [...this._moveKeys].every(
-        (key, index) => nextMoveKeys[index] === key
+        (key, index) => nextMoveKeys[index] === key,
       );
 
       // Update move keys if needed.

@@ -5,7 +5,7 @@ import { isScrollable } from './isScrollable';
  */
 export function getScrollableAncestors(
   element: HTMLElement | Document | null,
-  result: (HTMLElement | Window)[] = []
+  result: (HTMLElement | Window)[] = [],
 ) {
   let parent: HTMLElement | Document | ShadowRoot | null = null;
 

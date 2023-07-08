@@ -9,7 +9,7 @@ import {
 export function createFakeTouchEvent(
   type: FakeTouchEventType,
   options: FakeTouchOptions &
-    Omit<FakeTouchEventOptions, 'touches' | 'targetTouches' | 'changedTouches'> = {}
+    Omit<FakeTouchEventOptions, 'touches' | 'targetTouches' | 'changedTouches'> = {},
 ) {
   const {
     identifier,

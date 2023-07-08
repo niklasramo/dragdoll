@@ -173,7 +173,7 @@ export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
     element.addEventListener(
       SOURCE_EVENTS[this._sourceEvents].start,
       this._onStart as EventListener,
-      this._listenerOptions
+      this._listenerOptions,
     );
   }
 
@@ -183,7 +183,7 @@ export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
    * return the event or touch object. Otherwise return null.
    */
   protected _getTrackedPointerEventData(
-    e: PointerSensorSourceEvent
+    e: PointerSensorSourceEvent,
   ): PointerEvent | MouseEvent | Touch | null {
     return this.drag ? getPointerEventData(e, this.drag.pointerId) : null;
   }
@@ -383,7 +383,7 @@ export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
       this.element.removeEventListener(
         SOURCE_EVENTS[this._sourceEvents].start,
         this._onStart as EventListener,
-        this._listenerOptions
+        this._listenerOptions,
       );
 
       // Unbind window listeners.
@@ -404,7 +404,7 @@ export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
       this.element.addEventListener(
         SOURCE_EVENTS[this._sourceEvents].start,
         this._onStart as EventListener,
-        this._listenerOptions
+        this._listenerOptions,
       );
     }
   }
@@ -415,7 +415,7 @@ export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
   on<K extends keyof E>(
     eventName: K,
     listener: (e: E[K]) => void,
-    listenerId?: EventListenerId
+    listenerId?: EventListenerId,
   ): EventListenerId {
     return this._emitter.on(eventName, listener, listenerId);
   }
@@ -451,7 +451,7 @@ export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
     this.element.removeEventListener(
       SOURCE_EVENTS[this._sourceEvents].start,
       this._onStart as EventListener,
-      this._listenerOptions
+      this._listenerOptions,
     );
   }
 }

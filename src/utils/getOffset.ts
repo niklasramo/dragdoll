@@ -8,7 +8,7 @@ import { getStyleAsFloat } from './getStyleAsFloat';
  */
 export function getOffset(
   element: HTMLElement | Document | Window,
-  result: { left: number; top: number } = { left: 0, top: 0 }
+  result: { left: number; top: number } = { left: 0, top: 0 },
 ) {
   // Set up return data.
   result.left = 0;

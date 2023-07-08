@@ -12,7 +12,7 @@ import { BaseSensor } from './BaseSensor';
 export type KeyboardSensorPredicate = (
   e: KeyboardEvent,
   sensor: KeyboardSensor,
-  moveDistance: number
+  moveDistance: number,
 ) => { x: number; y: number } | null | undefined;
 
 export interface KeyboardSensorSettings {

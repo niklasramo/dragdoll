@@ -106,7 +106,7 @@ describe('PointerSensor', () => {
         {
           eventType: 'mouse',
           stepDuration: 0,
-        }
+        },
       );
 
       // ...which should trigger only mouse sensor events.
@@ -127,7 +127,7 @@ describe('PointerSensor', () => {
         {
           eventType: 'pointer',
           stepDuration: 0,
-        }
+        },
       );
 
       // ...which should trigger only pointer sensor events.
@@ -148,7 +148,7 @@ describe('PointerSensor', () => {
         {
           eventType: 'touch',
           stepDuration: 0,
-        }
+        },
       );
 
       // ...which should trigger only touch sensor events.
@@ -255,7 +255,7 @@ describe('PointerSensor', () => {
               sourceEvent = e;
             }
           },
-        }
+        },
       );
 
       assert.deepEqual(startEvent, {
@@ -302,7 +302,7 @@ describe('PointerSensor', () => {
               sourceEvent = e;
             }
           },
-        }
+        },
       );
 
       assert.deepEqual(startEvent, {
@@ -349,7 +349,7 @@ describe('PointerSensor', () => {
               sourceEvent = e;
             }
           },
-        }
+        },
       );
 
       assert.deepEqual(startEvent, {
@@ -398,7 +398,7 @@ describe('PointerSensor', () => {
               sourceEvent = e;
             }
           },
-        }
+        },
       );
 
       assert.deepEqual(moveEvent, {
@@ -445,7 +445,7 @@ describe('PointerSensor', () => {
               sourceEvent = e;
             }
           },
-        }
+        },
       );
 
       assert.deepEqual(moveEvent, {
@@ -492,7 +492,7 @@ describe('PointerSensor', () => {
               sourceEvent = e;
             }
           },
-        }
+        },
       );
 
       assert.deepEqual(moveEvent, {
@@ -541,7 +541,7 @@ describe('PointerSensor', () => {
               sourceEvent = e;
             }
           },
-        }
+        },
       );
 
       assert.deepEqual(endEvent, {
@@ -588,7 +588,7 @@ describe('PointerSensor', () => {
               sourceEvent = e;
             }
           },
-        }
+        },
       );
 
       assert.deepEqual(endEvent, {
@@ -635,7 +635,7 @@ describe('PointerSensor', () => {
               sourceEvent = e;
             }
           },
-        }
+        },
       );
 
       assert.deepEqual(endEvent, {
@@ -685,7 +685,7 @@ describe('PointerSensor', () => {
               sourceEvent = e;
             }
           },
-        }
+        },
       );
 
       assert.deepEqual(cancelEvent, {
@@ -733,7 +733,7 @@ describe('PointerSensor', () => {
               sourceEvent = e;
             }
           },
-        }
+        },
       );
 
       assert.deepEqual(cancelEvent, {

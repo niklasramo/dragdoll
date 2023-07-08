@@ -293,19 +293,19 @@ describe('BaseSensor', () => {
       const idA = Symbol();
       assert.equal(
         s.on('start', () => {}, idA),
-        idA
+        idA,
       );
 
       const idB = 1;
       assert.equal(
         s.on('start', () => {}, idB),
-        idB
+        idB,
       );
 
       const idC = 'foo';
       assert.equal(
         s.on('start', () => {}, idC),
-        idC
+        idC,
       );
     });
   });

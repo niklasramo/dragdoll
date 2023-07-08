@@ -198,14 +198,14 @@ export interface AutoScrollItemTarget {
 
 export type AutoScrollItemEventCallback = (
   scrollElement: Window | HTMLElement,
-  scrollDirection: ReturnType<typeof getDirectionAsString>
+  scrollDirection: ReturnType<typeof getDirectionAsString>,
 ) => void;
 
 export type AutoScrollItemEffectCallback = () => void;
 
 export type AutoScrollItemSpeedCallback = (
   scrollElement: Window | HTMLElement,
-  scrollData: AutoScrollSpeedData
+  scrollData: AutoScrollSpeedData,
 ) => number;
 
 //
@@ -220,7 +220,7 @@ function computeEdgeOffset(
   threshold: number,
   inertAreaSize: number,
   itemSize: number,
-  targetSize: number
+  targetSize: number,
 ) {
   return Math.max(0, itemSize + threshold * 2 + targetSize * inertAreaSize - targetSize) / 2;
 }
@@ -437,7 +437,7 @@ export function autoScrollSmoothSpeed(
   // Time in seconds, how long it will take to accelerate from 0 to maxSpeed.
   accelerationFactor = 0.5,
   // Time in seconds, how long it will take to decelerate maxSpeed to 0.
-  decelerationFactor = 0.25
+  decelerationFactor = 0.25,
 ): AutoScrollItemSpeedCallback {
   const acceleration = maxSpeed * (accelerationFactor > 0 ? 1 / accelerationFactor : Infinity);
   const deceleration = maxSpeed * (decelerationFactor > 0 ? 1 / decelerationFactor : Infinity);
@@ -510,11 +510,11 @@ export class AutoScroll {
     this._itemData = new Map();
     this._requestPool = new Pool<AutoScrollRequest>(
       () => new AutoScrollRequest(),
-      (request) => request.reset()
+      (request) => request.reset(),
     );
     this._actionPool = new Pool<AutoScrollAction>(
       () => new AutoScrollAction(),
-      (action) => action.reset()
+      (action) => action.reset(),
     );
 
     this._emitter = new Emitter();
@@ -560,7 +560,7 @@ export class AutoScroll {
 
   protected _getItemClientRect(
     item: AutoScrollItem,
-    result: RectExtended = { width: 0, height: 0, left: 0, right: 0, top: 0, bottom: 0 }
+    result: RectExtended = { width: 0, height: 0, left: 0, right: 0, top: 0, bottom: 0 },
   ) {
     const { clientRect } = item;
     result.left = clientRect.left;
@@ -579,7 +579,7 @@ export class AutoScroll {
     direction: AutoScrollDirection,
     threshold: number,
     distance: number,
-    maxValue: number
+    maxValue: number,
   ) {
     const reqMap = this._requests[axis];
     let request = reqMap.get(item);
@@ -702,7 +702,7 @@ export class AutoScroll {
           testThreshold,
           inertAreaSize,
           itemRect.width,
-          testRect.width
+          testRect.width,
         );
 
         if (moveDirectionX === AUTO_SCROLL_DIRECTION.right) {
@@ -745,7 +745,7 @@ export class AutoScroll {
           testThreshold,
           inertAreaSize,
           itemRect.height,
-          testRect.height
+          testRect.height,
         );
 
         if (moveDirectionY === AUTO_SCROLL_DIRECTION.down) {
@@ -785,7 +785,7 @@ export class AutoScroll {
           xDirection,
           xThreshold,
           xDistance,
-          xMaxScroll
+          xMaxScroll,
         );
       } else {
         this._cancelItemScroll(item, AUTO_SCROLL_AXIS.x);
@@ -802,7 +802,7 @@ export class AutoScroll {
           yDirection,
           yThreshold,
           yDistance,
-          yMaxScroll
+          yMaxScroll,
         );
       } else {
         this._cancelItemScroll(item, AUTO_SCROLL_AXIS.y);
@@ -857,7 +857,7 @@ export class AutoScroll {
         typeof target.threshold === 'number' ? target.threshold : DEFAULT_THRESHOLD;
       const testThreshold = computeThreshold(
         targetThreshold,
-        testIsAxisX ? testRect.width : testRect.height
+        testIsAxisX ? testRect.width : testRect.height,
       );
 
       // Compute edge offset.
@@ -865,7 +865,7 @@ export class AutoScroll {
         testThreshold,
         inertAreaSize,
         testIsAxisX ? itemRect.width : itemRect.height,
-        testIsAxisX ? testRect.width : testRect.height
+        testIsAxisX ? testRect.width : testRect.height,
       );
 
       // Compute distance (based on current direction).
@@ -1090,7 +1090,7 @@ export class AutoScroll {
    */
   on<T extends keyof AutoScrollEventCallbacks>(
     eventName: T,
-    listener: AutoScrollEventCallbacks[T]
+    listener: AutoScrollEventCallbacks[T],
   ): EventListenerId {
     return this._emitter.on(eventName, listener);
   }
@@ -1100,7 +1100,7 @@ export class AutoScroll {
    */
   off<T extends keyof AutoScrollEventCallbacks>(
     eventName: T,
-    listener: AutoScrollEventCallbacks[T] | EventListenerId
+    listener: AutoScrollEventCallbacks[T] | EventListenerId,
   ): void {
     this._emitter.off(eventName, listener);
   }

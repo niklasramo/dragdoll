@@ -9,7 +9,7 @@ const offsetB = { left: 0, top: 0 };
 export function getOffsetDiff(
   elemA: HTMLElement | Document,
   elemB: HTMLElement | Document,
-  result: { left: number; top: number } = { left: 0, top: 0 }
+  result: { left: number; top: number } = { left: 0, top: 0 },
 ) {
   result.left = 0;
   result.top = 0;

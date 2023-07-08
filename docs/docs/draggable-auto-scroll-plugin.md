@@ -86,7 +86,7 @@ type AutoScrollTarget = {
   axis?: 'x' | 'y' | 'xy';
   priority?: number;
   threshold?: number;
-  startPadding?: {
+  padding?: {
     left?: number;
     right?: number;
     top?: number;
@@ -123,6 +123,11 @@ Define the autoscroll targets that should be scrolled during drag. This can eith
   - Optional.
 - **`padding`**
   - By default the dragged element needs to overlap the target element for autoscrolling to start/continue. However, sometimes you might want to start/continue autoscrolling even if the dragged element is outside the target element, and this option allows you to do just that. Here you can define additional **virtual** padding for the target element, which is added to the element's dimensions when considering if it overlaps the dragged element or not. One practical use case for this is when you want to scroll the window, you most likely want to have infinite (use `Infinity` as padding value) padding on all side for the window element.
+  - Negative padding is not allowed.
+  - Default: `{ left: 0, right: 0, top: 0, bottom: 0 }`.
+  - Optional.
+- **`scrollPadding`**
+  - This works identically to the `padding` option, but is only used while the element is being auto-scrolled. If you don't define this then `padding` option's value will be used for both the start and scroll scenarios. You might want to use this in scenarios where you want to extend the auto-scrolled element's activation area after it has started auto-scrolling.
   - Negative padding is not allowed.
   - Default: `{ left: 0, right: 0, top: 0, bottom: 0 }`.
   - Optional.

@@ -425,13 +425,13 @@ declare class Draggable<S extends Sensor[] = Sensor[], E extends S[number]['even
     destroy(): void;
 }
 
-declare class Pool<O> {
-    protected _data: O[];
-    protected _createObject: () => O;
-    protected _onPut: ((object: O) => void) | undefined;
-    constructor(createObject: () => O, onPut?: (object: O) => void);
-    pick(): O;
-    put(object: O): void;
+declare class Pool<T> {
+    protected _data: T[];
+    protected _createObject: () => T;
+    protected _onPut: ((object: T) => void) | undefined;
+    constructor(createObject: () => T, onPut?: (object: T) => void);
+    pick(): T;
+    put(object: T): void;
     reset(): void;
 }
 

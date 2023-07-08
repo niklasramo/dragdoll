@@ -6,13 +6,11 @@
   --vp-button-brand-bg: #ff5555;
 }
 .VPImage.logo {
-  height: 40px;
+  height: 32px;
 }
 .VPFeatures .VPFeature {
   position: relative;
-  padding-left: 60px;
-  background-color: transparent;
-  border-color: var(--vp-c-divider-light);
+  padding-left: 34px;
 }
 .VPFeatures .VPFeature .icon {
   position: absolute;

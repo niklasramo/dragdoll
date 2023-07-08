@@ -53,7 +53,7 @@ class DraggableDragItem {
     rootParent: HTMLElement,
     rootContainingBlock: HTMLElement | Document,
     dragParent: HTMLElement,
-    dragContainingBlock: HTMLElement | Document
+    dragContainingBlock: HTMLElement | Document,
   ) {
     this.element = element;
     this.rootParent = rootParent;
@@ -186,7 +186,7 @@ export interface DraggableEventCallbacks<E extends SensorEvents> {
 export class Draggable<
   S extends Sensor[] = Sensor[],
   E extends S[number]['events'] = S[number]['events'],
-  P extends DraggablePluginMap = {}
+  P extends DraggablePluginMap = {},
 > {
   readonly sensors: S;
   readonly settings: DraggableSettings<S, E>;
@@ -252,7 +252,7 @@ export class Draggable<
 
   protected _parseSettings(
     options?: Partial<this['settings']>,
-    defaults: this['settings'] = getDefaultSettings()
+    defaults: this['settings'] = getDefaultSettings(),
   ): this['settings'] {
     const {
       container = defaults.container,
@@ -386,7 +386,7 @@ export class Draggable<
         rootParent,
         rootContainingBlock,
         dragParent,
-        dragContainingBlock
+        dragContainingBlock,
       );
 
       // Compute the element's current clientX/Y.
@@ -544,7 +544,7 @@ export class Draggable<
         const { left, top } = getOffsetDiff(
           item.dragContainingBlock as HTMLElement | Document,
           item.rootContainingBlock as HTMLElement | Document,
-          OFFSET_DIFF
+          OFFSET_DIFF,
         );
         (item as Writeable<typeof item>)._containerDiffX = left;
         (item as Writeable<typeof item>)._containerDiffY = top;
@@ -586,14 +586,14 @@ export class Draggable<
   on<K extends keyof DraggableEventCallbacks<E>>(
     eventName: K,
     listener: DraggableEventCallbacks<E>[K],
-    listenerId?: EventListenerId
+    listenerId?: EventListenerId,
   ): EventListenerId {
     return this._emitter.on(eventName, listener, listenerId);
   }
 
   off<K extends keyof DraggableEventCallbacks<E>>(
     eventName: K,
-    listener: DraggableEventCallbacks<E>[K] | EventListenerId
+    listener: DraggableEventCallbacks<E>[K] | EventListenerId,
   ): void {
     this._emitter.off(eventName, listener);
   }
@@ -712,7 +712,7 @@ export class Draggable<
   }
 
   use<SS extends S, EE extends SS[number]['events'], PP extends P>(
-    plugin: (draggable: this) => Draggable<SS, EE, PP>
+    plugin: (draggable: this) => Draggable<SS, EE, PP>,
   ) {
     return plugin(this);
   }

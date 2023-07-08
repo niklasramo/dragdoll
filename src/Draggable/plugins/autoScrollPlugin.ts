@@ -186,7 +186,7 @@ export type DraggableAutoScrollOptions<S extends Sensor[], E extends S[number]['
 
 export class DraggableAutoScroll<
   S extends Sensor[] = Sensor[],
-  E extends S[number]['events'] = S[number]['events']
+  E extends S[number]['events'] = S[number]['events'],
 > {
   readonly name: 'autoscroll';
   readonly version: string;
@@ -216,7 +216,7 @@ export class DraggableAutoScroll<
 
   protected _parseSettings(
     options?: Partial<this['settings']>,
-    defaults: this['settings'] = getDefaultSettings()
+    defaults: this['settings'] = getDefaultSettings(),
   ): this['settings'] {
     const {
       targets = defaults.targets,
@@ -249,7 +249,7 @@ export class DraggableAutoScroll<
 export function autoScrollPlugin<
   S extends Sensor[],
   E extends S[number]['events'],
-  P extends DraggablePluginMap
+  P extends DraggablePluginMap,
 >(options?: DraggableAutoScrollOptions<S, E>) {
   return (draggable: Draggable<S, E, P>) => {
     const p = new DraggableAutoScroll(draggable, options);
