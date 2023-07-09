@@ -114,9 +114,9 @@ Default is a function that stores the element's current computed transform and r
 
 ```ts
 type setPosition = (data: {
-  phase: 'start' | 'move' | 'end';
   draggable: Draggable;
   sensor: Sensor;
+  phase: 'start' | 'move' | 'end';
   item: DraggableDragItem;
   x: number;
   y: number;
@@ -198,7 +198,7 @@ type DraggableDragItem = {
   readonly dragParent: HTMLElement;
   // dragParent's containing block.
   readonly dragContainingBlock: HTMLElement | Document;
-  // Element's current position relative to the viewport (a.k.a client position).
+  // Element's current position relative to the viewport (a.k.a. client position).
   readonly x: number;
   readonly y: number;
   // Element's internal position during the drag. By default this reflects the
@@ -241,7 +241,7 @@ Is the Draggable instance destroyed or not?
 type on = (
   eventName: 'beforestart' | 'start' | 'beforemove' | 'move' | 'beforeend' | 'end' | 'destroy',
   listener: (e: SensorEvent | null | undefined) => void,
-  listenerId?: string | number | symbol
+  listenerId?: string | number | symbol,
 ) => string | number | symbol;
 
 // Usage
@@ -264,7 +264,7 @@ The method returns a listener id, which can be used to remove this specific list
 // Type
 type off = (
   eventName: 'beforestart' | 'start' | 'beforemove' | 'move' | 'beforeend' | 'end' | 'destroy',
-  target: Function | string | number | symbol
+  target: Function | string | number | symbol,
 ) => void;
 
 // Usage
@@ -273,23 +273,6 @@ draggable.off('start', id);
 ```
 
 Removes a listener (based on listener or listener id) from an event. The first argument is the event name and the second argument is either the listener function or listener id.
-
-### synchronize
-
-```ts
-// Type
-type synchronize = (syncImmediately?: boolean) => void;
-
-// Usage: synchronize asynchronously.
-draggable.synchronize();
-
-// Usage: synchronize immediately.
-draggable.synchronize(true);
-```
-
-Forcefully synchronizes the dragged elements' positions and offsets. This should be called if the dragged elements' positions/offsets might have been affected outside of the Draggable instance.
-
-By default the synchronization happens asynchronously in the next frame, but you can force it to happen immediately by providing `true` as the first argument. Note that there might be performance implications if you synchronize immediately in the form of reflow.
 
 ### stop
 
@@ -302,6 +285,23 @@ draggable.stop();
 ```
 
 Forcefully stops the draggable's current drag process.
+
+### updatePosition
+
+```ts
+// Type
+type updatePosition = (instant = false) => void;
+
+// Usage: update asynchronously on the next animation frame (no extra reflows, jank-free).
+draggable.updatePosition();
+
+// Usage: update instantly (causes extra reflows which may cause jank).
+draggable.updatePosition(true);
+```
+
+Forcefully recomputes the positions and offsets of all dragged elements. This should be called if the positions/offsets of the dragged elements or any of their ancestors change during drag. Draggable is smart enough to call this automatically when scrolling occurs during dragging, but if you manually change dimensions or positions of any element that affects the position/size of a dragged element you should call this manually.
+
+By default the synchronization happens asynchronously in the next frame, but you can force it to happen instantly by providing `true` as the first argument. Note that there might be performance implications if you update instantly (in the form of extra reflows).
 
 ### updateSettings
 
@@ -330,7 +330,7 @@ const draggable = new Draggable(
   ],
   {
     // Options here...
-  }
+  },
 )
   // Plugins here...
   .use(myPlugin)
@@ -383,7 +383,7 @@ type LoggerPluginOptions = {
 // The actual plugin is wrapped in a function via which we can pass user
 // options to the plugin.
 function loggerPlugin<S extends Sensor[], E extends S[number]['events']>(
-  options: LoggerPluginOptions = {}
+  options: LoggerPluginOptions = {},
 ) {
   // This is the actual Draggable plugin, a function which:
   // 1. Receives the Draggable instance as it's argument.

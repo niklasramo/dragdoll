@@ -151,14 +151,14 @@ class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['events']
   }
 
   onPrepareScrollEffect() {
-    const syncId = this._draggable['_syncId'];
-    ticker.off(tickerReadPhase, syncId);
-    ticker.off(tickerWritePhase, syncId);
-    this._draggable['_prepareSync']();
+    const updateId = this._draggable['_updateId'];
+    ticker.off(tickerReadPhase, updateId);
+    ticker.off(tickerWritePhase, updateId);
+    this._draggable['_preparePositionUpdate']();
   }
 
   onApplyScrollEffect() {
-    this._draggable['_applySync']();
+    this._draggable['_applyPositionUpdate']();
   }
 }
 

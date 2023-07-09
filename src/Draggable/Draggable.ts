@@ -40,8 +40,8 @@ class DraggableDragItem {
   readonly y: number;
   readonly pX: number;
   readonly pY: number;
-  readonly _syncDiffX: number;
-  readonly _syncDiffY: number;
+  readonly _updateDiffX: number;
+  readonly _updateDiffY: number;
   readonly _moveDiffX: number;
   readonly _moveDiffY: number;
   readonly _containerDiffX: number;
@@ -64,8 +64,8 @@ class DraggableDragItem {
     this.y = 0;
     this.pX = 0;
     this.pY = 0;
-    this._syncDiffX = 0;
-    this._syncDiffY = 0;
+    this._updateDiffX = 0;
+    this._updateDiffY = 0;
     this._moveDiffX = 0;
     this._moveDiffY = 0;
     this._containerDiffX = 0;
@@ -207,7 +207,7 @@ export class Draggable<
   }>;
   protected _startId: symbol;
   protected _moveId: symbol;
-  protected _syncId: symbol;
+  protected _updateId: symbol;
 
   constructor(sensors: S, options: Partial<DraggableSettings<S, E>> = {}) {
     this.sensors = sensors;
@@ -220,7 +220,7 @@ export class Draggable<
     this._emitter = new Emitter();
     this._startId = Symbol();
     this._moveId = Symbol();
-    this._syncId = Symbol();
+    this._updateId = Symbol();
 
     // Bind methods (that need binding).
     this._onMove = this._onMove.bind(this);
@@ -230,8 +230,8 @@ export class Draggable<
     this._applyStart = this._applyStart.bind(this);
     this._prepareMove = this._prepareMove.bind(this);
     this._applyMove = this._applyMove.bind(this);
-    this._prepareSync = this._prepareSync.bind(this);
-    this._applySync = this._applySync.bind(this);
+    this._preparePositionUpdate = this._preparePositionUpdate.bind(this);
+    this._applyPositionUpdate = this._applyPositionUpdate.bind(this);
 
     // Bind drag sensor events.
     this.sensors.forEach((sensor) => {
@@ -320,7 +320,7 @@ export class Draggable<
   }
 
   protected _onScroll() {
-    this.fixLayoutShift();
+    this.updatePosition();
   }
 
   protected _onEnd(e: E['end'] | E['cancel'] | E['destroy'], sensor: S[number]) {
@@ -532,7 +532,7 @@ export class Draggable<
     this._emit('move', drag.nextMoveEvent);
   }
 
-  protected _prepareSync() {
+  protected _preparePositionUpdate() {
     const { drag } = this;
     if (!drag) return;
 
@@ -553,25 +553,25 @@ export class Draggable<
       const { left, top } = item.element.getBoundingClientRect();
 
       // Update horizontal position data.
-      const _syncDiffX = item.x - item._moveDiffX - left;
-      (item as Writeable<typeof item>).pX = item.pX - item._syncDiffX + _syncDiffX;
-      (item as Writeable<typeof item>)._syncDiffX = _syncDiffX;
+      const _updateDiffX = item.x - item._moveDiffX - left;
+      (item as Writeable<typeof item>).pX = item.pX - item._updateDiffX + _updateDiffX;
+      (item as Writeable<typeof item>)._updateDiffX = _updateDiffX;
 
       // Update vertical position data.
-      const _syncDiffY = item.y - item._moveDiffY - top;
-      (item as Writeable<typeof item>).pY = item.pY - item._syncDiffY + _syncDiffY;
-      (item as Writeable<typeof item>)._syncDiffY = _syncDiffY;
+      const _updateDiffY = item.y - item._moveDiffY - top;
+      (item as Writeable<typeof item>).pY = item.pY - item._updateDiffY + _updateDiffY;
+      (item as Writeable<typeof item>)._updateDiffY = _updateDiffY;
     }
   }
 
-  protected _applySync() {
+  protected _applyPositionUpdate() {
     const { drag } = this;
     if (!drag) return;
 
     for (const item of drag.items) {
       if (!item.element) continue;
-      (item as Writeable<typeof item>)._syncDiffX = 0;
-      (item as Writeable<typeof item>)._syncDiffY = 0;
+      (item as Writeable<typeof item>)._updateDiffX = 0;
+      (item as Writeable<typeof item>)._updateDiffY = 0;
       this.settings.setPosition({
         phase: 'move',
         draggable: this,
@@ -596,17 +596,6 @@ export class Draggable<
     listener: DraggableEventCallbacks<E>[K] | EventListenerId,
   ): void {
     this._emitter.off(eventName, listener);
-  }
-
-  fixLayoutShift(synchronously = false) {
-    if (!this.drag) return;
-    if (synchronously) {
-      this._prepareSync();
-      this._applySync();
-    } else {
-      ticker.once(tickerReadPhase, this._prepareSync, this._syncId);
-      ticker.once(tickerWritePhase, this._applySync, this._syncId);
-    }
   }
 
   resolveStartPredicate(sensor: S[number], e?: E['start'] | E['move']) {
@@ -659,8 +648,8 @@ export class Draggable<
     ticker.off(tickerWritePhase, this._startId);
     ticker.off(tickerReadPhase, this._moveId);
     ticker.off(tickerWritePhase, this._moveId);
-    ticker.off(tickerReadPhase, this._syncId);
-    ticker.off(tickerWritePhase, this._syncId);
+    ticker.off(tickerReadPhase, this._updateId);
+    ticker.off(tickerWritePhase, this._updateId);
 
     // If drag process is started.
     if (drag.isStarted) {
@@ -705,6 +694,17 @@ export class Draggable<
 
     // Reset drag data.
     (this as Writeable<this>).drag = null;
+  }
+
+  updatePosition(instant = false) {
+    if (!this.drag) return;
+    if (instant) {
+      this._preparePositionUpdate();
+      this._applyPositionUpdate();
+    } else {
+      ticker.once(tickerReadPhase, this._preparePositionUpdate, this._updateId);
+      ticker.once(tickerWritePhase, this._applyPositionUpdate, this._updateId);
+    }
   }
 
   updateSettings(options: Partial<this['settings']> = {}) {

@@ -305,8 +305,8 @@ declare class DraggableDragItem {
     readonly y: number;
     readonly pX: number;
     readonly pY: number;
-    readonly _syncDiffX: number;
-    readonly _syncDiffY: number;
+    readonly _updateDiffX: number;
+    readonly _updateDiffY: number;
     readonly _moveDiffX: number;
     readonly _moveDiffY: number;
     readonly _containerDiffX: number;
@@ -401,7 +401,7 @@ declare class Draggable<S extends Sensor[] = Sensor[], E extends S[number]['even
     }>;
     protected _startId: symbol;
     protected _moveId: symbol;
-    protected _syncId: symbol;
+    protected _updateId: symbol;
     constructor(sensors: S, options?: Partial<DraggableSettings<S, E>>);
     protected _parseSettings(options?: Partial<this['settings']>, defaults?: this['settings']): this['settings'];
     protected _emit<K extends keyof DraggableEventCallbacks<E>>(type: K, ...e: Parameters<DraggableEventCallbacks<E>[K]>): void;
@@ -412,14 +412,14 @@ declare class Draggable<S extends Sensor[] = Sensor[], E extends S[number]['even
     protected _applyStart(): void;
     protected _prepareMove(): void;
     protected _applyMove(): void;
-    protected _prepareSync(): void;
-    protected _applySync(): void;
+    protected _preparePositionUpdate(): void;
+    protected _applyPositionUpdate(): void;
     on<K extends keyof DraggableEventCallbacks<E>>(eventName: K, listener: DraggableEventCallbacks<E>[K], listenerId?: EventListenerId): EventListenerId;
     off<K extends keyof DraggableEventCallbacks<E>>(eventName: K, listener: DraggableEventCallbacks<E>[K] | EventListenerId): void;
-    fixLayoutShift(synchronously?: boolean): void;
     resolveStartPredicate(sensor: S[number], e?: E['start'] | E['move']): void;
     rejectStartPredicate(sensor: S[number]): void;
     stop(): void;
+    updatePosition(instant?: boolean): void;
     updateSettings(options?: Partial<this['settings']>): void;
     use<SS extends S, EE extends SS[number]['events'], PP extends P>(plugin: (draggable: this) => Draggable<SS, EE, PP>): Draggable<SS, EE, PP>;
     destroy(): void;
