@@ -1,3 +1,5 @@
+export const IS_BROWSER = typeof window !== 'undefined' && typeof window.document !== 'undefined';
+
 export const HAS_PASSIVE_EVENTS = (() => {
   let isPassiveEventsSupported = false;
   try {
@@ -14,11 +16,12 @@ export const HAS_PASSIVE_EVENTS = (() => {
   return isPassiveEventsSupported;
 })();
 
-export const HAS_TOUCH_EVENTS = 'ontouchstart' in window;
+export const HAS_TOUCH_EVENTS = IS_BROWSER && 'ontouchstart' in window;
 
-export const HAS_POINTER_EVENTS = !!window.PointerEvent;
+export const HAS_POINTER_EVENTS = IS_BROWSER && !!window.PointerEvent;
 
 export const IS_SAFARI = !!(
+  IS_BROWSER &&
   navigator.vendor &&
   navigator.vendor.indexOf('Apple') > -1 &&
   navigator.userAgent &&

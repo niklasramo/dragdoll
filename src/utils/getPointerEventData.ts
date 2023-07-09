@@ -1,6 +1,6 @@
 export function getPointerEventData(
   e: PointerEvent | TouchEvent | MouseEvent,
-  id: number
+  id: number,
 ): PointerEvent | MouseEvent | Touch | null {
   // If we have a pointer event return the whole event if there's a match, and
   // null otherwise.

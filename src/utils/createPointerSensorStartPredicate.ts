@@ -22,12 +22,12 @@ function getScrollables(element: HTMLElement) {
 
 export function createPointerSensorStartPredicate<
   S extends (Sensor | PointerSensor)[] = (Sensor | PointerSensor)[],
-  D extends Draggable<S> = Draggable<S>
+  D extends Draggable<S> = Draggable<S>,
 >(
   options: {
     timeout?: number;
     fallback?: D['settings']['startPredicate'];
-  } = {}
+  } = {},
 ) {
   let dragAllowed: boolean | undefined = undefined;
 

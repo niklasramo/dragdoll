@@ -119,17 +119,26 @@ function getPaddedRect(rect: RectExtended, padding: AutoScrollTargetPadding, res
   return result;
 }
 
+function isScrolledToMax(scrollValue: number, maxScrollValue: number) {
+  // In some scenarios the scrollValue and/or maxScrollValue can be a float
+  // with subpixel values which might cause some funky scenarios where the
+  // element tries to scroll to the end but never actually reaches it. In such
+  // cases we want to do some rounding to detect that the element has actually
+  // reached the end of the scroll.
+  return Math.ceil(scrollValue) >= Math.floor(maxScrollValue);
+}
+
 //
 // PRIVATE TYPES
 //
 
-type AutoScrollAxis = typeof AUTO_SCROLL_AXIS[keyof typeof AUTO_SCROLL_AXIS];
+type AutoScrollAxis = (typeof AUTO_SCROLL_AXIS)[keyof typeof AUTO_SCROLL_AXIS];
 
-type AutoScrollDirectionX = typeof AUTO_SCROLL_DIRECTION_X[keyof typeof AUTO_SCROLL_DIRECTION_X];
+type AutoScrollDirectionX = (typeof AUTO_SCROLL_DIRECTION_X)[keyof typeof AUTO_SCROLL_DIRECTION_X];
 
-type AutoScrollDirectionY = typeof AUTO_SCROLL_DIRECTION_Y[keyof typeof AUTO_SCROLL_DIRECTION_Y];
+type AutoScrollDirectionY = (typeof AUTO_SCROLL_DIRECTION_Y)[keyof typeof AUTO_SCROLL_DIRECTION_Y];
 
-type AutoScrollDirection = typeof AUTO_SCROLL_DIRECTION[keyof typeof AUTO_SCROLL_DIRECTION];
+type AutoScrollDirection = (typeof AUTO_SCROLL_DIRECTION)[keyof typeof AUTO_SCROLL_DIRECTION];
 
 interface AutoScrollSpeedData {
   direction: ReturnType<typeof getDirectionAsString>;
@@ -189,14 +198,14 @@ export interface AutoScrollItemTarget {
 
 export type AutoScrollItemEventCallback = (
   scrollElement: Window | HTMLElement,
-  scrollDirection: ReturnType<typeof getDirectionAsString>
+  scrollDirection: ReturnType<typeof getDirectionAsString>,
 ) => void;
 
 export type AutoScrollItemEffectCallback = () => void;
 
 export type AutoScrollItemSpeedCallback = (
   scrollElement: Window | HTMLElement,
-  scrollData: AutoScrollSpeedData
+  scrollData: AutoScrollSpeedData,
 ) => number;
 
 //
@@ -211,7 +220,7 @@ function computeEdgeOffset(
   threshold: number,
   inertAreaSize: number,
   itemSize: number,
-  targetSize: number
+  targetSize: number,
 ) {
   return Math.max(0, itemSize + threshold * 2 + targetSize * inertAreaSize - targetSize) / 2;
 }
@@ -346,7 +355,7 @@ class AutoScrollRequest {
 
   hasReachedEnd() {
     return AUTO_SCROLL_AXIS_DIRECTION.forward & this.direction
-      ? this.value >= this.maxValue
+      ? isScrolledToMax(this.value, this.maxValue)
       : this.value <= 0;
   }
 
@@ -428,7 +437,7 @@ export function autoScrollSmoothSpeed(
   // Time in seconds, how long it will take to accelerate from 0 to maxSpeed.
   accelerationFactor = 0.5,
   // Time in seconds, how long it will take to decelerate maxSpeed to 0.
-  decelerationFactor = 0.25
+  decelerationFactor = 0.25,
 ): AutoScrollItemSpeedCallback {
   const acceleration = maxSpeed * (accelerationFactor > 0 ? 1 / accelerationFactor : Infinity);
   const deceleration = maxSpeed * (decelerationFactor > 0 ? 1 / decelerationFactor : Infinity);
@@ -501,11 +510,11 @@ export class AutoScroll {
     this._itemData = new Map();
     this._requestPool = new Pool<AutoScrollRequest>(
       () => new AutoScrollRequest(),
-      (request) => request.reset()
+      (request) => request.reset(),
     );
     this._actionPool = new Pool<AutoScrollAction>(
       () => new AutoScrollAction(),
-      (action) => action.reset()
+      (action) => action.reset(),
     );
 
     this._emitter = new Emitter();
@@ -551,7 +560,7 @@ export class AutoScroll {
 
   protected _getItemClientRect(
     item: AutoScrollItem,
-    result: RectExtended = { width: 0, height: 0, left: 0, right: 0, top: 0, bottom: 0 }
+    result: RectExtended = { width: 0, height: 0, left: 0, right: 0, top: 0, bottom: 0 },
   ) {
     const { clientRect } = item;
     result.left = clientRect.left;
@@ -570,7 +579,7 @@ export class AutoScroll {
     direction: AutoScrollDirection,
     threshold: number,
     distance: number,
-    maxValue: number
+    maxValue: number,
   ) {
     const reqMap = this._requests[axis];
     let request = reqMap.get(item);
@@ -657,7 +666,7 @@ export class AutoScroll {
       const testMaxScrollY = testAxisY ? getScrollTopMax(testElement) : -1;
 
       // Ignore this item if there is no possibility to scroll.
-      if (!testMaxScrollX && !testMaxScrollY) continue;
+      if (testMaxScrollX <= 0 && testMaxScrollY <= 0) continue;
 
       const testRect = getContentRect(testElement, R2);
       let testScore = getIntersectionScore(itemRect, testRect) || -Infinity;
@@ -693,12 +702,15 @@ export class AutoScroll {
           testThreshold,
           inertAreaSize,
           itemRect.width,
-          testRect.width
+          testRect.width,
         );
 
         if (moveDirectionX === AUTO_SCROLL_DIRECTION.right) {
           testDistance = testRect.right + testEdgeOffset - itemRect.right;
-          if (testDistance <= testThreshold && getScrollLeft(testElement) < testMaxScrollX) {
+          if (
+            testDistance <= testThreshold &&
+            !isScrolledToMax(getScrollLeft(testElement), testMaxScrollX)
+          ) {
             testDirection = AUTO_SCROLL_DIRECTION.right;
           }
         } else if (moveDirectionX === AUTO_SCROLL_DIRECTION.left) {
@@ -733,12 +745,15 @@ export class AutoScroll {
           testThreshold,
           inertAreaSize,
           itemRect.height,
-          testRect.height
+          testRect.height,
         );
 
         if (moveDirectionY === AUTO_SCROLL_DIRECTION.down) {
           testDistance = testRect.bottom + testEdgeOffset - itemRect.bottom;
-          if (testDistance <= testThreshold && getScrollTop(testElement) < testMaxScrollY) {
+          if (
+            testDistance <= testThreshold &&
+            !isScrolledToMax(getScrollTop(testElement), testMaxScrollY)
+          ) {
             testDirection = AUTO_SCROLL_DIRECTION.down;
           }
         } else if (moveDirectionY === AUTO_SCROLL_DIRECTION.up) {
@@ -770,7 +785,7 @@ export class AutoScroll {
           xDirection,
           xThreshold,
           xDistance,
-          xMaxScroll
+          xMaxScroll,
         );
       } else {
         this._cancelItemScroll(item, AUTO_SCROLL_AXIS.x);
@@ -787,7 +802,7 @@ export class AutoScroll {
           yDirection,
           yThreshold,
           yDistance,
-          yMaxScroll
+          yMaxScroll,
         );
       } else {
         this._cancelItemScroll(item, AUTO_SCROLL_AXIS.y);
@@ -817,7 +832,7 @@ export class AutoScroll {
         if (target.axis === 'x') continue;
       }
 
-      // Stop scrolling if there is no room to scroll anymore.
+      // Make sure the element is still scrollable.
       const testMaxScroll = testIsAxisX
         ? getScrollLeftMax(testElement)
         : getScrollTopMax(testElement);
@@ -842,7 +857,7 @@ export class AutoScroll {
         typeof target.threshold === 'number' ? target.threshold : DEFAULT_THRESHOLD;
       const testThreshold = computeThreshold(
         targetThreshold,
-        testIsAxisX ? testRect.width : testRect.height
+        testIsAxisX ? testRect.width : testRect.height,
       );
 
       // Compute edge offset.
@@ -850,7 +865,7 @@ export class AutoScroll {
         testThreshold,
         inertAreaSize,
         testIsAxisX ? itemRect.width : itemRect.height,
-        testIsAxisX ? testRect.width : testRect.height
+        testIsAxisX ? testRect.width : testRect.height,
       );
 
       // Compute distance (based on current direction).
@@ -870,11 +885,11 @@ export class AutoScroll {
         break;
       }
 
-      // Stop scrolling if we have reached the end of the scroll value.
+      // Stop scrolling if we have reached max scroll value.
       const testScroll = testIsAxisX ? getScrollLeft(testElement) : getScrollTop(testElement);
       hasReachedEnd =
         AUTO_SCROLL_AXIS_DIRECTION.forward & scrollRequest.direction
-          ? testScroll >= testMaxScroll
+          ? isScrolledToMax(testScroll, testMaxScroll)
           : testScroll <= 0;
       if (hasReachedEnd) break;
 
@@ -1075,7 +1090,7 @@ export class AutoScroll {
    */
   on<T extends keyof AutoScrollEventCallbacks>(
     eventName: T,
-    listener: AutoScrollEventCallbacks[T]
+    listener: AutoScrollEventCallbacks[T],
   ): EventListenerId {
     return this._emitter.on(eventName, listener);
   }
@@ -1085,7 +1100,7 @@ export class AutoScroll {
    */
   off<T extends keyof AutoScrollEventCallbacks>(
     eventName: T,
-    listener: AutoScrollEventCallbacks[T] | EventListenerId
+    listener: AutoScrollEventCallbacks[T] | EventListenerId,
   ): void {
     this._emitter.off(eventName, listener);
   }

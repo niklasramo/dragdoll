@@ -11,7 +11,7 @@ export let ticker = new Ticker<EventName>({ phases: [tickerReadPhase, tickerWrit
 export function setTicker(
   newTicker: Ticker<EventName, FrameCallback>,
   readPhase: EventName,
-  writePhase: EventName
+  writePhase: EventName,
 ) {
   tickerReadPhase = readPhase;
   tickerWritePhase = writePhase;

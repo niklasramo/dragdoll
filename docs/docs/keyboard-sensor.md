@@ -44,7 +44,7 @@ The constuctor accepts one argument, an optional [Settings](#settings) object, w
 type moveDistance = number;
 ```
 
-The number of pixels the `clientX` and/or `clientY` values are shifted per `"move"` event.
+The number of pixels the `x` and/or `y` values are shifted per `"move"` event.
 
 Defaults to `25`.
 
@@ -53,7 +53,8 @@ Defaults to `25`.
 ```ts
 type startPredicate = (
   e: KeyboardEvent,
-  sensor: KeyboardSensor
+  sensor: KeyboardSensor,
+  moveDistance: number
 ) => { x: number; y: number } | null | undefined;
 ```
 
@@ -64,7 +65,8 @@ Start predicate function which should return drag start coordinates (client `x` 
 ```ts
 type movePredicate = (
   e: KeyboardEvent,
-  sensor: KeyboardSensor
+  sensor: KeyboardSensor,
+  moveDistance: number
 ) => { x: number; y: number } | null | undefined;
 ```
 
@@ -75,7 +77,8 @@ Move predicate function which should return drag's next coordinates (client `x` 
 ```ts
 type endPredicate = (
   e: KeyboardEvent,
-  sensor: KeyboardSensor
+  sensor: KeyboardSensor,
+  moveDistance: number
 ) => { x: number; y: number } | null | undefined;
 ```
 
@@ -86,12 +89,12 @@ End predicate function which should return drag's end coordinates (client `x` an
 ```ts
 type cancelPredicate = (
   e: KeyboardEvent,
-  sensor: KeyboardSensor
+  sensor: KeyboardSensor,
+  moveDistance: number
 ) => { x: number; y: number } | null | undefined;
 ```
 
 Cancel predicate function which should return drag's end coordinates (client `x` and `y`) if drag needs to be canceled and otherwise return `null` or `undefined` to indicate no action. Called on `keydown` event in `document` when drag is active.
-
 
 ## Methods
 

@@ -4,7 +4,7 @@ export default {
   base: '/dragdoll/',
   lang: 'en-US',
   title: 'DragDoll',
-  description: 'Modular and extensible JavaScript drag & drop system.',
+  description: 'Modular and extensible TypeScript drag & drop system.',
   appearance: true,
   head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/dragdoll-icon.svg' }]],
   lastUpdated: true,
@@ -76,10 +76,10 @@ function sidebarGuide() {
       items: [
         { text: 'Sensor', link: '/docs/sensor' },
         { text: 'BaseSensor', link: '/docs/base-sensor' },
-        { text: 'BaseControllerSensor', link: '/docs/base-controller-sensor' },
+        { text: 'BaseMotionSensor', link: '/docs/base-motion-sensor' },
         { text: 'PointerSensor', link: '/docs/pointer-sensor' },
         { text: 'KeyboardSensor', link: '/docs/keyboard-sensor' },
-        { text: 'KeyboardControllerSensor', link: '/docs/keyboard-controller-sensor' },
+        { text: 'KeyboardMotionSensor', link: '/docs/keyboard-motion-sensor' },
       ],
     },
     {

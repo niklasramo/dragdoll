@@ -69,15 +69,15 @@
     <div class="container">
       <div class="draggable" tabindex="0"></div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/eventti@3.0.0/dist/eventti.umd.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tikki@2.0.0/dist/tikki.umd.js"></script>
+    <script src="../../node_modules/eventti/dist/eventti.umd.js"></script>
+    <script src="../../node_modules/tikki/dist/tikki.umd.js"></script>
     <script src="../../dist/dragdoll.umd.js"></script>
     <script>
       const element = document.querySelector('.draggable');
       const scroller = document.querySelector('.scroller');
       const dragContainer = document.querySelector('.dragContainer');
       const pointerSensor = new DragDoll.PointerSensor(element);
-      const keyboardSensor = new DragDoll.KeyboardControllerSensor();
+      const keyboardSensor = new DragDoll.KeyboardMotionSensor();
       const draggable = new DragDoll.Draggable([pointerSensor, keyboardSensor], {
         container: dragContainer,
         getElements: () => [element],

@@ -5,8 +5,8 @@ layout: home
 
 hero:
   name: DragDoll
-  text: Modular and extensible drag & drop system
-  tagline:
+  text:
+  tagline: Modular and extensible drag & drop system
   actions:
     - theme: brand
       text: Get Started

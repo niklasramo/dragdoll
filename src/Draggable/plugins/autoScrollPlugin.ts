@@ -1,6 +1,6 @@
 import { ticker, tickerReadPhase, tickerWritePhase } from '../../singletons/ticker';
 
-import { Draggable } from '../Draggable';
+import { Draggable, DraggablePluginMap } from '../Draggable';
 
 import { Sensor } from '../../Sensors/Sensor';
 
@@ -32,14 +32,14 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
 
       // Try to use the first item for the autoscroll data.
       if (primaryItem) {
-        AUTOSCROLL_POSITION.x = primaryItem.x;
-        AUTOSCROLL_POSITION.y = primaryItem.y;
+        AUTOSCROLL_POSITION.x = primaryItem.pX;
+        AUTOSCROLL_POSITION.y = primaryItem.pY;
       }
       // Fallback to the sensor's clientX/clientY values.
       else {
         const e = drag && (drag.nextMoveEvent || drag.startEvent);
-        AUTOSCROLL_POSITION.x = e ? e.clientX : 0;
-        AUTOSCROLL_POSITION.y = e ? e.clientY : 0;
+        AUTOSCROLL_POSITION.x = e ? e.x : 0;
+        AUTOSCROLL_POSITION.y = e ? e.y : 0;
       }
 
       return AUTOSCROLL_POSITION;
@@ -60,8 +60,8 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
       // 50x50px.
       else {
         const e = drag && (drag.nextMoveEvent || drag.startEvent);
-        AUTOSCROLL_CLIENT_RECT.left = e ? e.clientX - 25 : 0;
-        AUTOSCROLL_CLIENT_RECT.top = e ? e.clientY - 25 : 0;
+        AUTOSCROLL_CLIENT_RECT.left = e ? e.x - 25 : 0;
+        AUTOSCROLL_CLIENT_RECT.top = e ? e.y - 25 : 0;
         AUTOSCROLL_CLIENT_RECT.width = e ? 50 : 0;
         AUTOSCROLL_CLIENT_RECT.height = e ? 50 : 0;
       }
@@ -81,9 +81,9 @@ class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['events']
   protected _position: AutoScrollItem['position'];
   protected _clientRect: AutoScrollItem['clientRect'];
 
-  constructor(draggableAutoScroll: DraggableAutoScroll<S, E>) {
+  constructor(draggableAutoScroll: DraggableAutoScroll<S, E>, draggable: Draggable<S, E>) {
     this._draggableAutoScroll = draggableAutoScroll;
-    this._draggable = draggableAutoScroll.draggable;
+    this._draggable = draggable;
     this._position = { x: 0, y: 0 };
     this._clientRect = { left: 0, top: 0, width: 0, height: 0 };
   }
@@ -151,14 +151,14 @@ class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['events']
   }
 
   onPrepareScrollEffect() {
-    const syncId = this._draggable['_syncId'];
-    ticker.off(tickerReadPhase, syncId);
-    ticker.off(tickerWritePhase, syncId);
-    this._draggable['_prepareSynchronize']();
+    const updateId = this._draggable['_updateId'];
+    ticker.off(tickerReadPhase, updateId);
+    ticker.off(tickerWritePhase, updateId);
+    this._draggable['_preparePositionUpdate']();
   }
 
   onApplyScrollEffect() {
-    this._draggable['_applySynchronize']();
+    this._draggable['_applyPositionUpdate']();
   }
 }
 
@@ -169,7 +169,12 @@ export interface DraggableAutoScrollSettings<S extends Sensor[], E extends S[num
   smoothStop: boolean;
   getPosition: ((draggable: Draggable<S, E>) => { x: number; y: number }) | null;
   getClientRect:
-    | ((draggable: Draggable<S, E>) => { left: number; top: number; width: number; height: number })
+    | ((draggable: Draggable<S, E>) => {
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      })
     | null;
   onStart: AutoScrollItemEventCallback | null;
   onStop: AutoScrollItemEventCallback | null;
@@ -179,23 +184,24 @@ export type DraggableAutoScrollOptions<S extends Sensor[], E extends S[number]['
   DraggableAutoScrollSettings<S, E>
 >;
 
-export class DraggableAutoScroll<S extends Sensor[], E extends S[number]['events']> {
-  readonly name: string;
+export class DraggableAutoScroll<
+  S extends Sensor[] = Sensor[],
+  E extends S[number]['events'] = S[number]['events'],
+> {
+  readonly name: 'autoscroll';
   readonly version: string;
-  readonly draggable: Draggable<S, E>;
   readonly settings: DraggableAutoScrollSettings<S, E>;
   protected _autoScrollProxy: DraggableAutoScrollProxy<S, E> | null;
 
   constructor(draggable: Draggable<S, E>, options: DraggableAutoScrollOptions<S, E> = {}) {
     this.name = 'autoscroll';
     this.version = '0.0.2';
-    this.draggable = draggable;
     this.settings = this._parseSettings(options);
     this._autoScrollProxy = null;
 
     draggable.on('start', () => {
       if (!this._autoScrollProxy) {
-        this._autoScrollProxy = new DraggableAutoScrollProxy(this);
+        this._autoScrollProxy = new DraggableAutoScrollProxy(this, draggable);
         autoScroll.addItem(this._autoScrollProxy);
       }
     });
@@ -209,9 +215,9 @@ export class DraggableAutoScroll<S extends Sensor[], E extends S[number]['events
   }
 
   protected _parseSettings(
-    options?: DraggableAutoScrollOptions<S, E>,
-    defaults: DraggableAutoScrollSettings<S, E> = getDefaultSettings()
-  ): DraggableAutoScrollSettings<S, E> {
+    options?: Partial<this['settings']>,
+    defaults: this['settings'] = getDefaultSettings(),
+  ): this['settings'] {
     const {
       targets = defaults.targets,
       inertAreaSize = defaults.inertAreaSize,
@@ -235,14 +241,22 @@ export class DraggableAutoScroll<S extends Sensor[], E extends S[number]['events
     };
   }
 
-  updateSettings(options: DraggableAutoScrollOptions<S, E> = {}) {
+  updateSettings(options: Partial<this['settings']> = {}) {
     (this as Writeable<this>).settings = this._parseSettings(options, this.settings);
   }
 }
 
 export function autoScrollPlugin<
   S extends Sensor[],
-  E extends S[number]['events'] = S[number]['events']
->(options: DraggableAutoScrollOptions<S, E> = {}) {
-  return (draggable: Draggable<S, E>) => new DraggableAutoScroll(draggable, options);
+  E extends S[number]['events'],
+  P extends DraggablePluginMap,
+>(options?: DraggableAutoScrollOptions<S, E>) {
+  return (draggable: Draggable<S, E, P>) => {
+    const p = new DraggableAutoScroll(draggable, options);
+    const d = draggable as typeof draggable & {
+      plugins: { [p.name]: typeof p };
+    };
+    d.plugins[p.name] = p;
+    return d;
+  };
 }

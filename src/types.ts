@@ -15,3 +15,9 @@ export interface RectExtended extends Rect {
   right: number;
   bottom: number;
 }
+
+export type FilterNotStartingWith<Set, Needle extends string> = Set extends `${Needle}${infer _X}`
+  ? never
+  : Set;
+
+export type RemoveUnderscoreProperties<T extends {}> = Pick<T, FilterNotStartingWith<keyof T, '_'>>;

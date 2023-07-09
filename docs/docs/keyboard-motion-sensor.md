@@ -1,16 +1,16 @@
-[BaseControllerSensor](/docs/base-controller-sensor) →
+[BaseMotionSensor](/docs/base-motion-sensor) →
 
-# KeyboardControllerSensor
+# KeyboardMotionSensor
 
-KeyboardControllerSensor uses keyboard as the input for controlling drag movement smoothly. The keyboard keys, start condition and speed are configurable.
+KeyboardMotionSensor uses keyboard as the input for controlling drag movement smoothly. The keyboard keys, start condition and speed are configurable.
 
 ## Example
 
 ```ts
-import { KeyboardControllerSensor, Draggable } from 'dragdoll';
+import { KeyboardMotionSensor, Draggable } from 'dragdoll';
 
 // Create a keyboard controller sensor instance.
-const sensor = new KeyboardControllerSensor();
+const sensor = new KeyboardMotionSensor();
 
 // Listen to events.
 sensor.on('start', (e) => console.log('drag started', e));
@@ -29,8 +29,8 @@ const draggable = new Draggable([sensor], {
 ## Constructor
 
 ```ts
-class KeyboardControllerSensor {
-  constructor(options?: Partial<KeyboardControllerSensorSettings>) {}
+class KeyboardMotionSensor {
+  constructor(options?: Partial<KeyboardMotionSensorSettings>) {}
 }
 ```
 
@@ -43,7 +43,7 @@ The constuctor accepts one argument, an optional [Settings](#settings) object, w
 ```ts
 type startPredicate = (
   e: KeyboardEvent,
-  sensor: KeyboardControllerSensor
+  sensor: KeyboardMotionSensor
 ) => { x: number; y: number } | null | undefined;
 ```
 
@@ -64,7 +64,7 @@ Default:
 ### computeSpeed
 
 ```ts
-type computeSpeed = (sensor: KeyboardControllerSensor) => number;
+type computeSpeed = (sensor: KeyboardMotionSensor) => number;
 ```
 
 This function is called on every frame when drag is active. It should return the current speed of the drag movement.
@@ -133,10 +133,10 @@ Default: `[' ', 'Space', 'Enter']`.
 
 ```ts
 // Type
-type updateSettings = (options?: Partial<KeyboardControllerSensorSettings>) => void;
+type updateSettings = (options?: Partial<KeyboardMotionSensorSettings>) => void;
 
 // Usage
-keyboardControllerSensor.updateSettings({
+keyboardMotionSensor.updateSettings({
   startPredicate: () => {
     if (Math.random() > 0.5) {
       return { x: 0, y: 0 };

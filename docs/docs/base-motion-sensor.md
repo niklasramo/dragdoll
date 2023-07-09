@@ -1,18 +1,18 @@
 [BaseSensor](/docs/base-sensor) →
 
-# BaseControllerSensor
+# BaseMotionSensor
 
-BaseControllerSensor is a tailor-made base sensor for scenarios where you want to smoothly move an object, e.g. a car or a character in a 2D game, based on custom inputs. It extends [BaseSensor](/docs/base-sensor) and provides functionality for controlling the drag movement on every frame via speed and direction.
+BaseMotionSensor is an extendable base class tailor-made for scenarios where you want to smoothly move an object, e.g. a car or a character in a 2D game, based on custom inputs. It extends [BaseSensor](/docs/base-sensor) and provides functionality for controlling the drag movement on every frame via protected `_speed` and `_direction` properties.
 
 ## Example
 
 ```ts
-import { BaseControllerSensor, Draggable } from 'dragdoll';
+import { BaseMotionSensor, Draggable } from 'dragdoll';
 
 // Create a custom controller sensor which starts moving the provided
 // element "virtually" in random direction with random speed when you press
 // space. Stop the drag pressing space again, and cancel by pressing esc.
-class CustomControllerSensor extends BaseControllerSensor {
+class CustomMotionSensor extends BaseMotionSensor {
   element: HTMLElement;
 
   constructor(element: HTMLElement) {
@@ -27,12 +27,12 @@ class CustomControllerSensor extends BaseControllerSensor {
       // Start/stop drag with space.
       case ' ': {
         // Stop.
-        if (this.isActive) {
+        if (this.drag) {
           e.preventDefault();
           this._end({
             type: 'end',
-            clientX: this.clientX!,
-            clientY: this.clientY!,
+            x: this.drag.x,
+            y: this.drag.y,
           });
         }
         // Start.
@@ -44,30 +44,30 @@ class CustomControllerSensor extends BaseControllerSensor {
           // Compute random speed.
           const maxSpeed = 1000;
           const minSpeed = 100;
-          this.speed = Math.floor(Math.random() * (maxSpeed - minSpeed + 1) + minSpeed);
+          this._speed = Math.floor(Math.random() * (maxSpeed - minSpeed + 1) + minSpeed);
 
           // Compute random direction vector.
           const a = Math.random() * (2 * Math.PI);
-          this.direction.x = Math.cos(a);
-          this.direction.y = Math.sin(a);
+          this._direction.x = Math.cos(a);
+          this._direction.y = Math.sin(a);
 
           // Start the drag.
           this._start({
             type: 'start',
-            clientX: left,
-            clientY: top,
+            x: left,
+            y: top,
           });
         }
         return;
       }
       // Cancel on esc.
       case 'Escape': {
-        if (this.isActive) {
+        if (this.drag) {
           e.preventDefault();
           this._cancel({
             type: 'cancel',
-            clientX: this.clientX!,
-            clientY: this.clientY!,
+            x: this.drag.x,
+            y: this.drag.y,
           });
         }
         return;
@@ -84,7 +84,7 @@ class CustomControllerSensor extends BaseControllerSensor {
 
 // Create a custom controller sensor instance.
 const dragElement = document.querySelector('.dragElement');
-const customSensor = new CustomControllerSensor(dragElement);
+const customSensor = new CustomMotionSensor(dragElement);
 
 // Listen to events.
 customSensor.on('start', (e) => console.log('drag started', e));
@@ -101,37 +101,41 @@ const draggable = new Draggable([customSensor], {
 
 ## Properties
 
-### direction
+### drag
 
 ```ts
-type direction = { x: number; y: number };
+type drag = {
+  // Coordinates of the drag within the viewport.
+  readonly x: number;
+  readonly y: number;
+  // The latest DOMHighResTimeStamp.
+  readonly time: number;
+  // Current frame's delta time (in milliseconds).
+  readonly deltaTime: number;
+} | null;
+```
+
+Current drag data or `null` when drag is inactive. Read-only.
+
+## Protected Properties
+
+These protected properties are inherited by any class that extends this class and should be used to control the drag speed and direction.
+
+### \_direction
+
+```ts
+type _direction = { x: number; y: number };
 ```
 
 2D direction vector which indicates the drag direction. This is assumed to be a unit vector (length 1) if there should be movement, otherwise x and y components should be 0. You can manually modify this anytime you want.
 
-### speed
+### \_speed
 
 ```ts
 type speed = number;
 ```
 
 The speed of the drag as pixels-per-second. You can manually modify this anytime you want.
-
-### time
-
-```ts
-type time = DOMHighResTimeStamp;
-```
-
-The latest [`high resolution timestamp`](https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp) in milliseconds. Note that this is only updated while drag is active. Read-only.
-
-### deltaTime
-
-```ts
-type time = number;
-```
-
-Current frame's delta time in milliseconds. Note that this is only updated while drag is active. Read-only.
 
 ## Methods
 
@@ -145,8 +149,8 @@ type on = (
     e:
       | {
           type: 'start' | 'move' | 'end' | 'cancel';
-          clientX: number;
-          clientY: number;
+          x: number;
+          y: number;
         }
       | {
           type: 'tick';
@@ -161,7 +165,7 @@ type on = (
 ) => string | number | symbol;
 
 // Usage
-baseControllerSensor.on('start', (e) => {
+baseMotionSensor.on('start', (e) => {
   console.log('start', e);
 });
 ```
@@ -178,8 +182,8 @@ type off = (
 ) => void;
 
 // Usage
-const id = baseControllerSensor.on('start', (e) => console.log('start', e));
-baseControllerSensor.off('start', id);
+const id = baseMotionSensor.on('start', (e) => console.log('start', e));
+baseMotionSensor.off('start', id);
 ```
 
 Removes a listener (based on listener or listener id) from a sensor event.
