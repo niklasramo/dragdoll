@@ -140,9 +140,9 @@ Defaults to `[]`.
 type inertAreaSize = number;
 ```
 
-Defines the size of the minimum area in the center of the target element that will be guaranteed not trigger autoscrolling regardless of autoscroll target's threshold size and the dragged item's size. This value is a percentage of the target element's size (width and/or height depending on the scroll axes), and should be something between `0` and `1`. So in practice, if you set this to e.g `0.5` the inert area would be 50% of the scrollable element's width and/or height.
+Defines the size of the minimum area in the center of the target element that will be guaranteed not trigger autoscrolling regardless of autoscroll target's threshold size and the dragged item's size. This value is a percentage of the target element's size (width and/or height depending on the scroll axes), and should be something between `0` and `1`. For example, if you set this to `0.5` the inert area would be 50% of the scrollable element's width and/or height.
 
-The main reason an inert area is needed in first place is to balance the autoscrolling UX when having different sized target elements, and especially really small ones. Without this there would be a good chance that the smaller target elements would not have a neutral zone at all and would always autoscroll to some direction. However, if you completely want to disable this feature just the value to `0`.
+The main reason an inert area is needed in first place is to balance the autoscrolling UX when having different sized target elements, and especially really small ones. Without this there would be a good chance that the smaller target elements would not have a neutral zone at all and would always autoscroll to some direction. However, if you completely want to disable this feature just set the value to `0`.
 
 Defaults to `0.2`.
 
