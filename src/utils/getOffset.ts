@@ -7,7 +7,7 @@ import { getStyleAsFloat } from './getStyleAsFloat';
  * object so be sure to read the data from it instead using it as a reference.
  */
 export function getOffset(
-  element: HTMLElement | Document | Window,
+  element: Element | Document | Window,
   result: { left: number; top: number } = { left: 0, top: 0 },
 ) {
   // Set up return data.
@@ -25,14 +25,14 @@ export function getOffset(
   if ('self' in element && element.self === window.self) return result;
 
   // Add element's client rects to the offsets.
-  const { left, top } = (element as HTMLElement).getBoundingClientRect();
+  const { left, top } = (element as Element).getBoundingClientRect();
   result.left += left;
   result.top += top;
 
   // Include element's borders into the offset since we care about the offset
   // fromt the document to the element's content area (including padding).
-  result.left += getStyleAsFloat(element as HTMLElement, 'border-left-width');
-  result.top += getStyleAsFloat(element as HTMLElement, 'border-top-width');
+  result.left += getStyleAsFloat(element as Element, 'border-left-width');
+  result.top += getStyleAsFloat(element as Element, 'border-top-width');
 
   return result;
 }

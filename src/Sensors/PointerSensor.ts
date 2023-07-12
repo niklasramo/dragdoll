@@ -110,7 +110,7 @@ export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
   /**
    * The observed element or window.
    */
-  readonly element: HTMLElement | Window;
+  readonly element: Element | Window;
 
   /**
    * Current drag data, null if drag is not active.
@@ -147,7 +147,7 @@ export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
    */
   protected _emitter: Emitter<Events>;
 
-  constructor(element: HTMLElement | Window, options: Partial<PointerSensorSettings> = {}) {
+  constructor(element: Element | Window, options: Partial<PointerSensorSettings> = {}) {
     const {
       listenerOptions = {},
       sourceEvents = 'auto',

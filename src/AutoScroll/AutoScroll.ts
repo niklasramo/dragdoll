@@ -188,7 +188,7 @@ export interface AutoScrollEventCallbacks {
 }
 
 export interface AutoScrollItemTarget {
-  element: Window | HTMLElement;
+  element: Window | Element;
   axis?: 'x' | 'y' | 'xy';
   priority?: number;
   threshold?: number;
@@ -197,14 +197,14 @@ export interface AutoScrollItemTarget {
 }
 
 export type AutoScrollItemEventCallback = (
-  scrollElement: Window | HTMLElement,
+  scrollElement: Window | Element,
   scrollDirection: ReturnType<typeof getDirectionAsString>,
 ) => void;
 
 export type AutoScrollItemEffectCallback = () => void;
 
 export type AutoScrollItemSpeedCallback = (
-  scrollElement: Window | HTMLElement,
+  scrollElement: Window | Element,
   scrollData: AutoScrollSpeedData,
 ) => number;
 
@@ -242,7 +242,7 @@ class AutoScrollItemData {
 }
 
 class AutoScrollAction {
-  element: HTMLElement | Window | null;
+  element: Element | Window | null;
   requestX: AutoScrollRequest | null;
   requestY: AutoScrollRequest | null;
   scrollLeft: number;
@@ -299,15 +299,15 @@ class AutoScrollAction {
     if (this.element.scrollTo) {
       this.element.scrollTo(this.scrollLeft, this.scrollTop);
     } else {
-      (this.element as HTMLElement).scrollLeft = this.scrollLeft;
-      (this.element as HTMLElement).scrollTop = this.scrollTop;
+      (this.element as Element).scrollLeft = this.scrollLeft;
+      (this.element as Element).scrollTop = this.scrollTop;
     }
   }
 }
 
 class AutoScrollRequest {
   item: AutoScrollItem | null;
-  element: HTMLElement | Window | null;
+  element: Element | Window | null;
   isActive: boolean;
   isEnding: boolean;
   direction: AutoScrollDirection;
@@ -575,7 +575,7 @@ export class AutoScroll {
   protected _requestItemScroll(
     item: AutoScrollItem,
     axis: AutoScrollAxis,
-    element: Window | HTMLElement,
+    element: Window | Element,
     direction: AutoScrollDirection,
     threshold: number,
     distance: number,
@@ -619,9 +619,9 @@ export class AutoScroll {
       return;
     }
 
-    const itemData = this._itemData.get(item) as AutoScrollItemData;
-    const moveDirectionX = itemData.directionX;
-    const moveDirectionY = itemData.directionY;
+    const itemData = this._itemData.get(item);
+    const moveDirectionX = itemData?.directionX;
+    const moveDirectionY = itemData?.directionY;
     if (!moveDirectionX && !moveDirectionY) {
       checkX && this._cancelItemScroll(item, AUTO_SCROLL_AXIS.x);
       checkY && this._cancelItemScroll(item, AUTO_SCROLL_AXIS.y);
@@ -630,7 +630,7 @@ export class AutoScroll {
 
     const itemRect = this._getItemClientRect(item, R1);
 
-    let xElement: Window | HTMLElement | null = null;
+    let xElement: Window | Element | null = null;
     let xPriority = -Infinity;
     let xThreshold = 0;
     let xScore = -Infinity;
@@ -638,7 +638,7 @@ export class AutoScroll {
     let xDistance = 0;
     let xMaxScroll = 0;
 
-    let yElement: Window | HTMLElement | null = null;
+    let yElement: Window | Element | null = null;
     let yPriority = -Infinity;
     let yThreshold = 0;
     let yScore = -Infinity;
@@ -811,7 +811,7 @@ export class AutoScroll {
   }
 
   protected _updateScrollRequest(scrollRequest: AutoScrollRequest) {
-    const item = scrollRequest.item as AutoScrollItem;
+    const item = scrollRequest.item!;
     const { inertAreaSize, smoothStop, targets } = item;
     const itemRect = this._getItemClientRect(item, R1);
     let hasReachedEnd = null;
@@ -916,7 +916,7 @@ export class AutoScroll {
   protected _updateItems() {
     for (let i = 0; i < this.items.length; i++) {
       const item = this.items[i];
-      const itemData = this._itemData.get(item) as AutoScrollItemData;
+      const itemData = this._itemData.get(item)!;
       const { x, y } = item.position;
       const prevX = itemData.positionX;
       const prevY = itemData.positionY;
@@ -961,7 +961,7 @@ export class AutoScroll {
     let i = 0;
     for (; i < items.length; i++) {
       const item = items[i];
-      const itemData = this._itemData.get(item) as AutoScrollItemData;
+      const itemData = this._itemData.get(item)!;
       const checkTime = itemData.overlapCheckRequestTime;
       let needsCheck =
         checkTime > 0 && this._tickTime - checkTime > this.settings.overlapCheckInterval;
@@ -1011,7 +1011,7 @@ export class AutoScroll {
       // for the requested axis is already reserved let's ignore and cancel this
       // request.
       if (isAxisX ? action.requestX : action.requestY) {
-        this._cancelItemScroll(request.item as AutoScrollItem, axis);
+        this._cancelItemScroll(request.item!, axis);
         return;
       }
 

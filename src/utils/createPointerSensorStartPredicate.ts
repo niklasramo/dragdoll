@@ -8,8 +8,8 @@ import { getScrollableAncestors } from './getScrollableAncestors';
 
 import { isScrollable } from './isScrollable';
 
-function getScrollables(element: HTMLElement) {
-  const scrollables: (HTMLElement | Window)[] = [];
+function getScrollables(element: Element) {
+  const scrollables: (Element | Window)[] = [];
 
   if (isScrollable(element)) {
     scrollables.push(element);
@@ -33,7 +33,7 @@ export function createPointerSensorStartPredicate<
 
   let startTimeStamp: number = 0;
 
-  let targetElement: HTMLElement | null = null;
+  let targetElement: Element | null = null;
 
   let timer: number | undefined = undefined;
 
@@ -76,7 +76,7 @@ export function createPointerSensorStartPredicate<
       ) {
         // Prevent potentially scrollable nodes from scrolling to make sure
         // native scrolling does not interfere with dragging.
-        targetElement = e.target as HTMLElement | null;
+        targetElement = e.target as Element | null;
         const scrollables = targetElement ? getScrollables(targetElement) : [];
         scrollables.forEach((scrollable) => {
           scrollable.addEventListener('touchmove', onTouchMove as EventListener, {
