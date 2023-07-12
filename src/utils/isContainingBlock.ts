@@ -6,7 +6,7 @@ import { IS_SAFARI } from '../constants';
  * Check is the provided is a containing block for an _absolute_ positioned
  * element.
  */
-export function isContainingBlock(element: HTMLElement) {
+export function isContainingBlock(element: Element) {
   // The first thing to check is the element's position. If it's anything else
   // than "static" the element is a containing block.
   if (getStyle(element, 'position') !== 'static') {

@@ -31,11 +31,11 @@ enum DraggableStartPredicateState {
 }
 
 class DraggableDragItem {
-  readonly element: HTMLElement;
-  readonly rootParent: HTMLElement;
-  readonly rootContainingBlock: HTMLElement | Document;
-  readonly dragParent: HTMLElement;
-  readonly dragContainingBlock: HTMLElement | Document;
+  readonly element: HTMLElement | SVGElement;
+  readonly rootParent: Element;
+  readonly rootContainingBlock: Element | Document;
+  readonly dragParent: Element;
+  readonly dragContainingBlock: Element | Document;
   readonly x: number;
   readonly y: number;
   readonly pX: number;
@@ -49,11 +49,11 @@ class DraggableDragItem {
   readonly _transform: string;
 
   constructor(
-    element: HTMLElement,
-    rootParent: HTMLElement,
-    rootContainingBlock: HTMLElement | Document,
-    dragParent: HTMLElement,
-    dragContainingBlock: HTMLElement | Document,
+    element: HTMLElement | SVGElement,
+    rootParent: Element,
+    rootContainingBlock: Element | Document,
+    dragParent: Element,
+    dragContainingBlock: Element | Document,
   ) {
     this.element = element;
     this.rootParent = rootParent;
@@ -127,7 +127,7 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
 }
 
 export interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
-  container: HTMLElement | null;
+  container: Element | null;
   startPredicate: (data: {
     draggable: Draggable<S, E>;
     sensor: S[number];
@@ -137,11 +137,11 @@ export interface DraggableSettings<S extends Sensor[], E extends S[number]['even
     draggable: Draggable<S, E>;
     sensor: S[number];
     startEvent: E['start'] | E['move'];
-  }) => HTMLElement[] | null;
+  }) => (HTMLElement | SVGElement)[] | null;
   releaseElements: (data: {
     draggable: Draggable<S, E>;
     sensor: S[number];
-    elements: HTMLElement[];
+    elements: (HTMLElement | SVGElement)[];
   }) => void;
   getStartPosition: (data: {
     draggable: Draggable<S, E>;
@@ -368,7 +368,7 @@ export class Draggable<
       }
 
       // Get element's parent.
-      const rootParent = element.parentNode as HTMLElement;
+      const rootParent = element.parentNode as Element;
 
       // Get parent's containing block.
       const rootContainingBlock = getContainingBlock(rootParent);
@@ -542,8 +542,8 @@ export class Draggable<
       // Update container diff.
       if (item.rootContainingBlock !== item.dragContainingBlock) {
         const { left, top } = getOffsetDiff(
-          item.dragContainingBlock as HTMLElement | Document,
-          item.rootContainingBlock as HTMLElement | Document,
+          item.dragContainingBlock,
+          item.rootContainingBlock,
           OFFSET_DIFF,
         );
         (item as Writeable<typeof item>)._containerDiffX = left;
@@ -658,7 +658,7 @@ export class Draggable<
 
       // Move elements within the root container and collect all elements
       // to an elements array.
-      const elements: HTMLElement[] = [];
+      const elements: (HTMLElement | SVGElement)[] = [];
       for (const item of drag.items) {
         if (!item.element) continue;
         elements.push(item.element);

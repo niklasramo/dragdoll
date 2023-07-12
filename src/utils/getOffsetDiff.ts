@@ -7,8 +7,8 @@ const offsetB = { left: 0, top: 0 };
  * Calculate the offset difference two elements.
  */
 export function getOffsetDiff(
-  elemA: HTMLElement | Document,
-  elemB: HTMLElement | Document,
+  elemA: Element | Document,
+  elemB: Element | Document,
   result: { left: number; top: number } = { left: 0, top: 0 },
 ) {
   result.left = 0;
