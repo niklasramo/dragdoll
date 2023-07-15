@@ -181,7 +181,7 @@ interface PointerSensorEvents {
 }
 declare class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents> implements Sensor<E> {
     events: E;
-    readonly element: HTMLElement | Window;
+    readonly element: Element | Window;
     readonly drag: PointerSensorDragData | null;
     readonly isDestroyed: boolean;
     protected _startPredicate: (e: PointerSensorSourceEvent) => boolean;
@@ -189,7 +189,7 @@ declare class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
     protected _sourceEvents: keyof typeof SOURCE_EVENTS;
     protected _areWindowListenersBound: boolean;
     protected _emitter: Emitter<Events>;
-    constructor(element: HTMLElement | Window, options?: Partial<PointerSensorSettings>);
+    constructor(element: Element | Window, options?: Partial<PointerSensorSettings>);
     protected _getTrackedPointerEventData(e: PointerSensorSourceEvent): PointerEvent | MouseEvent | Touch | null;
     protected _onStart(e: PointerSensorSourceEvent): void;
     protected _onMove(e: PointerSensorSourceEvent): void;
@@ -296,11 +296,11 @@ declare enum DraggableStartPredicateState {
     REJECTED = 2
 }
 declare class DraggableDragItem {
-    readonly element: HTMLElement;
-    readonly rootParent: HTMLElement;
-    readonly rootContainingBlock: HTMLElement | Document;
-    readonly dragParent: HTMLElement;
-    readonly dragContainingBlock: HTMLElement | Document;
+    readonly element: HTMLElement | SVGElement;
+    readonly elementContainer: Element;
+    readonly elementOffsetContainer: Element | Window | Document;
+    readonly dragContainer: Element;
+    readonly dragOffsetContainer: Element | Window | Document;
     readonly x: number;
     readonly y: number;
     readonly pX: number;
@@ -312,7 +312,7 @@ declare class DraggableDragItem {
     readonly _containerDiffX: number;
     readonly _containerDiffY: number;
     readonly _transform: string;
-    constructor(element: HTMLElement, rootParent: HTMLElement, rootContainingBlock: HTMLElement | Document, dragParent: HTMLElement, dragContainingBlock: HTMLElement | Document);
+    constructor(element: HTMLElement | SVGElement, elementContainer: Element, elementOffsetContainer: Element | Window | Document, dragContainer: Element, dragOffsetContainer: Element | Window | Document);
 }
 declare class DraggableDrag<S extends Sensor[], E extends S[number]['events']> {
     readonly sensor: S[number] | null;
@@ -326,7 +326,7 @@ declare class DraggableDrag<S extends Sensor[], E extends S[number]['events']> {
     constructor();
 }
 interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
-    container: HTMLElement | null;
+    container: Element | null;
     startPredicate: (data: {
         draggable: Draggable<S, E>;
         sensor: S[number];
@@ -336,11 +336,11 @@ interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
         draggable: Draggable<S, E>;
         sensor: S[number];
         startEvent: E['start'] | E['move'];
-    }) => HTMLElement[] | null;
+    }) => (HTMLElement | SVGElement)[] | null;
     releaseElements: (data: {
         draggable: Draggable<S, E>;
         sensor: S[number];
-        elements: HTMLElement[];
+        elements: (HTMLElement | SVGElement)[];
     }) => void;
     getStartPosition: (data: {
         draggable: Draggable<S, E>;
@@ -507,16 +507,16 @@ interface AutoScrollEventCallbacks {
     afterscroll(): void;
 }
 interface AutoScrollItemTarget {
-    element: Window | HTMLElement;
+    element: Window | Element;
     axis?: 'x' | 'y' | 'xy';
     priority?: number;
     threshold?: number;
     padding?: AutoScrollTargetPadding;
     scrollPadding?: AutoScrollTargetPadding;
 }
-type AutoScrollItemEventCallback = (scrollElement: Window | HTMLElement, scrollDirection: ReturnType<typeof getDirectionAsString>) => void;
+type AutoScrollItemEventCallback = (scrollElement: Window | Element, scrollDirection: ReturnType<typeof getDirectionAsString>) => void;
 type AutoScrollItemEffectCallback = () => void;
-type AutoScrollItemSpeedCallback = (scrollElement: Window | HTMLElement, scrollData: AutoScrollSpeedData) => number;
+type AutoScrollItemSpeedCallback = (scrollElement: Window | Element, scrollData: AutoScrollSpeedData) => number;
 declare class AutoScrollItemData {
     positionX: number;
     positionY: number;
@@ -526,7 +526,7 @@ declare class AutoScrollItemData {
     constructor();
 }
 declare class AutoScrollAction {
-    element: HTMLElement | Window | null;
+    element: Element | Window | null;
     requestX: AutoScrollRequest | null;
     requestY: AutoScrollRequest | null;
     scrollLeft: number;
@@ -540,7 +540,7 @@ declare class AutoScrollAction {
 }
 declare class AutoScrollRequest {
     item: AutoScrollItem | null;
-    element: HTMLElement | Window | null;
+    element: Element | Window | null;
     isActive: boolean;
     isEnding: boolean;
     direction: AutoScrollDirection;
@@ -588,7 +588,7 @@ declare class AutoScroll {
     protected _startTicking(): void;
     protected _stopTicking(): void;
     protected _getItemClientRect(item: AutoScrollItem, result?: RectExtended): RectExtended;
-    protected _requestItemScroll(item: AutoScrollItem, axis: AutoScrollAxis, element: Window | HTMLElement, direction: AutoScrollDirection, threshold: number, distance: number, maxValue: number): void;
+    protected _requestItemScroll(item: AutoScrollItem, axis: AutoScrollAxis, element: Window | Element, direction: AutoScrollDirection, threshold: number, distance: number, maxValue: number): void;
     protected _cancelItemScroll(item: AutoScrollItem, axis: AutoScrollAxis): void;
     protected _checkItemOverlap(item: AutoScrollItem, checkX: boolean, checkY: boolean): void;
     protected _updateScrollRequest(scrollRequest: AutoScrollRequest): boolean;

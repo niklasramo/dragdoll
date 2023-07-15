@@ -1,16 +1,17 @@
-export const STYLES_CACHE: WeakMap<Element, CSSStyleDeclaration> = new WeakMap();
+const STYLE_DECLARATION_CACHE: WeakMap<Element, WeakRef<CSSStyleDeclaration>> = new WeakMap();
 
 /**
- * Returns the computed value of an element's style property as a string.
+ * Returns element's CSS Style Declaration. Caches reference to the declaration
+ * object weakly for faster access.
  */
-export function getStyle(element: Element, prop: string) {
-  if (!prop) return '';
+export function getStyle(element: Element) {
+  let styleDeclaration: CSSStyleDeclaration | undefined =
+    STYLE_DECLARATION_CACHE.get(element)?.deref();
 
-  let styleDeclaration: CSSStyleDeclaration | undefined = STYLES_CACHE.get(element);
   if (!styleDeclaration) {
     styleDeclaration = window.getComputedStyle(element, null);
-    STYLES_CACHE.set(element, styleDeclaration);
+    STYLE_DECLARATION_CACHE.set(element, new WeakRef(styleDeclaration));
   }
 
-  return styleDeclaration.getPropertyValue(prop);
+  return styleDeclaration;
 }

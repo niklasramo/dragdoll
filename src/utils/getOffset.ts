@@ -1,10 +1,13 @@
-import { getStyleAsFloat } from './getStyleAsFloat';
+import { getStyle } from './getStyle';
+
+import { isWindow } from './isWindow';
+
+import { isDocument } from './isDocument';
 
 /**
  * Returns the element's document offset, which in practice means the vertical
  * and horizontal distance between the element's northwest corner and the
- * document's northwest corner. Note that this function always returns the same
- * object so be sure to read the data from it instead using it as a reference.
+ * document's northwest corner.
  */
 export function getOffset(
   element: Element | Document | Window,
@@ -15,24 +18,34 @@ export function getOffset(
   result.top = 0;
 
   // Document's offsets are always 0.
-  if (element === document) return result;
-
-  // Add viewport scroll left/top to the respective offsets.
-  result.left = window.pageXOffset || 0;
-  result.top = window.pageYOffset || 0;
+  if (isDocument(element)) {
+    return result;
+  }
 
   // Window's offsets are the viewport scroll left/top values.
-  if ('self' in element && element.self === window.self) return result;
+  if (isWindow(element)) {
+    result.left = element.scrollX;
+    result.top = element.scrollY;
+    return result;
+  }
+
+  // Add viewport scroll left/top to the respective offsets.
+  const win = element.ownerDocument.defaultView;
+  if (win) {
+    result.left += win.scrollX;
+    result.top += win.scrollY;
+  }
 
   // Add element's client rects to the offsets.
-  const { left, top } = (element as Element).getBoundingClientRect();
+  const { left, top } = element.getBoundingClientRect();
   result.left += left;
   result.top += top;
 
   // Include element's borders into the offset since we care about the offset
-  // fromt the document to the element's content area (including padding).
-  result.left += getStyleAsFloat(element as Element, 'border-left-width');
-  result.top += getStyleAsFloat(element as Element, 'border-top-width');
+  // from the document to the element's content area (including padding).
+  const style = getStyle(element);
+  result.left += parseFloat(style.borderLeftWidth) || 0;
+  result.top += parseFloat(style.borderTopWidth) || 0;
 
   return result;
 }
