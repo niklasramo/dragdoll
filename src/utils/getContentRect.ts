@@ -1,6 +1,6 @@
 import { isWindow } from './isWindow';
 
-import { getStyleAsFloat } from './getStyleAsFloat';
+import { getStyle } from './getStyle';
 
 import { RectExtended } from '../types';
 
@@ -21,14 +21,15 @@ export function getContentRect(
     result.top = 0;
     result.bottom = result.height;
   } else {
-    const { left, top } = element.getBoundingClientRect();
-    const borderLeft = element.clientLeft || getStyleAsFloat(element, 'border-left-width');
-    const borderTop = element.clientTop || getStyleAsFloat(element, 'border-top-width');
+    const rect = element.getBoundingClientRect();
+    const style = getStyle(element);
+    const borderLeft = parseFloat(style.borderLeftWidth) || 0;
+    const borderTop = parseFloat(style.borderTopWidth) || 0;
     result.width = element.clientWidth;
     result.height = element.clientHeight;
-    result.left = left + borderLeft;
+    result.left = rect.left + borderLeft;
     result.right = result.left + result.width;
-    result.top = top + borderTop;
+    result.top = rect.top + borderTop;
     result.bottom = result.top + result.height;
   }
 

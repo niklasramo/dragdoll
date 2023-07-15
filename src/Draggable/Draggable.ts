@@ -6,7 +6,7 @@ import { Sensor, SensorEvents } from '../Sensors/Sensor';
 
 import { ticker, tickerReadPhase, tickerWritePhase } from '../singletons/ticker';
 
-import { getContainingBlock } from '../utils/getContainingBlock';
+import { getOffsetContainer } from '../utils/getOffsetContainer';
 
 import { getOffsetDiff } from '../utils/getOffsetDiff';
 
@@ -32,10 +32,10 @@ enum DraggableStartPredicateState {
 
 class DraggableDragItem {
   readonly element: HTMLElement | SVGElement;
-  readonly rootParent: Element;
-  readonly rootContainingBlock: Element | Document;
-  readonly dragParent: Element;
-  readonly dragContainingBlock: Element | Document;
+  readonly elementContainer: Element;
+  readonly elementOffsetContainer: Element | Window | Document;
+  readonly dragContainer: Element;
+  readonly dragOffsetContainer: Element | Window | Document;
   readonly x: number;
   readonly y: number;
   readonly pX: number;
@@ -50,16 +50,16 @@ class DraggableDragItem {
 
   constructor(
     element: HTMLElement | SVGElement,
-    rootParent: Element,
-    rootContainingBlock: Element | Document,
-    dragParent: Element,
-    dragContainingBlock: Element | Document,
+    elementContainer: Element,
+    elementOffsetContainer: Element | Window | Document,
+    dragContainer: Element,
+    dragOffsetContainer: Element | Window | Document,
   ) {
     this.element = element;
-    this.rootParent = rootParent;
-    this.rootContainingBlock = rootContainingBlock;
-    this.dragParent = dragParent;
-    this.dragContainingBlock = dragContainingBlock;
+    this.elementContainer = elementContainer;
+    this.elementOffsetContainer = elementOffsetContainer;
+    this.dragContainer = dragContainer;
+    this.dragOffsetContainer = dragOffsetContainer;
     this.x = 0;
     this.y = 0;
     this.pX = 0;
@@ -107,9 +107,14 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
     releaseElements: () => {},
     getStartPosition: ({ item }) => {
       // Store item element's initial transform.
-      const t = getStyle(item.element, 'transform');
-      if (t && t !== 'none' && t !== IDENTITY_MATRIX && t !== IDENTITY_MATRIX_3D) {
-        (item as Writeable<typeof item>)._transform = t;
+      const { transform } = getStyle(item.element);
+      if (
+        transform &&
+        transform !== 'none' &&
+        transform !== IDENTITY_MATRIX &&
+        transform !== IDENTITY_MATRIX_3D
+      ) {
+        (item as Writeable<typeof item>)._transform = transform;
       } else {
         (item as Writeable<typeof item>)._transform = '';
       }
@@ -368,25 +373,33 @@ export class Draggable<
       }
 
       // Get element's parent.
-      const rootParent = element.parentNode as Element;
+      const elementContainer = element.parentElement!;
 
       // Get parent's containing block.
-      const rootContainingBlock = getContainingBlock(rootParent);
+      const elementOffsetContainer = getOffsetContainer(element);
+      if (!elementOffsetContainer) {
+        throw new Error('Offset container could not be computed for the element!');
+      }
 
       // Get element's drag parent.
-      const dragParent = this.settings.container || rootParent;
+      const dragContainer = this.settings.container || elementContainer;
 
       // Get drag container's containing block.
-      const dragContainingBlock =
-        dragParent === rootParent ? rootContainingBlock : getContainingBlock(dragParent);
+      const dragOffsetContainer =
+        dragContainer === elementContainer
+          ? elementOffsetContainer
+          : getOffsetContainer(element, dragContainer);
+      if (!dragOffsetContainer) {
+        throw new Error('Drag offset container could not be computed for the element!');
+      }
 
       // Create drag item.
       const item: Writeable<DraggableDragItem> = new DraggableDragItem(
         element,
-        rootParent,
-        rootContainingBlock,
-        dragParent,
-        dragContainingBlock,
+        elementContainer,
+        elementOffsetContainer,
+        dragContainer,
+        dragOffsetContainer,
       );
 
       // Compute the element's current clientX/Y.
@@ -397,8 +410,12 @@ export class Draggable<
       // If parent's containing block is different than drag container's
       // containing block let's compute the offset difference between the
       // containing blocks.
-      if (rootContainingBlock !== dragContainingBlock) {
-        const { left, top } = getOffsetDiff(dragContainingBlock, rootContainingBlock, OFFSET_DIFF);
+      if (elementOffsetContainer !== dragOffsetContainer) {
+        const { left, top } = getOffsetDiff(
+          dragOffsetContainer,
+          elementOffsetContainer,
+          OFFSET_DIFF,
+        );
         item._containerDiffX = left;
         item._containerDiffY = top;
       }
@@ -431,7 +448,7 @@ export class Draggable<
     if (container) {
       for (const item of drag.items) {
         if (!item.element) continue;
-        if (item.element.parentNode !== container) {
+        if (item.element.parentElement !== container) {
           container.appendChild(item.element);
           (item as Writeable<typeof item>).pX += item._containerDiffX;
           (item as Writeable<typeof item>).pY += item._containerDiffY;
@@ -540,10 +557,10 @@ export class Draggable<
       if (!item.element) continue;
 
       // Update container diff.
-      if (item.rootContainingBlock !== item.dragContainingBlock) {
+      if (item.elementOffsetContainer !== item.dragOffsetContainer) {
         const { left, top } = getOffsetDiff(
-          item.dragContainingBlock,
-          item.rootContainingBlock,
+          item.dragOffsetContainer,
+          item.elementOffsetContainer,
           OFFSET_DIFF,
         );
         (item as Writeable<typeof item>)._containerDiffX = left;
@@ -662,12 +679,12 @@ export class Draggable<
       for (const item of drag.items) {
         if (!item.element) continue;
         elements.push(item.element);
-        if (item.rootParent && item.element.parentNode !== item.rootParent) {
+        if (item.elementContainer && item.element.parentElement !== item.elementContainer) {
           (item as Writeable<typeof item>).pX -= item._containerDiffX;
           (item as Writeable<typeof item>).pY -= item._containerDiffY;
           (item as Writeable<typeof item>)._containerDiffX = 0;
           (item as Writeable<typeof item>)._containerDiffY = 0;
-          item.rootParent.appendChild(item.element);
+          item.elementContainer.appendChild(item.element);
         }
         this.settings.setPosition({
           phase: 'end',

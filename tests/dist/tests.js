@@ -480,20 +480,19 @@ class KeyboardSensor extends BaseSensor {
     }
 }
 
-const STYLES_CACHE = new WeakMap();
-function getStyle(element, prop) {
-    if (!prop)
-        return '';
-    let styleDeclaration = STYLES_CACHE.get(element);
+const STYLE_DECLARATION_CACHE = new WeakMap();
+function getStyle(element) {
+    var _a;
+    let styleDeclaration = (_a = STYLE_DECLARATION_CACHE.get(element)) === null || _a === void 0 ? void 0 : _a.deref();
     if (!styleDeclaration) {
         styleDeclaration = window.getComputedStyle(element, null);
-        STYLES_CACHE.set(element, styleDeclaration);
+        STYLE_DECLARATION_CACHE.set(element, new WeakRef(styleDeclaration));
     }
-    return styleDeclaration.getPropertyValue(prop);
+    return styleDeclaration;
 }
 
-function getStyleAsFloat(el, styleProp) {
-    return parseFloat(getStyle(el, styleProp)) || 0;
+function isWindow(value) {
+    return value instanceof Window;
 }
 
 var DraggableStartPredicateState;
@@ -543,10 +542,6 @@ function getIntersectionScore(a, b) {
     return (area / maxArea) * 100;
 }
 
-function isWindow(value) {
-    return value === window;
-}
-
 function getContentRect(element, result = { width: 0, height: 0, left: 0, right: 0, top: 0, bottom: 0 }) {
     if (isWindow(element)) {
         result.width = document.documentElement.clientWidth;
@@ -557,14 +552,15 @@ function getContentRect(element, result = { width: 0, height: 0, left: 0, right:
         result.bottom = result.height;
     }
     else {
-        const { left, top } = element.getBoundingClientRect();
-        const borderLeft = element.clientLeft || getStyleAsFloat(element, 'border-left-width');
-        const borderTop = element.clientTop || getStyleAsFloat(element, 'border-top-width');
+        const rect = element.getBoundingClientRect();
+        const style = getStyle(element);
+        const borderLeft = parseFloat(style.borderLeftWidth) || 0;
+        const borderTop = parseFloat(style.borderTopWidth) || 0;
         result.width = element.clientWidth;
         result.height = element.clientHeight;
-        result.left = left + borderLeft;
+        result.left = rect.left + borderLeft;
         result.right = result.left + result.width;
-        result.top = top + borderTop;
+        result.top = rect.top + borderTop;
         result.bottom = result.top + result.height;
     }
     return result;
@@ -993,8 +989,8 @@ class AutoScroll {
             return;
         }
         const itemData = this._itemData.get(item);
-        const moveDirectionX = itemData.directionX;
-        const moveDirectionY = itemData.directionY;
+        const moveDirectionX = itemData === null || itemData === void 0 ? void 0 : itemData.directionX;
+        const moveDirectionY = itemData === null || itemData === void 0 ? void 0 : itemData.directionY;
         if (!moveDirectionX && !moveDirectionY) {
             checkX && this._cancelItemScroll(item, AUTO_SCROLL_AXIS.x);
             checkY && this._cancelItemScroll(item, AUTO_SCROLL_AXIS.y);
