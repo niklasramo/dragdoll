@@ -1,15 +1,15 @@
 import { assert } from 'chai';
-import { IS_BROWSER } from '../../src/constants';
-import { createTestElement } from './utils/createTestElement';
-import { createFakeDrag } from './utils/createFakeDrag';
-import { addDefaultPageStyles, removeDefaultPageStyles } from './utils/defaultPageStyles';
+import { IS_BROWSER } from '../../src/constants.js';
+import { createTestElement } from './utils/createTestElement.js';
+import { createFakeDrag } from './utils/createFakeDrag.js';
+import { addDefaultPageStyles, removeDefaultPageStyles } from './utils/defaultPageStyles.js';
 import {
   PointerSensor,
   PointerSensorCancelEvent,
   PointerSensorEndEvent,
   PointerSensorMoveEvent,
   PointerSensorStartEvent,
-} from '../../src/index';
+} from '../../src/index.js';
 
 describe('PointerSensor', () => {
   beforeEach(() => {

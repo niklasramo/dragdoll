@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { BaseSensor } from '../../src/index';
+import { BaseSensor } from '../../src/index.js';
 
 describe('BaseSensor', () => {
   describe('drag property', () => {

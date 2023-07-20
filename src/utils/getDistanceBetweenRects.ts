@@ -1,6 +1,6 @@
-import { isRectsOverlapping } from './isRectsOverlapping';
+import { isRectsOverlapping } from './isRectsOverlapping.js';
 
-import { RectExtended } from '../types';
+import { RectExtended } from '../types.js';
 
 function distanceBetweenPoints(x1: number, y1: number, x2: number, y2: number) {
   return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));

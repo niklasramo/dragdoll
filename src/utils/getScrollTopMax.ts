@@ -1,4 +1,4 @@
-import { isWindow } from './isWindow';
+import { isWindow } from './isWindow.js';
 
 export function getScrollTopMax(element: Element | Window) {
   if (isWindow(element)) element = document.documentElement;

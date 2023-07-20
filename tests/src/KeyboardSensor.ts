@@ -1,8 +1,8 @@
 import { assert } from 'chai';
-import { IS_BROWSER } from '../../src/constants';
-import { createTestElement } from './utils/createTestElement';
-import { addDefaultPageStyles, removeDefaultPageStyles } from './utils/defaultPageStyles';
-import { KeyboardSensor, KeyboardSensorStartEvent } from '../../src/index';
+import { IS_BROWSER } from '../../src/constants.js';
+import { createTestElement } from './utils/createTestElement.js';
+import { addDefaultPageStyles, removeDefaultPageStyles } from './utils/defaultPageStyles.js';
+import { KeyboardSensor, KeyboardSensorStartEvent } from '../../src/index.js';
 
 // PointerSensor
 

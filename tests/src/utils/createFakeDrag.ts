@@ -1,5 +1,5 @@
-import { createFakeTouchEvent } from './createFakeTouchEvent';
-import { FakeTouchEvent } from './FakeTouch';
+import { createFakeTouchEvent } from './createFakeTouchEvent.js';
+import { FakeTouchEvent } from './FakeTouch.js';
 
 type FakeDragStep = { x: number; y: number };
 type FakeDragStepList = [FakeDragStep, FakeDragStep, ...FakeDragStep[]];

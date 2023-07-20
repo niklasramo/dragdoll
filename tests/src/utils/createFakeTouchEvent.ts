@@ -4,7 +4,7 @@ import {
   FakeTouchEvent,
   FakeTouchEventType,
   FakeTouchEventOptions,
-} from './FakeTouch';
+} from './FakeTouch.js';
 
 export function createFakeTouchEvent(
   type: FakeTouchEventType,

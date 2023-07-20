@@ -1,6 +1,6 @@
-import { isRectsOverlapping } from './isRectsOverlapping';
+import { isRectsOverlapping } from './isRectsOverlapping.js';
 
-import { RectExtended } from '../types';
+import { RectExtended } from '../types.js';
 
 /**
  * Calculate intersection area between two rectangle.
