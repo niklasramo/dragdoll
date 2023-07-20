@@ -1,8 +1,8 @@
-import { ticker, tickerReadPhase, tickerWritePhase } from '../../singletons/ticker';
+import { ticker, tickerReadPhase, tickerWritePhase } from '../../singletons/ticker.js';
 
-import { Draggable, DraggablePluginMap } from '../Draggable';
+import { Draggable, DraggablePluginMap } from '../Draggable.js';
 
-import { Sensor } from '../../Sensors/Sensor';
+import { Sensor } from '../../Sensors/Sensor.js';
 
 import {
   AutoScrollItem,
@@ -10,11 +10,11 @@ import {
   AutoScrollItemEventCallback,
   AutoScrollItemTarget,
   autoScrollSmoothSpeed,
-} from '../../AutoScroll/AutoScroll';
+} from '../../AutoScroll/AutoScroll.js';
 
-import { autoScroll } from '../../singletons/autoScroll';
+import { autoScroll } from '../../singletons/autoScroll.js';
 
-import { Writeable } from '../../types';
+import { Writeable } from '../../types.js';
 
 const AUTOSCROLL_POSITION = { x: 0, y: 0 };
 

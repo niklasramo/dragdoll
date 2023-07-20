@@ -1,6 +1,6 @@
-import { HAS_PASSIVE_EVENTS } from '../constants';
+import { HAS_PASSIVE_EVENTS } from '../constants.js';
 
-import { ListenerOptions } from '../types';
+import { ListenerOptions } from '../types.js';
 
 export function parseListenerOptions(options: ListenerOptions = {}): ListenerOptions {
   const { capture = true, passive = true } = options;

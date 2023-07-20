@@ -1,12 +1,12 @@
-import { Sensor } from '../Sensors/Sensor';
+import { Sensor } from '../Sensors/Sensor.js';
 
-import { Draggable } from '../Draggable/Draggable';
+import { Draggable } from '../Draggable/Draggable.js';
 
-import { PointerSensor, PointerSensorEvents } from '../Sensors/PointerSensor';
+import { PointerSensor, PointerSensorEvents } from '../Sensors/PointerSensor.js';
 
-import { getScrollableAncestors } from './getScrollableAncestors';
+import { getScrollableAncestors } from './getScrollableAncestors.js';
 
-import { isScrollable } from './isScrollable';
+import { isScrollable } from './isScrollable.js';
 
 function getScrollables(element: Element) {
   const scrollables: (Element | Window)[] = [];

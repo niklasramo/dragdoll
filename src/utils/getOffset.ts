@@ -1,8 +1,8 @@
-import { getStyle } from './getStyle';
+import { getStyle } from './getStyle.js';
 
-import { isWindow } from './isWindow';
+import { isWindow } from './isWindow.js';
 
-import { isDocument } from './isDocument';
+import { isDocument } from './isDocument.js';
 
 /**
  * Returns the element's document offset, which in practice means the vertical

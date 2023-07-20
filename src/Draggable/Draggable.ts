@@ -1,18 +1,18 @@
-import { HAS_PASSIVE_EVENTS } from '../constants';
+import { HAS_PASSIVE_EVENTS } from '../constants.js';
 
 import { Emitter, EventListenerId } from 'eventti';
 
-import { Sensor, SensorEvents } from '../Sensors/Sensor';
+import { Sensor, SensorEvents } from '../Sensors/Sensor.js';
 
-import { ticker, tickerReadPhase, tickerWritePhase } from '../singletons/ticker';
+import { ticker, tickerReadPhase, tickerWritePhase } from '../singletons/ticker.js';
 
-import { getOffsetContainer } from '../utils/getOffsetContainer';
+import { getOffsetContainer } from '../utils/getOffsetContainer.js';
 
-import { getOffsetDiff } from '../utils/getOffsetDiff';
+import { getOffsetDiff } from '../utils/getOffsetDiff.js';
 
-import { getStyle } from 'utils/getStyle';
+import { getStyle } from 'utils/getStyle.js';
 
-import { Writeable } from '../types';
+import { Writeable } from '../types.js';
 
 const IDENTITY_MATRIX = 'matrix(1, 0, 0, 1, 0, 0)';
 

@@ -1,4 +1,4 @@
-import { getStyle } from './getStyle';
+import { getStyle } from './getStyle.js';
 
 const SCROLLABLE_OVERFLOWS = new Set(['auto', 'scroll', 'overlay']);
 

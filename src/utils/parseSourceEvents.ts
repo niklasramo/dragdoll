@@ -1,4 +1,4 @@
-import { HAS_POINTER_EVENTS, HAS_TOUCH_EVENTS } from '../constants';
+import { HAS_POINTER_EVENTS, HAS_TOUCH_EVENTS } from '../constants.js';
 
 export function parseSourceEvents(
   sourceEvents: 'pointer' | 'touch' | 'mouse' | 'auto' | undefined,

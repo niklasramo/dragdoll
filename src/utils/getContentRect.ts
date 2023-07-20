@@ -1,8 +1,8 @@
-import { isWindow } from './isWindow';
+import { isWindow } from './isWindow.js';
 
-import { getStyle } from './getStyle';
+import { getStyle } from './getStyle.js';
 
-import { RectExtended } from '../types';
+import { RectExtended } from '../types.js';
 
 /**
  * Get window's or element's client rectangle data relative to the element's

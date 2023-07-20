@@ -1,28 +1,28 @@
 import { Emitter, EventListenerId } from 'eventti';
 
-import { Rect, RectExtended } from '../types';
+import { Rect, RectExtended } from '../types.js';
 
-import { Pool } from '../Pool';
+import { Pool } from '../Pool.js';
 
-import { ticker, tickerReadPhase, tickerWritePhase } from '../singletons/ticker';
+import { ticker, tickerReadPhase, tickerWritePhase } from '../singletons/ticker.js';
 
-import { getIntersectionScore } from '../utils/getIntersectionScore';
+import { getIntersectionScore } from '../utils/getIntersectionScore.js';
 
-import { getContentRect } from '../utils/getContentRect';
+import { getContentRect } from '../utils/getContentRect.js';
 
-import { getDistanceBetweenRects } from '../utils/getDistanceBetweenRects';
+import { getDistanceBetweenRects } from '../utils/getDistanceBetweenRects.js';
 
-import { getScrollElement } from '../utils/getScrollElement';
+import { getScrollElement } from '../utils/getScrollElement.js';
 
-import { getScrollLeft } from '../utils/getScrollLeft';
+import { getScrollLeft } from '../utils/getScrollLeft.js';
 
-import { getScrollLeftMax } from '../utils/getScrollLeftMax';
+import { getScrollLeftMax } from '../utils/getScrollLeftMax.js';
 
-import { getScrollTop } from '../utils/getScrollTop';
+import { getScrollTop } from '../utils/getScrollTop.js';
 
-import { getScrollTopMax } from '../utils/getScrollTopMax';
+import { getScrollTopMax } from '../utils/getScrollTopMax.js';
 
-import { isRectsOverlapping } from '../utils/isRectsOverlapping';
+import { isRectsOverlapping } from '../utils/isRectsOverlapping.js';
 
 //
 // CONSTANTS

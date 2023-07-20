@@ -1,6 +1,6 @@
-import { getIntersectionArea } from './getIntersectionArea';
+import { getIntersectionArea } from './getIntersectionArea.js';
 
-import { RectExtended } from '../types';
+import { RectExtended } from '../types.js';
 
 /**
  * Calculate how many percent the intersection area of two rectangles is from

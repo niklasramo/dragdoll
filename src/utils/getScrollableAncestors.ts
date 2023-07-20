@@ -1,5 +1,5 @@
-import { isScrollable } from './isScrollable';
-import { isDocument } from './isDocument';
+import { isScrollable } from './isScrollable.js';
+import { isDocument } from './isDocument.js';
 
 /**
  * Compute the element's scrollable ancestor elements.

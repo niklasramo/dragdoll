@@ -1,4 +1,4 @@
-import { RectExtended } from '../types';
+import { RectExtended } from '../types.js';
 
 /**
  * Check if two rectangles are overlapping.

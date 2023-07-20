@@ -1,6 +1,6 @@
-import { Sensor } from './Sensor';
+import { Sensor } from './Sensor.js';
 
-import { BaseMotionSensor, BaseMotionSensorEvents } from './BaseMotionSensor';
+import { BaseMotionSensor, BaseMotionSensorEvents } from './BaseMotionSensor.js';
 
 export interface KeyboardMotionSensorSettings<
   E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents,

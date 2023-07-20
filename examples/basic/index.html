@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta charset="utf-8" />
@@ -69,21 +69,37 @@
     <div class="container">
       <div class="draggable" tabindex="0"></div>
     </div>
-    <script src="../../node_modules/eventti/dist/eventti.umd.js"></script>
-    <script src="../../node_modules/tikki/dist/tikki.umd.js"></script>
-    <script src="../../dist/dragdoll.umd.js"></script>
-    <script>
+    <script type="importmap">
+      {
+        "imports": {
+          "eventti": "../libs/eventti.js",
+          "tikki": "../libs/tikki.js",
+          "dragdoll": "../libs/dragdoll.js"
+        }
+      }
+    </script>
+    <script src="../libs/eventti.js" type="module"></script>
+    <script src="../libs/tikki.js" type="module"></script>
+    <script src="../libs/dragdoll.js" type="module"></script>
+    <script type="module">
+      import {
+        PointerSensor,
+        KeyboardMotionSensor,
+        Draggable,
+        createPointerSensorStartPredicate,
+        autoScrollPlugin,
+      } from 'dragdoll';
       const element = document.querySelector('.draggable');
       const scroller = document.querySelector('.scroller');
       const dragContainer = document.querySelector('.dragContainer');
-      const pointerSensor = new DragDoll.PointerSensor(element);
-      const keyboardSensor = new DragDoll.KeyboardMotionSensor();
-      const draggable = new DragDoll.Draggable([pointerSensor, keyboardSensor], {
+      const pointerSensor = new PointerSensor(element);
+      const keyboardSensor = new KeyboardMotionSensor();
+      const draggable = new Draggable([pointerSensor, keyboardSensor], {
         container: dragContainer,
         getElements: () => [element],
-        startPredicate: DragDoll.createPointerSensorStartPredicate(),
+        startPredicate: createPointerSensorStartPredicate(),
       }).use(
-        DragDoll.autoScrollPlugin({
+        autoScrollPlugin({
           targets: [
             {
               element: window,
@@ -97,7 +113,7 @@
               priority: 1,
             },
           ],
-        })
+        }),
       );
     </script>
   </body>
