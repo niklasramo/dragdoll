@@ -13,12 +13,23 @@ $ npm install dragdoll eventti tikki
 ### Browser
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/eventti@3.0.0/dist/eventti.umd.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tikki@2.0.0/dist/tikki.umd.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dragdoll@0.1.0/dist/dragdoll.umd.js"></script>
+<script type="importmap">
+  {
+    "imports": {
+      "eventti": "https://cdn.jsdelivr.net/npm/eventti@3.0.0/dist/eventti.js",
+      "tikki": "https://cdn.jsdelivr.net/npm/tikki@2.0.0/dist/tikki.js",
+      "dragdoll": "https://cdn.jsdelivr.net/npm/dragdoll@0.2.0/dist/index.js"
+    }
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/eventti@3.0.0/dist/eventti.js" type="module"></script>
+<script src="https://cdn.jsdelivr.net/npm/tikki@2.0.0/dist/tikki.js" type="module"></script>
+<script src="https://cdn.jsdelivr.net/npm/dragdoll@0.2.0/dist/index.js" type="module"></script>
+<script type="module">
+  import { Draggable, PointerSensor } from 'dragdoll';
+  // etc...
+</script>
 ```
-
-Access the library via `window.DragDoll` in browser context.
 
 ## Usage
 
