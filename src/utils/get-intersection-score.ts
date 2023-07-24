@@ -1,4 +1,4 @@
-import { getIntersectionArea } from './getIntersectionArea.js';
+import { getIntersectionArea } from './get-intersection-area.js';
 
 import { RectExtended } from '../types.js';
 

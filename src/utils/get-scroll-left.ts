@@ -1,4 +1,4 @@
-import { isWindow } from './isWindow.js';
+import { isWindow } from './is-window.js';
 
 export function getScrollLeft(element: Element | Window) {
   return isWindow(element) ? element.pageXOffset : element.scrollLeft;

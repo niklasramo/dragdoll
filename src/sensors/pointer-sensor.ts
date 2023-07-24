@@ -10,17 +10,17 @@ import {
   SensorCancelEvent,
   SensorEndEvent,
   SensorDestroyEvent,
-} from './Sensor.js';
+} from './sensor.js';
 
-import { getPointerEventData } from '../utils/getPointerEventData.js';
+import { getPointerEventData } from '../utils/get-pointer-event-data.js';
 
-import { getPointerType } from '../utils/getPointerType.js';
+import { getPointerType } from '../utils/get-pointer-type.js';
 
-import { getPointerId } from '../utils/getPointerId.js';
+import { getPointerId } from '../utils/get-pointer-id.js';
 
-import { parseListenerOptions } from '../utils/parseListenerOptions.js';
+import { parseListenerOptions } from '../utils/parse-listener-options.js';
 
-import { parseSourceEvents } from '../utils/parseSourceEvents.js';
+import { parseSourceEvents } from '../utils/parse-source-events.js';
 
 const POINTER_EVENTS = {
   start: 'pointerdown',

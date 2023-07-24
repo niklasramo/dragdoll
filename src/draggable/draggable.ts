@@ -2,15 +2,15 @@ import { HAS_PASSIVE_EVENTS } from '../constants.js';
 
 import { Emitter, EventListenerId } from 'eventti';
 
-import { Sensor, SensorEvents } from '../Sensors/Sensor.js';
+import { Sensor, SensorEvents } from '../sensors/sensor.js';
 
 import { ticker, tickerReadPhase, tickerWritePhase } from '../singletons/ticker.js';
 
-import { getOffsetContainer } from '../utils/getOffsetContainer.js';
+import { getOffsetContainer } from '../utils/get-offset-container.js';
 
-import { getOffsetDiff } from '../utils/getOffsetDiff.js';
+import { getOffsetDiff } from '../utils/get-offset-diff.js';
 
-import { getStyle } from 'utils/getStyle.js';
+import { getStyle } from 'utils/get-style.js';
 
 import { Writeable } from '../types.js';
 

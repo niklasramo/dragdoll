@@ -5,9 +5,9 @@ import {
   SensorCancelEvent,
   SensorEndEvent,
   SensorDestroyEvent,
-} from './Sensor.js';
+} from './sensor.js';
 
-import { BaseSensor } from './BaseSensor.js';
+import { BaseSensor } from './base-sensor.js';
 
 export type KeyboardSensorPredicate = (
   e: KeyboardEvent,

@@ -1,6 +1,6 @@
 import { Emitter, Events, EventListenerId } from 'eventti';
 
-import { Sensor, SensorEvents, SensorEventType } from './Sensor.js';
+import { Sensor, SensorEvents, SensorEventType } from './sensor.js';
 
 import { Writeable } from '../types.js';
 

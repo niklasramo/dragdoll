@@ -1,6 +1,6 @@
-import { Sensor, SensorEvents } from './Sensor.js';
+import { Sensor, SensorEvents } from './sensor.js';
 
-import { BaseSensor, BaseSensorDragData } from './BaseSensor.js';
+import { BaseSensor, BaseSensorDragData } from './base-sensor.js';
 
 import { Writeable } from '../types.js';
 

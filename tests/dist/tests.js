@@ -4179,7 +4179,7 @@ var should = import_index.default.should;
 var assert = import_index.default.assert;
 var core = import_index.default.core;
 
-// src/Sensors/Sensor.ts
+// src/sensors/sensor.ts
 var SensorEventType = {
   start: "start",
   move: "move",
@@ -4188,7 +4188,7 @@ var SensorEventType = {
   destroy: "destroy"
 };
 
-// src/Sensors/BaseSensor.ts
+// src/sensors/base-sensor.ts
 import { Emitter } from "eventti";
 var BaseSensor = class {
   constructor() {
@@ -4271,10 +4271,10 @@ var tickerReadPhase = Symbol();
 var tickerWritePhase = Symbol();
 var ticker = new Ticker({ phases: [tickerReadPhase, tickerWritePhase] });
 
-// src/Sensors/PointerSensor.ts
+// src/sensors/pointer-sensor.ts
 import { Emitter as Emitter2 } from "eventti";
 
-// src/utils/getPointerEventData.ts
+// src/utils/get-pointer-event-data.ts
 function getPointerEventData(e, id) {
   if ("pointerId" in e) {
     return e.pointerId === id ? e : null;
@@ -4291,12 +4291,12 @@ function getPointerEventData(e, id) {
   return e;
 }
 
-// src/utils/getPointerType.ts
+// src/utils/get-pointer-type.ts
 function getPointerType(e) {
   return "pointerType" in e ? e.pointerType : "touches" in e ? "touch" : "mouse";
 }
 
-// src/utils/getPointerId.ts
+// src/utils/get-pointer-id.ts
 function getPointerId(e) {
   if ("pointerId" in e)
     return e.pointerId;
@@ -4325,7 +4325,7 @@ var HAS_TOUCH_EVENTS = IS_BROWSER && "ontouchstart" in window;
 var HAS_POINTER_EVENTS = IS_BROWSER && !!window.PointerEvent;
 var IS_SAFARI = !!(IS_BROWSER && navigator.vendor && navigator.vendor.indexOf("Apple") > -1 && navigator.userAgent && navigator.userAgent.indexOf("CriOS") == -1 && navigator.userAgent.indexOf("FxiOS") == -1);
 
-// src/utils/parseListenerOptions.ts
+// src/utils/parse-listener-options.ts
 function parseListenerOptions(options = {}) {
   const { capture = true, passive = true } = options;
   if (HAS_PASSIVE_EVENTS) {
@@ -4335,12 +4335,12 @@ function parseListenerOptions(options = {}) {
   }
 }
 
-// src/utils/parseSourceEvents.ts
+// src/utils/parse-source-events.ts
 function parseSourceEvents(sourceEvents) {
   return sourceEvents === "auto" || sourceEvents === void 0 ? HAS_POINTER_EVENTS ? "pointer" : HAS_TOUCH_EVENTS ? "touch" : "mouse" : sourceEvents;
 }
 
-// src/Sensors/PointerSensor.ts
+// src/sensors/pointer-sensor.ts
 var POINTER_EVENTS = {
   start: "pointerdown",
   move: "pointermove",
@@ -4603,7 +4603,7 @@ var PointerSensor = class {
   }
 };
 
-// src/Sensors/KeyboardSensor.ts
+// src/sensors/keyboard-sensor.ts
 var KeyboardSensor = class extends BaseSensor {
   constructor(options = {}) {
     super();
@@ -4750,10 +4750,10 @@ var KeyboardSensor = class extends BaseSensor {
   }
 };
 
-// src/Draggable/Draggable.ts
+// src/draggable/draggable.ts
 import { Emitter as Emitter3 } from "eventti";
 
-// src/utils/getStyle.ts
+// src/utils/get-style.ts
 var STYLE_DECLARATION_CACHE = /* @__PURE__ */ new WeakMap();
 function getStyle(element) {
   let styleDeclaration = STYLE_DECLARATION_CACHE.get(element)?.deref();
@@ -4764,15 +4764,15 @@ function getStyle(element) {
   return styleDeclaration;
 }
 
-// src/utils/isWindow.ts
+// src/utils/is-window.ts
 function isWindow(value) {
   return value instanceof Window;
 }
 
-// src/AutoScroll/AutoScroll.ts
+// src/auto-scroll/auto-scroll.ts
 import { Emitter as Emitter4 } from "eventti";
 
-// src/Pool.ts
+// src/pool.ts
 var Pool = class {
   constructor(createObject, onPut) {
     this._data = [];
@@ -4793,12 +4793,12 @@ var Pool = class {
   }
 };
 
-// src/utils/isRectsOverlapping.ts
+// src/utils/is-rects-overlapping.ts
 function isRectsOverlapping(a, b) {
   return !(a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top);
 }
 
-// src/utils/getIntersectionArea.ts
+// src/utils/get-intersection-area.ts
 function getIntersectionArea(a, b) {
   if (!isRectsOverlapping(a, b))
     return 0;
@@ -4807,7 +4807,7 @@ function getIntersectionArea(a, b) {
   return width * height;
 }
 
-// src/utils/getIntersectionScore.ts
+// src/utils/get-intersection-score.ts
 function getIntersectionScore(a, b) {
   const area = getIntersectionArea(a, b);
   if (!area)
@@ -4816,7 +4816,7 @@ function getIntersectionScore(a, b) {
   return area / maxArea * 100;
 }
 
-// src/utils/getContentRect.ts
+// src/utils/get-content-rect.ts
 function getContentRect(element, result = { width: 0, height: 0, left: 0, right: 0, top: 0, bottom: 0 }) {
   if (isWindow(element)) {
     result.width = document.documentElement.clientWidth;
@@ -4840,7 +4840,7 @@ function getContentRect(element, result = { width: 0, height: 0, left: 0, right:
   return result;
 }
 
-// src/utils/getDistanceBetweenRects.ts
+// src/utils/get-distance-between-rects.ts
 function distanceBetweenPoints(x1, y1, x2, y2) {
   return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 }
@@ -4872,7 +4872,7 @@ function getDistanceBetweenRects(a, b) {
   }
 }
 
-// src/utils/getScrollElement.ts
+// src/utils/get-scroll-element.ts
 function getScrollElement(element) {
   if (isWindow(element) || element === document.documentElement || element === document.body) {
     return window;
@@ -4881,31 +4881,31 @@ function getScrollElement(element) {
   }
 }
 
-// src/utils/getScrollLeft.ts
+// src/utils/get-scroll-left.ts
 function getScrollLeft(element) {
   return isWindow(element) ? element.pageXOffset : element.scrollLeft;
 }
 
-// src/utils/getScrollLeftMax.ts
+// src/utils/get-scroll-left-max.ts
 function getScrollLeftMax(element) {
   if (isWindow(element))
     element = document.documentElement;
   return element.scrollWidth - element.clientWidth;
 }
 
-// src/utils/getScrollTop.ts
+// src/utils/get-scroll-top.ts
 function getScrollTop(element) {
   return isWindow(element) ? element.pageYOffset : element.scrollTop;
 }
 
-// src/utils/getScrollTopMax.ts
+// src/utils/get-scroll-top-max.ts
 function getScrollTopMax(element) {
   if (isWindow(element))
     element = document.documentElement;
   return element.scrollHeight - element.clientHeight;
 }
 
-// src/AutoScroll/AutoScroll.ts
+// src/auto-scroll/auto-scroll.ts
 var R1 = {
   width: 0,
   height: 0,
@@ -5670,7 +5670,7 @@ var AutoScroll = class {
   }
 };
 
-// src/singletons/autoScroll.ts
+// src/singletons/auto-scroll.ts
 var autoScroll = new AutoScroll();
 
 // tests/src/BaseSensor.ts

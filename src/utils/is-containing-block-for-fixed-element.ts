@@ -1,5 +1,5 @@
 import { IS_SAFARI } from '../constants.js';
-import { getStyle } from './getStyle.js';
+import { getStyle } from './get-style.js';
 
 export function isContainingBlockForFixedElement(element: Element) {
   const style = getStyle(element);
