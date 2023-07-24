@@ -1,6 +1,6 @@
-import { isWindow } from './isWindow.js';
+import { isWindow } from './is-window.js';
 
-import { getStyle } from './getStyle.js';
+import { getStyle } from './get-style.js';
 
 import { RectExtended } from '../types.js';
 

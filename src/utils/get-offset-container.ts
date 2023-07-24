@@ -1,7 +1,7 @@
-import { getStyle } from './getStyle.js';
-import { isContainingBlockForFixedElement } from './isContainingBlockForFixedElement.js';
-import { isContainingBlockForAbsoluteElement } from './isContainingBlockForAbsoluteElement.js';
-import { isDocument } from './isDocument.js';
+import { getStyle } from './get-style.js';
+import { isContainingBlockForFixedElement } from './is-containing-block-for-fixed-element.js';
+import { isContainingBlockForAbsoluteElement } from './is-containing-block-for-absolute-element.js';
+import { isDocument } from './is-document.js';
 
 /**
  * Returns the element's offset container (not to be mistaken with the native

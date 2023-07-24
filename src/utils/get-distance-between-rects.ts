@@ -1,4 +1,4 @@
-import { isRectsOverlapping } from './isRectsOverlapping.js';
+import { isRectsOverlapping } from './is-rects-overlapping.js';
 
 import { RectExtended } from '../types.js';
 

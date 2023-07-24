@@ -1,23 +1,23 @@
-export * from './Sensors/Sensor.js';
+export * from './sensors/sensor.js';
 
-export * from './Sensors/BaseSensor.js';
+export * from './sensors/base-sensor.js';
 
-export * from './Sensors/BaseMotionSensor.js';
+export * from './sensors/base-motion-sensor.js';
 
-export * from './Sensors/PointerSensor.js';
+export * from './sensors/pointer-sensor.js';
 
-export * from './Sensors/KeyboardSensor.js';
+export * from './sensors/keyboard-sensor.js';
 
-export * from './Sensors/KeyboardMotionSensor.js';
+export * from './sensors/keyboard-motion-sensor.js';
 
-export * from './Draggable/Draggable.js';
+export * from './draggable/draggable.js';
 
-export * from './Draggable/plugins/autoScrollPlugin.js';
+export * from './draggable/plugins/auto-scroll-plugin.js';
 
-export * from './AutoScroll/AutoScroll.js';
+export * from './auto-scroll/auto-scroll.js';
 
-export * from './singletons/autoScroll.js';
+export * from './singletons/auto-scroll.js';
 
 export * from './singletons/ticker.js';
 
-export * from './utils/createPointerSensorStartPredicate.js';
+export * from './utils/create-pointer-sensor-start-predicate.js';

@@ -1,5 +1,5 @@
-import { getStyle } from './getStyle.js';
-import { isContainingBlockForFixedElement } from './isContainingBlockForFixedElement.js';
+import { getStyle } from './get-style.js';
+import { isContainingBlockForFixedElement } from './is-containing-block-for-fixed-element.js';
 
 export function isContainingBlockForAbsoluteElement(element: Element) {
   // The first thing to check is the element's position. If it's anything else

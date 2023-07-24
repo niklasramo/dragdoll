@@ -1,4 +1,4 @@
-import { getOffset } from './getOffset.js';
+import { getOffset } from './get-offset.js';
 
 const offsetA = { left: 0, top: 0 };
 const offsetB = { left: 0, top: 0 };
