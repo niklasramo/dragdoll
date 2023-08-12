@@ -66,7 +66,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
     const {
       moveDistance = 25,
       startPredicate = (e) => {
-        if (e.key === 'Enter' || e.key === 'Space' || e.key === ' ') {
+        if (e.key === 'Enter' || e.key === ' ') {
           if (document.activeElement && document.activeElement !== document.body) {
             const { left, top } = document.activeElement.getBoundingClientRect();
             return { x: left, y: top };
@@ -114,7 +114,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
         return null;
       },
       endPredicate = (e, sensor) => {
-        if (sensor.drag && (e.key === 'Enter' || e.key === 'Space' || e.key === ' ')) {
+        if (sensor.drag && (e.key === 'Enter' || e.key === ' ')) {
           return { x: sensor.drag.x, y: sensor.drag.y };
         }
         return null;

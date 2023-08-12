@@ -72,13 +72,13 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
         return null;
       },
       computeSpeed = () => 500,
-      startKeys = [' ', 'Space', 'Enter'],
+      startKeys = [' ', 'Enter'],
       moveLeftKeys = ['ArrowLeft'],
       moveRightKeys = ['ArrowRight'],
       moveUpKeys = ['ArrowUp'],
       moveDownKeys = ['ArrowDown'],
       cancelKeys = ['Escape'],
-      endKeys = [' ', 'Space', 'Enter'],
+      endKeys = [' ', 'Enter'],
     } = options;
 
     this._computeSpeed = computeSpeed;

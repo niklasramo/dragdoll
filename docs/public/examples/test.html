@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>DragDoll - PointerSensor</title>
+    <title>DragDoll Examples - Draggable Box</title>
     <meta
       name="viewport"
       content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
@@ -19,20 +19,15 @@
       }
       html {
         overflow-y: scroll;
-        height: 200%;
+        width: 100%;
+        height: 100%;
         background: #222;
       }
-      .dragContainer {
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 0;
-        height: 0;
-        z-index: 1000;
-      }
-      .container {
-        position: relative;
-        transform: translate3d(100px, 100px, 0px);
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 300%;
       }
       .draggable {
         position: absolute;
@@ -46,41 +41,22 @@
       .draggable:focus {
         background-color: #fbff00;
       }
-      .scroller {
-        position: absolute;
-        left: 25vw;
-        top: 25vh;
-        height: 50vh;
-        width: 50vw;
-        overflow: auto;
-        background-color: #fff;
-      }
-      .scroller-content {
-        width: 10000px;
-        height: 10000px;
-      }
     </style>
   </head>
   <body>
-    <div class="dragContainer"></div>
-    <div class="scroller">
-      <div class="scroller-content"></div>
-    </div>
-    <div class="container">
-      <div class="draggable" tabindex="0"></div>
-    </div>
+    <div class="draggable" tabindex="0"></div>
     <script type="importmap">
       {
         "imports": {
-          "eventti": "../libs/eventti.js",
-          "tikki": "../libs/tikki.js",
-          "dragdoll": "../libs/dragdoll.js"
+          "eventti": "../assets/eventti.js",
+          "tikki": "../assets/tikki.js",
+          "dragdoll": "../assets/dragdoll.js"
         }
       }
     </script>
-    <script src="../libs/eventti.js" type="module"></script>
-    <script src="../libs/tikki.js" type="module"></script>
-    <script src="../libs/dragdoll.js" type="module"></script>
+    <script src="../assets/eventti.js" type="module"></script>
+    <script src="../assets/tikki.js" type="module"></script>
+    <script src="../assets/dragdoll.js" type="module"></script>
     <script type="module">
       import {
         PointerSensor,
@@ -88,14 +64,11 @@
         Draggable,
         createPointerSensorStartPredicate,
         autoScrollPlugin,
-      } from 'dragdoll';
+      } from '../assets/dragdoll.js';
       const element = document.querySelector('.draggable');
-      const scroller = document.querySelector('.scroller');
-      const dragContainer = document.querySelector('.dragContainer');
       const pointerSensor = new PointerSensor(element);
       const keyboardSensor = new KeyboardMotionSensor();
       const draggable = new Draggable([pointerSensor, keyboardSensor], {
-        container: dragContainer,
         getElements: () => [element],
         startPredicate: createPointerSensorStartPredicate(),
       }).use(
@@ -103,14 +76,8 @@
           targets: [
             {
               element: window,
-              threshold: 100,
-              padding: { top: Infinity, bottom: Infinity, left: Infinity, right: Infinity },
-            },
-            {
-              element: scroller,
-              threshold: 100,
-              padding: { top: 100, bottom: 100 },
-              priority: 1,
+              axis: 'y',
+              padding: { top: Infinity, bottom: Infinity },
             },
           ],
         }),

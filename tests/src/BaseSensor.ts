@@ -339,7 +339,7 @@ describe('BaseSensor', () => {
   describe('destroy method', () => {
     it(`should (if drag is active):
           1. set isDestroyed property to true
-          2. emit "cancel" event with the current x/Y coordinates
+          2. emit "cancel" event with the current x/y coordinates
           3. reset drag data
           4. emit "destroy" event
           5. remove all listeners from the internal emitter
