@@ -77,7 +77,7 @@ Default: `() => 500`.
 type startKeys = string[];
 ```
 
-Default: `[' ', 'Space', 'Enter']`.
+Default: `[' ', 'Enter']`.
 
 ### moveLeftKeys
 
@@ -125,7 +125,7 @@ Default: `['Escape']`.
 type endKeys = string[];
 ```
 
-Default: `[' ', 'Space', 'Enter']`.
+Default: `[' ', 'Enter']`.
 
 ## Methods
 
