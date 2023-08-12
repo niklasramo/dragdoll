@@ -107,12 +107,16 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
   protected _end(data: E['end']) {
     if (!this.drag) return;
     this._moveKeyTimestamps.clear();
+    this._direction.x = 0;
+    this._direction.y = 0;
     super._end(data);
   }
 
   protected _cancel(data: E['cancel']) {
     if (!this.drag) return;
     this._moveKeyTimestamps.clear();
+    this._direction.x = 0;
+    this._direction.y = 0;
     super._cancel(data);
   }
 
