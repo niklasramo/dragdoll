@@ -103,11 +103,13 @@ type ListenerOptions = {
     passive?: boolean;
 };
 type PointerType = 'mouse' | 'pen' | 'touch';
-interface Rect {
-    left: number;
-    top: number;
+type Dimensions = {
     width: number;
     height: number;
+};
+interface Rect extends Dimensions {
+    left: number;
+    top: number;
 }
 interface RectExtended extends Rect {
     right: number;
@@ -290,11 +292,6 @@ declare class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboa
     destroy(): void;
 }
 
-declare enum DraggableStartPredicateState {
-    PENDING = 0,
-    RESOLVED = 1,
-    REJECTED = 2
-}
 declare class DraggableDragItem {
     readonly element: HTMLElement | SVGElement;
     readonly elementContainer: Element;
@@ -314,6 +311,7 @@ declare class DraggableDragItem {
     readonly _transform: string;
     constructor(element: HTMLElement | SVGElement, elementContainer: Element, elementOffsetContainer: Element | Window | Document, dragContainer: Element, dragOffsetContainer: Element | Window | Document);
 }
+
 declare class DraggableDrag<S extends Sensor[], E extends S[number]['events']> {
     readonly sensor: S[number] | null;
     readonly isStarted: boolean;
@@ -324,6 +322,12 @@ declare class DraggableDrag<S extends Sensor[], E extends S[number]['events']> {
     readonly endEvent: E['end'] | E['cancel'] | E['destroy'] | null;
     readonly items: DraggableDragItem[];
     constructor();
+}
+
+declare enum DraggableStartPredicateState {
+    PENDING = 0,
+    RESOLVED = 1,
+    REJECTED = 2
 }
 interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
     container: Element | null;
@@ -376,11 +380,10 @@ interface DraggablePlugin {
 }
 type DraggablePluginMap = Record<string, DraggablePlugin | undefined>;
 interface DraggableEventCallbacks<E extends SensorEvents> {
-    beforestart(event: E['start'] | E['move']): void;
+    preparestart(event: E['start'] | E['move']): void;
     start(event: E['start'] | E['move']): void;
-    beforemove(event: E['move']): void;
+    preparemove(event: E['move']): void;
     move(event: E['move']): void;
-    beforeend(event: E['end'] | E['cancel'] | E['destroy'] | null): void;
     end(event: E['end'] | E['cancel'] | E['destroy'] | null): void;
     destroy(): void;
 }

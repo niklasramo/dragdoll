@@ -8,7 +8,7 @@ import { ticker, tickerReadPhase, tickerWritePhase } from '../singletons/ticker.
 
 import { getIntersectionScore } from '../utils/get-intersection-score.js';
 
-import { getContentRect } from '../utils/get-content-rect.js';
+import { getContentClientRect } from '../utils/get-content-client-rect.js';
 
 import { getDistanceBetweenRects } from '../utils/get-distance-between-rects.js';
 
@@ -668,7 +668,7 @@ export class AutoScroll {
       // Ignore this item if there is no possibility to scroll.
       if (testMaxScrollX <= 0 && testMaxScrollY <= 0) continue;
 
-      const testRect = getContentRect(testElement, R2);
+      const testRect = getContentClientRect(testElement, R2);
       let testScore = getIntersectionScore(itemRect, testRect) || -Infinity;
 
       // If the item has no overlap with the target.
@@ -840,7 +840,7 @@ export class AutoScroll {
         break;
       }
 
-      const testRect = getContentRect(testElement, R2);
+      const testRect = getContentClientRect(testElement, R2);
       const testScore = getIntersectionScore(itemRect, testRect) || -Infinity;
 
       // If the item has no overlap with the target nor the padded target rect

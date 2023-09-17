@@ -1,0 +1,64 @@
+/* VARIABLES */
+
+:root {
+  --bg-color: #161618;
+  --color: rgba(255, 255, 245, 0.86);
+  --theme-color: #ff5555;
+  --card-color: #fff;
+  --card-bgColor: var(--theme-color);
+  --card-color--focus: var(--card-color);
+  --card-bgColor--focus: #db55ff;
+  --card-color--drag: var(--card-color);
+  --card-bgColor--drag: #55ff9c;
+}
+
+/* BASE */
+
+* {
+  box-sizing: border-box;
+}
+html {
+  height: 100%;
+  background: var(--bg-color);
+  color: var(--color);
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+}
+body {
+  margin: 0;
+}
+
+/* CARD */
+
+.card {
+  width: 100px;
+  height: 100px;
+  background-color: var(--card-bgColor);
+  color: var(--card-color);
+  border-radius: 8px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .card:hover,
+  .card:focus-visible {
+    background-color: var(--card-bgColor--focus);
+    color: var(--card-bgColor--focus);
+  }
+  .card:focus-visible {
+    outline-offset: 4px;
+    outline: 1px solid var(--card-bgColor--focus);
+  }
+}
+.card.draggable {
+  cursor: grab;
+}
+.card.dragging {
+  cursor: grabbing;
+  background-color: var(--card-bgColor--drag);
+  color: var(--card-bgColor--drag);
+}
+@media (hover: hover) and (pointer: fine) {
+  .card.dragging:focus-visible {
+    outline: 1px solid var(--card-bgColor--drag);
+  }
+}

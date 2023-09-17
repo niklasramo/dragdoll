@@ -4,11 +4,14 @@ export type ListenerOptions = { capture?: boolean; passive?: boolean };
 
 export type PointerType = 'mouse' | 'pen' | 'touch';
 
-export interface Rect {
-  left: number;
-  top: number;
+export type Dimensions = {
   width: number;
   height: number;
+};
+
+export interface Rect extends Dimensions {
+  left: number;
+  top: number;
 }
 
 export interface RectExtended extends Rect {
