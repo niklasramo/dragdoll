@@ -239,7 +239,7 @@ Is the Draggable instance destroyed or not?
 ```ts
 // Type
 type on = (
-  eventName: 'beforestart' | 'start' | 'beforemove' | 'move' | 'beforeend' | 'end' | 'destroy',
+  eventName: 'preparestart' | 'start' | 'preparemove' | 'move' | 'end' | 'destroy',
   listener: (e: SensorEvent | null | undefined) => void,
   listenerId?: string | number | symbol,
 ) => string | number | symbol;
@@ -263,7 +263,7 @@ The method returns a listener id, which can be used to remove this specific list
 ```ts
 // Type
 type off = (
-  eventName: 'beforestart' | 'start' | 'beforemove' | 'move' | 'beforeend' | 'end' | 'destroy',
+  eventName: 'preparestart' | 'start' | 'preparemove' | 'move' | 'end' | 'destroy',
   target: Function | string | number | symbol,
 ) => void;
 
@@ -367,11 +367,10 @@ Let's build an example plugin, which logs draggable events based on options we p
 import { Draggable, KeyboardSensor, Sensor } from 'dragdoll';
 
 const DRAGGABLE_EVENTS = [
-  'beforestart',
+  'preparestart',
   'start',
-  'beforemove',
+  'preparemove',
   'move',
-  'beforeend',
   'end',
   'destroy',
 ] as const;

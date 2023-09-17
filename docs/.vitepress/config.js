@@ -7,6 +7,9 @@ export default {
   description: 'Modular and extensible TypeScript drag & drop system.',
   appearance: true,
   head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/dragdoll-icon.svg' }]],
+  markdown: {
+    lineNumbers: true,
+  },
   lastUpdated: true,
   themeConfig: {
     siteTitle: false,

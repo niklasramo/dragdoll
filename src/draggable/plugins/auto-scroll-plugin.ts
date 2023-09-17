@@ -206,7 +206,7 @@ export class DraggableAutoScroll<
       }
     });
 
-    draggable.on('beforeend', () => {
+    draggable.on('end', () => {
       if (this._autoScrollProxy) {
         autoScroll.removeItem(this._autoScrollProxy);
         this._autoScrollProxy = null;

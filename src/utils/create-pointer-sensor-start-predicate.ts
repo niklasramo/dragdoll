@@ -89,7 +89,7 @@ export function createPointerSensorStartPredicate<
           if (!startTimeStamp) return;
 
           // Unbind listeners.
-          draggable.off('beforeend', dragEndListener);
+          draggable.off('end', dragEndListener);
           draggable.sensors.forEach((sensor) => {
             if (sensor instanceof PointerSensor) {
               sensor.off('end', dragEndListener);
@@ -117,7 +117,7 @@ export function createPointerSensorStartPredicate<
         targetElement?.addEventListener('contextmenu', onContextMenu);
 
         // Reset data on drag end.
-        draggable.on('beforeend', dragEndListener);
+        draggable.on('end', dragEndListener);
         draggable.sensors.forEach((sensor) => {
           if (sensor instanceof PointerSensor) {
             sensor.off('end', dragEndListener);

@@ -4941,6 +4941,11 @@
     return styleDeclaration;
   }
 
+  // src/utils/is-document.ts
+  function isDocument(value) {
+    return value instanceof Document;
+  }
+
   // src/utils/is-window.ts
   function isWindow(value) {
     return value instanceof Window;
@@ -4990,8 +4995,8 @@
     return area / maxArea * 100;
   }
 
-  // src/utils/get-content-rect.ts
-  function getContentRect(element, result = { width: 0, height: 0, left: 0, right: 0, top: 0, bottom: 0 }) {
+  // src/utils/get-content-client-rect.ts
+  function getContentClientRect(element, result = { width: 0, height: 0, left: 0, right: 0, top: 0, bottom: 0 }) {
     if (isWindow(element)) {
       result.width = document.documentElement.clientWidth;
       result.height = document.documentElement.clientHeight;
@@ -4999,17 +5004,51 @@
       result.right = result.width;
       result.top = 0;
       result.bottom = result.height;
-    } else {
-      const rect = element.getBoundingClientRect();
-      const style = getStyle(element);
-      const borderLeft = parseFloat(style.borderLeftWidth) || 0;
-      const borderTop = parseFloat(style.borderTopWidth) || 0;
-      result.width = element.clientWidth;
-      result.height = element.clientHeight;
-      result.left = rect.left + borderLeft;
+    } else if (isDocument(element)) {
+      result.width = Math.max(
+        document.documentElement.scrollWidth,
+        document.body.scrollWidth,
+        document.documentElement.clientWidth
+      );
+      result.height = Math.max(
+        document.documentElement.scrollHeight,
+        document.body.scrollHeight,
+        document.documentElement.clientHeight
+      );
+      result.left = -window.scrollX;
+      result.top = -window.scrollY;
       result.right = result.left + result.width;
-      result.top = rect.top + borderTop;
       result.bottom = result.top + result.height;
+    } else {
+      const style = getStyle(element);
+      let { width, height, left, top } = element.getBoundingClientRect();
+      const borderLeft = parseFloat(style.borderLeftWidth) || 0;
+      const borderRight = parseFloat(style.borderRightWidth) || 0;
+      const borderTop = parseFloat(style.borderTopWidth) || 0;
+      const borderBottom = parseFloat(style.borderBottomWidth) || 0;
+      left += borderLeft;
+      top += borderTop;
+      width -= borderLeft;
+      width -= borderRight;
+      height -= borderTop;
+      height -= borderBottom;
+      if (element instanceof HTMLHtmlElement) {
+        const doc = element.ownerDocument;
+        const win = doc.defaultView;
+        if (win) {
+          width -= win.innerWidth - doc.documentElement.clientWidth;
+          height -= win.innerHeight - doc.documentElement.clientHeight;
+        }
+      } else {
+        width -= Math.max(0, Math.round(width) - element.clientWidth);
+        height -= Math.max(0, Math.round(height) - element.clientHeight);
+      }
+      result.width = width;
+      result.height = height;
+      result.left = left;
+      result.top = top;
+      result.right = left + width;
+      result.bottom = top + height;
     }
     return result;
   }
@@ -5472,7 +5511,7 @@
         const testMaxScrollY = testAxisY ? getScrollTopMax(testElement) : -1;
         if (testMaxScrollX <= 0 && testMaxScrollY <= 0)
           continue;
-        const testRect = getContentRect(testElement, R2);
+        const testRect = getContentClientRect(testElement, R2);
         let testScore = getIntersectionScore(itemRect, testRect) || -Infinity;
         if (testScore === -Infinity) {
           if (target.padding && isRectsOverlapping(itemRect, getPaddedRect(testRect, target.padding, R3))) {
@@ -5598,7 +5637,7 @@
         if (testMaxScroll <= 0) {
           break;
         }
-        const testRect = getContentRect(testElement, R2);
+        const testRect = getContentClientRect(testElement, R2);
         const testScore = getIntersectionScore(itemRect, testRect) || -Infinity;
         if (testScore === -Infinity) {
           const padding = target.scrollPadding || target.padding;
