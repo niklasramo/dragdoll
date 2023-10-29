@@ -389,13 +389,18 @@ var require_get_func_name = __commonJS({
     "use strict";
     var toString2 = Function.prototype.toString;
     var functionNameMatch = /\s*function(?:\s|\s*\/\*[^(?:*\/)]+\*\/\s*)*([^\s\(\/]+)/;
+    var maxFunctionSourceLength = 512;
     function getFuncName3(aFunc) {
       if (typeof aFunc !== "function") {
         return null;
       }
       var name = "";
       if (typeof Function.prototype.name === "undefined" && typeof aFunc.name === "undefined") {
-        var match = toString2.call(aFunc).match(functionNameMatch);
+        var functionSource = toString2.call(aFunc);
+        if (functionSource.indexOf("(") > maxFunctionSourceLength) {
+          return name;
+        }
+        var match = functionSource.match(functionNameMatch);
         if (match) {
           name = match[1];
         }
@@ -633,7 +638,11 @@ var init_typedarray = __esm({
 
 // node_modules/loupe/lib/date.js
 function inspectDate(dateObject, options) {
-  const split = dateObject.toJSON().split("T");
+  const stringRepresentation = dateObject.toJSON();
+  if (stringRepresentation === null) {
+    return "Invalid Date";
+  }
+  const split = stringRepresentation.split("T");
   const date = split[0];
   return options.stylize(`${date}T${truncate(split[1], options.truncate - date.length - 1)}`, "date");
 }
@@ -745,18 +754,18 @@ var init_regexp = __esm({
 });
 
 // node_modules/loupe/lib/set.js
-function arrayFromSet(set) {
+function arrayFromSet(set2) {
   const values = [];
-  set.forEach((value) => {
+  set2.forEach((value) => {
     values.push(value);
   });
   return values;
 }
-function inspectSet(set, options) {
-  if (set.size === 0)
+function inspectSet(set2, options) {
+  if (set2.size === 0)
     return "Set{}";
   options.truncate -= 7;
-  return `Set{ ${inspectList(arrayFromSet(set), options)} }`;
+  return `Set{ ${inspectList(arrayFromSet(set2), options)} }`;
 }
 var init_set = __esm({
   "node_modules/loupe/lib/set.js"() {
@@ -1000,6 +1009,9 @@ __export(loupe_exports, {
   registerConstructor: () => registerConstructor,
   registerStringTag: () => registerStringTag
 });
+function FakeMap() {
+  this.key = "chai/loupe__" + Math.random() + Date.now();
+}
 function inspect(value, options) {
   options = normaliseOptions(options);
   options.inspect = inspect;
@@ -1041,7 +1053,7 @@ function registerConstructor(constructor, inspector) {
   if (constructorMap.has(constructor)) {
     return false;
   }
-  constructorMap.add(constructor, inspector);
+  constructorMap.set(constructor, inspector);
   return true;
 }
 function registerStringTag(stringTag, inspector) {
@@ -1082,7 +1094,27 @@ var init_loupe = __esm({
     } catch (noNodeInspect) {
       nodeInspect = false;
     }
-    constructorMap = /* @__PURE__ */ new WeakMap();
+    FakeMap.prototype = {
+      // eslint-disable-next-line object-shorthand
+      get: function get(key) {
+        return key[this.key];
+      },
+      // eslint-disable-next-line object-shorthand
+      has: function has(key) {
+        return this.key in key;
+      },
+      // eslint-disable-next-line object-shorthand
+      set: function set(key, value) {
+        if (Object.isExtensible(key)) {
+          Object.defineProperty(key, this.key, {
+            // eslint-disable-next-line object-shorthand
+            value,
+            configurable: true
+          });
+        }
+      }
+    };
+    constructorMap = new (typeof WeakMap === "function" ? WeakMap : FakeMap)();
     stringTagMap = {};
     baseTypesMap = {
       undefined: (value, options) => options.stylize("undefined", "undefined"),
@@ -1335,14 +1367,14 @@ var require_deep_eql = __commonJS({
   "node_modules/deep-eql/index.js"(exports, module) {
     "use strict";
     var type = require_type_detect();
-    function FakeMap() {
+    function FakeMap2() {
       this._key = "chai/deep-eql__" + Math.random() + Date.now();
     }
-    FakeMap.prototype = {
-      get: function get(key) {
+    FakeMap2.prototype = {
+      get: function get2(key) {
         return key[this._key];
       },
-      set: function set(key, value) {
+      set: function set2(key, value) {
         if (Object.isExtensible(key)) {
           Object.defineProperty(key, this._key, {
             value,
@@ -1351,7 +1383,7 @@ var require_deep_eql = __commonJS({
         }
       }
     };
-    var MemoizeMap = typeof WeakMap === "function" ? WeakMap : FakeMap;
+    var MemoizeMap = typeof WeakMap === "function" ? WeakMap : FakeMap2;
     function memoizeCompare(leftHandOperand, rightHandOperand, memoizeMap) {
       if (!memoizeMap || isPrimitive(leftHandOperand) || isPrimitive(rightHandOperand)) {
         return null;
@@ -1560,8 +1592,15 @@ var require_deep_eql = __commonJS({
       }
       return keys;
     }
-    function getNonEnumerableSymbols(target) {
-      var keys = Object.getOwnPropertySymbols(target);
+    function getEnumerableSymbols(target) {
+      var keys = [];
+      var allKeys = Object.getOwnPropertySymbols(target);
+      for (var i = 0; i < allKeys.length; i += 1) {
+        var key = allKeys[i];
+        if (Object.getOwnPropertyDescriptor(target, key).enumerable) {
+          keys.push(key);
+        }
+      }
       return keys;
     }
     function keysEqual(leftHandOperand, rightHandOperand, keys, options) {
@@ -1579,8 +1618,8 @@ var require_deep_eql = __commonJS({
     function objectEqual(leftHandOperand, rightHandOperand, options) {
       var leftHandKeys = getEnumerableKeys(leftHandOperand);
       var rightHandKeys = getEnumerableKeys(rightHandOperand);
-      var leftHandSymbols = getNonEnumerableSymbols(leftHandOperand);
-      var rightHandSymbols = getNonEnumerableSymbols(rightHandOperand);
+      var leftHandSymbols = getEnumerableSymbols(leftHandOperand);
+      var rightHandSymbols = getEnumerableSymbols(rightHandOperand);
       leftHandKeys = leftHandKeys.concat(leftHandSymbols);
       rightHandKeys = rightHandKeys.concat(rightHandSymbols);
       if (leftHandKeys.length && leftHandKeys.length === rightHandKeys.length) {
@@ -2030,6 +2069,7 @@ var require_getOwnEnumerableProperties = __commonJS({
 var require_check_error = __commonJS({
   "node_modules/check-error/index.js"(exports, module) {
     "use strict";
+    var getFunctionName2 = require_get_func_name();
     function compatibleInstance(thrown, errorLike) {
       return errorLike instanceof Error && thrown === errorLike;
     }
@@ -2050,25 +2090,16 @@ var require_check_error = __commonJS({
       }
       return false;
     }
-    var functionNameMatch = /\s*function(?:\s|\s*\/\*[^(?:*\/)]+\*\/\s*)*([^\(\/]+)/;
-    function getFunctionName2(constructorFn) {
-      var name = "";
-      if (typeof constructorFn.name === "undefined") {
-        var match = String(constructorFn).match(functionNameMatch);
-        if (match) {
-          name = match[1];
-        }
-      } else {
-        name = constructorFn.name;
-      }
-      return name;
-    }
     function getConstructorName(errorLike) {
       var constructorName = errorLike;
       if (errorLike instanceof Error) {
         constructorName = getFunctionName2(errorLike.constructor);
       } else if (typeof errorLike === "function") {
-        constructorName = getFunctionName2(errorLike).trim() || getFunctionName2(new errorLike());
+        constructorName = getFunctionName2(errorLike);
+        if (constructorName === "") {
+          var newConstructorName = getFunctionName2(new errorLike());
+          constructorName = newConstructorName || constructorName;
+        }
       }
       return constructorName;
     }
@@ -4132,7 +4163,7 @@ var require_chai = __commonJS({
   "node_modules/chai/lib/chai.js"(exports) {
     "use strict";
     var used = [];
-    exports.version = "4.3.3";
+    exports.version = "4.3.8";
     exports.AssertionError = require_assertion_error();
     var util2 = require_utils();
     exports.use = function(fn) {
