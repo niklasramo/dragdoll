@@ -1,12 +1,8 @@
 :root {
-  --vp-c-brand: #ff5555;
-  --vp-c-brand-light: #ff5555;
-  --vp-c-brand-lighter: #fe6868;
-  --vp-c-green-dark: #d52929;
-  --vp-button-brand-bg: #ff5555;
-}
-.VPImage.logo {
-  height: 32px;
+  --vp-c-brand-1: #ff5555;
+  --vp-c-brand-2: #ff5555;
+  --vp-c-brand-3: #ff5555;
+  --vp-nav-logo-height: 32px;
 }
 .VPFeatures .VPFeature {
   position: relative;

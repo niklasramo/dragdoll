@@ -21,7 +21,7 @@
   },
   "type": "module",
   "source": "./src/index.ts",
-  "main": "./dist/dragdoll.cjs",
+  "main": "./dist/dragdoll.js",
   "exports": {
     ".": {
       "import": "./dist/dragdoll.js",
@@ -43,7 +43,7 @@
     "docs-dev": "npm run docs-copy-assets && vitepress dev docs",
     "docs-serve": "vitepress serve docs",
     "docs-copy-assets": "cpy --flat ./node_modules/eventti/dist/eventti.js ./docs/public/assets && cpy --flat ./node_modules/tikki/dist/tikki.js ./docs/public/assets && cpy --flat ./dist/dragdoll.js ./docs/public/assets",
-    "del-dist": "del ./dist && del ./tests/dist",
+    "del-dist": "rimraf ./dist && rimraf ./tests/dist",
     "format": "prettier --write ./src/ && prettier --write ./tests/src/",
     "size": "for file in ./dist/*.{js,cjs}; do echo $file && gzip-size $file --include-original; done;",
     "test": "npm run ts-check && npm run test-node && npm run test-browserstack",
@@ -53,12 +53,11 @@
     "ts-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/chai": "4.3.5",
-    "@types/mocha": "10.0.1",
-    "chai": "4.3.7",
+    "@types/chai": "4.3.9",
+    "@types/mocha": "10.0.3",
+    "chai": "4.3.10",
     "cpy-cli": "5.0.0",
     "csstype": "3.1.2",
-    "del-cli": "5.0.0",
     "dotenv": "16.3.1",
     "eventti": "3.0.0",
     "gzip-size-cli": "5.1.0",
@@ -69,12 +68,13 @@
     "karma-mocha": "2.0.1",
     "karma-mocha-reporter": "2.2.5",
     "mocha": "10.2.0",
-    "prettier": "3.0.1",
+    "prettier": "3.0.3",
+    "rimraf": "5.0.5",
     "tikki": "2.0.0",
     "tsup": "7.2.0",
-    "typescript": "5.1.6",
-    "vitepress": "1.0.0-rc.4",
-    "vue": "3.3.4"
+    "typescript": "5.2.2",
+    "vitepress": "1.0.0-rc.24",
+    "vue": "3.3.7"
   },
   "peerDependencies": {
     "eventti": "^3.0.0",
