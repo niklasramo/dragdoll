@@ -115,6 +115,7 @@ interface RectExtended extends Rect {
     right: number;
     bottom: number;
 }
+type CSSProperties = Partial<Omit<CSSStyleDeclaration, 'getPropertyPriority' | 'getPropertyValue' | 'item' | 'removeProperty' | 'setProperty' | 'length' | 'parentRule'>>;
 
 declare const SOURCE_EVENTS: {
     readonly pointer: {
@@ -298,6 +299,9 @@ declare class DraggableDragItem {
     readonly elementOffsetContainer: Element | Window | Document;
     readonly dragContainer: Element;
     readonly dragOffsetContainer: Element | Window | Document;
+    readonly initialTransform: string;
+    readonly frozenProps: CSSProperties | null;
+    readonly unfrozenProps: CSSProperties | null;
     readonly x: number;
     readonly y: number;
     readonly pX: number;
@@ -308,7 +312,6 @@ declare class DraggableDragItem {
     readonly _moveDiffY: number;
     readonly _containerDiffX: number;
     readonly _containerDiffY: number;
-    readonly _transform: string;
     constructor(element: HTMLElement | SVGElement, elementContainer: Element, elementOffsetContainer: Element | Window | Document, dragContainer: Element, dragOffsetContainer: Element | Window | Document);
 }
 
@@ -346,10 +349,17 @@ interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
         sensor: S[number];
         elements: (HTMLElement | SVGElement)[];
     }) => void;
+    getFrozenProps: (data: {
+        draggable: Draggable<S, E>;
+        sensor: S[number];
+        item: DraggableDragItem;
+        style: CSSStyleDeclaration;
+    }) => CSSProperties | (keyof CSSProperties)[] | null;
     getStartPosition: (data: {
         draggable: Draggable<S, E>;
         sensor: S[number];
         item: DraggableDragItem;
+        style: CSSStyleDeclaration;
     }) => {
         x: number;
         y: number;
@@ -679,4 +689,4 @@ declare function createPointerSensorStartPredicate<S extends (Sensor | PointerSe
     fallback?: D['settings']['startPredicate'];
 }): D["settings"]["startPredicate"];
 
-export { AUTO_SCROLL_AXIS, AUTO_SCROLL_AXIS_DIRECTION, AUTO_SCROLL_DIRECTION, AutoScroll, AutoScrollEventCallbacks, AutoScrollItem, AutoScrollItemEffectCallback, AutoScrollItemEventCallback, AutoScrollItemSpeedCallback, AutoScrollItemTarget, AutoScrollOptions, AutoScrollSettings, BaseMotionSensor, BaseMotionSensorDragData, BaseMotionSensorEvents, BaseMotionSensorTickEvent, BaseSensor, BaseSensorDragData, Draggable, DraggableAutoScroll, DraggableAutoScrollOptions, DraggableAutoScrollSettings, DraggableEventCallbacks, DraggablePlugin, DraggablePluginMap, DraggableSettings, KeyboardMotionSensor, KeyboardMotionSensorEvents, KeyboardMotionSensorSettings, KeyboardSensor, KeyboardSensorCancelEvent, KeyboardSensorDestroyEvent, KeyboardSensorEndEvent, KeyboardSensorEvents, KeyboardSensorMoveEvent, KeyboardSensorPredicate, KeyboardSensorSettings, KeyboardSensorStartEvent, PointerSensor, PointerSensorCancelEvent, PointerSensorDestroyEvent, PointerSensorDragData, PointerSensorEndEvent, PointerSensorEvents, PointerSensorMoveEvent, PointerSensorSettings, PointerSensorStartEvent, Sensor, SensorCancelEvent, SensorDestroyEvent, SensorEndEvent, SensorEventType, SensorEvents, SensorMoveEvent, SensorStartEvent, autoScroll, autoScrollPlugin, autoScrollSmoothSpeed, createPointerSensorStartPredicate, setTicker, ticker, tickerReadPhase, tickerWritePhase };
+export { AUTO_SCROLL_AXIS, AUTO_SCROLL_AXIS_DIRECTION, AUTO_SCROLL_DIRECTION, AutoScroll, type AutoScrollEventCallbacks, type AutoScrollItem, type AutoScrollItemEffectCallback, type AutoScrollItemEventCallback, type AutoScrollItemSpeedCallback, type AutoScrollItemTarget, type AutoScrollOptions, type AutoScrollSettings, BaseMotionSensor, type BaseMotionSensorDragData, type BaseMotionSensorEvents, type BaseMotionSensorTickEvent, BaseSensor, type BaseSensorDragData, Draggable, DraggableAutoScroll, type DraggableAutoScrollOptions, type DraggableAutoScrollSettings, type DraggableEventCallbacks, type DraggablePlugin, type DraggablePluginMap, type DraggableSettings, KeyboardMotionSensor, type KeyboardMotionSensorEvents, type KeyboardMotionSensorSettings, KeyboardSensor, type KeyboardSensorCancelEvent, type KeyboardSensorDestroyEvent, type KeyboardSensorEndEvent, type KeyboardSensorEvents, type KeyboardSensorMoveEvent, type KeyboardSensorPredicate, type KeyboardSensorSettings, type KeyboardSensorStartEvent, PointerSensor, type PointerSensorCancelEvent, type PointerSensorDestroyEvent, type PointerSensorDragData, type PointerSensorEndEvent, type PointerSensorEvents, type PointerSensorMoveEvent, type PointerSensorSettings, type PointerSensorStartEvent, type Sensor, type SensorCancelEvent, type SensorDestroyEvent, type SensorEndEvent, SensorEventType, type SensorEvents, type SensorMoveEvent, type SensorStartEvent, autoScroll, autoScrollPlugin, autoScrollSmoothSpeed, createPointerSensorStartPredicate, setTicker, ticker, tickerReadPhase, tickerWritePhase };

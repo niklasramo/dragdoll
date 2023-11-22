@@ -93,6 +93,23 @@ A clean up function that should handle disposing the dragged elements, if necess
 
 Default is `() => {}`.
 
+### getFrozenProps
+
+```ts
+type getFrozenProps: (data: {
+    draggable: Draggable;
+    sensor: S[number];
+    item: DraggableDragItem;
+    style: CSSStyleDeclaration;
+  }) =>  string[] | {[key: string]: string} | null;
+```
+
+A function that should return the an array of CSS properties that should be frozen during the drag. By "frozen" we mean that the current computed value of the property is stored and applied to the element's inline styles during the drag. This is usually only needed if you have a drag container and the dragged element has percentage based values for some of it's properties. The frozen properties are automatically unfrozen (restored to the original values) when drag ends.
+
+You can also return an object with key-value pairs where the key is the CSS property you want to freeze and the value is the explicit value you want it to be frozen to. This is useful if you want to freeze a property to a specific value instead of the current computed value.
+
+By default nothing is frozen.
+
 ### getStartPosition
 
 ```ts

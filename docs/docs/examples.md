@@ -10,7 +10,6 @@ import {
   PointerSensor,
   KeyboardMotionSensor,
   createPointerSensorStartPredicate,
-  autoScrollPlugin,
 } from 'dragdoll';
 
 const element = document.querySelector('.draggable');
@@ -19,6 +18,14 @@ const keyboardSensor = new KeyboardMotionSensor();
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   getElements: () => [element],
   startPredicate: createPointerSensorStartPredicate(),
+});
+
+draggable.on('start', () => {
+  element.classList.add('dragging');
+});
+
+draggable.on('end', () => {
+  element.classList.remove('dragging');
 });
 ```
 
@@ -39,7 +46,9 @@ const element = document.querySelector('.draggable');
 const pointerSensor = new PointerSensor(element);
 const keyboardSensor = new KeyboardMotionSensor();
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
+  container: document.querySelector('.drag-container'),
   getElements: () => [element],
+  getFrozenProps: () => ['left', 'top'],
   startPredicate: createPointerSensorStartPredicate(),
 }).use(
   autoScrollPlugin({
@@ -52,4 +61,12 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
     ],
   }),
 );
+
+draggable.on('start', () => {
+  element.classList.add('dragging');
+});
+
+draggable.on('end', () => {
+  element.classList.remove('dragging');
+});
 ```

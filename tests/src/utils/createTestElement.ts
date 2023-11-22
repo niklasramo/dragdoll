@@ -1,6 +1,17 @@
-import { Properties } from 'csstype';
+type CSSProperties = Partial<
+  Omit<
+    CSSStyleDeclaration,
+    | 'getPropertyPriority'
+    | 'getPropertyValue'
+    | 'item'
+    | 'removeProperty'
+    | 'setProperty'
+    | 'length'
+    | 'parentRule'
+  >
+>;
 
-const defaultStyles: Properties = {
+const defaultStyles: CSSProperties = {
   display: 'block',
   position: 'absolute',
   left: '0px',
@@ -13,7 +24,7 @@ const defaultStyles: Properties = {
   backgroundColor: 'red',
 };
 
-export function createTestElement(styles: Properties = {}) {
+export function createTestElement(styles: CSSProperties = {}) {
   const el = document.createElement('div');
   el.tabIndex = 0;
   Object.assign(el.style, { ...defaultStyles, ...styles });

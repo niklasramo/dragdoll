@@ -931,16 +931,16 @@ export class AutoScroll {
         x > prevX
           ? AUTO_SCROLL_DIRECTION.right
           : x < prevX
-          ? AUTO_SCROLL_DIRECTION.left
-          : itemData.directionX;
+            ? AUTO_SCROLL_DIRECTION.left
+            : itemData.directionX;
 
       // Update direction y.
       itemData.directionY =
         y > prevY
           ? AUTO_SCROLL_DIRECTION.down
           : y < prevY
-          ? AUTO_SCROLL_DIRECTION.up
-          : itemData.directionY;
+            ? AUTO_SCROLL_DIRECTION.up
+            : itemData.directionY;
 
       // Update positions.
       itemData.positionX = x;

@@ -16,7 +16,7 @@ import { getOffsetDiff } from '../utils/get-offset-diff.js';
 
 import { getStyle } from '../utils/get-style.js';
 
-import { Writeable } from '../types.js';
+import { Writeable, CSSProperties } from '../types.js';
 
 const IDENTITY_MATRIX = 'matrix(1, 0, 0, 1, 0, 0)';
 
@@ -42,24 +42,13 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
     container: null,
     startPredicate: () => true,
     getElements: () => null,
-    releaseElements: () => {},
-    getStartPosition: ({ item }) => {
-      // Store item element's initial transform.
-      const { transform } = getStyle(item.element);
-      if (
-        transform &&
-        transform !== 'none' &&
-        transform !== IDENTITY_MATRIX &&
-        transform !== IDENTITY_MATRIX_3D
-      ) {
-        (item as Writeable<typeof item>)._transform = transform;
-      } else {
-        (item as Writeable<typeof item>)._transform = '';
-      }
+    releaseElements: () => null,
+    getFrozenProps: () => null,
+    getStartPosition: () => {
       return { x: 0, y: 0 };
     },
     setPosition: ({ item, x, y }) => {
-      item.element.style.transform = `translate(${x}px, ${y}px) ${item._transform}`;
+      item.element.style.transform = `translate(${x}px, ${y}px) ${item.initialTransform}`;
     },
     getPositionChange: ({ event, prevEvent }) => {
       POSITION_CHANGE.x = event.x - prevEvent.x;
@@ -86,10 +75,17 @@ export interface DraggableSettings<S extends Sensor[], E extends S[number]['even
     sensor: S[number];
     elements: (HTMLElement | SVGElement)[];
   }) => void;
+  getFrozenProps: (data: {
+    draggable: Draggable<S, E>;
+    sensor: S[number];
+    item: DraggableDragItem;
+    style: CSSStyleDeclaration;
+  }) => CSSProperties | (keyof CSSProperties)[] | null;
   getStartPosition: (data: {
     draggable: Draggable<S, E>;
     sensor: S[number];
     item: DraggableDragItem;
+    style: CSSStyleDeclaration;
   }) => { x: number; y: number };
   setPosition: (data: {
     draggable: Draggable<S, E>;
@@ -201,6 +197,7 @@ export class Draggable<
       startPredicate = defaults.startPredicate,
       getElements = defaults.getElements,
       releaseElements = defaults.releaseElements,
+      getFrozenProps = defaults.getFrozenProps,
       getStartPosition = defaults.getStartPosition,
       setPosition = defaults.setPosition,
       getPositionChange = defaults.getPositionChange,
@@ -211,6 +208,7 @@ export class Draggable<
       startPredicate,
       getElements,
       releaseElements,
+      getFrozenProps,
       getStartPosition,
       setPosition,
       getPositionChange,
@@ -357,14 +355,63 @@ export class Draggable<
         item._containerDiffY = top;
       }
 
-      // Lastly, compute element's current elementX/Y.
+      // Get element's style declaration.
+      const style = getStyle(element);
+
+      // Store element's initial transform.
+      const { transform } = style;
+      if (
+        transform &&
+        transform !== 'none' &&
+        transform !== IDENTITY_MATRIX &&
+        transform !== IDENTITY_MATRIX_3D
+      ) {
+        item.initialTransform = transform;
+      }
+
+      // Get element's current elementX/Y.
       const { x, y } = this.settings.getStartPosition({
         draggable: this,
         sensor: drag.sensor!,
         item,
+        style,
       });
       item.pX = x;
       item.pY = y;
+
+      // Get element's frozen props.
+      const frozenProps = this.settings.getFrozenProps({
+        draggable: this,
+        sensor: drag.sensor!,
+        item,
+        style,
+      });
+      if (Array.isArray(frozenProps)) {
+        if (frozenProps.length) {
+          const props: CSSProperties = {};
+          for (const prop of frozenProps) {
+            props[prop] = style[prop];
+          }
+          item.frozenProps = props;
+        } else {
+          item.frozenProps = null;
+        }
+      } else {
+        item.frozenProps = frozenProps;
+      }
+
+      // Lastly, let's compute the unfrozen props. We store the current inline
+      // style values for all frozen props so that we can reset them after the
+      // drag process is over.
+      if (item.frozenProps) {
+        const unfrozenProps: CSSProperties = {};
+        for (const key in item.frozenProps) {
+          if (item.frozenProps.hasOwnProperty(key)) {
+            unfrozenProps[key] = element.style[key];
+          }
+        }
+        item.unfrozenProps = unfrozenProps;
+      }
 
       return item;
     });
@@ -385,6 +432,12 @@ export class Draggable<
         (item as Writeable<typeof item>).pX += item._containerDiffX;
         (item as Writeable<typeof item>).pY += item._containerDiffY;
       }
+
+      // Freeze element's props if such are provided.
+      if (item.frozenProps) {
+        Object.assign(item.element.style, item.frozenProps);
+      }
+
       // Set the element's start position.
       this.settings.setPosition({
         phase: 'start',
@@ -604,6 +657,15 @@ export class Draggable<
           (item as Writeable<typeof item>)._containerDiffY = 0;
           item.elementContainer.appendChild(item.element);
         }
+
+        // Unfreeze element's props if such are provided.
+        if (item.unfrozenProps) {
+          for (const key in item.unfrozenProps) {
+            item.element.style[key] = item.unfrozenProps[key] || '';
+          }
+        }
+
+        // Set final position after drag.
         this.settings.setPosition({
           phase: 'end',
           draggable: this,

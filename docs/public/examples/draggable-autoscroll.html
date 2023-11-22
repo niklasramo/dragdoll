@@ -53,8 +53,9 @@
       const pointerSensor = new PointerSensor(element);
       const keyboardSensor = new KeyboardMotionSensor();
       const draggable = new Draggable([pointerSensor, keyboardSensor], {
-        getElements: () => [element],
         container: document.querySelector('.drag-container'),
+        getElements: () => [element],
+        getFrozenProps: () => ['left', 'top'],
         startPredicate: createPointerSensorStartPredicate(),
       }).use(
         autoScrollPlugin({
