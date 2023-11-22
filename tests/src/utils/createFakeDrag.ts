@@ -92,10 +92,10 @@ export async function createFakeDrag(steps: FakeDragStepList, options: FakeDragO
         const eventName = isStart
           ? 'touchstart'
           : isEnd
-          ? cancelAtEnd
-            ? 'touchcancel'
-            : 'touchend'
-          : 'touchmove';
+            ? cancelAtEnd
+              ? 'touchcancel'
+              : 'touchend'
+            : 'touchmove';
         const event = createFakeTouchEvent(eventName, {
           clientX: x,
           clientY: y,
@@ -113,10 +113,10 @@ export async function createFakeDrag(steps: FakeDragStepList, options: FakeDragO
         const eventName = isStart
           ? 'pointerdown'
           : isEnd
-          ? cancelAtEnd
-            ? 'pointercancel'
-            : 'pointerup'
-          : 'pointermove';
+            ? cancelAtEnd
+              ? 'pointercancel'
+              : 'pointerup'
+            : 'pointermove';
         const event = new PointerEvent(eventName, {
           clientX: x,
           clientY: y,

@@ -7,7 +7,7 @@ export function parseSourceEvents(
     ? HAS_POINTER_EVENTS
       ? 'pointer'
       : HAS_TOUCH_EVENTS
-      ? 'touch'
-      : 'mouse'
+        ? 'touch'
+        : 'mouse'
     : sourceEvents;
 }

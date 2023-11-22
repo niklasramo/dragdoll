@@ -24,3 +24,16 @@ export type FilterNotStartingWith<Set, Needle extends string> = Set extends `${N
   : Set;
 
 export type RemoveUnderscoreProperties<T extends {}> = Pick<T, FilterNotStartingWith<keyof T, '_'>>;
+
+export type CSSProperties = Partial<
+  Omit<
+    CSSStyleDeclaration,
+    | 'getPropertyPriority'
+    | 'getPropertyValue'
+    | 'item'
+    | 'removeProperty'
+    | 'setProperty'
+    | 'length'
+    | 'parentRule'
+  >
+>;
