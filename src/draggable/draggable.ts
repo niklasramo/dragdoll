@@ -2,6 +2,8 @@ import { HAS_PASSIVE_EVENTS } from '../constants.js';
 
 import { Emitter, EventListenerId } from 'eventti';
 
+import { getOffsetContainer } from 'mezr';
+
 import { Sensor, SensorEvents } from '../sensors/sensor.js';
 
 import { DraggableDrag } from './draggable-drag.js';
@@ -9,8 +11,6 @@ import { DraggableDrag } from './draggable-drag.js';
 import { DraggableDragItem } from './draggable-drag-item.js';
 
 import { ticker, tickerReadPhase, tickerWritePhase } from '../singletons/ticker.js';
-
-import { getOffsetContainer } from '../utils/get-offset-container.js';
 
 import { getOffsetDiff } from '../utils/get-offset-diff.js';
 
@@ -59,7 +59,7 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
 }
 
 export interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
-  container: Element | null;
+  container: HTMLElement | null;
   startPredicate: (data: {
     draggable: Draggable<S, E>;
     sensor: S[number];
@@ -69,11 +69,11 @@ export interface DraggableSettings<S extends Sensor[], E extends S[number]['even
     draggable: Draggable<S, E>;
     sensor: S[number];
     startEvent: E['start'] | E['move'];
-  }) => (HTMLElement | SVGElement)[] | null;
+  }) => (HTMLElement | SVGSVGElement)[] | null;
   releaseElements: (data: {
     draggable: Draggable<S, E>;
     sensor: S[number];
-    elements: (HTMLElement | SVGElement)[];
+    elements: (HTMLElement | SVGSVGElement)[];
   }) => void;
   getFrozenProps: (data: {
     draggable: Draggable<S, E>;
@@ -323,7 +323,7 @@ export class Draggable<
       const dragOffsetContainer =
         dragContainer === elementContainer
           ? elementOffsetContainer
-          : getOffsetContainer(element, dragContainer);
+          : getOffsetContainer(element, { container: dragContainer });
       if (!dragOffsetContainer) {
         throw new Error('Drag offset container could not be computed for the element!');
       }
@@ -401,7 +401,7 @@ export class Draggable<
       }
 
       // Lastly, let's compute the unfrozen props. We store the current inline
-      // style values for all frozen props so that we can reset them after the
+      // style values for all frozen props so that we can restore them after the
       // drag process is over.
       if (item.frozenProps) {
         const unfrozenProps: CSSProperties = {};
@@ -647,7 +647,7 @@ export class Draggable<
 
       // Move elements within the root container and collect all elements
       // to an elements array.
-      const elements: (HTMLElement | SVGElement)[] = [];
+      const elements: (HTMLElement | SVGSVGElement)[] = [];
       for (const item of drag.items) {
         elements.push(item.element);
         if (item.elementContainer && item.element.parentElement !== item.elementContainer) {

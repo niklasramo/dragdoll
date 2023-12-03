@@ -1,11 +1,11 @@
 import { CSSProperties } from '../types.js';
 
 export class DraggableDragItem {
-  readonly element: HTMLElement | SVGElement;
-  readonly elementContainer: Element;
-  readonly elementOffsetContainer: Element | Window | Document;
-  readonly dragContainer: Element;
-  readonly dragOffsetContainer: Element | Window | Document;
+  readonly element: HTMLElement | SVGSVGElement;
+  readonly elementContainer: HTMLElement;
+  readonly elementOffsetContainer: HTMLElement | SVGSVGElement | Window | Document;
+  readonly dragContainer: HTMLElement;
+  readonly dragOffsetContainer: HTMLElement | SVGSVGElement | Window | Document;
   readonly initialTransform: string;
   readonly frozenProps: CSSProperties | null;
   readonly unfrozenProps: CSSProperties | null;
@@ -21,11 +21,11 @@ export class DraggableDragItem {
   readonly _containerDiffY: number;
 
   constructor(
-    element: HTMLElement | SVGElement,
-    elementContainer: Element,
-    elementOffsetContainer: Element | Window | Document,
-    dragContainer: Element,
-    dragOffsetContainer: Element | Window | Document,
+    element: HTMLElement | SVGSVGElement,
+    elementContainer: HTMLElement,
+    elementOffsetContainer: HTMLElement | SVGSVGElement | Window | Document,
+    dragContainer: HTMLElement,
+    dragOffsetContainer: HTMLElement | SVGSVGElement | Window | Document,
   ) {
     this.element = element;
     this.elementContainer = elementContainer;

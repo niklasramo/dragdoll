@@ -4961,25 +4961,208 @@
     }
   };
 
-  // src/utils/get-style.ts
+  // node_modules/mezr/dist/esm/utils/getStyle.js
   var STYLE_DECLARATION_CACHE = /* @__PURE__ */ new WeakMap();
-  function getStyle(element) {
-    let styleDeclaration = STYLE_DECLARATION_CACHE.get(element)?.deref();
-    if (!styleDeclaration) {
-      styleDeclaration = window.getComputedStyle(element, null);
-      STYLE_DECLARATION_CACHE.set(element, new WeakRef(styleDeclaration));
+  function getStyle(e, t) {
+    if (t)
+      return window.getComputedStyle(e, t);
+    let C = STYLE_DECLARATION_CACHE.get(e)?.deref();
+    return C || (C = window.getComputedStyle(e, null), STYLE_DECLARATION_CACHE.set(e, new WeakRef(C))), C;
+  }
+
+  // node_modules/mezr/dist/esm/utils/constants.js
+  var IS_BROWSER2 = "undefined" != typeof window && void 0 !== window.document;
+  var IS_SAFARI2 = !!(IS_BROWSER2 && navigator.vendor && navigator.vendor.indexOf("Apple") > -1 && navigator.userAgent && -1 == navigator.userAgent.indexOf("CriOS") && -1 == navigator.userAgent.indexOf("FxiOS"));
+  var BOX_EDGE = { content: "content", padding: "padding", scrollbar: "scrollbar", border: "border", margin: "margin" };
+  var INCLUDE_WINDOW_SCROLLBAR = { [BOX_EDGE.content]: false, [BOX_EDGE.padding]: false, [BOX_EDGE.scrollbar]: true, [BOX_EDGE.border]: true, [BOX_EDGE.margin]: true };
+  var SCROLLABLE_OVERFLOWS = /* @__PURE__ */ new Set(["auto", "scroll"]);
+  var IS_CHROMIUM = (() => {
+    try {
+      return window.navigator.userAgentData.brands.some(({ brand: n }) => "Chromium" === n);
+    } catch (n) {
+      return false;
     }
-    return styleDeclaration;
+  })();
+
+  // node_modules/mezr/dist/esm/utils/isDocumentElement.js
+  function isDocumentElement(e) {
+    return e instanceof HTMLHtmlElement;
   }
 
-  // src/utils/is-document.ts
-  function isDocument(value) {
-    return value instanceof Document;
+  // node_modules/mezr/dist/esm/utils/isIntersecting.js
+  function isIntersecting(t, e) {
+    return !(t.left + t.width <= e.left || e.left + e.width <= t.left || t.top + t.height <= e.top || e.top + e.height <= t.top);
   }
 
-  // src/utils/is-window.ts
-  function isWindow(value) {
-    return value instanceof Window;
+  // node_modules/mezr/dist/esm/utils/getDistanceBetweenPoints.js
+  function getDistanceBetweenPoints(t, e, n, o) {
+    return Math.sqrt(Math.pow(n - t, 2) + Math.pow(o - e, 2));
+  }
+
+  // node_modules/mezr/dist/esm/utils/getDistanceBetweenRects.js
+  function getDistanceBetweenRects(t, e) {
+    if (isIntersecting(t, e))
+      return null;
+    const n = t.left + t.width, i = t.top + t.height, o = e.left + e.width, s = e.top + e.height;
+    return n <= e.left ? i <= e.top ? getDistanceBetweenPoints(n, i, e.left, e.top) : t.top >= s ? getDistanceBetweenPoints(n, t.top, e.left, s) : e.left - n : t.left >= o ? i <= e.top ? getDistanceBetweenPoints(t.left, i, o, e.top) : t.top >= s ? getDistanceBetweenPoints(t.left, t.top, o, s) : t.left - o : i <= e.top ? e.top - i : t.top - s;
+  }
+
+  // node_modules/mezr/dist/esm/utils/isWindow.js
+  function isWindow(n) {
+    return n instanceof Window;
+  }
+
+  // node_modules/mezr/dist/esm/utils/isDocument.js
+  function isDocument(n) {
+    return n instanceof Document;
+  }
+
+  // node_modules/mezr/dist/esm/utils/getPreciseScrollbarSize.js
+  var SUBPIXEL_OFFSET = /* @__PURE__ */ new Map();
+  var testStyleElement = null;
+  var testParentElement = null;
+  var testChildElement = null;
+  function getSubpixelScrollbarSize(t, e) {
+    const n = t.split(".");
+    let l = SUBPIXEL_OFFSET.get(n[1]);
+    if (void 0 === l) {
+      testStyleElement || (testStyleElement = document.createElement("style")), testStyleElement.innerHTML = `
+      #mezr-scrollbar-test::-webkit-scrollbar {
+        width: ${t} !important;
+      }
+    `, testParentElement && testChildElement || (testParentElement = document.createElement("div"), testChildElement = document.createElement("div"), testParentElement.appendChild(testChildElement), testParentElement.id = "mezr-scrollbar-test", testParentElement.style.cssText = "\n        all: unset !important;\n        position: fixed !important;\n        top: -200px !important;\n        left: 0px !important;\n        width: 100px !important;\n        height: 100px !important;\n        overflow: scroll !important;\n        pointer-events: none !important;\n        visibility: hidden !important;\n      ", testChildElement.style.cssText = "\n        all: unset !important;\n        position: absolute !important;\n        inset: 0 !important;\n      "), document.body.appendChild(testStyleElement), document.body.appendChild(testParentElement);
+      l = testParentElement.getBoundingClientRect().width - testChildElement.getBoundingClientRect().width - e, SUBPIXEL_OFFSET.set(n[1], l), document.body.removeChild(testParentElement), document.body.removeChild(testStyleElement);
+    }
+    return e + l;
+  }
+  function getPreciseScrollbarSize(t, e, n) {
+    if (n <= 0)
+      return 0;
+    if (IS_CHROMIUM) {
+      const n2 = getStyle(t, "::-webkit-scrollbar"), l = "x" === e ? n2.height : n2.width, i = parseFloat(l);
+      if (!Number.isNaN(i) && !Number.isInteger(i))
+        return getSubpixelScrollbarSize(l, i);
+    }
+    return n;
+  }
+
+  // node_modules/mezr/dist/esm/utils/getWindowWidth.js
+  function getWindowWidth(e, r = false) {
+    if (r)
+      return e.innerWidth;
+    const { innerWidth: t, document: i } = e, { documentElement: n } = i, { clientWidth: c } = n;
+    return t - getPreciseScrollbarSize(n, "y", t - c);
+  }
+
+  // node_modules/mezr/dist/esm/utils/getDocumentWidth.js
+  function getDocumentWidth({ documentElement: t }) {
+    return Math.max(t.scrollWidth, t.clientWidth, t.getBoundingClientRect().width);
+  }
+
+  // node_modules/mezr/dist/esm/utils/getElementWidth.js
+  function getElementWidth(t, e = BOX_EDGE.border) {
+    let { width: r } = t.getBoundingClientRect();
+    if (e === BOX_EDGE.border)
+      return r;
+    const o = getStyle(t);
+    return e === BOX_EDGE.margin ? (r += Math.max(0, parseFloat(o.marginLeft) || 0), r += Math.max(0, parseFloat(o.marginRight) || 0), r) : (r -= parseFloat(o.borderLeftWidth) || 0, r -= parseFloat(o.borderRightWidth) || 0, e === BOX_EDGE.scrollbar ? r : (!isDocumentElement(t) && SCROLLABLE_OVERFLOWS.has(o.overflowY) && (r -= getPreciseScrollbarSize(t, "y", Math.round(r) - t.clientWidth)), e === BOX_EDGE.padding || (r -= parseFloat(o.paddingLeft) || 0, r -= parseFloat(o.paddingRight) || 0), r));
+  }
+
+  // node_modules/mezr/dist/esm/getWidth.js
+  function getWidth(t, i = BOX_EDGE.border) {
+    return isWindow(t) ? getWindowWidth(t, INCLUDE_WINDOW_SCROLLBAR[i]) : isDocument(t) ? getDocumentWidth(t) : getElementWidth(t, i);
+  }
+
+  // node_modules/mezr/dist/esm/utils/getWindowHeight.js
+  function getWindowHeight(e, r = false) {
+    if (r)
+      return e.innerHeight;
+    const { innerHeight: t, document: i } = e, { documentElement: n } = i, { clientHeight: c } = n;
+    return t - getPreciseScrollbarSize(n, "x", t - c);
+  }
+
+  // node_modules/mezr/dist/esm/utils/getDocumentHeight.js
+  function getDocumentHeight({ documentElement: t }) {
+    return Math.max(t.scrollHeight, t.clientHeight, t.getBoundingClientRect().height);
+  }
+
+  // node_modules/mezr/dist/esm/utils/getElementHeight.js
+  function getElementHeight(t, e = BOX_EDGE.border) {
+    let { height: r } = t.getBoundingClientRect();
+    if (e === BOX_EDGE.border)
+      return r;
+    const o = getStyle(t);
+    return e === BOX_EDGE.margin ? (r += Math.max(0, parseFloat(o.marginTop) || 0), r += Math.max(0, parseFloat(o.marginBottom) || 0), r) : (r -= parseFloat(o.borderTopWidth) || 0, r -= parseFloat(o.borderBottomWidth) || 0, e === BOX_EDGE.scrollbar ? r : (!isDocumentElement(t) && SCROLLABLE_OVERFLOWS.has(o.overflowX) && (r -= getPreciseScrollbarSize(t, "x", Math.round(r) - t.clientHeight)), e === BOX_EDGE.padding || (r -= parseFloat(o.paddingTop) || 0, r -= parseFloat(o.paddingBottom) || 0), r));
+  }
+
+  // node_modules/mezr/dist/esm/getHeight.js
+  function getHeight(t, e = BOX_EDGE.border) {
+    return isWindow(t) ? getWindowHeight(t, INCLUDE_WINDOW_SCROLLBAR[e]) : isDocument(t) ? getDocumentHeight(t) : getElementHeight(t, e);
+  }
+
+  // node_modules/mezr/dist/esm/utils/isRectObject.js
+  function isRectObject(t) {
+    return t?.constructor === Object;
+  }
+
+  // node_modules/mezr/dist/esm/utils/getOffsetFromDocument.js
+  function getOffsetFromDocument(t, o = BOX_EDGE.border) {
+    const e = { left: 0, top: 0 };
+    if (isDocument(t))
+      return e;
+    if (isWindow(t))
+      return e.left += t.scrollX || 0, e.top += t.scrollY || 0, e;
+    const r = t.ownerDocument.defaultView;
+    r && (e.left += r.scrollX || 0, e.top += r.scrollY || 0);
+    const n = t.getBoundingClientRect();
+    if (e.left += n.left, e.top += n.top, o === BOX_EDGE.border)
+      return e;
+    const l = getStyle(t);
+    return o === BOX_EDGE.margin ? (e.left -= Math.max(0, parseFloat(l.marginLeft) || 0), e.top -= Math.max(0, parseFloat(l.marginTop) || 0), e) : (e.left += parseFloat(l.borderLeftWidth) || 0, e.top += parseFloat(l.borderTopWidth) || 0, o === BOX_EDGE.scrollbar || o === BOX_EDGE.padding || (e.left += parseFloat(l.paddingLeft) || 0, e.top += parseFloat(l.paddingTop) || 0), e);
+  }
+
+  // node_modules/mezr/dist/esm/getOffset.js
+  function getOffset(t, e) {
+    const o = isRectObject(t) ? { left: t.left, top: t.top } : Array.isArray(t) ? getOffsetFromDocument(...t) : getOffsetFromDocument(t);
+    if (e && !isDocument(e)) {
+      const t2 = isRectObject(e) ? e : Array.isArray(e) ? getOffsetFromDocument(e[0], e[1]) : getOffsetFromDocument(e);
+      o.left -= t2.left, o.top -= t2.top;
+    }
+    return o;
+  }
+
+  // node_modules/mezr/dist/esm/getRect.js
+  function getRect(t, e) {
+    let i = 0, g = 0;
+    isRectObject(t) ? (i = t.width, g = t.height) : Array.isArray(t) ? (i = getWidth(...t), g = getHeight(...t)) : (i = getWidth(t), g = getHeight(t));
+    const r = getOffset(t, e);
+    return { width: i, height: g, ...r, right: r.left + i, bottom: r.top + g };
+  }
+
+  // node_modules/mezr/dist/esm/utils/getNormalizedRect.js
+  function getNormalizedRect(t) {
+    return isRectObject(t) ? t : getRect(t);
+  }
+
+  // node_modules/mezr/dist/esm/getDistance.js
+  function getDistance(e, t) {
+    const c = getNormalizedRect(e), i = getNormalizedRect(t);
+    return getDistanceBetweenRects(c, i);
+  }
+
+  // node_modules/mezr/dist/esm/getIntersection.js
+  function getIntersection(t, ...e) {
+    const o = { ...getNormalizedRect(t), right: 0, bottom: 0 };
+    for (const t2 of e) {
+      const e2 = getNormalizedRect(t2), i = Math.max(o.left, e2.left), h = Math.min(o.left + o.width, e2.left + e2.width);
+      if (h <= i)
+        return null;
+      const r = Math.max(o.top, e2.top), l = Math.min(o.top + o.height, e2.height + e2.top);
+      if (l <= r)
+        return null;
+      o.left = i, o.top = r, o.width = h - i, o.height = l - r;
+    }
+    return o.right = o.left + o.width, o.bottom = o.top + o.height, o;
   }
 
   // src/pool.ts
@@ -5003,18 +5186,10 @@
     }
   };
 
-  // src/utils/is-rects-overlapping.ts
-  function isRectsOverlapping(a, b) {
-    return !(a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top);
-  }
-
   // src/utils/get-intersection-area.ts
   function getIntersectionArea(a, b) {
-    if (!isRectsOverlapping(a, b))
-      return 0;
-    const width = Math.min(a.right, b.right) - Math.max(a.left, b.left);
-    const height = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
-    return width * height;
+    const intersection = getIntersection(a, b);
+    return intersection ? intersection.width * intersection.height : 0;
   }
 
   // src/utils/get-intersection-score.ts
@@ -5026,99 +5201,14 @@
     return area / maxArea * 100;
   }
 
-  // src/utils/get-content-client-rect.ts
-  function getContentClientRect(element, result = { width: 0, height: 0, left: 0, right: 0, top: 0, bottom: 0 }) {
-    if (isWindow(element)) {
-      result.width = document.documentElement.clientWidth;
-      result.height = document.documentElement.clientHeight;
-      result.left = 0;
-      result.right = result.width;
-      result.top = 0;
-      result.bottom = result.height;
-    } else if (isDocument(element)) {
-      result.width = Math.max(
-        document.documentElement.scrollWidth,
-        document.body.scrollWidth,
-        document.documentElement.clientWidth
-      );
-      result.height = Math.max(
-        document.documentElement.scrollHeight,
-        document.body.scrollHeight,
-        document.documentElement.clientHeight
-      );
-      result.left = -window.scrollX;
-      result.top = -window.scrollY;
-      result.right = result.left + result.width;
-      result.bottom = result.top + result.height;
-    } else {
-      const style = getStyle(element);
-      let { width, height, left, top } = element.getBoundingClientRect();
-      const borderLeft = parseFloat(style.borderLeftWidth) || 0;
-      const borderRight = parseFloat(style.borderRightWidth) || 0;
-      const borderTop = parseFloat(style.borderTopWidth) || 0;
-      const borderBottom = parseFloat(style.borderBottomWidth) || 0;
-      left += borderLeft;
-      top += borderTop;
-      width -= borderLeft;
-      width -= borderRight;
-      height -= borderTop;
-      height -= borderBottom;
-      if (element instanceof HTMLHtmlElement) {
-        const doc = element.ownerDocument;
-        const win = doc.defaultView;
-        if (win) {
-          width -= win.innerWidth - doc.documentElement.clientWidth;
-          height -= win.innerHeight - doc.documentElement.clientHeight;
-        }
-      } else {
-        width -= Math.max(0, Math.round(width) - element.clientWidth);
-        height -= Math.max(0, Math.round(height) - element.clientHeight);
-      }
-      result.width = width;
-      result.height = height;
-      result.left = left;
-      result.top = top;
-      result.right = left + width;
-      result.bottom = top + height;
-    }
-    return result;
-  }
-
-  // src/utils/get-distance-between-rects.ts
-  function distanceBetweenPoints(x1, y1, x2, y2) {
-    return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-  }
-  function getDistanceBetweenRects(a, b) {
-    if (isRectsOverlapping(a, b))
-      return 0;
-    if (a.right < b.left) {
-      if (a.bottom < b.top) {
-        return distanceBetweenPoints(a.right, a.bottom, b.left, b.top);
-      } else if (a.top > b.bottom) {
-        return distanceBetweenPoints(a.right, a.top, b.left, b.bottom);
-      } else {
-        return b.left - a.right;
-      }
-    } else if (a.left > b.right) {
-      if (a.bottom < b.top) {
-        return distanceBetweenPoints(a.left, a.bottom, b.right, b.top);
-      } else if (a.top > b.bottom) {
-        return distanceBetweenPoints(a.left, a.top, b.right, b.bottom);
-      } else {
-        return a.left - b.right;
-      }
-    } else {
-      if (a.bottom < b.top) {
-        return b.top - a.bottom;
-      } else {
-        return a.top - b.bottom;
-      }
-    }
+  // src/utils/is-window.ts
+  function isWindow2(value) {
+    return value instanceof Window;
   }
 
   // src/utils/get-scroll-element.ts
   function getScrollElement(element) {
-    if (isWindow(element) || element === document.documentElement || element === document.body) {
+    if (isWindow2(element) || element === document.documentElement || element === document.body) {
       return window;
     } else {
       return element;
@@ -5127,26 +5217,31 @@
 
   // src/utils/get-scroll-left.ts
   function getScrollLeft(element) {
-    return isWindow(element) ? element.pageXOffset : element.scrollLeft;
+    return isWindow2(element) ? element.pageXOffset : element.scrollLeft;
   }
 
   // src/utils/get-scroll-left-max.ts
   function getScrollLeftMax(element) {
-    if (isWindow(element))
+    if (isWindow2(element))
       element = document.documentElement;
     return element.scrollWidth - element.clientWidth;
   }
 
   // src/utils/get-scroll-top.ts
   function getScrollTop(element) {
-    return isWindow(element) ? element.pageYOffset : element.scrollTop;
+    return isWindow2(element) ? element.pageYOffset : element.scrollTop;
   }
 
   // src/utils/get-scroll-top-max.ts
   function getScrollTopMax(element) {
-    if (isWindow(element))
+    if (isWindow2(element))
       element = document.documentElement;
     return element.scrollHeight - element.clientHeight;
+  }
+
+  // src/utils/is-intersecting.ts
+  function isIntersecting2(a, b) {
+    return !(a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top);
   }
 
   // src/auto-scroll/auto-scroll.ts
@@ -5159,7 +5254,6 @@
     bottom: 0
   };
   var R2 = { ...R1 };
-  var R3 = { ...R1 };
   var DEFAULT_THRESHOLD = 50;
   var SPEED_DATA = {
     direction: "none",
@@ -5542,11 +5636,11 @@
         const testMaxScrollY = testAxisY ? getScrollTopMax(testElement) : -1;
         if (testMaxScrollX <= 0 && testMaxScrollY <= 0)
           continue;
-        const testRect = getContentClientRect(testElement, R2);
+        const testRect = getRect([testElement, "padding"], window);
         let testScore = getIntersectionScore(itemRect, testRect) || -Infinity;
         if (testScore === -Infinity) {
-          if (target.padding && isRectsOverlapping(itemRect, getPaddedRect(testRect, target.padding, R3))) {
-            testScore = -getDistanceBetweenRects(itemRect, testRect);
+          if (target.padding && isIntersecting2(itemRect, getPaddedRect(testRect, target.padding, R2))) {
+            testScore = -(getDistance(itemRect, testRect) || 0);
           } else {
             continue;
           }
@@ -5668,11 +5762,11 @@
         if (testMaxScroll <= 0) {
           break;
         }
-        const testRect = getContentClientRect(testElement, R2);
+        const testRect = getRect([testElement, "padding"], window);
         const testScore = getIntersectionScore(itemRect, testRect) || -Infinity;
         if (testScore === -Infinity) {
           const padding = target.scrollPadding || target.padding;
-          if (!(padding && isRectsOverlapping(itemRect, getPaddedRect(testRect, padding, R3)))) {
+          if (!(padding && isIntersecting2(itemRect, getPaddedRect(testRect, padding, R2)))) {
             break;
           }
         }

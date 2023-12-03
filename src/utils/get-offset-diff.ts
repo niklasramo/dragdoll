@@ -1,7 +1,4 @@
-import { getOffset } from './get-offset.js';
-
-const offsetA = { left: 0, top: 0 };
-const offsetB = { left: 0, top: 0 };
+import { getOffset } from 'mezr';
 
 /**
  * Calculate the offset difference two elements.
@@ -18,8 +15,8 @@ export function getOffsetDiff(
   if (elemA === elemB) return result;
 
   // Finally, let's calculate the offset diff.
-  getOffset(elemA, offsetA);
-  getOffset(elemB, offsetB);
+  const offsetA = getOffset([elemA, 'padding']);
+  const offsetB = getOffset([elemB, 'padding']);
   result.left = offsetB.left - offsetA.left;
   result.top = offsetB.top - offsetA.top;
 
