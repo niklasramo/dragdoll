@@ -1,5 +1,7 @@
 import { Emitter, EventListenerId } from 'eventti';
 
+import { getDistance, getRect } from 'mezr';
+
 import { Rect, RectExtended } from '../types.js';
 
 import { Pool } from '../pool.js';
@@ -7,10 +9,6 @@ import { Pool } from '../pool.js';
 import { ticker, tickerReadPhase, tickerWritePhase } from '../singletons/ticker.js';
 
 import { getIntersectionScore } from '../utils/get-intersection-score.js';
-
-import { getContentClientRect } from '../utils/get-content-client-rect.js';
-
-import { getDistanceBetweenRects } from '../utils/get-distance-between-rects.js';
 
 import { getScrollElement } from '../utils/get-scroll-element.js';
 
@@ -22,7 +20,7 @@ import { getScrollTop } from '../utils/get-scroll-top.js';
 
 import { getScrollTopMax } from '../utils/get-scroll-top-max.js';
 
-import { isRectsOverlapping } from '../utils/is-rects-overlapping.js';
+import { isIntersecting } from '../utils/is-intersecting.js';
 
 //
 // CONSTANTS
@@ -38,8 +36,6 @@ const R1: RectExtended = {
 };
 
 const R2: RectExtended = { ...R1 };
-
-const R3: RectExtended = { ...R1 };
 
 const DEFAULT_THRESHOLD = 50;
 
@@ -668,7 +664,7 @@ export class AutoScroll {
       // Ignore this item if there is no possibility to scroll.
       if (testMaxScrollX <= 0 && testMaxScrollY <= 0) continue;
 
-      const testRect = getContentClientRect(testElement, R2);
+      const testRect = getRect([testElement, 'padding'], window);
       let testScore = getIntersectionScore(itemRect, testRect) || -Infinity;
 
       // If the item has no overlap with the target.
@@ -678,9 +674,9 @@ export class AutoScroll {
         // between item and target and use that value (negated) as testScore.
         if (
           target.padding &&
-          isRectsOverlapping(itemRect, getPaddedRect(testRect, target.padding, R3))
+          isIntersecting(itemRect, getPaddedRect(testRect, target.padding, R2))
         ) {
-          testScore = -getDistanceBetweenRects(itemRect, testRect);
+          testScore = -(getDistance(itemRect, testRect) || 0);
         }
         // Otherwise let's ignore this target.
         else {
@@ -840,14 +836,14 @@ export class AutoScroll {
         break;
       }
 
-      const testRect = getContentClientRect(testElement, R2);
+      const testRect = getRect([testElement, 'padding'], window);
       const testScore = getIntersectionScore(itemRect, testRect) || -Infinity;
 
       // If the item has no overlap with the target nor the padded target rect
       // let's stop scrolling.
       if (testScore === -Infinity) {
         const padding = target.scrollPadding || target.padding;
-        if (!(padding && isRectsOverlapping(itemRect, getPaddedRect(testRect, padding, R3)))) {
+        if (!(padding && isIntersecting(itemRect, getPaddedRect(testRect, padding, R2)))) {
           break;
         }
       }

@@ -2,7 +2,7 @@
 
 ## Basic Draggable
 
-<iframe src="/dragdoll/examples/draggable-basic.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
+<iframe src="/dragdoll/examples/001-draggable-basic/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
 
 ```ts
 import {
@@ -12,7 +12,7 @@ import {
   createPointerSensorStartPredicate,
 } from 'dragdoll';
 
-const element = document.querySelector('.draggable');
+const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
 const keyboardSensor = new KeyboardMotionSensor();
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
@@ -27,11 +27,12 @@ draggable.on('start', () => {
 draggable.on('end', () => {
   element.classList.remove('dragging');
 });
+
 ```
 
 ## Draggable with AutoScroll
 
-<iframe src="/dragdoll/examples/draggable-autoscroll.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
+<iframe src="/dragdoll/examples/002-draggable-autoscroll/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
 
 ```ts
 import {
@@ -42,11 +43,12 @@ import {
   autoScrollPlugin,
 } from 'dragdoll';
 
-const element = document.querySelector('.draggable');
+const element = document.querySelector('.draggable') as HTMLElement;
+const container = document.querySelector('.drag-container') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
 const keyboardSensor = new KeyboardMotionSensor();
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
-  container: document.querySelector('.drag-container'),
+  container,
   getElements: () => [element],
   getFrozenProps: () => ['left', 'top'],
   startPredicate: createPointerSensorStartPredicate(),
@@ -69,4 +71,6 @@ draggable.on('start', () => {
 draggable.on('end', () => {
   element.classList.remove('dragging');
 });
+
 ```
+

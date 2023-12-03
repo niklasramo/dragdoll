@@ -294,11 +294,11 @@ declare class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboa
 }
 
 declare class DraggableDragItem {
-    readonly element: HTMLElement | SVGElement;
-    readonly elementContainer: Element;
-    readonly elementOffsetContainer: Element | Window | Document;
-    readonly dragContainer: Element;
-    readonly dragOffsetContainer: Element | Window | Document;
+    readonly element: HTMLElement | SVGSVGElement;
+    readonly elementContainer: HTMLElement;
+    readonly elementOffsetContainer: HTMLElement | SVGSVGElement | Window | Document;
+    readonly dragContainer: HTMLElement;
+    readonly dragOffsetContainer: HTMLElement | SVGSVGElement | Window | Document;
     readonly initialTransform: string;
     readonly frozenProps: CSSProperties | null;
     readonly unfrozenProps: CSSProperties | null;
@@ -312,7 +312,7 @@ declare class DraggableDragItem {
     readonly _moveDiffY: number;
     readonly _containerDiffX: number;
     readonly _containerDiffY: number;
-    constructor(element: HTMLElement | SVGElement, elementContainer: Element, elementOffsetContainer: Element | Window | Document, dragContainer: Element, dragOffsetContainer: Element | Window | Document);
+    constructor(element: HTMLElement | SVGSVGElement, elementContainer: HTMLElement, elementOffsetContainer: HTMLElement | SVGSVGElement | Window | Document, dragContainer: HTMLElement, dragOffsetContainer: HTMLElement | SVGSVGElement | Window | Document);
 }
 
 declare class DraggableDrag<S extends Sensor[], E extends S[number]['events']> {
@@ -333,7 +333,7 @@ declare enum DraggableStartPredicateState {
     REJECTED = 2
 }
 interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
-    container: Element | null;
+    container: HTMLElement | null;
     startPredicate: (data: {
         draggable: Draggable<S, E>;
         sensor: S[number];
@@ -343,11 +343,11 @@ interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
         draggable: Draggable<S, E>;
         sensor: S[number];
         startEvent: E['start'] | E['move'];
-    }) => (HTMLElement | SVGElement)[] | null;
+    }) => (HTMLElement | SVGSVGElement)[] | null;
     releaseElements: (data: {
         draggable: Draggable<S, E>;
         sensor: S[number];
-        elements: (HTMLElement | SVGElement)[];
+        elements: (HTMLElement | SVGSVGElement)[];
     }) => void;
     getFrozenProps: (data: {
         draggable: Draggable<S, E>;
