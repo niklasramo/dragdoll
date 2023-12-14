@@ -1,6 +1,7 @@
 import { CSSProperties } from '../types.js';
 
 export class DraggableDragItem {
+  data: { [key: string]: any };
   readonly element: HTMLElement | SVGSVGElement;
   readonly elementContainer: HTMLElement;
   readonly elementOffsetContainer: HTMLElement | SVGSVGElement | Window | Document;
@@ -27,6 +28,7 @@ export class DraggableDragItem {
     dragContainer: HTMLElement,
     dragOffsetContainer: HTMLElement | SVGSVGElement | Window | Document,
   ) {
+    this.data = {};
     this.element = element;
     this.elementContainer = elementContainer;
     this.elementOffsetContainer = elementOffsetContainer;

@@ -208,12 +208,18 @@ declare class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
     destroy(): void;
 }
 
-type KeyboardSensorPredicate = (e: KeyboardEvent, sensor: KeyboardSensor, moveDistance: number) => {
+type KeyboardSensorPredicate = (e: KeyboardEvent, sensor: KeyboardSensor, moveDistance: {
+    x: number;
+    y: number;
+}) => {
     x: number;
     y: number;
 } | null | undefined;
 interface KeyboardSensorSettings {
-    moveDistance: number;
+    moveDistance: number | {
+        x: number;
+        y: number;
+    };
     startPredicate: KeyboardSensorPredicate;
     movePredicate: KeyboardSensorPredicate;
     cancelPredicate: KeyboardSensorPredicate;
@@ -242,7 +248,10 @@ interface KeyboardSensorEvents {
 }
 declare class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvents> extends BaseSensor<E> implements Sensor<E> {
     events: E;
-    protected _moveDistance: number;
+    protected _moveDistance: {
+        x: number;
+        y: number;
+    };
     protected _startPredicate: KeyboardSensorPredicate;
     protected _movePredicate: KeyboardSensorPredicate;
     protected _cancelPredicate: KeyboardSensorPredicate;
@@ -294,6 +303,9 @@ declare class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboa
 }
 
 declare class DraggableDragItem {
+    data: {
+        [key: string]: any;
+    };
     readonly element: HTMLElement | SVGSVGElement;
     readonly elementContainer: HTMLElement;
     readonly elementOffsetContainer: HTMLElement | SVGSVGElement | Window | Document;

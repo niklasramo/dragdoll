@@ -41,10 +41,10 @@ The constuctor accepts one argument, an optional [Settings](#settings) object, w
 ### moveDistance
 
 ```ts
-type moveDistance = number;
+type moveDistance = number | { x: number; y: number };
 ```
 
-The number of pixels the `x` and/or `y` values are shifted per `"move"` event.
+The number of pixels the `x` and/or `y` values are shifted per `"move"` event. You can define a single number to shift both `x` and `y` values by the same amount or an object to shift them by different amounts.
 
 Defaults to `25`.
 
@@ -54,7 +54,7 @@ Defaults to `25`.
 type startPredicate = (
   e: KeyboardEvent,
   sensor: KeyboardSensor,
-  moveDistance: number
+  moveDistance: { x: number; y: number },
 ) => { x: number; y: number } | null | undefined;
 ```
 
@@ -66,7 +66,7 @@ Start predicate function which should return drag start coordinates (client `x` 
 type movePredicate = (
   e: KeyboardEvent,
   sensor: KeyboardSensor,
-  moveDistance: number
+  moveDistance: { x: number; y: number },
 ) => { x: number; y: number } | null | undefined;
 ```
 
@@ -78,7 +78,7 @@ Move predicate function which should return drag's next coordinates (client `x` 
 type endPredicate = (
   e: KeyboardEvent,
   sensor: KeyboardSensor,
-  moveDistance: number
+  moveDistance: { x: number; y: number },
 ) => { x: number; y: number } | null | undefined;
 ```
 
@@ -90,7 +90,7 @@ End predicate function which should return drag's end coordinates (client `x` an
 type cancelPredicate = (
   e: KeyboardEvent,
   sensor: KeyboardSensor,
-  moveDistance: number
+  moveDistance: { x: number; y: number },
 ) => { x: number; y: number } | null | undefined;
 ```
 
