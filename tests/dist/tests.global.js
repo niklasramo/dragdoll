@@ -4835,26 +4835,26 @@
           switch (e.key) {
             case "ArrowLeft": {
               return {
-                x: sensor.drag.x - moveDistance2,
+                x: sensor.drag.x - moveDistance2.x,
                 y: sensor.drag.y
               };
             }
             case "ArrowRight": {
               return {
-                x: sensor.drag.x + moveDistance2,
+                x: sensor.drag.x + moveDistance2.x,
                 y: sensor.drag.y
               };
             }
             case "ArrowUp": {
               return {
                 x: sensor.drag.x,
-                y: sensor.drag.y - moveDistance2
+                y: sensor.drag.y - moveDistance2.y
               };
             }
             case "ArrowDown": {
               return {
                 x: sensor.drag.x,
-                y: sensor.drag.y + moveDistance2
+                y: sensor.drag.y + moveDistance2.y
               };
             }
             default: {
@@ -4875,7 +4875,7 @@
           return null;
         }
       } = options;
-      this._moveDistance = moveDistance;
+      this._moveDistance = typeof moveDistance === "number" ? { x: moveDistance, y: moveDistance } : { ...moveDistance };
       this._startPredicate = startPredicate;
       this._movePredicate = movePredicate;
       this._cancelPredicate = cancelPredicate;
@@ -4936,7 +4936,13 @@
     }
     updateSettings(options = {}) {
       if (options.moveDistance !== void 0) {
-        this._moveDistance = options.moveDistance;
+        if (typeof options.moveDistance === "number") {
+          this._moveDistance.x = options.moveDistance;
+          this._moveDistance.y = options.moveDistance;
+        } else {
+          this._moveDistance.x = options.moveDistance.x;
+          this._moveDistance.y = options.moveDistance.y;
+        }
       }
       if (options.startPredicate !== void 0) {
         this._startPredicate = options.startPredicate;

@@ -12,11 +12,11 @@ import { BaseSensor } from './base-sensor.js';
 export type KeyboardSensorPredicate = (
   e: KeyboardEvent,
   sensor: KeyboardSensor,
-  moveDistance: number,
+  moveDistance: { x: number; y: number },
 ) => { x: number; y: number } | null | undefined;
 
 export interface KeyboardSensorSettings {
-  moveDistance: number;
+  moveDistance: number | { x: number; y: number };
   startPredicate: KeyboardSensorPredicate;
   movePredicate: KeyboardSensorPredicate;
   cancelPredicate: KeyboardSensorPredicate;
@@ -54,7 +54,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
   implements Sensor<E>
 {
   declare events: E;
-  protected _moveDistance: number;
+  protected _moveDistance: { x: number; y: number };
   protected _startPredicate: KeyboardSensorPredicate;
   protected _movePredicate: KeyboardSensorPredicate;
   protected _cancelPredicate: KeyboardSensorPredicate;
@@ -80,26 +80,26 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
         switch (e.key) {
           case 'ArrowLeft': {
             return {
-              x: sensor.drag.x - moveDistance,
+              x: sensor.drag.x - moveDistance.x,
               y: sensor.drag.y,
             };
           }
           case 'ArrowRight': {
             return {
-              x: sensor.drag.x + moveDistance,
+              x: sensor.drag.x + moveDistance.x,
               y: sensor.drag.y,
             };
           }
           case 'ArrowUp': {
             return {
               x: sensor.drag.x,
-              y: sensor.drag.y - moveDistance,
+              y: sensor.drag.y - moveDistance.y,
             };
           }
           case 'ArrowDown': {
             return {
               x: sensor.drag.x,
-              y: sensor.drag.y + moveDistance,
+              y: sensor.drag.y + moveDistance.y,
             };
           }
           default: {
@@ -121,7 +121,8 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
       },
     } = options;
 
-    this._moveDistance = moveDistance;
+    this._moveDistance =
+      typeof moveDistance === 'number' ? { x: moveDistance, y: moveDistance } : { ...moveDistance };
     this._startPredicate = startPredicate;
     this._movePredicate = movePredicate;
     this._cancelPredicate = cancelPredicate;
@@ -193,7 +194,13 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
 
   updateSettings(options: Partial<KeyboardSensorSettings> = {}) {
     if (options.moveDistance !== undefined) {
-      this._moveDistance = options.moveDistance;
+      if (typeof options.moveDistance === 'number') {
+        this._moveDistance.x = options.moveDistance;
+        this._moveDistance.y = options.moveDistance;
+      } else {
+        this._moveDistance.x = options.moveDistance.x;
+        this._moveDistance.y = options.moveDistance.y;
+      }
     }
 
     if (options.startPredicate !== undefined) {
