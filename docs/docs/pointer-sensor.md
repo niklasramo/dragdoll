@@ -135,9 +135,9 @@ type on = (
         }
       | {
           type: 'destroy';
-        }
+        },
   ) => void,
-  listenerId?: string | number | symbol
+  listenerId?: string | number | symbol,
 ) => string | number | symbol;
 
 // Usage
@@ -154,7 +154,7 @@ Adds a listener to a sensor event. Returns a listener id, which can be used to r
 // Type
 type off = (
   eventName: 'start' | 'move' | 'cancel' | 'end' | 'destroy',
-  target: Function | string | number | symbol
+  target: Function | string | number | symbol,
 ) => void;
 
 // Usage

@@ -34,7 +34,7 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
         threshold: 100,
       },
     ],
-  })
+  }),
 );
 
 // Update settings later if need be.
@@ -58,7 +58,7 @@ import { autoScrollPlugin } from 'dragdoll';
 draggable.use(
   autoScrollPlugin({
     /* Provide options here... */
-  })
+  }),
 );
 ```
 

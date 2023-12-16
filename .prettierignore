@@ -1,0 +1,12 @@
+node_modules
+dist
+cache
+package-lock.json
+.gitignore
+.prettierignore
+.parcel-cache
+.env
+docs/public/examples
+**/*.log
+**/*.map
+**/*.svg

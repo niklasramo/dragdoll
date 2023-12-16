@@ -28,8 +28,8 @@ type on = (
         }
       | {
           type: 'destroy';
-        }
-  ) => void
+        },
+  ) => void,
 ) => void;
 ```
 
