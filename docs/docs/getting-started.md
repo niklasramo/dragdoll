@@ -2,12 +2,12 @@
 
 ## Install
 
-DragDoll has two dependencies, [Eventti](https://github.com/niklasramo/eventti) and [Tikki](https://github.com/niklasramo/tikki), both of which are lightweight and performant libraries. Eventti is used for emitting all the events and Tikki is used for managing the animation loop when necessary.
+DragDoll has three dependencies, [Eventti](https://github.com/niklasramo/eventti), [Tikki](https://github.com/niklasramo/tikki) and [Mezr](https://github.com/niklasramo/mezr), all of which are lightweight and performant libraries. Eventti is used for emitting all the events, Tikki is used for managing the animation loop when necessary and Mezr is used for calculating tricky DOM bits.
 
 ### Node
 
 ```bash
-$ npm install dragdoll eventti tikki
+$ npm install dragdoll eventti tikki mezr
 ```
 
 ### Browser
@@ -18,13 +18,11 @@ $ npm install dragdoll eventti tikki
     "imports": {
       "eventti": "https://cdn.jsdelivr.net/npm/eventti@3.0.0/dist/eventti.js",
       "tikki": "https://cdn.jsdelivr.net/npm/tikki@2.0.0/dist/tikki.js",
-      "dragdoll": "https://cdn.jsdelivr.net/npm/dragdoll@0.2.0/dist/index.js"
+      "mezr": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/index.js",
+      "dragdoll": "https://cdn.jsdelivr.net/npm/dragdoll@0.2.0/dist/dragdoll.js"
     }
   }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/eventti@3.0.0/dist/eventti.js" type="module"></script>
-<script src="https://cdn.jsdelivr.net/npm/tikki@2.0.0/dist/tikki.js" type="module"></script>
-<script src="https://cdn.jsdelivr.net/npm/dragdoll@0.2.0/dist/index.js" type="module"></script>
 <script type="module">
   import { Draggable, PointerSensor } from 'dragdoll';
   // etc...
