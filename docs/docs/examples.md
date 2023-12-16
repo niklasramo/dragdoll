@@ -27,7 +27,6 @@ draggable.on('start', () => {
 draggable.on('end', () => {
   element.classList.remove('dragging');
 });
-
 ```
 
 ## Draggable - Autoscroll
@@ -71,7 +70,6 @@ draggable.on('start', () => {
 draggable.on('end', () => {
   element.classList.remove('dragging');
 });
-
 ```
 
 ## Draggable - Snap To Grid
@@ -144,6 +142,4 @@ draggable.on('start', () => {
 draggable.on('end', () => {
   element.classList.remove('dragging');
 });
-
 ```
-

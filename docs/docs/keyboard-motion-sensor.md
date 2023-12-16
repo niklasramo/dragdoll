@@ -43,7 +43,7 @@ The constuctor accepts one argument, an optional [Settings](#settings) object, w
 ```ts
 type startPredicate = (
   e: KeyboardEvent,
-  sensor: KeyboardMotionSensor
+  sensor: KeyboardMotionSensor,
 ) => { x: number; y: number } | null | undefined;
 ```
 
