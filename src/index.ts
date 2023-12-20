@@ -21,3 +21,5 @@ export * from './singletons/auto-scroll.js';
 export * from './singletons/ticker.js';
 
 export * from './utils/create-pointer-sensor-start-predicate.js';
+
+export * from './utils/create-snap-modifier.js';

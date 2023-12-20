@@ -79,7 +79,7 @@ async function buildExamplesMarkdown() {
 
       // Read index.ts file contents.
       let indexTsContent = await fs.readFile(indexTsPath, 'utf8');
-      indexTsContent = indexTsContent.replace('../../dist/dragdoll', 'dragdoll');
+      indexTsContent = indexTsContent.replace('../../src', 'dragdoll');
 
       // Append to markdown content.
       markdownContent += `## ${title}\n\n`;

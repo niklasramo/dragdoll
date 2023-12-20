@@ -4,7 +4,7 @@ import {
   KeyboardMotionSensor,
   createPointerSensorStartPredicate,
   autoScrollPlugin,
-} from '../../dist/dragdoll';
+} from '../../src';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const container = document.querySelector('.drag-container') as HTMLElement;

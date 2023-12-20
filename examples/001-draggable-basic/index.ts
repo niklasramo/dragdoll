@@ -3,7 +3,7 @@ import {
   PointerSensor,
   KeyboardMotionSensor,
   createPointerSensorStartPredicate,
-} from '../../dist/dragdoll';
+} from '../../src';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);

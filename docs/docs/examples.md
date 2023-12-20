@@ -27,6 +27,7 @@ draggable.on('start', () => {
 draggable.on('end', () => {
   element.classList.remove('dragging');
 });
+
 ```
 
 ## Draggable - Autoscroll
@@ -70,6 +71,7 @@ draggable.on('start', () => {
 draggable.on('end', () => {
   element.classList.remove('dragging');
 });
+
 ```
 
 ## Draggable - Snap To Grid
@@ -82,6 +84,7 @@ import {
   PointerSensor,
   KeyboardSensor,
   createPointerSensorStartPredicate,
+  createSnapModifier,
 } from 'dragdoll';
 
 const GRID_WIDTH = 40;
@@ -95,44 +98,7 @@ const keyboardSensor = new KeyboardSensor({
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   getElements: () => [element],
   startPredicate: createPointerSensorStartPredicate(),
-  getPositionChange: ({ startEvent, event, item }) => {
-    let { prevX = startEvent.x, prevY = startEvent.y } = item.data;
-
-    let changeX = event.x - prevX;
-    let changeXAbs = Math.abs(changeX);
-    if (changeXAbs >= GRID_WIDTH) {
-      const overshoot = changeXAbs % GRID_WIDTH;
-      if (changeX > 0) {
-        changeX -= overshoot;
-        item.data.prevX = event.x - overshoot;
-      } else {
-        changeX += overshoot;
-        item.data.prevX = event.x + overshoot;
-      }
-    } else {
-      changeX = 0;
-    }
-
-    let changeY = event.y - prevY;
-    let changeYAbs = Math.abs(changeY);
-    if (changeYAbs >= GRID_HEIGHT) {
-      const overshoot = changeYAbs % GRID_HEIGHT;
-      if (changeY > 0) {
-        changeY -= overshoot;
-        item.data.prevY = event.y - overshoot;
-      } else {
-        changeY += overshoot;
-        item.data.prevY = event.y + overshoot;
-      }
-    } else {
-      changeY = 0;
-    }
-
-    return {
-      x: changeX,
-      y: changeY,
-    };
-  },
+  getPositionChange: createSnapModifier(GRID_WIDTH, GRID_HEIGHT),
 });
 
 draggable.on('start', () => {
@@ -142,4 +108,6 @@ draggable.on('start', () => {
 draggable.on('end', () => {
   element.classList.remove('dragging');
 });
+
 ```
+
