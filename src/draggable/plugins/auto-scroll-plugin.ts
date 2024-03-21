@@ -32,12 +32,12 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
 
       // Try to use the first item for the autoscroll data.
       if (primaryItem) {
-        AUTOSCROLL_POSITION.x = primaryItem.pX;
-        AUTOSCROLL_POSITION.y = primaryItem.pY;
+        AUTOSCROLL_POSITION.x = primaryItem.position.x;
+        AUTOSCROLL_POSITION.y = primaryItem.position.y;
       }
       // Fallback to the sensor's clientX/clientY values.
       else {
-        const e = drag && (drag.nextMoveEvent || drag.startEvent);
+        const e = drag && (drag.event || drag.startEvent);
         AUTOSCROLL_POSITION.x = e ? e.x : 0;
         AUTOSCROLL_POSITION.y = e ? e.y : 0;
       }
@@ -50,7 +50,7 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
 
       // Try to use the first item for the autoscroll data.
       if (primaryItem && primaryItem.element) {
-        const { left, top, width, height } = primaryItem.element.getBoundingClientRect();
+        const { left, top, width, height } = primaryItem.clientRect;
         AUTOSCROLL_CLIENT_RECT.left = left;
         AUTOSCROLL_CLIENT_RECT.top = top;
         AUTOSCROLL_CLIENT_RECT.width = width;
@@ -59,7 +59,7 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
       // Fallback to the sensor's clientX/clientY values and a static size of
       // 50x50px.
       else {
-        const e = drag && (drag.nextMoveEvent || drag.startEvent);
+        const e = drag && (drag.event || drag.startEvent);
         AUTOSCROLL_CLIENT_RECT.left = e ? e.x - 25 : 0;
         AUTOSCROLL_CLIENT_RECT.top = e ? e.y - 25 : 0;
         AUTOSCROLL_CLIENT_RECT.width = e ? 50 : 0;

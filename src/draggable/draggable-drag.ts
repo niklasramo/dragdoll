@@ -3,22 +3,20 @@ import { Sensor } from '../sensors/sensor.js';
 import { DraggableDragItem } from './draggable-drag-item.js';
 
 export class DraggableDrag<S extends Sensor[], E extends S[number]['events']> {
-  readonly sensor: S[number] | null;
-  readonly isStarted: boolean;
+  readonly sensor: S[number];
   readonly isEnded: boolean;
-  readonly startEvent: E['start'] | E['move'] | null;
-  readonly nextMoveEvent: E['move'] | null;
-  readonly prevMoveEvent: E['move'] | null;
+  readonly event: E['start'] | E['move'];
+  readonly prevEvent: E['start'] | E['move'];
+  readonly startEvent: E['start'] | E['move'];
   readonly endEvent: E['end'] | E['cancel'] | E['destroy'] | null;
   readonly items: DraggableDragItem[];
 
-  constructor() {
-    this.sensor = null;
+  constructor(sensor: S[number], startEvent: E['start'] | E['move']) {
+    this.sensor = sensor;
     this.isEnded = false;
-    this.isStarted = false;
-    this.startEvent = null;
-    this.nextMoveEvent = null;
-    this.prevMoveEvent = null;
+    this.event = startEvent;
+    this.prevEvent = startEvent;
+    this.startEvent = startEvent;
     this.endEvent = null;
     this.items = [];
   }

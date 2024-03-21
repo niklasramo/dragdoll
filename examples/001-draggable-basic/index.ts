@@ -11,6 +11,7 @@ const keyboardSensor = new KeyboardMotionSensor();
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   getElements: () => [element],
   startPredicate: createPointerSensorStartPredicate(),
+  getFrozenProps: () => ['transform'],
 });
 
 draggable.on('start', () => {

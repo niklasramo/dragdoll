@@ -302,7 +302,7 @@ declare class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboa
     destroy(): void;
 }
 
-declare class DraggableDragItem {
+declare class DraggableDragItem<S extends Sensor[] = Sensor[], E extends S[number]['events'] = S[number]['events']> {
     data: {
         [key: string]: any;
     };
@@ -314,29 +314,39 @@ declare class DraggableDragItem {
     readonly initialTransform: string;
     readonly frozenProps: CSSProperties | null;
     readonly unfrozenProps: CSSProperties | null;
-    readonly x: number;
-    readonly y: number;
-    readonly pX: number;
-    readonly pY: number;
-    readonly _updateDiffX: number;
-    readonly _updateDiffY: number;
-    readonly _moveDiffX: number;
-    readonly _moveDiffY: number;
-    readonly _containerDiffX: number;
-    readonly _containerDiffY: number;
-    constructor(element: HTMLElement | SVGSVGElement, elementContainer: HTMLElement, elementOffsetContainer: HTMLElement | SVGSVGElement | Window | Document, dragContainer: HTMLElement, dragOffsetContainer: HTMLElement | SVGSVGElement | Window | Document);
+    readonly clientRect: Rect;
+    readonly position: {
+        x: number;
+        y: number;
+    };
+    readonly _updateDiff: {
+        x: number;
+        y: number;
+    };
+    readonly _moveDiff: {
+        x: number;
+        y: number;
+    };
+    readonly _containerDiff: {
+        x: number;
+        y: number;
+    };
+    constructor(element: HTMLElement | SVGSVGElement, draggable: Draggable<S, E>);
+    updateSize(dimensions?: {
+        width: number;
+        height: number;
+    }): void;
 }
 
 declare class DraggableDrag<S extends Sensor[], E extends S[number]['events']> {
-    readonly sensor: S[number] | null;
-    readonly isStarted: boolean;
+    readonly sensor: S[number];
     readonly isEnded: boolean;
-    readonly startEvent: E['start'] | E['move'] | null;
-    readonly nextMoveEvent: E['move'] | null;
-    readonly prevMoveEvent: E['move'] | null;
+    readonly event: E['start'] | E['move'];
+    readonly prevEvent: E['start'] | E['move'];
+    readonly startEvent: E['start'] | E['move'];
     readonly endEvent: E['end'] | E['cancel'] | E['destroy'] | null;
     readonly items: DraggableDragItem[];
-    constructor();
+    constructor(sensor: S[number], startEvent: E['start'] | E['move']);
 }
 
 declare enum DraggableStartPredicateState {
@@ -364,13 +374,13 @@ interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
     getFrozenProps: (data: {
         draggable: Draggable<S, E>;
         sensor: S[number];
-        item: DraggableDragItem;
+        item: DraggableDragItem<S, E>;
         style: CSSStyleDeclaration;
     }) => CSSProperties | (keyof CSSProperties)[] | null;
     getStartPosition: (data: {
         draggable: Draggable<S, E>;
         sensor: S[number];
-        item: DraggableDragItem;
+        item: DraggableDragItem<S, E>;
         style: CSSStyleDeclaration;
     }) => {
         x: number;
@@ -380,15 +390,15 @@ interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
         draggable: Draggable<S, E>;
         sensor: S[number];
         phase: 'start' | 'move' | 'end';
-        item: DraggableDragItem;
+        item: DraggableDragItem<S, E>;
         x: number;
         y: number;
     }) => void;
     getPositionChange: (data: {
         draggable: Draggable<S, E>;
         sensor: S[number];
-        item: DraggableDragItem;
-        event: E['move'];
+        item: DraggableDragItem<S, E>;
+        event: E['start'] | E['move'];
         prevEvent: E['start'] | E['move'];
         startEvent: E['start'] | E['move'];
     }) => {
