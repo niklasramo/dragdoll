@@ -541,8 +541,8 @@ export class AutoScroll {
   protected _startTicking() {
     if (this._isTicking) return;
     this._isTicking = true;
-    ticker.on(tickerReadPhase, this._frameRead);
-    ticker.on(tickerWritePhase, this._frameWrite);
+    ticker.on(tickerReadPhase, this._frameRead, this._frameRead);
+    ticker.on(tickerWritePhase, this._frameWrite, this._frameWrite);
   }
 
   protected _stopTicking() {
@@ -1087,18 +1087,16 @@ export class AutoScroll {
   on<T extends keyof AutoScrollEventCallbacks>(
     eventName: T,
     listener: AutoScrollEventCallbacks[T],
+    listenerId?: EventListenerId,
   ): EventListenerId {
-    return this._emitter.on(eventName, listener);
+    return this._emitter.on(eventName, listener, listenerId);
   }
 
   /**
    * Unbind a listener.
    */
-  off<T extends keyof AutoScrollEventCallbacks>(
-    eventName: T,
-    listener: AutoScrollEventCallbacks[T] | EventListenerId,
-  ): void {
-    this._emitter.off(eventName, listener);
+  off<T extends keyof AutoScrollEventCallbacks>(eventName: T, listenerId: EventListenerId): void {
+    this._emitter.off(eventName, listenerId);
   }
 
   addItem(item: AutoScrollItem) {

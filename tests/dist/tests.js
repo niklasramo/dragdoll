@@ -3693,8 +3693,8 @@ var BaseSensor = class {
   on(eventName, listener, listenerId) {
     return this._emitter.on(eventName, listener, listenerId);
   }
-  off(eventName, listener) {
-    this._emitter.off(eventName, listener);
+  off(eventName, listenerId) {
+    this._emitter.off(eventName, listenerId);
   }
   cancel() {
     if (!this.drag)
@@ -3719,10 +3719,10 @@ var BaseSensor = class {
 };
 
 // src/singletons/ticker.ts
-import { Ticker } from "tikki";
+import { AutoTicker } from "tikki";
 var tickerReadPhase = Symbol();
 var tickerWritePhase = Symbol();
-var ticker = new Ticker({ phases: [tickerReadPhase, tickerWritePhase] });
+var ticker = new AutoTicker({ phases: [tickerReadPhase, tickerWritePhase] });
 
 // src/sensors/pointer-sensor.ts
 import { Emitter as Emitter2 } from "eventti";
@@ -4033,8 +4033,8 @@ var PointerSensor = class {
   /**
    * Unbind a drag event listener.
    */
-  off(eventName, listener) {
-    this._emitter.off(eventName, listener);
+  off(eventName, listenerId) {
+    this._emitter.off(eventName, listenerId);
   }
   /**
    * Destroy the instance and unbind all drag event listeners.
@@ -4599,8 +4599,8 @@ var AutoScroll = class {
     if (this._isTicking)
       return;
     this._isTicking = true;
-    ticker.on(tickerReadPhase, this._frameRead);
-    ticker.on(tickerWritePhase, this._frameWrite);
+    ticker.on(tickerReadPhase, this._frameRead, this._frameRead);
+    ticker.on(tickerWritePhase, this._frameWrite, this._frameWrite);
   }
   _stopTicking() {
     if (!this._isTicking)
@@ -4990,14 +4990,14 @@ var AutoScroll = class {
   /**
    * Bind a listener.
    */
-  on(eventName, listener) {
-    return this._emitter.on(eventName, listener);
+  on(eventName, listener, listenerId) {
+    return this._emitter.on(eventName, listener, listenerId);
   }
   /**
    * Unbind a listener.
    */
-  off(eventName, listener) {
-    this._emitter.off(eventName, listener);
+  off(eventName, listenerId) {
+    this._emitter.off(eventName, listenerId);
   }
   addItem(item) {
     if (this._isDestroyed || this._itemData.has(item))
@@ -5083,16 +5083,6 @@ describe("BaseSensor", () => {
       const s = new BaseSensor();
       assert.equal(s.isDestroyed, false);
       s.destroy();
-    });
-  });
-  describe("_emitter", () => {
-    it("should allow duplicate listeners by default", () => {
-      const s = new BaseSensor();
-      assert.equal(s["_emitter"].allowDuplicateListeners, true);
-    });
-    it("should replace event listeners with duplicate ids by default", () => {
-      const s = new BaseSensor();
-      assert.equal(s["_emitter"].idDedupeMode, "replace");
     });
   });
   describe("_start method", () => {

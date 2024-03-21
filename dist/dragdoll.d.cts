@@ -1,6 +1,7 @@
-import { Emitter, Events, EventListenerId, EventName } from 'eventti';
+import * as eventti from 'eventti';
+import { EventListenerId, Emitter, Events } from 'eventti';
 import * as tikki from 'tikki';
-import { Ticker, FrameCallback } from 'tikki';
+import { Phase, AutoTicker, FrameCallback } from 'tikki';
 
 declare const SensorEventType: {
     readonly start: "start";
@@ -41,8 +42,8 @@ interface SensorEvents {
 }
 interface Sensor<E extends SensorEvents = SensorEvents> {
     events: E;
-    on<K extends keyof E>(eventName: K, listener: (eventData: E[K]) => void): void;
-    off<K extends keyof E>(eventName: K, listener: (eventData: E[K]) => void): void;
+    on<K extends keyof E>(eventName: K, listener: (eventData: E[K]) => void, listenerId?: EventListenerId): EventListenerId;
+    off<K extends keyof E>(eventName: K, listenerId: EventListenerId): void;
     cancel(): void;
     destroy(): void;
 }
@@ -65,7 +66,7 @@ declare class BaseSensor<E extends SensorEvents = SensorEvents> implements Senso
     protected _end(data: E['end']): void;
     protected _cancel(data: E['cancel']): void;
     on<K extends keyof E>(eventName: K, listener: (e: E[K]) => void, listenerId?: EventListenerId): EventListenerId;
-    off<K extends keyof E>(eventName: K, listener: ((e: E[K]) => void) | EventListenerId): void;
+    off<K extends keyof E>(eventName: K, listenerId: EventListenerId): void;
     cancel(): void;
     destroy(): void;
 }
@@ -204,7 +205,7 @@ declare class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
     cancel(): void;
     updateSettings(options: Partial<PointerSensorSettings>): void;
     on<K extends keyof E>(eventName: K, listener: (e: E[K]) => void, listenerId?: EventListenerId): EventListenerId;
-    off<K extends keyof E>(eventName: K, listener: ((e: E[K]) => void) | EventListenerId): void;
+    off<K extends keyof E>(eventName: K, listenerId: EventListenerId): void;
     destroy(): void;
 }
 
@@ -450,7 +451,7 @@ declare class Draggable<S extends Sensor[] = Sensor[], E extends S[number]['even
     protected _preparePositionUpdate(): void;
     protected _applyPositionUpdate(): void;
     on<K extends keyof DraggableEventCallbacks<E>>(eventName: K, listener: DraggableEventCallbacks<E>[K], listenerId?: EventListenerId): EventListenerId;
-    off<K extends keyof DraggableEventCallbacks<E>>(eventName: K, listener: DraggableEventCallbacks<E>[K] | EventListenerId): void;
+    off<K extends keyof DraggableEventCallbacks<E>>(eventName: K, listenerId: EventListenerId): void;
     resolveStartPredicate(sensor: S[number], e?: E['start'] | E['move']): void;
     rejectStartPredicate(sensor: S[number]): void;
     stop(): void;
@@ -632,8 +633,8 @@ declare class AutoScroll {
     protected _requestAction(request: AutoScrollRequest, axis: AutoScrollAxis): void;
     protected _updateActions(): void;
     protected _applyActions(): void;
-    on<T extends keyof AutoScrollEventCallbacks>(eventName: T, listener: AutoScrollEventCallbacks[T]): EventListenerId;
-    off<T extends keyof AutoScrollEventCallbacks>(eventName: T, listener: AutoScrollEventCallbacks[T] | EventListenerId): void;
+    on<T extends keyof AutoScrollEventCallbacks>(eventName: T, listener: AutoScrollEventCallbacks[T], listenerId?: EventListenerId): EventListenerId;
+    off<T extends keyof AutoScrollEventCallbacks>(eventName: T, listenerId: EventListenerId): void;
     addItem(item: AutoScrollItem): void;
     removeItem(item: AutoScrollItem): void;
     isDestroyed(): boolean;
@@ -701,10 +702,10 @@ declare function autoScrollPlugin<S extends Sensor[], E extends S[number]['event
 
 declare const autoScroll: AutoScroll;
 
-declare let tickerReadPhase: EventName;
-declare let tickerWritePhase: EventName;
-declare let ticker: Ticker<EventName, tikki.DefaultFrameCallback>;
-declare function setTicker(newTicker: Ticker<EventName, FrameCallback>, readPhase: EventName, writePhase: EventName): void;
+declare let tickerReadPhase: Phase;
+declare let tickerWritePhase: Phase;
+declare let ticker: AutoTicker<eventti.EventName, tikki.AutoTickerDefaultFrameCallback>;
+declare function setTicker(newTicker: AutoTicker<Phase, FrameCallback>, readPhase: Phase, writePhase: Phase): void;
 
 declare function createPointerSensorStartPredicate<S extends (Sensor | PointerSensor)[] = (Sensor | PointerSensor)[], D extends Draggable<S> = Draggable<S>>(options?: {
     timeout?: number;

@@ -172,11 +172,11 @@ export class Draggable<
         onEnd: (e) => this._onEnd(e, sensor),
       });
       const { onMove, onEnd } = this._sensorData.get(sensor)!;
-      sensor.on('start', onMove);
-      sensor.on('move', onMove);
-      sensor.on('cancel', onEnd);
-      sensor.on('end', onEnd);
-      sensor.on('destroy', onEnd);
+      sensor.on('start', onMove, onMove);
+      sensor.on('move', onMove, onMove);
+      sensor.on('cancel', onEnd, onEnd);
+      sensor.on('end', onEnd, onEnd);
+      sensor.on('destroy', onEnd, onEnd);
     });
   }
 
@@ -467,11 +467,8 @@ export class Draggable<
     return this._emitter.on(eventName, listener, listenerId);
   }
 
-  off<K extends keyof DraggableEventCallbacks<E>>(
-    eventName: K,
-    listener: DraggableEventCallbacks<E>[K] | EventListenerId,
-  ): void {
-    this._emitter.off(eventName, listener);
+  off<K extends keyof DraggableEventCallbacks<E>>(eventName: K, listenerId: EventListenerId): void {
+    this._emitter.off(eventName, listenerId);
   }
 
   resolveStartPredicate(sensor: S[number], e?: E['start'] | E['move']) {

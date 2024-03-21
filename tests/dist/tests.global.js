@@ -1658,8 +1658,8 @@
     }, "overwritingChainableMethodWrapper");
   }
   __name(overwriteChainableMethod, "overwriteChainableMethod");
-  function compareByInspect(a, b) {
-    return inspect2(a) < inspect2(b) ? -1 : 1;
+  function compareByInspect(a2, b) {
+    return inspect2(a2) < inspect2(b) ? -1 : 1;
   }
   __name(compareByInspect, "compareByInspect");
   function getOwnEnumerablePropertySymbols(obj) {
@@ -1787,8 +1787,8 @@
   __name(an, "an");
   Assertion.addChainableMethod("an", an);
   Assertion.addChainableMethod("a", an);
-  function SameValueZero(a, b) {
-    return isNaN2(a) && isNaN2(b) || a === b;
+  function SameValueZero(a2, b) {
+    return isNaN2(a2) && isNaN2(b) || a2 === b;
   }
   __name(SameValueZero, "SameValueZero");
   function includeChainingBehavior() {
@@ -3643,98 +3643,88 @@
     destroy: "destroy"
   };
 
-  // node_modules/eventti/dist/eventti.js
-  function getOrCreateEventData(e, t) {
-    let i = e.get(t);
-    return i || (i = new EventData(), e.set(t, i)), i;
-  }
-  var EventData = class {
-    constructor() {
-      this.idMap = /* @__PURE__ */ new Map(), this.fnMap = /* @__PURE__ */ new Map(), this.onceList = /* @__PURE__ */ new Set(), this.emitList = null;
+  // node_modules/eventti/dist/index.js
+  var r = { ADD: "add", UPDATE: "update", IGNORE: "ignore", THROW: "throw" };
+  var a = class {
+    constructor(n = {}) {
+      let { dedupe: t = r.ADD, getId: e = () => Symbol() } = n;
+      this.dedupe = t, this.getId = e, this._events = /* @__PURE__ */ new Map();
     }
-    add(e, t, i, s, n) {
-      if (!n && this.fnMap.has(e))
-        throw new Error("Emitter: tried to add an existing event listener to an event!");
-      if (this.idMap.has(i))
-        switch (s) {
-          case "throw":
-            throw new Error("Emitter: tried to add an existing event listener id to an event!");
-          case "ignore":
-            return i;
-          default:
-            this.delId(i, "update" === s);
-        }
-      let r = this.fnMap.get(e);
-      return r || (r = /* @__PURE__ */ new Set(), this.fnMap.set(e, r)), r.add(i), this.idMap.set(i, e), t && this.onceList.add(i), this.emitList && this.emitList.push(e), i;
-    }
-    delId(e, t = false) {
-      const i = this.idMap.get(e);
-      if (!i)
-        return;
-      const s = this.fnMap.get(i);
-      t || this.idMap.delete(e), this.onceList.delete(e), s.delete(e), s.size || this.fnMap.delete(i), this.emitList = null;
-    }
-    delFn(e) {
-      const t = this.fnMap.get(e);
-      t && (t.forEach((e2) => {
-        this.onceList.delete(e2), this.idMap.delete(e2);
-      }), this.fnMap.delete(e), this.emitList = null);
-    }
-  };
-  var Emitter = class {
-    constructor(e = {}) {
-      const { idDedupeMode: t = "replace", allowDuplicateListeners: i = true } = e;
-      this.idDedupeMode = t, this.allowDuplicateListeners = i, this._events = /* @__PURE__ */ new Map();
-    }
-    _getListeners(e) {
-      const t = this._events.get(e);
-      if (!t)
-        return null;
-      const { idMap: i, onceList: s } = t;
-      if (!i.size)
-        return null;
-      const n = t.emitList || [...i.values()];
-      if (s.size)
-        if (s.size === i.size)
-          this._events.delete(e);
-        else
-          for (const e2 of s)
-            t.delId(e2);
-      else
-        t.emitList = n;
-      return n;
-    }
-    on(e, t, i = Symbol()) {
-      return getOrCreateEventData(this._events, e).add(t, false, i, this.idDedupeMode, this.allowDuplicateListeners);
-    }
-    once(e, t, i = Symbol()) {
-      return getOrCreateEventData(this._events, e).add(t, true, i, this.idDedupeMode, this.allowDuplicateListeners);
-    }
-    off(e, t) {
-      if (void 0 === e)
-        return void this._events.clear();
-      if (void 0 === t)
-        return void this._events.delete(e);
-      const i = this._events.get(e);
-      i && ("function" == typeof t ? i.delFn(t) : i.delId(t), i.idMap.size || this._events.delete(e));
-    }
-    emit(e, ...t) {
-      const i = this._getListeners(e);
-      if (!i)
-        return;
-      let s = 0, n = i.length;
-      for (; s < n; s++)
-        i[s](...t);
-    }
-    listenerCount(e) {
-      var t;
-      if (void 0 === e) {
-        let e2 = 0;
-        return this._events.forEach((t2, i) => {
-          e2 += this.listenerCount(i);
-        }), e2;
+    _getListeners(n) {
+      let t = this._events.get(n);
+      if (t) {
+        let { idMap: e } = t;
+        if (e.size)
+          return t.emitList = t.emitList || [...e.values()];
       }
-      return (null === (t = this._events.get(e)) || void 0 === t ? void 0 : t.idMap.size) || 0;
+      return null;
+    }
+    on(n, t, e) {
+      let { _events: s } = this, i = s.get(n);
+      i || (i = { idMap: /* @__PURE__ */ new Map(), emitList: null }, s.set(n, i));
+      let { idMap: d, emitList: o2 } = i;
+      if (e = e === void 0 ? this.getId(t) : e, d.has(e))
+        switch (this.dedupe) {
+          case r.THROW:
+            throw new Error("Eventti: duplicate listener id!");
+          case r.IGNORE:
+            return e;
+          case r.UPDATE: {
+            i.emitList = null;
+            break;
+          }
+          default:
+            d.delete(e), i.emitList = null;
+        }
+      return d.set(e, t), o2?.push(t), e;
+    }
+    once(n, t, e) {
+      let s = false;
+      return e = e === void 0 ? this.getId(t) : e, this.on(n, (...i) => {
+        s || (s = true, this.off(n, e), t(...i));
+      }, e);
+    }
+    off(n, t) {
+      if (n === void 0) {
+        this._events.clear();
+        return;
+      }
+      if (t === void 0) {
+        this._events.delete(n);
+        return;
+      }
+      let e = this._events.get(n);
+      e && e.idMap.delete(t) && (e.emitList = null, e.idMap.size || this._events.delete(n));
+    }
+    emit(n, ...t) {
+      let e = this._getListeners(n);
+      if (!e)
+        return;
+      let { length: s } = e;
+      if (t.length)
+        if (s === 1)
+          e[0](...t);
+        else {
+          let i = 0;
+          for (; i < s; i++)
+            e[i](...t);
+        }
+      else if (s === 1)
+        e[0]();
+      else {
+        let i = 0;
+        for (; i < s; i++)
+          e[i]();
+      }
+    }
+    listenerCount(n) {
+      if (n === void 0) {
+        let t = 0;
+        return this._events.forEach((e, s) => {
+          t += this.listenerCount(s);
+        }), t;
+      }
+      return this._events.get(n)?.idMap.size || 0;
     }
   };
 
@@ -3743,7 +3733,7 @@
     constructor() {
       this.drag = null;
       this.isDestroyed = false;
-      this._emitter = new Emitter();
+      this._emitter = new a();
     }
     _createDragData(data) {
       return {
@@ -3789,8 +3779,8 @@
     on(eventName, listener, listenerId) {
       return this._emitter.on(eventName, listener, listenerId);
     }
-    off(eventName, listener) {
-      this._emitter.off(eventName, listener);
+    off(eventName, listenerId) {
+      this._emitter.off(eventName, listenerId);
     }
     cancel() {
       if (!this.drag)
@@ -3814,98 +3804,138 @@
     }
   };
 
-  // node_modules/tikki/dist/tikki.js
-  function createRequestFrame(e = 60) {
-    if ("function" == typeof requestAnimationFrame && "function" == typeof cancelAnimationFrame)
-      return (e2) => {
-        const t = requestAnimationFrame(e2);
+  // node_modules/tikki/dist/index.js
+  var o = class {
+    constructor(e = {}) {
+      let { phases: t = [], dedupe: r2, getId: s } = e;
+      this._phases = t, this._emitter = new a({ getId: s, dedupe: r2 }), this._queue = [], this.tick = this.tick.bind(this), this._getListeners = this._emitter._getListeners.bind(this._emitter);
+    }
+    get phases() {
+      return this._phases;
+    }
+    set phases(e) {
+      this._phases = e;
+    }
+    get dedupe() {
+      return this._emitter.dedupe;
+    }
+    set dedupe(e) {
+      this._emitter.dedupe = e;
+    }
+    get getId() {
+      return this._emitter.getId;
+    }
+    set getId(e) {
+      this._emitter.getId = e;
+    }
+    tick(...e) {
+      this._assertEmptyQueue(), this._fillQueue(), this._processQueue(...e);
+    }
+    on(e, t, r2) {
+      return this._emitter.on(e, t, r2);
+    }
+    once(e, t, r2) {
+      return this._emitter.once(e, t, r2);
+    }
+    off(e, t) {
+      return this._emitter.off(e, t);
+    }
+    count(e) {
+      return this._emitter.listenerCount(e);
+    }
+    _assertEmptyQueue() {
+      if (this._queue.length)
+        throw new Error("Ticker: Can't tick before the previous tick has finished!");
+    }
+    _fillQueue() {
+      let e = this._queue, t = this._phases, r2 = this._getListeners, s = 0, a2 = t.length, n;
+      for (; s < a2; s++)
+        n = r2(t[s]), n && e.push(n);
+      return e;
+    }
+    _processQueue(...e) {
+      let t = this._queue, r2 = t.length;
+      if (!r2)
+        return;
+      let s = 0, a2 = 0, n, c;
+      for (; s < r2; s++)
+        for (n = t[s], a2 = 0, c = n.length; a2 < c; a2++)
+          n[a2](...e);
+      t.length = 0;
+    }
+  };
+  function u(i = 60) {
+    if (typeof requestAnimationFrame == "function" && typeof cancelAnimationFrame == "function")
+      return (e) => {
+        let t = requestAnimationFrame(e);
         return () => cancelAnimationFrame(t);
       };
     {
-      const t = 1e3 / e, i = "undefined" == typeof performance ? () => Date.now() : () => performance.now();
-      return (e2) => {
-        const r = setTimeout(() => e2(i()), t);
-        return () => clearTimeout(r);
+      let e = 1e3 / i, t = typeof performance > "u" ? () => Date.now() : () => performance.now();
+      return (r2) => {
+        let s = setTimeout(() => r2(t()), e);
+        return () => clearTimeout(s);
       };
     }
   }
-  var AutoTickState;
-  !function(e) {
-    e[e.PAUSED = 1] = "PAUSED", e[e.ON_DEMAND = 2] = "ON_DEMAND", e[e.CONTINUOUS = 3] = "CONTINUOUS";
-  }(AutoTickState || (AutoTickState = {}));
-  var Ticker = class {
+  var l = class extends o {
     constructor(e = {}) {
-      const { phases: t = [], autoTick: i = AutoTickState.ON_DEMAND, allowDuplicateListeners: r = true, idDedupeMode: s = "replace", requestFrame: n = createRequestFrame() } = e;
-      this.phases = t, this._autoTick = i, this._requestFrame = n, this._cancelFrame = null, this._queue = [], this._emitter = new Emitter({ allowDuplicateListeners: r, idDedupeMode: s }), this.tick = this.tick.bind(this);
+      let { paused: t = false, onDemand: r2 = false, requestFrame: s = u(), ...a2 } = e;
+      super(a2), this._paused = t, this._onDemand = r2, this._requestFrame = s, this._cancelFrame = null, this._empty = true, !t && !r2 && this._request();
+    }
+    get phases() {
+      return this._phases;
+    }
+    set phases(e) {
+      this._phases = e, e.length ? (this._empty = false, this._request()) : this._empty = true;
+    }
+    get paused() {
+      return this._paused;
+    }
+    set paused(e) {
+      this._paused = e, e ? this._cancel() : this._request();
+    }
+    get onDemand() {
+      return this._onDemand;
+    }
+    set onDemand(e) {
+      this._onDemand = e, e || this._request();
     }
     get requestFrame() {
       return this._requestFrame;
     }
     set requestFrame(e) {
-      this._requestFrame = e, this._kickstart();
-    }
-    get autoTick() {
-      return this._autoTick;
-    }
-    set autoTick(e) {
-      this._autoTick = e, this._kickstart();
-    }
-    get allowDuplicateListeners() {
-      return this._emitter.allowDuplicateListeners;
-    }
-    set allowDuplicateListeners(e) {
-      this._emitter.allowDuplicateListeners = e;
-    }
-    get idDedupeMode() {
-      return this._emitter.idDedupeMode;
-    }
-    set idDedupeMode(e) {
-      this._emitter.idDedupeMode = e;
+      this._requestFrame !== e && (this._requestFrame = e, this._cancelFrame && (this._cancel(), this._request()));
     }
     tick(...e) {
-      this._cancelFrame = null;
-      const { _queue: t } = this;
-      if (t.length)
-        throw new Error("Ticker: Can't tick before the previous tick has finished!");
-      this._request();
-      const { phases: i, _emitter: r } = this;
-      let s, n, a, c, u, o;
-      for (s = 0, a = i.length; s < a; s++)
-        o = r._getListeners(i[s]), o && t.push(o);
-      for (s = 0, a = t.length; s < a; s++)
-        for (u = t[s], n = 0, c = u.length; n < c; n++)
-          u[n](...e);
-      t.length = 0, this._autoTick !== AutoTickState.ON_DEMAND || r.listenerCount() || this._cancel();
+      if (this._assertEmptyQueue(), this._cancelFrame = null, this._onDemand || this._request(), !this._empty) {
+        if (!this._fillQueue().length) {
+          this._empty = true;
+          return;
+        }
+        this._onDemand && this._request(), this._processQueue(...e);
+      }
     }
-    on(e, t, i) {
-      const r = this._emitter.on(e, t, i);
-      return this._request(), r;
+    on(e, t, r2) {
+      let s = super.on(e, t, r2);
+      return this._empty = false, this._request(), s;
     }
-    once(e, t, i) {
-      const r = this._emitter.once(e, t, i);
-      return this._request(), r;
-    }
-    off(e, t) {
-      return this._emitter.off(e, t);
-    }
-    listenerCount(e) {
-      return this._emitter.listenerCount(e);
+    once(e, t, r2) {
+      let s = super.once(e, t, r2);
+      return this._empty = false, this._request(), s;
     }
     _request() {
-      this._requestFrame && !this._cancelFrame && this._autoTick >= AutoTickState.ON_DEMAND && (this._cancelFrame = this._requestFrame(this.tick));
+      this._paused || this._cancelFrame || (this._cancelFrame = this._requestFrame(this.tick));
     }
     _cancel() {
       this._cancelFrame && (this._cancelFrame(), this._cancelFrame = null);
-    }
-    _kickstart() {
-      this._autoTick === AutoTickState.ON_DEMAND ? this._emitter.listenerCount() && this._request() : this._autoTick === AutoTickState.CONTINUOUS ? this._request() : this._cancel();
     }
   };
 
   // src/singletons/ticker.ts
   var tickerReadPhase = Symbol();
   var tickerWritePhase = Symbol();
-  var ticker = new Ticker({ phases: [tickerReadPhase, tickerWritePhase] });
+  var ticker = new l({ phases: [tickerReadPhase, tickerWritePhase] });
 
   // src/utils/get-pointer-event-data.ts
   function getPointerEventData(e, id) {
@@ -4011,7 +4041,7 @@
       this._startPredicate = startPredicate;
       this._listenerOptions = parseListenerOptions(listenerOptions);
       this._sourceEvents = parseSourceEvents(sourceEvents);
-      this._emitter = new Emitter();
+      this._emitter = new a();
       this._onStart = this._onStart.bind(this);
       this._onMove = this._onMove.bind(this);
       this._onCancel = this._onCancel.bind(this);
@@ -4213,8 +4243,8 @@
     /**
      * Unbind a drag event listener.
      */
-    off(eventName, listener) {
-      this._emitter.off(eventName, listener);
+    off(eventName, listenerId) {
+      this._emitter.off(eventName, listenerId);
     }
     /**
      * Destroy the instance and unbind all drag event listeners.
@@ -4423,16 +4453,16 @@
   }
 
   // node_modules/mezr/dist/esm/utils/getDistanceBetweenPoints.js
-  function getDistanceBetweenPoints(t, e, n, o) {
-    return Math.sqrt(Math.pow(n - t, 2) + Math.pow(o - e, 2));
+  function getDistanceBetweenPoints(t, e, n, o2) {
+    return Math.sqrt(Math.pow(n - t, 2) + Math.pow(o2 - e, 2));
   }
 
   // node_modules/mezr/dist/esm/utils/getDistanceBetweenRects.js
   function getDistanceBetweenRects(t, e) {
     if (isIntersecting(t, e))
       return null;
-    const n = t.left + t.width, i = t.top + t.height, o = e.left + e.width, s = e.top + e.height;
-    return n <= e.left ? i <= e.top ? getDistanceBetweenPoints(n, i, e.left, e.top) : t.top >= s ? getDistanceBetweenPoints(n, t.top, e.left, s) : e.left - n : t.left >= o ? i <= e.top ? getDistanceBetweenPoints(t.left, i, o, e.top) : t.top >= s ? getDistanceBetweenPoints(t.left, t.top, o, s) : t.left - o : i <= e.top ? e.top - i : t.top - s;
+    const n = t.left + t.width, i = t.top + t.height, o2 = e.left + e.width, s = e.top + e.height;
+    return n <= e.left ? i <= e.top ? getDistanceBetweenPoints(n, i, e.left, e.top) : t.top >= s ? getDistanceBetweenPoints(n, t.top, e.left, s) : e.left - n : t.left >= o2 ? i <= e.top ? getDistanceBetweenPoints(t.left, i, o2, e.top) : t.top >= s ? getDistanceBetweenPoints(t.left, t.top, o2, s) : t.left - o2 : i <= e.top ? e.top - i : t.top - s;
   }
 
   // node_modules/mezr/dist/esm/utils/isWindow.js
@@ -4452,31 +4482,31 @@
   var testChildElement = null;
   function getSubpixelScrollbarSize(t, e) {
     const n = t.split(".");
-    let l = SUBPIXEL_OFFSET.get(n[1]);
-    if (void 0 === l) {
+    let l2 = SUBPIXEL_OFFSET.get(n[1]);
+    if (void 0 === l2) {
       testStyleElement || (testStyleElement = document.createElement("style")), testStyleElement.innerHTML = `
       #mezr-scrollbar-test::-webkit-scrollbar {
         width: ${t} !important;
       }
     `, testParentElement && testChildElement || (testParentElement = document.createElement("div"), testChildElement = document.createElement("div"), testParentElement.appendChild(testChildElement), testParentElement.id = "mezr-scrollbar-test", testParentElement.style.cssText = "\n        all: unset !important;\n        position: fixed !important;\n        top: -200px !important;\n        left: 0px !important;\n        width: 100px !important;\n        height: 100px !important;\n        overflow: scroll !important;\n        pointer-events: none !important;\n        visibility: hidden !important;\n      ", testChildElement.style.cssText = "\n        all: unset !important;\n        position: absolute !important;\n        inset: 0 !important;\n      "), document.body.appendChild(testStyleElement), document.body.appendChild(testParentElement);
-      l = testParentElement.getBoundingClientRect().width - testChildElement.getBoundingClientRect().width - e, SUBPIXEL_OFFSET.set(n[1], l), document.body.removeChild(testParentElement), document.body.removeChild(testStyleElement);
+      l2 = testParentElement.getBoundingClientRect().width - testChildElement.getBoundingClientRect().width - e, SUBPIXEL_OFFSET.set(n[1], l2), document.body.removeChild(testParentElement), document.body.removeChild(testStyleElement);
     }
-    return e + l;
+    return e + l2;
   }
   function getPreciseScrollbarSize(t, e, n) {
     if (n <= 0)
       return 0;
     if (IS_CHROMIUM) {
-      const n2 = getStyle(t, "::-webkit-scrollbar"), l = "x" === e ? n2.height : n2.width, i = parseFloat(l);
+      const n2 = getStyle(t, "::-webkit-scrollbar"), l2 = "x" === e ? n2.height : n2.width, i = parseFloat(l2);
       if (!Number.isNaN(i) && !Number.isInteger(i))
-        return getSubpixelScrollbarSize(l, i);
+        return getSubpixelScrollbarSize(l2, i);
     }
     return n;
   }
 
   // node_modules/mezr/dist/esm/utils/getWindowWidth.js
-  function getWindowWidth(e, r = false) {
-    if (r)
+  function getWindowWidth(e, r2 = false) {
+    if (r2)
       return e.innerWidth;
     const { innerWidth: t, document: i } = e, { documentElement: n } = i, { clientWidth: c } = n;
     return t - getPreciseScrollbarSize(n, "y", t - c);
@@ -4489,11 +4519,11 @@
 
   // node_modules/mezr/dist/esm/utils/getElementWidth.js
   function getElementWidth(t, e = BOX_EDGE.border) {
-    let { width: r } = t.getBoundingClientRect();
+    let { width: r2 } = t.getBoundingClientRect();
     if (e === BOX_EDGE.border)
-      return r;
-    const o = getStyle(t);
-    return e === BOX_EDGE.margin ? (r += Math.max(0, parseFloat(o.marginLeft) || 0), r += Math.max(0, parseFloat(o.marginRight) || 0), r) : (r -= parseFloat(o.borderLeftWidth) || 0, r -= parseFloat(o.borderRightWidth) || 0, e === BOX_EDGE.scrollbar ? r : (!isDocumentElement(t) && SCROLLABLE_OVERFLOWS.has(o.overflowY) && (r -= getPreciseScrollbarSize(t, "y", Math.round(r) - t.clientWidth)), e === BOX_EDGE.padding || (r -= parseFloat(o.paddingLeft) || 0, r -= parseFloat(o.paddingRight) || 0), r));
+      return r2;
+    const o2 = getStyle(t);
+    return e === BOX_EDGE.margin ? (r2 += Math.max(0, parseFloat(o2.marginLeft) || 0), r2 += Math.max(0, parseFloat(o2.marginRight) || 0), r2) : (r2 -= parseFloat(o2.borderLeftWidth) || 0, r2 -= parseFloat(o2.borderRightWidth) || 0, e === BOX_EDGE.scrollbar ? r2 : (!isDocumentElement(t) && SCROLLABLE_OVERFLOWS.has(o2.overflowY) && (r2 -= getPreciseScrollbarSize(t, "y", Math.round(r2) - t.clientWidth)), e === BOX_EDGE.padding || (r2 -= parseFloat(o2.paddingLeft) || 0, r2 -= parseFloat(o2.paddingRight) || 0), r2));
   }
 
   // node_modules/mezr/dist/esm/getWidth.js
@@ -4502,8 +4532,8 @@
   }
 
   // node_modules/mezr/dist/esm/utils/getWindowHeight.js
-  function getWindowHeight(e, r = false) {
-    if (r)
+  function getWindowHeight(e, r2 = false) {
+    if (r2)
       return e.innerHeight;
     const { innerHeight: t, document: i } = e, { documentElement: n } = i, { clientHeight: c } = n;
     return t - getPreciseScrollbarSize(n, "x", t - c);
@@ -4516,11 +4546,11 @@
 
   // node_modules/mezr/dist/esm/utils/getElementHeight.js
   function getElementHeight(t, e = BOX_EDGE.border) {
-    let { height: r } = t.getBoundingClientRect();
+    let { height: r2 } = t.getBoundingClientRect();
     if (e === BOX_EDGE.border)
-      return r;
-    const o = getStyle(t);
-    return e === BOX_EDGE.margin ? (r += Math.max(0, parseFloat(o.marginTop) || 0), r += Math.max(0, parseFloat(o.marginBottom) || 0), r) : (r -= parseFloat(o.borderTopWidth) || 0, r -= parseFloat(o.borderBottomWidth) || 0, e === BOX_EDGE.scrollbar ? r : (!isDocumentElement(t) && SCROLLABLE_OVERFLOWS.has(o.overflowX) && (r -= getPreciseScrollbarSize(t, "x", Math.round(r) - t.clientHeight)), e === BOX_EDGE.padding || (r -= parseFloat(o.paddingTop) || 0, r -= parseFloat(o.paddingBottom) || 0), r));
+      return r2;
+    const o2 = getStyle(t);
+    return e === BOX_EDGE.margin ? (r2 += Math.max(0, parseFloat(o2.marginTop) || 0), r2 += Math.max(0, parseFloat(o2.marginBottom) || 0), r2) : (r2 -= parseFloat(o2.borderTopWidth) || 0, r2 -= parseFloat(o2.borderBottomWidth) || 0, e === BOX_EDGE.scrollbar ? r2 : (!isDocumentElement(t) && SCROLLABLE_OVERFLOWS.has(o2.overflowX) && (r2 -= getPreciseScrollbarSize(t, "x", Math.round(r2) - t.clientHeight)), e === BOX_EDGE.padding || (r2 -= parseFloat(o2.paddingTop) || 0, r2 -= parseFloat(o2.paddingBottom) || 0), r2));
   }
 
   // node_modules/mezr/dist/esm/getHeight.js
@@ -4534,37 +4564,37 @@
   }
 
   // node_modules/mezr/dist/esm/utils/getOffsetFromDocument.js
-  function getOffsetFromDocument(t, o = BOX_EDGE.border) {
+  function getOffsetFromDocument(t, o2 = BOX_EDGE.border) {
     const e = { left: 0, top: 0 };
     if (isDocument(t))
       return e;
     if (isWindow(t))
       return e.left += t.scrollX || 0, e.top += t.scrollY || 0, e;
-    const r = t.ownerDocument.defaultView;
-    r && (e.left += r.scrollX || 0, e.top += r.scrollY || 0);
+    const r2 = t.ownerDocument.defaultView;
+    r2 && (e.left += r2.scrollX || 0, e.top += r2.scrollY || 0);
     const n = t.getBoundingClientRect();
-    if (e.left += n.left, e.top += n.top, o === BOX_EDGE.border)
+    if (e.left += n.left, e.top += n.top, o2 === BOX_EDGE.border)
       return e;
-    const l = getStyle(t);
-    return o === BOX_EDGE.margin ? (e.left -= Math.max(0, parseFloat(l.marginLeft) || 0), e.top -= Math.max(0, parseFloat(l.marginTop) || 0), e) : (e.left += parseFloat(l.borderLeftWidth) || 0, e.top += parseFloat(l.borderTopWidth) || 0, o === BOX_EDGE.scrollbar || o === BOX_EDGE.padding || (e.left += parseFloat(l.paddingLeft) || 0, e.top += parseFloat(l.paddingTop) || 0), e);
+    const l2 = getStyle(t);
+    return o2 === BOX_EDGE.margin ? (e.left -= Math.max(0, parseFloat(l2.marginLeft) || 0), e.top -= Math.max(0, parseFloat(l2.marginTop) || 0), e) : (e.left += parseFloat(l2.borderLeftWidth) || 0, e.top += parseFloat(l2.borderTopWidth) || 0, o2 === BOX_EDGE.scrollbar || o2 === BOX_EDGE.padding || (e.left += parseFloat(l2.paddingLeft) || 0, e.top += parseFloat(l2.paddingTop) || 0), e);
   }
 
   // node_modules/mezr/dist/esm/getOffset.js
   function getOffset(t, e) {
-    const o = isRectObject(t) ? { left: t.left, top: t.top } : Array.isArray(t) ? getOffsetFromDocument(...t) : getOffsetFromDocument(t);
+    const o2 = isRectObject(t) ? { left: t.left, top: t.top } : Array.isArray(t) ? getOffsetFromDocument(...t) : getOffsetFromDocument(t);
     if (e && !isDocument(e)) {
       const t2 = isRectObject(e) ? e : Array.isArray(e) ? getOffsetFromDocument(e[0], e[1]) : getOffsetFromDocument(e);
-      o.left -= t2.left, o.top -= t2.top;
+      o2.left -= t2.left, o2.top -= t2.top;
     }
-    return o;
+    return o2;
   }
 
   // node_modules/mezr/dist/esm/getRect.js
   function getRect(t, e) {
     let i = 0, g = 0;
     isRectObject(t) ? (i = t.width, g = t.height) : Array.isArray(t) ? (i = getWidth(...t), g = getHeight(...t)) : (i = getWidth(t), g = getHeight(t));
-    const r = getOffset(t, e);
-    return { width: i, height: g, ...r, right: r.left + i, bottom: r.top + g };
+    const r2 = getOffset(t, e);
+    return { width: i, height: g, ...r2, right: r2.left + i, bottom: r2.top + g };
   }
 
   // node_modules/mezr/dist/esm/utils/getNormalizedRect.js
@@ -4580,17 +4610,17 @@
 
   // node_modules/mezr/dist/esm/getIntersection.js
   function getIntersection(t, ...e) {
-    const o = { ...getNormalizedRect(t), right: 0, bottom: 0 };
+    const o2 = { ...getNormalizedRect(t), right: 0, bottom: 0 };
     for (const t2 of e) {
-      const e2 = getNormalizedRect(t2), i = Math.max(o.left, e2.left), h = Math.min(o.left + o.width, e2.left + e2.width);
+      const e2 = getNormalizedRect(t2), i = Math.max(o2.left, e2.left), h = Math.min(o2.left + o2.width, e2.left + e2.width);
       if (h <= i)
         return null;
-      const r = Math.max(o.top, e2.top), l = Math.min(o.top + o.height, e2.height + e2.top);
-      if (l <= r)
+      const r2 = Math.max(o2.top, e2.top), l2 = Math.min(o2.top + o2.height, e2.height + e2.top);
+      if (l2 <= r2)
         return null;
-      o.left = i, o.top = r, o.width = h - i, o.height = l - r;
+      o2.left = i, o2.top = r2, o2.width = h - i, o2.height = l2 - r2;
     }
-    return o.right = o.left + o.width, o.bottom = o.top + o.height, o;
+    return o2.right = o2.left + o2.width, o2.bottom = o2.top + o2.height, o2;
   }
 
   // src/pool.ts
@@ -4615,17 +4645,17 @@
   };
 
   // src/utils/get-intersection-area.ts
-  function getIntersectionArea(a, b) {
-    const intersection = getIntersection(a, b);
+  function getIntersectionArea(a2, b) {
+    const intersection = getIntersection(a2, b);
     return intersection ? intersection.width * intersection.height : 0;
   }
 
   // src/utils/get-intersection-score.ts
-  function getIntersectionScore(a, b) {
-    const area = getIntersectionArea(a, b);
+  function getIntersectionScore(a2, b) {
+    const area = getIntersectionArea(a2, b);
     if (!area)
       return 0;
-    const maxArea = Math.min(a.width, b.width) * Math.min(a.height, b.height);
+    const maxArea = Math.min(a2.width, b.width) * Math.min(a2.height, b.height);
     return area / maxArea * 100;
   }
 
@@ -4668,8 +4698,8 @@
   }
 
   // src/utils/is-intersecting.ts
-  function isIntersecting2(a, b) {
-    return !(a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top);
+  function isIntersecting2(a2, b) {
+    return !(a2.right <= b.left || b.right <= a2.left || a2.bottom <= b.top || b.bottom <= a2.top);
   }
 
   // src/auto-scroll/auto-scroll.ts
@@ -4942,7 +4972,7 @@
         () => new AutoScrollAction(),
         (action) => action.reset()
       );
-      this._emitter = new Emitter();
+      this._emitter = new a();
       this._frameRead = this._frameRead.bind(this);
       this._frameWrite = this._frameWrite.bind(this);
     }
@@ -4969,8 +4999,8 @@
       if (this._isTicking)
         return;
       this._isTicking = true;
-      ticker.on(tickerReadPhase, this._frameRead);
-      ticker.on(tickerWritePhase, this._frameWrite);
+      ticker.on(tickerReadPhase, this._frameRead, this._frameRead);
+      ticker.on(tickerWritePhase, this._frameWrite, this._frameWrite);
     }
     _stopTicking() {
       if (!this._isTicking)
@@ -5360,14 +5390,14 @@
     /**
      * Bind a listener.
      */
-    on(eventName, listener) {
-      return this._emitter.on(eventName, listener);
+    on(eventName, listener, listenerId) {
+      return this._emitter.on(eventName, listener, listenerId);
     }
     /**
      * Unbind a listener.
      */
-    off(eventName, listener) {
-      this._emitter.off(eventName, listener);
+    off(eventName, listenerId) {
+      this._emitter.off(eventName, listenerId);
     }
     addItem(item) {
       if (this._isDestroyed || this._itemData.has(item))
@@ -5453,16 +5483,6 @@
         const s = new BaseSensor();
         assert.equal(s.isDestroyed, false);
         s.destroy();
-      });
-    });
-    describe("_emitter", () => {
-      it("should allow duplicate listeners by default", () => {
-        const s = new BaseSensor();
-        assert.equal(s["_emitter"].allowDuplicateListeners, true);
-      });
-      it("should replace event listeners with duplicate ids by default", () => {
-        const s = new BaseSensor();
-        assert.equal(s["_emitter"].idDedupeMode, "replace");
       });
     });
     describe("_start method", () => {

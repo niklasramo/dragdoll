@@ -50,7 +50,7 @@ export class BaseMotionSensor<E extends BaseMotionSensorEvents = BaseMotionSenso
   protected _start(data: E['start']) {
     if (this.isDestroyed || this.drag) return;
     super._start(data);
-    ticker.on(tickerReadPhase, this._tick);
+    ticker.on(tickerReadPhase, this._tick, this._tick);
   }
 
   protected _end(data: E['end']) {

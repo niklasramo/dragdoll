@@ -18,18 +18,6 @@ describe('BaseSensor', () => {
     });
   });
 
-  describe('_emitter', () => {
-    it('should allow duplicate listeners by default', () => {
-      const s = new BaseSensor();
-      assert.equal(s['_emitter'].allowDuplicateListeners, true);
-    });
-
-    it('should replace event listeners with duplicate ids by default', () => {
-      const s = new BaseSensor();
-      assert.equal(s['_emitter'].idDedupeMode, 'replace');
-    });
-  });
-
   describe('_start method', () => {
     it(`should create drag data`, function () {
       const s = new BaseSensor();
