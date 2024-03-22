@@ -186,19 +186,17 @@ type drag = DraggableDrag | null;
 
 type DraggableDrag = {
   // The sensor that is tracked for this drag process.
-  readonly sensor: Sensor | null;
-  // Has drag started?
-  readonly isStarted: boolean;
+  readonly sensor: Sensor;
   // Has drag ended?
   readonly isEnded: boolean;
   // The sensor event that initiated drag.
-  readonly startEvent: SensorStartEvent | SensorMoveEvent | null;
-  // The next/current sensor move event.
-  readonly nextMoveEvent: SensorMoveEvent | null;
+  readonly startEvent: SensorStartEvent | SensorMoveEvent;
+  // Current sensor move event.
+  readonly event: SensorStartEvent | SensorMoveEvent;
   // Previous sensor move event.
-  readonly prevMoveEvent: SensorMoveEvent | null;
+  readonly prevEvent: SensorStartEvent | SensorMoveEvent;
   // The sensor event that ended drag.
-  readonly endEvent: SensorEndEvent | SensorCancelEvent | SensorDestroyEvent | null;
+  readonly endEvent: SensorEndEvent | SensorCancelEvent | SensorDestroyEvent;
   // Drag items constructed from the drag elements as provided via getElements
   // option.
   readonly items: DraggableDragItem[];
@@ -206,22 +204,27 @@ type DraggableDrag = {
 
 type DraggableDragItem = {
   // Drag element.
-  readonly element: HTMLElement;
+  readonly element: HTMLElement | SVGSVGElement;
   // Element's original parent node before the drag starts.
-  readonly rootParent: HTMLElement;
-  // rootParent's containing block.
-  readonly rootContainingBlock: HTMLElement | Document;
+  readonly elementContainer: HTMLElement;
+  // elementContainer's offset container.
+  readonly elementOffsetContainer: HTMLElement | SVGSVGElement | Window | Document;
   // Element's parent node during the drag.
-  readonly dragParent: HTMLElement;
-  // dragParent's containing block.
-  readonly dragContainingBlock: HTMLElement | Document;
-  // Element's current position relative to the viewport (a.k.a. client position).
-  readonly x: number;
-  readonly y: number;
+  readonly dragContainer: HTMLElement;
+  // dragContainer's offset container.
+  readonly dragOffsetContainer: HTMLElement | SVGSVGElement | Window | Document;
+  // Element's original computed transform value.
+  readonly initialTransform: string;
+  // The CSS properties that are "frozen" for the drag's duration.
+  readonly frozenProps: CSSProperties | null;
+  // The original values of the CSS properties that are "frozen" for the drag's
+  // duration.
+  readonly unfrozenProps: CSSProperties | null;
+  // Cached bounding client rect of the element.
+  readonly clientRect: { width: number; height: number; left: number; top: number };
   // Element's internal position during the drag. By default this reflects the
   // element's translate position.
-  readonly pX: number;
-  readonly pY: number;
+  readonly position: { x: number; y: number };
 };
 ```
 
@@ -256,10 +259,12 @@ Is the Draggable instance destroyed or not?
 ```ts
 // Type
 type on = (
-  eventName: 'preparestart' | 'start' | 'preparemove' | 'move' | 'end' | 'destroy',
+  type: 'preparestart' | 'start' | 'preparemove' | 'move' | 'end' | 'destroy',
   listener: (e: SensorEvent | null | undefined) => void,
-  listenerId?: string | number | symbol,
-) => string | number | symbol;
+  listenerId?: ListenerId,
+) => ListenerId;
+
+type ListenerId = null | string | number | symbol | Function | Object;
 
 // Usage
 draggable.on('start', (e) => {
@@ -280,8 +285,8 @@ The method returns a listener id, which can be used to remove this specific list
 ```ts
 // Type
 type off = (
-  eventName: 'preparestart' | 'start' | 'preparemove' | 'move' | 'end' | 'destroy',
-  target: Function | string | number | symbol,
+  type: 'preparestart' | 'start' | 'preparemove' | 'move' | 'end' | 'destroy',
+  listenerId: null | string | number | symbol | Function | Object,
 ) => void;
 
 // Usage
@@ -289,7 +294,7 @@ const id = draggable.on('start', (e) => console.log('start', e));
 draggable.off('start', id);
 ```
 
-Removes a listener (based on listener or listener id) from an event. The first argument is the event name and the second argument is either the listener function or listener id.
+Removes a listener (based on listener id) from an event. The first argument is the event type and the second argument is either the listener id.
 
 ### stop
 
@@ -427,8 +432,8 @@ function loggerPlugin<S extends Sensor[], E extends S[number]['events']>(
 
     // Let's listen to the provided events and log the event object.
     const { events = [] } = options;
-    events.forEach((eventName) => {
-      draggable.on(eventName, (e: any) => console.log(e));
+    events.forEach((eventType) => {
+      draggable.on(eventType, (e: any) => console.log(e));
     });
 
     // If you need to dispose anything when e.g. the Draggable is destroyed

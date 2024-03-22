@@ -412,19 +412,19 @@ export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
   /**
    * Bind a drag event listener.
    */
-  on<K extends keyof E>(
-    eventName: K,
-    listener: (e: E[K]) => void,
+  on<T extends keyof E>(
+    type: T,
+    listener: (e: E[T]) => void,
     listenerId?: EventListenerId,
   ): EventListenerId {
-    return this._emitter.on(eventName, listener, listenerId);
+    return this._emitter.on(type, listener, listenerId);
   }
 
   /**
    * Unbind a drag event listener.
    */
-  off<K extends keyof E>(eventName: K, listenerId: EventListenerId): void {
-    this._emitter.off(eventName, listenerId);
+  off<T extends keyof E>(type: T, listenerId: EventListenerId): void {
+    this._emitter.off(type, listenerId);
   }
 
   /**

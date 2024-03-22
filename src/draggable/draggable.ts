@@ -459,16 +459,16 @@ export class Draggable<
     }
   }
 
-  on<K extends keyof DraggableEventCallbacks<E>>(
-    eventName: K,
-    listener: DraggableEventCallbacks<E>[K],
+  on<T extends keyof DraggableEventCallbacks<E>>(
+    type: T,
+    listener: DraggableEventCallbacks<E>[T],
     listenerId?: EventListenerId,
   ): EventListenerId {
-    return this._emitter.on(eventName, listener, listenerId);
+    return this._emitter.on(type, listener, listenerId);
   }
 
-  off<K extends keyof DraggableEventCallbacks<E>>(eventName: K, listenerId: EventListenerId): void {
-    this._emitter.off(eventName, listenerId);
+  off<T extends keyof DraggableEventCallbacks<E>>(type: T, listenerId: EventListenerId): void {
+    this._emitter.off(type, listenerId);
   }
 
   resolveStartPredicate(sensor: S[number], e?: E['start'] | E['move']) {

@@ -18,7 +18,7 @@ class CustomSensor implements Sensor {
 
 ```ts
 type on = (
-  eventName: 'start' | 'move' | 'cancel' | 'end' | 'destroy',
+  type: 'start' | 'move' | 'cancel' | 'end' | 'destroy',
   listener: (
     e:
       | {
@@ -30,7 +30,10 @@ type on = (
           type: 'destroy';
         },
   ) => void,
-) => void;
+  listenerId?: ListenerId,
+) => ListenerId;
+
+type ListenerId = null | string | number | symbol | Function | Object;
 ```
 
 Adds a listener to a sensor event.
@@ -38,10 +41,13 @@ Adds a listener to a sensor event.
 ### off
 
 ```ts
-type off = (eventName: 'start' | 'move' | 'cancel' | 'end' | 'destroy', listener: Function) => void;
+type off = (
+  type: 'start' | 'move' | 'cancel' | 'end' | 'destroy',
+  listenerId: null | string | number | symbol | Function | Object,
+) => void;
 ```
 
-Removes a listener from a sensor event.
+Removes a listener (based on listener id) from a sensor event.
 
 ### cancel
 

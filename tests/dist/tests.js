@@ -3690,11 +3690,11 @@ var BaseSensor = class {
     this._emitter.emit(SensorEventType.cancel, data);
     this._resetDragData();
   }
-  on(eventName, listener, listenerId) {
-    return this._emitter.on(eventName, listener, listenerId);
+  on(type3, listener, listenerId) {
+    return this._emitter.on(type3, listener, listenerId);
   }
-  off(eventName, listenerId) {
-    this._emitter.off(eventName, listenerId);
+  off(type3, listenerId) {
+    this._emitter.off(type3, listenerId);
   }
   cancel() {
     if (!this.drag)
@@ -4027,14 +4027,14 @@ var PointerSensor = class {
   /**
    * Bind a drag event listener.
    */
-  on(eventName, listener, listenerId) {
-    return this._emitter.on(eventName, listener, listenerId);
+  on(type3, listener, listenerId) {
+    return this._emitter.on(type3, listener, listenerId);
   }
   /**
    * Unbind a drag event listener.
    */
-  off(eventName, listenerId) {
-    this._emitter.off(eventName, listenerId);
+  off(type3, listenerId) {
+    this._emitter.off(type3, listenerId);
   }
   /**
    * Destroy the instance and unbind all drag event listeners.

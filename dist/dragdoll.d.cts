@@ -42,8 +42,8 @@ interface SensorEvents {
 }
 interface Sensor<E extends SensorEvents = SensorEvents> {
     events: E;
-    on<K extends keyof E>(eventName: K, listener: (eventData: E[K]) => void, listenerId?: EventListenerId): EventListenerId;
-    off<K extends keyof E>(eventName: K, listenerId: EventListenerId): void;
+    on<T extends keyof E>(type: T, listener: (eventData: E[T]) => void, listenerId?: EventListenerId): EventListenerId;
+    off<T extends keyof E>(type: T, listenerId: EventListenerId): void;
     cancel(): void;
     destroy(): void;
 }
@@ -65,8 +65,8 @@ declare class BaseSensor<E extends SensorEvents = SensorEvents> implements Senso
     protected _move(data: E['move']): void;
     protected _end(data: E['end']): void;
     protected _cancel(data: E['cancel']): void;
-    on<K extends keyof E>(eventName: K, listener: (e: E[K]) => void, listenerId?: EventListenerId): EventListenerId;
-    off<K extends keyof E>(eventName: K, listenerId: EventListenerId): void;
+    on<K extends keyof E>(type: K, listener: (e: E[K]) => void, listenerId?: EventListenerId): EventListenerId;
+    off<K extends keyof E>(type: K, listenerId: EventListenerId): void;
     cancel(): void;
     destroy(): void;
 }
@@ -204,8 +204,8 @@ declare class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
     protected _resetDrag(): void;
     cancel(): void;
     updateSettings(options: Partial<PointerSensorSettings>): void;
-    on<K extends keyof E>(eventName: K, listener: (e: E[K]) => void, listenerId?: EventListenerId): EventListenerId;
-    off<K extends keyof E>(eventName: K, listenerId: EventListenerId): void;
+    on<K extends keyof E>(type: K, listener: (e: E[K]) => void, listenerId?: EventListenerId): EventListenerId;
+    off<K extends keyof E>(type: K, listenerId: EventListenerId): void;
     destroy(): void;
 }
 

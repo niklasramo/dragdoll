@@ -46,12 +46,12 @@ export interface SensorEvents {
 
 export interface Sensor<E extends SensorEvents = SensorEvents> {
   events: E;
-  on<K extends keyof E>(
-    eventName: K,
-    listener: (eventData: E[K]) => void,
+  on<T extends keyof E>(
+    type: T,
+    listener: (eventData: E[T]) => void,
     listenerId?: EventListenerId,
   ): EventListenerId;
-  off<K extends keyof E>(eventName: K, listenerId: EventListenerId): void;
+  off<T extends keyof E>(type: T, listenerId: EventListenerId): void;
   cancel(): void;
   destroy(): void;
 }

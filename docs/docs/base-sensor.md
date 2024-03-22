@@ -47,7 +47,7 @@ An event emitter, instance of [Eventti Emitter](https://github.com/niklasramo/ev
 ```ts
 // Type
 type on = (
-  eventName: 'start' | 'move' | 'cancel' | 'end' | 'destroy',
+  type: 'start' | 'move' | 'cancel' | 'end' | 'destroy',
   listener: (
     e:
       | {
@@ -59,8 +59,10 @@ type on = (
           type: 'destroy';
         },
   ) => void,
-  listenerId?: string | number | symbol,
-) => string | number | symbol;
+  listenerId?: ListenerId,
+) => ListenerId;
+
+type ListenerId = null | string | number | symbol | Function | Object;
 
 // Usage
 baseSensor.on('start', (e) => {
@@ -75,8 +77,8 @@ Adds a listener to a sensor event. Returns a listener id, which can be used to r
 ```ts
 // Type
 type off = (
-  eventName: 'start' | 'move' | 'cancel' | 'end' | 'destroy',
-  target: Function | string | number | symbol,
+  type: 'start' | 'move' | 'cancel' | 'end' | 'destroy',
+  listenerId: null | string | number | symbol | Function | Object,
 ) => void;
 
 // Usage
@@ -84,7 +86,7 @@ const id = baseSensor.on('start', (e) => console.log('start', e));
 baseSensor.off('start', id);
 ```
 
-Removes a listener (based on listener or listener id) from a sensor event.
+Removes a listener (based on listener id) from a sensor event.
 
 ### cancel
 
