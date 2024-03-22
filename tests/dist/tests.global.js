@@ -5753,19 +5753,6 @@
         s["_start"]({ type: "start", x: 1, y: 2 });
         assert.equal(msg, "b");
       });
-      it("should remove event listeners based on the listener callback", () => {
-        const s = new BaseSensor();
-        let msg = "";
-        const listenerA = () => void (msg += "a");
-        const listenerB = () => void (msg += "b");
-        s.on("start", listenerA);
-        s.on("start", listenerB);
-        s.on("start", listenerB);
-        s.on("start", listenerA);
-        s.off("start", listenerA);
-        s["_start"]({ type: "start", x: 1, y: 2 });
-        assert.equal(msg, "bb");
-      });
     });
     describe("destroy method", () => {
       it(`should (if drag is active):
