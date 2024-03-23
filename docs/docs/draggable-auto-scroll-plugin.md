@@ -222,9 +222,11 @@ type getClientRect = (draggable: Draggable) => {
 };
 ```
 
-This function is used to get the dragged element's (bounding client rect)[https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect] data. The data is queried constantly while dragging is in process so it might be wise to cache the dragged element's client rect data and return it here. By default, however, the client rect data is not cached and is always queried from the DOM in order to function correctly in most cases rather than perform faster.
+This function is used to get the dragged element's (bounding client rect)[https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect] data. The data is queried constantly while dragging is in process, which is why the client rect data is cached to perform better on most use cases.
 
-By default the bounding client rect data of the first Draggable item (`draggable.drag.items[0]`) is queried from the DOM and returned. In case there are no drag items available the next "move" event's `clientX` and `clientY` properties (along with static 50px width and height) are used to create a client rect data.
+By default the cached `clientRect` data of the first Draggable item (`draggable.drag.items[0]`) is queried. In case there are no drag items available the current "move" event's `clientX` and `clientY` properties (along with static 50px width and height) are used to create a client rect data.
+
+Note that the `DraggableDragItem` has an `updateSize` method which you can use to update the cached client rect data if the dragged element's size changes during the drag.
 
 ### onStart
 
