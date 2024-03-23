@@ -65,8 +65,8 @@ declare class BaseSensor<E extends SensorEvents = SensorEvents> implements Senso
     protected _move(data: E['move']): void;
     protected _end(data: E['end']): void;
     protected _cancel(data: E['cancel']): void;
-    on<K extends keyof E>(type: K, listener: (e: E[K]) => void, listenerId?: EventListenerId): EventListenerId;
-    off<K extends keyof E>(type: K, listenerId: EventListenerId): void;
+    on<T extends keyof E>(type: T, listener: (e: E[T]) => void, listenerId?: EventListenerId): EventListenerId;
+    off<T extends keyof E>(type: T, listenerId: EventListenerId): void;
     cancel(): void;
     destroy(): void;
 }
@@ -204,8 +204,8 @@ declare class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
     protected _resetDrag(): void;
     cancel(): void;
     updateSettings(options: Partial<PointerSensorSettings>): void;
-    on<K extends keyof E>(type: K, listener: (e: E[K]) => void, listenerId?: EventListenerId): EventListenerId;
-    off<K extends keyof E>(type: K, listenerId: EventListenerId): void;
+    on<T extends keyof E>(type: T, listener: (e: E[T]) => void, listenerId?: EventListenerId): EventListenerId;
+    off<T extends keyof E>(type: T, listenerId: EventListenerId): void;
     destroy(): void;
 }
 
@@ -450,8 +450,8 @@ declare class Draggable<S extends Sensor[] = Sensor[], E extends S[number]['even
     protected _applyMove(): void;
     protected _preparePositionUpdate(): void;
     protected _applyPositionUpdate(): void;
-    on<K extends keyof DraggableEventCallbacks<E>>(eventName: K, listener: DraggableEventCallbacks<E>[K], listenerId?: EventListenerId): EventListenerId;
-    off<K extends keyof DraggableEventCallbacks<E>>(eventName: K, listenerId: EventListenerId): void;
+    on<T extends keyof DraggableEventCallbacks<E>>(type: T, listener: DraggableEventCallbacks<E>[T], listenerId?: EventListenerId): EventListenerId;
+    off<T extends keyof DraggableEventCallbacks<E>>(type: T, listenerId: EventListenerId): void;
     resolveStartPredicate(sensor: S[number], e?: E['start'] | E['move']): void;
     rejectStartPredicate(sensor: S[number]): void;
     stop(): void;
@@ -633,8 +633,8 @@ declare class AutoScroll {
     protected _requestAction(request: AutoScrollRequest, axis: AutoScrollAxis): void;
     protected _updateActions(): void;
     protected _applyActions(): void;
-    on<T extends keyof AutoScrollEventCallbacks>(eventName: T, listener: AutoScrollEventCallbacks[T], listenerId?: EventListenerId): EventListenerId;
-    off<T extends keyof AutoScrollEventCallbacks>(eventName: T, listenerId: EventListenerId): void;
+    on<T extends keyof AutoScrollEventCallbacks>(type: T, listener: AutoScrollEventCallbacks[T], listenerId?: EventListenerId): EventListenerId;
+    off<T extends keyof AutoScrollEventCallbacks>(type: T, listenerId: EventListenerId): void;
     addItem(item: AutoScrollItem): void;
     removeItem(item: AutoScrollItem): void;
     isDestroyed(): boolean;

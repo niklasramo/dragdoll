@@ -269,10 +269,34 @@ describe('BaseSensor', () => {
   });
 
   describe('on method', () => {
-    it('should return a symbol (by default) which acts as an id for removing the event listener', () => {
+    it('should return a unique symbol by default', () => {
       const s = new BaseSensor();
       const idA = s.on('start', () => {});
+      const idB = s.on('start', () => {});
       assert.equal(typeof idA, 'symbol');
+      assert.notEqual(idA, idB);
+    });
+
+    it('should allow duplicate event listeners', () => {
+      const s = new BaseSensor();
+      let counter = 0;
+      const listener = () => {
+        ++counter;
+      };
+      s.on('start', listener);
+      s.on('start', listener);
+      s['_start']({ type: 'start', x: 1, y: 2 });
+      assert.equal(counter, 2);
+    });
+
+    it('should remove the existing listener and add the new one if the same id is used', () => {
+      const s = new BaseSensor();
+      let msg = '';
+      s.on('start', () => void (msg += 'a'), 1);
+      s.on('start', () => void (msg += 'b'), 2);
+      s.on('start', () => void (msg += 'c'), 1);
+      s['_start']({ type: 'start', x: 1, y: 2 });
+      assert.equal(msg, 'bc');
     });
 
     it('should allow defining a custom id (string/symbol/number) for the event listener via third argument', () => {

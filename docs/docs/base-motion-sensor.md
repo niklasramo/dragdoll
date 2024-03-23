@@ -119,7 +119,7 @@ Current drag data or `null` when drag is inactive. Read-only.
 
 ## Protected Properties
 
-These protected properties are inherited by any class that extends this class and should be used to control the drag speed and direction.
+These properties are not meant to be exposed publicly, but they are available for any class that extends this class. They should be used to control the drag speed and direction.
 
 ### \_direction
 

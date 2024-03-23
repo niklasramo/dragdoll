@@ -294,7 +294,7 @@ const id = draggable.on('start', (e) => console.log('start', e));
 draggable.off('start', id);
 ```
 
-Removes a listener (based on listener id) from an event. The first argument is the event type and the second argument is either the listener id.
+Removes a listener (based on listener id) from an event. The first argument is the event type and the second argument is the listener id.
 
 ### stop
 

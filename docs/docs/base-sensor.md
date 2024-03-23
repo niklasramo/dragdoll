@@ -36,6 +36,8 @@ Is sensor destroyed or not? Read-only.
 
 ## Protected Properties
 
+These properties are not meant to be exposed publicly, but they are available for any class that extends this class.
+
 ### \_emitter
 
 An event emitter, instance of [Eventti Emitter](https://github.com/niklasramo/eventti#api).
@@ -114,7 +116,7 @@ Destroy the sensor. Disposes all allocated memory and removes all bound event li
 
 ## Protected Methods
 
-These protected methods are inherited by any class that extends this class and should be used to control the drag process.
+These methods are not meant to be exposed publicly, but they are available for any class that extends this class. You can use them to control the drag process.
 
 ### \_start
 
