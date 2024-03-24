@@ -19,7 +19,7 @@ $ npm install dragdoll eventti tikki mezr
       "eventti": "https://cdn.jsdelivr.net/npm/eventti@3.0.0/dist/eventti.js",
       "tikki": "https://cdn.jsdelivr.net/npm/tikki@2.0.0/dist/tikki.js",
       "mezr": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/index.js",
-      "dragdoll": "https://cdn.jsdelivr.net/npm/dragdoll@0.2.0/dist/dragdoll.js"
+      "dragdoll": "https://cdn.jsdelivr.net/npm/dragdoll@0.3.0/dist/dragdoll.js"
     }
   }
 </script>

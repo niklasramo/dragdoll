@@ -2,13 +2,12 @@ import { Sensor } from './sensor.js';
 
 import { BaseMotionSensor, BaseMotionSensorEvents } from './base-motion-sensor.js';
 
+import { Point } from 'types.js';
+
 export interface KeyboardMotionSensorSettings<
   E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents,
 > {
-  startPredicate: (
-    e: KeyboardEvent,
-    sensor: KeyboardMotionSensor<E>,
-  ) => { x: number; y: number } | null | undefined;
+  startPredicate: (e: KeyboardEvent, sensor: KeyboardMotionSensor<E>) => Point | null | undefined;
   computeSpeed: (sensor: KeyboardMotionSensor<E>) => number;
   startKeys: string[];
   moveLeftKeys: string[];
@@ -97,7 +96,7 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
     this._onKeyUp = this._onKeyUp.bind(this);
     this._onTick = this._onTick.bind(this);
 
-    this.on('tick', this._onTick);
+    this.on('tick', this._onTick, this._onTick);
     document.addEventListener('keydown', this._onKeyDown);
     document.addEventListener('keyup', this._onKeyUp);
     window.addEventListener('blur', this.cancel);

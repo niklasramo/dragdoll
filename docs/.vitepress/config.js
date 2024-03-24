@@ -28,6 +28,9 @@ export default {
       message: 'Released under the MIT License.',
       copyright: 'Copyright © 2022-present Niklas Rämö',
     },
+    search: {
+      provider: 'local',
+    },
     /*
     algolia: {
       appId: 'xxxxx',
@@ -89,8 +92,21 @@ function sidebarGuide() {
       text: 'Draggable',
       collapsible: false,
       items: [
-        { text: 'Draggable', link: '/docs/draggable' },
-        { text: 'AutoScroll Plugin', link: '/docs/draggable-auto-scroll-plugin' },
+        {
+          text: 'Draggable',
+          link: '/docs/draggable',
+          collapsible: false,
+          items: [
+            { text: 'DraggableDrag', link: '/docs/draggable-drag' },
+            { text: 'DraggableDragItem', link: '/docs/draggable-drag-item' },
+          ],
+        },
+        {
+          text: 'Plugins',
+          link: '/docs/draggable-plugins',
+          collapsible: false,
+          items: [{ text: 'AutoScroll', link: '/docs/draggable-auto-scroll-plugin' }],
+        },
       ],
     },
   ];

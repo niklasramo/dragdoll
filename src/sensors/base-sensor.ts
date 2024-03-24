@@ -64,16 +64,16 @@ export class BaseSensor<E extends SensorEvents = SensorEvents> implements Sensor
     this._resetDragData();
   }
 
-  on<K extends keyof E>(
-    eventName: K,
-    listener: (e: E[K]) => void,
+  on<T extends keyof E>(
+    type: T,
+    listener: (e: E[T]) => void,
     listenerId?: EventListenerId,
   ): EventListenerId {
-    return this._emitter.on(eventName, listener, listenerId);
+    return this._emitter.on(type, listener, listenerId);
   }
 
-  off<K extends keyof E>(eventName: K, listener: ((e: E[K]) => void) | EventListenerId): void {
-    this._emitter.off(eventName, listener);
+  off<T extends keyof E>(type: T, listenerId: EventListenerId): void {
+    this._emitter.off(type, listenerId);
   }
 
   cancel() {

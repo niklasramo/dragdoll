@@ -4,7 +4,9 @@
 
 <iframe src="/dragdoll/examples/001-draggable-basic/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
 
-```ts
+::: code-group
+
+```ts [index.ts]
 import {
   Draggable,
   PointerSensor,
@@ -18,6 +20,7 @@ const keyboardSensor = new KeyboardMotionSensor();
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   getElements: () => [element],
   startPredicate: createPointerSensorStartPredicate(),
+  getFrozenProps: () => ['transform'],
 });
 
 draggable.on('start', () => {
@@ -29,11 +32,107 @@ draggable.on('end', () => {
 });
 ```
 
+```html [index.html]
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Draggable - Basic</title>
+    <meta
+      name="viewport"
+      content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div class="card draggable" tabindex="0"></div>
+    <script type="module" src="index.ts"></script>
+  </body>
+</html>
+```
+
+```css [index.css]
+.draggable {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+```
+
+```css [base.css]
+:root {
+  --bg-color: #161618;
+  --color: rgba(255, 255, 245, 0.86);
+  --theme-color: #ff5555;
+  --card-color: #fff;
+  --card-bgColor: var(--theme-color);
+  --card-color--focus: var(--card-color);
+  --card-bgColor--focus: #db55ff;
+  --card-color--drag: var(--card-color);
+  --card-bgColor--drag: #55ff9c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  background: var(--bg-color);
+  color: var(--color);
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+}
+
+body {
+  margin: 0;
+}
+
+.card {
+  width: 100px;
+  height: 100px;
+  background-color: var(--card-bgColor);
+  color: var(--card-color);
+  border-radius: 8px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .card:hover,
+  .card:focus-visible {
+    background-color: var(--card-bgColor--focus);
+    color: var(--card-bgColor--focus);
+  }
+  .card:focus-visible {
+    outline-offset: 4px;
+    outline: 1px solid var(--card-bgColor--focus);
+  }
+}
+.card.draggable {
+  cursor: grab;
+}
+.card.dragging {
+  cursor: grabbing;
+  background-color: var(--card-bgColor--drag);
+  color: var(--card-bgColor--drag);
+}
+@media (hover: hover) and (pointer: fine) {
+  .card.dragging:focus-visible {
+    outline: 1px solid var(--card-bgColor--drag);
+  }
+}
+```
+
+:::
+
 ## Draggable - Autoscroll
 
 <iframe src="/dragdoll/examples/002-draggable-autoscroll/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
 
-```ts
+::: code-group
+
+```ts [index.ts]
 import {
   Draggable,
   PointerSensor,
@@ -72,16 +171,122 @@ draggable.on('end', () => {
 });
 ```
 
+```html [index.html]
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Draggable - Autoscroll</title>
+    <meta
+      name="viewport"
+      content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div class="drag-container"></div>
+    <div class="card draggable" tabindex="0"></div>
+    <script type="module" src="index.ts"></script>
+  </body>
+</html>
+```
+
+```css [index.css]
+body {
+  height: 300%;
+}
+.drag-container {
+  position: fixed;
+  left: 10px;
+  top: 10px;
+}
+.draggable {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+```
+
+```css [base.css]
+:root {
+  --bg-color: #161618;
+  --color: rgba(255, 255, 245, 0.86);
+  --theme-color: #ff5555;
+  --card-color: #fff;
+  --card-bgColor: var(--theme-color);
+  --card-color--focus: var(--card-color);
+  --card-bgColor--focus: #db55ff;
+  --card-color--drag: var(--card-color);
+  --card-bgColor--drag: #55ff9c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  background: var(--bg-color);
+  color: var(--color);
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+}
+
+body {
+  margin: 0;
+}
+
+.card {
+  width: 100px;
+  height: 100px;
+  background-color: var(--card-bgColor);
+  color: var(--card-color);
+  border-radius: 8px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .card:hover,
+  .card:focus-visible {
+    background-color: var(--card-bgColor--focus);
+    color: var(--card-bgColor--focus);
+  }
+  .card:focus-visible {
+    outline-offset: 4px;
+    outline: 1px solid var(--card-bgColor--focus);
+  }
+}
+.card.draggable {
+  cursor: grab;
+}
+.card.dragging {
+  cursor: grabbing;
+  background-color: var(--card-bgColor--drag);
+  color: var(--card-bgColor--drag);
+}
+@media (hover: hover) and (pointer: fine) {
+  .card.dragging:focus-visible {
+    outline: 1px solid var(--card-bgColor--drag);
+  }
+}
+```
+
+:::
+
 ## Draggable - Snap To Grid
 
 <iframe src="/dragdoll/examples/003-draggable-snap-to-grid/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
 
-```ts
+::: code-group
+
+```ts [index.ts]
 import {
   Draggable,
   PointerSensor,
   KeyboardSensor,
   createPointerSensorStartPredicate,
+  createSnapModifier,
 } from 'dragdoll';
 
 const GRID_WIDTH = 40;
@@ -95,44 +300,7 @@ const keyboardSensor = new KeyboardSensor({
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   getElements: () => [element],
   startPredicate: createPointerSensorStartPredicate(),
-  getPositionChange: ({ startEvent, event, item }) => {
-    let { prevX = startEvent.x, prevY = startEvent.y } = item.data;
-
-    let changeX = event.x - prevX;
-    let changeXAbs = Math.abs(changeX);
-    if (changeXAbs >= GRID_WIDTH) {
-      const overshoot = changeXAbs % GRID_WIDTH;
-      if (changeX > 0) {
-        changeX -= overshoot;
-        item.data.prevX = event.x - overshoot;
-      } else {
-        changeX += overshoot;
-        item.data.prevX = event.x + overshoot;
-      }
-    } else {
-      changeX = 0;
-    }
-
-    let changeY = event.y - prevY;
-    let changeYAbs = Math.abs(changeY);
-    if (changeYAbs >= GRID_HEIGHT) {
-      const overshoot = changeYAbs % GRID_HEIGHT;
-      if (changeY > 0) {
-        changeY -= overshoot;
-        item.data.prevY = event.y - overshoot;
-      } else {
-        changeY += overshoot;
-        item.data.prevY = event.y + overshoot;
-      }
-    } else {
-      changeY = 0;
-    }
-
-    return {
-      x: changeX,
-      y: changeY,
-    };
-  },
+  getPositionChange: createSnapModifier(GRID_WIDTH, GRID_HEIGHT),
 });
 
 draggable.on('start', () => {
@@ -143,3 +311,98 @@ draggable.on('end', () => {
   element.classList.remove('dragging');
 });
 ```
+
+```html [index.html]
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Draggable - Snap To Grid</title>
+    <meta
+      name="viewport"
+      content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div class="card draggable" tabindex="0"></div>
+    <script type="module" src="index.ts"></script>
+  </body>
+</html>
+```
+
+```css [index.css]
+.draggable {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 80px;
+  height: 80px;
+}
+```
+
+```css [base.css]
+:root {
+  --bg-color: #161618;
+  --color: rgba(255, 255, 245, 0.86);
+  --theme-color: #ff5555;
+  --card-color: #fff;
+  --card-bgColor: var(--theme-color);
+  --card-color--focus: var(--card-color);
+  --card-bgColor--focus: #db55ff;
+  --card-color--drag: var(--card-color);
+  --card-bgColor--drag: #55ff9c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  background: var(--bg-color);
+  color: var(--color);
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+}
+
+body {
+  margin: 0;
+}
+
+.card {
+  width: 100px;
+  height: 100px;
+  background-color: var(--card-bgColor);
+  color: var(--card-color);
+  border-radius: 8px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .card:hover,
+  .card:focus-visible {
+    background-color: var(--card-bgColor--focus);
+    color: var(--card-bgColor--focus);
+  }
+  .card:focus-visible {
+    outline-offset: 4px;
+    outline: 1px solid var(--card-bgColor--focus);
+  }
+}
+.card.draggable {
+  cursor: grab;
+}
+.card.dragging {
+  cursor: grabbing;
+  background-color: var(--card-bgColor--drag);
+  color: var(--card-bgColor--drag);
+}
+@media (hover: hover) and (pointer: fine) {
+  .card.dragging:focus-visible {
+    outline: 1px solid var(--card-bgColor--drag);
+  }
+}
+```
+
+:::

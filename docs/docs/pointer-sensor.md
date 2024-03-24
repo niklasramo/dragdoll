@@ -112,7 +112,7 @@ Is sensor destroyed or not? Read-only.
 ```ts
 // Type
 type on = (
-  eventName: 'start' | 'move' | 'cancel' | 'end' | 'destroy',
+  type: 'start' | 'move' | 'cancel' | 'end' | 'destroy',
   listener: (
     e:
       | {
@@ -137,8 +137,10 @@ type on = (
           type: 'destroy';
         },
   ) => void,
-  listenerId?: string | number | symbol,
-) => string | number | symbol;
+  listenerId?: ListenerId,
+) => ListenerId;
+
+type ListenerId = null | string | number | symbol | Function | Object;
 
 // Usage
 pointerSensor.on('start', (e) => {
@@ -152,17 +154,16 @@ Adds a listener to a sensor event. Returns a listener id, which can be used to r
 
 ```ts
 // Type
-type off = (
-  eventName: 'start' | 'move' | 'cancel' | 'end' | 'destroy',
-  target: Function | string | number | symbol,
-) => void;
+type off = (type: 'start' | 'move' | 'cancel' | 'end' | 'destroy', listenerId: ListenerId) => void;
+
+type ListenerId = null | string | number | symbol | Function | Object;
 
 // Usage
 const id = pointerSensor.on('start', (e) => console.log('start', e));
 pointerSensor.off('start', id);
 ```
 
-Removes a listener (based on listener or listener id) from a sensor event.
+Removes a listener (based on listener id) from a sensor event.
 
 ### updateSettings
 

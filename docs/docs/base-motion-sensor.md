@@ -119,7 +119,7 @@ Current drag data or `null` when drag is inactive. Read-only.
 
 ## Protected Properties
 
-These protected properties are inherited by any class that extends this class and should be used to control the drag speed and direction.
+These properties are not meant to be exposed publicly, but they are available for any class that extends this class. They should be used to control the drag speed and direction.
 
 ### \_direction
 
@@ -144,7 +144,7 @@ The speed of the drag as pixels-per-second. You can manually modify this anytime
 ```ts
 // Type
 type on = (
-  eventName: 'start' | 'move' | 'cancel' | 'end' | 'destroy' | 'tick',
+  type: 'start' | 'move' | 'cancel' | 'end' | 'destroy' | 'tick',
   listener: (
     e:
       | {
@@ -161,8 +161,10 @@ type on = (
           type: 'destroy';
         },
   ) => void,
-  listenerId?: string | number | symbol,
-) => string | number | symbol;
+  listenerId?: ListenerId,
+) => ListenerId;
+
+type ListenerId = null | string | number | symbol | Function | Object;
 
 // Usage
 baseMotionSensor.on('start', (e) => {
@@ -177,8 +179,8 @@ Adds a listener to a sensor event. Returns a listener id, which can be used to r
 ```ts
 // Type
 type off = (
-  eventName: 'start' | 'move' | 'cancel' | 'end' | 'destroy' | 'tick',
-  target: Function | string | number | symbol,
+  type: 'start' | 'move' | 'cancel' | 'end' | 'destroy' | 'tick',
+  listenerId: null | string | number | symbol | Function | Object,
 ) => void;
 
 // Usage
@@ -186,4 +188,4 @@ const id = baseMotionSensor.on('start', (e) => console.log('start', e));
 baseMotionSensor.off('start', id);
 ```
 
-Removes a listener (based on listener or listener id) from a sensor event.
+Removes a listener (based on listener id) from a sensor event.

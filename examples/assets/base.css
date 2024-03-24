@@ -1,5 +1,3 @@
-/* VARIABLES */
-
 :root {
   --bg-color: #161618;
   --color: rgba(255, 255, 245, 0.86);
@@ -12,11 +10,10 @@
   --card-bgColor--drag: #55ff9c;
 }
 
-/* BASE */
-
 * {
   box-sizing: border-box;
 }
+
 html {
   height: 100%;
   background: var(--bg-color);
@@ -25,11 +22,10 @@ html {
   background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
 }
+
 body {
   margin: 0;
 }
-
-/* CARD */
 
 .card {
   width: 100px;

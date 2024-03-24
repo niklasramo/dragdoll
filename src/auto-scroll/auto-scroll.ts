@@ -2,7 +2,7 @@ import { Emitter, EventListenerId } from 'eventti';
 
 import { getDistance, getRect } from 'mezr';
 
-import { Rect, RectExtended } from '../types.js';
+import { Point, Rect, RectExtended } from '../types.js';
 
 import { Pool } from '../pool.js';
 
@@ -162,7 +162,7 @@ type AutoScrollTargetPadding = {
 export interface AutoScrollItem {
   readonly targets: AutoScrollItemTarget[];
   readonly clientRect: Rect;
-  readonly position: { x: number; y: number };
+  readonly position: Point;
   readonly inertAreaSize: number;
   readonly smoothStop: boolean;
   readonly speed: number | AutoScrollItemSpeedCallback;
@@ -541,8 +541,8 @@ export class AutoScroll {
   protected _startTicking() {
     if (this._isTicking) return;
     this._isTicking = true;
-    ticker.on(tickerReadPhase, this._frameRead);
-    ticker.on(tickerWritePhase, this._frameWrite);
+    ticker.on(tickerReadPhase, this._frameRead, this._frameRead);
+    ticker.on(tickerWritePhase, this._frameWrite, this._frameWrite);
   }
 
   protected _stopTicking() {
@@ -1085,20 +1085,18 @@ export class AutoScroll {
    * Bind a listener.
    */
   on<T extends keyof AutoScrollEventCallbacks>(
-    eventName: T,
+    type: T,
     listener: AutoScrollEventCallbacks[T],
+    listenerId?: EventListenerId,
   ): EventListenerId {
-    return this._emitter.on(eventName, listener);
+    return this._emitter.on(type, listener, listenerId);
   }
 
   /**
    * Unbind a listener.
    */
-  off<T extends keyof AutoScrollEventCallbacks>(
-    eventName: T,
-    listener: AutoScrollEventCallbacks[T] | EventListenerId,
-  ): void {
-    this._emitter.off(eventName, listener);
+  off<T extends keyof AutoScrollEventCallbacks>(type: T, listenerId: EventListenerId): void {
+    this._emitter.off(type, listenerId);
   }
 
   addItem(item: AutoScrollItem) {

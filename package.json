@@ -1,6 +1,6 @@
 {
   "name": "dragdoll",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Modular and extensible drag & drop system.",
   "keywords": [
     "drag",
@@ -39,7 +39,7 @@
     "main": false
   },
   "scripts": {
-    "build": "npm run del-dist && npm run ts-check && npm run format && npm run build-lib && npm run build-tests && npm run build-examples && npm run size",
+    "build": "npm run del-dist && npm run ts-check && npm run build-lib && npm run build-tests && npm run build-examples && npm run format && npm run size",
     "build-lib": "tsup --config ./tsup.config.lib.ts",
     "build-tests": "tsup --config ./tsup.config.tests.ts",
     "build-examples": "node ./scripts/build-examples.mjs",
@@ -53,39 +53,38 @@
     "test": "npm run ts-check && npm run test-browserstack",
     "test-browser": "karma start karma.cjs",
     "test-browserstack": "karma start karma.browserstack.cjs",
-    "test-node": "mocha tests/dist/tests.js",
     "ts-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@parcel/config-default": "2.10.3",
-    "@types/chai": "4.3.11",
+    "@parcel/config-default": "2.12.0",
+    "@types/chai": "4.3.14",
     "@types/mocha": "10.0.6",
-    "chai": "4.3.10",
+    "chai": "5.1.0",
     "cpy-cli": "5.0.0",
-    "dotenv": "16.3.1",
-    "eventti": "3.0.0",
+    "dotenv": "16.4.5",
+    "eventti": "4.0.0",
     "gzip-size-cli": "5.1.0",
-    "jsdom": "23.0.1",
-    "karma": "6.4.2",
+    "jsdom": "24.0.0",
+    "karma": "6.4.3",
     "karma-browserstack-launcher": "1.6.0",
     "karma-chrome-launcher": "3.2.0",
-    "karma-firefox-launcher": "2.1.2",
+    "karma-firefox-launcher": "2.1.3",
     "karma-mocha": "2.0.1",
     "karma-mocha-reporter": "2.2.5",
     "mezr": "1.1.0",
-    "mocha": "10.2.0",
-    "parcel": "2.10.3",
-    "prettier": "3.1.1",
+    "mocha": "10.3.0",
+    "parcel": "2.12.0",
+    "prettier": "3.2.5",
     "rimraf": "5.0.5",
-    "tikki": "2.0.0",
-    "tsup": "8.0.1",
-    "typescript": "5.3.3",
-    "vitepress": "1.0.0-rc.32",
-    "vue": "3.3.12"
+    "tikki": "3.0.1",
+    "tsup": "8.0.2",
+    "typescript": "5.4.3",
+    "vitepress": "1.0.1",
+    "vue": "3.4.21"
   },
   "peerDependencies": {
-    "eventti": "^3.0.0",
+    "eventti": "^4.0.0",
     "mezr": "^1.1.0",
-    "tikki": "^2.0.0"
+    "tikki": "^3.0.1"
   }
 }

@@ -3,7 +3,7 @@ import {
   PointerSensor,
   KeyboardMotionSensor,
   createPointerSensorStartPredicate,
-} from '../../dist/dragdoll';
+} from '../../src';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
@@ -11,6 +11,7 @@ const keyboardSensor = new KeyboardMotionSensor();
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   getElements: () => [element],
   startPredicate: createPointerSensorStartPredicate(),
+  getFrozenProps: () => ['transform'],
 });
 
 draggable.on('start', () => {

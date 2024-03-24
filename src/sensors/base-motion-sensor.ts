@@ -2,7 +2,7 @@ import { Sensor, SensorEvents } from './sensor.js';
 
 import { BaseSensor, BaseSensorDragData } from './base-sensor.js';
 
-import { Writeable } from '../types.js';
+import { Point, Writeable } from '../types.js';
 
 import { ticker, tickerReadPhase } from '../singletons/ticker.js';
 
@@ -27,7 +27,7 @@ export class BaseMotionSensor<E extends BaseMotionSensorEvents = BaseMotionSenso
 {
   declare events: E;
   readonly drag: BaseMotionSensorDragData | null;
-  protected _direction: { x: number; y: number };
+  protected _direction: Point;
   protected _speed: number;
 
   constructor() {
@@ -50,7 +50,7 @@ export class BaseMotionSensor<E extends BaseMotionSensorEvents = BaseMotionSenso
   protected _start(data: E['start']) {
     if (this.isDestroyed || this.drag) return;
     super._start(data);
-    ticker.on(tickerReadPhase, this._tick);
+    ticker.on(tickerReadPhase, this._tick, this._tick);
   }
 
   protected _end(data: E['end']) {

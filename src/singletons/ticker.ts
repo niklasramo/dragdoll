@@ -1,17 +1,15 @@
-import { Ticker, FrameCallback } from 'tikki';
+import { AutoTicker, Phase, FrameCallback } from 'tikki';
 
-import { EventName } from 'eventti';
+export let tickerReadPhase: Phase = Symbol();
 
-export let tickerReadPhase: EventName = Symbol();
+export let tickerWritePhase: Phase = Symbol();
 
-export let tickerWritePhase: EventName = Symbol();
-
-export let ticker = new Ticker<EventName>({ phases: [tickerReadPhase, tickerWritePhase] });
+export let ticker = new AutoTicker<Phase>({ phases: [tickerReadPhase, tickerWritePhase] });
 
 export function setTicker(
-  newTicker: Ticker<EventName, FrameCallback>,
-  readPhase: EventName,
-  writePhase: EventName,
+  newTicker: AutoTicker<Phase, FrameCallback>,
+  readPhase: Phase,
+  writePhase: Phase,
 ) {
   tickerReadPhase = readPhase;
   tickerWritePhase = writePhase;
