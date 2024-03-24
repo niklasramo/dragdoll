@@ -48,8 +48,8 @@ draggable.plugins.autoscroll.updateSettings({
 
 Using the AutoScroll plugin very is simple:
 
-1. Import and invoke the plugin with the [options](#settings) you wish.
-2. Provide the return value to Draggable instance's [use](/docs/draggable#use) method.
+1. Import and invoke the plugin with the [`options`](#settings) you wish.
+2. Provide the return value to Draggable instance's [`use`](/docs/draggable#use) method.
 3. The plugin will get registered to Draggable instance as `"autoscroll"` (accessible via `draggable.plugins.autoscroll`).
 
 ```ts
@@ -222,11 +222,11 @@ type getClientRect = (draggable: Draggable) => {
 };
 ```
 
-This function is used to get the dragged element's (bounding client rect)[https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect] data. The data is queried constantly while dragging is in process, which is why the client rect data is cached to perform better on most use cases.
+This function is used to get the dragged element's [bounding client rect](https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect) data. The data is queried constantly while dragging is in process, which is why the client rect data is cached to perform better on most use cases.
 
-By default the cached `clientRect` data of the first Draggable item (`draggable.drag.items[0]`) is queried. In case there are no drag items available the current "move" event's `clientX` and `clientY` properties (along with static 50px width and height) are used to create a client rect data.
+By default the cached [`clientRect`](/docs/draggable-drag-item#clientrect) data of the first Draggable item is queried. In case there are no drag items available the current "move" event's `clientX` and `clientY` properties (along with static 50px width and height) are used to create a client rect data.
 
-Note that the `DraggableDragItem` has an `updateSize` method which you can use to update the cached client rect data if the dragged element's size changes during the drag.
+Note that the DraggableDragItem has an [`updateSize`](/docs/draggable-drag-item#updatesize) method which you can use to update the cached client rect data if the dragged element's size changes during the drag.
 
 ### onStart
 

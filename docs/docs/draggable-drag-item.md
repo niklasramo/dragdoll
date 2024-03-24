@@ -1,6 +1,8 @@
+[DraggableDrag](/docs/draggable-drag) →
+
 # DraggableDragItem
 
-DraggableDragItem class instance holds all the information about a drag item. All the drag items are available via the `items` property of the DraggableDrag instance (`draggable.drag.items`).
+DraggableDragItem class instance holds all the information about a drag item. All the drag items are available via the [`items`](/docs/draggable-drag#items) property of the DraggableDrag instance.
 
 ## Properties
 

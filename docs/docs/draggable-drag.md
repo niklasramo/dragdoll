@@ -1,6 +1,8 @@
+[Draggable](/docs/draggable) →
+
 # DraggableDrag
 
-DraggableDrag class instance holds all the information about the current drag process. It's available via the Draggable instance's `drag` property (`draggable.drag`).
+DraggableDrag class instance holds all the information about the current drag process. It's available via the Draggable instance's [`drag`](/docs/draggable#drag) property.
 
 ## Properties
 
@@ -60,4 +62,4 @@ The sensor event that ended the drag. Read-only.
 type items = DraggableDragItem[];
 ```
 
-An array of `DraggableDragItem` instances, which correspond to the drag elements as provided via the `getElements` option. Read-only.
+An array of DraggableDragItem instances, which correspond to the drag elements as provided via the [`getElements`](/docs/draggable#getelements) option. Read-only.
