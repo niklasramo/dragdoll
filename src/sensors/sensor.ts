@@ -1,4 +1,4 @@
-import { EventListenerId } from 'eventti';
+import type { EventListenerId } from 'eventti';
 
 export const SensorEventType = {
   start: 'start',
