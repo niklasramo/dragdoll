@@ -1,4 +1,4 @@
-name: CI Pull Request
+name: CI main PR
 on:
   pull_request:
     branches:
