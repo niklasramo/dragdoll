@@ -39,7 +39,7 @@
     "main": false
   },
   "scripts": {
-    "build": "npm run del-dist && npm run ts-check && npm run format && npm run build-lib && npm run build-tests && npm run build-examples && npm run size",
+    "build": "npm run del-dist && npm run ts-check && npm run build-lib && npm run build-tests && npm run build-examples && npm run format && npm run size",
     "build-lib": "tsup --config ./tsup.config.lib.ts",
     "build-tests": "tsup --config ./tsup.config.tests.ts",
     "build-examples": "node ./scripts/build-examples.mjs",
