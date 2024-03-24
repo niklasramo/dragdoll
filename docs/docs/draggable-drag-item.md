@@ -60,7 +60,7 @@ Element's original computed transform value. Read-only.
 type frozenProps = CSSProperties | null;
 ```
 
-The CSS properties that are "frozen" for the drag's duration. Read-only.
+A key value object of the frozen CSS properties and their frozen values. These are the values that are forced on the element for the duration of the drag. Read-only.
 
 ### unfrozenProps
 
@@ -68,7 +68,7 @@ The CSS properties that are "frozen" for the drag's duration. Read-only.
 type unfrozenProps = CSSProperties | null;
 ```
 
-The original values of the CSS properties that are "frozen" for the drag's duration. Read-only.
+A key value object of the frozen CSS properties and their unfrozen (original) values. These are the values that are restored to the element after the drag ends. Read-only.
 
 ### clientRect
 
@@ -76,7 +76,7 @@ The original values of the CSS properties that are "frozen" for the drag's durat
 type clientRect = { width: number; height: number; left: number; top: number };
 ```
 
-Cached bounding client rect of the element. Read-only.
+Cached bounding client rect of the element. The `width` and `height` of this object can be updated using the [`updateSize`](#updatesize) method. The `left` and `top` are automatically updated by the Draggable instance, but you can also forcefully update them using the [`draggable.updatePosition`](/docs/draggable#updateposition) method. Read-only.
 
 ### position
 

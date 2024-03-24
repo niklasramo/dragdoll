@@ -14,7 +14,7 @@ import {
 
 import { autoScroll } from '../../singletons/auto-scroll.js';
 
-import { Writeable } from '../../types.js';
+import { Point, Writeable } from '../../types.js';
 
 const AUTOSCROLL_POSITION = { x: 0, y: 0 };
 
@@ -167,7 +167,7 @@ export interface DraggableAutoScrollSettings<S extends Sensor[], E extends S[num
   inertAreaSize: number;
   speed: number | AutoScrollItemSpeedCallback;
   smoothStop: boolean;
-  getPosition: ((draggable: Draggable<S, E>) => { x: number; y: number }) | null;
+  getPosition: ((draggable: Draggable<S, E>) => Point) | null;
   getClientRect:
     | ((draggable: Draggable<S, E>) => {
         left: number;

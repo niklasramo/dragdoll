@@ -1,0 +1,1 @@
+{"mappings":"AAAA","sources":["examples/003-draggable-snap-to-grid/index.css"],"sourcesContent":[".draggable {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 80px;\n  height: 80px;\n}\n"],"names":[],"version":3,"file":"index.df4623f1.css.map"}

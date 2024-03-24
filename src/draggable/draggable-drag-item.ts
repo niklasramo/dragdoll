@@ -1,9 +1,14 @@
 import { getOffsetContainer } from 'mezr';
+
 import { Sensor } from '../sensors/sensor.js';
-import type { Draggable } from './draggable.js';
-import { CSSProperties, Rect } from '../types.js';
+
+import { CSSProperties, Point, Rect } from '../types.js';
+
 import { getStyle } from 'utils/get-style.js';
+
 import { getOffsetDiff } from 'utils/get-offset-diff.js';
+
+import type { Draggable } from './draggable.js';
 
 const OFFSET_DIFF = { left: 0, top: 0 };
 
@@ -25,10 +30,10 @@ export class DraggableDragItem<
   readonly frozenProps: CSSProperties | null;
   readonly unfrozenProps: CSSProperties | null;
   readonly clientRect: Rect;
-  readonly position: { x: number; y: number };
-  readonly _updateDiff: { x: number; y: number };
-  readonly _moveDiff: { x: number; y: number };
-  readonly _containerDiff: { x: number; y: number };
+  readonly position: Point;
+  readonly _updateDiff: Point;
+  readonly _moveDiff: Point;
+  readonly _containerDiff: Point;
 
   constructor(element: HTMLElement | SVGSVGElement, draggable: Draggable<S, E>) {
     // Make sure the element is in DOM.

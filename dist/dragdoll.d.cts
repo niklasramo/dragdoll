@@ -71,6 +71,29 @@ declare class BaseSensor<E extends SensorEvents = SensorEvents> implements Senso
     destroy(): void;
 }
 
+type ListenerOptions = {
+    capture?: boolean;
+    passive?: boolean;
+};
+type PointerType = 'mouse' | 'pen' | 'touch';
+type Point = {
+    x: number;
+    y: number;
+};
+type Dimensions = {
+    width: number;
+    height: number;
+};
+interface Rect extends Dimensions {
+    left: number;
+    top: number;
+}
+interface RectExtended extends Rect {
+    right: number;
+    bottom: number;
+}
+type CSSProperties = Partial<Omit<CSSStyleDeclaration, 'getPropertyPriority' | 'getPropertyValue' | 'item' | 'removeProperty' | 'setProperty' | 'length' | 'parentRule'>>;
+
 interface BaseMotionSensorTickEvent {
     type: 'tick';
     time: number;
@@ -86,10 +109,7 @@ interface BaseMotionSensorDragData extends BaseSensorDragData {
 declare class BaseMotionSensor<E extends BaseMotionSensorEvents = BaseMotionSensorEvents> extends BaseSensor<E> implements Sensor<E> {
     events: E;
     readonly drag: BaseMotionSensorDragData | null;
-    protected _direction: {
-        x: number;
-        y: number;
-    };
+    protected _direction: Point;
     protected _speed: number;
     constructor();
     protected _createDragData(data: E['start']): BaseMotionSensorDragData;
@@ -98,25 +118,6 @@ declare class BaseMotionSensor<E extends BaseMotionSensorEvents = BaseMotionSens
     protected _cancel(data: E['cancel']): void;
     protected _tick(time: number): void;
 }
-
-type ListenerOptions = {
-    capture?: boolean;
-    passive?: boolean;
-};
-type PointerType = 'mouse' | 'pen' | 'touch';
-type Dimensions = {
-    width: number;
-    height: number;
-};
-interface Rect extends Dimensions {
-    left: number;
-    top: number;
-}
-interface RectExtended extends Rect {
-    right: number;
-    bottom: number;
-}
-type CSSProperties = Partial<Omit<CSSStyleDeclaration, 'getPropertyPriority' | 'getPropertyValue' | 'item' | 'removeProperty' | 'setProperty' | 'length' | 'parentRule'>>;
 
 declare const SOURCE_EVENTS: {
     readonly pointer: {
@@ -209,18 +210,9 @@ declare class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
     destroy(): void;
 }
 
-type KeyboardSensorPredicate = (e: KeyboardEvent, sensor: KeyboardSensor, moveDistance: {
-    x: number;
-    y: number;
-}) => {
-    x: number;
-    y: number;
-} | null | undefined;
+type KeyboardSensorPredicate = (e: KeyboardEvent, sensor: KeyboardSensor, moveDistance: Point) => Point | null | undefined;
 interface KeyboardSensorSettings {
-    moveDistance: number | {
-        x: number;
-        y: number;
-    };
+    moveDistance: number | Point;
     startPredicate: KeyboardSensorPredicate;
     movePredicate: KeyboardSensorPredicate;
     cancelPredicate: KeyboardSensorPredicate;
@@ -249,10 +241,7 @@ interface KeyboardSensorEvents {
 }
 declare class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvents> extends BaseSensor<E> implements Sensor<E> {
     events: E;
-    protected _moveDistance: {
-        x: number;
-        y: number;
-    };
+    protected _moveDistance: Point;
     protected _startPredicate: KeyboardSensorPredicate;
     protected _movePredicate: KeyboardSensorPredicate;
     protected _cancelPredicate: KeyboardSensorPredicate;
@@ -264,10 +253,7 @@ declare class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEven
 }
 
 interface KeyboardMotionSensorSettings<E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents> {
-    startPredicate: (e: KeyboardEvent, sensor: KeyboardMotionSensor<E>) => {
-        x: number;
-        y: number;
-    } | null | undefined;
+    startPredicate: (e: KeyboardEvent, sensor: KeyboardMotionSensor<E>) => Point | null | undefined;
     computeSpeed: (sensor: KeyboardMotionSensor<E>) => number;
     startKeys: string[];
     moveLeftKeys: string[];
@@ -316,22 +302,10 @@ declare class DraggableDragItem<S extends Sensor[] = Sensor[], E extends S[numbe
     readonly frozenProps: CSSProperties | null;
     readonly unfrozenProps: CSSProperties | null;
     readonly clientRect: Rect;
-    readonly position: {
-        x: number;
-        y: number;
-    };
-    readonly _updateDiff: {
-        x: number;
-        y: number;
-    };
-    readonly _moveDiff: {
-        x: number;
-        y: number;
-    };
-    readonly _containerDiff: {
-        x: number;
-        y: number;
-    };
+    readonly position: Point;
+    readonly _updateDiff: Point;
+    readonly _moveDiff: Point;
+    readonly _containerDiff: Point;
     constructor(element: HTMLElement | SVGSVGElement, draggable: Draggable<S, E>);
     updateSize(dimensions?: {
         width: number;
@@ -383,10 +357,7 @@ interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
         sensor: S[number];
         item: DraggableDragItem<S, E>;
         style: CSSStyleDeclaration;
-    }) => {
-        x: number;
-        y: number;
-    };
+    }) => Point;
     setPosition: (data: {
         draggable: Draggable<S, E>;
         sensor: S[number];
@@ -402,10 +373,7 @@ interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
         event: E['start'] | E['move'];
         prevEvent: E['start'] | E['move'];
         startEvent: E['start'] | E['move'];
-    }) => {
-        x: number;
-        y: number;
-    };
+    }) => Point;
 }
 interface DraggablePlugin {
     name: string;
@@ -521,10 +489,7 @@ type AutoScrollTargetPadding = {
 interface AutoScrollItem {
     readonly targets: AutoScrollItemTarget[];
     readonly clientRect: Rect;
-    readonly position: {
-        x: number;
-        y: number;
-    };
+    readonly position: Point;
     readonly inertAreaSize: number;
     readonly smoothStop: boolean;
     readonly speed: number | AutoScrollItemSpeedCallback;
@@ -653,10 +618,7 @@ declare class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['
     constructor(draggableAutoScroll: DraggableAutoScroll<S, E>, draggable: Draggable<S, E>);
     private _getSettings;
     get targets(): AutoScrollItemTarget[];
-    get position(): {
-        x: number;
-        y: number;
-    };
+    get position(): Point;
     get clientRect(): Rect;
     get inertAreaSize(): number;
     get smoothStop(): boolean;
@@ -671,10 +633,7 @@ interface DraggableAutoScrollSettings<S extends Sensor[], E extends S[number]['e
     inertAreaSize: number;
     speed: number | AutoScrollItemSpeedCallback;
     smoothStop: boolean;
-    getPosition: ((draggable: Draggable<S, E>) => {
-        x: number;
-        y: number;
-    }) | null;
+    getPosition: ((draggable: Draggable<S, E>) => Point) | null;
     getClientRect: ((draggable: Draggable<S, E>) => {
         left: number;
         top: number;

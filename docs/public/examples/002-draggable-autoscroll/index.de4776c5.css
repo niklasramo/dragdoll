@@ -1,0 +1,17 @@
+body {
+  height: 300%;
+}
+
+.drag-container {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+}
+
+.draggable {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%)translateY(-50%);
+}
+/*# sourceMappingURL=index.de4776c5.css.map */

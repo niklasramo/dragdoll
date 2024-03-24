@@ -12,7 +12,7 @@ import { ticker, tickerReadPhase, tickerWritePhase } from '../singletons/ticker.
 
 import { getOffsetDiff } from '../utils/get-offset-diff.js';
 
-import { Writeable, CSSProperties } from '../types.js';
+import { Writeable, CSSProperties, Point } from '../types.js';
 
 const SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
 
@@ -78,7 +78,7 @@ export interface DraggableSettings<S extends Sensor[], E extends S[number]['even
     sensor: S[number];
     item: DraggableDragItem<S, E>;
     style: CSSStyleDeclaration;
-  }) => { x: number; y: number };
+  }) => Point;
   setPosition: (data: {
     draggable: Draggable<S, E>;
     sensor: S[number];
@@ -94,7 +94,7 @@ export interface DraggableSettings<S extends Sensor[], E extends S[number]['even
     event: E['start'] | E['move'];
     prevEvent: E['start'] | E['move'];
     startEvent: E['start'] | E['move'];
-  }) => { x: number; y: number };
+  }) => Point;
 }
 
 export interface DraggablePlugin {

@@ -2,7 +2,7 @@ import { Emitter, EventListenerId } from 'eventti';
 
 import { getDistance, getRect } from 'mezr';
 
-import { Rect, RectExtended } from '../types.js';
+import { Point, Rect, RectExtended } from '../types.js';
 
 import { Pool } from '../pool.js';
 
@@ -162,7 +162,7 @@ type AutoScrollTargetPadding = {
 export interface AutoScrollItem {
   readonly targets: AutoScrollItemTarget[];
   readonly clientRect: Rect;
-  readonly position: { x: number; y: number };
+  readonly position: Point;
   readonly inertAreaSize: number;
   readonly smoothStop: boolean;
   readonly speed: number | AutoScrollItemSpeedCallback;

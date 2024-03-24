@@ -2,13 +2,12 @@ import { Sensor } from './sensor.js';
 
 import { BaseMotionSensor, BaseMotionSensorEvents } from './base-motion-sensor.js';
 
+import { Point } from 'types.js';
+
 export interface KeyboardMotionSensorSettings<
   E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents,
 > {
-  startPredicate: (
-    e: KeyboardEvent,
-    sensor: KeyboardMotionSensor<E>,
-  ) => { x: number; y: number } | null | undefined;
+  startPredicate: (e: KeyboardEvent, sensor: KeyboardMotionSensor<E>) => Point | null | undefined;
   computeSpeed: (sensor: KeyboardMotionSensor<E>) => number;
   startKeys: string[];
   moveLeftKeys: string[];

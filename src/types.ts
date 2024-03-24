@@ -4,6 +4,11 @@ export type ListenerOptions = { capture?: boolean; passive?: boolean };
 
 export type PointerType = 'mouse' | 'pen' | 'touch';
 
+export type Point = {
+  x: number;
+  y: number;
+};
+
 export type Dimensions = {
   width: number;
   height: number;

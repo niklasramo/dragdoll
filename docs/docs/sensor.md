@@ -1,6 +1,6 @@
 # Sensor
 
-A sensor, in the context of DragDoll, is conceptually a constrained event emitter, which implements the [`Sensor`](https://github.com/niklasramo/dragdoll/tree/main/src/Sensors/Sensor.ts) interface. The point of sensors is to normalize any kind of signals/events (e.g. DOM events) into unified drag events, which can then be used as input for other systems that need to implement drag behavior.
+A sensor, in the context of DragDoll, is conceptually a constrained event emitter, which implements the [`Sensor`](https://github.com/niklasramo/dragdoll/blob/main/src/sensors/sensor.ts) interface. The point of sensors is to normalize any kind of signals/events (e.g. DOM events) into unified drag events, which can then be used as input for other systems that need to implement drag behavior.
 
 DragDoll provides a TypeScript interface for validating base functionality of a sensor. Your custom sensor can extend the Sensor API as much as it needs as long as it doesn't break it.
 

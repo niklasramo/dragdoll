@@ -9,14 +9,16 @@ import {
 
 import { BaseSensor } from './base-sensor.js';
 
+import { Point } from 'types.js';
+
 export type KeyboardSensorPredicate = (
   e: KeyboardEvent,
   sensor: KeyboardSensor,
-  moveDistance: { x: number; y: number },
-) => { x: number; y: number } | null | undefined;
+  moveDistance: Point,
+) => Point | null | undefined;
 
 export interface KeyboardSensorSettings {
-  moveDistance: number | { x: number; y: number };
+  moveDistance: number | Point;
   startPredicate: KeyboardSensorPredicate;
   movePredicate: KeyboardSensorPredicate;
   cancelPredicate: KeyboardSensorPredicate;
@@ -54,7 +56,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
   implements Sensor<E>
 {
   declare events: E;
-  protected _moveDistance: { x: number; y: number };
+  protected _moveDistance: Point;
   protected _startPredicate: KeyboardSensorPredicate;
   protected _movePredicate: KeyboardSensorPredicate;
   protected _cancelPredicate: KeyboardSensorPredicate;
