@@ -1,1 +1,0 @@
-{"mappings":"AAAA","sources":["examples/001-draggable-basic/index.css"],"sourcesContent":[".draggable {\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  transform: translateX(-50%) translateY(-50%);\n}\n"],"names":[],"version":3,"file":"index.3708564b.css.map"}

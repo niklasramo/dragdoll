@@ -32,7 +32,7 @@ async function buildExampleDirectories() {
       mode: 'production',
       shouldDisableCache: true,
       defaultTargetOptions: {
-        shouldOptimize: false,
+        shouldOptimize: true,
         distDir: outputDir,
         publicUrl: `./`,
       },
