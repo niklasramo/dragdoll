@@ -671,10 +671,10 @@ declare function createPointerSensorStartPredicate<S extends (Sensor | PointerSe
     fallback?: D['settings']['startPredicate'];
 }): D["settings"]["startPredicate"];
 
-declare function createSnapModifier(gridWidth: number, gridHeight: number): ({ startEvent, event, item, }: {
-    startEvent: SensorStartEvent | SensorMoveEvent;
-    event: SensorMoveEvent;
-    item: DraggableDragItem;
+declare function createSnapModifier<S extends Sensor[], E extends S[number]['events']>(gridWidth: number, gridHeight: number): ({ item, event, startEvent, }: {
+    item: DraggableDragItem<S, E>;
+    event: E['start'] | E['move'];
+    startEvent: E['start'] | E['move'];
 }) => {
     x: number;
     y: number;
