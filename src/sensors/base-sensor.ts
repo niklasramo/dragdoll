@@ -78,12 +78,11 @@ export class BaseSensor<E extends SensorEvents = SensorEvents> implements Sensor
 
   cancel() {
     if (!this.drag) return;
-    this._emitter.emit(SensorEventType.cancel, {
+    this._cancel({
       type: SensorEventType.cancel,
       x: this.drag.x,
       y: this.drag.y,
-    });
-    this._resetDragData();
+    } as E['cancel']);
   }
 
   destroy() {

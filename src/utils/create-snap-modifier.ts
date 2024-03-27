@@ -1,4 +1,4 @@
-import { SensorStartEvent, SensorMoveEvent } from '../sensors/sensor.js';
+import { Sensor } from '../sensors/sensor.js';
 
 import { DraggableDragItem } from 'draggable/draggable-drag-item.js';
 
@@ -16,15 +16,18 @@ function getAxisChange(gridSize: number, snapPosition: number, sensorPosition: n
   return 0;
 }
 
-export function createSnapModifier(gridWidth: number, gridHeight: number) {
+export function createSnapModifier<S extends Sensor[], E extends S[number]['events']>(
+  gridWidth: number,
+  gridHeight: number,
+) {
   return function snapModifier({
-    startEvent,
-    event,
     item,
+    event,
+    startEvent,
   }: {
-    startEvent: SensorStartEvent | SensorMoveEvent;
-    event: SensorMoveEvent;
-    item: DraggableDragItem;
+    item: DraggableDragItem<S, E>;
+    event: E['start'] | E['move'];
+    startEvent: E['start'] | E['move'];
   }) {
     let { __snapX__ = startEvent.x, __snapY__ = startEvent.y } = item.data;
 

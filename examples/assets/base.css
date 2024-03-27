@@ -33,6 +33,7 @@ body {
   background-color: var(--card-bgColor);
   color: var(--card-color);
   border-radius: 8px;
+  border: 1.5px solid var(--bg-color);
 }
 @media (hover: hover) and (pointer: fine) {
   .card:hover,

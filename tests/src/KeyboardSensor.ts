@@ -4,8 +4,6 @@ import { createTestElement } from './utils/createTestElement.js';
 import { addDefaultPageStyles, removeDefaultPageStyles } from './utils/defaultPageStyles.js';
 import { KeyboardSensor, KeyboardSensorStartEvent } from '../../src/index.js';
 
-// PointerSensor
-
 describe('KeyboardSensor', () => {
   beforeEach(() => {
     if (IS_BROWSER) {
@@ -25,16 +23,20 @@ describe('KeyboardSensor', () => {
 
   describe('drag property', () => {
     it(`should be null on init`, function () {
-      const s = new KeyboardSensor();
+      const el = createTestElement();
+      const s = new KeyboardSensor(el);
       assert.equal(s.drag, null);
+      el.remove();
       s.destroy();
     });
   });
 
   describe('isDestroyed property', () => {
     it(`should be false on init`, function () {
-      const s = new KeyboardSensor();
+      const el = createTestElement();
+      const s = new KeyboardSensor(el);
       assert.equal(s.isDestroyed, false);
+      el.remove();
       s.destroy();
     });
   });
@@ -44,7 +46,7 @@ describe('KeyboardSensor', () => {
       if (!IS_BROWSER) this.skip();
 
       const el = createTestElement({ left: '10px', top: '20px' });
-      const s = new KeyboardSensor();
+      const s = new KeyboardSensor(el);
 
       let startEvent: KeyboardSensorStartEvent | null = null;
       s.on('start', (e) => {

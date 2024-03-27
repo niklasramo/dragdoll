@@ -14,21 +14,27 @@ import {
   createPointerSensorStartPredicate,
 } from 'dragdoll';
 
-const element = document.querySelector('.draggable') as HTMLElement;
-const pointerSensor = new PointerSensor(element);
-const keyboardSensor = new KeyboardMotionSensor();
-const draggable = new Draggable([pointerSensor, keyboardSensor], {
-  getElements: () => [element],
-  startPredicate: createPointerSensorStartPredicate(),
-  getFrozenProps: () => ['transform'],
-});
+let zIndex = 0;
 
-draggable.on('start', () => {
-  element.classList.add('dragging');
-});
+const draggableElements = document.querySelectorAll('.draggable');
 
-draggable.on('end', () => {
-  element.classList.remove('dragging');
+[...draggableElements].forEach((draggableElement) => {
+  const pointerSensor = new PointerSensor(draggableElement);
+  const keyboardSensor = new KeyboardMotionSensor(draggableElement);
+  const draggable = new Draggable([pointerSensor, keyboardSensor], {
+    getElements: () => [draggableElement as HTMLElement],
+    startPredicate: createPointerSensorStartPredicate(),
+    getFrozenProps: () => ['transform'],
+  });
+
+  draggable.on('start', () => {
+    draggableElement.classList.add('dragging');
+    (draggableElement as HTMLElement).style.zIndex = `${++zIndex}`;
+  });
+
+  draggable.on('end', () => {
+    draggableElement.classList.remove('dragging');
+  });
 });
 ```
 
@@ -47,6 +53,9 @@ draggable.on('end', () => {
   </head>
   <body>
     <div class="card draggable" tabindex="0"></div>
+    <div class="card draggable" tabindex="0"></div>
+    <div class="card draggable" tabindex="0"></div>
+    <div class="card draggable" tabindex="0"></div>
     <script type="module" src="index.ts"></script>
   </body>
 </html>
@@ -57,7 +66,18 @@ draggable.on('end', () => {
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translateX(-50%) translateY(-50%);
+}
+.draggable:nth-child(1) {
+  transform: translateX(-50%) translateY(-50%) translateY(-55%) translateX(-55%);
+}
+.draggable:nth-child(2) {
+  transform: translateX(-50%) translateY(-50%) translateY(-55%) translateX(55%);
+}
+.draggable:nth-child(3) {
+  transform: translateX(-50%) translateY(-50%) translateY(55%) translateX(-55%);
+}
+.draggable:nth-child(4) {
+  transform: translateX(-50%) translateY(-50%) translateY(55%) translateX(55%);
 }
 ```
 
@@ -97,6 +117,7 @@ body {
   background-color: var(--card-bgColor);
   color: var(--card-color);
   border-radius: 8px;
+  border: 1.5px solid var(--bg-color);
 }
 @media (hover: hover) and (pointer: fine) {
   .card:hover,
@@ -144,7 +165,7 @@ import {
 const element = document.querySelector('.draggable') as HTMLElement;
 const container = document.querySelector('.drag-container') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
-const keyboardSensor = new KeyboardMotionSensor();
+const keyboardSensor = new KeyboardMotionSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   container,
   getElements: () => [element],
@@ -245,6 +266,7 @@ body {
   background-color: var(--card-bgColor);
   color: var(--card-color);
   border-radius: 8px;
+  border: 1.5px solid var(--bg-color);
 }
 @media (hover: hover) and (pointer: fine) {
   .card:hover,
@@ -294,7 +316,7 @@ const GRID_HEIGHT = 40;
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
-const keyboardSensor = new KeyboardSensor({
+const keyboardSensor = new KeyboardSensor(element, {
   moveDistance: { x: GRID_WIDTH, y: GRID_HEIGHT },
 });
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
@@ -378,6 +400,7 @@ body {
   background-color: var(--card-bgColor);
   color: var(--card-color);
   border-radius: 8px;
+  border: 1.5px solid var(--bg-color);
 }
 @media (hover: hover) and (pointer: fine) {
   .card:hover,

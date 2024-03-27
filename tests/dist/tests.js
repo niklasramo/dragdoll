@@ -3699,12 +3699,11 @@ var BaseSensor = class {
   cancel() {
     if (!this.drag)
       return;
-    this._emitter.emit(SensorEventType.cancel, {
+    this._cancel({
       type: SensorEventType.cancel,
       x: this.drag.x,
       y: this.drag.y
     });
-    this._resetDragData();
   }
   destroy() {
     if (this.isDestroyed)
@@ -4057,80 +4056,101 @@ var PointerSensor = class {
 };
 
 // src/sensors/keyboard-sensor.ts
-var KeyboardSensor = class extends BaseSensor {
-  constructor(options = {}) {
-    super();
-    const {
-      moveDistance = 25,
-      startPredicate = (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          if (document.activeElement && document.activeElement !== document.body) {
-            const { left, top } = document.activeElement.getBoundingClientRect();
-            return { x: left, y: top };
-          }
-        }
-        return null;
-      },
-      movePredicate = (e, sensor, moveDistance2) => {
-        if (!sensor.drag)
-          return null;
-        switch (e.key) {
-          case "ArrowLeft": {
-            return {
-              x: sensor.drag.x - moveDistance2.x,
-              y: sensor.drag.y
-            };
-          }
-          case "ArrowRight": {
-            return {
-              x: sensor.drag.x + moveDistance2.x,
-              y: sensor.drag.y
-            };
-          }
-          case "ArrowUp": {
-            return {
-              x: sensor.drag.x,
-              y: sensor.drag.y - moveDistance2.y
-            };
-          }
-          case "ArrowDown": {
-            return {
-              x: sensor.drag.x,
-              y: sensor.drag.y + moveDistance2.y
-            };
-          }
-          default: {
-            return null;
-          }
-        }
-      },
-      cancelPredicate = (e, sensor) => {
-        if (sensor.drag && e.key === "Escape") {
-          return { x: sensor.drag.x, y: sensor.drag.y };
-        }
-        return null;
-      },
-      endPredicate = (e, sensor) => {
-        if (sensor.drag && (e.key === "Enter" || e.key === " ")) {
-          return { x: sensor.drag.x, y: sensor.drag.y };
-        }
+var keyboardSensorDefaults = {
+  moveDistance: 25,
+  cancelOnBlur: true,
+  cancelOnVisibilityChange: true,
+  startPredicate: (e, sensor) => {
+    if (sensor.element && (e.key === "Enter" || e.key === " ")) {
+      if (document.activeElement === sensor.element) {
+        const { left, top } = sensor.element.getBoundingClientRect();
+        return { x: left, y: top };
+      }
+    }
+    return null;
+  },
+  movePredicate: (e, sensor) => {
+    if (!sensor.drag)
+      return null;
+    switch (e.key) {
+      case "ArrowLeft": {
+        return {
+          x: sensor.drag.x - sensor.moveDistance.x,
+          y: sensor.drag.y
+        };
+      }
+      case "ArrowRight": {
+        return {
+          x: sensor.drag.x + sensor.moveDistance.x,
+          y: sensor.drag.y
+        };
+      }
+      case "ArrowUp": {
+        return {
+          x: sensor.drag.x,
+          y: sensor.drag.y - sensor.moveDistance.y
+        };
+      }
+      case "ArrowDown": {
+        return {
+          x: sensor.drag.x,
+          y: sensor.drag.y + sensor.moveDistance.y
+        };
+      }
+      default: {
         return null;
       }
+    }
+  },
+  cancelPredicate: (e, sensor) => {
+    if (sensor.drag && e.key === "Escape") {
+      return { x: sensor.drag.x, y: sensor.drag.y };
+    }
+    return null;
+  },
+  endPredicate: (e, sensor) => {
+    if (sensor.drag && (e.key === "Enter" || e.key === " ")) {
+      return { x: sensor.drag.x, y: sensor.drag.y };
+    }
+    return null;
+  }
+};
+var KeyboardSensor = class extends BaseSensor {
+  constructor(element, options = {}) {
+    super();
+    const {
+      moveDistance = keyboardSensorDefaults.moveDistance,
+      cancelOnBlur = keyboardSensorDefaults.cancelOnBlur,
+      cancelOnVisibilityChange = keyboardSensorDefaults.cancelOnVisibilityChange,
+      startPredicate = keyboardSensorDefaults.startPredicate,
+      movePredicate = keyboardSensorDefaults.movePredicate,
+      cancelPredicate = keyboardSensorDefaults.cancelPredicate,
+      endPredicate = keyboardSensorDefaults.endPredicate
     } = options;
-    this._moveDistance = typeof moveDistance === "number" ? { x: moveDistance, y: moveDistance } : { ...moveDistance };
+    this.element = element;
+    this.moveDistance = typeof moveDistance === "number" ? { x: moveDistance, y: moveDistance } : { ...moveDistance };
+    this._cancelOnBlur = cancelOnBlur;
+    this._cancelOnVisibilityChange = cancelOnVisibilityChange;
     this._startPredicate = startPredicate;
     this._movePredicate = movePredicate;
     this._cancelPredicate = cancelPredicate;
     this._endPredicate = endPredicate;
-    this.cancel = this.cancel.bind(this);
     this._onKeyDown = this._onKeyDown.bind(this);
+    this._internalCancel = this._internalCancel.bind(this);
     document.addEventListener("keydown", this._onKeyDown);
-    window.addEventListener("blur", this.cancel);
-    window.addEventListener("visibilitychange", this.cancel);
+    if (cancelOnBlur) {
+      element?.addEventListener("blur", this._internalCancel);
+    }
+    if (cancelOnVisibilityChange) {
+      document.addEventListener("visibilitychange", this._internalCancel);
+    }
+  }
+  _internalCancel() {
+    this.cancel();
   }
   _onKeyDown(e) {
     if (!this.drag) {
-      const startPosition = this._startPredicate(e, this, this._moveDistance);
+      const startPosition = this._startPredicate(e, this);
       if (startPosition) {
         e.preventDefault();
         this._start({
@@ -4142,7 +4162,7 @@ var KeyboardSensor = class extends BaseSensor {
       }
       return;
     }
-    const cancelPosition = this._cancelPredicate(e, this, this._moveDistance);
+    const cancelPosition = this._cancelPredicate(e, this);
     if (cancelPosition) {
       e.preventDefault();
       this._cancel({
@@ -4153,7 +4173,7 @@ var KeyboardSensor = class extends BaseSensor {
       });
       return;
     }
-    const endPosition = this._endPredicate(e, this, this._moveDistance);
+    const endPosition = this._endPredicate(e, this);
     if (endPosition) {
       e.preventDefault();
       this._end({
@@ -4164,7 +4184,7 @@ var KeyboardSensor = class extends BaseSensor {
       });
       return;
     }
-    const movePosition = this._movePredicate(e, this, this._moveDistance);
+    const movePosition = this._movePredicate(e, this);
     if (movePosition) {
       e.preventDefault();
       this._move({
@@ -4177,26 +4197,50 @@ var KeyboardSensor = class extends BaseSensor {
     }
   }
   updateSettings(options = {}) {
-    if (options.moveDistance !== void 0) {
-      if (typeof options.moveDistance === "number") {
-        this._moveDistance.x = options.moveDistance;
-        this._moveDistance.y = options.moveDistance;
+    const {
+      moveDistance,
+      cancelOnBlur,
+      cancelOnVisibilityChange,
+      startPredicate,
+      movePredicate,
+      cancelPredicate,
+      endPredicate
+    } = options;
+    if (moveDistance !== void 0) {
+      if (typeof moveDistance === "number") {
+        this.moveDistance.x = this.moveDistance.y = moveDistance;
       } else {
-        this._moveDistance.x = options.moveDistance.x;
-        this._moveDistance.y = options.moveDistance.y;
+        this.moveDistance.x = moveDistance.x;
+        this.moveDistance.y = moveDistance.y;
       }
     }
-    if (options.startPredicate !== void 0) {
-      this._startPredicate = options.startPredicate;
+    if (cancelOnBlur !== void 0 && this._cancelOnBlur !== cancelOnBlur) {
+      this._cancelOnBlur = cancelOnBlur;
+      if (cancelOnBlur) {
+        this.element?.addEventListener("blur", this._internalCancel);
+      } else {
+        this.element?.removeEventListener("blur", this._internalCancel);
+      }
     }
-    if (options.movePredicate !== void 0) {
-      this._movePredicate = options.movePredicate;
+    if (cancelOnVisibilityChange !== void 0 && this._cancelOnVisibilityChange !== cancelOnVisibilityChange) {
+      this._cancelOnVisibilityChange = cancelOnVisibilityChange;
+      if (cancelOnVisibilityChange) {
+        document.addEventListener("visibilitychange", this._internalCancel);
+      } else {
+        document.removeEventListener("visibilitychange", this._internalCancel);
+      }
     }
-    if (options.cancelPredicate !== void 0) {
-      this._cancelPredicate = options.cancelPredicate;
+    if (startPredicate) {
+      this._startPredicate = startPredicate;
     }
-    if (options.endPredicate !== void 0) {
-      this._endPredicate = options.endPredicate;
+    if (movePredicate) {
+      this._movePredicate = movePredicate;
+    }
+    if (cancelPredicate) {
+      this._cancelPredicate = cancelPredicate;
+    }
+    if (endPredicate) {
+      this._endPredicate = endPredicate;
     }
   }
   destroy() {
@@ -4204,8 +4248,12 @@ var KeyboardSensor = class extends BaseSensor {
       return;
     super.destroy();
     document.removeEventListener("keydown", this._onKeyDown);
-    window.removeEventListener("blur", this.cancel);
-    window.removeEventListener("visibilitychange", this.cancel);
+    if (this._cancelOnBlur) {
+      this.element?.removeEventListener("blur", this._internalCancel);
+    }
+    if (this._cancelOnVisibilityChange) {
+      document.removeEventListener("visibilitychange", this._internalCancel);
+    }
   }
 };
 
@@ -6362,15 +6410,19 @@ describe("KeyboardSensor", () => {
   });
   describe("drag property", () => {
     it(`should be null on init`, function() {
-      const s = new KeyboardSensor();
+      const el = createTestElement();
+      const s = new KeyboardSensor(el);
       assert.equal(s.drag, null);
+      el.remove();
       s.destroy();
     });
   });
   describe("isDestroyed property", () => {
     it(`should be false on init`, function() {
-      const s = new KeyboardSensor();
+      const el = createTestElement();
+      const s = new KeyboardSensor(el);
       assert.equal(s.isDestroyed, false);
+      el.remove();
       s.destroy();
     });
   });
@@ -6379,7 +6431,7 @@ describe("KeyboardSensor", () => {
       if (!IS_BROWSER)
         this.skip();
       const el = createTestElement({ left: "10px", top: "20px" });
-      const s = new KeyboardSensor();
+      const s = new KeyboardSensor(el);
       let startEvent = null;
       s.on("start", (e) => {
         if (startEvent === null) {

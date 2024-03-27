@@ -48,8 +48,9 @@ const element = document.querySelector('.draggable');
 // not yet make the element move.
 const pointerSensor = new PointerSensor(element);
 
-// Let's also create a keyboard sensor.
-const keyboardSensor = new KeyboardSensor();
+// Let's also create a keyboard sensor, which listens to keyboard events and
+// emits drag events for us to listen to.
+const keyboardSensor = new KeyboardSensor(element);
 
 // Next, let's make the element move based on the events the PointerSensor
 // and KeyboardSensor are emitting. Note that you can feed multiple sensors to
@@ -69,8 +70,9 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
 // Now you should be able to drag the element around using mouse, touch or
 // keyboard.
 
-// When you're done with your dragging needs you can destroy the sensor and
+// When you're done with your dragging needs you can destroy the sensors and
 // draggable.
 draggable.destroy();
 pointerSensor.destroy();
+keyboardSensor.destroy();
 ```
