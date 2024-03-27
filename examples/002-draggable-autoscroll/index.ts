@@ -9,7 +9,7 @@ import {
 const element = document.querySelector('.draggable') as HTMLElement;
 const container = document.querySelector('.drag-container') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
-const keyboardSensor = new KeyboardMotionSensor();
+const keyboardSensor = new KeyboardMotionSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   container,
   getElements: () => [element],

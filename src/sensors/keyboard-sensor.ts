@@ -11,18 +11,19 @@ import { BaseSensor } from './base-sensor.js';
 
 import { Point } from 'types.js';
 
-export type KeyboardSensorPredicate = (
+export type KeyboardSensorPredicate<E extends KeyboardSensorEvents = KeyboardSensorEvents> = (
   e: KeyboardEvent,
-  sensor: KeyboardSensor,
-  moveDistance: Point,
+  sensor: KeyboardSensor<E>,
 ) => Point | null | undefined;
 
-export interface KeyboardSensorSettings {
+export interface KeyboardSensorSettings<E extends KeyboardSensorEvents = KeyboardSensorEvents> {
   moveDistance: number | Point;
-  startPredicate: KeyboardSensorPredicate;
-  movePredicate: KeyboardSensorPredicate;
-  cancelPredicate: KeyboardSensorPredicate;
-  endPredicate: KeyboardSensorPredicate;
+  cancelOnBlur: boolean;
+  cancelOnVisibilityChange: boolean;
+  startPredicate: KeyboardSensorPredicate<E>;
+  movePredicate: KeyboardSensorPredicate<E>;
+  cancelPredicate: KeyboardSensorPredicate<E>;
+  endPredicate: KeyboardSensorPredicate<E>;
 }
 
 export interface KeyboardSensorStartEvent extends SensorStartEvent {
@@ -51,97 +52,123 @@ export interface KeyboardSensorEvents {
   destroy: KeyboardSensorDestroyEvent;
 }
 
+export const keyboardSensorDefaults: KeyboardSensorSettings<any> = {
+  moveDistance: 25,
+  cancelOnBlur: true,
+  cancelOnVisibilityChange: true,
+  startPredicate: (e, sensor) => {
+    if (sensor.element && (e.key === 'Enter' || e.key === ' ')) {
+      if (document.activeElement === sensor.element) {
+        const { left, top } = sensor.element.getBoundingClientRect();
+        return { x: left, y: top };
+      }
+    }
+    return null;
+  },
+  movePredicate: (e, sensor) => {
+    if (!sensor.drag) return null;
+
+    switch (e.key) {
+      case 'ArrowLeft': {
+        return {
+          x: sensor.drag.x - sensor.moveDistance.x,
+          y: sensor.drag.y,
+        };
+      }
+      case 'ArrowRight': {
+        return {
+          x: sensor.drag.x + sensor.moveDistance.x,
+          y: sensor.drag.y,
+        };
+      }
+      case 'ArrowUp': {
+        return {
+          x: sensor.drag.x,
+          y: sensor.drag.y - sensor.moveDistance.y,
+        };
+      }
+      case 'ArrowDown': {
+        return {
+          x: sensor.drag.x,
+          y: sensor.drag.y + sensor.moveDistance.y,
+        };
+      }
+      default: {
+        return null;
+      }
+    }
+  },
+  cancelPredicate: (e, sensor) => {
+    if (sensor.drag && e.key === 'Escape') {
+      return { x: sensor.drag.x, y: sensor.drag.y };
+    }
+    return null;
+  },
+  endPredicate: (e, sensor) => {
+    if (sensor.drag && (e.key === 'Enter' || e.key === ' ')) {
+      return { x: sensor.drag.x, y: sensor.drag.y };
+    }
+    return null;
+  },
+} as const;
+
 export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvents>
   extends BaseSensor<E>
   implements Sensor<E>
 {
   declare events: E;
-  protected _moveDistance: Point;
-  protected _startPredicate: KeyboardSensorPredicate;
-  protected _movePredicate: KeyboardSensorPredicate;
-  protected _cancelPredicate: KeyboardSensorPredicate;
-  protected _endPredicate: KeyboardSensorPredicate;
+  readonly element: Element | null;
+  readonly moveDistance: Point;
+  protected _cancelOnBlur: boolean;
+  protected _cancelOnVisibilityChange: boolean;
+  protected _startPredicate: KeyboardSensorPredicate<E>;
+  protected _movePredicate: KeyboardSensorPredicate<E>;
+  protected _cancelPredicate: KeyboardSensorPredicate<E>;
+  protected _endPredicate: KeyboardSensorPredicate<E>;
 
-  constructor(options: Partial<KeyboardSensorSettings> = {}) {
+  constructor(element: Element | null, options: Partial<KeyboardSensorSettings<E>> = {}) {
     super();
 
     const {
-      moveDistance = 25,
-      startPredicate = (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          if (document.activeElement && document.activeElement !== document.body) {
-            const { left, top } = document.activeElement.getBoundingClientRect();
-            return { x: left, y: top };
-          }
-        }
-        return null;
-      },
-      movePredicate = (e, sensor, moveDistance) => {
-        if (!sensor.drag) return null;
-
-        switch (e.key) {
-          case 'ArrowLeft': {
-            return {
-              x: sensor.drag.x - moveDistance.x,
-              y: sensor.drag.y,
-            };
-          }
-          case 'ArrowRight': {
-            return {
-              x: sensor.drag.x + moveDistance.x,
-              y: sensor.drag.y,
-            };
-          }
-          case 'ArrowUp': {
-            return {
-              x: sensor.drag.x,
-              y: sensor.drag.y - moveDistance.y,
-            };
-          }
-          case 'ArrowDown': {
-            return {
-              x: sensor.drag.x,
-              y: sensor.drag.y + moveDistance.y,
-            };
-          }
-          default: {
-            return null;
-          }
-        }
-      },
-      cancelPredicate = (e, sensor) => {
-        if (sensor.drag && e.key === 'Escape') {
-          return { x: sensor.drag.x, y: sensor.drag.y };
-        }
-        return null;
-      },
-      endPredicate = (e, sensor) => {
-        if (sensor.drag && (e.key === 'Enter' || e.key === ' ')) {
-          return { x: sensor.drag.x, y: sensor.drag.y };
-        }
-        return null;
-      },
+      moveDistance = keyboardSensorDefaults.moveDistance,
+      cancelOnBlur = keyboardSensorDefaults.cancelOnBlur,
+      cancelOnVisibilityChange = keyboardSensorDefaults.cancelOnVisibilityChange,
+      startPredicate = keyboardSensorDefaults.startPredicate,
+      movePredicate = keyboardSensorDefaults.movePredicate,
+      cancelPredicate = keyboardSensorDefaults.cancelPredicate,
+      endPredicate = keyboardSensorDefaults.endPredicate,
     } = options;
 
-    this._moveDistance =
+    this.element = element;
+    this.moveDistance =
       typeof moveDistance === 'number' ? { x: moveDistance, y: moveDistance } : { ...moveDistance };
+    this._cancelOnBlur = cancelOnBlur;
+    this._cancelOnVisibilityChange = cancelOnVisibilityChange;
     this._startPredicate = startPredicate;
     this._movePredicate = movePredicate;
     this._cancelPredicate = cancelPredicate;
     this._endPredicate = endPredicate;
 
-    this.cancel = this.cancel.bind(this);
     this._onKeyDown = this._onKeyDown.bind(this);
+    this._internalCancel = this._internalCancel.bind(this);
 
     document.addEventListener('keydown', this._onKeyDown);
-    window.addEventListener('blur', this.cancel);
-    window.addEventListener('visibilitychange', this.cancel);
+    if (cancelOnBlur) {
+      element?.addEventListener('blur', this._internalCancel);
+    }
+    if (cancelOnVisibilityChange) {
+      document.addEventListener('visibilitychange', this._internalCancel);
+    }
+  }
+
+  protected _internalCancel() {
+    this.cancel();
   }
 
   protected _onKeyDown(e: KeyboardEvent) {
     // Handle start.
     if (!this.drag) {
-      const startPosition = this._startPredicate(e, this, this._moveDistance);
+      const startPosition = this._startPredicate(e, this);
       if (startPosition) {
         e.preventDefault();
         this._start({
@@ -155,7 +182,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
     }
 
     // Handle cancel.
-    const cancelPosition = this._cancelPredicate(e, this, this._moveDistance);
+    const cancelPosition = this._cancelPredicate(e, this);
     if (cancelPosition) {
       e.preventDefault();
       this._cancel({
@@ -168,7 +195,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
     }
 
     // Handle end.
-    const endPosition = this._endPredicate(e, this, this._moveDistance);
+    const endPosition = this._endPredicate(e, this);
     if (endPosition) {
       e.preventDefault();
       this._end({
@@ -181,7 +208,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
     }
 
     // Handle move.
-    const movePosition = this._movePredicate(e, this, this._moveDistance);
+    const movePosition = this._movePredicate(e, this);
     if (movePosition) {
       e.preventDefault();
       this._move({
@@ -194,31 +221,61 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
     }
   }
 
-  updateSettings(options: Partial<KeyboardSensorSettings> = {}) {
-    if (options.moveDistance !== undefined) {
-      if (typeof options.moveDistance === 'number') {
-        this._moveDistance.x = options.moveDistance;
-        this._moveDistance.y = options.moveDistance;
+  updateSettings(options: Partial<KeyboardSensorSettings<E>> = {}) {
+    const {
+      moveDistance,
+      cancelOnBlur,
+      cancelOnVisibilityChange,
+      startPredicate,
+      movePredicate,
+      cancelPredicate,
+      endPredicate,
+    } = options;
+
+    if (moveDistance !== undefined) {
+      if (typeof moveDistance === 'number') {
+        this.moveDistance.x = this.moveDistance.y = moveDistance;
       } else {
-        this._moveDistance.x = options.moveDistance.x;
-        this._moveDistance.y = options.moveDistance.y;
+        this.moveDistance.x = moveDistance.x;
+        this.moveDistance.y = moveDistance.y;
       }
     }
 
-    if (options.startPredicate !== undefined) {
-      this._startPredicate = options.startPredicate;
+    if (cancelOnBlur !== undefined && this._cancelOnBlur !== cancelOnBlur) {
+      this._cancelOnBlur = cancelOnBlur;
+      if (cancelOnBlur) {
+        this.element?.addEventListener('blur', this._internalCancel);
+      } else {
+        this.element?.removeEventListener('blur', this._internalCancel);
+      }
     }
 
-    if (options.movePredicate !== undefined) {
-      this._movePredicate = options.movePredicate;
+    if (
+      cancelOnVisibilityChange !== undefined &&
+      this._cancelOnVisibilityChange !== cancelOnVisibilityChange
+    ) {
+      this._cancelOnVisibilityChange = cancelOnVisibilityChange;
+      if (cancelOnVisibilityChange) {
+        document.addEventListener('visibilitychange', this._internalCancel);
+      } else {
+        document.removeEventListener('visibilitychange', this._internalCancel);
+      }
     }
 
-    if (options.cancelPredicate !== undefined) {
-      this._cancelPredicate = options.cancelPredicate;
+    if (startPredicate) {
+      this._startPredicate = startPredicate;
     }
 
-    if (options.endPredicate !== undefined) {
-      this._endPredicate = options.endPredicate;
+    if (movePredicate) {
+      this._movePredicate = movePredicate;
+    }
+
+    if (cancelPredicate) {
+      this._cancelPredicate = cancelPredicate;
+    }
+
+    if (endPredicate) {
+      this._endPredicate = endPredicate;
     }
   }
 
@@ -226,7 +283,11 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
     if (this.isDestroyed) return;
     super.destroy();
     document.removeEventListener('keydown', this._onKeyDown);
-    window.removeEventListener('blur', this.cancel);
-    window.removeEventListener('visibilitychange', this.cancel);
+    if (this._cancelOnBlur) {
+      this.element?.removeEventListener('blur', this._internalCancel);
+    }
+    if (this._cancelOnVisibilityChange) {
+      document.removeEventListener('visibilitychange', this._internalCancel);
+    }
   }
 }
