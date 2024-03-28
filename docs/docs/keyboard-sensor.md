@@ -2,7 +2,7 @@
 
 # KeyboardSensor
 
-KeyboardSensor listens to `document`'s `keydown` events and normalizes them into unified drag events. You can configure start/end/move/cancel predicate functions, which determine the drag's movement and the keys that control the drag. This sensor is designed to be as simple and as customizable as possible with minimal API interface.
+KeyboardSensor listens to keyboard events and normalizes them into unified drag events. This sensor is designed to be as simple and as customizable as possible with minimal API interface.
 
 ## Example
 
@@ -11,8 +11,7 @@ import { KeyboardSensor, Draggable } from 'dragdoll';
 
 // Create a keyboard sensor instance that listens to keydown events and starts
 // emitting drag events when the provided element is focused and a start key
-// (enter or space) is pressed. You can stop the drag by pressing the end key
-// (enter or space) or cancel it by pressing the cancel key (escape).
+// (enter or space) is pressed.
 const element = document.querySelector('.draggable');
 const keyboardSensor = new KeyboardSensor(element);
 

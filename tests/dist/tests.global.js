@@ -6146,18 +6146,12 @@
   // tests/src/PointerSensor.ts
   describe("PointerSensor", () => {
     beforeEach(() => {
-      if (IS_BROWSER) {
-        addDefaultPageStyles(document);
-        return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-      }
-      return;
+      addDefaultPageStyles(document);
+      return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     });
     afterEach(() => {
-      if (IS_BROWSER) {
-        removeDefaultPageStyles(document);
-        return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-      }
-      return;
+      removeDefaultPageStyles(document);
+      return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     });
     describe("drag property", () => {
       it(`should be null on init`, function() {
@@ -6175,24 +6169,18 @@
     });
     describe("target element parameter", () => {
       it("should accept document.documentElement", function() {
-        if (!IS_BROWSER)
-          this.skip();
         const s = new PointerSensor(document.documentElement, { sourceEvents: "mouse" });
         document.documentElement.dispatchEvent(new MouseEvent("mousedown"));
         assert.notEqual(s.drag, null);
         s.destroy();
       });
       it("should accept document.body", function() {
-        if (!IS_BROWSER)
-          this.skip();
         const s = new PointerSensor(document.body, { sourceEvents: "mouse" });
         document.body.dispatchEvent(new MouseEvent("mousedown"));
         assert.notEqual(s.drag, null);
         s.destroy();
       });
       it("should accept a descendant of document.body", function() {
-        if (!IS_BROWSER)
-          this.skip();
         const el = createTestElement();
         const s = new PointerSensor(el, { sourceEvents: "mouse" });
         el.dispatchEvent(new MouseEvent("mousedown"));
@@ -6203,8 +6191,6 @@
     });
     describe("sourceEvents option", () => {
       it('should listen to mouse/pointer/touch events when set to "mouse"/"pointer"/"touch"', function() {
-        if (!IS_BROWSER)
-          this.skip();
         const mouseSensor = new PointerSensor(document.body, { sourceEvents: "mouse" });
         const pointerSensor = new PointerSensor(document.body, { sourceEvents: "pointer" });
         const touchSensor = new PointerSensor(document.body, { sourceEvents: "touch" });
@@ -6320,8 +6306,6 @@
     });
     describe("start event", () => {
       it(`should be triggered correctly on mousedown`, function() {
-        if (!IS_BROWSER)
-          this.skip();
         const el = createTestElement();
         const s = new PointerSensor(el, { sourceEvents: "mouse" });
         let startEvent = null;
@@ -6362,8 +6346,6 @@
         el.remove();
       });
       it(`should be triggered correctly on pointerdown`, function() {
-        if (!IS_BROWSER)
-          this.skip();
         const el = createTestElement();
         const s = new PointerSensor(el, { sourceEvents: "pointer" });
         let startEvent = null;
@@ -6404,8 +6386,6 @@
         el.remove();
       });
       it(`should be triggered correctly on touchstart`, function() {
-        if (!IS_BROWSER)
-          this.skip();
         const el = createTestElement();
         const s = new PointerSensor(el, { sourceEvents: "touch" });
         let startEvent = null;
@@ -6448,8 +6428,6 @@
     });
     describe("move event", () => {
       it(`should be triggered correctly on mousemove`, function() {
-        if (!IS_BROWSER)
-          this.skip();
         const el = createTestElement();
         const s = new PointerSensor(el, { sourceEvents: "mouse" });
         let moveEvent = null;
@@ -6490,8 +6468,6 @@
         el.remove();
       });
       it(`should be triggered correctly on pointermove`, function() {
-        if (!IS_BROWSER)
-          this.skip();
         const el = createTestElement();
         const s = new PointerSensor(el, { sourceEvents: "pointer" });
         let moveEvent = null;
@@ -6532,8 +6508,6 @@
         el.remove();
       });
       it(`should be triggered correctly on touchmove`, function() {
-        if (!IS_BROWSER)
-          this.skip();
         const el = createTestElement();
         const s = new PointerSensor(el, { sourceEvents: "touch" });
         let moveEvent = null;
@@ -6576,8 +6550,6 @@
     });
     describe("end event", () => {
       it(`should be triggered correctly on mouseup`, function() {
-        if (!IS_BROWSER)
-          this.skip();
         const el = createTestElement();
         const s = new PointerSensor(el, { sourceEvents: "mouse" });
         let endEvent = null;
@@ -6618,8 +6590,6 @@
         el.remove();
       });
       it(`should be triggered correctly on pointerup`, function() {
-        if (!IS_BROWSER)
-          this.skip();
         const el = createTestElement();
         const s = new PointerSensor(el, { sourceEvents: "pointer" });
         let endEvent = null;
@@ -6660,8 +6630,6 @@
         el.remove();
       });
       it(`should be triggered correctly on touchend`, function() {
-        if (!IS_BROWSER)
-          this.skip();
         const el = createTestElement();
         const s = new PointerSensor(el, { sourceEvents: "touch" });
         let endEvent = null;
@@ -6704,8 +6672,6 @@
     });
     describe("cancel event", () => {
       it(`should be triggered correctly on pointercancel`, function() {
-        if (!IS_BROWSER)
-          this.skip();
         const el = createTestElement();
         const s = new PointerSensor(el, { sourceEvents: "pointer" });
         let cancelEvent = null;
@@ -6747,8 +6713,6 @@
         el.remove();
       });
       it(`should be triggered correctly on touchcancel`, function() {
-        if (!IS_BROWSER)
-          this.skip();
         const el = createTestElement();
         const s = new PointerSensor(el, { sourceEvents: "touch" });
         let cancelEvent = null;
@@ -6795,18 +6759,12 @@
   // tests/src/KeyboardSensor.ts
   describe("KeyboardSensor", () => {
     beforeEach(() => {
-      if (IS_BROWSER) {
-        addDefaultPageStyles(document);
-        return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-      }
-      return;
+      addDefaultPageStyles(document);
+      return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     });
     afterEach(() => {
-      if (IS_BROWSER) {
-        removeDefaultPageStyles(document);
-        return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-      }
-      return;
+      removeDefaultPageStyles(document);
+      return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     });
     describe("drag property", () => {
       it(`should be null on init`, function() {
@@ -6827,30 +6785,157 @@
       });
     });
     describe("start event", () => {
-      it(`should be triggered correctly on Enter`, function() {
-        if (!IS_BROWSER)
-          this.skip();
-        const el = createTestElement({ left: "10px", top: "20px" });
+      it(`should be triggered on Enter and Space when sensor element is focused`, function() {
+        ["Enter", " "].forEach((key) => {
+          const el = createTestElement({ left: "10px", top: "20px" });
+          const elDecoy = createTestElement({ left: "10px", top: "20px" });
+          const s = new KeyboardSensor(el);
+          let startEvent = null;
+          s.on("start", (e) => {
+            if (startEvent === null) {
+              startEvent = e;
+            } else {
+              assert.fail("start event listener called twice");
+            }
+          });
+          const srcEvent = new KeyboardEvent("keydown", { key });
+          document.dispatchEvent(srcEvent);
+          assert.equal(s.drag, null);
+          elDecoy.focus();
+          document.dispatchEvent(srcEvent);
+          assert.equal(s.drag, null);
+          el.focus();
+          document.dispatchEvent(srcEvent);
+          assert.deepEqual(startEvent, {
+            type: "start",
+            srcEvent,
+            x: 10,
+            y: 20
+          });
+          s.destroy();
+          el.remove();
+          elDecoy.remove();
+        });
+      });
+    });
+    describe("on method", () => {
+      it("should return a unique symbol by default", () => {
+        const el = createTestElement();
         const s = new KeyboardSensor(el);
-        let startEvent = null;
-        s.on("start", (e) => {
-          if (startEvent === null) {
-            startEvent = e;
-          } else {
-            assert.fail("start event listener called twice");
-          }
+        const idA = s.on("start", () => {
         });
-        const srcEvent = new KeyboardEvent("keydown", { key: "Enter" });
-        document.dispatchEvent(srcEvent);
-        assert.equal(s.drag, null);
+        const idB = s.on("start", () => {
+        });
+        assert.equal(typeof idA, "symbol");
+        assert.notEqual(idA, idB);
+        el.remove();
+        s.destroy();
+      });
+      it("should allow duplicate event listeners", () => {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el);
+        let counter = 0;
+        const listener = () => {
+          ++counter;
+        };
+        s.on("start", listener);
+        s.on("start", listener);
         el.focus();
-        document.dispatchEvent(srcEvent);
-        assert.deepEqual(startEvent, {
-          type: "start",
-          srcEvent,
-          x: 10,
-          y: 20
-        });
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        assert.equal(counter, 2);
+        el.remove();
+        s.destroy();
+      });
+      it("should remove the existing listener and add the new one if the same id is used", () => {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el);
+        let msg = "";
+        s.on("start", () => void (msg += "a"), 1);
+        s.on("start", () => void (msg += "b"), 2);
+        s.on("start", () => void (msg += "c"), 1);
+        el.focus();
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        assert.equal(msg, "bc");
+        el.remove();
+        s.destroy();
+      });
+      it("should allow defining a custom id (string/symbol/number) for the event listener via third argument", () => {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el);
+        const idA = Symbol();
+        assert.equal(
+          s.on("start", () => {
+          }, idA),
+          idA
+        );
+        const idB = 1;
+        assert.equal(
+          s.on("start", () => {
+          }, idB),
+          idB
+        );
+        const idC = "foo";
+        assert.equal(
+          s.on("start", () => {
+          }, idC),
+          idC
+        );
+        el.remove();
+        s.destroy();
+      });
+    });
+    describe("off method", () => {
+      it("should remove an event listener based on id", () => {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el);
+        let msg = "";
+        const idA = s.on("start", () => void (msg += "a"));
+        s.on("start", () => void (msg += "b"));
+        s.off("start", idA);
+        el.focus();
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        assert.equal(msg, "b");
+      });
+    });
+    describe("updateSettings method", () => {
+      it(`should update settings`, function() {
+        const initSettings = {
+          moveDistance: 25,
+          cancelOnBlur: false,
+          cancelOnVisibilityChange: false,
+          startPredicate: () => null,
+          movePredicate: () => null,
+          cancelPredicate: () => null,
+          endPredicate: () => null
+        };
+        const updatedSettings = {
+          moveDistance: 50,
+          cancelOnBlur: true,
+          cancelOnVisibilityChange: true,
+          startPredicate: () => void 0,
+          movePredicate: () => void 0,
+          cancelPredicate: () => void 0,
+          endPredicate: () => void 0
+        };
+        const el = createTestElement();
+        const s = new KeyboardSensor(el, initSettings);
+        assert.equal(s.moveDistance.x, initSettings.moveDistance);
+        assert.equal(s.moveDistance.y, initSettings.moveDistance);
+        assert.equal(s["_cancelOnBlur"], initSettings.cancelOnBlur);
+        assert.equal(s["_cancelOnVisibilityChange"], initSettings.cancelOnVisibilityChange);
+        assert.equal(s["_startPredicate"], initSettings.startPredicate);
+        assert.equal(s["_movePredicate"], initSettings.movePredicate);
+        assert.equal(s["_cancelPredicate"], initSettings.cancelPredicate);
+        assert.equal(s["_endPredicate"], initSettings.endPredicate);
+        s.updateSettings(updatedSettings);
+        assert.equal(s.moveDistance.x, updatedSettings.moveDistance);
+        assert.equal(s.moveDistance.y, updatedSettings.moveDistance);
+        assert.equal(s["_cancelOnBlur"], updatedSettings.cancelOnBlur);
+        assert.equal(s["_cancelOnVisibilityChange"], updatedSettings.cancelOnVisibilityChange);
+        assert.equal(s["_startPredicate"], updatedSettings.startPredicate);
+        assert.equal(s["_movePredicate"], updatedSettings.movePredicate);
+        assert.equal(s["_cancelPredicate"], updatedSettings.cancelPredicate);
+        assert.equal(s["_endPredicate"], updatedSettings.endPredicate);
         s.destroy();
         el.remove();
       });
