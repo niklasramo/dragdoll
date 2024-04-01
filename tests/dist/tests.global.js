@@ -6809,30 +6809,141 @@
         });
       });
       describe("cancelOnBlur", () => {
-        it("should cancel drag on blur", () => {
-          return new Promise((resolve) => {
-            const el = createTestElement();
-            const s = new KeyboardSensor(el, { cancelOnBlur: true });
-            assert.equal(s["_cancelOnBlur"], true);
-            let cancelEvents = 0;
-            s.on("cancel", () => {
-              ++cancelEvents;
-            });
-            let endEvents = 0;
-            s.on("end", () => {
-              ++endEvents;
-            });
-            focusElement(el);
-            document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-            assert.notEqual(s.drag, null);
-            blurElement(el);
-            assert.equal(s.drag, null);
-            assert.equal(cancelEvents, 1);
-            assert.equal(endEvents, 0);
-            el.remove();
-            s.destroy();
-            resolve(void 0);
+        it("should cancel drag on blur when true", () => {
+          const el = createTestElement();
+          const s = new KeyboardSensor(el, { cancelOnBlur: true });
+          assert.equal(s["_cancelOnBlur"], true);
+          let cancelEvents = 0;
+          s.on("cancel", () => {
+            ++cancelEvents;
           });
+          let endEvents = 0;
+          s.on("end", () => {
+            ++endEvents;
+          });
+          focusElement(el);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          assert.notEqual(s.drag, null);
+          blurElement(el);
+          assert.equal(s.drag, null);
+          assert.equal(cancelEvents, 1);
+          assert.equal(endEvents, 0);
+          el.remove();
+          s.destroy();
+        });
+        it("should not cancel drag on blur when false", () => {
+          const el = createTestElement();
+          const s = new KeyboardSensor(el, { cancelOnBlur: false });
+          assert.equal(s["_cancelOnBlur"], false);
+          focusElement(el);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          assert.notEqual(s.drag, null);
+          blurElement(el);
+          assert.notEqual(s.drag, null);
+          el.remove();
+          s.destroy();
+        });
+      });
+      describe("startPredicate", () => {
+        it("should define the start predicate", () => {
+          let returnValue = null;
+          const el = createTestElement();
+          const s = new KeyboardSensor(el, {
+            startPredicate: (e, sensor) => {
+              assert.equal(e.type, "keydown");
+              assert.equal(sensor, s);
+              return returnValue;
+            }
+          });
+          returnValue = null;
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          assert.equal(s.drag, null);
+          returnValue = void 0;
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          assert.equal(s.drag, null);
+          returnValue = { x: 10, y: 20 };
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          assert.deepEqual(s.drag, { x: 10, y: 20 });
+          el.remove();
+          s.destroy();
+        });
+      });
+      describe("movePredicate", () => {
+        it("should define the move predicate", () => {
+          let returnValue = null;
+          const el = createTestElement();
+          const s = new KeyboardSensor(el, {
+            movePredicate: (e, sensor) => {
+              assert.equal(e.type, "keydown");
+              assert.equal(sensor, s);
+              return returnValue;
+            }
+          });
+          focusElement(el);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          returnValue = null;
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+          assert.deepEqual(s.drag, { x: 0, y: 0 });
+          returnValue = void 0;
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+          assert.deepEqual(s.drag, { x: 0, y: 0 });
+          returnValue = { x: 1, y: 1 };
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+          assert.deepEqual(s.drag, returnValue);
+          el.remove();
+          s.destroy();
+        });
+      });
+      describe("cancelPredicate", () => {
+        it("should define the cancel predicate", () => {
+          let returnValue = null;
+          const el = createTestElement();
+          const s = new KeyboardSensor(el, {
+            cancelPredicate: (e, sensor) => {
+              assert.equal(e.type, "keydown");
+              assert.equal(sensor, s);
+              return returnValue;
+            }
+          });
+          focusElement(el);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          returnValue = null;
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+          assert.notEqual(s.drag, null);
+          returnValue = void 0;
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+          assert.notEqual(s.drag, null);
+          returnValue = { x: 1, y: 1 };
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+          assert.equal(s.drag, null);
+          el.remove();
+          s.destroy();
+        });
+      });
+      describe("endPredicate", () => {
+        it("should define the end predicate", () => {
+          let returnValue = null;
+          const el = createTestElement();
+          const s = new KeyboardSensor(el, {
+            endPredicate: (e, sensor) => {
+              assert.equal(e.type, "keydown");
+              assert.equal(sensor, s);
+              return returnValue;
+            }
+          });
+          focusElement(el);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          returnValue = null;
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          assert.notEqual(s.drag, null);
+          returnValue = void 0;
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          assert.notEqual(s.drag, null);
+          returnValue = { x: 1, y: 1 };
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          assert.equal(s.drag, null);
+          el.remove();
+          s.destroy();
         });
       });
     });
