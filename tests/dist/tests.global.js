@@ -5532,6 +5532,11 @@
         assert.equal(s.isDestroyed, false);
         s.destroy();
       });
+      it(`should be true after destroy method is called`, function() {
+        const s = new BaseSensor();
+        s.destroy();
+        assert.equal(s.isDestroyed, true);
+      });
     });
     describe("_start method", () => {
       it(`should create drag data`, function() {
@@ -6756,6 +6761,22 @@
     });
   });
 
+  // tests/src/utils/focusElement.ts
+  function focusElement(element) {
+    if (document.activeElement !== element) {
+      element.focus();
+      element.dispatchEvent(new FocusEvent("focus"));
+    }
+  }
+
+  // tests/src/utils/blurElement.ts
+  function blurElement(element) {
+    if (element === document.activeElement) {
+      element.blur();
+      element.dispatchEvent(new FocusEvent("blur"));
+    }
+  }
+
   // tests/src/KeyboardSensor.ts
   describe("KeyboardSensor", () => {
     beforeEach(() => {
@@ -6765,6 +6786,55 @@
     afterEach(() => {
       removeDefaultPageStyles(document);
       return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    });
+    describe("settings", () => {
+      describe("moveDistance", () => {
+        it("should define the drag movement distance", () => {
+          const el = createTestElement();
+          const s = new KeyboardSensor(el, { moveDistance: { x: 7, y: 9 } });
+          assert.deepEqual(s.moveDistance, { x: 7, y: 9 });
+          focusElement(el);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          assert.deepEqual(s.drag, { x: 0, y: 0 });
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+          assert.deepEqual(s.drag, { x: 7, y: 0 });
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+          assert.deepEqual(s.drag, { x: 7, y: 9 });
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft" }));
+          assert.deepEqual(s.drag, { x: 0, y: 9 });
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp" }));
+          assert.deepEqual(s.drag, { x: 0, y: 0 });
+          el.remove();
+          s.destroy();
+        });
+      });
+      describe("cancelOnBlur", () => {
+        it("should cancel drag on blur", () => {
+          return new Promise((resolve) => {
+            const el = createTestElement();
+            const s = new KeyboardSensor(el, { cancelOnBlur: true });
+            assert.equal(s["_cancelOnBlur"], true);
+            let cancelEvents = 0;
+            s.on("cancel", () => {
+              ++cancelEvents;
+            });
+            let endEvents = 0;
+            s.on("end", () => {
+              ++endEvents;
+            });
+            focusElement(el);
+            document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+            assert.notEqual(s.drag, null);
+            blurElement(el);
+            assert.equal(s.drag, null);
+            assert.equal(cancelEvents, 1);
+            assert.equal(endEvents, 0);
+            el.remove();
+            s.destroy();
+            resolve(void 0);
+          });
+        });
+      });
     });
     describe("drag property", () => {
       it(`should be null on init`, function() {
@@ -6782,6 +6852,13 @@
         assert.equal(s.isDestroyed, false);
         el.remove();
         s.destroy();
+      });
+      it(`should be true after destroy method is called`, function() {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el);
+        s.destroy();
+        assert.equal(s.isDestroyed, true);
+        el.remove();
       });
     });
     describe("start event", () => {
@@ -6801,10 +6878,10 @@
           const srcEvent = new KeyboardEvent("keydown", { key });
           document.dispatchEvent(srcEvent);
           assert.equal(s.drag, null);
-          elDecoy.focus();
+          focusElement(elDecoy);
           document.dispatchEvent(srcEvent);
           assert.equal(s.drag, null);
-          el.focus();
+          focusElement(el);
           document.dispatchEvent(srcEvent);
           assert.deepEqual(startEvent, {
             type: "start",
@@ -6840,7 +6917,7 @@
         };
         s.on("start", listener);
         s.on("start", listener);
-        el.focus();
+        focusElement(el);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
         assert.equal(counter, 2);
         el.remove();
@@ -6853,7 +6930,7 @@
         s.on("start", () => void (msg += "a"), 1);
         s.on("start", () => void (msg += "b"), 2);
         s.on("start", () => void (msg += "c"), 1);
-        el.focus();
+        focusElement(el);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
         assert.equal(msg, "bc");
         el.remove();
@@ -6892,7 +6969,7 @@
         const idA = s.on("start", () => void (msg += "a"));
         s.on("start", () => void (msg += "b"));
         s.off("start", idA);
-        el.focus();
+        focusElement(el);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
         assert.equal(msg, "b");
       });

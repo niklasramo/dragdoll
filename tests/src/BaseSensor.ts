@@ -16,6 +16,12 @@ describe('BaseSensor', () => {
       assert.equal(s.isDestroyed, false);
       s.destroy();
     });
+
+    it(`should be true after destroy method is called`, function () {
+      const s = new BaseSensor();
+      s.destroy();
+      assert.equal(s.isDestroyed, true);
+    });
   });
 
   describe('_start method', () => {

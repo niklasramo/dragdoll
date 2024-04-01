@@ -1,5 +1,7 @@
 import { assert } from 'chai';
 import { createTestElement } from './utils/createTestElement.js';
+import { focusElement } from './utils/focusElement.js';
+import { blurElement } from './utils/blurElement.js';
 import { addDefaultPageStyles, removeDefaultPageStyles } from './utils/defaultPageStyles.js';
 import { KeyboardSensor, KeyboardSensorStartEvent } from '../../src/index.js';
 
@@ -12,6 +14,95 @@ describe('KeyboardSensor', () => {
   afterEach(() => {
     removeDefaultPageStyles(document);
     return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  });
+
+  describe('settings', () => {
+    describe('moveDistance', () => {
+      it('should define the drag movement distance', () => {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el, { moveDistance: { x: 7, y: 9 } });
+
+        // Make sure the moveDistance property is set correctly.
+        assert.deepEqual(s.moveDistance, { x: 7, y: 9 });
+
+        // Start drag.
+        focusElement(el);
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+
+        // Make sure drag position is at 0,0.
+        assert.deepEqual(s.drag, { x: 0, y: 0 });
+
+        // Move to the right.
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
+
+        // Make sure drag position is at 7,0.
+        assert.deepEqual(s.drag, { x: 7, y: 0 });
+
+        // Move down.
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
+
+        // Make sure drag position is at 7,9.
+        assert.deepEqual(s.drag, { x: 7, y: 9 });
+
+        // Move left.
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
+
+        // Make sure drag position is at 0,9.
+        assert.deepEqual(s.drag, { x: 0, y: 9 });
+
+        // Move up.
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp' }));
+
+        // Make sure drag position is at 0,0.
+        assert.deepEqual(s.drag, { x: 0, y: 0 });
+
+        el.remove();
+        s.destroy();
+      });
+    });
+
+    describe('cancelOnBlur', () => {
+      it('should cancel drag on blur', () => {
+        return new Promise((resolve) => {
+          const el = createTestElement();
+          const s = new KeyboardSensor(el, { cancelOnBlur: true });
+
+          // Make sure the cancelOnBlur property is set correctly.
+          assert.equal(s['_cancelOnBlur'], true);
+
+          // Count cancel events.
+          let cancelEvents = 0;
+          s.on('cancel', () => {
+            ++cancelEvents;
+          });
+
+          // Count end events.
+          let endEvents = 0;
+          s.on('end', () => {
+            ++endEvents;
+          });
+
+          // Start drag.
+          focusElement(el);
+          document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+
+          // Make sure drag is started.
+          assert.notEqual(s.drag, null);
+
+          // Blur the sensor element.
+          blurElement(el);
+
+          // Make sure drag is canceled, not ended.
+          assert.equal(s.drag, null);
+          assert.equal(cancelEvents, 1);
+          assert.equal(endEvents, 0);
+
+          el.remove();
+          s.destroy();
+          resolve(undefined);
+        });
+      });
+    });
   });
 
   describe('drag property', () => {
@@ -31,6 +122,14 @@ describe('KeyboardSensor', () => {
       assert.equal(s.isDestroyed, false);
       el.remove();
       s.destroy();
+    });
+
+    it(`should be true after destroy method is called`, function () {
+      const el = createTestElement();
+      const s = new KeyboardSensor(el);
+      s.destroy();
+      assert.equal(s.isDestroyed, true);
+      el.remove();
     });
   });
 
@@ -58,12 +157,12 @@ describe('KeyboardSensor', () => {
 
         // Drag should not start if any other element than sensor element is
         // focused.
-        elDecoy.focus();
+        focusElement(elDecoy);
         document.dispatchEvent(srcEvent);
         assert.equal(s.drag, null);
 
         // Drag should start if the sensor element is focused.
-        el.focus();
+        focusElement(el);
         document.dispatchEvent(srcEvent);
         assert.deepEqual(startEvent, {
           type: 'start',
@@ -102,7 +201,7 @@ describe('KeyboardSensor', () => {
       s.on('start', listener);
       s.on('start', listener);
 
-      el.focus();
+      focusElement(el);
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       assert.equal(counter, 2);
@@ -120,7 +219,7 @@ describe('KeyboardSensor', () => {
       s.on('start', () => void (msg += 'b'), 2);
       s.on('start', () => void (msg += 'c'), 1);
 
-      el.focus();
+      focusElement(el);
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       assert.equal(msg, 'bc');
@@ -166,7 +265,7 @@ describe('KeyboardSensor', () => {
       s.on('start', () => void (msg += 'b'));
       s.off('start', idA);
 
-      el.focus();
+      focusElement(el);
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       assert.equal(msg, 'b');
