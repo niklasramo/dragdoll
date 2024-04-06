@@ -4063,8 +4063,8 @@ var keyboardSensorDefaults = {
   startPredicate: (e, sensor) => {
     if (sensor.element && (e.key === "Enter" || e.key === " ")) {
       if (document.activeElement === sensor.element) {
-        const { left, top } = sensor.element.getBoundingClientRect();
-        return { x: left, y: top };
+        const { x, y } = sensor.element.getBoundingClientRect();
+        return { x, y };
       }
     }
     return null;
@@ -4104,13 +4104,15 @@ var keyboardSensorDefaults = {
   },
   cancelPredicate: (e, sensor) => {
     if (sensor.drag && e.key === "Escape") {
-      return { x: sensor.drag.x, y: sensor.drag.y };
+      const { x, y } = sensor.drag;
+      return { x, y };
     }
     return null;
   },
   endPredicate: (e, sensor) => {
     if (sensor.drag && (e.key === "Enter" || e.key === " ")) {
-      return { x: sensor.drag.x, y: sensor.drag.y };
+      const { x, y } = sensor.drag;
+      return { x, y };
     }
     return null;
   }
@@ -6467,6 +6469,25 @@ describe("KeyboardSensor", () => {
         el.remove();
         s.destroy();
       });
+      it(`should start drag with Enter and Space by default when the target element is focused`, function() {
+        ["Enter", " "].forEach((key) => {
+          const el = createTestElement();
+          const elDecoy = createTestElement();
+          const s = new KeyboardSensor(el);
+          const srcEvent = new KeyboardEvent("keydown", { key });
+          document.dispatchEvent(srcEvent);
+          assert.equal(s.drag, null);
+          focusElement(elDecoy);
+          document.dispatchEvent(srcEvent);
+          assert.equal(s.drag, null);
+          focusElement(el);
+          document.dispatchEvent(srcEvent);
+          assert.deepEqual(s.drag, { x: 0, y: 0 });
+          s.destroy();
+          el.remove();
+          elDecoy.remove();
+        });
+      });
     });
     describe("movePredicate", () => {
       it("should define the move predicate", () => {
@@ -6547,185 +6568,298 @@ describe("KeyboardSensor", () => {
       });
     });
   });
-  describe("drag property", () => {
-    it(`should be null on init`, function() {
-      const el = createTestElement();
-      const s = new KeyboardSensor(el);
-      assert.equal(s.drag, null);
-      el.remove();
-      s.destroy();
-    });
-  });
-  describe("isDestroyed property", () => {
-    it(`should be false on init`, function() {
-      const el = createTestElement();
-      const s = new KeyboardSensor(el);
-      assert.equal(s.isDestroyed, false);
-      el.remove();
-      s.destroy();
-    });
-    it(`should be true after destroy method is called`, function() {
-      const el = createTestElement();
-      const s = new KeyboardSensor(el);
-      s.destroy();
-      assert.equal(s.isDestroyed, true);
-      el.remove();
-    });
-  });
-  describe("start event", () => {
-    it(`should be triggered on Enter and Space when sensor element is focused`, function() {
-      ["Enter", " "].forEach((key) => {
-        const el = createTestElement({ left: "10px", top: "20px" });
-        const elDecoy = createTestElement({ left: "10px", top: "20px" });
+  describe("properties", () => {
+    describe("drag", () => {
+      it(`should be null on init`, function() {
+        const el = createTestElement();
         const s = new KeyboardSensor(el);
-        let startEvent = null;
-        s.on("start", (e) => {
-          if (startEvent === null) {
-            startEvent = e;
-          } else {
-            assert.fail("start event listener called twice");
-          }
-        });
-        const srcEvent = new KeyboardEvent("keydown", { key });
-        document.dispatchEvent(srcEvent);
         assert.equal(s.drag, null);
-        focusElement(elDecoy);
-        document.dispatchEvent(srcEvent);
-        assert.equal(s.drag, null);
+        el.remove();
+        s.destroy();
+      });
+      it(`should be null after destroy method is called`, function() {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el);
         focusElement(el);
-        document.dispatchEvent(srcEvent);
-        assert.deepEqual(startEvent, {
-          type: "start",
-          srcEvent,
-          x: 10,
-          y: 20
-        });
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        assert.notEqual(s.drag, null);
+        s.destroy();
+        assert.equal(s.drag, null);
+        el.remove();
+      });
+      it(`should match the current drag position`, function() {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el, { moveDistance: 1 });
+        focusElement(el);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        assert.deepEqual(s.drag, { x: 0, y: 0 });
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+        assert.deepEqual(s.drag, { x: 1, y: 0 });
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+        assert.deepEqual(s.drag, { x: 1, y: 1 });
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft" }));
+        assert.deepEqual(s.drag, { x: 0, y: 1 });
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp" }));
+        assert.deepEqual(s.drag, { x: 0, y: 0 });
         s.destroy();
         el.remove();
-        elDecoy.remove();
+      });
+    });
+    describe("isDestroyed", () => {
+      it(`should be false on init`, function() {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el);
+        assert.equal(s.isDestroyed, false);
+        el.remove();
+        s.destroy();
+      });
+      it(`should be true after destroy method is called`, function() {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el);
+        s.destroy();
+        assert.equal(s.isDestroyed, true);
+        el.remove();
       });
     });
   });
-  describe("on method", () => {
-    it("should return a unique symbol by default", () => {
-      const el = createTestElement();
-      const s = new KeyboardSensor(el);
-      const idA = s.on("start", () => {
+  describe("events", () => {
+    describe("start", () => {
+      it(`should be triggered on drag start`, function() {
+        const el = createTestElement({ left: "10px", top: "20px" });
+        const s = new KeyboardSensor(el);
+        const expectedEvent = {
+          type: "start",
+          x: 10,
+          y: 20,
+          srcEvent: new KeyboardEvent("keydown", { key: "Enter" })
+        };
+        let startEventCount = 0;
+        s.on("start", (e) => {
+          assert.deepEqual(e, expectedEvent);
+          ++startEventCount;
+        });
+        focusElement(el);
+        document.dispatchEvent(expectedEvent.srcEvent);
+        assert.equal(startEventCount, 1);
+        el.remove();
+        s.destroy();
       });
-      const idB = s.on("start", () => {
+      describe("move", () => {
+        it("should be triggered on drag move", () => {
+          const el = createTestElement();
+          const s = new KeyboardSensor(el, { moveDistance: 1 });
+          let expectedEvent;
+          let moveEventCount = 0;
+          s.on("move", (e) => {
+            assert.deepEqual(e, expectedEvent);
+            ++moveEventCount;
+            return;
+          });
+          focusElement(el);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          expectedEvent = {
+            type: "move",
+            x: -1,
+            y: 0,
+            srcEvent: new KeyboardEvent("keydown", { key: "ArrowLeft" })
+          };
+          document.dispatchEvent(expectedEvent.srcEvent);
+          expectedEvent = {
+            type: "move",
+            x: 0,
+            y: 0,
+            srcEvent: new KeyboardEvent("keydown", { key: "ArrowRight" })
+          };
+          document.dispatchEvent(expectedEvent.srcEvent);
+          expectedEvent = {
+            type: "move",
+            x: 0,
+            y: -1,
+            srcEvent: new KeyboardEvent("keydown", { key: "ArrowUp" })
+          };
+          document.dispatchEvent(expectedEvent.srcEvent);
+          expectedEvent = {
+            type: "move",
+            x: 0,
+            y: 0,
+            srcEvent: new KeyboardEvent("keydown", { key: "ArrowDown" })
+          };
+          document.dispatchEvent(expectedEvent.srcEvent);
+          assert.equal(moveEventCount, 4);
+          el.remove();
+          s.destroy();
+        });
       });
-      assert.equal(typeof idA, "symbol");
-      assert.notEqual(idA, idB);
-      el.remove();
-      s.destroy();
-    });
-    it("should allow duplicate event listeners", () => {
-      const el = createTestElement();
-      const s = new KeyboardSensor(el);
-      let counter = 0;
-      const listener = () => {
-        ++counter;
-      };
-      s.on("start", listener);
-      s.on("start", listener);
-      focusElement(el);
-      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-      assert.equal(counter, 2);
-      el.remove();
-      s.destroy();
-    });
-    it("should remove the existing listener and add the new one if the same id is used", () => {
-      const el = createTestElement();
-      const s = new KeyboardSensor(el);
-      let msg = "";
-      s.on("start", () => void (msg += "a"), 1);
-      s.on("start", () => void (msg += "b"), 2);
-      s.on("start", () => void (msg += "c"), 1);
-      focusElement(el);
-      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-      assert.equal(msg, "bc");
-      el.remove();
-      s.destroy();
-    });
-    it("should allow defining a custom id (string/symbol/number) for the event listener via third argument", () => {
-      const el = createTestElement();
-      const s = new KeyboardSensor(el);
-      const idA = Symbol();
-      assert.equal(
-        s.on("start", () => {
-        }, idA),
-        idA
-      );
-      const idB = 1;
-      assert.equal(
-        s.on("start", () => {
-        }, idB),
-        idB
-      );
-      const idC = "foo";
-      assert.equal(
-        s.on("start", () => {
-        }, idC),
-        idC
-      );
-      el.remove();
-      s.destroy();
+      describe("cancel", () => {
+        it("should be triggered on drag cancel", () => {
+          const el = createTestElement();
+          const s = new KeyboardSensor(el);
+          const cancelEvent = {
+            type: "cancel",
+            x: 0,
+            y: 0,
+            srcEvent: new KeyboardEvent("keydown", { key: "Escape" })
+          };
+          let cancelEventCount = 0;
+          s.on("cancel", (e) => {
+            assert.deepEqual(e, cancelEvent);
+            ++cancelEventCount;
+          });
+          focusElement(el);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          document.dispatchEvent(cancelEvent.srcEvent);
+          assert.equal(cancelEventCount, 1);
+          el.remove();
+          s.destroy();
+        });
+      });
+      describe("end", () => {
+        it("should be triggered on drag end", () => {
+          const el = createTestElement();
+          const s = new KeyboardSensor(el);
+          const endEvent = {
+            type: "end",
+            x: 0,
+            y: 0,
+            srcEvent: new KeyboardEvent("keydown", { key: "Enter" })
+          };
+          let endEventCount = 0;
+          s.on("end", (e) => {
+            assert.deepEqual(e, endEvent);
+            ++endEventCount;
+          });
+          focusElement(el);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          document.dispatchEvent(endEvent.srcEvent);
+          assert.equal(endEventCount, 1);
+          el.remove();
+          s.destroy();
+        });
+      });
     });
   });
-  describe("off method", () => {
-    it("should remove an event listener based on id", () => {
-      const el = createTestElement();
-      const s = new KeyboardSensor(el);
-      let msg = "";
-      const idA = s.on("start", () => void (msg += "a"));
-      s.on("start", () => void (msg += "b"));
-      s.off("start", idA);
-      focusElement(el);
-      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-      assert.equal(msg, "b");
+  describe("methods", () => {
+    describe("on", () => {
+      it("should return a unique symbol by default", () => {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el);
+        const idA = s.on("start", () => {
+        });
+        const idB = s.on("start", () => {
+        });
+        assert.equal(typeof idA, "symbol");
+        assert.notEqual(idA, idB);
+        el.remove();
+        s.destroy();
+      });
+      it("should allow duplicate event listeners", () => {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el);
+        let counter = 0;
+        const listener = () => {
+          ++counter;
+        };
+        s.on("start", listener);
+        s.on("start", listener);
+        focusElement(el);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        assert.equal(counter, 2);
+        el.remove();
+        s.destroy();
+      });
+      it("should remove the existing listener and add the new one if the same id is used", () => {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el);
+        let msg = "";
+        s.on("start", () => void (msg += "a"), 1);
+        s.on("start", () => void (msg += "b"), 2);
+        s.on("start", () => void (msg += "c"), 1);
+        focusElement(el);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        assert.equal(msg, "bc");
+        el.remove();
+        s.destroy();
+      });
+      it("should allow defining a custom id (string/symbol/number) for the event listener via third argument", () => {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el);
+        const idA = Symbol();
+        assert.equal(
+          s.on("start", () => {
+          }, idA),
+          idA
+        );
+        const idB = 1;
+        assert.equal(
+          s.on("start", () => {
+          }, idB),
+          idB
+        );
+        const idC = "foo";
+        assert.equal(
+          s.on("start", () => {
+          }, idC),
+          idC
+        );
+        el.remove();
+        s.destroy();
+      });
     });
-  });
-  describe("updateSettings method", () => {
-    it(`should update settings`, function() {
-      const initSettings = {
-        moveDistance: 25,
-        cancelOnBlur: false,
-        cancelOnVisibilityChange: false,
-        startPredicate: () => null,
-        movePredicate: () => null,
-        cancelPredicate: () => null,
-        endPredicate: () => null
-      };
-      const updatedSettings = {
-        moveDistance: 50,
-        cancelOnBlur: true,
-        cancelOnVisibilityChange: true,
-        startPredicate: () => void 0,
-        movePredicate: () => void 0,
-        cancelPredicate: () => void 0,
-        endPredicate: () => void 0
-      };
-      const el = createTestElement();
-      const s = new KeyboardSensor(el, initSettings);
-      assert.equal(s.moveDistance.x, initSettings.moveDistance);
-      assert.equal(s.moveDistance.y, initSettings.moveDistance);
-      assert.equal(s["_cancelOnBlur"], initSettings.cancelOnBlur);
-      assert.equal(s["_cancelOnVisibilityChange"], initSettings.cancelOnVisibilityChange);
-      assert.equal(s["_startPredicate"], initSettings.startPredicate);
-      assert.equal(s["_movePredicate"], initSettings.movePredicate);
-      assert.equal(s["_cancelPredicate"], initSettings.cancelPredicate);
-      assert.equal(s["_endPredicate"], initSettings.endPredicate);
-      s.updateSettings(updatedSettings);
-      assert.equal(s.moveDistance.x, updatedSettings.moveDistance);
-      assert.equal(s.moveDistance.y, updatedSettings.moveDistance);
-      assert.equal(s["_cancelOnBlur"], updatedSettings.cancelOnBlur);
-      assert.equal(s["_cancelOnVisibilityChange"], updatedSettings.cancelOnVisibilityChange);
-      assert.equal(s["_startPredicate"], updatedSettings.startPredicate);
-      assert.equal(s["_movePredicate"], updatedSettings.movePredicate);
-      assert.equal(s["_cancelPredicate"], updatedSettings.cancelPredicate);
-      assert.equal(s["_endPredicate"], updatedSettings.endPredicate);
-      s.destroy();
-      el.remove();
+    describe("off", () => {
+      it("should remove an event listener based on id", () => {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el);
+        let msg = "";
+        const idA = s.on("start", () => void (msg += "a"));
+        s.on("start", () => void (msg += "b"));
+        s.off("start", idA);
+        focusElement(el);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        assert.equal(msg, "b");
+      });
+    });
+    describe("updateSettings", () => {
+      it(`should update settings`, function() {
+        const initSettings = {
+          moveDistance: 25,
+          cancelOnBlur: false,
+          cancelOnVisibilityChange: false,
+          startPredicate: () => null,
+          movePredicate: () => null,
+          cancelPredicate: () => null,
+          endPredicate: () => null
+        };
+        const updatedSettings = {
+          moveDistance: 50,
+          cancelOnBlur: true,
+          cancelOnVisibilityChange: true,
+          startPredicate: () => void 0,
+          movePredicate: () => void 0,
+          cancelPredicate: () => void 0,
+          endPredicate: () => void 0
+        };
+        const el = createTestElement();
+        const s = new KeyboardSensor(el, initSettings);
+        assert.equal(s.moveDistance.x, initSettings.moveDistance);
+        assert.equal(s.moveDistance.y, initSettings.moveDistance);
+        assert.equal(s["_cancelOnBlur"], initSettings.cancelOnBlur);
+        assert.equal(s["_cancelOnVisibilityChange"], initSettings.cancelOnVisibilityChange);
+        assert.equal(s["_startPredicate"], initSettings.startPredicate);
+        assert.equal(s["_movePredicate"], initSettings.movePredicate);
+        assert.equal(s["_cancelPredicate"], initSettings.cancelPredicate);
+        assert.equal(s["_endPredicate"], initSettings.endPredicate);
+        s.updateSettings(updatedSettings);
+        assert.equal(s.moveDistance.x, updatedSettings.moveDistance);
+        assert.equal(s.moveDistance.y, updatedSettings.moveDistance);
+        assert.equal(s["_cancelOnBlur"], updatedSettings.cancelOnBlur);
+        assert.equal(s["_cancelOnVisibilityChange"], updatedSettings.cancelOnVisibilityChange);
+        assert.equal(s["_startPredicate"], updatedSettings.startPredicate);
+        assert.equal(s["_movePredicate"], updatedSettings.movePredicate);
+        assert.equal(s["_cancelPredicate"], updatedSettings.cancelPredicate);
+        assert.equal(s["_endPredicate"], updatedSettings.endPredicate);
+        s.destroy();
+        el.remove();
+      });
     });
   });
 });

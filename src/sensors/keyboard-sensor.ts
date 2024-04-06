@@ -59,8 +59,8 @@ export const keyboardSensorDefaults: KeyboardSensorSettings<any> = {
   startPredicate: (e, sensor) => {
     if (sensor.element && (e.key === 'Enter' || e.key === ' ')) {
       if (document.activeElement === sensor.element) {
-        const { left, top } = sensor.element.getBoundingClientRect();
-        return { x: left, y: top };
+        const { x, y } = sensor.element.getBoundingClientRect();
+        return { x, y };
       }
     }
     return null;
@@ -100,13 +100,15 @@ export const keyboardSensorDefaults: KeyboardSensorSettings<any> = {
   },
   cancelPredicate: (e, sensor) => {
     if (sensor.drag && e.key === 'Escape') {
-      return { x: sensor.drag.x, y: sensor.drag.y };
+      const { x, y } = sensor.drag;
+      return { x, y };
     }
     return null;
   },
   endPredicate: (e, sensor) => {
     if (sensor.drag && (e.key === 'Enter' || e.key === ' ')) {
-      return { x: sensor.drag.x, y: sensor.drag.y };
+      const { x, y } = sensor.drag;
+      return { x, y };
     }
     return null;
   },

@@ -1,6 +1,6 @@
 {
   "name": "dragdoll",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Modular and extensible drag & drop system.",
   "keywords": [
     "drag",
@@ -72,14 +72,14 @@
     "karma-mocha": "2.0.1",
     "karma-mocha-reporter": "2.2.5",
     "mezr": "1.1.0",
-    "mocha": "10.3.0",
+    "mocha": "10.4.0",
     "parcel": "2.12.0",
     "prettier": "3.2.5",
     "rimraf": "5.0.5",
     "tikki": "3.0.1",
     "tsup": "8.0.2",
     "typescript": "5.4.3",
-    "vitepress": "1.0.1",
+    "vitepress": "1.0.2",
     "vue": "3.4.21"
   },
   "peerDependencies": {
