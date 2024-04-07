@@ -223,6 +223,36 @@ describe('KeyboardSensor', () => {
         el.remove();
         s.destroy();
       });
+
+      it(`should move drag with arrow keys by default`, function () {
+        ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].forEach((key) => {
+          const el = createTestElement();
+          const s = new KeyboardSensor(el, { moveDistance: 1 });
+          const srcEvent = new KeyboardEvent('keydown', { key });
+
+          focusElement(el);
+          document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+          document.dispatchEvent(srcEvent);
+
+          switch (key) {
+            case 'ArrowLeft':
+              assert.deepEqual(s.drag, { x: -1, y: 0 });
+              break;
+            case 'ArrowRight':
+              assert.deepEqual(s.drag, { x: 1, y: 0 });
+              break;
+            case 'ArrowUp':
+              assert.deepEqual(s.drag, { x: 0, y: -1 });
+              break;
+            case 'ArrowDown':
+              assert.deepEqual(s.drag, { x: 0, y: 1 });
+              break;
+          }
+
+          s.destroy();
+          el.remove();
+        });
+      });
     });
 
     describe('cancelPredicate', () => {
@@ -259,7 +289,24 @@ describe('KeyboardSensor', () => {
         el.remove();
         s.destroy();
       });
+
+      it(`should cancel drag with Escape by default`, function () {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el);
+        const srcEvent = new KeyboardEvent('keydown', { key: 'Escape' });
+
+        focusElement(el);
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+        assert.deepEqual(s.drag, { x: 0, y: 0 });
+
+        document.dispatchEvent(srcEvent);
+        assert.equal(s.drag, null);
+
+        s.destroy();
+        el.remove();
+      });
     });
+
     describe('endPredicate', () => {
       it('should define the end predicate', () => {
         let returnValue: undefined | null | { x: number; y: number } = null;
@@ -293,6 +340,23 @@ describe('KeyboardSensor', () => {
 
         el.remove();
         s.destroy();
+      });
+
+      it(`should end drag with Enter and Space by default when the target element is focused`, function () {
+        ['Enter', ' '].forEach((key) => {
+          const el = createTestElement();
+          const s = new KeyboardSensor(el);
+
+          focusElement(el);
+          document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+          assert.deepEqual(s.drag, { x: 0, y: 0 });
+
+          document.dispatchEvent(new KeyboardEvent('keydown', { key }));
+          assert.equal(s.drag, null);
+
+          s.destroy();
+          el.remove();
+        });
       });
     });
   });
