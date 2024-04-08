@@ -78,7 +78,7 @@
     "rimraf": "5.0.5",
     "tikki": "3.0.1",
     "tsup": "8.0.2",
-    "typescript": "5.4.3",
+    "typescript": "5.4.4",
     "vitepress": "1.0.2",
     "vue": "3.4.21"
   },
