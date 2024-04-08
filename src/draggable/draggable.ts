@@ -359,14 +359,14 @@ export class Draggable<
       // Update horizontal position data.
       if (changeX) {
         item.position.x += changeX;
-        item.clientRect.left += changeX;
+        item.clientRect.x += changeX;
         item._moveDiff.x += changeX;
       }
 
       // Update vertical position data.
       if (changeY) {
         item.position.y += changeY;
-        item.clientRect.top += changeY;
+        item.clientRect.y += changeY;
         item._moveDiff.y += changeY;
       }
     }
@@ -422,12 +422,12 @@ export class Draggable<
       const { left, top, width, height } = item.element.getBoundingClientRect();
 
       // Update horizontal position data.
-      const updateDiffX = item.clientRect.left - item._moveDiff.x - left;
+      const updateDiffX = item.clientRect.x - item._moveDiff.x - left;
       item.position.x = item.position.x - item._updateDiff.x + updateDiffX;
       item._updateDiff.x = updateDiffX;
 
       // Update vertical position data.
-      const updateDiffY = item.clientRect.top - item._moveDiff.y - top;
+      const updateDiffY = item.clientRect.y - item._moveDiff.y - top;
       item.position.y = item.position.y - item._updateDiff.y + updateDiffY;
       item._updateDiff.y = updateDiffY;
 

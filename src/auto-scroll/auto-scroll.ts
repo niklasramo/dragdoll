@@ -1,14 +1,16 @@
 import { Emitter, EventListenerId } from 'eventti';
 
-import { getDistance, getRect } from 'mezr';
-
-import { Point, Rect, RectExtended } from '../types.js';
+import { Point, Rect } from '../types.js';
 
 import { Pool } from '../pool.js';
 
 import { ticker, tickerReadPhase, tickerWritePhase } from '../singletons/ticker.js';
 
+import { getDistance } from '../utils/get-distance.js';
+
 import { getIntersectionScore } from '../utils/get-intersection-score.js';
+
+import { getRect } from '../utils/get-rect.js';
 
 import { getScrollElement } from '../utils/get-scroll-element.js';
 
@@ -26,16 +28,12 @@ import { isIntersecting } from '../utils/is-intersecting.js';
 // CONSTANTS
 //
 
-const R1: RectExtended = {
+const TEMP_RECT: Rect = {
   width: 0,
   height: 0,
-  left: 0,
-  right: 0,
-  top: 0,
-  bottom: 0,
+  x: 0,
+  y: 0,
 };
-
-const R2: RectExtended = { ...R1 };
 
 const DEFAULT_THRESHOLD = 50;
 
@@ -96,7 +94,7 @@ function getDirectionAsString(direction: number) {
   }
 }
 
-function getPaddedRect(rect: RectExtended, padding: AutoScrollTargetPadding, result: RectExtended) {
+function getPaddedRect(rect: Rect, padding: AutoScrollTargetPadding, result: Rect) {
   let { left = 0, right = 0, top = 0, bottom = 0 } = padding;
 
   // Don't allow negative padding.
@@ -107,10 +105,8 @@ function getPaddedRect(rect: RectExtended, padding: AutoScrollTargetPadding, res
 
   result.width = rect.width + left + right;
   result.height = rect.height + top + bottom;
-  result.left = rect.left - left;
-  result.top = rect.top - top;
-  result.right = rect.right + right;
-  result.bottom = rect.bottom + bottom;
+  result.x = rect.x - left;
+  result.y = rect.y - top;
 
   return result;
 }
@@ -554,20 +550,6 @@ export class AutoScroll {
     ticker.off(tickerWritePhase, this._frameWrite);
   }
 
-  protected _getItemClientRect(
-    item: AutoScrollItem,
-    result: RectExtended = { width: 0, height: 0, left: 0, right: 0, top: 0, bottom: 0 },
-  ) {
-    const { clientRect } = item;
-    result.left = clientRect.left;
-    result.top = clientRect.top;
-    result.width = clientRect.width;
-    result.height = clientRect.height;
-    result.right = clientRect.left + clientRect.width;
-    result.bottom = clientRect.top + clientRect.height;
-    return result;
-  }
-
   protected _requestItemScroll(
     item: AutoScrollItem,
     axis: AutoScrollAxis,
@@ -608,7 +590,7 @@ export class AutoScroll {
   }
 
   protected _checkItemOverlap(item: AutoScrollItem, checkX: boolean, checkY: boolean) {
-    const { inertAreaSize, targets } = item;
+    const { inertAreaSize, targets, clientRect } = item;
     if (!targets.length) {
       checkX && this._cancelItemScroll(item, AUTO_SCROLL_AXIS.x);
       checkY && this._cancelItemScroll(item, AUTO_SCROLL_AXIS.y);
@@ -623,8 +605,6 @@ export class AutoScroll {
       checkY && this._cancelItemScroll(item, AUTO_SCROLL_AXIS.y);
       return;
     }
-
-    const itemRect = this._getItemClientRect(item, R1);
 
     let xElement: Window | Element | null = null;
     let xPriority = -Infinity;
@@ -665,7 +645,7 @@ export class AutoScroll {
       if (testMaxScrollX <= 0 && testMaxScrollY <= 0) continue;
 
       const testRect = getRect([testElement, 'padding'], window);
-      let testScore = getIntersectionScore(itemRect, testRect) || -Infinity;
+      let testScore = getIntersectionScore(clientRect, testRect) || -Infinity;
 
       // If the item has no overlap with the target.
       if (testScore === -Infinity) {
@@ -674,9 +654,9 @@ export class AutoScroll {
         // between item and target and use that value (negated) as testScore.
         if (
           target.padding &&
-          isIntersecting(itemRect, getPaddedRect(testRect, target.padding, R2))
+          isIntersecting(clientRect, getPaddedRect(testRect, target.padding, TEMP_RECT))
         ) {
-          testScore = -(getDistance(itemRect, testRect) || 0);
+          testScore = -(getDistance(clientRect, testRect) || 0);
         }
         // Otherwise let's ignore this target.
         else {
@@ -697,12 +677,13 @@ export class AutoScroll {
         const testEdgeOffset = computeEdgeOffset(
           testThreshold,
           inertAreaSize,
-          itemRect.width,
+          clientRect.width,
           testRect.width,
         );
 
         if (moveDirectionX === AUTO_SCROLL_DIRECTION.right) {
-          testDistance = testRect.right + testEdgeOffset - itemRect.right;
+          testDistance =
+            testRect.x + testRect.width + testEdgeOffset - (clientRect.x + clientRect.width);
           if (
             testDistance <= testThreshold &&
             !isScrolledToMax(getScrollLeft(testElement), testMaxScrollX)
@@ -710,7 +691,7 @@ export class AutoScroll {
             testDirection = AUTO_SCROLL_DIRECTION.right;
           }
         } else if (moveDirectionX === AUTO_SCROLL_DIRECTION.left) {
-          testDistance = itemRect.left - (testRect.left - testEdgeOffset);
+          testDistance = clientRect.x - (testRect.x - testEdgeOffset);
           if (testDistance <= testThreshold && getScrollLeft(testElement) > 0) {
             testDirection = AUTO_SCROLL_DIRECTION.left;
           }
@@ -740,12 +721,13 @@ export class AutoScroll {
         const testEdgeOffset = computeEdgeOffset(
           testThreshold,
           inertAreaSize,
-          itemRect.height,
+          clientRect.height,
           testRect.height,
         );
 
         if (moveDirectionY === AUTO_SCROLL_DIRECTION.down) {
-          testDistance = testRect.bottom + testEdgeOffset - itemRect.bottom;
+          testDistance =
+            testRect.y + testRect.height + testEdgeOffset - (clientRect.y + clientRect.height);
           if (
             testDistance <= testThreshold &&
             !isScrolledToMax(getScrollTop(testElement), testMaxScrollY)
@@ -753,7 +735,7 @@ export class AutoScroll {
             testDirection = AUTO_SCROLL_DIRECTION.down;
           }
         } else if (moveDirectionY === AUTO_SCROLL_DIRECTION.up) {
-          testDistance = itemRect.top - (testRect.top - testEdgeOffset);
+          testDistance = clientRect.y - (testRect.y - testEdgeOffset);
           if (testDistance <= testThreshold && getScrollTop(testElement) > 0) {
             testDirection = AUTO_SCROLL_DIRECTION.up;
           }
@@ -808,8 +790,7 @@ export class AutoScroll {
 
   protected _updateScrollRequest(scrollRequest: AutoScrollRequest) {
     const item = scrollRequest.item!;
-    const { inertAreaSize, smoothStop, targets } = item;
-    const itemRect = this._getItemClientRect(item, R1);
+    const { inertAreaSize, smoothStop, targets, clientRect } = item;
     let hasReachedEnd = null;
 
     let i = 0;
@@ -837,13 +818,13 @@ export class AutoScroll {
       }
 
       const testRect = getRect([testElement, 'padding'], window);
-      const testScore = getIntersectionScore(itemRect, testRect) || -Infinity;
+      const testScore = getIntersectionScore(clientRect, testRect) || -Infinity;
 
       // If the item has no overlap with the target nor the padded target rect
       // let's stop scrolling.
       if (testScore === -Infinity) {
         const padding = target.scrollPadding || target.padding;
-        if (!(padding && isIntersecting(itemRect, getPaddedRect(testRect, padding, R2)))) {
+        if (!(padding && isIntersecting(clientRect, getPaddedRect(testRect, padding, TEMP_RECT)))) {
           break;
         }
       }
@@ -860,20 +841,22 @@ export class AutoScroll {
       const testEdgeOffset = computeEdgeOffset(
         testThreshold,
         inertAreaSize,
-        testIsAxisX ? itemRect.width : itemRect.height,
+        testIsAxisX ? clientRect.width : clientRect.height,
         testIsAxisX ? testRect.width : testRect.height,
       );
 
       // Compute distance (based on current direction).
       let testDistance = 0;
       if (scrollRequest.direction === AUTO_SCROLL_DIRECTION.left) {
-        testDistance = itemRect.left - (testRect.left - testEdgeOffset);
+        testDistance = clientRect.x - (testRect.x - testEdgeOffset);
       } else if (scrollRequest.direction === AUTO_SCROLL_DIRECTION.right) {
-        testDistance = testRect.right + testEdgeOffset - itemRect.right;
+        testDistance =
+          testRect.x + testRect.width + testEdgeOffset - (clientRect.x + clientRect.width);
       } else if (scrollRequest.direction === AUTO_SCROLL_DIRECTION.up) {
-        testDistance = itemRect.top - (testRect.top - testEdgeOffset);
+        testDistance = clientRect.y - (testRect.y - testEdgeOffset);
       } else {
-        testDistance = testRect.bottom + testEdgeOffset - itemRect.bottom;
+        testDistance =
+          testRect.y + testRect.height + testEdgeOffset - (clientRect.y + clientRect.height);
       }
 
       // Stop scrolling if threshold is not exceeded.

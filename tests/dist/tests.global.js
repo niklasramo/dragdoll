@@ -4658,21 +4658,6 @@
     return getDistanceBetweenRects(c, i);
   }
 
-  // node_modules/mezr/dist/esm/getIntersection.js
-  function getIntersection(t, ...e) {
-    const o2 = { ...getNormalizedRect(t), right: 0, bottom: 0 };
-    for (const t2 of e) {
-      const e2 = getNormalizedRect(t2), i = Math.max(o2.left, e2.left), h = Math.min(o2.left + o2.width, e2.left + e2.width);
-      if (h <= i)
-        return null;
-      const r2 = Math.max(o2.top, e2.top), l2 = Math.min(o2.top + o2.height, e2.height + e2.top);
-      if (l2 <= r2)
-        return null;
-      o2.left = i, o2.top = r2, o2.width = h - i, o2.height = l2 - r2;
-    }
-    return o2.right = o2.left + o2.width, o2.bottom = o2.top + o2.height, o2;
-  }
-
   // src/pool.ts
   var Pool = class {
     constructor(createObject, onPut) {
@@ -4694,6 +4679,45 @@
     }
   };
 
+  // src/utils/create-full-rect.ts
+  function createFullRect(sourceRect, result = { width: 0, height: 0, x: 0, y: 0, left: 0, top: 0, right: 0, bottom: 0 }) {
+    if (sourceRect) {
+      result.width = sourceRect.width;
+      result.height = sourceRect.height;
+      result.x = sourceRect.x;
+      result.y = sourceRect.y;
+      result.left = sourceRect.x;
+      result.top = sourceRect.y;
+      result.right = sourceRect.x + sourceRect.width;
+      result.bottom = sourceRect.y + sourceRect.height;
+    }
+    return result;
+  }
+
+  // src/utils/get-distance.ts
+  var RECT_A = createFullRect();
+  var RECT_B = createFullRect();
+  function getDistance2(a2, b) {
+    return getDistance(createFullRect(a2, RECT_A), createFullRect(b, RECT_B));
+  }
+
+  // src/utils/get-intersection.ts
+  function getIntersection(a2, b, result = { width: 0, height: 0, x: 0, y: 0 }) {
+    const x1 = Math.max(a2.x, b.x);
+    const x2 = Math.min(a2.x + a2.width, b.x + b.width);
+    if (x2 <= x1)
+      return null;
+    const y1 = Math.max(a2.y, b.y);
+    const y2 = Math.min(a2.y + a2.height, b.y + b.height);
+    if (y2 <= y1)
+      return null;
+    result.x = x1;
+    result.y = y1;
+    result.width = x2 - x1;
+    result.height = y2 - y1;
+    return result;
+  }
+
   // src/utils/get-intersection-area.ts
   function getIntersectionArea(a2, b) {
     const intersection = getIntersection(a2, b);
@@ -4707,6 +4731,12 @@
       return 0;
     const maxArea = Math.min(a2.width, b.width) * Math.min(a2.height, b.height);
     return area / maxArea * 100;
+  }
+
+  // src/utils/get-rect.ts
+  function getRect2(...args) {
+    const { width, height, left: x, top: y } = getRect(...args);
+    return { width, height, x, y };
   }
 
   // src/utils/is-window.ts
@@ -4749,19 +4779,16 @@
 
   // src/utils/is-intersecting.ts
   function isIntersecting2(a2, b) {
-    return !(a2.right <= b.left || b.right <= a2.left || a2.bottom <= b.top || b.bottom <= a2.top);
+    return !(a2.x + a2.width <= b.x || b.x + b.width <= a2.x || a2.y + a2.height <= b.y || b.y + b.height <= a2.y);
   }
 
   // src/auto-scroll/auto-scroll.ts
-  var R1 = {
+  var TEMP_RECT = {
     width: 0,
     height: 0,
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0
+    x: 0,
+    y: 0
   };
-  var R2 = { ...R1 };
   var DEFAULT_THRESHOLD = 50;
   var SPEED_DATA = {
     direction: "none",
@@ -4821,10 +4848,8 @@
     bottom = Math.max(0, bottom);
     result.width = rect.width + left + right;
     result.height = rect.height + top + bottom;
-    result.left = rect.left - left;
-    result.top = rect.top - top;
-    result.right = rect.right + right;
-    result.bottom = rect.bottom + bottom;
+    result.x = rect.x - left;
+    result.y = rect.y - top;
     return result;
   }
   function isScrolledToMax(scrollValue, maxScrollValue) {
@@ -5061,16 +5086,6 @@
       ticker.off(tickerReadPhase, this._frameRead);
       ticker.off(tickerWritePhase, this._frameWrite);
     }
-    _getItemClientRect(item, result = { width: 0, height: 0, left: 0, right: 0, top: 0, bottom: 0 }) {
-      const { clientRect } = item;
-      result.left = clientRect.left;
-      result.top = clientRect.top;
-      result.width = clientRect.width;
-      result.height = clientRect.height;
-      result.right = clientRect.left + clientRect.width;
-      result.bottom = clientRect.top + clientRect.height;
-      return result;
-    }
     _requestItemScroll(item, axis, element, direction, threshold, distance, maxValue) {
       const reqMap = this._requests[axis];
       let request = reqMap.get(item);
@@ -5100,7 +5115,7 @@
       reqMap.delete(item);
     }
     _checkItemOverlap(item, checkX, checkY) {
-      const { inertAreaSize, targets } = item;
+      const { inertAreaSize, targets, clientRect } = item;
       if (!targets.length) {
         checkX && this._cancelItemScroll(item, AUTO_SCROLL_AXIS.x);
         checkY && this._cancelItemScroll(item, AUTO_SCROLL_AXIS.y);
@@ -5114,7 +5129,6 @@
         checkY && this._cancelItemScroll(item, AUTO_SCROLL_AXIS.y);
         return;
       }
-      const itemRect = this._getItemClientRect(item, R1);
       let xElement = null;
       let xPriority = -Infinity;
       let xThreshold = 0;
@@ -5144,11 +5158,11 @@
         const testMaxScrollY = testAxisY ? getScrollTopMax(testElement) : -1;
         if (testMaxScrollX <= 0 && testMaxScrollY <= 0)
           continue;
-        const testRect = getRect([testElement, "padding"], window);
-        let testScore = getIntersectionScore(itemRect, testRect) || -Infinity;
+        const testRect = getRect2([testElement, "padding"], window);
+        let testScore = getIntersectionScore(clientRect, testRect) || -Infinity;
         if (testScore === -Infinity) {
-          if (target.padding && isIntersecting2(itemRect, getPaddedRect(testRect, target.padding, R2))) {
-            testScore = -(getDistance(itemRect, testRect) || 0);
+          if (target.padding && isIntersecting2(clientRect, getPaddedRect(testRect, target.padding, TEMP_RECT))) {
+            testScore = -(getDistance2(clientRect, testRect) || 0);
           } else {
             continue;
           }
@@ -5160,16 +5174,16 @@
           const testEdgeOffset = computeEdgeOffset(
             testThreshold,
             inertAreaSize,
-            itemRect.width,
+            clientRect.width,
             testRect.width
           );
           if (moveDirectionX === AUTO_SCROLL_DIRECTION.right) {
-            testDistance = testRect.right + testEdgeOffset - itemRect.right;
+            testDistance = testRect.x + testRect.width + testEdgeOffset - (clientRect.x + clientRect.width);
             if (testDistance <= testThreshold && !isScrolledToMax(getScrollLeft(testElement), testMaxScrollX)) {
               testDirection = AUTO_SCROLL_DIRECTION.right;
             }
           } else if (moveDirectionX === AUTO_SCROLL_DIRECTION.left) {
-            testDistance = itemRect.left - (testRect.left - testEdgeOffset);
+            testDistance = clientRect.x - (testRect.x - testEdgeOffset);
             if (testDistance <= testThreshold && getScrollLeft(testElement) > 0) {
               testDirection = AUTO_SCROLL_DIRECTION.left;
             }
@@ -5191,16 +5205,16 @@
           const testEdgeOffset = computeEdgeOffset(
             testThreshold,
             inertAreaSize,
-            itemRect.height,
+            clientRect.height,
             testRect.height
           );
           if (moveDirectionY === AUTO_SCROLL_DIRECTION.down) {
-            testDistance = testRect.bottom + testEdgeOffset - itemRect.bottom;
+            testDistance = testRect.y + testRect.height + testEdgeOffset - (clientRect.y + clientRect.height);
             if (testDistance <= testThreshold && !isScrolledToMax(getScrollTop(testElement), testMaxScrollY)) {
               testDirection = AUTO_SCROLL_DIRECTION.down;
             }
           } else if (moveDirectionY === AUTO_SCROLL_DIRECTION.up) {
-            testDistance = itemRect.top - (testRect.top - testEdgeOffset);
+            testDistance = clientRect.y - (testRect.y - testEdgeOffset);
             if (testDistance <= testThreshold && getScrollTop(testElement) > 0) {
               testDirection = AUTO_SCROLL_DIRECTION.up;
             }
@@ -5249,8 +5263,7 @@
     }
     _updateScrollRequest(scrollRequest) {
       const item = scrollRequest.item;
-      const { inertAreaSize, smoothStop, targets } = item;
-      const itemRect = this._getItemClientRect(item, R1);
+      const { inertAreaSize, smoothStop, targets, clientRect } = item;
       let hasReachedEnd = null;
       let i = 0;
       for (; i < targets.length; i++) {
@@ -5270,11 +5283,11 @@
         if (testMaxScroll <= 0) {
           break;
         }
-        const testRect = getRect([testElement, "padding"], window);
-        const testScore = getIntersectionScore(itemRect, testRect) || -Infinity;
+        const testRect = getRect2([testElement, "padding"], window);
+        const testScore = getIntersectionScore(clientRect, testRect) || -Infinity;
         if (testScore === -Infinity) {
           const padding = target.scrollPadding || target.padding;
-          if (!(padding && isIntersecting2(itemRect, getPaddedRect(testRect, padding, R2)))) {
+          if (!(padding && isIntersecting2(clientRect, getPaddedRect(testRect, padding, TEMP_RECT)))) {
             break;
           }
         }
@@ -5286,18 +5299,18 @@
         const testEdgeOffset = computeEdgeOffset(
           testThreshold,
           inertAreaSize,
-          testIsAxisX ? itemRect.width : itemRect.height,
+          testIsAxisX ? clientRect.width : clientRect.height,
           testIsAxisX ? testRect.width : testRect.height
         );
         let testDistance = 0;
         if (scrollRequest.direction === AUTO_SCROLL_DIRECTION.left) {
-          testDistance = itemRect.left - (testRect.left - testEdgeOffset);
+          testDistance = clientRect.x - (testRect.x - testEdgeOffset);
         } else if (scrollRequest.direction === AUTO_SCROLL_DIRECTION.right) {
-          testDistance = testRect.right + testEdgeOffset - itemRect.right;
+          testDistance = testRect.x + testRect.width + testEdgeOffset - (clientRect.x + clientRect.width);
         } else if (scrollRequest.direction === AUTO_SCROLL_DIRECTION.up) {
-          testDistance = itemRect.top - (testRect.top - testEdgeOffset);
+          testDistance = clientRect.y - (testRect.y - testEdgeOffset);
         } else {
-          testDistance = testRect.bottom + testEdgeOffset - itemRect.bottom;
+          testDistance = testRect.y + testRect.height + testEdgeOffset - (clientRect.y + clientRect.height);
         }
         if (testDistance > testThreshold) {
           break;

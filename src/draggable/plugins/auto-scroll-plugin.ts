@@ -14,11 +14,16 @@ import {
 
 import { autoScroll } from '../../singletons/auto-scroll.js';
 
-import { Point, Writeable } from '../../types.js';
+import { Point, Rect, Writeable } from '../../types.js';
 
-const AUTOSCROLL_POSITION = { x: 0, y: 0 };
+const AUTOSCROLL_POSITION: Point = { x: 0, y: 0 };
 
-const AUTOSCROLL_CLIENT_RECT = { left: 0, top: 0, width: 0, height: 0 };
+const AUTOSCROLL_CLIENT_RECT: Rect = {
+  width: 0,
+  height: 0,
+  x: 0,
+  y: 0,
+};
 
 function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>() {
   return {
@@ -32,16 +37,13 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
 
       // Try to use the first item for the autoscroll data.
       if (primaryItem) {
-        AUTOSCROLL_POSITION.x = primaryItem.position.x;
-        AUTOSCROLL_POSITION.y = primaryItem.position.y;
-      }
-      // Fallback to the sensor's clientX/clientY values.
-      else {
-        const e = drag && (drag.event || drag.startEvent);
-        AUTOSCROLL_POSITION.x = e ? e.x : 0;
-        AUTOSCROLL_POSITION.y = e ? e.y : 0;
+        return primaryItem.position;
       }
 
+      // Fallback to the sensor's clientX/clientY values.
+      const e = drag && (drag.event || drag.startEvent);
+      AUTOSCROLL_POSITION.x = e ? e.x : 0;
+      AUTOSCROLL_POSITION.y = e ? e.y : 0;
       return AUTOSCROLL_POSITION;
     },
     getClientRect: (draggable: Draggable<S, E>) => {
@@ -50,22 +52,16 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
 
       // Try to use the first item for the autoscroll data.
       if (primaryItem && primaryItem.element) {
-        const { left, top, width, height } = primaryItem.clientRect;
-        AUTOSCROLL_CLIENT_RECT.left = left;
-        AUTOSCROLL_CLIENT_RECT.top = top;
-        AUTOSCROLL_CLIENT_RECT.width = width;
-        AUTOSCROLL_CLIENT_RECT.height = height;
-      }
-      // Fallback to the sensor's clientX/clientY values and a static size of
-      // 50x50px.
-      else {
-        const e = drag && (drag.event || drag.startEvent);
-        AUTOSCROLL_CLIENT_RECT.left = e ? e.x - 25 : 0;
-        AUTOSCROLL_CLIENT_RECT.top = e ? e.y - 25 : 0;
-        AUTOSCROLL_CLIENT_RECT.width = e ? 50 : 0;
-        AUTOSCROLL_CLIENT_RECT.height = e ? 50 : 0;
+        return primaryItem.clientRect;
       }
 
+      // Fallback to the sensor's clientX/clientY values and a static size of
+      // 50x50px.
+      const e = drag && (drag.event || drag.startEvent);
+      AUTOSCROLL_CLIENT_RECT.width = e ? 50 : 0;
+      AUTOSCROLL_CLIENT_RECT.height = e ? 50 : 0;
+      AUTOSCROLL_CLIENT_RECT.x = e ? e.x - 25 : 0;
+      AUTOSCROLL_CLIENT_RECT.y = e ? e.y - 25 : 0;
       return AUTOSCROLL_CLIENT_RECT;
     },
     onStart: null,
@@ -85,7 +81,7 @@ class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['events']
     this._draggableAutoScroll = draggableAutoScroll;
     this._draggable = draggable;
     this._position = { x: 0, y: 0 };
-    this._clientRect = { left: 0, top: 0, width: 0, height: 0 };
+    this._clientRect = { width: 0, height: 0, x: 0, y: 0 };
   }
 
   private _getSettings() {
@@ -101,33 +97,29 @@ class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['events']
   }
 
   get position() {
-    let { getPosition } = this._getSettings();
+    const position = this._position;
+    const { getPosition } = this._getSettings();
     if (typeof getPosition === 'function') {
-      const position = getPosition(this._draggable);
-      this._position.x = position.x;
-      this._position.y = position.y;
+      Object.assign(position, getPosition(this._draggable));
     } else {
-      this._position.x = 0;
-      this._position.y = 0;
+      position.x = 0;
+      position.y = 0;
     }
-    return this._position;
+    return position;
   }
 
   get clientRect() {
-    let { getClientRect } = this._getSettings();
+    const rect = this._clientRect;
+    const { getClientRect } = this._getSettings();
     if (typeof getClientRect === 'function') {
-      const { left, top, width, height } = getClientRect(this._draggable);
-      this._clientRect.left = left;
-      this._clientRect.top = top;
-      this._clientRect.width = width;
-      this._clientRect.height = height;
+      Object.assign(rect, getClientRect(this._draggable));
     } else {
-      this._clientRect.left = 0;
-      this._clientRect.top = 0;
-      this._clientRect.width = 0;
-      this._clientRect.height = 0;
+      rect.width = 0;
+      rect.height = 0;
+      rect.x = 0;
+      rect.y = 0;
     }
-    return this._clientRect;
+    return rect;
   }
 
   get inertAreaSize() {
@@ -168,14 +160,7 @@ export interface DraggableAutoScrollSettings<S extends Sensor[], E extends S[num
   speed: number | AutoScrollItemSpeedCallback;
   smoothStop: boolean;
   getPosition: ((draggable: Draggable<S, E>) => Point) | null;
-  getClientRect:
-    | ((draggable: Draggable<S, E>) => {
-        left: number;
-        top: number;
-        width: number;
-        height: number;
-      })
-    | null;
+  getClientRect: ((draggable: Draggable<S, E>) => Rect) | null;
   onStart: AutoScrollItemEventCallback | null;
   onStop: AutoScrollItemEventCallback | null;
 }
@@ -195,7 +180,7 @@ export class DraggableAutoScroll<
 
   constructor(draggable: Draggable<S, E>, options: DraggableAutoScrollOptions<S, E> = {}) {
     this.name = 'autoscroll';
-    this.version = '0.0.2';
+    this.version = '0.0.3';
     this.settings = this._parseSettings(options);
     this._autoScrollProxy = null;
 

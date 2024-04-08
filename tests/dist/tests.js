@@ -4270,7 +4270,6 @@ import { getOffset } from "mezr";
 
 // src/auto-scroll/auto-scroll.ts
 import { Emitter as Emitter4 } from "eventti";
-import { getDistance, getRect } from "mezr";
 
 // src/pool.ts
 var Pool = class {
@@ -4293,8 +4292,49 @@ var Pool = class {
   }
 };
 
+// src/utils/get-distance.ts
+import { getDistance as _getDistance } from "mezr";
+
+// src/utils/create-full-rect.ts
+function createFullRect(sourceRect, result = { width: 0, height: 0, x: 0, y: 0, left: 0, top: 0, right: 0, bottom: 0 }) {
+  if (sourceRect) {
+    result.width = sourceRect.width;
+    result.height = sourceRect.height;
+    result.x = sourceRect.x;
+    result.y = sourceRect.y;
+    result.left = sourceRect.x;
+    result.top = sourceRect.y;
+    result.right = sourceRect.x + sourceRect.width;
+    result.bottom = sourceRect.y + sourceRect.height;
+  }
+  return result;
+}
+
+// src/utils/get-distance.ts
+var RECT_A = createFullRect();
+var RECT_B = createFullRect();
+function getDistance(a, b) {
+  return _getDistance(createFullRect(a, RECT_A), createFullRect(b, RECT_B));
+}
+
+// src/utils/get-intersection.ts
+function getIntersection(a, b, result = { width: 0, height: 0, x: 0, y: 0 }) {
+  const x1 = Math.max(a.x, b.x);
+  const x2 = Math.min(a.x + a.width, b.x + b.width);
+  if (x2 <= x1)
+    return null;
+  const y1 = Math.max(a.y, b.y);
+  const y2 = Math.min(a.y + a.height, b.y + b.height);
+  if (y2 <= y1)
+    return null;
+  result.x = x1;
+  result.y = y1;
+  result.width = x2 - x1;
+  result.height = y2 - y1;
+  return result;
+}
+
 // src/utils/get-intersection-area.ts
-import { getIntersection } from "mezr";
 function getIntersectionArea(a, b) {
   const intersection = getIntersection(a, b);
   return intersection ? intersection.width * intersection.height : 0;
@@ -4307,6 +4347,13 @@ function getIntersectionScore(a, b) {
     return 0;
   const maxArea = Math.min(a.width, b.width) * Math.min(a.height, b.height);
   return area / maxArea * 100;
+}
+
+// src/utils/get-rect.ts
+import { getRect as _getRect } from "mezr";
+function getRect(...args) {
+  const { width, height, left: x, top: y } = _getRect(...args);
+  return { width, height, x, y };
 }
 
 // src/utils/is-window.ts
@@ -4349,19 +4396,16 @@ function getScrollTopMax(element) {
 
 // src/utils/is-intersecting.ts
 function isIntersecting(a, b) {
-  return !(a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top);
+  return !(a.x + a.width <= b.x || b.x + b.width <= a.x || a.y + a.height <= b.y || b.y + b.height <= a.y);
 }
 
 // src/auto-scroll/auto-scroll.ts
-var R1 = {
+var TEMP_RECT = {
   width: 0,
   height: 0,
-  left: 0,
-  right: 0,
-  top: 0,
-  bottom: 0
+  x: 0,
+  y: 0
 };
-var R2 = { ...R1 };
 var DEFAULT_THRESHOLD = 50;
 var SPEED_DATA = {
   direction: "none",
@@ -4421,10 +4465,8 @@ function getPaddedRect(rect, padding, result) {
   bottom = Math.max(0, bottom);
   result.width = rect.width + left + right;
   result.height = rect.height + top + bottom;
-  result.left = rect.left - left;
-  result.top = rect.top - top;
-  result.right = rect.right + right;
-  result.bottom = rect.bottom + bottom;
+  result.x = rect.x - left;
+  result.y = rect.y - top;
   return result;
 }
 function isScrolledToMax(scrollValue, maxScrollValue) {
@@ -4661,16 +4703,6 @@ var AutoScroll = class {
     ticker.off(tickerReadPhase, this._frameRead);
     ticker.off(tickerWritePhase, this._frameWrite);
   }
-  _getItemClientRect(item, result = { width: 0, height: 0, left: 0, right: 0, top: 0, bottom: 0 }) {
-    const { clientRect } = item;
-    result.left = clientRect.left;
-    result.top = clientRect.top;
-    result.width = clientRect.width;
-    result.height = clientRect.height;
-    result.right = clientRect.left + clientRect.width;
-    result.bottom = clientRect.top + clientRect.height;
-    return result;
-  }
   _requestItemScroll(item, axis, element, direction, threshold, distance, maxValue) {
     const reqMap = this._requests[axis];
     let request = reqMap.get(item);
@@ -4700,7 +4732,7 @@ var AutoScroll = class {
     reqMap.delete(item);
   }
   _checkItemOverlap(item, checkX, checkY) {
-    const { inertAreaSize, targets } = item;
+    const { inertAreaSize, targets, clientRect } = item;
     if (!targets.length) {
       checkX && this._cancelItemScroll(item, AUTO_SCROLL_AXIS.x);
       checkY && this._cancelItemScroll(item, AUTO_SCROLL_AXIS.y);
@@ -4714,7 +4746,6 @@ var AutoScroll = class {
       checkY && this._cancelItemScroll(item, AUTO_SCROLL_AXIS.y);
       return;
     }
-    const itemRect = this._getItemClientRect(item, R1);
     let xElement = null;
     let xPriority = -Infinity;
     let xThreshold = 0;
@@ -4745,10 +4776,10 @@ var AutoScroll = class {
       if (testMaxScrollX <= 0 && testMaxScrollY <= 0)
         continue;
       const testRect = getRect([testElement, "padding"], window);
-      let testScore = getIntersectionScore(itemRect, testRect) || -Infinity;
+      let testScore = getIntersectionScore(clientRect, testRect) || -Infinity;
       if (testScore === -Infinity) {
-        if (target.padding && isIntersecting(itemRect, getPaddedRect(testRect, target.padding, R2))) {
-          testScore = -(getDistance(itemRect, testRect) || 0);
+        if (target.padding && isIntersecting(clientRect, getPaddedRect(testRect, target.padding, TEMP_RECT))) {
+          testScore = -(getDistance(clientRect, testRect) || 0);
         } else {
           continue;
         }
@@ -4760,16 +4791,16 @@ var AutoScroll = class {
         const testEdgeOffset = computeEdgeOffset(
           testThreshold,
           inertAreaSize,
-          itemRect.width,
+          clientRect.width,
           testRect.width
         );
         if (moveDirectionX === AUTO_SCROLL_DIRECTION.right) {
-          testDistance = testRect.right + testEdgeOffset - itemRect.right;
+          testDistance = testRect.x + testRect.width + testEdgeOffset - (clientRect.x + clientRect.width);
           if (testDistance <= testThreshold && !isScrolledToMax(getScrollLeft(testElement), testMaxScrollX)) {
             testDirection = AUTO_SCROLL_DIRECTION.right;
           }
         } else if (moveDirectionX === AUTO_SCROLL_DIRECTION.left) {
-          testDistance = itemRect.left - (testRect.left - testEdgeOffset);
+          testDistance = clientRect.x - (testRect.x - testEdgeOffset);
           if (testDistance <= testThreshold && getScrollLeft(testElement) > 0) {
             testDirection = AUTO_SCROLL_DIRECTION.left;
           }
@@ -4791,16 +4822,16 @@ var AutoScroll = class {
         const testEdgeOffset = computeEdgeOffset(
           testThreshold,
           inertAreaSize,
-          itemRect.height,
+          clientRect.height,
           testRect.height
         );
         if (moveDirectionY === AUTO_SCROLL_DIRECTION.down) {
-          testDistance = testRect.bottom + testEdgeOffset - itemRect.bottom;
+          testDistance = testRect.y + testRect.height + testEdgeOffset - (clientRect.y + clientRect.height);
           if (testDistance <= testThreshold && !isScrolledToMax(getScrollTop(testElement), testMaxScrollY)) {
             testDirection = AUTO_SCROLL_DIRECTION.down;
           }
         } else if (moveDirectionY === AUTO_SCROLL_DIRECTION.up) {
-          testDistance = itemRect.top - (testRect.top - testEdgeOffset);
+          testDistance = clientRect.y - (testRect.y - testEdgeOffset);
           if (testDistance <= testThreshold && getScrollTop(testElement) > 0) {
             testDirection = AUTO_SCROLL_DIRECTION.up;
           }
@@ -4849,8 +4880,7 @@ var AutoScroll = class {
   }
   _updateScrollRequest(scrollRequest) {
     const item = scrollRequest.item;
-    const { inertAreaSize, smoothStop, targets } = item;
-    const itemRect = this._getItemClientRect(item, R1);
+    const { inertAreaSize, smoothStop, targets, clientRect } = item;
     let hasReachedEnd = null;
     let i = 0;
     for (; i < targets.length; i++) {
@@ -4871,10 +4901,10 @@ var AutoScroll = class {
         break;
       }
       const testRect = getRect([testElement, "padding"], window);
-      const testScore = getIntersectionScore(itemRect, testRect) || -Infinity;
+      const testScore = getIntersectionScore(clientRect, testRect) || -Infinity;
       if (testScore === -Infinity) {
         const padding = target.scrollPadding || target.padding;
-        if (!(padding && isIntersecting(itemRect, getPaddedRect(testRect, padding, R2)))) {
+        if (!(padding && isIntersecting(clientRect, getPaddedRect(testRect, padding, TEMP_RECT)))) {
           break;
         }
       }
@@ -4886,18 +4916,18 @@ var AutoScroll = class {
       const testEdgeOffset = computeEdgeOffset(
         testThreshold,
         inertAreaSize,
-        testIsAxisX ? itemRect.width : itemRect.height,
+        testIsAxisX ? clientRect.width : clientRect.height,
         testIsAxisX ? testRect.width : testRect.height
       );
       let testDistance = 0;
       if (scrollRequest.direction === AUTO_SCROLL_DIRECTION.left) {
-        testDistance = itemRect.left - (testRect.left - testEdgeOffset);
+        testDistance = clientRect.x - (testRect.x - testEdgeOffset);
       } else if (scrollRequest.direction === AUTO_SCROLL_DIRECTION.right) {
-        testDistance = testRect.right + testEdgeOffset - itemRect.right;
+        testDistance = testRect.x + testRect.width + testEdgeOffset - (clientRect.x + clientRect.width);
       } else if (scrollRequest.direction === AUTO_SCROLL_DIRECTION.up) {
-        testDistance = itemRect.top - (testRect.top - testEdgeOffset);
+        testDistance = clientRect.y - (testRect.y - testEdgeOffset);
       } else {
-        testDistance = testRect.bottom + testEdgeOffset - itemRect.bottom;
+        testDistance = testRect.y + testRect.height + testEdgeOffset - (clientRect.y + clientRect.height);
       }
       if (testDistance > testThreshold) {
         break;

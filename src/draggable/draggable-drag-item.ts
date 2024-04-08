@@ -91,8 +91,8 @@ export class DraggableDragItem<
 
     // Store element's client rect.
     {
-      const { left, top, width, height } = clientRect;
-      this.clientRect = { left, top, width, height };
+      const { width, height, x, y } = clientRect;
+      this.clientRect = { width, height, x, y };
     }
 
     // If element's offset container is different than drag container's

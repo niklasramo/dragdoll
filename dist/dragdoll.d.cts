@@ -84,13 +84,7 @@ type Dimensions = {
     width: number;
     height: number;
 };
-interface Rect extends Dimensions {
-    left: number;
-    top: number;
-}
-interface RectExtended extends Rect {
-    right: number;
-    bottom: number;
+interface Rect extends Point, Dimensions {
 }
 type CSSProperties = Partial<Omit<CSSStyleDeclaration, 'getPropertyPriority' | 'getPropertyValue' | 'item' | 'removeProperty' | 'setProperty' | 'length' | 'parentRule'>>;
 
@@ -602,7 +596,6 @@ declare class AutoScroll {
     protected _frameWrite(): void;
     protected _startTicking(): void;
     protected _stopTicking(): void;
-    protected _getItemClientRect(item: AutoScrollItem, result?: RectExtended): RectExtended;
     protected _requestItemScroll(item: AutoScrollItem, axis: AutoScrollAxis, element: Window | Element, direction: AutoScrollDirection, threshold: number, distance: number, maxValue: number): void;
     protected _cancelItemScroll(item: AutoScrollItem, axis: AutoScrollAxis): void;
     protected _checkItemOverlap(item: AutoScrollItem, checkX: boolean, checkY: boolean): void;
@@ -648,12 +641,7 @@ interface DraggableAutoScrollSettings<S extends Sensor[], E extends S[number]['e
     speed: number | AutoScrollItemSpeedCallback;
     smoothStop: boolean;
     getPosition: ((draggable: Draggable<S, E>) => Point) | null;
-    getClientRect: ((draggable: Draggable<S, E>) => {
-        left: number;
-        top: number;
-        width: number;
-        height: number;
-    }) | null;
+    getClientRect: ((draggable: Draggable<S, E>) => Rect) | null;
     onStart: AutoScrollItemEventCallback | null;
     onStop: AutoScrollItemEventCallback | null;
 }
