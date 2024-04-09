@@ -4262,11 +4262,529 @@ var KeyboardSensor = class extends BaseSensor {
 // src/draggable/draggable.ts
 import { Emitter as Emitter3 } from "eventti";
 
+// src/draggable/draggable-drag.ts
+var DraggableDrag = class {
+  constructor(sensor, startEvent) {
+    this.sensor = sensor;
+    this.isEnded = false;
+    this.event = startEvent;
+    this.prevEvent = startEvent;
+    this.startEvent = startEvent;
+    this.endEvent = null;
+    this.items = [];
+  }
+};
+
 // src/draggable/draggable-drag-item.ts
 import { getOffsetContainer } from "mezr";
 
+// src/utils/get-style.ts
+var STYLE_DECLARATION_CACHE = /* @__PURE__ */ new WeakMap();
+function getStyle(element) {
+  let styleDeclaration = STYLE_DECLARATION_CACHE.get(element)?.deref();
+  if (!styleDeclaration) {
+    styleDeclaration = window.getComputedStyle(element, null);
+    STYLE_DECLARATION_CACHE.set(element, new WeakRef(styleDeclaration));
+  }
+  return styleDeclaration;
+}
+
 // src/utils/get-offset-diff.ts
 import { getOffset } from "mezr";
+function getOffsetDiff(elemA, elemB, result = { left: 0, top: 0 }) {
+  result.left = 0;
+  result.top = 0;
+  if (elemA === elemB)
+    return result;
+  const offsetA = getOffset([elemA, "padding"]);
+  const offsetB = getOffset([elemB, "padding"]);
+  result.left = offsetB.left - offsetA.left;
+  result.top = offsetB.top - offsetA.top;
+  return result;
+}
+
+// src/draggable/draggable-drag-item.ts
+var OFFSET_DIFF = { left: 0, top: 0 };
+var IDENTITY_MATRIX = "matrix(1, 0, 0, 1, 0, 0)";
+var IDENTITY_MATRIX_3D = "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)";
+var DraggableDragItem = class {
+  constructor(element, draggable) {
+    if (!element.isConnected) {
+      throw new Error("Element is not connected");
+    }
+    const sensor = draggable.drag?.sensor;
+    if (!sensor) {
+      throw new Error("Sensor is not defined");
+    }
+    const item = this;
+    const style = getStyle(element);
+    const clientRect = element.getBoundingClientRect();
+    this.data = {};
+    this.element = element;
+    this.frozenProps = null;
+    this.unfrozenProps = null;
+    this.position = { x: 0, y: 0 };
+    this._updateDiff = { x: 0, y: 0 };
+    this._moveDiff = { x: 0, y: 0 };
+    this._containerDiff = { x: 0, y: 0 };
+    const elementContainer = element.parentElement;
+    if (!elementContainer) {
+      throw new Error("Element does not have a parent element.");
+    }
+    this.elementContainer = elementContainer;
+    const elementOffsetContainer = getOffsetContainer(element);
+    if (!elementOffsetContainer) {
+      throw new Error("Offset container could not be computed for the element!");
+    }
+    this.elementOffsetContainer = elementOffsetContainer;
+    const dragContainer = draggable.settings.container || elementContainer;
+    this.dragContainer = dragContainer;
+    const dragOffsetContainer = dragContainer === elementContainer ? elementOffsetContainer : getOffsetContainer(element, { container: dragContainer });
+    if (!dragOffsetContainer) {
+      throw new Error("Drag offset container could not be computed for the element!");
+    }
+    this.dragOffsetContainer = dragOffsetContainer;
+    {
+      const { width, height, x: x2, y: y2 } = clientRect;
+      this.clientRect = { width, height, x: x2, y: y2 };
+    }
+    if (elementOffsetContainer !== dragOffsetContainer) {
+      const { left, top } = getOffsetDiff(dragOffsetContainer, elementOffsetContainer, OFFSET_DIFF);
+      this._containerDiff.x = left;
+      this._containerDiff.y = top;
+    }
+    const { transform } = style;
+    if (transform && transform !== "none" && transform !== IDENTITY_MATRIX && transform !== IDENTITY_MATRIX_3D) {
+      this.initialTransform = transform;
+    } else {
+      this.initialTransform = "";
+    }
+    const { x, y } = draggable.settings.getStartPosition({
+      draggable,
+      sensor,
+      item,
+      style
+    });
+    this.position.x = x;
+    this.position.y = y;
+    const frozenProps = draggable.settings.getFrozenProps({
+      draggable,
+      sensor,
+      item,
+      style
+    });
+    if (Array.isArray(frozenProps)) {
+      if (frozenProps.length) {
+        const props = {};
+        for (const prop of frozenProps) {
+          props[prop] = style[prop];
+        }
+        this.frozenProps = props;
+      } else {
+        this.frozenProps = null;
+      }
+    } else {
+      this.frozenProps = frozenProps;
+    }
+    if (this.frozenProps) {
+      const unfrozenProps = {};
+      for (const key in this.frozenProps) {
+        if (this.frozenProps.hasOwnProperty(key)) {
+          unfrozenProps[key] = element.style[key];
+        }
+      }
+      this.unfrozenProps = unfrozenProps;
+    }
+  }
+  updateSize(dimensions) {
+    if (dimensions) {
+      this.clientRect.width = dimensions.width;
+      this.clientRect.height = dimensions.height;
+    } else {
+      const rect = this.element.getBoundingClientRect();
+      this.clientRect.width = rect.width;
+      this.clientRect.height = rect.height;
+    }
+  }
+};
+
+// src/draggable/draggable.ts
+var SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
+var OFFSET_DIFF2 = { left: 0, top: 0 };
+var POSITION_CHANGE = { x: 0, y: 0 };
+function getDefaultSettings() {
+  return {
+    container: null,
+    startPredicate: () => true,
+    getElements: () => null,
+    releaseElements: () => null,
+    getFrozenProps: () => null,
+    getStartPosition: () => {
+      return { x: 0, y: 0 };
+    },
+    setPosition: ({ item, x, y }) => {
+      item.element.style.transform = `translate(${x}px, ${y}px) ${item.initialTransform}`;
+    },
+    getPositionChange: ({ event, prevEvent }) => {
+      POSITION_CHANGE.x = event.x - prevEvent.x;
+      POSITION_CHANGE.y = event.y - prevEvent.y;
+      return POSITION_CHANGE;
+    }
+  };
+}
+var Draggable = class {
+  constructor(sensors, options = {}) {
+    this.sensors = sensors;
+    this.settings = this._parseSettings(options);
+    this.plugins = {};
+    this.drag = null;
+    this.isDestroyed = false;
+    this._sensorData = /* @__PURE__ */ new Map();
+    this._emitter = new Emitter3();
+    this._startId = Symbol();
+    this._moveId = Symbol();
+    this._updateId = Symbol();
+    this._onMove = this._onMove.bind(this);
+    this._onScroll = this._onScroll.bind(this);
+    this._onEnd = this._onEnd.bind(this);
+    this._prepareStart = this._prepareStart.bind(this);
+    this._applyStart = this._applyStart.bind(this);
+    this._prepareMove = this._prepareMove.bind(this);
+    this._applyMove = this._applyMove.bind(this);
+    this._preparePositionUpdate = this._preparePositionUpdate.bind(this);
+    this._applyPositionUpdate = this._applyPositionUpdate.bind(this);
+    this.sensors.forEach((sensor) => {
+      this._sensorData.set(sensor, {
+        predicateState: 0 /* PENDING */,
+        predicateEvent: null,
+        onMove: (e) => this._onMove(e, sensor),
+        onEnd: (e) => this._onEnd(e, sensor)
+      });
+      const { onMove, onEnd } = this._sensorData.get(sensor);
+      sensor.on("start", onMove, onMove);
+      sensor.on("move", onMove, onMove);
+      sensor.on("cancel", onEnd, onEnd);
+      sensor.on("end", onEnd, onEnd);
+      sensor.on("destroy", onEnd, onEnd);
+    });
+  }
+  _parseSettings(options, defaults = getDefaultSettings()) {
+    const {
+      container = defaults.container,
+      startPredicate = defaults.startPredicate,
+      getElements = defaults.getElements,
+      releaseElements = defaults.releaseElements,
+      getFrozenProps = defaults.getFrozenProps,
+      getStartPosition = defaults.getStartPosition,
+      setPosition = defaults.setPosition,
+      getPositionChange = defaults.getPositionChange
+    } = options || {};
+    return {
+      container,
+      startPredicate,
+      getElements,
+      releaseElements,
+      getFrozenProps,
+      getStartPosition,
+      setPosition,
+      getPositionChange
+    };
+  }
+  _emit(type3, ...e) {
+    this._emitter.emit(type3, ...e);
+  }
+  _onMove(e, sensor) {
+    const sensorData = this._sensorData.get(sensor);
+    if (!sensorData)
+      return;
+    switch (sensorData.predicateState) {
+      case 0 /* PENDING */: {
+        sensorData.predicateEvent = e;
+        const shouldStart = this.settings.startPredicate({
+          draggable: this,
+          sensor,
+          event: e
+        });
+        if (shouldStart === true) {
+          this.resolveStartPredicate(sensor);
+        } else if (shouldStart === false) {
+          this.rejectStartPredicate(sensor);
+        }
+        break;
+      }
+      case 1 /* RESOLVED */: {
+        if (this.drag) {
+          this.drag.event = e;
+          ticker.once(tickerReadPhase, this._prepareMove, this._moveId);
+          ticker.once(tickerWritePhase, this._applyMove, this._moveId);
+        }
+        break;
+      }
+    }
+  }
+  _onScroll() {
+    this.updatePosition();
+  }
+  _onEnd(e, sensor) {
+    const sensorData = this._sensorData.get(sensor);
+    if (!sensorData)
+      return;
+    if (!this.drag) {
+      sensorData.predicateState = 0 /* PENDING */;
+      sensorData.predicateEvent = null;
+    } else if (sensorData.predicateState === 1 /* RESOLVED */) {
+      this.drag.endEvent = e;
+      this._sensorData.forEach((data) => {
+        data.predicateState = 0 /* PENDING */;
+        data.predicateEvent = null;
+      });
+      this.stop();
+    }
+  }
+  _prepareStart() {
+    const drag = this.drag;
+    if (!drag)
+      return;
+    const elements = this.settings.getElements({
+      draggable: this,
+      sensor: drag.sensor,
+      startEvent: drag.startEvent
+    }) || [];
+    drag.items = elements.map((element) => {
+      return new DraggableDragItem(element, this);
+    });
+    this._emit("preparestart", drag.startEvent);
+  }
+  _applyStart() {
+    const drag = this.drag;
+    if (!drag)
+      return;
+    const { container } = this.settings;
+    for (const item of drag.items) {
+      if (container && item.element.parentElement !== container) {
+        container.appendChild(item.element);
+        item.position.x += item._containerDiff.x;
+        item.position.y += item._containerDiff.y;
+      }
+      if (item.frozenProps) {
+        Object.assign(item.element.style, item.frozenProps);
+      }
+      this.settings.setPosition({
+        phase: "start",
+        draggable: this,
+        sensor: drag.sensor,
+        item,
+        x: item.position.x,
+        y: item.position.y
+      });
+    }
+    window.addEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS);
+    this._emit("start", drag.startEvent);
+  }
+  _prepareMove() {
+    const drag = this.drag;
+    if (!drag)
+      return;
+    const { event, prevEvent, startEvent, sensor } = drag;
+    if (event === prevEvent)
+      return;
+    for (const item of drag.items) {
+      const { x: changeX, y: changeY } = this.settings.getPositionChange({
+        draggable: this,
+        sensor,
+        item,
+        event,
+        prevEvent,
+        startEvent
+      });
+      if (changeX) {
+        item.position.x += changeX;
+        item.clientRect.x += changeX;
+        item._moveDiff.x += changeX;
+      }
+      if (changeY) {
+        item.position.y += changeY;
+        item.clientRect.y += changeY;
+        item._moveDiff.y += changeY;
+      }
+    }
+    drag.prevEvent = event;
+    this._emit("preparemove", event);
+  }
+  _applyMove() {
+    const drag = this.drag;
+    if (!drag)
+      return;
+    for (const item of drag.items) {
+      item._moveDiff.x = 0;
+      item._moveDiff.y = 0;
+      this.settings.setPosition({
+        phase: "move",
+        draggable: this,
+        sensor: drag.sensor,
+        item,
+        x: item.position.x,
+        y: item.position.y
+      });
+    }
+    if (drag.event) {
+      this._emit("move", drag.event);
+    }
+  }
+  _preparePositionUpdate() {
+    const { drag } = this;
+    if (!drag)
+      return;
+    for (const item of drag.items) {
+      if (item.elementOffsetContainer !== item.dragOffsetContainer) {
+        const { left: left2, top: top2 } = getOffsetDiff(
+          item.dragOffsetContainer,
+          item.elementOffsetContainer,
+          OFFSET_DIFF2
+        );
+        item._containerDiff.x = left2;
+        item._containerDiff.y = top2;
+      }
+      const { left, top, width, height } = item.element.getBoundingClientRect();
+      const updateDiffX = item.clientRect.x - item._moveDiff.x - left;
+      item.position.x = item.position.x - item._updateDiff.x + updateDiffX;
+      item._updateDiff.x = updateDiffX;
+      const updateDiffY = item.clientRect.y - item._moveDiff.y - top;
+      item.position.y = item.position.y - item._updateDiff.y + updateDiffY;
+      item._updateDiff.y = updateDiffY;
+      item.clientRect.width = width;
+      item.clientRect.height = height;
+    }
+  }
+  _applyPositionUpdate() {
+    const { drag } = this;
+    if (!drag)
+      return;
+    for (const item of drag.items) {
+      item._updateDiff.x = 0;
+      item._updateDiff.y = 0;
+      this.settings.setPosition({
+        phase: "move",
+        draggable: this,
+        sensor: drag.sensor,
+        item,
+        x: item.position.x,
+        y: item.position.y
+      });
+    }
+  }
+  on(type3, listener, listenerId) {
+    return this._emitter.on(type3, listener, listenerId);
+  }
+  off(type3, listenerId) {
+    this._emitter.off(type3, listenerId);
+  }
+  resolveStartPredicate(sensor, e) {
+    const sensorData = this._sensorData.get(sensor);
+    if (!sensorData)
+      return;
+    const startEvent = e || sensorData.predicateEvent;
+    if (sensorData.predicateState === 0 /* PENDING */ && startEvent) {
+      sensorData.predicateState = 1 /* RESOLVED */;
+      sensorData.predicateEvent = null;
+      this.drag = new DraggableDrag(sensor, startEvent);
+      this._sensorData.forEach((data, s) => {
+        if (s === sensor)
+          return;
+        data.predicateState = 2 /* REJECTED */;
+        data.predicateEvent = null;
+      });
+      ticker.once(tickerReadPhase, this._prepareStart, this._startId);
+      ticker.once(tickerWritePhase, this._applyStart, this._startId);
+    }
+  }
+  rejectStartPredicate(sensor) {
+    const sensorData = this._sensorData.get(sensor);
+    if (sensorData?.predicateState === 0 /* PENDING */) {
+      sensorData.predicateState = 2 /* REJECTED */;
+      sensorData.predicateEvent = null;
+    }
+  }
+  stop() {
+    const drag = this.drag;
+    if (!drag || drag.isEnded)
+      return;
+    drag.isEnded = true;
+    ticker.off(tickerReadPhase, this._startId);
+    ticker.off(tickerWritePhase, this._startId);
+    ticker.off(tickerReadPhase, this._moveId);
+    ticker.off(tickerWritePhase, this._moveId);
+    ticker.off(tickerReadPhase, this._updateId);
+    ticker.off(tickerWritePhase, this._updateId);
+    window.removeEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS);
+    const elements = [];
+    for (const item of drag.items) {
+      elements.push(item.element);
+      if (item.elementContainer && item.element.parentElement !== item.elementContainer) {
+        item.position.x -= item._containerDiff.x;
+        item.position.y -= item._containerDiff.y;
+        item._containerDiff.x = 0;
+        item._containerDiff.y = 0;
+        item.elementContainer.appendChild(item.element);
+      }
+      if (item.unfrozenProps) {
+        for (const key in item.unfrozenProps) {
+          item.element.style[key] = item.unfrozenProps[key] || "";
+        }
+      }
+      this.settings.setPosition({
+        phase: "end",
+        draggable: this,
+        sensor: drag.sensor,
+        item,
+        x: item.position.x,
+        y: item.position.y
+      });
+    }
+    if (elements.length) {
+      this.settings.releaseElements({
+        draggable: this,
+        sensor: drag.sensor,
+        elements
+      });
+    }
+    this._emit("end", drag.endEvent);
+    this.drag = null;
+  }
+  updatePosition(instant = false) {
+    if (!this.drag)
+      return;
+    if (instant) {
+      this._preparePositionUpdate();
+      this._applyPositionUpdate();
+    } else {
+      ticker.once(tickerReadPhase, this._preparePositionUpdate, this._updateId);
+      ticker.once(tickerWritePhase, this._applyPositionUpdate, this._updateId);
+    }
+  }
+  updateSettings(options = {}) {
+    this.settings = this._parseSettings(options, this.settings);
+  }
+  use(plugin) {
+    return plugin(this);
+  }
+  destroy() {
+    if (this.isDestroyed)
+      return;
+    this.isDestroyed = true;
+    this.stop();
+    this._sensorData.forEach(({ onMove, onEnd }, sensor) => {
+      sensor.off("start", onMove);
+      sensor.off("move", onMove);
+      sensor.off("cancel", onEnd);
+      sensor.off("end", onEnd);
+      sensor.off("destroy", onEnd);
+    });
+    this._sensorData.clear();
+    this._emit("destroy");
+    this._emitter.off();
+  }
+};
 
 // src/auto-scroll/auto-scroll.ts
 import { Emitter as Emitter4 } from "eventti";
@@ -5545,27 +6063,6 @@ describe("BaseSensor", () => {
   });
 });
 
-// tests/src/utils/createTestElement.ts
-var defaultStyles = {
-  display: "block",
-  position: "absolute",
-  left: "0px",
-  top: "0px",
-  width: "100px",
-  height: "100px",
-  padding: "0px",
-  margin: "0px",
-  boxSizing: "border-box",
-  backgroundColor: "red"
-};
-function createTestElement(styles2 = {}) {
-  const el = document.createElement("div");
-  el.tabIndex = 0;
-  Object.assign(el.style, { ...defaultStyles, ...styles2 });
-  document.body.appendChild(el);
-  return el;
-}
-
 // tests/src/utils/FakeTouch.ts
 var FakeTouch = class {
   constructor(options = {}) {
@@ -5752,6 +6249,93 @@ async function createFakeDrag(steps, options) {
     }
   }
 }
+
+// tests/src/utils/createTestElement.ts
+var defaultStyles = {
+  display: "block",
+  position: "absolute",
+  left: "0px",
+  top: "0px",
+  width: "100px",
+  height: "100px",
+  padding: "0px",
+  margin: "0px",
+  boxSizing: "border-box",
+  backgroundColor: "red"
+};
+function createTestElement(styles2 = {}) {
+  const el = document.createElement("div");
+  el.tabIndex = 0;
+  Object.assign(el.style, { ...defaultStyles, ...styles2 });
+  document.body.appendChild(el);
+  return el;
+}
+
+// tests/src/utils/focusElement.ts
+function focusElement(element) {
+  if (document.activeElement !== element) {
+    element.focus();
+    element.dispatchEvent(new FocusEvent("focus"));
+  }
+}
+
+// tests/src/utils/wait.ts
+function wait(time) {
+  return new Promise((resolve) => {
+    window.setTimeout(() => {
+      resolve(void 0);
+    }, time);
+  });
+}
+
+// tests/src/Draggable.ts
+describe("Draggable", () => {
+  it("should drag an element using the provided sensors", async () => {
+    const el = createTestElement();
+    const pointerSensor = new PointerSensor(el, { sourceEvents: "mouse" });
+    const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+    const draggable = new Draggable([pointerSensor, keyboardSensor], { getElements: () => [el] });
+    let rect = el.getBoundingClientRect();
+    assert.equal(rect.x, 0);
+    assert.equal(rect.y, 0);
+    focusElement(el);
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+    await wait(100);
+    rect = el.getBoundingClientRect();
+    assert.equal(rect.x, 1);
+    assert.equal(rect.y, 0);
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    await wait(100);
+    assert.equal(draggable.drag, null);
+    await wait(100);
+    await createFakeDrag(
+      [
+        { x: 1, y: 1 },
+        // mouse down
+        { x: 2, y: 2 },
+        // mouse move
+        { x: 3, y: 3 },
+        // mouse move
+        { x: 3, y: 3 }
+        // mouse up
+      ],
+      {
+        eventType: "mouse",
+        stepDuration: 50
+      }
+    );
+    await wait(100);
+    assert.equal(draggable.drag, null);
+    rect = el.getBoundingClientRect();
+    assert.equal(rect.x, 3);
+    assert.equal(rect.y, 2);
+    draggable.destroy();
+    pointerSensor.destroy();
+    keyboardSensor.destroy();
+    el.remove();
+  });
+});
 
 // tests/src/utils/defaultPageStyles.ts
 function addDefaultPageStyles(doc) {
@@ -6392,14 +6976,6 @@ describe("PointerSensor", () => {
     });
   });
 });
-
-// tests/src/utils/focusElement.ts
-function focusElement(element) {
-  if (document.activeElement !== element) {
-    element.focus();
-    element.dispatchEvent(new FocusEvent("focus"));
-  }
-}
 
 // tests/src/utils/blurElement.ts
 function blurElement(element) {
