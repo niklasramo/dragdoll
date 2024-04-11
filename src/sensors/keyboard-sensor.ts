@@ -153,10 +153,11 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
 
     this._onKeyDown = this._onKeyDown.bind(this);
     this._internalCancel = this._internalCancel.bind(this);
+    this._blurCancelHandler = this._blurCancelHandler.bind(this);
 
     document.addEventListener('keydown', this._onKeyDown);
     if (cancelOnBlur) {
-      element?.addEventListener('blur', this._internalCancel);
+      element?.addEventListener('blur', this._blurCancelHandler);
     }
     if (cancelOnVisibilityChange) {
       document.addEventListener('visibilitychange', this._internalCancel);
@@ -165,6 +166,21 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
 
   protected _internalCancel() {
     this.cancel();
+  }
+
+  protected _blurCancelHandler() {
+    // If the Draggable has a container defined the dragged element will be
+    // appended to the container, which will cause the element to lose focus
+    // temporarily in some browsers (e.g. Chrome). Draggable will automatically
+    // restore the focus immediately after the element is appended, but the blur
+    // event will be triggered anyway. This is why we need to defer the cancel
+    // call to the next microtask, where we can check if the element is still
+    // focused.
+    queueMicrotask(() => {
+      if (document.activeElement !== this.element) {
+        this.cancel();
+      }
+    });
   }
 
   protected _onKeyDown(e: KeyboardEvent) {
@@ -246,9 +262,9 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
     if (cancelOnBlur !== undefined && this._cancelOnBlur !== cancelOnBlur) {
       this._cancelOnBlur = cancelOnBlur;
       if (cancelOnBlur) {
-        this.element?.addEventListener('blur', this._internalCancel);
+        this.element?.addEventListener('blur', this._blurCancelHandler);
       } else {
-        this.element?.removeEventListener('blur', this._internalCancel);
+        this.element?.removeEventListener('blur', this._blurCancelHandler);
       }
     }
 
@@ -286,7 +302,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
     super.destroy();
     document.removeEventListener('keydown', this._onKeyDown);
     if (this._cancelOnBlur) {
-      this.element?.removeEventListener('blur', this._internalCancel);
+      this.element?.removeEventListener('blur', this._blurCancelHandler);
     }
     if (this._cancelOnVisibilityChange) {
       document.removeEventListener('visibilitychange', this._internalCancel);

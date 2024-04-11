@@ -248,6 +248,7 @@ declare class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEven
     protected _endPredicate: KeyboardSensorPredicate<E>;
     constructor(element: Element | null, options?: Partial<KeyboardSensorSettings<E>>);
     protected _internalCancel(): void;
+    protected _blurCancelHandler(): void;
     protected _onKeyDown(e: KeyboardEvent): void;
     updateSettings(options?: Partial<KeyboardSensorSettings<E>>): void;
     destroy(): void;
@@ -289,6 +290,7 @@ declare class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboa
     protected _end(data: E['end']): void;
     protected _cancel(data: E['cancel']): void;
     protected _internalCancel(): void;
+    protected _blurCancelHandler(): void;
     protected _updateDirection(): void;
     protected _onTick(): void;
     protected _onKeyUp(e: KeyboardEvent): void;
@@ -332,6 +334,12 @@ declare class DraggableDrag<S extends Sensor[], E extends S[number]['events']> {
     constructor(sensor: S[number], startEvent: E['start'] | E['move']);
 }
 
+declare enum DragStartPhase {
+    NONE = 0,
+    INIT = 1,
+    START_PREPARE = 2,
+    FINISH_APPLY = 3
+}
 declare enum DraggableStartPredicateState {
     PENDING = 0,
     RESOLVED = 1,
@@ -411,6 +419,7 @@ declare class Draggable<S extends Sensor[] = Sensor[], E extends S[number]['even
     protected _emitter: Emitter<{
         [K in keyof DraggableEventCallbacks<E>]: DraggableEventCallbacks<E>[K];
     }>;
+    protected _startPhase: DragStartPhase;
     protected _startId: symbol;
     protected _moveId: symbol;
     protected _updateId: symbol;

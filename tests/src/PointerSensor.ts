@@ -89,7 +89,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'mouse',
@@ -110,7 +110,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'pointer',
@@ -131,7 +131,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'touch',
@@ -231,7 +231,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'mouse',
@@ -276,7 +276,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'pointer',
@@ -321,7 +321,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'touch',
@@ -368,7 +368,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'mouse',
@@ -413,7 +413,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'pointer',
@@ -458,7 +458,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'touch',
@@ -505,7 +505,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'mouse',
@@ -524,8 +524,8 @@ describe('PointerSensor', () => {
         target: el,
         pointerId: -1,
         pointerType: 'mouse',
-        x: 3,
-        y: 3,
+        x: 2,
+        y: 2,
       });
 
       s.destroy();
@@ -550,7 +550,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'pointer',
@@ -569,8 +569,8 @@ describe('PointerSensor', () => {
         target: el,
         pointerId: sourceEvent.pointerId,
         pointerType: sourceEvent.pointerType,
-        x: 3,
-        y: 3,
+        x: 2,
+        y: 2,
       });
 
       s.destroy();
@@ -595,7 +595,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'touch',
@@ -614,8 +614,8 @@ describe('PointerSensor', () => {
         target: el,
         pointerId: sourceEvent.changedTouches[0].identifier,
         pointerType: 'touch',
-        x: 3,
-        y: 3,
+        x: 2,
+        y: 2,
       });
 
       s.destroy();
@@ -642,7 +642,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'pointer',
@@ -662,8 +662,8 @@ describe('PointerSensor', () => {
         target: el,
         pointerId: sourceEvent.pointerId,
         pointerType: sourceEvent.pointerType,
-        x: 3,
-        y: 3,
+        x: 2,
+        y: 2,
       });
 
       s.destroy();
@@ -688,7 +688,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'touch',
@@ -708,8 +708,8 @@ describe('PointerSensor', () => {
         target: el,
         pointerId: sourceEvent.changedTouches[0].identifier,
         pointerType: 'touch',
-        x: 3,
-        y: 3,
+        x: 2,
+        y: 2,
       });
 
       s.destroy();

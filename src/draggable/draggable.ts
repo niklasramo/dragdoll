@@ -10,6 +10,8 @@ import { DraggableDragItem } from './draggable-drag-item.js';
 
 import { ticker, tickerReadPhase, tickerWritePhase } from '../singletons/ticker.js';
 
+import { appendElement } from 'utils/append-element.js';
+
 import { getOffsetDiff } from '../utils/get-offset-diff.js';
 
 import { Writeable, CSSProperties, Point } from '../types.js';
@@ -19,6 +21,13 @@ const SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: t
 const OFFSET_DIFF = { left: 0, top: 0 };
 
 const POSITION_CHANGE = { x: 0, y: 0 };
+
+enum DragStartPhase {
+  NONE = 0,
+  INIT = 1,
+  START_PREPARE = 2,
+  FINISH_APPLY = 3,
+}
 
 enum DraggableStartPredicateState {
   PENDING = 0,
@@ -135,6 +144,7 @@ export class Draggable<
   protected _emitter: Emitter<{
     [K in keyof DraggableEventCallbacks<E>]: DraggableEventCallbacks<E>[K];
   }>;
+  protected _startPhase: DragStartPhase;
   protected _startId: symbol;
   protected _moveId: symbol;
   protected _updateId: symbol;
@@ -148,6 +158,7 @@ export class Draggable<
 
     this._sensorData = new Map();
     this._emitter = new Emitter();
+    this._startPhase = DragStartPhase.NONE;
     this._startId = Symbol();
     this._moveId = Symbol();
     this._updateId = Symbol();
@@ -281,6 +292,9 @@ export class Draggable<
     const drag: Writeable<DraggableDrag<S, E>> | null = this.drag;
     if (!drag) return;
 
+    // Update start phase.
+    this._startPhase = DragStartPhase.START_PREPARE;
+
     // Get elements that we'll need to move with the drag.
     // NB: It is okay if there are no elements and thus no items. The drag
     // process will process as usual, but nothing is moving by default.
@@ -304,13 +318,12 @@ export class Draggable<
     const drag: Writeable<DraggableDrag<S, E>> | null = this.drag;
     if (!drag) return;
 
-    const { container } = this.settings;
     for (const item of drag.items as Writeable<DraggableDragItem<S, E>>[]) {
       // Append element within the container element if such is provided.
-      if (container && item.element.parentElement !== container) {
-        container.appendChild(item.element);
+      if (item.dragContainer !== item.elementContainer) {
         item.position.x += item._containerDiff.x;
         item.position.y += item._containerDiff.y;
+        appendElement(item.element, item.dragContainer);
       }
 
       // Freeze element's props if such are provided.
@@ -331,6 +344,9 @@ export class Draggable<
 
     // Bind scroll listeners.
     window.addEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
+
+    // Update start phase.
+    this._startPhase = DragStartPhase.FINISH_APPLY;
 
     // Emit start event.
     this._emit('start', drag.startEvent);
@@ -478,6 +494,9 @@ export class Draggable<
     const startEvent = e || sensorData.predicateEvent;
 
     if (sensorData.predicateState === DraggableStartPredicateState.PENDING && startEvent) {
+      //  Update start phase.
+      this._startPhase = DragStartPhase.INIT;
+
       // Resolve the provided sensor's start predicate.
       sensorData.predicateState = DraggableStartPredicateState.RESOLVED;
       sensorData.predicateEvent = null;
@@ -509,6 +528,20 @@ export class Draggable<
     const drag: Writeable<DraggableDrag<S, E>> | null = this.drag;
     if (!drag || drag.isEnded) return;
 
+    // If drag start process is still in the prepare and apply phase, let's
+    // wait for it to finish before stopping the drag process. This is a very
+    // rare edge case, but it can happen if the drag process is stopped
+    // forcefully during the start phase.
+    // NB: We reuse the `_startId` symbol to queue the stop procedure.
+    if (this._startPhase === DragStartPhase.START_PREPARE) {
+      this.off('start', this._startId);
+      this.on('start', () => this.stop(), this._startId);
+      return;
+    }
+
+    // Reset drag start phase.
+    this._startPhase = DragStartPhase.NONE;
+
     // Mark drag process as ended.
     drag.isEnded = true;
 
@@ -528,12 +561,13 @@ export class Draggable<
     const elements: (HTMLElement | SVGSVGElement)[] = [];
     for (const item of drag.items as Writeable<DraggableDragItem<S, E>>[]) {
       elements.push(item.element);
-      if (item.elementContainer && item.element.parentElement !== item.elementContainer) {
+
+      if (item.elementContainer !== item.dragContainer) {
         item.position.x -= item._containerDiff.x;
         item.position.y -= item._containerDiff.y;
         item._containerDiff.x = 0;
         item._containerDiff.y = 0;
-        item.elementContainer.appendChild(item.element);
+        appendElement(item.element, item.elementContainer);
       }
 
       // Unfreeze element's props if such are provided.

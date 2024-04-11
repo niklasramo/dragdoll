@@ -2,6 +2,7 @@ import { assert } from 'chai';
 import { createTestElement } from './utils/createTestElement.js';
 import { focusElement } from './utils/focusElement.js';
 import { blurElement } from './utils/blurElement.js';
+import { wait } from './utils/wait.js';
 import { addDefaultPageStyles, removeDefaultPageStyles } from './utils/defaultPageStyles.js';
 import { KeyboardSensor } from '../../src/index.js';
 
@@ -67,7 +68,7 @@ describe('KeyboardSensor', () => {
     });
 
     describe('cancelOnBlur', () => {
-      it('should cancel drag on blur when true', () => {
+      it('should cancel drag on blur when true', async () => {
         const el = createTestElement();
         const s = new KeyboardSensor(el, { cancelOnBlur: true });
 
@@ -95,6 +96,9 @@ describe('KeyboardSensor', () => {
 
         // Blur the sensor element.
         blurElement(el);
+
+        // The blur canceling is done asynchronously. We need to wait a bit.
+        await wait(1);
 
         // Make sure drag is canceled, not ended.
         assert.equal(s.drag, null);

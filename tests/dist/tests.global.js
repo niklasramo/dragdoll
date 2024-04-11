@@ -4349,9 +4349,10 @@
       this._endPredicate = endPredicate;
       this._onKeyDown = this._onKeyDown.bind(this);
       this._internalCancel = this._internalCancel.bind(this);
+      this._blurCancelHandler = this._blurCancelHandler.bind(this);
       document.addEventListener("keydown", this._onKeyDown);
       if (cancelOnBlur) {
-        element?.addEventListener("blur", this._internalCancel);
+        element?.addEventListener("blur", this._blurCancelHandler);
       }
       if (cancelOnVisibilityChange) {
         document.addEventListener("visibilitychange", this._internalCancel);
@@ -4359,6 +4360,13 @@
     }
     _internalCancel() {
       this.cancel();
+    }
+    _blurCancelHandler() {
+      queueMicrotask(() => {
+        if (document.activeElement !== this.element) {
+          this.cancel();
+        }
+      });
     }
     _onKeyDown(e) {
       if (!this.drag) {
@@ -4429,9 +4437,9 @@
       if (cancelOnBlur !== void 0 && this._cancelOnBlur !== cancelOnBlur) {
         this._cancelOnBlur = cancelOnBlur;
         if (cancelOnBlur) {
-          this.element?.addEventListener("blur", this._internalCancel);
+          this.element?.addEventListener("blur", this._blurCancelHandler);
         } else {
-          this.element?.removeEventListener("blur", this._internalCancel);
+          this.element?.removeEventListener("blur", this._blurCancelHandler);
         }
       }
       if (cancelOnVisibilityChange !== void 0 && this._cancelOnVisibilityChange !== cancelOnVisibilityChange) {
@@ -4461,7 +4469,7 @@
       super.destroy();
       document.removeEventListener("keydown", this._onKeyDown);
       if (this._cancelOnBlur) {
-        this.element?.removeEventListener("blur", this._internalCancel);
+        this.element?.removeEventListener("blur", this._blurCancelHandler);
       }
       if (this._cancelOnVisibilityChange) {
         document.removeEventListener("visibilitychange", this._internalCancel);
@@ -4911,6 +4919,16 @@
     }
   };
 
+  // src/utils/append-element.ts
+  function appendElement(element, container) {
+    const focusedElement = document.activeElement;
+    const containsFocus = element.contains(focusedElement);
+    container.append(element);
+    if (containsFocus && document.activeElement !== focusedElement) {
+      focusedElement.focus({ preventScroll: true });
+    }
+  }
+
   // src/draggable/draggable.ts
   var SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
   var OFFSET_DIFF2 = { left: 0, top: 0 };
@@ -4944,6 +4962,7 @@
       this.isDestroyed = false;
       this._sensorData = /* @__PURE__ */ new Map();
       this._emitter = new a();
+      this._startPhase = 0 /* NONE */;
       this._startId = Symbol();
       this._moveId = Symbol();
       this._updateId = Symbol();
@@ -5048,6 +5067,7 @@
       const drag = this.drag;
       if (!drag)
         return;
+      this._startPhase = 2 /* START_PREPARE */;
       const elements = this.settings.getElements({
         draggable: this,
         sensor: drag.sensor,
@@ -5062,12 +5082,11 @@
       const drag = this.drag;
       if (!drag)
         return;
-      const { container } = this.settings;
       for (const item of drag.items) {
-        if (container && item.element.parentElement !== container) {
-          container.appendChild(item.element);
+        if (item.dragContainer !== item.elementContainer) {
           item.position.x += item._containerDiff.x;
           item.position.y += item._containerDiff.y;
+          appendElement(item.element, item.dragContainer);
         }
         if (item.frozenProps) {
           Object.assign(item.element.style, item.frozenProps);
@@ -5082,6 +5101,7 @@
         });
       }
       window.addEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS);
+      this._startPhase = 3 /* FINISH_APPLY */;
       this._emit("start", drag.startEvent);
     }
     _prepareMove() {
@@ -5188,6 +5208,7 @@
         return;
       const startEvent = e || sensorData.predicateEvent;
       if (sensorData.predicateState === 0 /* PENDING */ && startEvent) {
+        this._startPhase = 1 /* INIT */;
         sensorData.predicateState = 1 /* RESOLVED */;
         sensorData.predicateEvent = null;
         this.drag = new DraggableDrag(sensor, startEvent);
@@ -5212,6 +5233,12 @@
       const drag = this.drag;
       if (!drag || drag.isEnded)
         return;
+      if (this._startPhase === 2 /* START_PREPARE */) {
+        this.off("start", this._startId);
+        this.on("start", () => this.stop(), this._startId);
+        return;
+      }
+      this._startPhase = 0 /* NONE */;
       drag.isEnded = true;
       ticker.off(tickerReadPhase, this._startId);
       ticker.off(tickerWritePhase, this._startId);
@@ -5223,12 +5250,12 @@
       const elements = [];
       for (const item of drag.items) {
         elements.push(item.element);
-        if (item.elementContainer && item.element.parentElement !== item.elementContainer) {
+        if (item.elementContainer !== item.dragContainer) {
           item.position.x -= item._containerDiff.x;
           item.position.y -= item._containerDiff.y;
           item._containerDiff.x = 0;
           item._containerDiff.y = 0;
-          item.elementContainer.appendChild(item.element);
+          appendElement(item.element, item.elementContainer);
         }
         if (item.unfrozenProps) {
           for (const key in item.unfrozenProps) {
@@ -6771,7 +6798,12 @@
   function focusElement(element) {
     if (document.activeElement !== element) {
       element.focus();
-      element.dispatchEvent(new FocusEvent("focus"));
+      element.dispatchEvent(
+        new FocusEvent("focus", {
+          bubbles: false,
+          cancelable: true
+        })
+      );
     }
   }
 
@@ -6830,6 +6862,108 @@
       pointerSensor.destroy();
       keyboardSensor.destroy();
       el.remove();
+    });
+    describe("options", () => {
+      describe("container", () => {
+        it("should define the drag container", async () => {
+          const container = createTestElement();
+          const el = createTestElement();
+          const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+          const draggable = new Draggable([keyboardSensor], { container, getElements: () => [el] });
+          const originalContainer = el.parentNode;
+          focusElement(el);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          await wait(100);
+          assert.notEqual(draggable.drag, null);
+          assert.equal(el.parentNode, container);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          await wait(100);
+          assert.equal(draggable.drag, null);
+          assert.equal(el.parentNode, originalContainer);
+          draggable.destroy();
+          keyboardSensor.destroy();
+          el.remove();
+          container.remove();
+        });
+        it("should keep the client position synced", async () => {
+          const container = createTestElement({ position: "absolute", left: "10px", top: "20px" });
+          const el = createTestElement();
+          const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+          const draggable = new Draggable([keyboardSensor], { container, getElements: () => [el] });
+          const originalContainer = el.parentNode;
+          let rect = el.getBoundingClientRect();
+          assert.equal(rect.x, 0);
+          assert.equal(rect.y, 0);
+          rect = container.getBoundingClientRect();
+          assert.equal(rect.x, 10);
+          assert.equal(rect.y, 20);
+          focusElement(el);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          await wait(100);
+          assert.equal(el.parentNode, container);
+          rect = el.getBoundingClientRect();
+          assert.equal(rect.x, 0);
+          assert.equal(rect.y, 0);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+          await wait(100);
+          rect = el.getBoundingClientRect();
+          assert.equal(rect.x, 1);
+          assert.equal(rect.y, 0);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          await wait(100);
+          rect = el.getBoundingClientRect();
+          assert.equal(rect.x, 1);
+          assert.equal(rect.y, 0);
+          assert.equal(el.parentNode, originalContainer);
+          draggable.destroy();
+          keyboardSensor.destroy();
+          el.remove();
+          container.remove();
+        });
+      });
+      describe("getElements", () => {
+        it("should be a function that returns an array of the dragged elements", async () => {
+          const elA = createTestElement();
+          const elB = createTestElement();
+          const elC = createTestElement();
+          const keyboardSensor = new KeyboardSensor(elA, { moveDistance: 1 });
+          const draggable = new Draggable([keyboardSensor], {
+            getElements: () => [elB, elC]
+          });
+          focusElement(elA);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+          await wait(100);
+          const rectA = elA.getBoundingClientRect();
+          assert.equal(rectA.x, 0);
+          assert.equal(rectA.y, 0);
+          const rectB = elB.getBoundingClientRect();
+          assert.equal(rectB.x, 1);
+          assert.equal(rectB.y, 0);
+          const rectC = elC.getBoundingClientRect();
+          assert.equal(rectC.x, 1);
+          assert.equal(rectC.y, 0);
+          draggable.destroy();
+          keyboardSensor.destroy();
+          elA.remove();
+          elB.remove();
+          elC.remove();
+        });
+      });
+    });
+    describe("events", () => {
+      describe("preparestart", () => {
+      });
+      describe("start", () => {
+      });
+      describe("preparemove", () => {
+      });
+      describe("move", () => {
+      });
+      describe("end", () => {
+      });
+      describe("destroy", () => {
+      });
     });
   });
 
@@ -6927,7 +7061,7 @@
           [
             { x: 1, y: 1 },
             { x: 2, y: 2 },
-            { x: 3, y: 3 }
+            { x: 2, y: 2 }
           ],
           {
             eventType: "mouse",
@@ -6942,7 +7076,7 @@
           [
             { x: 1, y: 1 },
             { x: 2, y: 2 },
-            { x: 3, y: 3 }
+            { x: 2, y: 2 }
           ],
           {
             eventType: "pointer",
@@ -6957,7 +7091,7 @@
           [
             { x: 1, y: 1 },
             { x: 2, y: 2 },
-            { x: 3, y: 3 }
+            { x: 2, y: 2 }
           ],
           {
             eventType: "touch",
@@ -7038,7 +7172,7 @@
           [
             { x: 1, y: 1 },
             { x: 2, y: 2 },
-            { x: 3, y: 3 }
+            { x: 2, y: 2 }
           ],
           {
             eventType: "mouse",
@@ -7078,7 +7212,7 @@
           [
             { x: 1, y: 1 },
             { x: 2, y: 2 },
-            { x: 3, y: 3 }
+            { x: 2, y: 2 }
           ],
           {
             eventType: "pointer",
@@ -7118,7 +7252,7 @@
           [
             { x: 1, y: 1 },
             { x: 2, y: 2 },
-            { x: 3, y: 3 }
+            { x: 2, y: 2 }
           ],
           {
             eventType: "touch",
@@ -7160,7 +7294,7 @@
           [
             { x: 1, y: 1 },
             { x: 2, y: 2 },
-            { x: 3, y: 3 }
+            { x: 2, y: 2 }
           ],
           {
             eventType: "mouse",
@@ -7200,7 +7334,7 @@
           [
             { x: 1, y: 1 },
             { x: 2, y: 2 },
-            { x: 3, y: 3 }
+            { x: 2, y: 2 }
           ],
           {
             eventType: "pointer",
@@ -7240,7 +7374,7 @@
           [
             { x: 1, y: 1 },
             { x: 2, y: 2 },
-            { x: 3, y: 3 }
+            { x: 2, y: 2 }
           ],
           {
             eventType: "touch",
@@ -7282,7 +7416,7 @@
           [
             { x: 1, y: 1 },
             { x: 2, y: 2 },
-            { x: 3, y: 3 }
+            { x: 2, y: 2 }
           ],
           {
             eventType: "mouse",
@@ -7300,8 +7434,8 @@
           target: el,
           pointerId: -1,
           pointerType: "mouse",
-          x: 3,
-          y: 3
+          x: 2,
+          y: 2
         });
         s.destroy();
         el.remove();
@@ -7322,7 +7456,7 @@
           [
             { x: 1, y: 1 },
             { x: 2, y: 2 },
-            { x: 3, y: 3 }
+            { x: 2, y: 2 }
           ],
           {
             eventType: "pointer",
@@ -7340,8 +7474,8 @@
           target: el,
           pointerId: sourceEvent.pointerId,
           pointerType: sourceEvent.pointerType,
-          x: 3,
-          y: 3
+          x: 2,
+          y: 2
         });
         s.destroy();
         el.remove();
@@ -7362,7 +7496,7 @@
           [
             { x: 1, y: 1 },
             { x: 2, y: 2 },
-            { x: 3, y: 3 }
+            { x: 2, y: 2 }
           ],
           {
             eventType: "touch",
@@ -7380,8 +7514,8 @@
           target: el,
           pointerId: sourceEvent.changedTouches[0].identifier,
           pointerType: "touch",
-          x: 3,
-          y: 3
+          x: 2,
+          y: 2
         });
         s.destroy();
         el.remove();
@@ -7404,7 +7538,7 @@
           [
             { x: 1, y: 1 },
             { x: 2, y: 2 },
-            { x: 3, y: 3 }
+            { x: 2, y: 2 }
           ],
           {
             eventType: "pointer",
@@ -7423,8 +7557,8 @@
           target: el,
           pointerId: sourceEvent.pointerId,
           pointerType: sourceEvent.pointerType,
-          x: 3,
-          y: 3
+          x: 2,
+          y: 2
         });
         s.destroy();
         el.remove();
@@ -7445,7 +7579,7 @@
           [
             { x: 1, y: 1 },
             { x: 2, y: 2 },
-            { x: 3, y: 3 }
+            { x: 2, y: 2 }
           ],
           {
             eventType: "touch",
@@ -7464,8 +7598,8 @@
           target: el,
           pointerId: sourceEvent.changedTouches[0].identifier,
           pointerType: "touch",
-          x: 3,
-          y: 3
+          x: 2,
+          y: 2
         });
         s.destroy();
         el.remove();
@@ -7513,7 +7647,7 @@
         });
       });
       describe("cancelOnBlur", () => {
-        it("should cancel drag on blur when true", () => {
+        it("should cancel drag on blur when true", async () => {
           const el = createTestElement();
           const s = new KeyboardSensor(el, { cancelOnBlur: true });
           assert.equal(s["_cancelOnBlur"], true);
@@ -7529,6 +7663,7 @@
           document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
           assert.notEqual(s.drag, null);
           blurElement(el);
+          await wait(1);
           assert.equal(s.drag, null);
           assert.equal(cancelEvents, 1);
           assert.equal(endEvents, 0);
