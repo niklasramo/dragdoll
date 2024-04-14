@@ -6885,40 +6885,60 @@
           el.remove();
           container.remove();
         });
-        it("should keep the client position synced", async () => {
-          const container = createTestElement({ position: "absolute", left: "10px", top: "20px" });
-          const el = createTestElement();
-          const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-          const draggable = new Draggable([keyboardSensor], { container, getElements: () => [el] });
-          const originalContainer = el.parentNode;
-          let rect = el.getBoundingClientRect();
-          assert.equal(rect.x, 0);
-          assert.equal(rect.y, 0);
-          rect = container.getBoundingClientRect();
-          assert.equal(rect.x, 10);
-          assert.equal(rect.y, 20);
-          focusElement(el);
-          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-          await wait(100);
-          assert.equal(el.parentNode, container);
-          rect = el.getBoundingClientRect();
-          assert.equal(rect.x, 0);
-          assert.equal(rect.y, 0);
-          document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-          await wait(100);
-          rect = el.getBoundingClientRect();
-          assert.equal(rect.x, 1);
-          assert.equal(rect.y, 0);
-          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-          await wait(100);
-          rect = el.getBoundingClientRect();
-          assert.equal(rect.x, 1);
-          assert.equal(rect.y, 0);
-          assert.equal(el.parentNode, originalContainer);
-          draggable.destroy();
-          keyboardSensor.destroy();
-          el.remove();
-          container.remove();
+        it(`should not offset client position`, async () => {
+          const containerPositions = ["static", "relative", "fixed", "absolute"];
+          const elPositions = ["fixed", "absolute"];
+          for (const containerPosition of containerPositions) {
+            for (const elPosition of elPositions) {
+              const assertMsg = `element ${elPosition} - container ${containerPosition}`;
+              const container = createTestElement({
+                position: containerPosition,
+                left: "0px",
+                top: "0px",
+                transform: "translate(7px, 8px)"
+              });
+              const el = createTestElement({
+                position: elPosition,
+                left: "19px",
+                top: "20px",
+                transform: "translate(-1px, -5px)"
+              });
+              const keyboardSensor = new KeyboardSensor(el, {
+                moveDistance: 1
+              });
+              const draggable = new Draggable([keyboardSensor], {
+                container,
+                getElements: () => [el]
+              });
+              const originalContainer = el.parentNode;
+              let containerRect = container.getBoundingClientRect();
+              let elRect = el.getBoundingClientRect();
+              assert.notEqual(elRect.x, containerRect.x, "1: " + assertMsg);
+              assert.notEqual(elRect.y, containerRect.y, "2: " + assertMsg);
+              focusElement(el);
+              document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+              await wait(100);
+              assert.equal(el.parentNode, container, "3: " + assertMsg);
+              let rect = el.getBoundingClientRect();
+              assert.equal(rect.x, elRect.x, "4: " + assertMsg);
+              assert.equal(rect.y, elRect.y, "5: " + assertMsg);
+              document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+              await wait(100);
+              rect = el.getBoundingClientRect();
+              assert.equal(rect.x, elRect.x + 1, "6: " + assertMsg);
+              assert.equal(rect.y, elRect.y, "7: " + assertMsg);
+              document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+              await wait(100);
+              rect = el.getBoundingClientRect();
+              assert.equal(rect.x, elRect.x + 1, "8: " + assertMsg);
+              assert.equal(rect.y, elRect.y, "9: " + assertMsg);
+              assert.equal(el.parentNode, originalContainer, "10: " + assertMsg);
+              draggable.destroy();
+              keyboardSensor.destroy();
+              el.remove();
+              container.remove();
+            }
+          }
         });
       });
       describe("getElements", () => {
