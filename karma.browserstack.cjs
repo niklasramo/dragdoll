@@ -21,6 +21,11 @@ module.exports = function (config) {
     browserDisconnectTimeout: 10000,
     browserDisconnectTolerance: 2,
     singleRun: true,
+    client: {
+      mocha: {
+        timeout: 10000,
+      },
+    },
 
     customLaunchers: {
       // Windows 11

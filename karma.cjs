@@ -14,5 +14,10 @@ module.exports = function (config) {
     logLevel: config.LOG_INFO,
     colors: true,
     browsers: ['Chrome', 'Firefox'],
+    client: {
+      mocha: {
+        timeout: 10000,
+      },
+    },
   });
 };
