@@ -2,5 +2,16 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translateX(-50%) translateY(-50%);
+}
+.draggable:nth-child(1) {
+  transform: translateX(-50%) translateY(-50%) translateY(-55%) translateX(-55%);
+}
+.draggable:nth-child(2) {
+  transform: translateX(-50%) translateY(-50%) translateY(-55%) translateX(55%);
+}
+.draggable:nth-child(3) {
+  transform: translateX(-50%) translateY(-50%) translateY(55%) translateX(-55%);
+}
+.draggable:nth-child(4) {
+  transform: translateX(-50%) translateY(-50%) translateY(55%) translateX(55%);
 }

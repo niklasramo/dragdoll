@@ -7,8 +7,6 @@ import { Point } from 'types.js';
 export interface KeyboardMotionSensorSettings<
   E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents,
 > {
-  startPredicate: (e: KeyboardEvent, sensor: KeyboardMotionSensor<E>) => Point | null | undefined;
-  computeSpeed: (sensor: KeyboardMotionSensor<E>) => number;
   startKeys: string[];
   moveLeftKeys: string[];
   moveRightKeys: string[];
@@ -16,6 +14,10 @@ export interface KeyboardMotionSensorSettings<
   moveDownKeys: string[];
   cancelKeys: string[];
   endKeys: string[];
+  cancelOnBlur: boolean;
+  cancelOnVisibilityChange: boolean;
+  computeSpeed: (sensor: KeyboardMotionSensor<E>) => number;
+  startPredicate: (e: KeyboardEvent, sensor: KeyboardMotionSensor<E>) => Point | null | undefined;
 }
 
 export interface KeyboardMotionSensorEvents extends BaseMotionSensorEvents {}
@@ -42,13 +44,32 @@ function getEarliestTimestamp(keys: Set<string>, timestamps: Map<string, number>
   return result;
 }
 
+export const keyboardMotionSensorDefaults: KeyboardMotionSensorSettings<any> = {
+  startKeys: [' ', 'Enter'],
+  moveLeftKeys: ['ArrowLeft'],
+  moveRightKeys: ['ArrowRight'],
+  moveUpKeys: ['ArrowUp'],
+  moveDownKeys: ['ArrowDown'],
+  cancelKeys: ['Escape'],
+  endKeys: [' ', 'Enter'],
+  cancelOnBlur: true,
+  cancelOnVisibilityChange: true,
+  computeSpeed: () => 500,
+  startPredicate: (_e, sensor) => {
+    if (sensor.element && document.activeElement === sensor.element) {
+      const { left, top } = sensor.element.getBoundingClientRect();
+      return { x: left, y: top };
+    }
+    return null;
+  },
+} as const;
+
 export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents>
   extends BaseMotionSensor<E>
   implements Sensor<E>
 {
   declare events: E;
-  protected _startPredicate: Exclude<KeyboardMotionSensorSettings<E>['startPredicate'], undefined>;
-  protected _computeSpeed: Exclude<KeyboardMotionSensorSettings<E>['computeSpeed'], undefined>;
+  readonly element: Element | null;
   protected _moveKeys: Set<string>;
   protected _moveKeyTimestamps: Map<string, number>;
   protected _startKeys: Set<string>;
@@ -58,30 +79,29 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
   protected _moveDownKeys: Set<string>;
   protected _cancelKeys: Set<string>;
   protected _endKeys: Set<string>;
+  protected _cancelOnBlur: boolean;
+  protected _cancelOnVisibilityChange: boolean;
+  protected _computeSpeed: Exclude<KeyboardMotionSensorSettings<E>['computeSpeed'], undefined>;
+  protected _startPredicate: Exclude<KeyboardMotionSensorSettings<E>['startPredicate'], undefined>;
 
-  constructor(options: Partial<KeyboardMotionSensorSettings<E>> = {}) {
+  constructor(element: Element | null, options: Partial<KeyboardMotionSensorSettings<E>> = {}) {
     super();
 
     const {
-      startPredicate = () => {
-        if (document.activeElement) {
-          const { left, top } = document.activeElement.getBoundingClientRect();
-          return { x: left, y: top };
-        }
-        return null;
-      },
-      computeSpeed = () => 500,
-      startKeys = [' ', 'Enter'],
-      moveLeftKeys = ['ArrowLeft'],
-      moveRightKeys = ['ArrowRight'],
-      moveUpKeys = ['ArrowUp'],
-      moveDownKeys = ['ArrowDown'],
-      cancelKeys = ['Escape'],
-      endKeys = [' ', 'Enter'],
+      startPredicate = keyboardMotionSensorDefaults.startPredicate,
+      computeSpeed = keyboardMotionSensorDefaults.computeSpeed,
+      cancelOnVisibilityChange = keyboardMotionSensorDefaults.cancelOnVisibilityChange,
+      cancelOnBlur = keyboardMotionSensorDefaults.cancelOnBlur,
+      startKeys = keyboardMotionSensorDefaults.startKeys,
+      moveLeftKeys = keyboardMotionSensorDefaults.moveLeftKeys,
+      moveRightKeys = keyboardMotionSensorDefaults.moveRightKeys,
+      moveUpKeys = keyboardMotionSensorDefaults.moveUpKeys,
+      moveDownKeys = keyboardMotionSensorDefaults.moveDownKeys,
+      cancelKeys = keyboardMotionSensorDefaults.cancelKeys,
+      endKeys = keyboardMotionSensorDefaults.endKeys,
     } = options;
 
-    this._computeSpeed = computeSpeed;
-    this._startPredicate = startPredicate;
+    this.element = element;
     this._startKeys = new Set(startKeys);
     this._cancelKeys = new Set(cancelKeys);
     this._endKeys = new Set(endKeys);
@@ -91,16 +111,26 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
     this._moveDownKeys = new Set(moveDownKeys);
     this._moveKeys = new Set([...moveLeftKeys, ...moveRightKeys, ...moveUpKeys, ...moveDownKeys]);
     this._moveKeyTimestamps = new Map();
+    this._cancelOnBlur = cancelOnBlur;
+    this._cancelOnVisibilityChange = cancelOnVisibilityChange;
+    this._computeSpeed = computeSpeed;
+    this._startPredicate = startPredicate;
 
     this._onKeyDown = this._onKeyDown.bind(this);
     this._onKeyUp = this._onKeyUp.bind(this);
     this._onTick = this._onTick.bind(this);
+    this._internalCancel = this._internalCancel.bind(this);
+    this._blurCancelHandler = this._blurCancelHandler.bind(this);
 
     this.on('tick', this._onTick, this._onTick);
     document.addEventListener('keydown', this._onKeyDown);
     document.addEventListener('keyup', this._onKeyUp);
-    window.addEventListener('blur', this.cancel);
-    window.addEventListener('visibilitychange', this.cancel);
+    if (cancelOnBlur) {
+      element?.addEventListener('blur', this._blurCancelHandler);
+    }
+    if (cancelOnVisibilityChange) {
+      document.addEventListener('visibilitychange', this._internalCancel);
+    }
   }
 
   protected _end(data: E['end']) {
@@ -117,6 +147,25 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
     this._direction.x = 0;
     this._direction.y = 0;
     super._cancel(data);
+  }
+
+  protected _internalCancel() {
+    this.cancel();
+  }
+
+  protected _blurCancelHandler() {
+    // If the Draggable has a container defined the dragged element will be
+    // appended to the container, which will cause the element to lose focus
+    // temporarily in some browsers (e.g. Chrome). Draggable will automatically
+    // restore the focus immediately after the element is appended, but the blur
+    // event will be triggered anyway. This is why we need to defer the cancel
+    // call to the next microtask, where we can check if the element is still
+    // focused.
+    queueMicrotask(() => {
+      if (document.activeElement !== this.element) {
+        this.cancel();
+      }
+    });
   }
 
   protected _updateDirection() {
@@ -171,11 +220,7 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
     // Handle cancel.
     if (this._cancelKeys.has(e.key)) {
       e.preventDefault();
-      this._cancel({
-        type: 'cancel',
-        x: this.drag.x,
-        y: this.drag.y,
-      });
+      this._internalCancel();
       return;
     }
 
@@ -204,12 +249,35 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
   updateSettings(options: Partial<KeyboardMotionSensorSettings<E>> = {}) {
     let moveKeysMayNeedUpdate = false;
 
-    if (options.startPredicate !== undefined) {
-      this._startPredicate = options.startPredicate;
+    const { cancelOnBlur, cancelOnVisibilityChange, startPredicate, computeSpeed } = options;
+
+    if (cancelOnBlur !== undefined && this._cancelOnBlur !== cancelOnBlur) {
+      this._cancelOnBlur = cancelOnBlur;
+      if (cancelOnBlur) {
+        this.element?.addEventListener('blur', this._blurCancelHandler);
+      } else {
+        this.element?.removeEventListener('blur', this._blurCancelHandler);
+      }
     }
 
-    if (options.computeSpeed !== undefined) {
-      this._computeSpeed = options.computeSpeed;
+    if (
+      cancelOnVisibilityChange !== undefined &&
+      this._cancelOnVisibilityChange !== cancelOnVisibilityChange
+    ) {
+      this._cancelOnVisibilityChange = cancelOnVisibilityChange;
+      if (cancelOnVisibilityChange) {
+        document.addEventListener('visibilitychange', this._internalCancel);
+      } else {
+        document.removeEventListener('visibilitychange', this._internalCancel);
+      }
+    }
+
+    if (startPredicate !== undefined) {
+      this._startPredicate = startPredicate;
+    }
+
+    if (computeSpeed !== undefined) {
+      this._computeSpeed = computeSpeed;
     }
 
     KEY_TYPES.forEach((keyType, index) => {
@@ -250,7 +318,11 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
     this.off('tick', this._onTick);
     document.removeEventListener('keydown', this._onKeyDown);
     document.removeEventListener('keyup', this._onKeyUp);
-    window.removeEventListener('blur', this.cancel);
-    window.removeEventListener('visibilitychange', this.cancel);
+    if (this._cancelOnBlur) {
+      this.element?.removeEventListener('blur', this._blurCancelHandler);
+    }
+    if (this._cancelOnVisibilityChange) {
+      document.removeEventListener('visibilitychange', this._internalCancel);
+    }
   }
 }

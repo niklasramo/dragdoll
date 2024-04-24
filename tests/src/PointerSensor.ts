@@ -1,5 +1,4 @@
 import { assert } from 'chai';
-import { IS_BROWSER } from '../../src/constants.js';
 import { createTestElement } from './utils/createTestElement.js';
 import { createFakeDrag } from './utils/createFakeDrag.js';
 import { addDefaultPageStyles, removeDefaultPageStyles } from './utils/defaultPageStyles.js';
@@ -13,19 +12,13 @@ import {
 
 describe('PointerSensor', () => {
   beforeEach(() => {
-    if (IS_BROWSER) {
-      addDefaultPageStyles(document);
-      return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-    }
-    return;
+    addDefaultPageStyles(document);
+    return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   });
 
   afterEach(() => {
-    if (IS_BROWSER) {
-      removeDefaultPageStyles(document);
-      return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-    }
-    return;
+    removeDefaultPageStyles(document);
+    return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   });
 
   describe('drag property', () => {
@@ -46,7 +39,6 @@ describe('PointerSensor', () => {
 
   describe('target element parameter', () => {
     it('should accept document.documentElement', function () {
-      if (!IS_BROWSER) this.skip();
       const s = new PointerSensor(document.documentElement, { sourceEvents: 'mouse' });
       document.documentElement.dispatchEvent(new MouseEvent('mousedown'));
       assert.notEqual(s.drag, null);
@@ -54,7 +46,6 @@ describe('PointerSensor', () => {
     });
 
     it('should accept document.body', function () {
-      if (!IS_BROWSER) this.skip();
       const s = new PointerSensor(document.body, { sourceEvents: 'mouse' });
       document.body.dispatchEvent(new MouseEvent('mousedown'));
       assert.notEqual(s.drag, null);
@@ -62,7 +53,6 @@ describe('PointerSensor', () => {
     });
 
     it('should accept a descendant of document.body', function () {
-      if (!IS_BROWSER) this.skip();
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'mouse' });
       el.dispatchEvent(new MouseEvent('mousedown'));
@@ -74,8 +64,6 @@ describe('PointerSensor', () => {
 
   describe('sourceEvents option', () => {
     it('should listen to mouse/pointer/touch events when set to "mouse"/"pointer"/"touch"', function () {
-      if (!IS_BROWSER) this.skip();
-
       const mouseSensor = new PointerSensor(document.body, { sourceEvents: 'mouse' });
       const pointerSensor = new PointerSensor(document.body, { sourceEvents: 'pointer' });
       const touchSensor = new PointerSensor(document.body, { sourceEvents: 'touch' });
@@ -101,7 +89,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'mouse',
@@ -122,7 +110,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'pointer',
@@ -143,7 +131,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'touch',
@@ -226,8 +214,6 @@ describe('PointerSensor', () => {
 
   describe('start event', () => {
     it(`should be triggered correctly on mousedown`, function () {
-      if (!IS_BROWSER) this.skip();
-
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'mouse' });
       let startEvent: PointerSensorStartEvent | null = null;
@@ -245,7 +231,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'mouse',
@@ -273,8 +259,6 @@ describe('PointerSensor', () => {
     });
 
     it(`should be triggered correctly on pointerdown`, function () {
-      if (!IS_BROWSER) this.skip();
-
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'pointer' });
       let startEvent: PointerSensorStartEvent | null = null;
@@ -292,7 +276,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'pointer',
@@ -320,8 +304,6 @@ describe('PointerSensor', () => {
     });
 
     it(`should be triggered correctly on touchstart`, function () {
-      if (!IS_BROWSER) this.skip();
-
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'touch' });
       let startEvent: PointerSensorStartEvent | null = null;
@@ -339,7 +321,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'touch',
@@ -369,8 +351,6 @@ describe('PointerSensor', () => {
 
   describe('move event', () => {
     it(`should be triggered correctly on mousemove`, function () {
-      if (!IS_BROWSER) this.skip();
-
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'mouse' });
       let moveEvent: PointerSensorMoveEvent | null = null;
@@ -388,7 +368,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'mouse',
@@ -416,8 +396,6 @@ describe('PointerSensor', () => {
     });
 
     it(`should be triggered correctly on pointermove`, function () {
-      if (!IS_BROWSER) this.skip();
-
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'pointer' });
       let moveEvent: PointerSensorMoveEvent | null = null;
@@ -435,7 +413,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'pointer',
@@ -463,8 +441,6 @@ describe('PointerSensor', () => {
     });
 
     it(`should be triggered correctly on touchmove`, function () {
-      if (!IS_BROWSER) this.skip();
-
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'touch' });
       let moveEvent: PointerSensorMoveEvent | null = null;
@@ -482,7 +458,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'touch',
@@ -512,8 +488,6 @@ describe('PointerSensor', () => {
 
   describe('end event', () => {
     it(`should be triggered correctly on mouseup`, function () {
-      if (!IS_BROWSER) this.skip();
-
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'mouse' });
       let endEvent: PointerSensorEndEvent | null = null;
@@ -531,7 +505,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'mouse',
@@ -550,8 +524,8 @@ describe('PointerSensor', () => {
         target: el,
         pointerId: -1,
         pointerType: 'mouse',
-        x: 3,
-        y: 3,
+        x: 2,
+        y: 2,
       });
 
       s.destroy();
@@ -559,8 +533,6 @@ describe('PointerSensor', () => {
     });
 
     it(`should be triggered correctly on pointerup`, function () {
-      if (!IS_BROWSER) this.skip();
-
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'pointer' });
       let endEvent: PointerSensorEndEvent | null = null;
@@ -578,7 +550,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'pointer',
@@ -597,8 +569,8 @@ describe('PointerSensor', () => {
         target: el,
         pointerId: sourceEvent.pointerId,
         pointerType: sourceEvent.pointerType,
-        x: 3,
-        y: 3,
+        x: 2,
+        y: 2,
       });
 
       s.destroy();
@@ -606,8 +578,6 @@ describe('PointerSensor', () => {
     });
 
     it(`should be triggered correctly on touchend`, function () {
-      if (!IS_BROWSER) this.skip();
-
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'touch' });
       let endEvent: PointerSensorEndEvent | null = null;
@@ -625,7 +595,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'touch',
@@ -644,8 +614,8 @@ describe('PointerSensor', () => {
         target: el,
         pointerId: sourceEvent.changedTouches[0].identifier,
         pointerType: 'touch',
-        x: 3,
-        y: 3,
+        x: 2,
+        y: 2,
       });
 
       s.destroy();
@@ -655,8 +625,6 @@ describe('PointerSensor', () => {
 
   describe('cancel event', () => {
     it(`should be triggered correctly on pointercancel`, function () {
-      if (!IS_BROWSER) this.skip();
-
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'pointer' });
       let cancelEvent: PointerSensorCancelEvent | null = null;
@@ -674,7 +642,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'pointer',
@@ -694,8 +662,8 @@ describe('PointerSensor', () => {
         target: el,
         pointerId: sourceEvent.pointerId,
         pointerType: sourceEvent.pointerType,
-        x: 3,
-        y: 3,
+        x: 2,
+        y: 2,
       });
 
       s.destroy();
@@ -703,8 +671,6 @@ describe('PointerSensor', () => {
     });
 
     it(`should be triggered correctly on touchcancel`, function () {
-      if (!IS_BROWSER) this.skip();
-
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'touch' });
       let cancelEvent: PointerSensorCancelEvent | null = null;
@@ -722,7 +688,7 @@ describe('PointerSensor', () => {
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
-          { x: 3, y: 3 },
+          { x: 2, y: 2 },
         ],
         {
           eventType: 'touch',
@@ -742,8 +708,8 @@ describe('PointerSensor', () => {
         target: el,
         pointerId: sourceEvent.changedTouches[0].identifier,
         pointerType: 'touch',
-        x: 3,
-        y: 3,
+        x: 2,
+        y: 2,
       });
 
       s.destroy();

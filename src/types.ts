@@ -14,13 +14,12 @@ export type Dimensions = {
   height: number;
 };
 
-export interface Rect extends Dimensions {
-  left: number;
-  top: number;
-}
+export interface Rect extends Point, Dimensions {}
 
-export interface RectExtended extends Rect {
+export interface RectFull extends Rect {
+  left: number;
   right: number;
+  top: number;
   bottom: number;
 }
 

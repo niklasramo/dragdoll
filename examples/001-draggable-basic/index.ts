@@ -5,19 +5,25 @@ import {
   createPointerSensorStartPredicate,
 } from '../../src';
 
-const element = document.querySelector('.draggable') as HTMLElement;
-const pointerSensor = new PointerSensor(element);
-const keyboardSensor = new KeyboardMotionSensor();
-const draggable = new Draggable([pointerSensor, keyboardSensor], {
-  getElements: () => [element],
-  startPredicate: createPointerSensorStartPredicate(),
-  getFrozenProps: () => ['transform'],
-});
+let zIndex = 0;
 
-draggable.on('start', () => {
-  element.classList.add('dragging');
-});
+const draggableElements = document.querySelectorAll('.draggable');
 
-draggable.on('end', () => {
-  element.classList.remove('dragging');
+[...draggableElements].forEach((draggableElement) => {
+  const pointerSensor = new PointerSensor(draggableElement);
+  const keyboardSensor = new KeyboardMotionSensor(draggableElement);
+  const draggable = new Draggable([pointerSensor, keyboardSensor], {
+    getElements: () => [draggableElement as HTMLElement],
+    startPredicate: createPointerSensorStartPredicate(),
+    getFrozenProps: () => ['transform'],
+  });
+
+  draggable.on('start', () => {
+    draggableElement.classList.add('dragging');
+    (draggableElement as HTMLElement).style.zIndex = `${++zIndex}`;
+  });
+
+  draggable.on('end', () => {
+    draggableElement.classList.remove('dragging');
+  });
 });

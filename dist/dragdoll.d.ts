@@ -84,13 +84,7 @@ type Dimensions = {
     width: number;
     height: number;
 };
-interface Rect extends Dimensions {
-    left: number;
-    top: number;
-}
-interface RectExtended extends Rect {
-    right: number;
-    bottom: number;
+interface Rect extends Point, Dimensions {
 }
 type CSSProperties = Partial<Omit<CSSStyleDeclaration, 'getPropertyPriority' | 'getPropertyValue' | 'item' | 'removeProperty' | 'setProperty' | 'length' | 'parentRule'>>;
 
@@ -210,13 +204,15 @@ declare class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
     destroy(): void;
 }
 
-type KeyboardSensorPredicate = (e: KeyboardEvent, sensor: KeyboardSensor, moveDistance: Point) => Point | null | undefined;
-interface KeyboardSensorSettings {
+type KeyboardSensorPredicate<E extends KeyboardSensorEvents = KeyboardSensorEvents> = (e: KeyboardEvent, sensor: KeyboardSensor<E>) => Point | null | undefined;
+interface KeyboardSensorSettings<E extends KeyboardSensorEvents = KeyboardSensorEvents> {
     moveDistance: number | Point;
-    startPredicate: KeyboardSensorPredicate;
-    movePredicate: KeyboardSensorPredicate;
-    cancelPredicate: KeyboardSensorPredicate;
-    endPredicate: KeyboardSensorPredicate;
+    cancelOnBlur: boolean;
+    cancelOnVisibilityChange: boolean;
+    startPredicate: KeyboardSensorPredicate<E>;
+    movePredicate: KeyboardSensorPredicate<E>;
+    cancelPredicate: KeyboardSensorPredicate<E>;
+    endPredicate: KeyboardSensorPredicate<E>;
 }
 interface KeyboardSensorStartEvent extends SensorStartEvent {
     srcEvent: KeyboardEvent;
@@ -239,22 +235,26 @@ interface KeyboardSensorEvents {
     end: KeyboardSensorEndEvent;
     destroy: KeyboardSensorDestroyEvent;
 }
+declare const keyboardSensorDefaults: KeyboardSensorSettings<any>;
 declare class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvents> extends BaseSensor<E> implements Sensor<E> {
     events: E;
-    protected _moveDistance: Point;
-    protected _startPredicate: KeyboardSensorPredicate;
-    protected _movePredicate: KeyboardSensorPredicate;
-    protected _cancelPredicate: KeyboardSensorPredicate;
-    protected _endPredicate: KeyboardSensorPredicate;
-    constructor(options?: Partial<KeyboardSensorSettings>);
+    readonly element: Element | null;
+    readonly moveDistance: Point;
+    protected _cancelOnBlur: boolean;
+    protected _cancelOnVisibilityChange: boolean;
+    protected _startPredicate: KeyboardSensorPredicate<E>;
+    protected _movePredicate: KeyboardSensorPredicate<E>;
+    protected _cancelPredicate: KeyboardSensorPredicate<E>;
+    protected _endPredicate: KeyboardSensorPredicate<E>;
+    constructor(element: Element | null, options?: Partial<KeyboardSensorSettings<E>>);
+    protected _internalCancel(): void;
+    protected _blurCancelHandler(): void;
     protected _onKeyDown(e: KeyboardEvent): void;
-    updateSettings(options?: Partial<KeyboardSensorSettings>): void;
+    updateSettings(options?: Partial<KeyboardSensorSettings<E>>): void;
     destroy(): void;
 }
 
 interface KeyboardMotionSensorSettings<E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents> {
-    startPredicate: (e: KeyboardEvent, sensor: KeyboardMotionSensor<E>) => Point | null | undefined;
-    computeSpeed: (sensor: KeyboardMotionSensor<E>) => number;
     startKeys: string[];
     moveLeftKeys: string[];
     moveRightKeys: string[];
@@ -262,13 +262,17 @@ interface KeyboardMotionSensorSettings<E extends KeyboardMotionSensorEvents = Ke
     moveDownKeys: string[];
     cancelKeys: string[];
     endKeys: string[];
+    cancelOnBlur: boolean;
+    cancelOnVisibilityChange: boolean;
+    computeSpeed: (sensor: KeyboardMotionSensor<E>) => number;
+    startPredicate: (e: KeyboardEvent, sensor: KeyboardMotionSensor<E>) => Point | null | undefined;
 }
 interface KeyboardMotionSensorEvents extends BaseMotionSensorEvents {
 }
+declare const keyboardMotionSensorDefaults: KeyboardMotionSensorSettings<any>;
 declare class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents> extends BaseMotionSensor<E> implements Sensor<E> {
     events: E;
-    protected _startPredicate: Exclude<KeyboardMotionSensorSettings<E>['startPredicate'], undefined>;
-    protected _computeSpeed: Exclude<KeyboardMotionSensorSettings<E>['computeSpeed'], undefined>;
+    readonly element: Element | null;
     protected _moveKeys: Set<string>;
     protected _moveKeyTimestamps: Map<string, number>;
     protected _startKeys: Set<string>;
@@ -278,9 +282,15 @@ declare class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboa
     protected _moveDownKeys: Set<string>;
     protected _cancelKeys: Set<string>;
     protected _endKeys: Set<string>;
-    constructor(options?: Partial<KeyboardMotionSensorSettings<E>>);
+    protected _cancelOnBlur: boolean;
+    protected _cancelOnVisibilityChange: boolean;
+    protected _computeSpeed: Exclude<KeyboardMotionSensorSettings<E>['computeSpeed'], undefined>;
+    protected _startPredicate: Exclude<KeyboardMotionSensorSettings<E>['startPredicate'], undefined>;
+    constructor(element: Element | null, options?: Partial<KeyboardMotionSensorSettings<E>>);
     protected _end(data: E['end']): void;
     protected _cancel(data: E['cancel']): void;
+    protected _internalCancel(): void;
+    protected _blurCancelHandler(): void;
     protected _updateDirection(): void;
     protected _onTick(): void;
     protected _onKeyUp(e: KeyboardEvent): void;
@@ -324,6 +334,12 @@ declare class DraggableDrag<S extends Sensor[], E extends S[number]['events']> {
     constructor(sensor: S[number], startEvent: E['start'] | E['move']);
 }
 
+declare enum DragStartPhase {
+    NONE = 0,
+    INIT = 1,
+    START_PREPARE = 2,
+    FINISH_APPLY = 3
+}
 declare enum DraggableStartPredicateState {
     PENDING = 0,
     RESOLVED = 1,
@@ -403,6 +419,7 @@ declare class Draggable<S extends Sensor[] = Sensor[], E extends S[number]['even
     protected _emitter: Emitter<{
         [K in keyof DraggableEventCallbacks<E>]: DraggableEventCallbacks<E>[K];
     }>;
+    protected _startPhase: DragStartPhase;
     protected _startId: symbol;
     protected _moveId: symbol;
     protected _updateId: symbol;
@@ -588,7 +605,6 @@ declare class AutoScroll {
     protected _frameWrite(): void;
     protected _startTicking(): void;
     protected _stopTicking(): void;
-    protected _getItemClientRect(item: AutoScrollItem, result?: RectExtended): RectExtended;
     protected _requestItemScroll(item: AutoScrollItem, axis: AutoScrollAxis, element: Window | Element, direction: AutoScrollDirection, threshold: number, distance: number, maxValue: number): void;
     protected _cancelItemScroll(item: AutoScrollItem, axis: AutoScrollAxis): void;
     protected _checkItemOverlap(item: AutoScrollItem, checkX: boolean, checkY: boolean): void;
@@ -634,12 +650,7 @@ interface DraggableAutoScrollSettings<S extends Sensor[], E extends S[number]['e
     speed: number | AutoScrollItemSpeedCallback;
     smoothStop: boolean;
     getPosition: ((draggable: Draggable<S, E>) => Point) | null;
-    getClientRect: ((draggable: Draggable<S, E>) => {
-        left: number;
-        top: number;
-        width: number;
-        height: number;
-    }) | null;
+    getClientRect: ((draggable: Draggable<S, E>) => Rect) | null;
     onStart: AutoScrollItemEventCallback | null;
     onStop: AutoScrollItemEventCallback | null;
 }
@@ -671,13 +682,13 @@ declare function createPointerSensorStartPredicate<S extends (Sensor | PointerSe
     fallback?: D['settings']['startPredicate'];
 }): D["settings"]["startPredicate"];
 
-declare function createSnapModifier(gridWidth: number, gridHeight: number): ({ startEvent, event, item, }: {
-    startEvent: SensorStartEvent | SensorMoveEvent;
-    event: SensorMoveEvent;
-    item: DraggableDragItem;
+declare function createSnapModifier<S extends Sensor[], E extends S[number]['events']>(gridWidth: number, gridHeight: number): ({ item, event, startEvent, }: {
+    item: DraggableDragItem<S, E>;
+    event: E['start'] | E['move'];
+    startEvent: E['start'] | E['move'];
 }) => {
     x: number;
     y: number;
 };
 
-export { AUTO_SCROLL_AXIS, AUTO_SCROLL_AXIS_DIRECTION, AUTO_SCROLL_DIRECTION, AutoScroll, type AutoScrollEventCallbacks, type AutoScrollItem, type AutoScrollItemEffectCallback, type AutoScrollItemEventCallback, type AutoScrollItemSpeedCallback, type AutoScrollItemTarget, type AutoScrollOptions, type AutoScrollSettings, BaseMotionSensor, type BaseMotionSensorDragData, type BaseMotionSensorEvents, type BaseMotionSensorTickEvent, BaseSensor, type BaseSensorDragData, Draggable, DraggableAutoScroll, type DraggableAutoScrollOptions, type DraggableAutoScrollSettings, type DraggableEventCallbacks, type DraggablePlugin, type DraggablePluginMap, type DraggableSettings, KeyboardMotionSensor, type KeyboardMotionSensorEvents, type KeyboardMotionSensorSettings, KeyboardSensor, type KeyboardSensorCancelEvent, type KeyboardSensorDestroyEvent, type KeyboardSensorEndEvent, type KeyboardSensorEvents, type KeyboardSensorMoveEvent, type KeyboardSensorPredicate, type KeyboardSensorSettings, type KeyboardSensorStartEvent, PointerSensor, type PointerSensorCancelEvent, type PointerSensorDestroyEvent, type PointerSensorDragData, type PointerSensorEndEvent, type PointerSensorEvents, type PointerSensorMoveEvent, type PointerSensorSettings, type PointerSensorStartEvent, type Sensor, type SensorCancelEvent, type SensorDestroyEvent, type SensorEndEvent, SensorEventType, type SensorEvents, type SensorMoveEvent, type SensorStartEvent, autoScroll, autoScrollPlugin, autoScrollSmoothSpeed, createPointerSensorStartPredicate, createSnapModifier, setTicker, ticker, tickerReadPhase, tickerWritePhase };
+export { AUTO_SCROLL_AXIS, AUTO_SCROLL_AXIS_DIRECTION, AUTO_SCROLL_DIRECTION, AutoScroll, type AutoScrollEventCallbacks, type AutoScrollItem, type AutoScrollItemEffectCallback, type AutoScrollItemEventCallback, type AutoScrollItemSpeedCallback, type AutoScrollItemTarget, type AutoScrollOptions, type AutoScrollSettings, BaseMotionSensor, type BaseMotionSensorDragData, type BaseMotionSensorEvents, type BaseMotionSensorTickEvent, BaseSensor, type BaseSensorDragData, Draggable, DraggableAutoScroll, type DraggableAutoScrollOptions, type DraggableAutoScrollSettings, type DraggableEventCallbacks, type DraggablePlugin, type DraggablePluginMap, type DraggableSettings, KeyboardMotionSensor, type KeyboardMotionSensorEvents, type KeyboardMotionSensorSettings, KeyboardSensor, type KeyboardSensorCancelEvent, type KeyboardSensorDestroyEvent, type KeyboardSensorEndEvent, type KeyboardSensorEvents, type KeyboardSensorMoveEvent, type KeyboardSensorPredicate, type KeyboardSensorSettings, type KeyboardSensorStartEvent, PointerSensor, type PointerSensorCancelEvent, type PointerSensorDestroyEvent, type PointerSensorDragData, type PointerSensorEndEvent, type PointerSensorEvents, type PointerSensorMoveEvent, type PointerSensorSettings, type PointerSensorStartEvent, type Sensor, type SensorCancelEvent, type SensorDestroyEvent, type SensorEndEvent, SensorEventType, type SensorEvents, type SensorMoveEvent, type SensorStartEvent, autoScroll, autoScrollPlugin, autoScrollSmoothSpeed, createPointerSensorStartPredicate, createSnapModifier, keyboardMotionSensorDefaults, keyboardSensorDefaults, setTicker, ticker, tickerReadPhase, tickerWritePhase };

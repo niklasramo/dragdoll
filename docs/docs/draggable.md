@@ -45,6 +45,10 @@ The element the dragged elements should be appended to for the duration of the d
 
 Default is `null`.
 
+::: info
+When using a custom container, the dragged element must be either `absolute` or `fixed` positioned. You can overcome this limitation by changing the element's CSS position to `absolute` or `fixed` just before the drag starts ([`getElements`](#getelements)) and then back to the original position after the drag ends ([`releaseElements`](#releaseelements)). Additionally you will need to offset the element's position to match the original position before the drag starts, e.g. by using `transform: translate(x, y)`.
+:::
+
 ### startPredicate
 
 ```ts

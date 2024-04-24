@@ -34,4 +34,4 @@ https://niklasramo.github.io/dragdoll/docs/getting-started.html
 
 ## Copyright
 
-Copyright © 2022, Niklas Rämö (inramo@gmail.com). Licensed under the MIT license.
+Copyright © 2022-2024, Niklas Rämö (inramo@gmail.com). Licensed under the MIT license.
