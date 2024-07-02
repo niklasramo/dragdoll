@@ -1,5 +1,3 @@
-import { ticker, tickerReadPhase, tickerWritePhase } from '../../singletons/ticker.js';
-
 import { Draggable, DraggablePluginMap } from '../draggable.js';
 
 import { Sensor } from '../../sensors/sensor.js';
@@ -140,17 +138,6 @@ class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['events']
 
   get onStop() {
     return this._getSettings().onStop;
-  }
-
-  onPrepareScrollEffect() {
-    const updateId = this._draggable['_updateId'];
-    ticker.off(tickerReadPhase, updateId);
-    ticker.off(tickerWritePhase, updateId);
-    this._draggable['_preparePositionUpdate']();
-  }
-
-  onApplyScrollEffect() {
-    this._draggable['_applyPositionUpdate']();
   }
 }
 

@@ -1,11 +1,13 @@
 body {
   height: 300%;
 }
+
 .drag-container {
   position: fixed;
   left: 10px;
   top: 10px;
 }
+
 .draggable {
   position: absolute;
   left: 50%;

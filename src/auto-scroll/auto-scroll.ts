@@ -1,10 +1,8 @@
-import { Emitter, EventListenerId } from 'eventti';
-
 import { Point, Rect } from '../types.js';
 
 import { Pool } from '../pool.js';
 
-import { ticker, tickerReadPhase, tickerWritePhase } from '../singletons/ticker.js';
+import { ticker, tickerPhases } from '../singletons/ticker.js';
 
 import { getDistance } from '../utils/get-distance.js';
 
@@ -164,8 +162,6 @@ export interface AutoScrollItem {
   readonly speed: number | AutoScrollItemSpeedCallback;
   readonly onStart?: AutoScrollItemEventCallback | null;
   readonly onStop?: AutoScrollItemEventCallback | null;
-  readonly onPrepareScrollEffect?: AutoScrollItemEffectCallback | null;
-  readonly onApplyScrollEffect?: AutoScrollItemEffectCallback | null;
 }
 
 export interface AutoScrollSettings {
@@ -173,11 +169,6 @@ export interface AutoScrollSettings {
 }
 
 export interface AutoScrollOptions extends Partial<AutoScrollSettings> {}
-
-export interface AutoScrollEventCallbacks {
-  beforescroll(): void;
-  afterscroll(): void;
-}
 
 export interface AutoScrollItemTarget {
   element: Window | Element;
@@ -477,10 +468,6 @@ export class AutoScroll {
   };
   protected _requestPool: Pool<AutoScrollRequest>;
   protected _actionPool: Pool<AutoScrollAction>;
-  protected _emitter: Emitter<{
-    beforescroll: () => void;
-    afterscroll: () => void;
-  }>;
 
   constructor(options: AutoScrollOptions = {}) {
     const { overlapCheckInterval = 150 } = options;
@@ -509,8 +496,6 @@ export class AutoScroll {
       (action) => action.reset(),
     );
 
-    this._emitter = new Emitter();
-
     this._frameRead = this._frameRead.bind(this);
     this._frameWrite = this._frameWrite.bind(this);
   }
@@ -537,8 +522,8 @@ export class AutoScroll {
   protected _startTicking() {
     if (this._isTicking) return;
     this._isTicking = true;
-    ticker.on(tickerReadPhase, this._frameRead, this._frameRead);
-    ticker.on(tickerWritePhase, this._frameWrite, this._frameWrite);
+    ticker.on(tickerPhases.read, this._frameRead, this._frameRead);
+    ticker.on(tickerPhases.write, this._frameWrite, this._frameWrite);
   }
 
   protected _stopTicking() {
@@ -546,8 +531,8 @@ export class AutoScroll {
     this._isTicking = false;
     this._tickTime = 0;
     this._tickDeltaTime = 0;
-    ticker.off(tickerReadPhase, this._frameRead);
-    ticker.off(tickerWritePhase, this._frameWrite);
+    ticker.off(tickerPhases.read, this._frameRead);
+    ticker.off(tickerPhases.write, this._frameWrite);
   }
 
   protected _requestItemScroll(
@@ -1028,14 +1013,8 @@ export class AutoScroll {
     // No actions -> no scrolling.
     if (!this._actions.length) return;
 
-    // TODO: Would be nice to emit also the elements that will be scrolled,
-    // to which direction they will be scrolled and how much they will be
-    // scrolled.
-    this._emitter.emit('beforescroll');
-
-    let i = 0;
-
     // Scroll all the required elements.
+    let i = 0;
     for (i = 0; i < this._actions.length; i++) {
       this._actions[i].scroll();
       this._actionPool.put(this._actions[i]);
@@ -1043,43 +1022,6 @@ export class AutoScroll {
 
     // Reset actions.
     this._actions.length = 0;
-
-    // Call after scroll callbacks for all items that were scrolled.
-    let item: AutoScrollItem;
-    for (i = 0; i < this.items.length; i++) {
-      item = this.items[i];
-      if (item.onPrepareScrollEffect) {
-        item.onPrepareScrollEffect();
-      }
-    }
-    for (i = 0; i < this.items.length; i++) {
-      item = this.items[i];
-      if (item.onApplyScrollEffect) {
-        item.onApplyScrollEffect();
-      }
-    }
-
-    // TODO: Would be nice to emit also the elements that were scrolled,
-    // to which direction they were scrolled and how much they were scrolled.
-    this._emitter.emit('afterscroll');
-  }
-
-  /**
-   * Bind a listener.
-   */
-  on<T extends keyof AutoScrollEventCallbacks>(
-    type: T,
-    listener: AutoScrollEventCallbacks[T],
-    listenerId?: EventListenerId,
-  ): EventListenerId {
-    return this._emitter.on(type, listener, listenerId);
-  }
-
-  /**
-   * Unbind a listener.
-   */
-  off<T extends keyof AutoScrollEventCallbacks>(type: T, listenerId: EventListenerId): void {
-    this._emitter.off(type, listenerId);
   }
 
   addItem(item: AutoScrollItem) {
@@ -1156,7 +1098,6 @@ export class AutoScroll {
     this._actions.length = 0;
     this._requestPool.reset();
     this._actionPool.reset();
-    this._emitter.off();
 
     this._isDestroyed = true;
   }

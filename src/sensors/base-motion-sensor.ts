@@ -4,7 +4,7 @@ import { BaseSensor, BaseSensorDragData } from './base-sensor.js';
 
 import { Point, Writeable } from '../types.js';
 
-import { ticker, tickerReadPhase } from '../singletons/ticker.js';
+import { ticker, tickerPhases } from '../singletons/ticker.js';
 
 export interface BaseMotionSensorTickEvent {
   type: 'tick';
@@ -50,18 +50,18 @@ export class BaseMotionSensor<E extends BaseMotionSensorEvents = BaseMotionSenso
   protected _start(data: E['start']) {
     if (this.isDestroyed || this.drag) return;
     super._start(data);
-    ticker.on(tickerReadPhase, this._tick, this._tick);
+    ticker.on(tickerPhases.read, this._tick, this._tick);
   }
 
   protected _end(data: E['end']) {
     if (!this.drag) return;
-    ticker.off(tickerReadPhase, this._tick);
+    ticker.off(tickerPhases.read, this._tick);
     super._end(data);
   }
 
   protected _cancel(data: E['cancel']) {
     if (!this.drag) return;
-    ticker.off(tickerReadPhase, this._tick);
+    ticker.off(tickerPhases.read, this._tick);
     super._cancel(data);
   }
 

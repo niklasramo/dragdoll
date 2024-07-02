@@ -5,8 +5,7 @@ const STYLE_DECLARATION_CACHE: WeakMap<Element, WeakRef<CSSStyleDeclaration>> = 
  * object weakly for faster access.
  */
 export function getStyle(element: Element) {
-  let styleDeclaration: CSSStyleDeclaration | undefined =
-    STYLE_DECLARATION_CACHE.get(element)?.deref();
+  let styleDeclaration = STYLE_DECLARATION_CACHE.get(element)?.deref();
 
   if (!styleDeclaration) {
     styleDeclaration = window.getComputedStyle(element, null);

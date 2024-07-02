@@ -62,22 +62,21 @@ const draggableElements = document.querySelectorAll('.draggable');
 ```
 
 ```css [index.css]
+body {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  gap: 10px 10px;
+}
+
 .draggable {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-}
-.draggable:nth-child(1) {
-  transform: translateX(-50%) translateY(-50%) translateY(-55%) translateX(-55%);
-}
-.draggable:nth-child(2) {
-  transform: translateX(-50%) translateY(-50%) translateY(-55%) translateX(55%);
-}
-.draggable:nth-child(3) {
-  transform: translateX(-50%) translateY(-50%) translateY(55%) translateX(-55%);
-}
-.draggable:nth-child(4) {
-  transform: translateX(-50%) translateY(-50%) translateY(55%) translateX(55%);
+  position: relative;
+  flex-grow: 0;
+  flex-shrink: 0;
 }
 ```
 
@@ -219,11 +218,13 @@ draggable.on('end', () => {
 body {
   height: 300%;
 }
+
 .drag-container {
   position: fixed;
   left: 10px;
   top: 10px;
 }
+
 .draggable {
   position: absolute;
   left: 50%;

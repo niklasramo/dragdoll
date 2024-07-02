@@ -62,4 +62,28 @@ The sensor event that ended the drag. Read-only.
 type items = DraggableDragItem[];
 ```
 
-An array of DraggableDragItem instances, which correspond to the drag elements as provided via the [`getElements`](/docs/draggable#getelements) option. Read-only.
+An array of [`DraggableDragItem`](/docs/draggable-drag-item) instances, which correspond to the drag elements as provided via the [`getElements`](/docs/draggable#getelements) option. Read-only.
+
+### measureElements
+
+```ts
+type measureElements = Map<HTMLElement, HTMLElement>;
+```
+
+A map of all the container elements and their corresponding measure elements. The measure elements are used to compute the untransformed bounding client rect of the dragged elements' containers and they are created only when absolutely necessary so they are not always available. Read-only.
+
+### matrixCache
+
+```ts
+type matrixCache = ObjectCache<HTMLElement | SVGSVGElement, [DOMMatrix, DOMMatrix]>;
+```
+
+A cache of the computed matrices for the dragged elements' containers. Please refer to the source code if you need more info on this. Read-only.
+
+### clientOffsetCache
+
+```ts
+type clientOffsetCache = ObjectCache<HTMLElement | SVGSVGElement | Window | Document, Point>;
+```
+
+A cache of the computed client offsets for the dragged elements' containers. Please refer to the source code if you need more info on this. Read-only.

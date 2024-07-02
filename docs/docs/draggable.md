@@ -137,7 +137,7 @@ Default is a function that stores the element's current computed transform and r
 type setPosition = (data: {
   draggable: Draggable;
   sensor: Sensor;
-  phase: 'start' | 'move' | 'end';
+  phase: 'start' | 'move' | 'end' | 'pre-align' | 'align';
   item: DraggableDragItem;
   x: number;
   y: number;
@@ -147,6 +147,14 @@ type setPosition = (data: {
 A function that should apply the current drag position (`x` and `y` coordinates) to the provided dragged element. Note that you can build custom behaviour here and e.g. update the element's "left" and "top" CSS properties instead of the default "transform".
 
 Default is a function that applies the `x` and `y` coordinates to the element's transform, while respecting the element's original transform value.
+
+Also note that the `phase` argument is provided to the function to help you determine what phase of the drag process you are in:
+
+- `start`: Called when the drag starts.
+- `move`: Called on every "move" event emitted by the currently tracked sensor.
+- `end`: Called when the drag ends.
+- `pre-align`: Called when the element containers' world matrices are updated. During this phase the element's position might be temporarily out of sync with the drag position as we need to first update the containers' world matrices before aligning the element.
+- `align`: Called when the element's position is realigned based on the element's current client offset and container world matrices.
 
 ### getPositionChange
 
@@ -269,22 +277,27 @@ draggable.stop();
 
 Forcefully stops the draggable's current drag process.
 
-### updatePosition
+### align
 
 ```ts
 // Type
-type updatePosition = (instant = false) => void;
+type align = (options?: { instant?: boolean; updateMatrices?: boolean }) => void;
 
-// Usage: update asynchronously on the next animation frame (no extra reflows, jank-free).
-draggable.updatePosition();
+// Usage: update asynchronously on the next animation frame.
+draggable.align();
 
-// Usage: update instantly (causes extra reflows which may cause jank).
-draggable.updatePosition(true);
+// Usage: update instantly. May cause extra reflows (extra jank).
+draggable.align({ instant: true });
+
+// Update the containers' world transform matrices before aligning.
+draggbale.align({ updateMatrices: true });
 ```
 
-Forcefully recomputes the positions and offsets of all dragged elements. This should be called if the positions/offsets of the dragged elements or any of their ancestors change during drag. Draggable is smart enough to call this automatically when scrolling occurs during dragging, but if you manually change dimensions or positions of any element that affects the position/size of a dragged element you should call this manually.
+Recomputes the positions and offsets of all dragged elements. This should be called if a dragged element's position goes out of sync inadvertently. Draggable is smart enough to call this automatically when scrolling occurs during dragging, but if you manually change dimensions, positions or transforms of any element that affects the position/size/transform of a dragged element or it's containers you should call this manually.
 
-By default the synchronization happens asynchronously in the next frame, but you can force it to happen instantly by providing `true` as the first argument. Note that there might be performance implications if you update instantly (in the form of extra reflows).
+By default the synchronization happens asynchronously in the next frame, but you can force it to happen instantly by setting `instant` option to `true`. Note that there might be performance implications if you update instantly (in the form of extra reflows).
+
+The `updateMatrices` option, when `true`, updates the dragged items' container world transform matrices before aligning. This is useful if you have changed the element/drag container transforms (or any of their ancestors' transforms) and need to realign the dragged elements based on the new transforms. By default this option is `false`.
 
 ### updateSettings
 

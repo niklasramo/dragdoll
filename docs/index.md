@@ -27,7 +27,7 @@ features:
     details: Comes with strong types, smart defaults and prebaked solutions for common use cases.
   - icon: 🎁
     title: Tiny and Modular
-    details: Weighs around 11kB gzipped all in all, but you can use only the bits and pieces you need.
+    details: Weighs around 12.4kB gzipped all in all, but you can use only the bits and pieces you need.
   - icon: 🍦
     title: Vanilla Flavour
     details: No frameworks were abused while writing this library. It's all vanilla framework-free TS down to the core.

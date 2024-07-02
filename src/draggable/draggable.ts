@@ -8,19 +8,19 @@ import { DraggableDrag } from './draggable-drag.js';
 
 import { DraggableDragItem } from './draggable-drag-item.js';
 
-import { ticker, tickerReadPhase, tickerWritePhase } from '../singletons/ticker.js';
+import { ticker, tickerPhases } from '../singletons/ticker.js';
 
 import { appendElement } from 'utils/append-element.js';
 
-import { getOffsetDiff } from '../utils/get-offset-diff.js';
+import { createWrapperElement } from 'utils/create-wrapper-element.js';
 
 import { Writeable, CSSProperties, Point } from '../types.js';
 
 const SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
 
-const OFFSET_DIFF = { left: 0, top: 0 };
-
 const POSITION_CHANGE = { x: 0, y: 0 };
+
+const DOM_MATRIX = new DOMMatrix();
 
 enum DragStartPhase {
   NONE = 0,
@@ -49,7 +49,13 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
       return { x: 0, y: 0 };
     },
     setPosition: ({ item, x, y }) => {
-      item.element.style.transform = `translate(${x}px, ${y}px) ${item.initialTransform}`;
+      const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
+
+      DOM_MATRIX.setMatrixValue(
+        `${inverseContainerMatrix} translate(${x}px, ${y}px) ${containerMatrix} ${item.elementMatrix}`,
+      );
+
+      item.element.style.transform = `${DOM_MATRIX}`;
     },
     getPositionChange: ({ event, prevEvent }) => {
       POSITION_CHANGE.x = event.x - prevEvent.x;
@@ -91,7 +97,7 @@ export interface DraggableSettings<S extends Sensor[], E extends S[number]['even
   setPosition: (data: {
     draggable: Draggable<S, E>;
     sensor: S[number];
-    phase: 'start' | 'move' | 'end';
+    phase: 'start' | 'move' | 'end' | 'pre-align' | 'align';
     item: DraggableDragItem<S, E>;
     x: number;
     y: number;
@@ -147,7 +153,7 @@ export class Draggable<
   protected _startPhase: DragStartPhase;
   protected _startId: symbol;
   protected _moveId: symbol;
-  protected _updateId: symbol;
+  protected _alignId: symbol;
 
   constructor(sensors: S, options: Partial<DraggableSettings<S, E>> = {}) {
     this.sensors = sensors;
@@ -161,7 +167,7 @@ export class Draggable<
     this._startPhase = DragStartPhase.NONE;
     this._startId = Symbol();
     this._moveId = Symbol();
-    this._updateId = Symbol();
+    this._alignId = Symbol();
 
     // Bind methods (that need binding).
     this._onMove = this._onMove.bind(this);
@@ -171,8 +177,10 @@ export class Draggable<
     this._applyStart = this._applyStart.bind(this);
     this._prepareMove = this._prepareMove.bind(this);
     this._applyMove = this._applyMove.bind(this);
-    this._preparePositionUpdate = this._preparePositionUpdate.bind(this);
-    this._applyPositionUpdate = this._applyPositionUpdate.bind(this);
+    this._prepareAlign = this._prepareAlign.bind(this);
+    this._applyAlign = this._applyAlign.bind(this);
+    this._computeOffsets = this._computeOffsets.bind(this);
+    this._applyOffsets = this._applyOffsets.bind(this);
 
     // Bind drag sensor events.
     this.sensors.forEach((sensor) => {
@@ -254,8 +262,8 @@ export class Draggable<
         // Move the element if dragging is active.
         if (this.drag) {
           (this.drag as Writeable<DraggableDrag<S, E>>).event = e;
-          ticker.once(tickerReadPhase, this._prepareMove, this._moveId);
-          ticker.once(tickerWritePhase, this._applyMove, this._moveId);
+          ticker.once(tickerPhases.read, this._prepareMove, this._moveId);
+          ticker.once(tickerPhases.write, this._applyMove, this._moveId);
         }
         break;
       }
@@ -263,7 +271,7 @@ export class Draggable<
   }
 
   protected _onScroll() {
-    this.updatePosition();
+    this.align();
   }
 
   protected _onEnd(e: E['end'] | E['cancel'] | E['destroy'], sensor: S[number]) {
@@ -321,9 +329,9 @@ export class Draggable<
     for (const item of drag.items as Writeable<DraggableDragItem<S, E>>[]) {
       // Append element within the container element if such is provided.
       if (item.dragContainer !== item.elementContainer) {
-        item.position.x += item._containerDiff.x;
-        item.position.y += item._containerDiff.y;
-        appendElement(item.element, item.dragContainer);
+        item.dragInnerContainer = createWrapperElement();
+        item.applyContainerOffset();
+        appendElement(item.element, item.dragContainer, item.dragInnerContainer);
       }
 
       // Freeze element's props if such are provided.
@@ -331,7 +339,7 @@ export class Draggable<
         Object.assign(item.element.style, item.frozenProps);
       }
 
-      // Set the element's start position.
+      // Set element's start position.
       this.settings.setPosition({
         phase: 'start',
         draggable: this,
@@ -376,14 +384,14 @@ export class Draggable<
       if (changeX) {
         item.position.x += changeX;
         item.clientRect.x += changeX;
-        item._moveDiff.x += changeX;
+        item.moveDiff.x += changeX;
       }
 
       // Update vertical position data.
       if (changeY) {
         item.position.y += changeY;
         item.clientRect.y += changeY;
-        item._moveDiff.y += changeY;
+        item.moveDiff.y += changeY;
       }
     }
 
@@ -400,8 +408,8 @@ export class Draggable<
 
     // Reset movement diff and move the element.
     for (const item of drag.items as Writeable<DraggableDragItem<S, E>>[]) {
-      item._moveDiff.x = 0;
-      item._moveDiff.y = 0;
+      item.moveDiff.x = 0;
+      item.moveDiff.y = 0;
 
       this.settings.setPosition({
         phase: 'move',
@@ -419,53 +427,85 @@ export class Draggable<
     }
   }
 
-  protected _preparePositionUpdate() {
+  protected _computeOffsets(updateMatrices = false) {
     const { drag } = this;
     if (!drag) return;
 
+    // Invalidate matrix cache.
+    if (updateMatrices) {
+      drag.matrixCache.invalidate();
+    }
+
+    // Invalidate client offset cache.
+    drag.clientOffsetCache.invalidate();
+
+    // Update drag items' world matrices and container offsets.
     for (const item of drag.items as Writeable<DraggableDragItem<S, E>>[]) {
-      // Update container diff.
-      if (item.elementOffsetContainer !== item.dragOffsetContainer) {
-        const { left, top } = getOffsetDiff(
-          item.dragOffsetContainer,
-          item.elementOffsetContainer,
-          OFFSET_DIFF,
-        );
-        item._containerDiff.x = left;
-        item._containerDiff.y = top;
+      if (updateMatrices) {
+        item.updateContainerMatrices();
       }
-
-      const { left, top, width, height } = item.element.getBoundingClientRect();
-
-      // Update horizontal position data.
-      const updateDiffX = item.clientRect.x - item._moveDiff.x - left;
-      item.position.x = item.position.x - item._updateDiff.x + updateDiffX;
-      item._updateDiff.x = updateDiffX;
-
-      // Update vertical position data.
-      const updateDiffY = item.clientRect.y - item._moveDiff.y - top;
-      item.position.y = item.position.y - item._updateDiff.y + updateDiffY;
-      item._updateDiff.y = updateDiffY;
-
-      // Update item client size. This is not necessary for the drag process,
-      // but since we're computing the bounding client rect, we might as well
-      // update the size in the process. The size is used by the auto-scroll
-      // plugin and possibly some other third-party plugins.
-      item.clientRect.width = width;
-      item.clientRect.height = height;
+      item.updateContainerOffset();
     }
   }
 
-  protected _applyPositionUpdate() {
+  protected _applyOffsets(updateMatrices = false) {
+    const { drag } = this;
+    if (!drag) return;
+
+    // Apply new transforms to the drag inner containers. This unfortunately
+    // needs to be done before we query the client rects in the next step.
+    for (const item of drag.items as Writeable<DraggableDragItem<S, E>>[]) {
+      item.applyContainerOffset();
+
+      // Apply the changed matrices to the element BEFORE we query the client
+      // rect.
+      if (updateMatrices) {
+        this.settings.setPosition({
+          phase: 'pre-align',
+          draggable: this,
+          sensor: drag.sensor,
+          item: item as DraggableDragItem<S, E>,
+          x: item.position.x - item.alignDiff.x - item.moveDiff.x,
+          y: item.position.y - item.alignDiff.y - item.moveDiff.y,
+        });
+      }
+    }
+  }
+
+  protected _prepareAlign() {
     const { drag } = this;
     if (!drag) return;
 
     for (const item of drag.items as Writeable<DraggableDragItem<S, E>>[]) {
-      item._updateDiff.x = 0;
-      item._updateDiff.y = 0;
+      const { x, y } = item.element.getBoundingClientRect();
+
+      // Note that we INTENTIONALLY DO NOT UPDATE THE CLIENT RECT COORDINATES
+      // here. The point of this method is to update the POSITION of the
+      // draggable item based on how much the client rect has drifted so that
+      // the element is visually repostioned to the correct place.
+
+      // Update horizontal position data.
+      const alignDiffX = item.clientRect.x - item.moveDiff.x - x;
+      item.position.x = item.position.x - item.alignDiff.x + alignDiffX;
+      item.alignDiff.x = alignDiffX;
+
+      // Update vertical position data.
+      const alignDiffY = item.clientRect.y - item.moveDiff.y - y;
+      item.position.y = item.position.y - item.alignDiff.y + alignDiffY;
+      item.alignDiff.y = alignDiffY;
+    }
+  }
+
+  protected _applyAlign() {
+    const { drag } = this;
+    if (!drag) return;
+
+    for (const item of drag.items as Writeable<DraggableDragItem<S, E>>[]) {
+      item.alignDiff.x = 0;
+      item.alignDiff.y = 0;
 
       this.settings.setPosition({
-        phase: 'move',
+        phase: 'align',
         draggable: this,
         sensor: drag.sensor,
         item: item as DraggableDragItem<S, E>,
@@ -511,8 +551,8 @@ export class Draggable<
       });
 
       // Queue drag start.
-      ticker.once(tickerReadPhase, this._prepareStart, this._startId);
-      ticker.once(tickerWritePhase, this._applyStart, this._startId);
+      ticker.once(tickerPhases.read, this._prepareStart, this._startId);
+      ticker.once(tickerPhases.write, this._applyStart, this._startId);
     }
   }
 
@@ -546,15 +586,22 @@ export class Draggable<
     drag.isEnded = true;
 
     // Cancel all queued ticks.
-    ticker.off(tickerReadPhase, this._startId);
-    ticker.off(tickerWritePhase, this._startId);
-    ticker.off(tickerReadPhase, this._moveId);
-    ticker.off(tickerWritePhase, this._moveId);
-    ticker.off(tickerReadPhase, this._updateId);
-    ticker.off(tickerWritePhase, this._updateId);
+    ticker.off(tickerPhases.read, this._startId);
+    ticker.off(tickerPhases.write, this._startId);
+    ticker.off(tickerPhases.read, this._moveId);
+    ticker.off(tickerPhases.write, this._moveId);
+    ticker.off(tickerPhases.preRead, this._alignId);
+    ticker.off(tickerPhases.preWrite, this._alignId);
+    ticker.off(tickerPhases.read, this._alignId);
+    ticker.off(tickerPhases.write, this._alignId);
 
     // Unbind scroll listener.
     window.removeEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
+
+    // Remove measure elements.
+    for (const [_element, measureElement] of drag.measureElements) {
+      measureElement.remove();
+    }
 
     // Move elements within the root container and collect all elements
     // to an elements array.
@@ -563,11 +610,12 @@ export class Draggable<
       elements.push(item.element);
 
       if (item.elementContainer !== item.dragContainer) {
-        item.position.x -= item._containerDiff.x;
-        item.position.y -= item._containerDiff.y;
-        item._containerDiff.x = 0;
-        item._containerDiff.y = 0;
         appendElement(item.element, item.elementContainer);
+
+        // Remove drag inner container if such exists.
+        if (item.dragInnerContainer) {
+          item.dragInnerContainer.remove();
+        }
       }
 
       // Unfreeze element's props if such are provided.
@@ -604,14 +652,24 @@ export class Draggable<
     (this as Writeable<this>).drag = null;
   }
 
-  updatePosition(instant = false) {
+  align({
+    instant = false,
+    updateMatrices = false,
+  }: {
+    instant?: boolean;
+    updateMatrices?: boolean;
+  } = {}) {
     if (!this.drag) return;
     if (instant) {
-      this._preparePositionUpdate();
-      this._applyPositionUpdate();
+      this._computeOffsets(updateMatrices);
+      this._applyOffsets(updateMatrices);
+      this._prepareAlign();
+      this._applyAlign();
     } else {
-      ticker.once(tickerReadPhase, this._preparePositionUpdate, this._updateId);
-      ticker.once(tickerWritePhase, this._applyPositionUpdate, this._updateId);
+      ticker.once(tickerPhases.preRead, () => this._computeOffsets(updateMatrices), this._alignId);
+      ticker.once(tickerPhases.preWrite, () => this._applyOffsets(updateMatrices), this._alignId);
+      ticker.once(tickerPhases.read, this._prepareAlign, this._alignId);
+      ticker.once(tickerPhases.write, this._applyAlign, this._alignId);
     }
   }
 

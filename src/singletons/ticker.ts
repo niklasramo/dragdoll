@@ -1,17 +1,20 @@
 import { AutoTicker, Phase, FrameCallback } from 'tikki';
 
-export let tickerReadPhase: Phase = Symbol();
+export const tickerPhases = {
+  preRead: Symbol(),
+  preWrite: Symbol(),
+  read: Symbol(),
+  write: Symbol(),
+};
 
-export let tickerWritePhase: Phase = Symbol();
-
-export let ticker = new AutoTicker<Phase>({ phases: [tickerReadPhase, tickerWritePhase] });
+export let ticker = new AutoTicker<Phase>({
+  phases: [tickerPhases.preRead, tickerPhases.preWrite, tickerPhases.read, tickerPhases.write],
+});
 
 export function setTicker(
   newTicker: AutoTicker<Phase, FrameCallback>,
-  readPhase: Phase,
-  writePhase: Phase,
+  phases: typeof tickerPhases,
 ) {
-  tickerReadPhase = readPhase;
-  tickerWritePhase = writePhase;
   ticker = newTicker;
+  Object.assign(tickerPhases, phases);
 }
