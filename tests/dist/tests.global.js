@@ -7018,6 +7018,32 @@
       keyboardSensor.destroy();
       el.remove();
     });
+    it("should work with transformed elements", async () => {
+      const el = createTestElement({
+        transform: "scale(1.2) translate(-5px, -6px) rotate(33deg) skew(31deg, 43deg)",
+        transformOrigin: "21px 22px"
+      });
+      const container = createTestElement({
+        transform: "scale(0.5) translate(3px, 4px) rotate(77deg) skew(11deg, 22deg)",
+        transformOrigin: "12px 13px"
+      });
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], { getElements: () => [el] });
+      container.appendChild(el);
+      const startRect = el.getBoundingClientRect();
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+      await wait(100);
+      const endRect = el.getBoundingClientRect();
+      assert.equal(Math.round((endRect.x - startRect.x) * 1e3) / 1e3, 1, "x");
+      assert.equal(Math.round((endRect.y - startRect.y) * 1e3) / 1e3, 1, "y");
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+      container.remove();
+    });
     describe("options", () => {
       describe("container", () => {
         it("should define the drag container", async () => {
@@ -7030,7 +7056,8 @@
           document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
           await wait(100);
           assert.notEqual(draggable.drag, null);
-          assert.equal(el.parentNode, container);
+          assert.ok(container.contains(el));
+          assert.equal(el.parentElement, draggable.drag?.items[0].dragInnerContainer);
           document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
           await wait(100);
           assert.equal(draggable.drag, null);
@@ -7040,7 +7067,7 @@
           el.remove();
           container.remove();
         });
-        it(`should not offset client position`, async () => {
+        it(`should maintain client position`, async () => {
           const containerPositions = ["static", "relative", "fixed", "absolute"];
           const elPositions = ["fixed", "absolute"];
           for (const containerPosition of containerPositions) {
@@ -7073,27 +7100,66 @@
               focusElement(el);
               document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
               await wait(100);
-              assert.equal(el.parentNode, container, "3: " + assertMsg);
+              assert.ok(container.contains(el), "3: " + assertMsg);
+              assert.equal(
+                el.parentElement,
+                draggable.drag?.items[0].dragInnerContainer,
+                "4: " + assertMsg
+              );
               let rect = el.getBoundingClientRect();
-              assert.equal(rect.x, elRect.x, "4: " + assertMsg);
-              assert.equal(rect.y, elRect.y, "5: " + assertMsg);
+              assert.equal(rect.x, elRect.x, "5: " + assertMsg);
+              assert.equal(rect.y, elRect.y, "6: " + assertMsg);
               document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
               await wait(100);
               rect = el.getBoundingClientRect();
-              assert.equal(rect.x, elRect.x + 1, "6: " + assertMsg);
-              assert.equal(rect.y, elRect.y, "7: " + assertMsg);
+              assert.equal(rect.x, elRect.x + 1, "7: " + assertMsg);
+              assert.equal(rect.y, elRect.y, "8: " + assertMsg);
               document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
               await wait(100);
               rect = el.getBoundingClientRect();
-              assert.equal(rect.x, elRect.x + 1, "8: " + assertMsg);
-              assert.equal(rect.y, elRect.y, "9: " + assertMsg);
-              assert.equal(el.parentNode, originalContainer, "10: " + assertMsg);
+              assert.equal(rect.x, elRect.x + 1, "9: " + assertMsg);
+              assert.equal(rect.y, elRect.y, "10: " + assertMsg);
+              assert.equal(el.parentNode, originalContainer, "11: " + assertMsg);
               draggable.destroy();
               keyboardSensor.destroy();
               el.remove();
               container.remove();
             }
           }
+        });
+        it("should work with transformed elements", async () => {
+          const el = createTestElement({
+            transform: "scale(1.2) translate(-5px, -6px) rotate(33deg) skew(31deg, 43deg)",
+            transformOrigin: "21px 22px"
+          });
+          const container = createTestElement({
+            transform: "scale(0.5) translate(3px, 4px) rotate(77deg) skew(11deg, 22deg)",
+            transformOrigin: "12px 13px"
+          });
+          const dragContainer = createTestElement({
+            transform: "scale(0.75) translate(-30px, 79px) rotate(31deg) skew(3deg, 4deg)",
+            transformOrigin: "120px 130px"
+          });
+          const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+          const draggable = new Draggable([keyboardSensor], {
+            getElements: () => [el],
+            container: dragContainer
+          });
+          container.appendChild(el);
+          const startRect = el.getBoundingClientRect();
+          focusElement(el);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+          await wait(100);
+          const endRect = el.getBoundingClientRect();
+          assert.equal(Math.round((endRect.x - startRect.x) * 1e3) / 1e3, 1, "x");
+          assert.equal(Math.round((endRect.y - startRect.y) * 1e3) / 1e3, 1, "y");
+          draggable.destroy();
+          keyboardSensor.destroy();
+          el.remove();
+          container.remove();
+          dragContainer.remove();
         });
       });
       describe("getElements", () => {
