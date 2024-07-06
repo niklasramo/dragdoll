@@ -261,7 +261,7 @@ export class Draggable<
       case DraggableStartPredicateState.RESOLVED: {
         // Move the element if dragging is active.
         if (this.drag) {
-          (this.drag as Writeable<DraggableDrag<S, E>>).event = e;
+          (this.drag as Writeable<typeof this.drag>).event = e;
           ticker.once(tickerPhases.read, this._prepareMove, this._moveId);
           ticker.once(tickerPhases.write, this._applyMove, this._moveId);
         }
@@ -287,7 +287,7 @@ export class Draggable<
     // Otherwise, if drag is active AND the sensor is the one that triggered the
     // drag process, let's reset all sensors' start preidcate states.
     else if (sensorData.predicateState === DraggableStartPredicateState.RESOLVED) {
-      (this.drag as Writeable<DraggableDrag<S, E>>).endEvent = e;
+      (this.drag as Writeable<typeof this.drag>).endEvent = e;
       this._sensorData.forEach((data) => {
         data.predicateState = DraggableStartPredicateState.PENDING;
         data.predicateEvent = null;
@@ -297,7 +297,7 @@ export class Draggable<
   }
 
   protected _prepareStart() {
-    const drag: Writeable<DraggableDrag<S, E>> | null = this.drag;
+    const drag = this.drag;
     if (!drag) return;
 
     // Update start phase.
@@ -314,7 +314,7 @@ export class Draggable<
       }) || [];
 
     // Create drag items.
-    drag.items = elements.map((element) => {
+    (drag as Writeable<typeof drag>).items = elements.map((element) => {
       return new DraggableDragItem(element, this);
     });
 
@@ -323,14 +323,14 @@ export class Draggable<
   }
 
   protected _applyStart() {
-    const drag: Writeable<DraggableDrag<S, E>> | null = this.drag;
+    const drag = this.drag;
     if (!drag) return;
 
-    for (const item of drag.items as Writeable<DraggableDragItem<S, E>>[]) {
+    for (const item of drag.items) {
       // Append element within the container element if such is provided.
       if (item.dragContainer !== item.elementContainer) {
-        item.dragInnerContainer = createWrapperElement();
-        item.applyContainerOffset();
+        (item as Writeable<typeof item>).dragInnerContainer = createWrapperElement();
+        item['_applyContainerOffset']();
         appendElement(item.element, item.dragContainer, item.dragInnerContainer);
       }
 
@@ -361,7 +361,7 @@ export class Draggable<
   }
 
   protected _prepareMove() {
-    const drag: Writeable<DraggableDrag<S, E>> | null = this.drag;
+    const drag = this.drag;
     if (!drag) return;
 
     // Get next event and previous event so we can compute the movement
@@ -369,7 +369,7 @@ export class Draggable<
     const { event, prevEvent, startEvent, sensor } = drag;
     if (event === prevEvent) return;
 
-    for (const item of drag.items as Writeable<DraggableDragItem<S, E>>[]) {
+    for (const item of drag.items) {
       // Compute how much x and y needs to be transformed.
       const { x: changeX, y: changeY } = this.settings.getPositionChange({
         draggable: this,
@@ -384,32 +384,32 @@ export class Draggable<
       if (changeX) {
         item.position.x += changeX;
         item.clientRect.x += changeX;
-        item.moveDiff.x += changeX;
+        item['_moveDiff'].x += changeX;
       }
 
       // Update vertical position data.
       if (changeY) {
         item.position.y += changeY;
         item.clientRect.y += changeY;
-        item.moveDiff.y += changeY;
+        item['_moveDiff'].y += changeY;
       }
     }
 
     // Store next event as previous event.
-    (drag as Writeable<DraggableDrag<S, E>>).prevEvent = event;
+    (drag as Writeable<typeof drag>).prevEvent = event;
 
     // Emit preparemove event.
     this._emit('preparemove', event as E['move']);
   }
 
   protected _applyMove() {
-    const drag: Writeable<DraggableDrag<S, E>> | null = this.drag;
+    const drag = this.drag;
     if (!drag) return;
 
     // Reset movement diff and move the element.
-    for (const item of drag.items as Writeable<DraggableDragItem<S, E>>[]) {
-      item.moveDiff.x = 0;
-      item.moveDiff.y = 0;
+    for (const item of drag.items) {
+      item['_moveDiff'].x = 0;
+      item['_moveDiff'].y = 0;
 
       this.settings.setPosition({
         phase: 'move',
@@ -433,14 +433,14 @@ export class Draggable<
 
     // Invalidate matrix cache.
     if (updateMatrices) {
-      drag.matrixCache.invalidate();
+      drag['_matrixCache'].invalidate();
     }
 
     // Invalidate client offset cache.
-    drag.clientOffsetCache.invalidate();
+    drag['_clientOffsetCache'].invalidate();
 
     // Update drag items' world matrices and container offsets.
-    for (const item of drag.items as Writeable<DraggableDragItem<S, E>>[]) {
+    for (const item of drag.items) {
       if (updateMatrices) {
         item.updateContainerMatrices();
       }
@@ -454,8 +454,8 @@ export class Draggable<
 
     // Apply new transforms to the drag inner containers. This unfortunately
     // needs to be done before we query the client rects in the next step.
-    for (const item of drag.items as Writeable<DraggableDragItem<S, E>>[]) {
-      item.applyContainerOffset();
+    for (const item of drag.items) {
+      item['_applyContainerOffset']();
 
       // Apply the changed matrices to the element BEFORE we query the client
       // rect.
@@ -465,8 +465,8 @@ export class Draggable<
           draggable: this,
           sensor: drag.sensor,
           item: item as DraggableDragItem<S, E>,
-          x: item.position.x - item.alignDiff.x - item.moveDiff.x,
-          y: item.position.y - item.alignDiff.y - item.moveDiff.y,
+          x: item.position.x - item['_alignDiff'].x - item['_moveDiff'].x,
+          y: item.position.y - item['_alignDiff'].y - item['_moveDiff'].y,
         });
       }
     }
@@ -476,7 +476,7 @@ export class Draggable<
     const { drag } = this;
     if (!drag) return;
 
-    for (const item of drag.items as Writeable<DraggableDragItem<S, E>>[]) {
+    for (const item of drag.items) {
       const { x, y } = item.element.getBoundingClientRect();
 
       // Note that we INTENTIONALLY DO NOT UPDATE THE CLIENT RECT COORDINATES
@@ -485,14 +485,14 @@ export class Draggable<
       // the element is visually repostioned to the correct place.
 
       // Update horizontal position data.
-      const alignDiffX = item.clientRect.x - item.moveDiff.x - x;
-      item.position.x = item.position.x - item.alignDiff.x + alignDiffX;
-      item.alignDiff.x = alignDiffX;
+      const alignDiffX = item.clientRect.x - item['_moveDiff'].x - x;
+      item.position.x = item.position.x - item['_alignDiff'].x + alignDiffX;
+      item['_alignDiff'].x = alignDiffX;
 
       // Update vertical position data.
-      const alignDiffY = item.clientRect.y - item.moveDiff.y - y;
-      item.position.y = item.position.y - item.alignDiff.y + alignDiffY;
-      item.alignDiff.y = alignDiffY;
+      const alignDiffY = item.clientRect.y - item['_moveDiff'].y - y;
+      item.position.y = item.position.y - item['_alignDiff'].y + alignDiffY;
+      item['_alignDiff'].y = alignDiffY;
     }
   }
 
@@ -500,9 +500,9 @@ export class Draggable<
     const { drag } = this;
     if (!drag) return;
 
-    for (const item of drag.items as Writeable<DraggableDragItem<S, E>>[]) {
-      item.alignDiff.x = 0;
-      item.alignDiff.y = 0;
+    for (const item of drag.items) {
+      item['_alignDiff'].x = 0;
+      item['_alignDiff'].y = 0;
 
       this.settings.setPosition({
         phase: 'align',
@@ -565,7 +565,7 @@ export class Draggable<
   }
 
   stop() {
-    const drag: Writeable<DraggableDrag<S, E>> | null = this.drag;
+    const drag = this.drag;
     if (!drag || drag.isEnded) return;
 
     // If drag start process is still in the prepare and apply phase, let's
@@ -583,7 +583,7 @@ export class Draggable<
     this._startPhase = DragStartPhase.NONE;
 
     // Mark drag process as ended.
-    drag.isEnded = true;
+    (drag as Writeable<typeof drag>).isEnded = true;
 
     // Cancel all queued ticks.
     ticker.off(tickerPhases.read, this._startId);
@@ -599,14 +599,12 @@ export class Draggable<
     window.removeEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
 
     // Remove measure elements.
-    for (const [_element, measureElement] of drag.measureElements) {
-      measureElement.remove();
-    }
+    drag['_measureElements'].forEach((el) => el.remove());
 
     // Move elements within the root container and collect all elements
     // to an elements array.
     const elements: (HTMLElement | SVGSVGElement)[] = [];
-    for (const item of drag.items as Writeable<DraggableDragItem<S, E>>[]) {
+    for (const item of drag.items) {
       elements.push(item.element);
 
       if (item.elementContainer !== item.dragContainer) {

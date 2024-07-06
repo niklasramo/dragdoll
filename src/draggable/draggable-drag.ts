@@ -14,9 +14,9 @@ export class DraggableDrag<S extends Sensor[], E extends S[number]['events']> {
   readonly startEvent: E['start'] | E['move'];
   readonly endEvent: E['end'] | E['cancel'] | E['destroy'] | null;
   readonly items: DraggableDragItem[];
-  readonly measureElements: Map<HTMLElement, HTMLElement>;
-  readonly matrixCache: ObjectCache<HTMLElement | SVGSVGElement, [DOMMatrix, DOMMatrix]>;
-  readonly clientOffsetCache: ObjectCache<HTMLElement | SVGSVGElement | Window | Document, Point>;
+  protected _measureElements: Map<HTMLElement, HTMLElement>;
+  protected _matrixCache: ObjectCache<HTMLElement | SVGSVGElement, [DOMMatrix, DOMMatrix]>;
+  protected _clientOffsetCache: ObjectCache<HTMLElement | SVGSVGElement | Window | Document, Point>;
 
   constructor(sensor: S[number], startEvent: E['start'] | E['move']) {
     this.sensor = sensor;
@@ -26,8 +26,8 @@ export class DraggableDrag<S extends Sensor[], E extends S[number]['events']> {
     this.startEvent = startEvent;
     this.endEvent = null;
     this.items = [];
-    this.measureElements = new Map();
-    this.matrixCache = new ObjectCache();
-    this.clientOffsetCache = new ObjectCache();
+    this._measureElements = new Map();
+    this._matrixCache = new ObjectCache();
+    this._clientOffsetCache = new ObjectCache();
   }
 }

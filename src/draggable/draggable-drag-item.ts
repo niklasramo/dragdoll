@@ -37,8 +37,8 @@ export class DraggableDragItem<
   readonly clientRect: Rect;
   readonly position: Point;
   readonly containerOffset: Point;
-  readonly moveDiff: Point;
-  readonly alignDiff: Point;
+  protected _moveDiff: Point;
+  protected _alignDiff: Point;
   protected _measureElements: Map<HTMLElement, HTMLElement>;
   protected _matrixCache: ObjectCache<HTMLElement | SVGSVGElement, [DOMMatrix, DOMMatrix]>;
   protected _clientOffsetCache: ObjectCache<HTMLElement | SVGSVGElement | Window | Document, Point>;
@@ -58,7 +58,6 @@ export class DraggableDragItem<
 
     const style = getStyle(element);
     const clientRect = element.getBoundingClientRect();
-    const { sensor, matrixCache, measureElements, clientOffsetCache } = drag;
 
     this.data = {};
     this.element = element;
@@ -68,11 +67,11 @@ export class DraggableDragItem<
     this.unfrozenProps = null;
     this.position = { x: 0, y: 0 };
     this.containerOffset = { x: 0, y: 0 };
-    this.moveDiff = { x: 0, y: 0 };
-    this.alignDiff = { x: 0, y: 0 };
-    this._measureElements = measureElements;
-    this._matrixCache = matrixCache;
-    this._clientOffsetCache = clientOffsetCache;
+    this._moveDiff = { x: 0, y: 0 };
+    this._alignDiff = { x: 0, y: 0 };
+    this._measureElements = drag['_measureElements'];
+    this._matrixCache = drag['_matrixCache'];
+    this._clientOffsetCache = drag['_clientOffsetCache'];
 
     // Use element's parent element as the element container.
     const elementContainer = element.parentElement;
@@ -125,7 +124,7 @@ export class DraggableDragItem<
     // position here should reflect the transform value delta.
     const { x, y } = draggable.settings.getStartPosition({
       draggable,
-      sensor,
+      sensor: drag.sensor,
       item: this,
       style,
     });
@@ -135,7 +134,7 @@ export class DraggableDragItem<
     // Get element's frozen props.
     const frozenProps = draggable.settings.getFrozenProps({
       draggable,
-      sensor,
+      sensor: drag.sensor,
       item: this,
       style,
     });
@@ -164,6 +163,19 @@ export class DraggableDragItem<
         }
       }
       this.unfrozenProps = unfrozenProps;
+    }
+  }
+
+  protected _applyContainerOffset() {
+    if (this.dragInnerContainer) {
+      const { x, y } = this.containerOffset;
+      const containerMatrix = this.getContainerMatrix()[0];
+      const inverseDragContainerMatrix = this.getDragContainerMatrix()[1];
+      this.dragInnerContainer.style.setProperty(
+        'transform',
+        `${inverseDragContainerMatrix} translate(${x}px, ${y}px) ${containerMatrix}`,
+        'important',
+      );
     }
   }
 
@@ -272,19 +284,6 @@ export class DraggableDragItem<
     } else {
       containerOffset.x = 0;
       containerOffset.y = 0;
-    }
-  }
-
-  applyContainerOffset() {
-    if (this.dragInnerContainer) {
-      const { x, y } = this.containerOffset;
-      const containerMatrix = this.getContainerMatrix()[0];
-      const inverseDragContainerMatrix = this.getDragContainerMatrix()[1];
-      this.dragInnerContainer.style.setProperty(
-        'transform',
-        `${inverseDragContainerMatrix} translate(${x}px, ${y}px) ${containerMatrix}`,
-        'important',
-      );
     }
   }
 

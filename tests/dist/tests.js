@@ -4322,9 +4322,9 @@ var DraggableDrag = class {
     this.startEvent = startEvent;
     this.endEvent = null;
     this.items = [];
-    this.measureElements = /* @__PURE__ */ new Map();
-    this.matrixCache = new ObjectCache();
-    this.clientOffsetCache = new ObjectCache();
+    this._measureElements = /* @__PURE__ */ new Map();
+    this._matrixCache = new ObjectCache();
+    this._clientOffsetCache = new ObjectCache();
   }
 };
 
@@ -4482,7 +4482,6 @@ var DraggableDragItem = class {
     }
     const style = getStyle(element);
     const clientRect = element.getBoundingClientRect();
-    const { sensor, matrixCache, measureElements, clientOffsetCache } = drag;
     this.data = {};
     this.element = element;
     this.dragInnerContainer = null;
@@ -4491,11 +4490,11 @@ var DraggableDragItem = class {
     this.unfrozenProps = null;
     this.position = { x: 0, y: 0 };
     this.containerOffset = { x: 0, y: 0 };
-    this.moveDiff = { x: 0, y: 0 };
-    this.alignDiff = { x: 0, y: 0 };
-    this._measureElements = measureElements;
-    this._matrixCache = matrixCache;
-    this._clientOffsetCache = clientOffsetCache;
+    this._moveDiff = { x: 0, y: 0 };
+    this._alignDiff = { x: 0, y: 0 };
+    this._measureElements = drag["_measureElements"];
+    this._matrixCache = drag["_matrixCache"];
+    this._clientOffsetCache = drag["_clientOffsetCache"];
     const elementContainer = element.parentElement;
     if (!elementContainer) {
       throw new Error("Dragged element does not have a parent element.");
@@ -4524,7 +4523,7 @@ var DraggableDragItem = class {
     this.updateContainerOffset();
     const { x, y } = draggable.settings.getStartPosition({
       draggable,
-      sensor,
+      sensor: drag.sensor,
       item: this,
       style
     });
@@ -4532,7 +4531,7 @@ var DraggableDragItem = class {
     this.position.y = y;
     const frozenProps = draggable.settings.getFrozenProps({
       draggable,
-      sensor,
+      sensor: drag.sensor,
       item: this,
       style
     });
@@ -4557,6 +4556,18 @@ var DraggableDragItem = class {
         }
       }
       this.unfrozenProps = unfrozenProps;
+    }
+  }
+  _applyContainerOffset() {
+    if (this.dragInnerContainer) {
+      const { x, y } = this.containerOffset;
+      const containerMatrix = this.getContainerMatrix()[0];
+      const inverseDragContainerMatrix = this.getDragContainerMatrix()[1];
+      this.dragInnerContainer.style.setProperty(
+        "transform",
+        `${inverseDragContainerMatrix} translate(${x}px, ${y}px) ${containerMatrix}`,
+        "important"
+      );
     }
   }
   getContainerMatrix() {
@@ -4627,18 +4638,6 @@ var DraggableDragItem = class {
     } else {
       containerOffset.x = 0;
       containerOffset.y = 0;
-    }
-  }
-  applyContainerOffset() {
-    if (this.dragInnerContainer) {
-      const { x, y } = this.containerOffset;
-      const containerMatrix = this.getContainerMatrix()[0];
-      const inverseDragContainerMatrix = this.getDragContainerMatrix()[1];
-      this.dragInnerContainer.style.setProperty(
-        "transform",
-        `${inverseDragContainerMatrix} translate(${x}px, ${y}px) ${containerMatrix}`,
-        "important"
-      );
     }
   }
   updateSize(dimensions) {
@@ -4822,7 +4821,7 @@ var Draggable = class {
     for (const item of drag.items) {
       if (item.dragContainer !== item.elementContainer) {
         item.dragInnerContainer = createWrapperElement();
-        item.applyContainerOffset();
+        item["_applyContainerOffset"]();
         appendElement(item.element, item.dragContainer, item.dragInnerContainer);
       }
       if (item.frozenProps) {
@@ -4858,12 +4857,12 @@ var Draggable = class {
       if (changeX) {
         item.position.x += changeX;
         item.clientRect.x += changeX;
-        item.moveDiff.x += changeX;
+        item["_moveDiff"].x += changeX;
       }
       if (changeY) {
         item.position.y += changeY;
         item.clientRect.y += changeY;
-        item.moveDiff.y += changeY;
+        item["_moveDiff"].y += changeY;
       }
     }
     drag.prevEvent = event;
@@ -4873,8 +4872,8 @@ var Draggable = class {
     const drag = this.drag;
     if (!drag) return;
     for (const item of drag.items) {
-      item.moveDiff.x = 0;
-      item.moveDiff.y = 0;
+      item["_moveDiff"].x = 0;
+      item["_moveDiff"].y = 0;
       this.settings.setPosition({
         phase: "move",
         draggable: this,
@@ -4892,9 +4891,9 @@ var Draggable = class {
     const { drag } = this;
     if (!drag) return;
     if (updateMatrices) {
-      drag.matrixCache.invalidate();
+      drag["_matrixCache"].invalidate();
     }
-    drag.clientOffsetCache.invalidate();
+    drag["_clientOffsetCache"].invalidate();
     for (const item of drag.items) {
       if (updateMatrices) {
         item.updateContainerMatrices();
@@ -4906,15 +4905,15 @@ var Draggable = class {
     const { drag } = this;
     if (!drag) return;
     for (const item of drag.items) {
-      item.applyContainerOffset();
+      item["_applyContainerOffset"]();
       if (updateMatrices) {
         this.settings.setPosition({
           phase: "pre-align",
           draggable: this,
           sensor: drag.sensor,
           item,
-          x: item.position.x - item.alignDiff.x - item.moveDiff.x,
-          y: item.position.y - item.alignDiff.y - item.moveDiff.y
+          x: item.position.x - item["_alignDiff"].x - item["_moveDiff"].x,
+          y: item.position.y - item["_alignDiff"].y - item["_moveDiff"].y
         });
       }
     }
@@ -4924,20 +4923,20 @@ var Draggable = class {
     if (!drag) return;
     for (const item of drag.items) {
       const { x, y } = item.element.getBoundingClientRect();
-      const alignDiffX = item.clientRect.x - item.moveDiff.x - x;
-      item.position.x = item.position.x - item.alignDiff.x + alignDiffX;
-      item.alignDiff.x = alignDiffX;
-      const alignDiffY = item.clientRect.y - item.moveDiff.y - y;
-      item.position.y = item.position.y - item.alignDiff.y + alignDiffY;
-      item.alignDiff.y = alignDiffY;
+      const alignDiffX = item.clientRect.x - item["_moveDiff"].x - x;
+      item.position.x = item.position.x - item["_alignDiff"].x + alignDiffX;
+      item["_alignDiff"].x = alignDiffX;
+      const alignDiffY = item.clientRect.y - item["_moveDiff"].y - y;
+      item.position.y = item.position.y - item["_alignDiff"].y + alignDiffY;
+      item["_alignDiff"].y = alignDiffY;
     }
   }
   _applyAlign() {
     const { drag } = this;
     if (!drag) return;
     for (const item of drag.items) {
-      item.alignDiff.x = 0;
-      item.alignDiff.y = 0;
+      item["_alignDiff"].x = 0;
+      item["_alignDiff"].y = 0;
       this.settings.setPosition({
         phase: "align",
         draggable: this,
@@ -4998,9 +4997,7 @@ var Draggable = class {
     ticker.off(tickerPhases.read, this._alignId);
     ticker.off(tickerPhases.write, this._alignId);
     window.removeEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS);
-    for (const [_element, measureElement] of drag.measureElements) {
-      measureElement.remove();
-    }
+    drag["_measureElements"].forEach((el) => el.remove());
     const elements = [];
     for (const item of drag.items) {
       elements.push(item.element);

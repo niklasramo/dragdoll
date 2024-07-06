@@ -46,7 +46,7 @@ The dragged element's parent node during the drag. Read-only.
 type dragInnerContainer = HTMLElement | null;
 ```
 
-If [`elementContainer`](#elementcontainer) is not the same element as [`dragContainer`](#dragcontainer) we need to create a wrapper element dynamically for the dragged element. This is that wrapper element and it is appended to the [`dragContainer`](#dragcontainer). Read-only.
+If [`elementContainer`](#elementcontainer) is not the same element as [`dragContainer`](#dragcontainer) we need to create a wrapper element dynamically for the dragged element. This is that wrapper element and it is appended to the [`dragContainer`](#dragcontainer). In practice this element will be created for each dragged item when you define a `[container](/docs/draggable#container)` for a Draggable instance. Read-only.
 
 ### dragOffsetContainer
 
@@ -104,22 +104,6 @@ type containerOffset = { x: number; y: number };
 
 The offset between [`elementOffsetContainer`](#elementoffsetcontainer) and [`dragOffsetContainer`](#dragoffsetcontainer). The offset value is computed so that transforms are fully ignored. Read-only.
 
-### moveDiff
-
-```ts
-type moveDiff = { x: number; y: number };
-```
-
-Used internally to keep track of the difference between the current and the previous move event when updating the [`position`](#position) property asynchronously. Read-only.
-
-### alignDiff
-
-```ts
-type alignDiff = { x: number; y: number };
-```
-
-Used internally to keep track of the computed align offset when aligning the dragged element asynchronously to the correct client position. Read-only.
-
 ## Methods
 
 ### getContainerMatrix
@@ -153,14 +137,6 @@ type updateContainerOffset = (force?: boolean) => void;
 ```
 
 Computes the offset between [`elementOffsetContainer`](#elementoffsetcontainer) and [`dragOffsetContainer`](#dragoffsetcontainer). By default this method will use the cached client offset values for both elements. However, you can set the `force` argument to true to forcefully recalculate the offset.
-
-### applyContainerOffset
-
-```ts
-type applyContainerOffset = () => void;
-```
-
-Applies the computed container offset and container world matrices to [`dragInnerContainer`](#draginnercontainer). You should not need to call this method manually, as it is called automatically by the Draggable instance.
 
 ### updateSize
 
