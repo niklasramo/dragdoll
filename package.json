@@ -39,14 +39,14 @@
     "main": false
   },
   "scripts": {
-    "build": "npm run del-dist && npm run ts-check && npm run build-lib && npm run build-tests && npm run build-examples && npm run format && npm run size",
+    "build": "npm run clean-build && npm run ts-check && npm run build-lib && npm run build-tests && npm run build-examples && npm run format && npm run size",
     "build-lib": "tsup --config ./tsup.config.lib.ts",
     "build-tests": "tsup --config ./tsup.config.tests.ts",
     "build-examples": "node ./scripts/build-examples.mjs",
+    "clean-build": "rimraf ./dist && rimraf ./tests/dist && rimraf ./docs/public/examples",
     "docs-build": "vitepress build docs",
     "docs-dev": "npm run build && vitepress dev docs",
     "docs-serve": "vitepress serve docs",
-    "del-dist": "rimraf ./dist && rimraf ./tests/dist && rimraf ./docs/public/examples",
     "format": "prettier --write --no-error-on-unmatched-pattern \"./**/*\"",
     "format-check": "prettier --check --no-error-on-unmatched-pattern \"./**/*\"",
     "size": "for file in ./dist/*.{js,cjs}; do echo $file && gzip-size $file --include-original; done;",
