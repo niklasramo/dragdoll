@@ -7,13 +7,13 @@ import {
 } from '../../src';
 
 const element = document.querySelector('.draggable') as HTMLElement;
-const container = document.querySelector('.drag-container') as HTMLElement;
+const dragContainer = document.querySelector('.drag-container') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
 const keyboardSensor = new KeyboardMotionSensor(element, {
   computeSpeed: () => 100,
 });
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
-  container,
+  container: dragContainer,
   getElements: () => [element],
   getFrozenProps: () => ['left', 'top'],
   startPredicate: createPointerSensorStartPredicate(),

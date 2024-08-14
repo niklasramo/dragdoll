@@ -1,28 +1,7 @@
 import { getStyle } from './get-style.js';
+import { parseTransformOrigin } from './parse-transform-origin.js';
 
-const ELEMENT_MATRIX = new DOMMatrix();
-const ORIGIN_MATRIX = new DOMMatrix();
-
-function parseTransformOrigin(transformOrigin: string): { x: number; y: number; z: number } {
-  const values = transformOrigin.split(' ');
-  let originX = '';
-  let originY = '';
-  let originZ = '';
-
-  if (values.length === 1) {
-    originX = originY = values[0];
-  } else if (values.length === 2) {
-    [originX, originY] = values;
-  } else {
-    [originX, originY, originZ] = values;
-  }
-
-  return {
-    x: parseFloat(originX) || 0,
-    y: parseFloat(originY) || 0,
-    z: parseFloat(originZ) || 0,
-  };
-}
+const MATRIX = new DOMMatrix();
 
 export function getWorldTransformMatrix(
   el: HTMLElement | SVGSVGElement,
@@ -36,14 +15,19 @@ export function getWorldTransformMatrix(
   while (currentElement) {
     const { transform, transformOrigin } = getStyle(currentElement);
     if (transform && transform !== 'none') {
-      ELEMENT_MATRIX.setMatrixValue(transform);
-      if (!ELEMENT_MATRIX.isIdentity) {
-        result.preMultiplySelf(ELEMENT_MATRIX);
+      MATRIX.setMatrixValue(transform);
+      if (!MATRIX.isIdentity) {
         const { x, y, z } = parseTransformOrigin(transformOrigin);
-        ORIGIN_MATRIX.setMatrixValue('').translateSelf(x, y, z);
-        if (!ORIGIN_MATRIX.isIdentity) {
-          result.preMultiplySelf(ORIGIN_MATRIX);
+        if (z === 0) {
+          MATRIX.setMatrixValue(
+            `translate(${x}px, ${y}px) ${MATRIX} translate(${x * -1}px, ${y * -1}px)`,
+          );
+        } else {
+          MATRIX.setMatrixValue(
+            `translate3d(${x}px, ${y}px, ${z}px) ${MATRIX} translate3d(${x * -1}px, ${y * -1}px, ${z * -1}px)`,
+          );
         }
+        result.preMultiplySelf(MATRIX);
       }
     }
     currentElement = currentElement.parentElement;

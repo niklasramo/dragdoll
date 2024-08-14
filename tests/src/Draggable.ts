@@ -128,8 +128,8 @@ describe('Draggable', () => {
         // Make sure the element has been moved within the container.
         assert.ok(container.contains(el));
 
-        // Make sure the element's current parent is the drag inner container.
-        assert.equal(el.parentElement, draggable.drag?.items[0].dragInnerContainer);
+        // Make sure the element's current parent is the container.
+        assert.equal(el.parentElement, container);
 
         // End the drag.
         document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -191,18 +191,10 @@ describe('Draggable', () => {
             // Make sure the element has been moved within the container.
             assert.ok(container.contains(el), '3: ' + assertMsg);
 
-            // Make sure the element's current parent is the drag inner
-            // container.
-            assert.equal(
-              el.parentElement,
-              draggable.drag?.items[0].dragInnerContainer,
-              '4: ' + assertMsg,
-            );
-
             // Make sure the element's client position has not changed.
             let rect = el.getBoundingClientRect();
-            assert.equal(rect.x, elRect.x, '5: ' + assertMsg);
-            assert.equal(rect.y, elRect.y, '6: ' + assertMsg);
+            assert.equal(rect.x, elRect.x, '4: ' + assertMsg);
+            assert.equal(rect.y, elRect.y, '5: ' + assertMsg);
 
             // Move the element to the right.
             document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
@@ -211,8 +203,8 @@ describe('Draggable', () => {
 
             // Make sure the element has moved.
             rect = el.getBoundingClientRect();
-            assert.equal(rect.x, elRect.x + 1, '7: ' + assertMsg);
-            assert.equal(rect.y, elRect.y, '8: ' + assertMsg);
+            assert.equal(rect.x, elRect.x + 1, '6: ' + assertMsg);
+            assert.equal(rect.y, elRect.y, '7: ' + assertMsg);
 
             // End the drag.
             document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));

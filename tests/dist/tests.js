@@ -3736,13 +3736,11 @@ var BaseSensor = class {
 // src/singletons/ticker.ts
 import { AutoTicker } from "tikki";
 var tickerPhases = {
-  preRead: Symbol(),
-  preWrite: Symbol(),
   read: Symbol(),
   write: Symbol()
 };
 var ticker = new AutoTicker({
-  phases: [tickerPhases.preRead, tickerPhases.preWrite, tickerPhases.read, tickerPhases.write]
+  phases: [tickerPhases.read, tickerPhases.write]
 });
 
 // src/sensors/pointer-sensor.ts
@@ -4377,9 +4375,7 @@ function getOffsetDiff(elemA, elemB, result = { x: 0, y: 0 }) {
   return result;
 }
 
-// src/utils/get-world-transform-matrix.ts
-var ELEMENT_MATRIX = new DOMMatrix();
-var ORIGIN_MATRIX = new DOMMatrix();
+// src/utils/parse-transform-origin.ts
 function parseTransformOrigin(transformOrigin) {
   const values = transformOrigin.split(" ");
   let originX = "";
@@ -4398,20 +4394,28 @@ function parseTransformOrigin(transformOrigin) {
     z: parseFloat(originZ) || 0
   };
 }
+
+// src/utils/get-world-transform-matrix.ts
+var MATRIX = new DOMMatrix();
 function getWorldTransformMatrix(el, result = new DOMMatrix()) {
   let currentElement = el;
   result.setMatrixValue("");
   while (currentElement) {
     const { transform, transformOrigin } = getStyle(currentElement);
     if (transform && transform !== "none") {
-      ELEMENT_MATRIX.setMatrixValue(transform);
-      if (!ELEMENT_MATRIX.isIdentity) {
-        result.preMultiplySelf(ELEMENT_MATRIX);
+      MATRIX.setMatrixValue(transform);
+      if (!MATRIX.isIdentity) {
         const { x, y, z } = parseTransformOrigin(transformOrigin);
-        ORIGIN_MATRIX.setMatrixValue("").translateSelf(x, y, z);
-        if (!ORIGIN_MATRIX.isIdentity) {
-          result.preMultiplySelf(ORIGIN_MATRIX);
+        if (z === 0) {
+          MATRIX.setMatrixValue(
+            `translate(${x}px, ${y}px) ${MATRIX} translate(${x * -1}px, ${y * -1}px)`
+          );
+        } else {
+          MATRIX.setMatrixValue(
+            `translate3d(${x}px, ${y}px, ${z}px) ${MATRIX} translate3d(${x * -1}px, ${y * -1}px, ${z * -1}px)`
+          );
         }
+        result.preMultiplySelf(MATRIX);
       }
     }
     currentElement = currentElement.parentElement;
@@ -4484,12 +4488,13 @@ var DraggableDragItem = class {
     const clientRect = element.getBoundingClientRect();
     this.data = {};
     this.element = element;
-    this.dragInnerContainer = null;
-    this.elementMatrix = new DOMMatrix();
+    this.elementTransformOrigin = parseTransformOrigin(style.transformOrigin);
+    this.elementTransformMatrix = new DOMMatrix().setMatrixValue(style.transform);
     this.frozenProps = null;
     this.unfrozenProps = null;
     this.position = { x: 0, y: 0 };
     this.containerOffset = { x: 0, y: 0 };
+    this.startOffset = { x: 0, y: 0 };
     this._moveDiff = { x: 0, y: 0 };
     this._alignDiff = { x: 0, y: 0 };
     this._measureElements = drag["_measureElements"];
@@ -4518,8 +4523,7 @@ var DraggableDragItem = class {
       const { width, height, x: x2, y: y2 } = clientRect;
       this.clientRect = { width, height, x: x2, y: y2 };
     }
-    this.elementMatrix.setMatrixValue(style.transform);
-    this.updateContainerMatrices();
+    this._computeContainerMatrices();
     this.updateContainerOffset();
     const { x, y } = draggable.settings.getStartPosition({
       draggable,
@@ -4558,29 +4562,7 @@ var DraggableDragItem = class {
       this.unfrozenProps = unfrozenProps;
     }
   }
-  _applyContainerOffset() {
-    if (this.dragInnerContainer) {
-      const { x, y } = this.containerOffset;
-      const containerMatrix = this.getContainerMatrix()[0];
-      const inverseDragContainerMatrix = this.getDragContainerMatrix()[1];
-      this.dragInnerContainer.style.setProperty(
-        "transform",
-        `${inverseDragContainerMatrix} translate(${x}px, ${y}px) ${containerMatrix}`,
-        "important"
-      );
-    }
-  }
-  getContainerMatrix() {
-    return this._matrixCache.get(this.elementContainer);
-  }
-  getDragContainerMatrix() {
-    return this._matrixCache.get(this.dragContainer);
-  }
-  updateContainerMatrices(force = false) {
-    if (force) {
-      this._matrixCache.invalidate(this.elementContainer);
-      this._matrixCache.invalidate(this.dragContainer);
-    }
+  _computeContainerMatrices() {
     [this.elementContainer, this.dragContainer].forEach((container) => {
       if (!this._matrixCache.isValid(container)) {
         const matrices = this._matrixCache.get(container) || [new DOMMatrix(), new DOMMatrix()];
@@ -4590,6 +4572,12 @@ var DraggableDragItem = class {
         this._matrixCache.set(container, matrices);
       }
     });
+  }
+  getContainerMatrix() {
+    return this._matrixCache.get(this.elementContainer);
+  }
+  getDragContainerMatrix() {
+    return this._matrixCache.get(this.dragContainer);
   }
   updateContainerOffset(force = false) {
     const {
@@ -4663,6 +4651,21 @@ function appendElement(element, container, innerContainer) {
   }
 }
 
+// src/utils/round-number.ts
+function roundNumber(value, decimals = 0) {
+  const multiplier = Math.pow(10, decimals);
+  return Math.round((value + Number.EPSILON) * multiplier) / multiplier;
+}
+
+// src/utils/are-matrices-equal.ts
+function areMatricesEqual(m1, m2) {
+  if (m1.isIdentity && m2.isIdentity) return true;
+  if (m1.is2D && m2.is2D) {
+    return m1.a === m2.a && m1.b === m2.b && m1.c === m2.c && m1.d === m2.d && m1.e === m2.e && m1.f === m2.f;
+  }
+  return m1.m11 === m2.m11 && m1.m12 === m2.m12 && m1.m13 === m2.m13 && m1.m14 === m2.m14 && m1.m21 === m2.m21 && m1.m22 === m2.m22 && m1.m23 === m2.m23 && m1.m24 === m2.m24 && m1.m31 === m2.m31 && m1.m32 === m2.m32 && m1.m33 === m2.m33 && m1.m34 === m2.m34 && m1.m41 === m2.m41 && m1.m42 === m2.m42 && m1.m43 === m2.m43 && m1.m44 === m2.m44;
+}
+
 // src/draggable/draggable.ts
 var SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
 var POSITION_CHANGE = { x: 0, y: 0 };
@@ -4677,11 +4680,51 @@ function getDefaultSettings() {
     getStartPosition: () => {
       return { x: 0, y: 0 };
     },
-    setPosition: ({ item, x, y }) => {
+    // TODO: This will create quite large matrix strings and is potentially
+    // called a lot. We should probably avoid using `setMatrixValue` and instead
+    // use the other `DOMMatrix` methods directly manipulating the matrix.
+    // Benchmark before changing.
+    setPosition: ({ item, x, y, phase }) => {
+      const isEndPhase = phase === "end";
       const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
-      DOM_MATRIX.setMatrixValue(
-        `${inverseContainerMatrix} translate(${x}px, ${y}px) ${containerMatrix} ${item.elementMatrix}`
-      );
+      const [_dragContainerMatrix, inverseDragContainerMatrix] = item.getDragContainerMatrix();
+      const { startOffset, containerOffset, elementTransformMatrix, elementTransformOrigin } = item;
+      const { x: oX, y: oY, z: oZ } = elementTransformOrigin;
+      const hasTransformOrigin = oX !== 0 || oY !== 0 || oZ !== 0;
+      const tX = isEndPhase ? x : containerOffset.x + (x - startOffset.x);
+      const tY = isEndPhase ? y : containerOffset.y + (y - startOffset.y);
+      let matrixValue = "";
+      if (hasTransformOrigin) {
+        if (oZ === 0) {
+          matrixValue += `translate(${oX * -1}px, ${oY * -1}px) `;
+        } else {
+          matrixValue += `translate3d(${oX * -1}px, ${oY * -1}px, ${oZ * -1}px) `;
+        }
+      }
+      if (isEndPhase) {
+        if (!inverseContainerMatrix.isIdentity) {
+          matrixValue += `${inverseContainerMatrix} `;
+        }
+      } else {
+        if (!inverseDragContainerMatrix.isIdentity) {
+          matrixValue += `${inverseDragContainerMatrix} `;
+        }
+      }
+      matrixValue += `translate(${tX}px, ${tY}px) `;
+      if (!containerMatrix.isIdentity) {
+        matrixValue += `${containerMatrix} `;
+      }
+      if (hasTransformOrigin) {
+        if (oZ === 0) {
+          matrixValue += `translate(${oX}px, ${oY}px) `;
+        } else {
+          matrixValue += `translate3d(${oX}px, ${oY}px, ${oZ}px) `;
+        }
+      }
+      if (!elementTransformMatrix.isIdentity) {
+        matrixValue += `${elementTransformMatrix} `;
+      }
+      DOM_MATRIX.setMatrixValue(matrixValue.trim());
       item.element.style.transform = `${DOM_MATRIX}`;
     },
     getPositionChange: ({ event, prevEvent }) => {
@@ -4713,8 +4756,6 @@ var Draggable = class {
     this._applyMove = this._applyMove.bind(this);
     this._prepareAlign = this._prepareAlign.bind(this);
     this._applyAlign = this._applyAlign.bind(this);
-    this._computeOffsets = this._computeOffsets.bind(this);
-    this._applyOffsets = this._applyOffsets.bind(this);
     this.sensors.forEach((sensor) => {
       this._sensorData.set(sensor, {
         predicateState: 0 /* PENDING */,
@@ -4820,9 +4861,7 @@ var Draggable = class {
     if (!drag) return;
     for (const item of drag.items) {
       if (item.dragContainer !== item.elementContainer) {
-        item.dragInnerContainer = createWrapperElement();
-        item["_applyContainerOffset"]();
-        appendElement(item.element, item.dragContainer, item.dragInnerContainer);
+        appendElement(item.element, item.dragContainer);
       }
       if (item.frozenProps) {
         Object.assign(item.element.style, item.frozenProps);
@@ -4835,6 +4874,30 @@ var Draggable = class {
         x: item.position.x,
         y: item.position.y
       });
+    }
+    for (const item of drag.items) {
+      const containerMatrix = item.getContainerMatrix()[0];
+      const dragContainerMatrix = item.getDragContainerMatrix()[0];
+      if (areMatricesEqual(containerMatrix, dragContainerMatrix)) {
+        continue;
+      }
+      const rect = item.element.getBoundingClientRect();
+      const { startOffset } = item;
+      startOffset.x = roundNumber(rect.x - item.clientRect.x, 3);
+      startOffset.y = roundNumber(rect.y - item.clientRect.y, 3);
+    }
+    for (const item of drag.items) {
+      const { startOffset } = item;
+      if (startOffset.x !== 0 || startOffset.y !== 0) {
+        this.settings.setPosition({
+          phase: "start-align",
+          draggable: this,
+          sensor: drag.sensor,
+          item,
+          x: item.position.x,
+          y: item.position.y
+        });
+      }
     }
     window.addEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS);
     this._startPhase = 3 /* FINISH_APPLY */;
@@ -4885,37 +4948,6 @@ var Draggable = class {
     }
     if (drag.event) {
       this._emit("move", drag.event);
-    }
-  }
-  _computeOffsets(updateMatrices = false) {
-    const { drag } = this;
-    if (!drag) return;
-    if (updateMatrices) {
-      drag["_matrixCache"].invalidate();
-    }
-    drag["_clientOffsetCache"].invalidate();
-    for (const item of drag.items) {
-      if (updateMatrices) {
-        item.updateContainerMatrices();
-      }
-      item.updateContainerOffset();
-    }
-  }
-  _applyOffsets(updateMatrices = false) {
-    const { drag } = this;
-    if (!drag) return;
-    for (const item of drag.items) {
-      item["_applyContainerOffset"]();
-      if (updateMatrices) {
-        this.settings.setPosition({
-          phase: "pre-align",
-          draggable: this,
-          sensor: drag.sensor,
-          item,
-          x: item.position.x - item["_alignDiff"].x - item["_moveDiff"].x,
-          y: item.position.y - item["_alignDiff"].y - item["_moveDiff"].y
-        });
-      }
     }
   }
   _prepareAlign() {
@@ -4992,20 +5024,26 @@ var Draggable = class {
     ticker.off(tickerPhases.write, this._startId);
     ticker.off(tickerPhases.read, this._moveId);
     ticker.off(tickerPhases.write, this._moveId);
-    ticker.off(tickerPhases.preRead, this._alignId);
-    ticker.off(tickerPhases.preWrite, this._alignId);
     ticker.off(tickerPhases.read, this._alignId);
     ticker.off(tickerPhases.write, this._alignId);
     window.removeEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS);
-    drag["_measureElements"].forEach((el) => el.remove());
+    drag["_clientOffsetCache"].clear();
+    for (const item of drag.items) {
+      if (item.elementContainer !== item.dragContainer) {
+        const { x: startX, y: startY } = item.containerOffset;
+        item.updateContainerOffset();
+        const { x: endX, y: endY } = item.containerOffset;
+        item.position.x += (endX - startX) * -1;
+        item.position.y += (endY - startY) * -1;
+        item.containerOffset.x = 0;
+        item.containerOffset.y = 0;
+      }
+    }
     const elements = [];
     for (const item of drag.items) {
       elements.push(item.element);
       if (item.elementContainer !== item.dragContainer) {
         appendElement(item.element, item.elementContainer);
-        if (item.dragInnerContainer) {
-          item.dragInnerContainer.remove();
-        }
       }
       if (item.unfrozenProps) {
         for (const key in item.unfrozenProps) {
@@ -5028,22 +5066,16 @@ var Draggable = class {
         elements
       });
     }
+    drag["_measureElements"].forEach((el) => el.remove());
     this._emit("end", drag.endEvent);
     this.drag = null;
   }
-  align({
-    instant = false,
-    updateMatrices = false
-  } = {}) {
+  align(instant = false) {
     if (!this.drag) return;
     if (instant) {
-      this._computeOffsets(updateMatrices);
-      this._applyOffsets(updateMatrices);
       this._prepareAlign();
       this._applyAlign();
     } else {
-      ticker.once(tickerPhases.preRead, () => this._computeOffsets(updateMatrices), this._alignId);
-      ticker.once(tickerPhases.preWrite, () => this._applyOffsets(updateMatrices), this._alignId);
       ticker.once(tickerPhases.read, this._prepareAlign, this._alignId);
       ticker.once(tickerPhases.write, this._applyAlign, this._alignId);
     }
@@ -6593,7 +6625,7 @@ describe("Draggable", () => {
         await wait(100);
         assert.notEqual(draggable.drag, null);
         assert.ok(container.contains(el));
-        assert.equal(el.parentElement, draggable.drag?.items[0].dragInnerContainer);
+        assert.equal(el.parentElement, container);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
         await wait(100);
         assert.equal(draggable.drag, null);
@@ -6637,19 +6669,14 @@ describe("Draggable", () => {
             document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
             await wait(100);
             assert.ok(container.contains(el), "3: " + assertMsg);
-            assert.equal(
-              el.parentElement,
-              draggable.drag?.items[0].dragInnerContainer,
-              "4: " + assertMsg
-            );
             let rect = el.getBoundingClientRect();
-            assert.equal(rect.x, elRect.x, "5: " + assertMsg);
-            assert.equal(rect.y, elRect.y, "6: " + assertMsg);
+            assert.equal(rect.x, elRect.x, "4: " + assertMsg);
+            assert.equal(rect.y, elRect.y, "5: " + assertMsg);
             document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
             await wait(100);
             rect = el.getBoundingClientRect();
-            assert.equal(rect.x, elRect.x + 1, "7: " + assertMsg);
-            assert.equal(rect.y, elRect.y, "8: " + assertMsg);
+            assert.equal(rect.x, elRect.x + 1, "6: " + assertMsg);
+            assert.equal(rect.y, elRect.y, "7: " + assertMsg);
             document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
             await wait(100);
             rect = el.getBoundingClientRect();

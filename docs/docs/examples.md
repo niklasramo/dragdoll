@@ -162,13 +162,13 @@ import {
 } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
-const container = document.querySelector('.drag-container') as HTMLElement;
+const dragContainer = document.querySelector('.drag-container') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
 const keyboardSensor = new KeyboardMotionSensor(element, {
   computeSpeed: () => 100,
 });
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
-  container,
+  container: dragContainer,
   getElements: () => [element],
   getFrozenProps: () => ['left', 'top'],
   startPredicate: createPointerSensorStartPredicate(),
@@ -208,7 +208,9 @@ draggable.on('end', () => {
   </head>
   <body>
     <div class="drag-container"></div>
-    <div class="card draggable" tabindex="0"></div>
+    <div class="card-container">
+      <div class="card draggable" tabindex="0"></div>
+    </div>
     <script type="module" src="index.ts"></script>
   </body>
 </html>
@@ -223,6 +225,17 @@ body {
   position: fixed;
   left: 10px;
   top: 10px;
+  width: 0px;
+  height: 0px;
+  transform: scale(0.3) skew(10deg, 10deg);
+  transform-origin: 17px 37px;
+}
+
+.card-container {
+  position: absolute;
+  inset: 0;
+  transform: scale(0.5);
+  transform-origin: 50% 50%;
 }
 
 .draggable {
@@ -230,6 +243,7 @@ body {
   left: 50%;
   top: 50%;
   transform: translateX(-50%) translateY(-50%);
+  transform-origin: 10px 20px;
 }
 ```
 

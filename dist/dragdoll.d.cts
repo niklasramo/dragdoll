@@ -320,24 +320,28 @@ declare class DraggableDragItem<S extends Sensor[] = Sensor[], E extends S[numbe
     readonly elementContainer: HTMLElement;
     readonly elementOffsetContainer: HTMLElement | SVGSVGElement | Window | Document;
     readonly dragContainer: HTMLElement;
-    readonly dragInnerContainer: HTMLElement | null;
     readonly dragOffsetContainer: HTMLElement | SVGSVGElement | Window | Document;
-    readonly elementMatrix: DOMMatrix;
+    readonly elementTransformOrigin: {
+        x: number;
+        y: number;
+        z: number;
+    };
+    readonly elementTransformMatrix: DOMMatrix;
     readonly frozenProps: CSSProperties | null;
     readonly unfrozenProps: CSSProperties | null;
     readonly clientRect: Rect;
     readonly position: Point;
     readonly containerOffset: Point;
+    readonly startOffset: Point;
     protected _moveDiff: Point;
     protected _alignDiff: Point;
     protected _measureElements: Map<HTMLElement, HTMLElement>;
     protected _matrixCache: ObjectCache<HTMLElement | SVGSVGElement, [DOMMatrix, DOMMatrix]>;
     protected _clientOffsetCache: ObjectCache<HTMLElement | SVGSVGElement | Window | Document, Point>;
     constructor(element: HTMLElement | SVGSVGElement, draggable: Draggable<S, E>);
-    protected _applyContainerOffset(): void;
+    protected _computeContainerMatrices(): void;
     getContainerMatrix(): [DOMMatrix, DOMMatrix];
     getDragContainerMatrix(): [DOMMatrix, DOMMatrix];
-    updateContainerMatrices(force?: boolean): void;
     updateContainerOffset(force?: boolean): void;
     updateSize(dimensions?: {
         width: number;
@@ -402,7 +406,7 @@ interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
     setPosition: (data: {
         draggable: Draggable<S, E>;
         sensor: S[number];
-        phase: 'start' | 'move' | 'end' | 'pre-align' | 'align';
+        phase: 'start' | 'move' | 'end' | 'align' | 'start-align';
         item: DraggableDragItem<S, E>;
         x: number;
         y: number;
@@ -458,8 +462,6 @@ declare class Draggable<S extends Sensor[] = Sensor[], E extends S[number]['even
     protected _applyStart(): void;
     protected _prepareMove(): void;
     protected _applyMove(): void;
-    protected _computeOffsets(updateMatrices?: boolean): void;
-    protected _applyOffsets(updateMatrices?: boolean): void;
     protected _prepareAlign(): void;
     protected _applyAlign(): void;
     on<T extends keyof DraggableEventCallbacks<E>>(type: T, listener: DraggableEventCallbacks<E>[T], listenerId?: EventListenerId): EventListenerId;
@@ -467,10 +469,7 @@ declare class Draggable<S extends Sensor[] = Sensor[], E extends S[number]['even
     resolveStartPredicate(sensor: S[number], e?: E['start'] | E['move']): void;
     rejectStartPredicate(sensor: S[number]): void;
     stop(): void;
-    align({ instant, updateMatrices, }?: {
-        instant?: boolean;
-        updateMatrices?: boolean;
-    }): void;
+    align(instant?: boolean): void;
     updateSettings(options?: Partial<this['settings']>): void;
     use<SS extends S, EE extends SS[number]['events'], PP extends P>(plugin: (draggable: this) => Draggable<SS, EE, PP>): Draggable<SS, EE, PP>;
     destroy(): void;
@@ -689,8 +688,6 @@ declare function autoScrollPlugin<S extends Sensor[], E extends S[number]['event
 declare const autoScroll: AutoScroll;
 
 declare const tickerPhases: {
-    preRead: symbol;
-    preWrite: symbol;
     read: symbol;
     write: symbol;
 };

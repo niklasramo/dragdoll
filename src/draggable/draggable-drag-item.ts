@@ -16,6 +16,8 @@ import { createWrapperElement } from 'utils/create-wrapper-element.js';
 
 import { isMatrixWarped } from 'utils/is-matrix-warped.js';
 
+import { parseTransformOrigin } from 'utils/parse-transform-origin.js';
+
 import type { Draggable } from './draggable.js';
 
 import type { ObjectCache } from 'utils/object-cache.js';
@@ -29,14 +31,15 @@ export class DraggableDragItem<
   readonly elementContainer: HTMLElement;
   readonly elementOffsetContainer: HTMLElement | SVGSVGElement | Window | Document;
   readonly dragContainer: HTMLElement;
-  readonly dragInnerContainer: HTMLElement | null;
   readonly dragOffsetContainer: HTMLElement | SVGSVGElement | Window | Document;
-  readonly elementMatrix: DOMMatrix;
+  readonly elementTransformOrigin: { x: number; y: number; z: number };
+  readonly elementTransformMatrix: DOMMatrix;
   readonly frozenProps: CSSProperties | null;
   readonly unfrozenProps: CSSProperties | null;
   readonly clientRect: Rect;
   readonly position: Point;
   readonly containerOffset: Point;
+  readonly startOffset: Point;
   protected _moveDiff: Point;
   protected _alignDiff: Point;
   protected _measureElements: Map<HTMLElement, HTMLElement>;
@@ -61,12 +64,13 @@ export class DraggableDragItem<
 
     this.data = {};
     this.element = element;
-    this.dragInnerContainer = null;
-    this.elementMatrix = new DOMMatrix();
+    this.elementTransformOrigin = parseTransformOrigin(style.transformOrigin);
+    this.elementTransformMatrix = new DOMMatrix().setMatrixValue(style.transform);
     this.frozenProps = null;
     this.unfrozenProps = null;
     this.position = { x: 0, y: 0 };
     this.containerOffset = { x: 0, y: 0 };
+    this.startOffset = { x: 0, y: 0 };
     this._moveDiff = { x: 0, y: 0 };
     this._alignDiff = { x: 0, y: 0 };
     this._measureElements = drag['_measureElements'];
@@ -112,9 +116,8 @@ export class DraggableDragItem<
       this.clientRect = { width, height, x, y };
     }
 
-    // Compute matrices and initial container diff.
-    this.elementMatrix.setMatrixValue(style.transform);
-    this.updateContainerMatrices();
+    // Compute container matrices and offset.
+    this._computeContainerMatrices();
     this.updateContainerOffset();
 
     // Get element's initial position. This position is relative to the
@@ -166,33 +169,7 @@ export class DraggableDragItem<
     }
   }
 
-  protected _applyContainerOffset() {
-    if (this.dragInnerContainer) {
-      const { x, y } = this.containerOffset;
-      const containerMatrix = this.getContainerMatrix()[0];
-      const inverseDragContainerMatrix = this.getDragContainerMatrix()[1];
-      this.dragInnerContainer.style.setProperty(
-        'transform',
-        `${inverseDragContainerMatrix} translate(${x}px, ${y}px) ${containerMatrix}`,
-        'important',
-      );
-    }
-  }
-
-  getContainerMatrix() {
-    return this._matrixCache.get(this.elementContainer)!;
-  }
-
-  getDragContainerMatrix() {
-    return this._matrixCache.get(this.dragContainer)!;
-  }
-
-  updateContainerMatrices(force = false) {
-    if (force) {
-      this._matrixCache.invalidate(this.elementContainer);
-      this._matrixCache.invalidate(this.dragContainer);
-    }
-
+  protected _computeContainerMatrices() {
     [this.elementContainer, this.dragContainer].forEach((container) => {
       if (!this._matrixCache.isValid(container)) {
         const matrices = this._matrixCache.get(container) || [new DOMMatrix(), new DOMMatrix()];
@@ -202,6 +179,14 @@ export class DraggableDragItem<
         this._matrixCache.set(container, matrices);
       }
     });
+  }
+
+  getContainerMatrix() {
+    return this._matrixCache.get(this.elementContainer)!;
+  }
+
+  getDragContainerMatrix() {
+    return this._matrixCache.get(this.dragContainer)!;
   }
 
   updateContainerOffset(force = false) {
