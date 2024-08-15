@@ -5135,6 +5135,7 @@
   var SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
   var POSITION_CHANGE = { x: 0, y: 0 };
   var DOM_MATRIX = new DOMMatrix();
+  var TEMP_MATRIX = new DOMMatrix();
   function getDefaultSettings() {
     return {
       container: null,
@@ -5145,51 +5146,44 @@
       getStartPosition: () => {
         return { x: 0, y: 0 };
       },
-      // TODO: This will create quite large matrix strings and is potentially
-      // called a lot. We should probably avoid using `setMatrixValue` and instead
-      // use the other `DOMMatrix` methods directly manipulating the matrix.
-      // Benchmark before changing.
       setPosition: ({ item, x, y, phase }) => {
         const isEndPhase = phase === "end";
         const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
         const [_dragContainerMatrix, inverseDragContainerMatrix] = item.getDragContainerMatrix();
         const { startOffset, containerOffset, elementTransformMatrix, elementTransformOrigin } = item;
         const { x: oX, y: oY, z: oZ } = elementTransformOrigin;
-        const hasTransformOrigin = oX !== 0 || oY !== 0 || oZ !== 0;
+        const needsOriginOffset = !elementTransformMatrix.isIdentity && (oX !== 0 || oY !== 0 || oZ !== 0);
         const tX = isEndPhase ? x : containerOffset.x + (x - startOffset.x);
         const tY = isEndPhase ? y : containerOffset.y + (y - startOffset.y);
-        let matrixValue = "";
-        if (hasTransformOrigin) {
+        DOM_MATRIX.setMatrixValue("");
+        if (needsOriginOffset) {
           if (oZ === 0) {
-            matrixValue += `translate(${oX * -1}px, ${oY * -1}px) `;
+            DOM_MATRIX.translateSelf(oX * -1, oY * -1);
           } else {
-            matrixValue += `translate3d(${oX * -1}px, ${oY * -1}px, ${oZ * -1}px) `;
+            DOM_MATRIX.translateSelf(oX * -1, oY * -1, oZ * -1);
           }
         }
         if (isEndPhase) {
           if (!inverseContainerMatrix.isIdentity) {
-            matrixValue += `${inverseContainerMatrix} `;
+            DOM_MATRIX.multiplySelf(inverseContainerMatrix);
           }
         } else {
           if (!inverseDragContainerMatrix.isIdentity) {
-            matrixValue += `${inverseDragContainerMatrix} `;
+            DOM_MATRIX.multiplySelf(inverseDragContainerMatrix);
           }
         }
-        matrixValue += `translate(${tX}px, ${tY}px) `;
+        TEMP_MATRIX.setMatrixValue("").translateSelf(tX, tY);
+        DOM_MATRIX.multiplySelf(TEMP_MATRIX);
         if (!containerMatrix.isIdentity) {
-          matrixValue += `${containerMatrix} `;
+          DOM_MATRIX.multiplySelf(containerMatrix);
         }
-        if (hasTransformOrigin) {
-          if (oZ === 0) {
-            matrixValue += `translate(${oX}px, ${oY}px) `;
-          } else {
-            matrixValue += `translate3d(${oX}px, ${oY}px, ${oZ}px) `;
-          }
+        if (needsOriginOffset) {
+          TEMP_MATRIX.setMatrixValue("").translateSelf(oX, oY, oZ);
+          DOM_MATRIX.multiplySelf(TEMP_MATRIX);
         }
         if (!elementTransformMatrix.isIdentity) {
-          matrixValue += `${elementTransformMatrix} `;
+          DOM_MATRIX.multiplySelf(elementTransformMatrix);
         }
-        DOM_MATRIX.setMatrixValue(matrixValue.trim());
         item.element.style.transform = `${DOM_MATRIX}`;
       },
       getPositionChange: ({ event, prevEvent }) => {

@@ -23,6 +23,8 @@ const POSITION_CHANGE = { x: 0, y: 0 };
 
 const DOM_MATRIX = new DOMMatrix();
 
+const TEMP_MATRIX = new DOMMatrix();
+
 enum DragStartPhase {
   NONE = 0,
   INIT = 1,
@@ -49,27 +51,26 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
     getStartPosition: () => {
       return { x: 0, y: 0 };
     },
-    // TODO: This will create quite large matrix strings and is potentially
-    // called a lot. We should probably avoid using `setMatrixValue` and instead
-    // use the other `DOMMatrix` methods directly manipulating the matrix.
-    // Benchmark before changing.
     setPosition: ({ item, x, y, phase }) => {
       const isEndPhase = phase === 'end';
       const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
       const [_dragContainerMatrix, inverseDragContainerMatrix] = item.getDragContainerMatrix();
       const { startOffset, containerOffset, elementTransformMatrix, elementTransformOrigin } = item;
       const { x: oX, y: oY, z: oZ } = elementTransformOrigin;
-      const hasTransformOrigin = oX !== 0 || oY !== 0 || oZ !== 0;
+      const needsOriginOffset =
+        !elementTransformMatrix.isIdentity && (oX !== 0 || oY !== 0 || oZ !== 0);
       const tX = isEndPhase ? x : containerOffset.x + (x - startOffset.x);
       const tY = isEndPhase ? y : containerOffset.y + (y - startOffset.y);
-      let matrixValue = '';
+
+      // Reset the matrix to identity.
+      DOM_MATRIX.setMatrixValue('');
 
       // First of all negate the element's transform origin.
-      if (hasTransformOrigin) {
+      if (needsOriginOffset) {
         if (oZ === 0) {
-          matrixValue += `translate(${oX * -1}px, ${oY * -1}px) `;
+          DOM_MATRIX.translateSelf(oX * -1, oY * -1);
         } else {
-          matrixValue += `translate3d(${oX * -1}px, ${oY * -1}px, ${oZ * -1}px) `;
+          DOM_MATRIX.translateSelf(oX * -1, oY * -1, oZ * -1);
         }
       }
 
@@ -80,40 +81,35 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
       // appended to the drag container (if defined).
       if (isEndPhase) {
         if (!inverseContainerMatrix.isIdentity) {
-          matrixValue += `${inverseContainerMatrix} `;
+          DOM_MATRIX.multiplySelf(inverseContainerMatrix);
         }
       } else {
         if (!inverseDragContainerMatrix.isIdentity) {
-          matrixValue += `${inverseDragContainerMatrix} `;
+          DOM_MATRIX.multiplySelf(inverseDragContainerMatrix);
         }
       }
 
       // Apply the translation (in world space coordinates).
-      matrixValue += `translate(${tX}px, ${tY}px) `;
+      TEMP_MATRIX.setMatrixValue('').translateSelf(tX, tY);
+      DOM_MATRIX.multiplySelf(TEMP_MATRIX);
 
       // Apply the element's original container's world matrix so we can apply
       // the element's original transform as if it was in the original
       // container's local space coordinates.
       if (!containerMatrix.isIdentity) {
-        matrixValue += `${containerMatrix} `;
+        DOM_MATRIX.multiplySelf(containerMatrix);
       }
 
-      // Undo the tranform origin negation.
-      if (hasTransformOrigin) {
-        if (oZ === 0) {
-          matrixValue += `translate(${oX}px, ${oY}px) `;
-        } else {
-          matrixValue += `translate3d(${oX}px, ${oY}px, ${oZ}px) `;
-        }
+      // Undo the transform origin negation.
+      if (needsOriginOffset) {
+        TEMP_MATRIX.setMatrixValue('').translateSelf(oX, oY, oZ);
+        DOM_MATRIX.multiplySelf(TEMP_MATRIX);
       }
 
       // Apply the element's original transform.
       if (!elementTransformMatrix.isIdentity) {
-        matrixValue += `${elementTransformMatrix} `;
+        DOM_MATRIX.multiplySelf(elementTransformMatrix);
       }
-
-      // Create the final matrix value.
-      DOM_MATRIX.setMatrixValue(matrixValue.trim());
 
       // Apply the matrix to the element.
       item.element.style.transform = `${DOM_MATRIX}`;
@@ -649,7 +645,7 @@ export class Draggable<
     // offset is computed once, but not updated during drag (because we don't
     // need to). But on drop we need to how much the offset diff has changed
     // from the start and then add the diff to the item's position, and finally
-    // reset the container offser. Let's do this procedure in a separate loop to
+    // reset the container offset. Let's do this procedure in a separate loop to
     // avoid layout thrashing.
     drag['_clientOffsetCache'].clear();
     for (const item of drag.items) {
