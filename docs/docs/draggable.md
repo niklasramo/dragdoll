@@ -281,23 +281,16 @@ Forcefully stops the draggable's current drag process.
 
 ```ts
 // Type
-type align = (options?: { instant?: boolean; updateMatrices?: boolean }) => void;
+type align = (instant?: boolean) => void;
 
 // Usage: update asynchronously on the next animation frame.
 draggable.align();
 
-// Usage: update instantly. May cause extra reflows (extra jank).
-draggable.align({ instant: true });
-
-// Update the containers' world transform matrices before aligning.
-draggbale.align({ updateMatrices: true });
+// Usage: update instantly. May cause extra reflows (jank).
+draggable.align(true);
 ```
 
-Recomputes the positions and offsets of all dragged elements. This should be called if a dragged element's position goes out of sync inadvertently. Draggable is smart enough to call this automatically when scrolling occurs during dragging, but if you manually change dimensions, positions or transforms of any element that affects the position/size/transform of a dragged element or it's containers you should call this manually.
-
-By default the synchronization happens asynchronously in the next frame, but you can force it to happen instantly by setting `instant` option to `true`. Note that there might be performance implications if you update instantly (in the form of extra reflows).
-
-The `updateMatrices` option, when `true`, updates the dragged items' container world transform matrices before aligning. This is useful if you have changed the element/drag container transforms (or any of their ancestors' transforms) and need to realign the dragged elements based on the new transforms. By default this option is `false`.
+Recomputes the positions of all dragged elements if they have drifted due to e.g. scrolling. This should be called if a dragged element's position goes out of sync inadvertently. Draggable is smart enough to call this automatically when scrolling occurs during dragging, but if you need to realign the elements manually you can call this method.
 
 ### updateSettings
 
