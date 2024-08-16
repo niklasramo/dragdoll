@@ -104,6 +104,14 @@ type containerOffset = { x: number; y: number };
 
 The offset between [`elementOffsetContainer`](#elementoffsetcontainer) and [`dragOffsetContainer`](#dragoffsetcontainer). The offset value is computed so that transforms are fully ignored. Read-only.
 
+### startOffset
+
+```ts
+type startOffset = { x: number; y: number };
+```
+
+If you have defined a [`container`](/docs/draggable#container) and the element's container has different skew/scale transform than the drag container we need to compute an additional offset during the start of the drag which we will need to apply in the [`setPosition`](/docs/draggable#setposition) method. The dragged element's left/top/right/bottom values might be affected by the scale/skew difference in the containers, and this value contains the data to offset that difference visually. Read-only.
+
 ## Methods
 
 ### getContainerMatrix

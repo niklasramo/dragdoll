@@ -4395,11 +4395,17 @@ function parseTransformOrigin(transformOrigin) {
   };
 }
 
+// src/utils/reset-matrix.ts
+var RESET_TRANSFORM = "scale(1, 1)";
+function resetMatrix(m) {
+  return m.setMatrixValue(RESET_TRANSFORM);
+}
+
 // src/utils/get-world-transform-matrix.ts
 var MATRIX = new DOMMatrix();
 function getWorldTransformMatrix(el, result = new DOMMatrix()) {
   let currentElement = el;
-  result.setMatrixValue("");
+  resetMatrix(result);
   while (currentElement) {
     const { transform, transformOrigin } = getStyle(currentElement);
     if (transform && transform !== "none") {
@@ -4690,7 +4696,7 @@ function getDefaultSettings() {
       const needsOriginOffset = !elementTransformMatrix.isIdentity && (oX !== 0 || oY !== 0 || oZ !== 0);
       const tX = isEndPhase ? x : containerOffset.x + (x - startOffset.x);
       const tY = isEndPhase ? y : containerOffset.y + (y - startOffset.y);
-      DOM_MATRIX.setMatrixValue("");
+      resetMatrix(DOM_MATRIX);
       if (needsOriginOffset) {
         if (oZ === 0) {
           DOM_MATRIX.translateSelf(oX * -1, oY * -1);
@@ -4707,13 +4713,13 @@ function getDefaultSettings() {
           DOM_MATRIX.multiplySelf(inverseDragContainerMatrix);
         }
       }
-      TEMP_MATRIX.setMatrixValue("").translateSelf(tX, tY);
+      resetMatrix(TEMP_MATRIX).translateSelf(tX, tY);
       DOM_MATRIX.multiplySelf(TEMP_MATRIX);
       if (!containerMatrix.isIdentity) {
         DOM_MATRIX.multiplySelf(containerMatrix);
       }
       if (needsOriginOffset) {
-        TEMP_MATRIX.setMatrixValue("").translateSelf(oX, oY, oZ);
+        resetMatrix(TEMP_MATRIX).translateSelf(oX, oY, oZ);
         DOM_MATRIX.multiplySelf(TEMP_MATRIX);
       }
       if (!elementTransformMatrix.isIdentity) {

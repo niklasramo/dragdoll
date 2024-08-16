@@ -14,8 +14,11 @@ import { appendElement } from 'utils/append-element.js';
 
 import { roundNumber } from 'utils/round-number.js';
 
-import { Writeable, CSSProperties, Point } from '../types.js';
+import { resetMatrix } from 'utils/reset-matrix.js';
+
 import { areMatricesEqual } from 'utils/are-matrices-equal.js';
+
+import { Writeable, CSSProperties, Point } from '../types.js';
 
 const SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
 
@@ -63,7 +66,7 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
       const tY = isEndPhase ? y : containerOffset.y + (y - startOffset.y);
 
       // Reset the matrix to identity.
-      DOM_MATRIX.setMatrixValue('');
+      resetMatrix(DOM_MATRIX);
 
       // First of all negate the element's transform origin.
       if (needsOriginOffset) {
@@ -90,7 +93,7 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
       }
 
       // Apply the translation (in world space coordinates).
-      TEMP_MATRIX.setMatrixValue('').translateSelf(tX, tY);
+      resetMatrix(TEMP_MATRIX).translateSelf(tX, tY);
       DOM_MATRIX.multiplySelf(TEMP_MATRIX);
 
       // Apply the element's original container's world matrix so we can apply
@@ -102,7 +105,7 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
 
       // Undo the transform origin negation.
       if (needsOriginOffset) {
-        TEMP_MATRIX.setMatrixValue('').translateSelf(oX, oY, oZ);
+        resetMatrix(TEMP_MATRIX).translateSelf(oX, oY, oZ);
         DOM_MATRIX.multiplySelf(TEMP_MATRIX);
       }
 

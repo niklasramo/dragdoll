@@ -1,5 +1,6 @@
 import { getStyle } from './get-style.js';
 import { parseTransformOrigin } from './parse-transform-origin.js';
+import { resetMatrix } from './reset-matrix.js';
 
 const MATRIX = new DOMMatrix();
 
@@ -10,7 +11,7 @@ export function getWorldTransformMatrix(
   let currentElement: HTMLElement | SVGSVGElement | null = el;
 
   // Reset the result matrix to identity.
-  result.setMatrixValue('');
+  resetMatrix(result);
 
   while (currentElement) {
     const { transform, transformOrigin } = getStyle(currentElement);

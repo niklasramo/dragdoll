@@ -137,7 +137,7 @@ Default is a function that stores the element's current computed transform and r
 type setPosition = (data: {
   draggable: Draggable;
   sensor: Sensor;
-  phase: 'start' | 'move' | 'end' | 'pre-align' | 'align';
+  phase: 'start' | 'move' | 'end' | 'align' | 'start-align';
   item: DraggableDragItem;
   x: number;
   y: number;
@@ -153,8 +153,8 @@ Also note that the `phase` argument is provided to the function to help you dete
 - `start`: Called when the drag starts.
 - `move`: Called on every "move" event emitted by the currently tracked sensor.
 - `end`: Called when the drag ends.
-- `pre-align`: Called when the element containers' world matrices are updated. During this phase the element's position might be temporarily out of sync with the drag position as we need to first update the containers' world matrices before aligning the element.
-- `align`: Called when the element's position is realigned based on the element's current client offset and container world matrices.
+- `align`: Called when the element's position is realigned via [`align`](#align) method.
+- `start-align`: Called (if needed) during the drag start phase as an additional step after `start` phase.
 
 ### getPositionChange
 

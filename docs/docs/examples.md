@@ -108,6 +108,7 @@ html {
 
 body {
   margin: 0;
+  overflow: hidden;
 }
 
 .card {
@@ -219,6 +220,7 @@ draggable.on('end', () => {
 ```css [index.css]
 body {
   height: 300%;
+  overflow-y: auto;
 }
 
 .drag-container {
@@ -270,6 +272,7 @@ html {
 
 body {
   margin: 0;
+  overflow: hidden;
 }
 
 .card {
@@ -385,6 +388,7 @@ draggable.on('end', () => {
 ```css [index.css]
 body {
   height: 300%;
+  overflow-y: auto;
 }
 
 .drag-container-outer {
@@ -455,6 +459,7 @@ html {
 
 body {
   margin: 0;
+  overflow: hidden;
 }
 
 .card {
@@ -589,6 +594,7 @@ html {
 
 body {
   margin: 0;
+  overflow: hidden;
 }
 
 .card {
