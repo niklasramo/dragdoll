@@ -4677,63 +4677,61 @@ var SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: tru
 var POSITION_CHANGE = { x: 0, y: 0 };
 var DOM_MATRIX = new DOMMatrix();
 var TEMP_MATRIX = new DOMMatrix();
-function getDefaultSettings() {
-  return {
-    container: null,
-    startPredicate: () => true,
-    getElements: () => null,
-    releaseElements: () => null,
-    getFrozenProps: () => null,
-    getStartPosition: () => {
-      return { x: 0, y: 0 };
-    },
-    setPosition: ({ item, x, y, phase }) => {
-      const isEndPhase = phase === "end";
-      const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
-      const [_dragContainerMatrix, inverseDragContainerMatrix] = item.getDragContainerMatrix();
-      const { startOffset, containerOffset, elementTransformMatrix, elementTransformOrigin } = item;
-      const { x: oX, y: oY, z: oZ } = elementTransformOrigin;
-      const needsOriginOffset = !elementTransformMatrix.isIdentity && (oX !== 0 || oY !== 0 || oZ !== 0);
-      const tX = isEndPhase ? x : containerOffset.x + (x - startOffset.x);
-      const tY = isEndPhase ? y : containerOffset.y + (y - startOffset.y);
-      resetMatrix(DOM_MATRIX);
-      if (needsOriginOffset) {
-        if (oZ === 0) {
-          DOM_MATRIX.translateSelf(oX * -1, oY * -1);
-        } else {
-          DOM_MATRIX.translateSelf(oX * -1, oY * -1, oZ * -1);
-        }
-      }
-      if (isEndPhase) {
-        if (!inverseContainerMatrix.isIdentity) {
-          DOM_MATRIX.multiplySelf(inverseContainerMatrix);
-        }
+var DraggableDefaultSettings = {
+  container: null,
+  startPredicate: () => true,
+  getElements: () => null,
+  releaseElements: () => null,
+  getFrozenProps: () => null,
+  getStartPosition: () => {
+    return { x: 0, y: 0 };
+  },
+  setPosition: ({ item, x, y, phase }) => {
+    const isEndPhase = phase === "end";
+    const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
+    const [_dragContainerMatrix, inverseDragContainerMatrix] = item.getDragContainerMatrix();
+    const { startOffset, containerOffset, elementTransformMatrix, elementTransformOrigin } = item;
+    const { x: oX, y: oY, z: oZ } = elementTransformOrigin;
+    const needsOriginOffset = !elementTransformMatrix.isIdentity && (oX !== 0 || oY !== 0 || oZ !== 0);
+    const tX = isEndPhase ? x : containerOffset.x + (x - startOffset.x);
+    const tY = isEndPhase ? y : containerOffset.y + (y - startOffset.y);
+    resetMatrix(DOM_MATRIX);
+    if (needsOriginOffset) {
+      if (oZ === 0) {
+        DOM_MATRIX.translateSelf(oX * -1, oY * -1);
       } else {
-        if (!inverseDragContainerMatrix.isIdentity) {
-          DOM_MATRIX.multiplySelf(inverseDragContainerMatrix);
-        }
+        DOM_MATRIX.translateSelf(oX * -1, oY * -1, oZ * -1);
       }
-      resetMatrix(TEMP_MATRIX).translateSelf(tX, tY);
-      DOM_MATRIX.multiplySelf(TEMP_MATRIX);
-      if (!containerMatrix.isIdentity) {
-        DOM_MATRIX.multiplySelf(containerMatrix);
-      }
-      if (needsOriginOffset) {
-        resetMatrix(TEMP_MATRIX).translateSelf(oX, oY, oZ);
-        DOM_MATRIX.multiplySelf(TEMP_MATRIX);
-      }
-      if (!elementTransformMatrix.isIdentity) {
-        DOM_MATRIX.multiplySelf(elementTransformMatrix);
-      }
-      item.element.style.transform = `${DOM_MATRIX}`;
-    },
-    getPositionChange: ({ event, prevEvent }) => {
-      POSITION_CHANGE.x = event.x - prevEvent.x;
-      POSITION_CHANGE.y = event.y - prevEvent.y;
-      return POSITION_CHANGE;
     }
-  };
-}
+    if (isEndPhase) {
+      if (!inverseContainerMatrix.isIdentity) {
+        DOM_MATRIX.multiplySelf(inverseContainerMatrix);
+      }
+    } else {
+      if (!inverseDragContainerMatrix.isIdentity) {
+        DOM_MATRIX.multiplySelf(inverseDragContainerMatrix);
+      }
+    }
+    resetMatrix(TEMP_MATRIX).translateSelf(tX, tY);
+    DOM_MATRIX.multiplySelf(TEMP_MATRIX);
+    if (!containerMatrix.isIdentity) {
+      DOM_MATRIX.multiplySelf(containerMatrix);
+    }
+    if (needsOriginOffset) {
+      resetMatrix(TEMP_MATRIX).translateSelf(oX, oY, oZ);
+      DOM_MATRIX.multiplySelf(TEMP_MATRIX);
+    }
+    if (!elementTransformMatrix.isIdentity) {
+      DOM_MATRIX.multiplySelf(elementTransformMatrix);
+    }
+    item.element.style.transform = `${DOM_MATRIX}`;
+  },
+  getPositionChange: ({ event, prevEvent }) => {
+    POSITION_CHANGE.x = event.x - prevEvent.x;
+    POSITION_CHANGE.y = event.y - prevEvent.y;
+    return POSITION_CHANGE;
+  }
+};
 var Draggable = class {
   constructor(sensors, options = {}) {
     this.sensors = sensors;
@@ -4771,7 +4769,7 @@ var Draggable = class {
       sensor.on("destroy", onEnd, onEnd);
     });
   }
-  _parseSettings(options, defaults = getDefaultSettings()) {
+  _parseSettings(options, defaults = DraggableDefaultSettings) {
     const {
       container = defaults.container,
       startPredicate = defaults.startPredicate,

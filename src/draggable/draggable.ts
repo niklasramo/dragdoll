@@ -41,90 +41,6 @@ enum DraggableStartPredicateState {
   REJECTED = 2,
 }
 
-function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>(): DraggableSettings<
-  S,
-  E
-> {
-  return {
-    container: null,
-    startPredicate: () => true,
-    getElements: () => null,
-    releaseElements: () => null,
-    getFrozenProps: () => null,
-    getStartPosition: () => {
-      return { x: 0, y: 0 };
-    },
-    setPosition: ({ item, x, y, phase }) => {
-      const isEndPhase = phase === 'end';
-      const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
-      const [_dragContainerMatrix, inverseDragContainerMatrix] = item.getDragContainerMatrix();
-      const { startOffset, containerOffset, elementTransformMatrix, elementTransformOrigin } = item;
-      const { x: oX, y: oY, z: oZ } = elementTransformOrigin;
-      const needsOriginOffset =
-        !elementTransformMatrix.isIdentity && (oX !== 0 || oY !== 0 || oZ !== 0);
-      const tX = isEndPhase ? x : containerOffset.x + (x - startOffset.x);
-      const tY = isEndPhase ? y : containerOffset.y + (y - startOffset.y);
-
-      // Reset the matrix to identity.
-      resetMatrix(DOM_MATRIX);
-
-      // First of all negate the element's transform origin.
-      if (needsOriginOffset) {
-        if (oZ === 0) {
-          DOM_MATRIX.translateSelf(oX * -1, oY * -1);
-        } else {
-          DOM_MATRIX.translateSelf(oX * -1, oY * -1, oZ * -1);
-        }
-      }
-
-      // Invert the current container's matrix, so we can apply the
-      // translation in world space coordinates. If this is the end phase the
-      // element will have been appended back to the original container if
-      // there was a drag container defined. Otherwise the element will be
-      // appended to the drag container (if defined).
-      if (isEndPhase) {
-        if (!inverseContainerMatrix.isIdentity) {
-          DOM_MATRIX.multiplySelf(inverseContainerMatrix);
-        }
-      } else {
-        if (!inverseDragContainerMatrix.isIdentity) {
-          DOM_MATRIX.multiplySelf(inverseDragContainerMatrix);
-        }
-      }
-
-      // Apply the translation (in world space coordinates).
-      resetMatrix(TEMP_MATRIX).translateSelf(tX, tY);
-      DOM_MATRIX.multiplySelf(TEMP_MATRIX);
-
-      // Apply the element's original container's world matrix so we can apply
-      // the element's original transform as if it was in the original
-      // container's local space coordinates.
-      if (!containerMatrix.isIdentity) {
-        DOM_MATRIX.multiplySelf(containerMatrix);
-      }
-
-      // Undo the transform origin negation.
-      if (needsOriginOffset) {
-        resetMatrix(TEMP_MATRIX).translateSelf(oX, oY, oZ);
-        DOM_MATRIX.multiplySelf(TEMP_MATRIX);
-      }
-
-      // Apply the element's original transform.
-      if (!elementTransformMatrix.isIdentity) {
-        DOM_MATRIX.multiplySelf(elementTransformMatrix);
-      }
-
-      // Apply the matrix to the element.
-      item.element.style.transform = `${DOM_MATRIX}`;
-    },
-    getPositionChange: ({ event, prevEvent }) => {
-      POSITION_CHANGE.x = event.x - prevEvent.x;
-      POSITION_CHANGE.y = event.y - prevEvent.y;
-      return POSITION_CHANGE;
-    },
-  };
-}
-
 export interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
   container: HTMLElement | null;
   startPredicate: (data: {
@@ -187,6 +103,85 @@ export interface DraggableEventCallbacks<E extends SensorEvents> {
   end(event: E['end'] | E['cancel'] | E['destroy'] | null): void;
   destroy(): void;
 }
+
+export const DraggableDefaultSettings: DraggableSettings<any, any> = {
+  container: null,
+  startPredicate: () => true,
+  getElements: () => null,
+  releaseElements: () => null,
+  getFrozenProps: () => null,
+  getStartPosition: () => {
+    return { x: 0, y: 0 };
+  },
+  setPosition: ({ item, x, y, phase }) => {
+    const isEndPhase = phase === 'end';
+    const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
+    const [_dragContainerMatrix, inverseDragContainerMatrix] = item.getDragContainerMatrix();
+    const { startOffset, containerOffset, elementTransformMatrix, elementTransformOrigin } = item;
+    const { x: oX, y: oY, z: oZ } = elementTransformOrigin;
+    const needsOriginOffset =
+      !elementTransformMatrix.isIdentity && (oX !== 0 || oY !== 0 || oZ !== 0);
+    const tX = isEndPhase ? x : containerOffset.x + (x - startOffset.x);
+    const tY = isEndPhase ? y : containerOffset.y + (y - startOffset.y);
+
+    // Reset the matrix to identity.
+    resetMatrix(DOM_MATRIX);
+
+    // First of all negate the element's transform origin.
+    if (needsOriginOffset) {
+      if (oZ === 0) {
+        DOM_MATRIX.translateSelf(oX * -1, oY * -1);
+      } else {
+        DOM_MATRIX.translateSelf(oX * -1, oY * -1, oZ * -1);
+      }
+    }
+
+    // Invert the current container's matrix, so we can apply the
+    // translation in world space coordinates. If this is the end phase the
+    // element will have been appended back to the original container if
+    // there was a drag container defined. Otherwise the element will be
+    // appended to the drag container (if defined).
+    if (isEndPhase) {
+      if (!inverseContainerMatrix.isIdentity) {
+        DOM_MATRIX.multiplySelf(inverseContainerMatrix);
+      }
+    } else {
+      if (!inverseDragContainerMatrix.isIdentity) {
+        DOM_MATRIX.multiplySelf(inverseDragContainerMatrix);
+      }
+    }
+
+    // Apply the translation (in world space coordinates).
+    resetMatrix(TEMP_MATRIX).translateSelf(tX, tY);
+    DOM_MATRIX.multiplySelf(TEMP_MATRIX);
+
+    // Apply the element's original container's world matrix so we can apply
+    // the element's original transform as if it was in the original
+    // container's local space coordinates.
+    if (!containerMatrix.isIdentity) {
+      DOM_MATRIX.multiplySelf(containerMatrix);
+    }
+
+    // Undo the transform origin negation.
+    if (needsOriginOffset) {
+      resetMatrix(TEMP_MATRIX).translateSelf(oX, oY, oZ);
+      DOM_MATRIX.multiplySelf(TEMP_MATRIX);
+    }
+
+    // Apply the element's original transform.
+    if (!elementTransformMatrix.isIdentity) {
+      DOM_MATRIX.multiplySelf(elementTransformMatrix);
+    }
+
+    // Apply the matrix to the element.
+    item.element.style.transform = `${DOM_MATRIX}`;
+  },
+  getPositionChange: ({ event, prevEvent }) => {
+    POSITION_CHANGE.x = event.x - prevEvent.x;
+    POSITION_CHANGE.y = event.y - prevEvent.y;
+    return POSITION_CHANGE;
+  },
+} as const;
 
 export class Draggable<
   S extends Sensor[] = Sensor[],
@@ -259,7 +254,7 @@ export class Draggable<
 
   protected _parseSettings(
     options?: Partial<this['settings']>,
-    defaults: this['settings'] = getDefaultSettings(),
+    defaults: this['settings'] = DraggableDefaultSettings,
   ): this['settings'] {
     const {
       container = defaults.container,

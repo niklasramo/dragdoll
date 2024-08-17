@@ -1,5 +1,6 @@
 import {
   Draggable,
+  DraggableDefaultSettings,
   PointerSensor,
   KeyboardMotionSensor,
   createPointerSensorStartPredicate,
@@ -15,6 +16,18 @@ const draggableElements = document.querySelectorAll('.draggable');
   const draggable = new Draggable([pointerSensor, keyboardSensor], {
     getElements: () => [draggableElement as HTMLElement],
     startPredicate: createPointerSensorStartPredicate(),
+    getPositionChange: (...args) => {
+      const change = DraggableDefaultSettings.getPositionChange(...args);
+      const { element } = args[0].item;
+      const allowX = element.classList.contains('axis-x');
+      const allowY = element.classList.contains('axis-y');
+      if (allowX && !allowY) {
+        change.y = 0;
+      } else if (allowY && !allowX) {
+        change.x = 0;
+      }
+      return change;
+    },
   });
 
   draggable.on('start', () => {
