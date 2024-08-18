@@ -146,7 +146,7 @@ body {
   height: 100px;
   background-color: var(--card-bgColor);
   color: var(--card-color);
-  border-radius: 8px;
+  border-radius: 7px;
   border: 1.5px solid var(--bg-color);
   font-size: 30px;
 
@@ -340,7 +340,7 @@ body {
   height: 100px;
   background-color: var(--card-bgColor);
   color: var(--card-color);
-  border-radius: 8px;
+  border-radius: 7px;
   border: 1.5px solid var(--bg-color);
   font-size: 30px;
 
@@ -557,7 +557,7 @@ body {
   height: 100px;
   background-color: var(--card-bgColor);
   color: var(--card-color);
-  border-radius: 8px;
+  border-radius: 7px;
   border: 1.5px solid var(--bg-color);
   font-size: 30px;
 
@@ -722,7 +722,7 @@ body {
   height: 100px;
   background-color: var(--card-bgColor);
   color: var(--card-color);
-  border-radius: 8px;
+  border-radius: 7px;
   border: 1.5px solid var(--bg-color);
   font-size: 30px;
 
@@ -924,7 +924,7 @@ body {
   height: 100px;
   background-color: var(--card-bgColor);
   color: var(--card-color);
-  border-radius: 8px;
+  border-radius: 7px;
   border: 1.5px solid var(--bg-color);
   font-size: 30px;
 

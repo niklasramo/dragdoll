@@ -12,7 +12,7 @@ import { getOffsetDiff } from 'utils/get-offset-diff.js';
 
 import { getWorldTransformMatrix } from 'utils/get-world-transform-matrix.js';
 
-import { createWrapperElement } from 'utils/create-wrapper-element.js';
+import { createMeasureElement } from 'utils/create-measure-element.js';
 
 import { isMatrixWarped } from 'utils/is-matrix-warped.js';
 
@@ -21,6 +21,8 @@ import { parseTransformOrigin } from 'utils/parse-transform-origin.js';
 import type { Draggable } from './draggable.js';
 
 import type { ObjectCache } from 'utils/object-cache.js';
+
+const MEASURE_ELEMENT = createMeasureElement();
 
 export class DraggableDragItem<
   S extends Sensor[] = Sensor[],
@@ -42,7 +44,6 @@ export class DraggableDragItem<
   readonly startOffset: Point;
   protected _moveDiff: Point;
   protected _alignDiff: Point;
-  protected _measureElements: Map<HTMLElement, HTMLElement>;
   protected _matrixCache: ObjectCache<HTMLElement | SVGSVGElement, [DOMMatrix, DOMMatrix]>;
   protected _clientOffsetCache: ObjectCache<HTMLElement | SVGSVGElement | Window | Document, Point>;
 
@@ -73,7 +74,6 @@ export class DraggableDragItem<
     this.startOffset = { x: 0, y: 0 };
     this._moveDiff = { x: 0, y: 0 };
     this._alignDiff = { x: 0, y: 0 };
-    this._measureElements = drag['_measureElements'];
     this._matrixCache = drag['_matrixCache'];
     this._clientOffsetCache = drag['_clientOffsetCache'];
 
@@ -235,14 +235,10 @@ export class DraggableDragItem<
             // unfortunately, there seems to be no way to do that accurately
             // with subpixel precision.
             if (isMatrixWarped(matrices[0])) {
-              const measureElement =
-                this._measureElements.get(offsetContainer) || createWrapperElement(true);
-              measureElement.style.setProperty('transform', matrices[1].toString(), 'important');
-              if (!measureElement.isConnected) {
-                this._measureElements.set(offsetContainer, measureElement);
-                offsetContainer.append(measureElement);
-              }
-              getClientOffset(measureElement, offset);
+              MEASURE_ELEMENT.style.setProperty('transform', matrices[1].toString(), 'important');
+              offsetContainer.append(MEASURE_ELEMENT);
+              getClientOffset(MEASURE_ELEMENT, offset);
+              MEASURE_ELEMENT.remove();
             }
             // If the matrix only contains a 2d translation we can compute the
             // client offset normally and subtract the translation values from

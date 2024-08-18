@@ -189,7 +189,7 @@ An array of all the sensors attached to the Draggable instance. Read-only.
 type settings = DraggableSettings;
 ```
 
-Current settings ([DraggableSettings](#settings)) of the Draggable instance. Read-only.
+Current [settings](#settings) of the Draggable instance. Read-only.
 
 ### drag
 

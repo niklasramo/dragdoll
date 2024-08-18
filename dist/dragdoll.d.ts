@@ -335,7 +335,6 @@ declare class DraggableDragItem<S extends Sensor[] = Sensor[], E extends S[numbe
     readonly startOffset: Point;
     protected _moveDiff: Point;
     protected _alignDiff: Point;
-    protected _measureElements: Map<HTMLElement, HTMLElement>;
     protected _matrixCache: ObjectCache<HTMLElement | SVGSVGElement, [DOMMatrix, DOMMatrix]>;
     protected _clientOffsetCache: ObjectCache<HTMLElement | SVGSVGElement | Window | Document, Point>;
     constructor(element: HTMLElement | SVGSVGElement, draggable: Draggable<S, E>);
@@ -357,7 +356,6 @@ declare class DraggableDrag<S extends Sensor[], E extends S[number]['events']> {
     readonly startEvent: E['start'] | E['move'];
     readonly endEvent: E['end'] | E['cancel'] | E['destroy'] | null;
     readonly items: DraggableDragItem[];
-    protected _measureElements: Map<HTMLElement, HTMLElement>;
     protected _matrixCache: ObjectCache<HTMLElement | SVGSVGElement, [DOMMatrix, DOMMatrix]>;
     protected _clientOffsetCache: ObjectCache<HTMLElement | SVGSVGElement | Window | Document, Point>;
     constructor(sensor: S[number], startEvent: E['start'] | E['move']);

@@ -4,7 +4,7 @@ export default {
   base: '/dragdoll/',
   lang: 'en-US',
   title: 'DragDoll',
-  description: 'Modular and extensible TypeScript drag & drop system.',
+  description: 'Modular and extensible drag system.',
   appearance: true,
   head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/dragdoll-icon.svg' }]],
   markdown: {

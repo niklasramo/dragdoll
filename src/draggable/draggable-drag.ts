@@ -14,7 +14,6 @@ export class DraggableDrag<S extends Sensor[], E extends S[number]['events']> {
   readonly startEvent: E['start'] | E['move'];
   readonly endEvent: E['end'] | E['cancel'] | E['destroy'] | null;
   readonly items: DraggableDragItem[];
-  protected _measureElements: Map<HTMLElement, HTMLElement>;
   protected _matrixCache: ObjectCache<HTMLElement | SVGSVGElement, [DOMMatrix, DOMMatrix]>;
   protected _clientOffsetCache: ObjectCache<HTMLElement | SVGSVGElement | Window | Document, Point>;
 
@@ -26,7 +25,6 @@ export class DraggableDrag<S extends Sensor[], E extends S[number]['events']> {
     this.startEvent = startEvent;
     this.endEvent = null;
     this.items = [];
-    this._measureElements = new Map();
     this._matrixCache = new ObjectCache();
     this._clientOffsetCache = new ObjectCache();
   }

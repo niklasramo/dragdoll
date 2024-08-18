@@ -1,12 +1,12 @@
 ---
-title: Modular and extensible drag & drop system
+title: Modular and extensible drag system
 
 layout: home
 
 hero:
   name: DragDoll
   text:
-  tagline: Modular and extensible drag & drop system
+  tagline: Modular and extensible drag system
   actions:
     - theme: brand
       text: Get Started

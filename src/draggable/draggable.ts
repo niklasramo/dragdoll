@@ -18,6 +18,8 @@ import { resetMatrix } from 'utils/reset-matrix.js';
 
 import { areMatricesEqual } from 'utils/are-matrices-equal.js';
 
+import { isMatrixWarped } from 'utils/is-matrix-warped.js';
+
 import { Writeable, CSSProperties, Point } from '../types.js';
 
 const SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
@@ -411,8 +413,11 @@ export class Draggable<
         continue;
       }
 
-      // TODO: We can probably also skip computation if both matrices contain
-      // only translations.
+      // We can also skip computation if both matrices contain only 2D
+      // translations.
+      if (!isMatrixWarped(containerMatrix) && !isMatrixWarped(dragContainerMatrix)) {
+        continue;
+      }
 
       const rect = item.element.getBoundingClientRect();
       const { startOffset } = item;
@@ -694,9 +699,6 @@ export class Draggable<
         elements,
       });
     }
-
-    // Remove measure elements.
-    drag['_measureElements'].forEach((el) => el.remove());
 
     // Emit end event.
     this._emit('end', drag.endEvent);

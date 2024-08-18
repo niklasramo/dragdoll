@@ -32,9 +32,10 @@ async function buildExampleDirectories() {
       mode: 'production',
       shouldDisableCache: true,
       defaultTargetOptions: {
-        shouldOptimize: true,
         distDir: outputDir,
         publicUrl: `./`,
+        sourceMaps: false,
+        shouldOptimize: false,
       },
     });
     await parcel.run();

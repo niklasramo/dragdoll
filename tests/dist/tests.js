@@ -4320,7 +4320,6 @@ var DraggableDrag = class {
     this.startEvent = startEvent;
     this.endEvent = null;
     this.items = [];
-    this._measureElements = /* @__PURE__ */ new Map();
     this._matrixCache = new ObjectCache();
     this._clientOffsetCache = new ObjectCache();
   }
@@ -4437,41 +4436,28 @@ function setStyles(el, styles2, important = false) {
   }
 }
 
-// src/utils/create-wrapper-element.ts
-function createWrapperElement(isMeasureElement = false) {
+// src/utils/create-measure-element.ts
+function createMeasureElement() {
   const el = document.createElement("div");
+  el.classList.add("dragdoll-measure");
   setStyles(
     el,
-    Object.assign(
-      {
-        display: "block",
-        position: "absolute",
-        padding: "0px",
-        margin: "0px",
-        border: "none",
-        transform: "none",
-        "transform-origin": "0 0",
-        transition: "none",
-        animation: "none"
-      },
-      isMeasureElement ? {
-        inset: "0px",
-        opacity: "0",
-        "pointer-events": "none"
-      } : {
-        width: "0px",
-        height: "0px",
-        left: "0px",
-        top: "0px"
-      }
-    ),
+    {
+      display: "block",
+      position: "absolute",
+      inset: "0px",
+      padding: "0px",
+      margin: "0px",
+      border: "none",
+      opacity: "0",
+      transform: "none",
+      "transform-origin": "0 0",
+      transition: "none",
+      animation: "none",
+      "pointer-events": "none"
+    },
     true
   );
-  if (isMeasureElement) {
-    el.classList.add("dragdoll-measure");
-  } else {
-    el.classList.add("dragdoll-container");
-  }
   return el;
 }
 
@@ -4481,6 +4467,7 @@ function isMatrixWarped(m) {
 }
 
 // src/draggable/draggable-drag-item.ts
+var MEASURE_ELEMENT = createMeasureElement();
 var DraggableDragItem = class {
   constructor(element, draggable) {
     if (!element.isConnected) {
@@ -4503,7 +4490,6 @@ var DraggableDragItem = class {
     this.startOffset = { x: 0, y: 0 };
     this._moveDiff = { x: 0, y: 0 };
     this._alignDiff = { x: 0, y: 0 };
-    this._measureElements = drag["_measureElements"];
     this._matrixCache = drag["_matrixCache"];
     this._clientOffsetCache = drag["_clientOffsetCache"];
     const elementContainer = element.parentElement;
@@ -4609,13 +4595,10 @@ var DraggableDragItem = class {
           const matrices = _matrixCache.get(container);
           if (offsetContainer instanceof HTMLElement && matrices && !matrices[0].isIdentity) {
             if (isMatrixWarped(matrices[0])) {
-              const measureElement = this._measureElements.get(offsetContainer) || createWrapperElement(true);
-              measureElement.style.setProperty("transform", matrices[1].toString(), "important");
-              if (!measureElement.isConnected) {
-                this._measureElements.set(offsetContainer, measureElement);
-                offsetContainer.append(measureElement);
-              }
-              getClientOffset(measureElement, offset);
+              MEASURE_ELEMENT.style.setProperty("transform", matrices[1].toString(), "important");
+              offsetContainer.append(MEASURE_ELEMENT);
+              getClientOffset(MEASURE_ELEMENT, offset);
+              MEASURE_ELEMENT.remove();
             } else {
               getClientOffset(offsetContainer, offset);
               offset.x -= matrices[0].m41;
@@ -4879,6 +4862,9 @@ var Draggable = class {
       if (areMatricesEqual(containerMatrix, dragContainerMatrix)) {
         continue;
       }
+      if (!isMatrixWarped(containerMatrix) && !isMatrixWarped(dragContainerMatrix)) {
+        continue;
+      }
       const rect = item.element.getBoundingClientRect();
       const { startOffset } = item;
       startOffset.x = roundNumber(rect.x - item.clientRect.x, 3);
@@ -5064,7 +5050,6 @@ var Draggable = class {
         elements
       });
     }
-    drag["_measureElements"].forEach((el) => el.remove());
     this._emit("end", drag.endEvent);
     this.drag = null;
   }

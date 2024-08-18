@@ -1,0 +1,24 @@
+body {
+  height: 300%;
+  overflow-y: auto;
+}
+
+.drag-container {
+  width: 0;
+  height: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.card-container {
+  position: absolute;
+  inset: 0;
+}
+
+.draggable {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%)translateY(-50%);
+}
