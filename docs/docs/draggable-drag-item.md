@@ -6,7 +6,15 @@ DraggableDragItem class instance holds all the information about a drag item. Al
 
 ## Properties
 
-All the properties are read-only.
+### data
+
+```ts
+type data = { [key: string]: any };
+```
+
+A key value object of custom data, which can be used to store any additional information needed to perform custom logic during the drag. You can utilize this store in your custom plugins and modifiers for example.
+
+When drag ends this data (and the whole `DraggableDragItem` instance) is discarded, so you don't have to worry about cleaning up the data.
 
 ### element
 
@@ -40,14 +48,6 @@ type dragContainer = HTMLElement;
 
 The dragged element's parent node during the drag. Read-only.
 
-### dragInnerContainer
-
-```ts
-type dragInnerContainer = HTMLElement | null;
-```
-
-If [`elementContainer`](#elementcontainer) is not the same element as [`dragContainer`](#dragcontainer) we need to create a wrapper element dynamically for the dragged element. This is that wrapper element and it is appended to the [`dragContainer`](#dragcontainer). In practice this element will be created for each dragged item when you define a `[container](/docs/draggable#container)` for a Draggable instance. Read-only.
-
 ### dragOffsetContainer
 
 ```ts
@@ -64,18 +64,18 @@ type elementMatrix = DOMMatrix;
 
 The dragged element's original computed transform matrix. Read-only.
 
-### frozenProps
+### frozenStyles
 
 ```ts
-type frozenProps = CSSProperties | null;
+type frozenStyles = CSSProperties | null;
 ```
 
 A key value object of the frozen CSS properties and their frozen values. These are the values that are forced on the dragged element for the duration of the drag. Read-only.
 
-### unfrozenProps
+### unfrozenStyles
 
 ```ts
-type unfrozenProps = CSSProperties | null;
+type unfrozenStyles = CSSProperties | null;
 ```
 
 A key value object of the frozen CSS properties and their unfrozen (original) values. These are the values that are restored to the dragged element after the drag ends. Read-only.
@@ -86,7 +86,7 @@ A key value object of the frozen CSS properties and their unfrozen (original) va
 type clientRect = { width: number; height: number; left: number; top: number };
 ```
 
-Cached bounding client rect of the dragged element. The `width` and `height` of this object can be updated using the [`updateSize`](#updatesize) method. The `left` and `top` are automatically updated by the Draggable instance, but you can also forcefully update them using the [`draggable.updatePosition`](/docs/draggable#updateposition) method. Read-only.
+Cached bounding client rect of the dragged element. The `width` and `height` of this object can be updated using the [`updateSize`](#updatesize) method. The `left` and `top` are automatically updated whenever [position](#position) changes. Read-only.
 
 ### position
 
@@ -94,7 +94,11 @@ Cached bounding client rect of the dragged element. The `width` and `height` of 
 type position = { x: number; y: number };
 ```
 
-The dragged element's internal position during the drag. By default this reflects the element's translate position. Read-only.
+The dragged element's relative viewport position. This is always `{x: 0, y: 0}` on drag start and, by default, only updated when the sensor moves. [Modifiers](/docs/draggable-modifiers) might affect this value during start, move and end phases.
+
+In practice this value will tell you how many (untransformed) pixels the element has moved in the viewport's scope and to which directions. E.g. `{x: -100, y: 50}` would mean that the element has moved 100 pixels to the left and 50 pixels down from the original position.
+
+Read-only.
 
 ### containerOffset
 
@@ -102,15 +106,15 @@ The dragged element's internal position during the drag. By default this reflect
 type containerOffset = { x: number; y: number };
 ```
 
-The offset between [`elementOffsetContainer`](#elementoffsetcontainer) and [`dragOffsetContainer`](#dragoffsetcontainer). The offset value is computed so that transforms are fully ignored. Read-only.
+The offset between [`elementOffsetContainer`](#elementoffsetcontainer) and [`dragOffsetContainer`](#dragoffsetcontainer). The offset value is computed so that transforms are fully ignored. This offset is used to correct the element's position when/if it is reparented to the [`dragContainer`](#dragcontainer). Read-only.
 
-### startOffset
+### alignmentOffset
 
 ```ts
-type startOffset = { x: number; y: number };
+type alignmentOffset = { x: number; y: number };
 ```
 
-If you have defined a [`container`](/docs/draggable#container) and the element's container has different skew/scale transform than the drag container we need to compute an additional offset during the start of the drag which we will need to apply in the [`setPosition`](/docs/draggable#setposition) method. The dragged element's left/top/right/bottom values might be affected by the scale/skew difference in the containers, and this value contains the data to offset that difference visually. Read-only.
+Keeps track of any _unintended_ drift between the dragged element's position and the sensor's position. For example, this is used to correct the element's position when the element's parent is scrolled or when [`align`](/docs/draggable#align) method is used. Read-only.
 
 ## Methods
 
@@ -120,7 +124,7 @@ If you have defined a [`container`](/docs/draggable#container) and the element's
 type getContainerMatrix = () => [DOMMatrix, DOMMatrix];
 ```
 
-Returns the computed world transform matrix of the [`elementContainer`](#elementoffsetcontainer). The first matrix in the returned array is the world transform matrix and the second matrix is the inverse of the world transform matrix. Note that the returned matrices are cached, please use the [`updateContainerMatrices`](#updatecontainermatrices) method to update the matrices if you need to.
+Returns the world transform matrix of the [`elementContainer`](#elementcontainer), which is computed and cached at the start of the drag. The first matrix in the returned array is the world transform matrix and the second matrix is the inverse of the world transform matrix.
 
 ### getDragContainerMatrix
 
@@ -128,23 +132,7 @@ Returns the computed world transform matrix of the [`elementContainer`](#element
 type getDragContainerMatrix = () => [DOMMatrix, DOMMatrix];
 ```
 
-Returns the computed world transform matrix of the [`dragContainer`](#dragcontainer). The first matrix in the returned array is the world transform matrix and the second matrix is the inverse of the world transform matrix. Note that the returned matrices are cached, please use the [`updateContainerMatrices`](#updatecontainermatrices) method to update the matrices if you need to.
-
-### updateContainerMatrices
-
-```ts
-type updateContainerMatrices = (force?: boolean) => void;
-```
-
-Computes and caches the world transform matrices of the [`elementContainer`](#elementcontainer) and the [`dragContainer`](#dragcontainer). By default this method will not update the matrices if the matrices are considered valid. However, you can set the `force` argument to true to forcefully update the matrices.
-
-### updateContainerOffset
-
-```ts
-type updateContainerOffset = (force?: boolean) => void;
-```
-
-Computes the offset between [`elementOffsetContainer`](#elementoffsetcontainer) and [`dragOffsetContainer`](#dragoffsetcontainer). By default this method will use the cached client offset values for both elements. However, you can set the `force` argument to true to forcefully recalculate the offset.
+Returns the world transform matrix of the [`dragContainer`](#dragcontainer), which is computed and cached at the start of the drag. The first matrix in the returned array is the world transform matrix and the second matrix is the inverse of the world transform matrix.
 
 ### updateSize
 

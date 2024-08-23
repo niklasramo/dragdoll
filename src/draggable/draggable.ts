@@ -10,15 +10,15 @@ import { DraggableDragItem } from './draggable-drag-item.js';
 
 import { ticker, tickerPhases } from '../singletons/ticker.js';
 
-import { appendElement } from 'utils/append-element.js';
+import { appendElement } from '../utils/append-element.js';
 
-import { roundNumber } from 'utils/round-number.js';
+import { roundNumber } from '../utils/round-number.js';
 
-import { resetMatrix } from 'utils/reset-matrix.js';
+import { resetMatrix } from '../utils/reset-matrix.js';
 
-import { areMatricesEqual } from 'utils/are-matrices-equal.js';
+import { areMatricesEqual } from '../utils/are-matrices-equal.js';
 
-import { isMatrixWarped } from 'utils/is-matrix-warped.js';
+import { isMatrixWarped } from '../utils/is-matrix-warped.js';
 
 import { Writeable, CSSProperties, Point } from '../types.js';
 
@@ -26,7 +26,7 @@ const SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: t
 
 const POSITION_CHANGE = { x: 0, y: 0 };
 
-const DOM_MATRIX = new DOMMatrix();
+const ELEMENT_MATRIX = new DOMMatrix();
 
 const TEMP_MATRIX = new DOMMatrix();
 
@@ -43,6 +43,18 @@ enum DraggableStartPredicateState {
   REJECTED = 2,
 }
 
+export type DraggableModifierData<S extends Sensor[], E extends S[number]['events']> = {
+  draggable: Draggable<S, E>;
+  drag: DraggableDrag<S, E>;
+  item: DraggableDragItem<S, E>;
+  phase: 'start' | 'move' | 'end';
+};
+
+export type DraggableModifier<S extends Sensor[], E extends S[number]['events']> = (
+  change: Point,
+  data: DraggableModifierData<S, E>,
+) => Point;
+
 export interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
   container: HTMLElement | null;
   startPredicate: (data: {
@@ -50,44 +62,23 @@ export interface DraggableSettings<S extends Sensor[], E extends S[number]['even
     sensor: S[number];
     event: E['start'] | E['move'];
   }) => boolean | undefined;
-  getElements: (data: {
+  elements: (data: {
     draggable: Draggable<S, E>;
-    sensor: S[number];
-    startEvent: E['start'] | E['move'];
+    drag: DraggableDrag<S, E>;
   }) => (HTMLElement | SVGSVGElement)[] | null;
-  releaseElements: (data: {
+  frozenStyles: (data: {
     draggable: Draggable<S, E>;
-    sensor: S[number];
-    elements: (HTMLElement | SVGSVGElement)[];
-  }) => void;
-  getFrozenProps: (data: {
-    draggable: Draggable<S, E>;
-    sensor: S[number];
+    drag: DraggableDrag<S, E>;
     item: DraggableDragItem<S, E>;
     style: CSSStyleDeclaration;
   }) => CSSProperties | (keyof CSSProperties)[] | null;
-  getStartPosition: (data: {
+  positionModifiers: DraggableModifier<S, E>[];
+  applyPosition: (data: {
     draggable: Draggable<S, E>;
-    sensor: S[number];
+    drag: DraggableDrag<S, E>;
     item: DraggableDragItem<S, E>;
-    style: CSSStyleDeclaration;
-  }) => Point;
-  setPosition: (data: {
-    draggable: Draggable<S, E>;
-    sensor: S[number];
-    phase: 'start' | 'move' | 'end' | 'align' | 'start-align';
-    item: DraggableDragItem<S, E>;
-    x: number;
-    y: number;
+    phase: 'start' | 'move' | 'end' | 'align';
   }) => void;
-  getPositionChange: (data: {
-    draggable: Draggable<S, E>;
-    sensor: S[number];
-    item: DraggableDragItem<S, E>;
-    event: E['start'] | E['move'];
-    prevEvent: E['start'] | E['move'];
-    startEvent: E['start'] | E['move'];
-  }) => Point;
 }
 
 export interface DraggablePlugin {
@@ -109,32 +100,34 @@ export interface DraggableEventCallbacks<E extends SensorEvents> {
 export const DraggableDefaultSettings: DraggableSettings<any, any> = {
   container: null,
   startPredicate: () => true,
-  getElements: () => null,
-  releaseElements: () => null,
-  getFrozenProps: () => null,
-  getStartPosition: () => {
-    return { x: 0, y: 0 };
-  },
-  setPosition: ({ item, x, y, phase }) => {
+  elements: () => null,
+  frozenStyles: () => null,
+  applyPosition: ({ item, phase }) => {
     const isEndPhase = phase === 'end';
     const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
     const [_dragContainerMatrix, inverseDragContainerMatrix] = item.getDragContainerMatrix();
-    const { startOffset, containerOffset, elementTransformMatrix, elementTransformOrigin } = item;
+    const {
+      position,
+      alignmentOffset,
+      containerOffset,
+      elementTransformMatrix,
+      elementTransformOrigin,
+    } = item;
     const { x: oX, y: oY, z: oZ } = elementTransformOrigin;
     const needsOriginOffset =
       !elementTransformMatrix.isIdentity && (oX !== 0 || oY !== 0 || oZ !== 0);
-    const tX = isEndPhase ? x : containerOffset.x + (x - startOffset.x);
-    const tY = isEndPhase ? y : containerOffset.y + (y - startOffset.y);
+    const tX = position.x + alignmentOffset.x + containerOffset.x;
+    const tY = position.y + alignmentOffset.y + containerOffset.y;
 
     // Reset the matrix to identity.
-    resetMatrix(DOM_MATRIX);
+    resetMatrix(ELEMENT_MATRIX);
 
     // First of all negate the element's transform origin.
     if (needsOriginOffset) {
       if (oZ === 0) {
-        DOM_MATRIX.translateSelf(oX * -1, oY * -1);
+        ELEMENT_MATRIX.translateSelf(-oX, -oY);
       } else {
-        DOM_MATRIX.translateSelf(oX * -1, oY * -1, oZ * -1);
+        ELEMENT_MATRIX.translateSelf(-oX, -oY, -oZ);
       }
     }
 
@@ -145,44 +138,40 @@ export const DraggableDefaultSettings: DraggableSettings<any, any> = {
     // appended to the drag container (if defined).
     if (isEndPhase) {
       if (!inverseContainerMatrix.isIdentity) {
-        DOM_MATRIX.multiplySelf(inverseContainerMatrix);
+        ELEMENT_MATRIX.multiplySelf(inverseContainerMatrix);
       }
     } else {
       if (!inverseDragContainerMatrix.isIdentity) {
-        DOM_MATRIX.multiplySelf(inverseDragContainerMatrix);
+        ELEMENT_MATRIX.multiplySelf(inverseDragContainerMatrix);
       }
     }
 
     // Apply the translation (in world space coordinates).
     resetMatrix(TEMP_MATRIX).translateSelf(tX, tY);
-    DOM_MATRIX.multiplySelf(TEMP_MATRIX);
+    ELEMENT_MATRIX.multiplySelf(TEMP_MATRIX);
 
     // Apply the element's original container's world matrix so we can apply
     // the element's original transform as if it was in the original
     // container's local space coordinates.
     if (!containerMatrix.isIdentity) {
-      DOM_MATRIX.multiplySelf(containerMatrix);
+      ELEMENT_MATRIX.multiplySelf(containerMatrix);
     }
 
     // Undo the transform origin negation.
     if (needsOriginOffset) {
       resetMatrix(TEMP_MATRIX).translateSelf(oX, oY, oZ);
-      DOM_MATRIX.multiplySelf(TEMP_MATRIX);
+      ELEMENT_MATRIX.multiplySelf(TEMP_MATRIX);
     }
 
     // Apply the element's original transform.
     if (!elementTransformMatrix.isIdentity) {
-      DOM_MATRIX.multiplySelf(elementTransformMatrix);
+      ELEMENT_MATRIX.multiplySelf(elementTransformMatrix);
     }
 
     // Apply the matrix to the element.
-    item.element.style.transform = `${DOM_MATRIX}`;
+    item.element.style.transform = `${ELEMENT_MATRIX}`;
   },
-  getPositionChange: ({ event, prevEvent }) => {
-    POSITION_CHANGE.x = event.x - prevEvent.x;
-    POSITION_CHANGE.y = event.y - prevEvent.y;
-    return POSITION_CHANGE;
-  },
+  positionModifiers: [],
 } as const;
 
 export class Draggable<
@@ -261,23 +250,19 @@ export class Draggable<
     const {
       container = defaults.container,
       startPredicate = defaults.startPredicate,
-      getElements = defaults.getElements,
-      releaseElements = defaults.releaseElements,
-      getFrozenProps = defaults.getFrozenProps,
-      getStartPosition = defaults.getStartPosition,
-      setPosition = defaults.setPosition,
-      getPositionChange = defaults.getPositionChange,
+      elements = defaults.elements,
+      frozenStyles = defaults.frozenStyles,
+      positionModifiers = defaults.positionModifiers,
+      applyPosition = defaults.applyPosition,
     } = options || {};
 
     return {
       container,
       startPredicate,
-      getElements,
-      releaseElements,
-      getFrozenProps,
-      getStartPosition,
-      setPosition,
-      getPositionChange,
+      elements,
+      frozenStyles,
+      positionModifiers,
+      applyPosition,
     };
   }
 
@@ -360,12 +345,11 @@ export class Draggable<
 
     // Get elements that we'll need to move with the drag.
     // NB: It is okay if there are no elements and thus no items. The drag
-    // process will process as usual, but nothing is moving by default.
+    // process will process as usual, but no elements will be moved.
     const elements =
-      this.settings.getElements({
+      this.settings.elements({
         draggable: this,
-        sensor: drag.sensor,
-        startEvent: drag.startEvent,
+        drag,
       }) || [];
 
     // Create drag items.
@@ -388,18 +372,16 @@ export class Draggable<
       }
 
       // Freeze element's props if such are provided.
-      if (item.frozenProps) {
-        Object.assign(item.element.style, item.frozenProps);
+      if (item.frozenStyles) {
+        Object.assign(item.element.style, item.frozenStyles);
       }
 
       // Set element's start position.
-      this.settings.setPosition({
+      this.settings.applyPosition({
         phase: 'start',
         draggable: this,
-        sensor: drag.sensor,
+        drag,
         item,
-        x: item.position.x,
-        y: item.position.y,
       });
     }
 
@@ -420,25 +402,23 @@ export class Draggable<
       }
 
       const rect = item.element.getBoundingClientRect();
-      const { startOffset } = item;
+      const { alignmentOffset } = item;
 
       // Round the align diff to nearest 3rd decimal to avoid applying it if the
       // value is so small that it's not visible.
-      startOffset.x = roundNumber(rect.x - item.clientRect.x, 3);
-      startOffset.y = roundNumber(rect.y - item.clientRect.y, 3);
+      alignmentOffset.x += roundNumber(item.clientRect.x - rect.x, 3);
+      alignmentOffset.y += roundNumber(item.clientRect.y - rect.y, 3);
     }
 
     // Apply start offset (if needed).
     for (const item of drag.items) {
-      const { startOffset } = item;
-      if (startOffset.x !== 0 || startOffset.y !== 0) {
-        this.settings.setPosition({
-          phase: 'start-align',
+      const { alignmentOffset } = item;
+      if (alignmentOffset.x !== 0 || alignmentOffset.y !== 0) {
+        this.settings.applyPosition({
+          phase: 'align',
           draggable: this,
-          sensor: drag.sensor,
+          drag,
           item,
-          x: item.position.x,
-          y: item.position.y,
         });
       }
     }
@@ -459,32 +439,40 @@ export class Draggable<
 
     // Get next event and previous event so we can compute the movement
     // difference between the clientX/Y values.
-    const { event, prevEvent, startEvent, sensor } = drag;
+    const { event, prevEvent } = drag;
     if (event === prevEvent) return;
 
-    for (const item of drag.items) {
-      // Compute how much x and y needs to be transformed.
-      const { x: changeX, y: changeY } = this.settings.getPositionChange({
-        draggable: this,
-        sensor,
-        item,
-        event,
-        prevEvent,
-        startEvent,
-      });
+    // Compute the default movement diff.
+    const defaultChangeX = event.x - prevEvent.x;
+    const defaultChangeY = event.y - prevEvent.y;
 
-      // Update horizontal position data.
-      if (changeX) {
-        item.position.x += changeX;
-        item.clientRect.x += changeX;
-        item['_moveDiff'].x += changeX;
+    // Run all modifiers for the move phase.
+    const { positionModifiers } = this.settings;
+    for (const item of drag.items) {
+      let positionChange = POSITION_CHANGE;
+      positionChange.x = defaultChangeX;
+      positionChange.y = defaultChangeY;
+      for (const modifier of positionModifiers) {
+        positionChange = modifier(positionChange, {
+          draggable: this,
+          drag,
+          item,
+          phase: 'move',
+        });
       }
 
-      // Update vertical position data.
-      if (changeY) {
-        item.position.y += changeY;
-        item.clientRect.y += changeY;
-        item['_moveDiff'].y += changeY;
+      // Update horizontal position data (if needed).
+      if (positionChange.x) {
+        item.position.x += positionChange.x;
+        item.clientRect.x += positionChange.x;
+        item['_moveDiff'].x += positionChange.x;
+      }
+
+      // Update vertical position data (if needed).
+      if (positionChange.y) {
+        item.position.y += positionChange.y;
+        item.clientRect.y += positionChange.y;
+        item['_moveDiff'].y += positionChange.y;
       }
     }
 
@@ -504,13 +492,11 @@ export class Draggable<
       item['_moveDiff'].x = 0;
       item['_moveDiff'].y = 0;
 
-      this.settings.setPosition({
+      this.settings.applyPosition({
         phase: 'move',
         draggable: this,
-        sensor: drag.sensor,
+        drag,
         item,
-        x: item.position.x,
-        y: item.position.y,
       });
     }
 
@@ -534,12 +520,12 @@ export class Draggable<
 
       // Update horizontal position data.
       const alignDiffX = item.clientRect.x - item['_moveDiff'].x - x;
-      item.position.x = item.position.x - item['_alignDiff'].x + alignDiffX;
+      item.alignmentOffset.x = item.alignmentOffset.x - item['_alignDiff'].x + alignDiffX;
       item['_alignDiff'].x = alignDiffX;
 
       // Update vertical position data.
       const alignDiffY = item.clientRect.y - item['_moveDiff'].y - y;
-      item.position.y = item.position.y - item['_alignDiff'].y + alignDiffY;
+      item.alignmentOffset.y = item.alignmentOffset.y - item['_alignDiff'].y + alignDiffY;
       item['_alignDiff'].y = alignDiffY;
     }
   }
@@ -552,13 +538,11 @@ export class Draggable<
       item['_alignDiff'].x = 0;
       item['_alignDiff'].y = 0;
 
-      this.settings.setPosition({
+      this.settings.applyPosition({
         phase: 'align',
         draggable: this,
-        sensor: drag.sensor,
+        drag,
         item,
-        x: item.position.x,
-        y: item.position.y,
       });
     }
   }
@@ -644,6 +628,9 @@ export class Draggable<
     // Unbind scroll listener.
     window.removeEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
 
+    // Get position modifiers.
+    const { positionModifiers } = this.settings;
+
     // Adjust items' positions for the drop. When the drag starts the container
     // offset is computed once, but not updated during drag (because we don't
     // need to). But on drop we need to how much the offset diff has changed
@@ -654,49 +641,59 @@ export class Draggable<
     for (const item of drag.items) {
       if (item.elementContainer !== item.dragContainer) {
         const { x: startX, y: startY } = item.containerOffset;
-        item.updateContainerOffset();
+        item['_updateContainerOffset']();
         const { x: endX, y: endY } = item.containerOffset;
-        item.position.x += (endX - startX) * -1;
-        item.position.y += (endY - startY) * -1;
+        item.alignmentOffset.x = startX - endX;
+        item.alignmentOffset.y = startY - endY;
         item.containerOffset.x = 0;
         item.containerOffset.y = 0;
       }
+
+      // Run all modifiers for the end phase.
+      let positionChange = POSITION_CHANGE;
+      positionChange.x = 0;
+      positionChange.y = 0;
+      for (const modifier of positionModifiers) {
+        positionChange = modifier(positionChange, {
+          draggable: this,
+          drag,
+          item,
+          phase: 'end',
+        });
+      }
+
+      // Update horizontal position data (if needed).
+      if (positionChange.x) {
+        item.position.x += positionChange.x;
+        item.clientRect.x += positionChange.x;
+      }
+
+      // Update vertical position data (if needed).
+      if (positionChange.y) {
+        item.position.y += positionChange.y;
+        item.clientRect.y += positionChange.y;
+      }
     }
 
-    // Move elements within the root container and collect all elements
-    // to an elements array.
-    const elements: (HTMLElement | SVGSVGElement)[] = [];
+    // Move elements within the root container.
     for (const item of drag.items) {
-      elements.push(item.element);
-
       if (item.elementContainer !== item.dragContainer) {
         appendElement(item.element, item.elementContainer);
       }
 
       // Unfreeze element's props if such are provided.
-      if (item.unfrozenProps) {
-        for (const key in item.unfrozenProps) {
-          item.element.style[key] = item.unfrozenProps[key] || '';
+      if (item.unfrozenStyles) {
+        for (const key in item.unfrozenStyles) {
+          item.element.style[key] = item.unfrozenStyles[key] || '';
         }
       }
 
       // Set final position after drag.
-      this.settings.setPosition({
+      this.settings.applyPosition({
         phase: 'end',
         draggable: this,
-        sensor: drag.sensor,
+        drag,
         item,
-        x: item.position.x,
-        y: item.position.y,
-      });
-    }
-
-    // Call "releaseElements" callback.
-    if (elements.length) {
-      this.settings.releaseElements({
-        draggable: this,
-        sensor: drag.sensor!,
-        elements,
       });
     }
 

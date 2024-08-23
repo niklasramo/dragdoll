@@ -23,7 +23,7 @@ keyboardSensor.on('cancel', (e) => console.log('drag canceled', e));
 
 // Use the sensor to move an element.
 const draggable = new Draggable([keyboardSensor], {
-  getElements: () => [element],
+  elements: () => [element],
 });
 ```
 
@@ -35,7 +35,7 @@ class KeyboardSensor {
 }
 ```
 
-The constuctor accepts two arguments: the element which should be focused to start the drag and an optional [Settings](#settings) object, which you can also change later via [`updateSettings`](#updatesettings) method.
+The constuctor accepts two arguments: the element which should be focused to start the drag and an optional [`settings`](#settings) object, which you can also change later via [`updateSettings`](#updatesettings) method.
 
 ## Settings
 
@@ -153,4 +153,4 @@ keyboardSensor.updateSettings({
 });
 ```
 
-Updates the the sensor's settings. Accepts [Settings](#settings) object as the first argument, only the options you provide will be updated.
+Updates the the sensor's settings. Accepts [`settings`](#settings) object as the first argument, only the options you provide will be updated.

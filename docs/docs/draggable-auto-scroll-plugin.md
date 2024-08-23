@@ -1,4 +1,4 @@
-[Draggable](/docs/draggable) →
+[Draggable Plugins](/docs/draggable-plugins) →
 
 # AutoScroll Plugin
 
@@ -19,7 +19,7 @@ const element = document.querySelector('.draggable');
 const pointerSensor = new PointerSensor(element);
 const keyboardSensor = new KeyboardSensor();
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
-  getElements: () => [element],
+  elements: () => [element],
   startPredicate: createPointerSensorStartPredicate(),
 }).use(
   autoScrollPlugin({

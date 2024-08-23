@@ -10,7 +10,7 @@ describe('Draggable', () => {
     const el = createTestElement();
     const pointerSensor = new PointerSensor(el, { sourceEvents: 'mouse' });
     const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-    const draggable = new Draggable([pointerSensor, keyboardSensor], { getElements: () => [el] });
+    const draggable = new Draggable([pointerSensor, keyboardSensor], { elements: () => [el] });
 
     // Make sure the element is at the top left corner.
     let rect = el.getBoundingClientRect();
@@ -80,7 +80,7 @@ describe('Draggable', () => {
       transformOrigin: '12px 13px',
     });
     const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-    const draggable = new Draggable([keyboardSensor], { getElements: () => [el] });
+    const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
 
     // Add the element to a container.
     container.appendChild(el);
@@ -113,7 +113,7 @@ describe('Draggable', () => {
         const container = createTestElement();
         const el = createTestElement();
         const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-        const draggable = new Draggable([keyboardSensor], { container, getElements: () => [el] });
+        const draggable = new Draggable([keyboardSensor], { container, elements: () => [el] });
         const originalContainer = el.parentNode;
 
         // Start dragging the element with keyboard.
@@ -172,7 +172,7 @@ describe('Draggable', () => {
             });
             const draggable = new Draggable([keyboardSensor], {
               container,
-              getElements: () => [el],
+              elements: () => [el],
             });
             const originalContainer = el.parentNode;
 
@@ -242,7 +242,7 @@ describe('Draggable', () => {
         });
         const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
         const draggable = new Draggable([keyboardSensor], {
-          getElements: () => [el],
+          elements: () => [el],
           container: dragContainer,
         });
 
@@ -273,14 +273,14 @@ describe('Draggable', () => {
       });
     });
 
-    describe('getElements', () => {
+    describe('elements', () => {
       it('should be a function that returns an array of the dragged elements', async () => {
         const elA = createTestElement();
         const elB = createTestElement();
         const elC = createTestElement();
         const keyboardSensor = new KeyboardSensor(elA, { moveDistance: 1 });
         const draggable = new Draggable([keyboardSensor], {
-          getElements: () => [elB, elC],
+          elements: () => [elB, elC],
         });
 
         // Start dragging the element with keyboard.

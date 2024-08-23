@@ -16,7 +16,7 @@ const dragElement = document.querySelector('.dragElement');
 const pointerSensor = new PointerSensor(dragElement);
 const keyboardSensor = new KeyboardSensor();
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
-  getElements: () => [dragElement],
+  elements: () => [dragElement],
   startPredicate: createPointerSensorStartPredicate(),
 });
 ```
@@ -29,7 +29,7 @@ class Draggable {
 }
 ```
 
-The constuctor accepts two arguments: `sensors` and `options`. The first argument is an array of sensors that the Draggable will use as inputs for moving the draggable elements around. The sensors are required and can't be changed after Draggable instantiation. The second argument is an optional [DraggableSettings](#settings) object, which you can also change later via [`updateSettings`](#updatesettings) method.
+The constuctor accepts two arguments: `sensors` and `options`. The first argument is an array of sensors that the Draggable will use as inputs for moving the draggable elements around. The sensors are required and can't be changed after Draggable instantiation. The second argument is an optional [`DraggableSettings`](#settings) object, which you can also change later via [`updateSettings`](#updatesettings) method.
 
 ## Settings
 
@@ -46,7 +46,7 @@ The element the dragged elements should be appended to for the duration of the d
 Default is `null`.
 
 ::: info
-When using a custom container, the dragged element must be either `absolute` or `fixed` positioned. You can overcome this limitation by changing the element's CSS position to `absolute` or `fixed` just before the drag starts ([`getElements`](#getelements)) and then back to the original position after the drag ends ([`releaseElements`](#releaseelements)). Additionally you will need to offset the element's position to match the original position before the drag starts, e.g. by using `transform: translate(x, y)`.
+When using a custom container, the dragged element must be either `absolute` or `fixed` positioned. You can overcome this limitation by changing the element's CSS position to `absolute` or `fixed` just before the drag starts (e.g. using [`elements`](#elements)) and then back to the original position after the drag ends. Additionally you will need to offset the element's position to match the original position before the drag starts, e.g. by using `transform: translate(x, y)`.
 :::
 
 ### startPredicate
@@ -69,13 +69,13 @@ Return:
 
 Default is `() => true`.
 
-### getElements
+### elements
 
+<!-- prettier-ignore -->
 ```ts
-type getElements = (data: {
+type elements = (data: {
   draggable: Draggable;
-  sensor: Sensor;
-  startEvent: SensorStartEvent | SensorMoveEvent;
+  drag: DraggableDrag;
 }) => HTMLElement[] | null;
 ```
 
@@ -83,26 +83,12 @@ A function that should return all the elements you want to move during the drag.
 
 Default is `() => null`.
 
-### releaseElements
+### frozenStyles
 
 ```ts
-type releaseElements = (data: {
-  draggable: Draggable;
-  sensor: Sensor;
-  elements: HTMLElement[];
-}) => void;
-```
-
-A clean up function that should handle disposing the dragged elements, if necessary. This function is called when drag ends.
-
-Default is `() => {}`.
-
-### getFrozenProps
-
-```ts
-type getFrozenProps: (data: {
+type frozenStyles: (data: {
     draggable: Draggable;
-    sensor: S[number];
+    drag: DraggableDrag;
     item: DraggableDragItem;
     style: CSSStyleDeclaration;
   }) =>  string[] | {[key: string]: string} | null;
@@ -114,64 +100,45 @@ You can also return an object with key-value pairs where the key is the CSS prop
 
 By default nothing is frozen.
 
-### getStartPosition
+### applyPosition
 
 ```ts
-type getStartPosition = (data: {
+type applyPosition = (data: {
   draggable: Draggable;
-  sensor: Sensor;
+  drag: DraggableDrag;
   item: DraggableDragItem;
-}) => {
-  x: number;
-  y: number;
-};
-```
-
-A function that should return a dragged element's initial drag position. The value is stored to drag data and updated on sensor's events. Any container offsets, when the element is appended to drag container, are automatically added to the drag position. The drag position is provided to [`setPosition`](#setposition) function where you can apply the position to the element. In short, this function's return value is relative to your custom logic and only meaningful in the context of [`setPosition`](#setposition).
-
-Default is a function that stores the element's current computed transform and returns `{ x: 0, y: 0 }`.
-
-### setPosition
-
-```ts
-type setPosition = (data: {
-  draggable: Draggable;
-  sensor: Sensor;
   phase: 'start' | 'move' | 'end' | 'align' | 'start-align';
-  item: DraggableDragItem;
-  x: number;
-  y: number;
 }) => void;
 ```
 
-A function that should apply the current drag position (`x` and `y` coordinates) to the provided dragged element. Note that you can build custom behaviour here and e.g. update the element's "left" and "top" CSS properties instead of the default "transform".
+A function that should apply the current [`position`](/docs/draggable-drag-item#position) to a dragged [`element`](/docs/draggable-drag-item#element).
 
-Default is a function that applies the `x` and `y` coordinates to the element's transform, while respecting the element's original transform value.
+Default is a (very involved) function that applies the position, container offset, alignment offset and matrix transform offsets the element's transform property, while respecting the element's original transform and transform origin.
 
 Also note that the `phase` argument is provided to the function to help you determine what phase of the drag process you are in:
 
 - `start`: Called when the drag starts.
-- `move`: Called on every "move" event emitted by the currently tracked sensor.
+- `move`: Called on every "move" event emitted by the currently tracked sensor during the drag.
 - `end`: Called when the drag ends.
-- `align`: Called when the element's position is realigned via [`align`](#align) method.
-- `start-align`: Called (if needed) during the drag start phase as an additional step after `start` phase.
+- `align`: Called when the element's position is realigned (mostly via [`align`](#align) method).
 
-### getPositionChange
+### positionModifiers
 
 ```ts
-type getPositionChange = (data: {
-  draggable: Draggable;
-  sensor: Sensor;
-  item: DraggableDragItem;
-  event: SensorMoveEvent;
-  prevEvent: SensorStartEvent | SensorMoveEvent;
-  startEvent: SensorStartEvent | SensorMoveEvent;
-}) => { x: number; y: number };
+type DraggableModifier = (
+  change: { x: number; y: number },
+  data: {
+    draggable: Draggable;
+    drag: DraggableDrag;
+    item: DraggableDragItem;
+    phase: 'start' | 'move' | 'end';
+  },
+) => { x: number; y: number };
+
+type positionModifiers = DraggableModifier | DraggableModifier[];
 ```
 
-A function that should return the position change of a dragged element. This function is called on every "move" event emitted by the currently tracked sensor during drag. Note that you can get creative here and build any kind of custom logic (e.g. snap to grid) you might need.
-
-Default is a function that returns the diff between (client) x and y coordinates of `event` and `prevEvent`.
+An array of position modifier functions that should return the position change of a dragged element. Checkout the [Draggable Modifiers](/docs/draggable-modifiers) page for detailed information.
 
 ## Properties
 
@@ -189,7 +156,7 @@ An array of all the sensors attached to the Draggable instance. Read-only.
 type settings = DraggableSettings;
 ```
 
-Current [settings](#settings) of the Draggable instance. Read-only.
+Current [`settings`](#settings) of the Draggable instance. Read-only.
 
 ### drag
 
@@ -304,7 +271,7 @@ draggable.updateSettings({
 });
 ```
 
-Updates the the draggable's settings. Accepts [DraggableSettings](#settings) as the first argument, only the options you provide will be updated.
+Updates the the draggable's settings. Accepts [`DraggableSettings`](#settings) as the first argument, only the options you provide will be updated.
 
 ### use
 

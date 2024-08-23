@@ -4468,6 +4468,7 @@ function isMatrixWarped(m) {
 
 // src/draggable/draggable-drag-item.ts
 var MEASURE_ELEMENT = createMeasureElement();
+var START_POINT = { x: 0, y: 0 };
 var DraggableDragItem = class {
   constructor(element, draggable) {
     if (!element.isConnected) {
@@ -4483,11 +4484,11 @@ var DraggableDragItem = class {
     this.element = element;
     this.elementTransformOrigin = parseTransformOrigin(style.transformOrigin);
     this.elementTransformMatrix = new DOMMatrix().setMatrixValue(style.transform);
-    this.frozenProps = null;
-    this.unfrozenProps = null;
+    this.frozenStyles = null;
+    this.unfrozenStyles = null;
     this.position = { x: 0, y: 0 };
     this.containerOffset = { x: 0, y: 0 };
-    this.startOffset = { x: 0, y: 0 };
+    this.alignmentOffset = { x: 0, y: 0 };
     this._moveDiff = { x: 0, y: 0 };
     this._alignDiff = { x: 0, y: 0 };
     this._matrixCache = drag["_matrixCache"];
@@ -4512,49 +4513,57 @@ var DraggableDragItem = class {
     const dragOffsetContainer = dragContainer === elementContainer ? elementOffsetContainer : getOffsetContainer(element, { container: dragContainer });
     this.dragOffsetContainer = dragOffsetContainer;
     {
-      const { width, height, x: x2, y: y2 } = clientRect;
-      this.clientRect = { width, height, x: x2, y: y2 };
+      const { width, height, x, y } = clientRect;
+      this.clientRect = { width, height, x, y };
     }
-    this._computeContainerMatrices();
-    this.updateContainerOffset();
-    const { x, y } = draggable.settings.getStartPosition({
+    this._updateContainerMatrices();
+    this._updateContainerOffset();
+    const { positionModifiers } = draggable.settings;
+    let startPoint = START_POINT;
+    startPoint.x = this.position.x;
+    startPoint.y = this.position.y;
+    for (const modifier of positionModifiers) {
+      startPoint = modifier(startPoint, {
+        draggable,
+        drag,
+        item: this,
+        phase: "start"
+      });
+    }
+    this.position.x += startPoint.x;
+    this.position.y += startPoint.x;
+    this.clientRect.x += startPoint.x;
+    this.clientRect.y += startPoint.x;
+    const frozenStyles = draggable.settings.frozenStyles({
       draggable,
-      sensor: drag.sensor,
+      drag,
       item: this,
       style
     });
-    this.position.x = x;
-    this.position.y = y;
-    const frozenProps = draggable.settings.getFrozenProps({
-      draggable,
-      sensor: drag.sensor,
-      item: this,
-      style
-    });
-    if (Array.isArray(frozenProps)) {
-      if (frozenProps.length) {
+    if (Array.isArray(frozenStyles)) {
+      if (frozenStyles.length) {
         const props = {};
-        for (const prop of frozenProps) {
+        for (const prop of frozenStyles) {
           props[prop] = style[prop];
         }
-        this.frozenProps = props;
+        this.frozenStyles = props;
       } else {
-        this.frozenProps = null;
+        this.frozenStyles = null;
       }
     } else {
-      this.frozenProps = frozenProps;
+      this.frozenStyles = frozenStyles;
     }
-    if (this.frozenProps) {
-      const unfrozenProps = {};
-      for (const key in this.frozenProps) {
-        if (this.frozenProps.hasOwnProperty(key)) {
-          unfrozenProps[key] = element.style[key];
+    if (this.frozenStyles) {
+      const unfrozenStyles = {};
+      for (const key in this.frozenStyles) {
+        if (this.frozenStyles.hasOwnProperty(key)) {
+          unfrozenStyles[key] = element.style[key];
         }
       }
-      this.unfrozenProps = unfrozenProps;
+      this.unfrozenStyles = unfrozenStyles;
     }
   }
-  _computeContainerMatrices() {
+  _updateContainerMatrices() {
     [this.elementContainer, this.dragContainer].forEach((container) => {
       if (!this._matrixCache.isValid(container)) {
         const matrices = this._matrixCache.get(container) || [new DOMMatrix(), new DOMMatrix()];
@@ -4565,13 +4574,7 @@ var DraggableDragItem = class {
       }
     });
   }
-  getContainerMatrix() {
-    return this._matrixCache.get(this.elementContainer);
-  }
-  getDragContainerMatrix() {
-    return this._matrixCache.get(this.dragContainer);
-  }
-  updateContainerOffset(force = false) {
+  _updateContainerOffset() {
     const {
       elementOffsetContainer,
       elementContainer,
@@ -4581,10 +4584,6 @@ var DraggableDragItem = class {
       _clientOffsetCache,
       _matrixCache
     } = this;
-    if (force) {
-      _clientOffsetCache.invalidate(dragOffsetContainer);
-      _clientOffsetCache.invalidate(elementOffsetContainer);
-    }
     if (elementOffsetContainer !== dragOffsetContainer) {
       const [dragOffset, elementOffset] = [
         [dragContainer, dragOffsetContainer],
@@ -4616,6 +4615,12 @@ var DraggableDragItem = class {
       containerOffset.x = 0;
       containerOffset.y = 0;
     }
+  }
+  getContainerMatrix() {
+    return this._matrixCache.get(this.elementContainer);
+  }
+  getDragContainerMatrix() {
+    return this._matrixCache.get(this.dragContainer);
   }
   updateSize(dimensions) {
     if (dimensions) {
@@ -4658,62 +4663,60 @@ function areMatricesEqual(m1, m2) {
 // src/draggable/draggable.ts
 var SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
 var POSITION_CHANGE = { x: 0, y: 0 };
-var DOM_MATRIX = new DOMMatrix();
+var ELEMENT_MATRIX = new DOMMatrix();
 var TEMP_MATRIX = new DOMMatrix();
 var DraggableDefaultSettings = {
   container: null,
   startPredicate: () => true,
-  getElements: () => null,
-  releaseElements: () => null,
-  getFrozenProps: () => null,
-  getStartPosition: () => {
-    return { x: 0, y: 0 };
-  },
-  setPosition: ({ item, x, y, phase }) => {
+  elements: () => null,
+  frozenStyles: () => null,
+  applyPosition: ({ item, phase }) => {
     const isEndPhase = phase === "end";
     const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
     const [_dragContainerMatrix, inverseDragContainerMatrix] = item.getDragContainerMatrix();
-    const { startOffset, containerOffset, elementTransformMatrix, elementTransformOrigin } = item;
+    const {
+      position,
+      alignmentOffset,
+      containerOffset,
+      elementTransformMatrix,
+      elementTransformOrigin
+    } = item;
     const { x: oX, y: oY, z: oZ } = elementTransformOrigin;
     const needsOriginOffset = !elementTransformMatrix.isIdentity && (oX !== 0 || oY !== 0 || oZ !== 0);
-    const tX = isEndPhase ? x : containerOffset.x + (x - startOffset.x);
-    const tY = isEndPhase ? y : containerOffset.y + (y - startOffset.y);
-    resetMatrix(DOM_MATRIX);
+    const tX = position.x + alignmentOffset.x + containerOffset.x;
+    const tY = position.y + alignmentOffset.y + containerOffset.y;
+    resetMatrix(ELEMENT_MATRIX);
     if (needsOriginOffset) {
       if (oZ === 0) {
-        DOM_MATRIX.translateSelf(oX * -1, oY * -1);
+        ELEMENT_MATRIX.translateSelf(-oX, -oY);
       } else {
-        DOM_MATRIX.translateSelf(oX * -1, oY * -1, oZ * -1);
+        ELEMENT_MATRIX.translateSelf(-oX, -oY, -oZ);
       }
     }
     if (isEndPhase) {
       if (!inverseContainerMatrix.isIdentity) {
-        DOM_MATRIX.multiplySelf(inverseContainerMatrix);
+        ELEMENT_MATRIX.multiplySelf(inverseContainerMatrix);
       }
     } else {
       if (!inverseDragContainerMatrix.isIdentity) {
-        DOM_MATRIX.multiplySelf(inverseDragContainerMatrix);
+        ELEMENT_MATRIX.multiplySelf(inverseDragContainerMatrix);
       }
     }
     resetMatrix(TEMP_MATRIX).translateSelf(tX, tY);
-    DOM_MATRIX.multiplySelf(TEMP_MATRIX);
+    ELEMENT_MATRIX.multiplySelf(TEMP_MATRIX);
     if (!containerMatrix.isIdentity) {
-      DOM_MATRIX.multiplySelf(containerMatrix);
+      ELEMENT_MATRIX.multiplySelf(containerMatrix);
     }
     if (needsOriginOffset) {
       resetMatrix(TEMP_MATRIX).translateSelf(oX, oY, oZ);
-      DOM_MATRIX.multiplySelf(TEMP_MATRIX);
+      ELEMENT_MATRIX.multiplySelf(TEMP_MATRIX);
     }
     if (!elementTransformMatrix.isIdentity) {
-      DOM_MATRIX.multiplySelf(elementTransformMatrix);
+      ELEMENT_MATRIX.multiplySelf(elementTransformMatrix);
     }
-    item.element.style.transform = `${DOM_MATRIX}`;
+    item.element.style.transform = `${ELEMENT_MATRIX}`;
   },
-  getPositionChange: ({ event, prevEvent }) => {
-    POSITION_CHANGE.x = event.x - prevEvent.x;
-    POSITION_CHANGE.y = event.y - prevEvent.y;
-    return POSITION_CHANGE;
-  }
+  positionModifiers: []
 };
 var Draggable = class {
   constructor(sensors, options = {}) {
@@ -4756,22 +4759,18 @@ var Draggable = class {
     const {
       container = defaults.container,
       startPredicate = defaults.startPredicate,
-      getElements = defaults.getElements,
-      releaseElements = defaults.releaseElements,
-      getFrozenProps = defaults.getFrozenProps,
-      getStartPosition = defaults.getStartPosition,
-      setPosition = defaults.setPosition,
-      getPositionChange = defaults.getPositionChange
+      elements = defaults.elements,
+      frozenStyles = defaults.frozenStyles,
+      positionModifiers = defaults.positionModifiers,
+      applyPosition = defaults.applyPosition
     } = options || {};
     return {
       container,
       startPredicate,
-      getElements,
-      releaseElements,
-      getFrozenProps,
-      getStartPosition,
-      setPosition,
-      getPositionChange
+      elements,
+      frozenStyles,
+      positionModifiers,
+      applyPosition
     };
   }
   _emit(type3, ...e) {
@@ -4827,10 +4826,9 @@ var Draggable = class {
     const drag = this.drag;
     if (!drag) return;
     this._startPhase = 2 /* START_PREPARE */;
-    const elements = this.settings.getElements({
+    const elements = this.settings.elements({
       draggable: this,
-      sensor: drag.sensor,
-      startEvent: drag.startEvent
+      drag
     }) || [];
     drag.items = elements.map((element) => {
       return new DraggableDragItem(element, this);
@@ -4844,16 +4842,14 @@ var Draggable = class {
       if (item.dragContainer !== item.elementContainer) {
         appendElement(item.element, item.dragContainer);
       }
-      if (item.frozenProps) {
-        Object.assign(item.element.style, item.frozenProps);
+      if (item.frozenStyles) {
+        Object.assign(item.element.style, item.frozenStyles);
       }
-      this.settings.setPosition({
+      this.settings.applyPosition({
         phase: "start",
         draggable: this,
-        sensor: drag.sensor,
-        item,
-        x: item.position.x,
-        y: item.position.y
+        drag,
+        item
       });
     }
     for (const item of drag.items) {
@@ -4866,20 +4862,18 @@ var Draggable = class {
         continue;
       }
       const rect = item.element.getBoundingClientRect();
-      const { startOffset } = item;
-      startOffset.x = roundNumber(rect.x - item.clientRect.x, 3);
-      startOffset.y = roundNumber(rect.y - item.clientRect.y, 3);
+      const { alignmentOffset } = item;
+      alignmentOffset.x += roundNumber(item.clientRect.x - rect.x, 3);
+      alignmentOffset.y += roundNumber(item.clientRect.y - rect.y, 3);
     }
     for (const item of drag.items) {
-      const { startOffset } = item;
-      if (startOffset.x !== 0 || startOffset.y !== 0) {
-        this.settings.setPosition({
-          phase: "start-align",
+      const { alignmentOffset } = item;
+      if (alignmentOffset.x !== 0 || alignmentOffset.y !== 0) {
+        this.settings.applyPosition({
+          phase: "align",
           draggable: this,
-          sensor: drag.sensor,
-          item,
-          x: item.position.x,
-          y: item.position.y
+          drag,
+          item
         });
       }
     }
@@ -4890,26 +4884,32 @@ var Draggable = class {
   _prepareMove() {
     const drag = this.drag;
     if (!drag) return;
-    const { event, prevEvent, startEvent, sensor } = drag;
+    const { event, prevEvent } = drag;
     if (event === prevEvent) return;
+    const defaultChangeX = event.x - prevEvent.x;
+    const defaultChangeY = event.y - prevEvent.y;
+    const { positionModifiers } = this.settings;
     for (const item of drag.items) {
-      const { x: changeX, y: changeY } = this.settings.getPositionChange({
-        draggable: this,
-        sensor,
-        item,
-        event,
-        prevEvent,
-        startEvent
-      });
-      if (changeX) {
-        item.position.x += changeX;
-        item.clientRect.x += changeX;
-        item["_moveDiff"].x += changeX;
+      let positionChange = POSITION_CHANGE;
+      positionChange.x = defaultChangeX;
+      positionChange.y = defaultChangeY;
+      for (const modifier of positionModifiers) {
+        positionChange = modifier(positionChange, {
+          draggable: this,
+          drag,
+          item,
+          phase: "move"
+        });
       }
-      if (changeY) {
-        item.position.y += changeY;
-        item.clientRect.y += changeY;
-        item["_moveDiff"].y += changeY;
+      if (positionChange.x) {
+        item.position.x += positionChange.x;
+        item.clientRect.x += positionChange.x;
+        item["_moveDiff"].x += positionChange.x;
+      }
+      if (positionChange.y) {
+        item.position.y += positionChange.y;
+        item.clientRect.y += positionChange.y;
+        item["_moveDiff"].y += positionChange.y;
       }
     }
     drag.prevEvent = event;
@@ -4921,13 +4921,11 @@ var Draggable = class {
     for (const item of drag.items) {
       item["_moveDiff"].x = 0;
       item["_moveDiff"].y = 0;
-      this.settings.setPosition({
+      this.settings.applyPosition({
         phase: "move",
         draggable: this,
-        sensor: drag.sensor,
-        item,
-        x: item.position.x,
-        y: item.position.y
+        drag,
+        item
       });
     }
     if (drag.event) {
@@ -4940,10 +4938,10 @@ var Draggable = class {
     for (const item of drag.items) {
       const { x, y } = item.element.getBoundingClientRect();
       const alignDiffX = item.clientRect.x - item["_moveDiff"].x - x;
-      item.position.x = item.position.x - item["_alignDiff"].x + alignDiffX;
+      item.alignmentOffset.x = item.alignmentOffset.x - item["_alignDiff"].x + alignDiffX;
       item["_alignDiff"].x = alignDiffX;
       const alignDiffY = item.clientRect.y - item["_moveDiff"].y - y;
-      item.position.y = item.position.y - item["_alignDiff"].y + alignDiffY;
+      item.alignmentOffset.y = item.alignmentOffset.y - item["_alignDiff"].y + alignDiffY;
       item["_alignDiff"].y = alignDiffY;
     }
   }
@@ -4953,13 +4951,11 @@ var Draggable = class {
     for (const item of drag.items) {
       item["_alignDiff"].x = 0;
       item["_alignDiff"].y = 0;
-      this.settings.setPosition({
+      this.settings.applyPosition({
         phase: "align",
         draggable: this,
-        sensor: drag.sensor,
-        item,
-        x: item.position.x,
-        y: item.position.y
+        drag,
+        item
       });
     }
   }
@@ -5011,43 +5007,52 @@ var Draggable = class {
     ticker.off(tickerPhases.read, this._alignId);
     ticker.off(tickerPhases.write, this._alignId);
     window.removeEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS);
+    const { positionModifiers } = this.settings;
     drag["_clientOffsetCache"].clear();
     for (const item of drag.items) {
       if (item.elementContainer !== item.dragContainer) {
         const { x: startX, y: startY } = item.containerOffset;
-        item.updateContainerOffset();
+        item["_updateContainerOffset"]();
         const { x: endX, y: endY } = item.containerOffset;
-        item.position.x += (endX - startX) * -1;
-        item.position.y += (endY - startY) * -1;
+        item.alignmentOffset.x = startX - endX;
+        item.alignmentOffset.y = startY - endY;
         item.containerOffset.x = 0;
         item.containerOffset.y = 0;
       }
+      let positionChange = POSITION_CHANGE;
+      positionChange.x = 0;
+      positionChange.y = 0;
+      for (const modifier of positionModifiers) {
+        positionChange = modifier(positionChange, {
+          draggable: this,
+          drag,
+          item,
+          phase: "end"
+        });
+      }
+      if (positionChange.x) {
+        item.position.x += positionChange.x;
+        item.clientRect.x += positionChange.x;
+      }
+      if (positionChange.y) {
+        item.position.y += positionChange.y;
+        item.clientRect.y += positionChange.y;
+      }
     }
-    const elements = [];
     for (const item of drag.items) {
-      elements.push(item.element);
       if (item.elementContainer !== item.dragContainer) {
         appendElement(item.element, item.elementContainer);
       }
-      if (item.unfrozenProps) {
-        for (const key in item.unfrozenProps) {
-          item.element.style[key] = item.unfrozenProps[key] || "";
+      if (item.unfrozenStyles) {
+        for (const key in item.unfrozenStyles) {
+          item.element.style[key] = item.unfrozenStyles[key] || "";
         }
       }
-      this.settings.setPosition({
+      this.settings.applyPosition({
         phase: "end",
         draggable: this,
-        sensor: drag.sensor,
-        item,
-        x: item.position.x,
-        y: item.position.y
-      });
-    }
-    if (elements.length) {
-      this.settings.releaseElements({
-        draggable: this,
-        sensor: drag.sensor,
-        elements
+        drag,
+        item
       });
     }
     this._emit("end", drag.endEvent);
@@ -5086,6 +5091,25 @@ var Draggable = class {
   }
 };
 
+// src/utils/create-full-rect.ts
+function createFullRect(sourceRect, result = { width: 0, height: 0, x: 0, y: 0, left: 0, top: 0, right: 0, bottom: 0 }) {
+  if (sourceRect) {
+    result.width = sourceRect.width;
+    result.height = sourceRect.height;
+    result.x = sourceRect.x;
+    result.y = sourceRect.y;
+    result.left = sourceRect.x;
+    result.top = sourceRect.y;
+    result.right = sourceRect.x + sourceRect.width;
+    result.bottom = sourceRect.y + sourceRect.height;
+  }
+  return result;
+}
+
+// src/draggable/modifiers/create-containment-modifier.ts
+var TEMP_RECT_1 = createFullRect();
+var TEMP_RECT_2 = createFullRect();
+
 // src/pool.ts
 var Pool = class {
   constructor(createObject, onPut) {
@@ -5109,23 +5133,6 @@ var Pool = class {
 
 // src/utils/get-distance.ts
 import { getDistance as _getDistance } from "mezr";
-
-// src/utils/create-full-rect.ts
-function createFullRect(sourceRect, result = { width: 0, height: 0, x: 0, y: 0, left: 0, top: 0, right: 0, bottom: 0 }) {
-  if (sourceRect) {
-    result.width = sourceRect.width;
-    result.height = sourceRect.height;
-    result.x = sourceRect.x;
-    result.y = sourceRect.y;
-    result.left = sourceRect.x;
-    result.top = sourceRect.y;
-    result.right = sourceRect.x + sourceRect.width;
-    result.bottom = sourceRect.y + sourceRect.height;
-  }
-  return result;
-}
-
-// src/utils/get-distance.ts
 var RECT_A = createFullRect();
 var RECT_B = createFullRect();
 function getDistance(a, b) {
@@ -6528,7 +6535,7 @@ describe("Draggable", () => {
     const el = createTestElement();
     const pointerSensor = new PointerSensor(el, { sourceEvents: "mouse" });
     const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-    const draggable = new Draggable([pointerSensor, keyboardSensor], { getElements: () => [el] });
+    const draggable = new Draggable([pointerSensor, keyboardSensor], { elements: () => [el] });
     let rect = el.getBoundingClientRect();
     assert.equal(rect.x, 0);
     assert.equal(rect.y, 0);
@@ -6579,7 +6586,7 @@ describe("Draggable", () => {
       transformOrigin: "12px 13px"
     });
     const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-    const draggable = new Draggable([keyboardSensor], { getElements: () => [el] });
+    const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
     container.appendChild(el);
     const startRect = el.getBoundingClientRect();
     focusElement(el);
@@ -6601,7 +6608,7 @@ describe("Draggable", () => {
         const container = createTestElement();
         const el = createTestElement();
         const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-        const draggable = new Draggable([keyboardSensor], { container, getElements: () => [el] });
+        const draggable = new Draggable([keyboardSensor], { container, elements: () => [el] });
         const originalContainer = el.parentNode;
         focusElement(el);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
@@ -6641,7 +6648,7 @@ describe("Draggable", () => {
             });
             const draggable = new Draggable([keyboardSensor], {
               container,
-              getElements: () => [el]
+              elements: () => [el]
             });
             const originalContainer = el.parentNode;
             let containerRect = container.getBoundingClientRect();
@@ -6688,7 +6695,7 @@ describe("Draggable", () => {
         });
         const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
         const draggable = new Draggable([keyboardSensor], {
-          getElements: () => [el],
+          elements: () => [el],
           container: dragContainer
         });
         container.appendChild(el);
@@ -6708,14 +6715,14 @@ describe("Draggable", () => {
         dragContainer.remove();
       });
     });
-    describe("getElements", () => {
+    describe("elements", () => {
       it("should be a function that returns an array of the dragged elements", async () => {
         const elA = createTestElement();
         const elB = createTestElement();
         const elC = createTestElement();
         const keyboardSensor = new KeyboardSensor(elA, { moveDistance: 1 });
         const draggable = new Draggable([keyboardSensor], {
-          getElements: () => [elB, elC]
+          elements: () => [elB, elC]
         });
         focusElement(elA);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));

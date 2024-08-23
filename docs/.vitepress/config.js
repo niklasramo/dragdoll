@@ -102,6 +102,15 @@ function sidebarGuide() {
           ],
         },
         {
+          text: 'Modifiers',
+          link: '/docs/draggable-modifiers',
+          collapsible: false,
+          items: [
+            { text: 'Containment', link: '/docs/draggable-containment-modifier' },
+            { text: 'Snap', link: '/docs/draggable-snap-modifier' },
+          ],
+        },
+        {
           text: 'Plugins',
           link: '/docs/draggable-plugins',
           collapsible: false,

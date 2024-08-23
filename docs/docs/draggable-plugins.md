@@ -85,7 +85,7 @@ function loggerPlugin<S extends Sensor[], E extends S[number]['events']>(
 const dragElement = document.querySelector('.dragElement');
 const keyboardSensor = new KeyboardSensor();
 const draggable = new Draggable([keyboardSensor], {
-  getElements: () => [dragElement],
+  elements: () => [dragElement],
 }).use(loggerPlugin({ events: ['start', 'end'] }));
 
 // You can also access the logger plugin instance any time you want.

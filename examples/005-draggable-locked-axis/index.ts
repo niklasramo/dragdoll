@@ -1,6 +1,5 @@
 import {
   Draggable,
-  DraggableDefaultSettings,
   PointerSensor,
   KeyboardMotionSensor,
   createPointerSensorStartPredicate,
@@ -8,17 +7,16 @@ import {
 
 let zIndex = 0;
 
-const draggableElements = document.querySelectorAll('.draggable');
+const draggableElements = [...document.querySelectorAll('.draggable')] as HTMLElement[];
 
-[...draggableElements].forEach((draggableElement) => {
-  const pointerSensor = new PointerSensor(draggableElement);
-  const keyboardSensor = new KeyboardMotionSensor(draggableElement);
+draggableElements.forEach((element) => {
+  const pointerSensor = new PointerSensor(element);
+  const keyboardSensor = new KeyboardMotionSensor(element);
   const draggable = new Draggable([pointerSensor, keyboardSensor], {
-    getElements: () => [draggableElement as HTMLElement],
+    elements: () => [element],
     startPredicate: createPointerSensorStartPredicate(),
-    getPositionChange: (...args) => {
-      const change = DraggableDefaultSettings.getPositionChange(...args);
-      const { element } = args[0].item;
+    positionModifiers: (change, { item }) => {
+      const { element } = item;
       const allowX = element.classList.contains('axis-x');
       const allowY = element.classList.contains('axis-y');
       if (allowX && !allowY) {
@@ -31,11 +29,11 @@ const draggableElements = document.querySelectorAll('.draggable');
   });
 
   draggable.on('start', () => {
-    draggableElement.classList.add('dragging');
-    (draggableElement as HTMLElement).style.zIndex = `${++zIndex}`;
+    element.classList.add('dragging');
+    element.style.zIndex = `${++zIndex}`;
   });
 
   draggable.on('end', () => {
-    draggableElement.classList.remove('dragging');
+    element.classList.remove('dragging');
   });
 });

@@ -60,7 +60,7 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
   // elements that we want to move around based on the provided sensor's
   // events. In this case we just want to move the element which we are
   // monitoring.
-  getElements: () => [element],
+  elements: () => [element],
   // Start predicate is a function which determines when the dragging should
   // start. There's a really good ready-made start predicate available for
   // PointerSensor, which we are using here.

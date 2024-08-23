@@ -4,25 +4,27 @@ import { Sensor } from '../sensors/sensor.js';
 
 import { CSSProperties, Point, Rect } from '../types.js';
 
-import { getStyle } from 'utils/get-style.js';
+import { getStyle } from '../utils/get-style.js';
 
-import { getClientOffset } from 'utils/get-client-offset.js';
+import { getClientOffset } from '../utils/get-client-offset.js';
 
-import { getOffsetDiff } from 'utils/get-offset-diff.js';
+import { getOffsetDiff } from '../utils/get-offset-diff.js';
 
-import { getWorldTransformMatrix } from 'utils/get-world-transform-matrix.js';
+import { getWorldTransformMatrix } from '../utils/get-world-transform-matrix.js';
 
-import { createMeasureElement } from 'utils/create-measure-element.js';
+import { createMeasureElement } from '../utils/create-measure-element.js';
 
-import { isMatrixWarped } from 'utils/is-matrix-warped.js';
+import { isMatrixWarped } from '../utils/is-matrix-warped.js';
 
-import { parseTransformOrigin } from 'utils/parse-transform-origin.js';
+import { parseTransformOrigin } from '../utils/parse-transform-origin.js';
 
 import type { Draggable } from './draggable.js';
 
-import type { ObjectCache } from 'utils/object-cache.js';
+import type { ObjectCache } from '../utils/object-cache.js';
 
 const MEASURE_ELEMENT = createMeasureElement();
+
+const START_POINT = { x: 0, y: 0 };
 
 export class DraggableDragItem<
   S extends Sensor[] = Sensor[],
@@ -36,12 +38,12 @@ export class DraggableDragItem<
   readonly dragOffsetContainer: HTMLElement | SVGSVGElement | Window | Document;
   readonly elementTransformOrigin: { x: number; y: number; z: number };
   readonly elementTransformMatrix: DOMMatrix;
-  readonly frozenProps: CSSProperties | null;
-  readonly unfrozenProps: CSSProperties | null;
+  readonly frozenStyles: CSSProperties | null;
+  readonly unfrozenStyles: CSSProperties | null;
   readonly clientRect: Rect;
   readonly position: Point;
   readonly containerOffset: Point;
-  readonly startOffset: Point;
+  readonly alignmentOffset: Point;
   protected _moveDiff: Point;
   protected _alignDiff: Point;
   protected _matrixCache: ObjectCache<HTMLElement | SVGSVGElement, [DOMMatrix, DOMMatrix]>;
@@ -67,11 +69,11 @@ export class DraggableDragItem<
     this.element = element;
     this.elementTransformOrigin = parseTransformOrigin(style.transformOrigin);
     this.elementTransformMatrix = new DOMMatrix().setMatrixValue(style.transform);
-    this.frozenProps = null;
-    this.unfrozenProps = null;
+    this.frozenStyles = null;
+    this.unfrozenStyles = null;
     this.position = { x: 0, y: 0 };
     this.containerOffset = { x: 0, y: 0 };
-    this.startOffset = { x: 0, y: 0 };
+    this.alignmentOffset = { x: 0, y: 0 };
     this._moveDiff = { x: 0, y: 0 };
     this._alignDiff = { x: 0, y: 0 };
     this._matrixCache = drag['_matrixCache'];
@@ -117,59 +119,63 @@ export class DraggableDragItem<
     }
 
     // Compute container matrices and offset.
-    this._computeContainerMatrices();
-    this.updateContainerOffset();
+    this._updateContainerMatrices();
+    this._updateContainerOffset();
 
-    // Get element's initial position. This position is relative to the
-    // properties the user is using to move the element. For example, if the
-    // user is using the `translate` transform to move the element then the
-    // initial position will be relative to the `translate` transform and the
-    // position here should reflect the transform value delta.
-    const { x, y } = draggable.settings.getStartPosition({
-      draggable,
-      sensor: drag.sensor,
-      item: this,
-      style,
-    });
-    this.position.x = x;
-    this.position.y = y;
+    // Compute start position.
+    const { positionModifiers } = draggable.settings;
+    let startPoint = START_POINT;
+    startPoint.x = this.position.x;
+    startPoint.y = this.position.y;
+    for (const modifier of positionModifiers) {
+      startPoint = modifier(startPoint, {
+        draggable,
+        drag,
+        item: this,
+        phase: 'start',
+      });
+    }
+    this.position.x += startPoint.x;
+    this.position.y += startPoint.x;
+    this.clientRect.x += startPoint.x;
+    this.clientRect.y += startPoint.x;
 
     // Get element's frozen props.
-    const frozenProps = draggable.settings.getFrozenProps({
+    const frozenStyles = draggable.settings.frozenStyles({
       draggable,
-      sensor: drag.sensor,
+      drag,
       item: this,
       style,
     });
-    if (Array.isArray(frozenProps)) {
-      if (frozenProps.length) {
+    if (Array.isArray(frozenStyles)) {
+      if (frozenStyles.length) {
         const props: CSSProperties = {};
-        for (const prop of frozenProps) {
+        for (const prop of frozenStyles) {
           props[prop] = style[prop];
         }
-        this.frozenProps = props;
+        this.frozenStyles = props;
       } else {
-        this.frozenProps = null;
+        this.frozenStyles = null;
       }
     } else {
-      this.frozenProps = frozenProps;
+      this.frozenStyles = frozenStyles;
     }
 
     // Lastly, let's compute the unfrozen props. We store the current inline
     // style values for all frozen props so that we can restore them after the
     // drag process is over.
-    if (this.frozenProps) {
-      const unfrozenProps: CSSProperties = {};
-      for (const key in this.frozenProps) {
-        if (this.frozenProps.hasOwnProperty(key)) {
-          unfrozenProps[key] = element.style[key];
+    if (this.frozenStyles) {
+      const unfrozenStyles: CSSProperties = {};
+      for (const key in this.frozenStyles) {
+        if (this.frozenStyles.hasOwnProperty(key)) {
+          unfrozenStyles[key] = element.style[key];
         }
       }
-      this.unfrozenProps = unfrozenProps;
+      this.unfrozenStyles = unfrozenStyles;
     }
   }
 
-  protected _computeContainerMatrices() {
+  protected _updateContainerMatrices() {
     [this.elementContainer, this.dragContainer].forEach((container) => {
       if (!this._matrixCache.isValid(container)) {
         const matrices = this._matrixCache.get(container) || [new DOMMatrix(), new DOMMatrix()];
@@ -181,15 +187,7 @@ export class DraggableDragItem<
     });
   }
 
-  getContainerMatrix() {
-    return this._matrixCache.get(this.elementContainer)!;
-  }
-
-  getDragContainerMatrix() {
-    return this._matrixCache.get(this.dragContainer)!;
-  }
-
-  updateContainerOffset(force = false) {
+  protected _updateContainerOffset() {
     const {
       elementOffsetContainer,
       elementContainer,
@@ -199,12 +197,6 @@ export class DraggableDragItem<
       _clientOffsetCache,
       _matrixCache,
     } = this;
-
-    // If force is true, invalidate the client offset cache.
-    if (force) {
-      _clientOffsetCache.invalidate(dragOffsetContainer);
-      _clientOffsetCache.invalidate(elementOffsetContainer);
-    }
 
     // If element's offset container is different than drag container's
     // offset container let's compute the offset between the offset containers.
@@ -266,6 +258,14 @@ export class DraggableDragItem<
       containerOffset.x = 0;
       containerOffset.y = 0;
     }
+  }
+
+  getContainerMatrix() {
+    return this._matrixCache.get(this.elementContainer)!;
+  }
+
+  getDragContainerMatrix() {
+    return this._matrixCache.get(this.dragContainer)!;
   }
 
   updateSize(dimensions?: { width: number; height: number }) {

@@ -62,4 +62,4 @@ The sensor event that ended the drag. Read-only.
 type items = DraggableDragItem[];
 ```
 
-An array of [`DraggableDragItem`](/docs/draggable-drag-item) instances, which correspond to the drag elements as provided via the [`getElements`](/docs/draggable#getelements) option. Read-only.
+An array of [`DraggableDragItem`](/docs/draggable-drag-item) instances, which correspond to the drag elements as provided via the [`elements`](/docs/draggable#elements) option. Read-only.

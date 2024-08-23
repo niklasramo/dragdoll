@@ -1683,6 +1683,10 @@ function $ba8ad8073c33464d$export$8317bebcfd6ca26c(m) {
 
 
 const $93e17dd02dc97955$var$MEASURE_ELEMENT = (0, $3625b5560175528a$export$8de5e08b53f62319)();
+const $93e17dd02dc97955$var$START_POINT = {
+    x: 0,
+    y: 0
+};
 class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
     constructor(element, draggable){
         // Make sure the element is in DOM.
@@ -1697,8 +1701,8 @@ class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
         this.element = element;
         this.elementTransformOrigin = (0, $7e1617964030f7dd$export$808822009ec670b1)(style.transformOrigin);
         this.elementTransformMatrix = new DOMMatrix().setMatrixValue(style.transform);
-        this.frozenProps = null;
-        this.unfrozenProps = null;
+        this.frozenStyles = null;
+        this.unfrozenStyles = null;
         this.position = {
             x: 0,
             y: 0
@@ -1707,7 +1711,7 @@ class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
             x: 0,
             y: 0
         };
-        this.startOffset = {
+        this.alignmentOffset = {
             x: 0,
             y: 0
         };
@@ -1753,45 +1757,47 @@ class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
             };
         }
         // Compute container matrices and offset.
-        this._computeContainerMatrices();
-        this.updateContainerOffset();
-        // Get element's initial position. This position is relative to the
-        // properties the user is using to move the element. For example, if the
-        // user is using the `translate` transform to move the element then the
-        // initial position will be relative to the `translate` transform and the
-        // position here should reflect the transform value delta.
-        const { x: x, y: y } = draggable.settings.getStartPosition({
+        this._updateContainerMatrices();
+        this._updateContainerOffset();
+        // Compute start position.
+        const { positionModifiers: positionModifiers } = draggable.settings;
+        let startPoint = $93e17dd02dc97955$var$START_POINT;
+        startPoint.x = this.position.x;
+        startPoint.y = this.position.y;
+        for (const modifier of positionModifiers)startPoint = modifier(startPoint, {
             draggable: draggable,
-            sensor: drag.sensor,
+            drag: drag,
             item: this,
-            style: style
+            phase: "start"
         });
-        this.position.x = x;
-        this.position.y = y;
+        this.position.x += startPoint.x;
+        this.position.y += startPoint.x;
+        this.clientRect.x += startPoint.x;
+        this.clientRect.y += startPoint.x;
         // Get element's frozen props.
-        const frozenProps = draggable.settings.getFrozenProps({
+        const frozenStyles = draggable.settings.frozenStyles({
             draggable: draggable,
-            sensor: drag.sensor,
+            drag: drag,
             item: this,
             style: style
         });
-        if (Array.isArray(frozenProps)) {
-            if (frozenProps.length) {
+        if (Array.isArray(frozenStyles)) {
+            if (frozenStyles.length) {
                 const props = {};
-                for (const prop of frozenProps)props[prop] = style[prop];
-                this.frozenProps = props;
-            } else this.frozenProps = null;
-        } else this.frozenProps = frozenProps;
+                for (const prop of frozenStyles)props[prop] = style[prop];
+                this.frozenStyles = props;
+            } else this.frozenStyles = null;
+        } else this.frozenStyles = frozenStyles;
         // Lastly, let's compute the unfrozen props. We store the current inline
         // style values for all frozen props so that we can restore them after the
         // drag process is over.
-        if (this.frozenProps) {
-            const unfrozenProps = {};
-            for(const key in this.frozenProps)if (this.frozenProps.hasOwnProperty(key)) unfrozenProps[key] = element.style[key];
-            this.unfrozenProps = unfrozenProps;
+        if (this.frozenStyles) {
+            const unfrozenStyles = {};
+            for(const key in this.frozenStyles)if (this.frozenStyles.hasOwnProperty(key)) unfrozenStyles[key] = element.style[key];
+            this.unfrozenStyles = unfrozenStyles;
         }
     }
-    _computeContainerMatrices() {
+    _updateContainerMatrices() {
         [
             this.elementContainer,
             this.dragContainer
@@ -1808,19 +1814,8 @@ class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
             }
         });
     }
-    getContainerMatrix() {
-        return this._matrixCache.get(this.elementContainer);
-    }
-    getDragContainerMatrix() {
-        return this._matrixCache.get(this.dragContainer);
-    }
-    updateContainerOffset(force = false) {
+    _updateContainerOffset() {
         const { elementOffsetContainer: elementOffsetContainer, elementContainer: elementContainer, dragOffsetContainer: dragOffsetContainer, dragContainer: dragContainer, containerOffset: containerOffset, _clientOffsetCache: _clientOffsetCache, _matrixCache: _matrixCache } = this;
-        // If force is true, invalidate the client offset cache.
-        if (force) {
-            _clientOffsetCache.invalidate(dragOffsetContainer);
-            _clientOffsetCache.invalidate(elementOffsetContainer);
-        }
         // If element's offset container is different than drag container's
         // offset container let's compute the offset between the offset containers.
         if (elementOffsetContainer !== dragOffsetContainer) {
@@ -1876,6 +1871,12 @@ class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
             containerOffset.y = 0;
         }
     }
+    getContainerMatrix() {
+        return this._matrixCache.get(this.elementContainer);
+    }
+    getDragContainerMatrix() {
+        return this._matrixCache.get(this.dragContainer);
+    }
     updateSize(dimensions) {
         if (dimensions) {
             this.clientRect.width = dimensions.width;
@@ -1925,7 +1926,7 @@ const $0d0c72b4b6dc9dbb$var$POSITION_CHANGE = {
     x: 0,
     y: 0
 };
-const $0d0c72b4b6dc9dbb$var$DOM_MATRIX = new DOMMatrix();
+const $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX = new DOMMatrix();
 const $0d0c72b4b6dc9dbb$var$TEMP_MATRIX = new DOMMatrix();
 var $0d0c72b4b6dc9dbb$var$DragStartPhase;
 (function(DragStartPhase) {
@@ -1943,30 +1944,23 @@ var $0d0c72b4b6dc9dbb$var$DraggableStartPredicateState;
 const $0d0c72b4b6dc9dbb$export$7ce0cd3869d5dcd9 = {
     container: null,
     startPredicate: ()=>true,
-    getElements: ()=>null,
-    releaseElements: ()=>null,
-    getFrozenProps: ()=>null,
-    getStartPosition: ()=>{
-        return {
-            x: 0,
-            y: 0
-        };
-    },
-    setPosition: ({ item: item, x: x, y: y, phase: phase })=>{
+    elements: ()=>null,
+    frozenStyles: ()=>null,
+    applyPosition: ({ item: item, phase: phase })=>{
         const isEndPhase = phase === "end";
         const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
         const [_dragContainerMatrix, inverseDragContainerMatrix] = item.getDragContainerMatrix();
-        const { startOffset: startOffset, containerOffset: containerOffset, elementTransformMatrix: elementTransformMatrix, elementTransformOrigin: elementTransformOrigin } = item;
+        const { position: position, alignmentOffset: alignmentOffset, containerOffset: containerOffset, elementTransformMatrix: elementTransformMatrix, elementTransformOrigin: elementTransformOrigin } = item;
         const { x: oX, y: oY, z: oZ } = elementTransformOrigin;
         const needsOriginOffset = !elementTransformMatrix.isIdentity && (oX !== 0 || oY !== 0 || oZ !== 0);
-        const tX = isEndPhase ? x : containerOffset.x + (x - startOffset.x);
-        const tY = isEndPhase ? y : containerOffset.y + (y - startOffset.y);
+        const tX = position.x + alignmentOffset.x + containerOffset.x;
+        const tY = position.y + alignmentOffset.y + containerOffset.y;
         // Reset the matrix to identity.
-        (0, $c87c13e795b928df$export$5e2c7a53f84076f2)($0d0c72b4b6dc9dbb$var$DOM_MATRIX);
+        (0, $c87c13e795b928df$export$5e2c7a53f84076f2)($0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX);
         // First of all negate the element's transform origin.
         if (needsOriginOffset) {
-            if (oZ === 0) $0d0c72b4b6dc9dbb$var$DOM_MATRIX.translateSelf(oX * -1, oY * -1);
-            else $0d0c72b4b6dc9dbb$var$DOM_MATRIX.translateSelf(oX * -1, oY * -1, oZ * -1);
+            if (oZ === 0) $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX.translateSelf(-oX, -oY);
+            else $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX.translateSelf(-oX, -oY, -oZ);
         }
         // Invert the current container's matrix, so we can apply the
         // translation in world space coordinates. If this is the end phase the
@@ -1974,30 +1968,26 @@ const $0d0c72b4b6dc9dbb$export$7ce0cd3869d5dcd9 = {
         // there was a drag container defined. Otherwise the element will be
         // appended to the drag container (if defined).
         if (isEndPhase) {
-            if (!inverseContainerMatrix.isIdentity) $0d0c72b4b6dc9dbb$var$DOM_MATRIX.multiplySelf(inverseContainerMatrix);
-        } else if (!inverseDragContainerMatrix.isIdentity) $0d0c72b4b6dc9dbb$var$DOM_MATRIX.multiplySelf(inverseDragContainerMatrix);
+            if (!inverseContainerMatrix.isIdentity) $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX.multiplySelf(inverseContainerMatrix);
+        } else if (!inverseDragContainerMatrix.isIdentity) $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX.multiplySelf(inverseDragContainerMatrix);
         // Apply the translation (in world space coordinates).
         (0, $c87c13e795b928df$export$5e2c7a53f84076f2)($0d0c72b4b6dc9dbb$var$TEMP_MATRIX).translateSelf(tX, tY);
-        $0d0c72b4b6dc9dbb$var$DOM_MATRIX.multiplySelf($0d0c72b4b6dc9dbb$var$TEMP_MATRIX);
+        $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX.multiplySelf($0d0c72b4b6dc9dbb$var$TEMP_MATRIX);
         // Apply the element's original container's world matrix so we can apply
         // the element's original transform as if it was in the original
         // container's local space coordinates.
-        if (!containerMatrix.isIdentity) $0d0c72b4b6dc9dbb$var$DOM_MATRIX.multiplySelf(containerMatrix);
+        if (!containerMatrix.isIdentity) $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX.multiplySelf(containerMatrix);
         // Undo the transform origin negation.
         if (needsOriginOffset) {
             (0, $c87c13e795b928df$export$5e2c7a53f84076f2)($0d0c72b4b6dc9dbb$var$TEMP_MATRIX).translateSelf(oX, oY, oZ);
-            $0d0c72b4b6dc9dbb$var$DOM_MATRIX.multiplySelf($0d0c72b4b6dc9dbb$var$TEMP_MATRIX);
+            $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX.multiplySelf($0d0c72b4b6dc9dbb$var$TEMP_MATRIX);
         }
         // Apply the element's original transform.
-        if (!elementTransformMatrix.isIdentity) $0d0c72b4b6dc9dbb$var$DOM_MATRIX.multiplySelf(elementTransformMatrix);
+        if (!elementTransformMatrix.isIdentity) $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX.multiplySelf(elementTransformMatrix);
         // Apply the matrix to the element.
-        item.element.style.transform = `${$0d0c72b4b6dc9dbb$var$DOM_MATRIX}`;
+        item.element.style.transform = `${$0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX}`;
     },
-    getPositionChange: ({ event: event, prevEvent: prevEvent })=>{
-        $0d0c72b4b6dc9dbb$var$POSITION_CHANGE.x = event.x - prevEvent.x;
-        $0d0c72b4b6dc9dbb$var$POSITION_CHANGE.y = event.y - prevEvent.y;
-        return $0d0c72b4b6dc9dbb$var$POSITION_CHANGE;
-    }
+    positionModifiers: []
 };
 class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
     constructor(sensors, options = {}){
@@ -2039,16 +2029,14 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         });
     }
     _parseSettings(options, defaults = $0d0c72b4b6dc9dbb$export$7ce0cd3869d5dcd9) {
-        const { container: container = defaults.container, startPredicate: startPredicate = defaults.startPredicate, getElements: getElements = defaults.getElements, releaseElements: releaseElements = defaults.releaseElements, getFrozenProps: getFrozenProps = defaults.getFrozenProps, getStartPosition: getStartPosition = defaults.getStartPosition, setPosition: setPosition = defaults.setPosition, getPositionChange: getPositionChange = defaults.getPositionChange } = options || {};
+        const { container: container = defaults.container, startPredicate: startPredicate = defaults.startPredicate, elements: elements = defaults.elements, frozenStyles: frozenStyles = defaults.frozenStyles, positionModifiers: positionModifiers = defaults.positionModifiers, applyPosition: applyPosition = defaults.applyPosition } = options || {};
         return {
             container: container,
             startPredicate: startPredicate,
-            getElements: getElements,
-            releaseElements: releaseElements,
-            getFrozenProps: getFrozenProps,
-            getStartPosition: getStartPosition,
-            setPosition: setPosition,
-            getPositionChange: getPositionChange
+            elements: elements,
+            frozenStyles: frozenStyles,
+            positionModifiers: positionModifiers,
+            applyPosition: applyPosition
         };
     }
     _emit(type, ...e) {
@@ -2109,11 +2097,10 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         this._startPhase = 2;
         // Get elements that we'll need to move with the drag.
         // NB: It is okay if there are no elements and thus no items. The drag
-        // process will process as usual, but nothing is moving by default.
-        const elements = this.settings.getElements({
+        // process will process as usual, but no elements will be moved.
+        const elements = this.settings.elements({
             draggable: this,
-            sensor: drag.sensor,
-            startEvent: drag.startEvent
+            drag: drag
         }) || [];
         // Create drag items.
         drag.items = elements.map((element)=>{
@@ -2129,15 +2116,13 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
             // Append element within the container element if such is provided.
             if (item.dragContainer !== item.elementContainer) (0, $3ba9e1e7a6850ba1$export$33e13bbfe889ab45)(item.element, item.dragContainer);
             // Freeze element's props if such are provided.
-            if (item.frozenProps) Object.assign(item.element.style, item.frozenProps);
+            if (item.frozenStyles) Object.assign(item.element.style, item.frozenStyles);
             // Set element's start position.
-            this.settings.setPosition({
+            this.settings.applyPosition({
                 phase: "start",
                 draggable: this,
-                sensor: drag.sensor,
-                item: item,
-                x: item.position.x,
-                y: item.position.y
+                drag: drag,
+                item: item
             });
         }
         // Compute the start offset (if needed).
@@ -2150,22 +2135,20 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
             // translations.
             if (!(0, $ba8ad8073c33464d$export$8317bebcfd6ca26c)(containerMatrix) && !(0, $ba8ad8073c33464d$export$8317bebcfd6ca26c)(dragContainerMatrix)) continue;
             const rect = item.element.getBoundingClientRect();
-            const { startOffset: startOffset } = item;
+            const { alignmentOffset: alignmentOffset } = item;
             // Round the align diff to nearest 3rd decimal to avoid applying it if the
             // value is so small that it's not visible.
-            startOffset.x = (0, $b71b05db74a54e91$export$a3992db8dd0fd9e6)(rect.x - item.clientRect.x, 3);
-            startOffset.y = (0, $b71b05db74a54e91$export$a3992db8dd0fd9e6)(rect.y - item.clientRect.y, 3);
+            alignmentOffset.x += (0, $b71b05db74a54e91$export$a3992db8dd0fd9e6)(item.clientRect.x - rect.x, 3);
+            alignmentOffset.y += (0, $b71b05db74a54e91$export$a3992db8dd0fd9e6)(item.clientRect.y - rect.y, 3);
         }
         // Apply start offset (if needed).
         for (const item of drag.items){
-            const { startOffset: startOffset } = item;
-            if (startOffset.x !== 0 || startOffset.y !== 0) this.settings.setPosition({
-                phase: "start-align",
+            const { alignmentOffset: alignmentOffset } = item;
+            if (alignmentOffset.x !== 0 || alignmentOffset.y !== 0) this.settings.applyPosition({
+                phase: "align",
                 draggable: this,
-                sensor: drag.sensor,
-                item: item,
-                x: item.position.x,
-                y: item.position.y
+                drag: drag,
+                item: item
             });
         }
         // Bind scroll listeners.
@@ -2180,29 +2163,34 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         if (!drag) return;
         // Get next event and previous event so we can compute the movement
         // difference between the clientX/Y values.
-        const { event: event, prevEvent: prevEvent, startEvent: startEvent, sensor: sensor } = drag;
+        const { event: event, prevEvent: prevEvent } = drag;
         if (event === prevEvent) return;
+        // Compute the default movement diff.
+        const defaultChangeX = event.x - prevEvent.x;
+        const defaultChangeY = event.y - prevEvent.y;
+        // Run all modifiers for the move phase.
+        const { positionModifiers: positionModifiers } = this.settings;
         for (const item of drag.items){
-            // Compute how much x and y needs to be transformed.
-            const { x: changeX, y: changeY } = this.settings.getPositionChange({
+            let positionChange = $0d0c72b4b6dc9dbb$var$POSITION_CHANGE;
+            positionChange.x = defaultChangeX;
+            positionChange.y = defaultChangeY;
+            for (const modifier of positionModifiers)positionChange = modifier(positionChange, {
                 draggable: this,
-                sensor: sensor,
+                drag: drag,
                 item: item,
-                event: event,
-                prevEvent: prevEvent,
-                startEvent: startEvent
+                phase: "move"
             });
-            // Update horizontal position data.
-            if (changeX) {
-                item.position.x += changeX;
-                item.clientRect.x += changeX;
-                item["_moveDiff"].x += changeX;
+            // Update horizontal position data (if needed).
+            if (positionChange.x) {
+                item.position.x += positionChange.x;
+                item.clientRect.x += positionChange.x;
+                item["_moveDiff"].x += positionChange.x;
             }
-            // Update vertical position data.
-            if (changeY) {
-                item.position.y += changeY;
-                item.clientRect.y += changeY;
-                item["_moveDiff"].y += changeY;
+            // Update vertical position data (if needed).
+            if (positionChange.y) {
+                item.position.y += positionChange.y;
+                item.clientRect.y += positionChange.y;
+                item["_moveDiff"].y += positionChange.y;
             }
         }
         // Store next event as previous event.
@@ -2217,13 +2205,11 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         for (const item of drag.items){
             item["_moveDiff"].x = 0;
             item["_moveDiff"].y = 0;
-            this.settings.setPosition({
+            this.settings.applyPosition({
                 phase: "move",
                 draggable: this,
-                sensor: drag.sensor,
-                item: item,
-                x: item.position.x,
-                y: item.position.y
+                drag: drag,
+                item: item
             });
         }
         // Emit move event.
@@ -2240,11 +2226,11 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
             // the element is visually repostioned to the correct place.
             // Update horizontal position data.
             const alignDiffX = item.clientRect.x - item["_moveDiff"].x - x;
-            item.position.x = item.position.x - item["_alignDiff"].x + alignDiffX;
+            item.alignmentOffset.x = item.alignmentOffset.x - item["_alignDiff"].x + alignDiffX;
             item["_alignDiff"].x = alignDiffX;
             // Update vertical position data.
             const alignDiffY = item.clientRect.y - item["_moveDiff"].y - y;
-            item.position.y = item.position.y - item["_alignDiff"].y + alignDiffY;
+            item.alignmentOffset.y = item.alignmentOffset.y - item["_alignDiff"].y + alignDiffY;
             item["_alignDiff"].y = alignDiffY;
         }
     }
@@ -2254,13 +2240,11 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         for (const item of drag.items){
             item["_alignDiff"].x = 0;
             item["_alignDiff"].y = 0;
-            this.settings.setPosition({
+            this.settings.applyPosition({
                 phase: "align",
                 draggable: this,
-                sensor: drag.sensor,
-                item: item,
-                x: item.position.x,
-                y: item.position.y
+                drag: drag,
+                item: item
             });
         }
     }
@@ -2325,6 +2309,8 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         (0, $e434efa1a293c3f2$export$e94d57566be028aa).off((0, $e434efa1a293c3f2$export$ef9171fc2626).write, this._alignId);
         // Unbind scroll listener.
         window.removeEventListener("scroll", this._onScroll, $0d0c72b4b6dc9dbb$var$SCROLL_LISTENER_OPTIONS);
+        // Get position modifiers.
+        const { positionModifiers: positionModifiers } = this.settings;
         // Adjust items' positions for the drop. When the drag starts the container
         // offset is computed once, but not updated during drag (because we don't
         // need to). But on drop we need to how much the offset diff has changed
@@ -2332,39 +2318,50 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         // reset the container offset. Let's do this procedure in a separate loop to
         // avoid layout thrashing.
         drag["_clientOffsetCache"].clear();
-        for (const item of drag.items)if (item.elementContainer !== item.dragContainer) {
-            const { x: startX, y: startY } = item.containerOffset;
-            item.updateContainerOffset();
-            const { x: endX, y: endY } = item.containerOffset;
-            item.position.x += (endX - startX) * -1;
-            item.position.y += (endY - startY) * -1;
-            item.containerOffset.x = 0;
-            item.containerOffset.y = 0;
-        }
-        // Move elements within the root container and collect all elements
-        // to an elements array.
-        const elements = [];
         for (const item of drag.items){
-            elements.push(item.element);
+            if (item.elementContainer !== item.dragContainer) {
+                const { x: startX, y: startY } = item.containerOffset;
+                item["_updateContainerOffset"]();
+                const { x: endX, y: endY } = item.containerOffset;
+                item.alignmentOffset.x = startX - endX;
+                item.alignmentOffset.y = startY - endY;
+                item.containerOffset.x = 0;
+                item.containerOffset.y = 0;
+            }
+            // Run all modifiers for the end phase.
+            let positionChange = $0d0c72b4b6dc9dbb$var$POSITION_CHANGE;
+            positionChange.x = 0;
+            positionChange.y = 0;
+            for (const modifier of positionModifiers)positionChange = modifier(positionChange, {
+                draggable: this,
+                drag: drag,
+                item: item,
+                phase: "end"
+            });
+            // Update horizontal position data (if needed).
+            if (positionChange.x) {
+                item.position.x += positionChange.x;
+                item.clientRect.x += positionChange.x;
+            }
+            // Update vertical position data (if needed).
+            if (positionChange.y) {
+                item.position.y += positionChange.y;
+                item.clientRect.y += positionChange.y;
+            }
+        }
+        // Move elements within the root container.
+        for (const item of drag.items){
             if (item.elementContainer !== item.dragContainer) (0, $3ba9e1e7a6850ba1$export$33e13bbfe889ab45)(item.element, item.elementContainer);
             // Unfreeze element's props if such are provided.
-            if (item.unfrozenProps) for(const key in item.unfrozenProps)item.element.style[key] = item.unfrozenProps[key] || "";
+            if (item.unfrozenStyles) for(const key in item.unfrozenStyles)item.element.style[key] = item.unfrozenStyles[key] || "";
             // Set final position after drag.
-            this.settings.setPosition({
+            this.settings.applyPosition({
                 phase: "end",
                 draggable: this,
-                sensor: drag.sensor,
-                item: item,
-                x: item.position.x,
-                y: item.position.y
+                drag: drag,
+                item: item
             });
         }
-        // Call "releaseElements" callback.
-        if (elements.length) this.settings.releaseElements({
-            draggable: this,
-            sensor: drag.sensor,
-            elements: elements
-        });
         // Emit end event.
         this._emit("end", drag.endEvent);
         // Reset drag data.
@@ -2404,26 +2401,41 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
 }
 
 
-class $bfd9fff49b9cfdf1$export$14963ee5c8637e11 {
-    constructor(createObject, onPut){
-        this._data = [];
-        this._createObject = createObject;
-        this._onPut = onPut;
-    }
-    pick() {
-        return this._data.length ? this._data.pop() : this._createObject();
-    }
-    put(object) {
-        if (this._data.indexOf(object) === -1) {
-            this._onPut && this._onPut(object);
-            this._data.push(object);
-        }
-    }
-    reset() {
-        this._data.length = 0;
-    }
+function $0b5391881dc2b3a6$var$round(value, multipleOf) {
+    return Math.round(value / multipleOf) * multipleOf;
 }
-
+function $0b5391881dc2b3a6$var$getAxisChange(cellSize, snapPosition, sensorPosition) {
+    const change = sensorPosition - snapPosition;
+    const changeAbs = Math.abs(change);
+    if (changeAbs >= cellSize) {
+        const overflow = changeAbs % cellSize;
+        return $0b5391881dc2b3a6$var$round(change > 0 ? change - overflow : change + overflow, cellSize);
+    }
+    return 0;
+}
+function $0b5391881dc2b3a6$export$7f11ea1f0ba255b5(cellWidth, cellHeight) {
+    return function snapModifier(change, { item: item }) {
+        const snapState = item.data.__snap__ || (item.data.__snap__ = {
+            snapX: 0,
+            snapY: 0,
+            sensorX: 0,
+            sensorY: 0
+        });
+        // Add the change to the sensor position.
+        snapState.sensorX += change.x;
+        snapState.sensorY += change.y;
+        // Compute the change on the x and y axis.
+        const changeX = $0b5391881dc2b3a6$var$getAxisChange(cellWidth, snapState.snapX, snapState.sensorX);
+        const changeY = $0b5391881dc2b3a6$var$getAxisChange(cellHeight, snapState.snapY, snapState.sensorY);
+        // Add the change to the snap position.
+        snapState.snapX += changeX;
+        snapState.snapY += changeY;
+        // Update the change.
+        change.x = changeX;
+        change.y = changeY;
+        return change;
+    };
+}
 
 
 
@@ -2449,6 +2461,97 @@ function $5a69d436ccaf0646$export$3a8bd5429d724075(sourceRect, result = {
     }
     return result;
 }
+
+
+const $e4a9d189cff00937$var$TEMP_RECT_1 = (0, $5a69d436ccaf0646$export$3a8bd5429d724075)();
+const $e4a9d189cff00937$var$TEMP_RECT_2 = (0, $5a69d436ccaf0646$export$3a8bd5429d724075)();
+const $e4a9d189cff00937$var$ADJUSTMENT_DATA = {
+    change: 0,
+    drift: 0
+};
+function $e4a9d189cff00937$var$adjustAxisChange(itemStartX, itemEndX, containerStartX, containerEndX, drift, change, trackDrift) {
+    let nextChange = change;
+    let nextDrift = drift;
+    if (change > 0) {
+        nextChange = Math.min(Math.max(containerEndX - itemEndX, 0), change);
+        if (trackDrift) {
+            if (drift < 0) {
+                const driftChange = Math.min(-drift, change);
+                nextDrift = drift + driftChange;
+                nextChange = Math.max(0, nextChange - driftChange);
+            } else nextDrift = drift + (change - nextChange);
+        }
+    } else if (change < 0) {
+        nextChange = Math.max(Math.min(containerStartX - itemStartX, 0), change);
+        if (trackDrift) {
+            if (drift > 0) {
+                const driftChange = Math.max(-drift, change);
+                nextDrift = drift + driftChange;
+                nextChange = Math.min(0, nextChange - driftChange);
+            } else nextDrift = drift + (change - nextChange);
+        }
+    }
+    $e4a9d189cff00937$var$ADJUSTMENT_DATA.change = nextChange;
+    $e4a9d189cff00937$var$ADJUSTMENT_DATA.drift = nextDrift;
+}
+function $e4a9d189cff00937$export$b43dd221600cdb2e(getContainerRect, trackSensorDrift = ({ drag: drag })=>{
+    return drag.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638);
+}) {
+    return function containmentModifier(change, data) {
+        const containerRect = (0, $5a69d436ccaf0646$export$3a8bd5429d724075)(getContainerRect(data), $e4a9d189cff00937$var$TEMP_RECT_1);
+        const itemRect = (0, $5a69d436ccaf0646$export$3a8bd5429d724075)(data.item.clientRect, $e4a9d189cff00937$var$TEMP_RECT_2);
+        const itemData = data.item.data;
+        const containmentState = itemData.__containment__ || {
+            drift: {
+                x: 0,
+                y: 0
+            },
+            trackDrift: false
+        };
+        // On first move, store the containment state. Item data will be kept alive
+        // for the duration of the drag, but it will be removed once the drag ends.
+        if (!itemData.__containment__) {
+            containmentState.trackDrift = typeof trackSensorDrift === "function" ? trackSensorDrift(data) : trackSensorDrift;
+            itemData.__containment__ = containmentState;
+        }
+        const { drift: drift, trackDrift: trackDrift } = containmentState;
+        if (change.x) {
+            $e4a9d189cff00937$var$adjustAxisChange(itemRect.left, itemRect.right, containerRect.left, containerRect.right, drift.x, change.x, trackDrift);
+            drift.x = $e4a9d189cff00937$var$ADJUSTMENT_DATA.drift;
+            change.x = $e4a9d189cff00937$var$ADJUSTMENT_DATA.change;
+        }
+        if (change.y) {
+            $e4a9d189cff00937$var$adjustAxisChange(itemRect.top, itemRect.bottom, containerRect.top, containerRect.bottom, drift.y, change.y, trackDrift);
+            drift.y = $e4a9d189cff00937$var$ADJUSTMENT_DATA.drift;
+            change.y = $e4a9d189cff00937$var$ADJUSTMENT_DATA.change;
+        }
+        return change;
+    };
+}
+
+
+class $bfd9fff49b9cfdf1$export$14963ee5c8637e11 {
+    constructor(createObject, onPut){
+        this._data = [];
+        this._createObject = createObject;
+        this._onPut = onPut;
+    }
+    pick() {
+        return this._data.length ? this._data.pop() : this._createObject();
+    }
+    put(object) {
+        if (this._data.indexOf(object) === -1) {
+            this._onPut && this._onPut(object);
+            this._data.push(object);
+        }
+    }
+    reset() {
+        this._data.length = 0;
+    }
+}
+
+
+
 
 
 const $7209e3369c19bf94$var$RECT_A = (0, $5a69d436ccaf0646$export$3a8bd5429d724075)();
@@ -3383,9 +3486,6 @@ function $244877ffe9407e42$export$c0f5c18ade842ccd(options) {
 
 
 
-
-
-
 const $26b99708933973c1$var$SCROLLABLE_OVERFLOWS = new Set([
     "auto",
     "scroll",
@@ -3420,13 +3520,13 @@ function $73a32fa1436292cd$export$e4864aa91b5ed091(element, result = []) {
 
 
 
-function $adba878171f1fb5f$var$getScrollables(element) {
+function $c26397d14873e1ed$var$getScrollables(element) {
     const scrollables = [];
     if ((0, $26b99708933973c1$export$2bb74740c4e19def)(element)) scrollables.push(element);
     (0, $73a32fa1436292cd$export$e4864aa91b5ed091)(element, scrollables);
     return scrollables;
 }
-function $adba878171f1fb5f$export$88d83dc4a35d804f(options = {}) {
+function $c26397d14873e1ed$export$88d83dc4a35d804f(options = {}) {
     let dragAllowed = undefined;
     let startTimeStamp = 0;
     let targetElement = null;
@@ -3457,7 +3557,7 @@ function $adba878171f1fb5f$export$88d83dc4a35d804f(options = {}) {
                 // Prevent potentially scrollable nodes from scrolling to make sure
                 // native scrolling does not interfere with dragging.
                 targetElement = e.target;
-                const scrollables = targetElement ? $adba878171f1fb5f$var$getScrollables(targetElement) : [];
+                const scrollables = targetElement ? $c26397d14873e1ed$var$getScrollables(targetElement) : [];
                 scrollables.forEach((scrollable)=>{
                     scrollable.addEventListener("touchmove", onTouchMove, {
                         passive: false,
@@ -3519,71 +3619,34 @@ function $adba878171f1fb5f$export$88d83dc4a35d804f(options = {}) {
 }
 
 
-function $651357ea46622ef9$var$round(value, multipleOf) {
-    return Math.round(value / multipleOf) * multipleOf;
-}
-function $651357ea46622ef9$var$getAxisChange(gridSize, snapPosition, sensorPosition) {
-    let change = sensorPosition - snapPosition;
-    let changeAbs = Math.abs(change);
-    if (changeAbs >= gridSize) {
-        const overflow = changeAbs % gridSize;
-        return $651357ea46622ef9$var$round(change > 0 ? change - overflow : change + overflow, gridSize);
-    }
-    return 0;
-}
-function $651357ea46622ef9$export$7f11ea1f0ba255b5(gridWidth, gridHeight) {
-    return function snapModifier({ item: item, event: event, startEvent: startEvent }) {
-        let { __snapX__: __snapX__ = startEvent.x, __snapY__: __snapY__ = startEvent.y } = item.data;
-        const changeX = $651357ea46622ef9$var$getAxisChange(gridWidth, __snapX__, event.x);
-        const changeY = $651357ea46622ef9$var$getAxisChange(gridHeight, __snapY__, event.y);
-        if (changeX) item.data.__snapX__ = __snapX__ + changeX;
-        if (changeY) item.data.__snapY__ = __snapY__ + changeY;
-        return {
-            x: changeX,
-            y: changeY
-        };
-    };
-}
 
 
 
 
-const $72821dbb08df4f25$var$element = document.querySelector(".draggable");
-const $72821dbb08df4f25$var$dragContainer = document.querySelector(".drag-container");
-const $72821dbb08df4f25$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($72821dbb08df4f25$var$element);
-const $72821dbb08df4f25$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($72821dbb08df4f25$var$element, {
-    computeSpeed: ()=>100
-});
-const $72821dbb08df4f25$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $72821dbb08df4f25$var$pointerSensor,
-    $72821dbb08df4f25$var$keyboardSensor
-], {
-    container: $72821dbb08df4f25$var$dragContainer,
-    getElements: ()=>[
-            $72821dbb08df4f25$var$element
-        ],
-    getFrozenProps: ()=>[
-            "left",
-            "top"
-        ],
-    startPredicate: (0, $adba878171f1fb5f$export$88d83dc4a35d804f)()
-}).use((0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
-    targets: [
-        {
-            element: window,
-            axis: "y",
-            padding: {
-                top: Infinity,
-                bottom: Infinity
-            }
-        }
-    ]
-}));
-$72821dbb08df4f25$var$draggable.on("start", ()=>{
-    $72821dbb08df4f25$var$element.classList.add("dragging");
-});
-$72821dbb08df4f25$var$draggable.on("end", ()=>{
-    $72821dbb08df4f25$var$element.classList.remove("dragging");
+
+let $1721b684b57c24ff$var$zIndex = 0;
+const $1721b684b57c24ff$var$draggableElements = [
+    ...document.querySelectorAll(".draggable")
+];
+$1721b684b57c24ff$var$draggableElements.forEach((element)=>{
+    const pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element);
+    const keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)(element);
+    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+        pointerSensor,
+        keyboardSensor
+    ], {
+        elements: ()=>[
+                element
+            ],
+        startPredicate: (0, $c26397d14873e1ed$export$88d83dc4a35d804f)()
+    });
+    draggable.on("start", ()=>{
+        element.classList.add("dragging");
+        element.style.zIndex = `${++$1721b684b57c24ff$var$zIndex}`;
+    });
+    draggable.on("end", ()=>{
+        element.classList.remove("dragging");
+    });
 });
 
 

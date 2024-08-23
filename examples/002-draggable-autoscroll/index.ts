@@ -14,8 +14,8 @@ const keyboardSensor = new KeyboardMotionSensor(element, {
 });
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   container: dragContainer,
-  getElements: () => [element],
-  getFrozenProps: () => ['left', 'top'],
+  elements: () => [element],
+  frozenStyles: () => ['left', 'top'],
   startPredicate: createPointerSensorStartPredicate(),
 }).use(
   autoScrollPlugin({

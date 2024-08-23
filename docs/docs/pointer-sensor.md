@@ -20,7 +20,7 @@ pointerSensor.on('cancel', (e) => console.log('drag canceled', e));
 // Use the sensor to move an element.
 const dragElement = document.querySelector('.dragElement');
 const draggable = new Draggable([pointerSensor], {
-  getElements: () => [dragElement],
+  elements: () => [dragElement],
 });
 ```
 
@@ -32,7 +32,7 @@ class PointerSensor {
 }
 ```
 
-The constuctor accepts two arguments: `element` and `options`. The first argument is the element (or window) which's events will be tracked. The second argument is an optional [Settings](#settings) object, which you can also change later via [`updateSettings`](#updatesettings) method.
+The constuctor accepts two arguments: `element` and `options`. The first argument is the element (or window) which's events will be tracked. The second argument is an optional [`settings`](#settings) object, which you can also change later via [`updateSettings`](#updatesettings) method.
 
 ## Settings
 
@@ -45,7 +45,7 @@ type listenerOptions = {
 };
 ```
 
-This object will be propagated to the source event listeners' [options](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener). You can use it to define whether the source event listeners should be passive and/or use capture.
+This object will be propagated to the source event listeners' [`options`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener). You can use it to define whether the source event listeners should be passive and/or use capture.
 
 Defaults to `{ capture: true, passive: true }`.
 
@@ -177,7 +177,7 @@ pointerSensor.updateSettings({
 });
 ```
 
-Updates the the sensor's settings. Accepts [Settings](#settings) as the first argument, only the options you provide will be updated.
+Updates the the sensor's settings. Accepts [`settings`](#settings) as the first argument, only the options you provide will be updated.
 
 ### cancel
 
