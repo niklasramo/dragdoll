@@ -1,4 +1,4 @@
-import { Sensor, SensorEvents } from './sensor.js';
+import { Sensor, SensorEvents, SensorEventType } from './sensor.js';
 
 import { BaseSensor, BaseSensorDragData } from './base-sensor.js';
 
@@ -94,7 +94,7 @@ export class BaseMotionSensor<E extends BaseMotionSensorEvents = BaseMotionSenso
       // need to do it here.
       if (deltaX || deltaY) {
         this._move({
-          type: 'move',
+          type: SensorEventType.Move,
           x: this.drag.x + deltaX,
           y: this.drag.y + deltaY,
         });

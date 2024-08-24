@@ -219,7 +219,7 @@ export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
     // Emit start event.
     const eventData: PointerSensorStartEvent = {
       ...dragData,
-      type: SensorEventType.start,
+      type: SensorEventType.Start,
       srcEvent: e,
       target: pointerEventData.target,
     };
@@ -245,7 +245,7 @@ export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
     (this.drag.y as Writeable<number>) = pointerEventData.clientY;
 
     const eventData: PointerSensorMoveEvent = {
-      type: SensorEventType.move,
+      type: SensorEventType.Move,
       srcEvent: e,
       target: pointerEventData.target,
       ...this.drag,
@@ -267,7 +267,7 @@ export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
     (this.drag.y as Writeable<number>) = pointerEventData.clientY;
 
     const eventData: PointerSensorCancelEvent = {
-      type: SensorEventType.cancel,
+      type: SensorEventType.Cancel,
       srcEvent: e,
       target: pointerEventData.target,
       ...this.drag,
@@ -291,7 +291,7 @@ export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
     (this.drag.y as Writeable<number>) = pointerEventData.clientY;
 
     const eventData: PointerSensorEndEvent = {
-      type: SensorEventType.end,
+      type: SensorEventType.End,
       srcEvent: e,
       target: pointerEventData.target,
       ...this.drag,
@@ -346,7 +346,7 @@ export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
     if (!this.drag) return;
 
     const eventData: PointerSensorCancelEvent = {
-      type: SensorEventType.cancel,
+      type: SensorEventType.Cancel,
       srcEvent: null,
       target: null,
       ...this.drag,
@@ -440,8 +440,8 @@ export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
     this.cancel();
 
     // Emit destroy event.
-    this._emitter.emit(SensorEventType.destroy, {
-      type: SensorEventType.destroy,
+    this._emitter.emit(SensorEventType.Destroy, {
+      type: SensorEventType.Destroy,
     });
 
     // Destroy emitter.

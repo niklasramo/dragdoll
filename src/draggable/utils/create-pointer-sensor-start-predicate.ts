@@ -1,6 +1,6 @@
-import { Sensor } from '../../sensors/sensor.js';
+import { Sensor, SensorEventType } from '../../sensors/sensor.js';
 
-import { Draggable } from '../draggable.js';
+import { Draggable, DraggableEventType } from '../draggable.js';
 
 import { PointerSensor, PointerSensorEvents } from '../../sensors/pointer-sensor.js';
 
@@ -71,7 +71,7 @@ export function createPointerSensorStartPredicate<
       // On first event (touchstart/pointerdown) we need to store the drag start
       // data and bind listeners for touchmove and contextmenu.
       if (
-        e.type === 'start' &&
+        e.type === SensorEventType.Start &&
         (e.srcEvent.type === 'pointerdown' || e.srcEvent.type === 'touchstart')
       ) {
         // Prevent potentially scrollable nodes from scrolling to make sure
@@ -89,10 +89,10 @@ export function createPointerSensorStartPredicate<
           if (!startTimeStamp) return;
 
           // Unbind listeners.
-          draggable.off('end', dragEndListener);
+          draggable.off(DraggableEventType.End, dragEndListener);
           draggable.sensors.forEach((sensor) => {
             if (sensor instanceof PointerSensor) {
-              sensor.off('end', dragEndListener);
+              sensor.off(SensorEventType.End, dragEndListener);
             }
           });
           targetElement?.removeEventListener('contextmenu', onContextMenu);
@@ -116,11 +116,12 @@ export function createPointerSensorStartPredicate<
         // Prevent context menu popping up.
         targetElement?.addEventListener('contextmenu', onContextMenu);
 
-        // Reset data on drag end.
-        draggable.on('end', dragEndListener);
+        // Reset data on drag end. We want to listen to all sensors as we don't
+        // know yet which one will start the drag.
+        draggable.on(DraggableEventType.End, dragEndListener);
         draggable.sensors.forEach((sensor) => {
           if (sensor instanceof PointerSensor) {
-            sensor.off('end', dragEndListener);
+            sensor.on(SensorEventType.End, dragEndListener);
           }
         });
 
@@ -147,7 +148,7 @@ export function createPointerSensorStartPredicate<
 
     // On mouse/pen let's allow starting drag immediately if mouse's left button
     // is pressed down.
-    if (e.type === 'start' && !(e.srcEvent as MouseEvent | PointerEvent).button) {
+    if (e.type === SensorEventType.Start && !(e.srcEvent as MouseEvent | PointerEvent).button) {
       return true;
     } else {
       return false;

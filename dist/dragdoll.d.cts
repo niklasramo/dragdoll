@@ -4,34 +4,35 @@ import * as tikki from 'tikki';
 import { AutoTicker, Phase, FrameCallback } from 'tikki';
 
 declare const SensorEventType: {
-    readonly start: "start";
-    readonly move: "move";
-    readonly cancel: "cancel";
-    readonly end: "end";
-    readonly destroy: "destroy";
+    readonly Start: "start";
+    readonly Move: "move";
+    readonly Cancel: "cancel";
+    readonly End: "end";
+    readonly Destroy: "destroy";
 };
+type SensorEventType = (typeof SensorEventType)[keyof typeof SensorEventType];
 interface SensorStartEvent {
-    type: typeof SensorEventType.start;
+    type: typeof SensorEventType.Start;
     x: number;
     y: number;
 }
 interface SensorMoveEvent {
-    type: typeof SensorEventType.move;
+    type: typeof SensorEventType.Move;
     x: number;
     y: number;
 }
 interface SensorCancelEvent {
-    type: typeof SensorEventType.cancel;
+    type: typeof SensorEventType.Cancel;
     x: number;
     y: number;
 }
 interface SensorEndEvent {
-    type: typeof SensorEventType.end;
+    type: typeof SensorEventType.End;
     x: number;
     y: number;
 }
 interface SensorDestroyEvent {
-    type: typeof SensorEventType.destroy;
+    type: typeof SensorEventType.Destroy;
 }
 interface SensorEvents {
     start: SensorStartEvent;
@@ -362,21 +363,34 @@ declare class DraggableDrag<S extends Sensor[], E extends S[number]['events']> {
 }
 
 declare enum DragStartPhase {
-    NONE = 0,
-    INIT = 1,
-    START_PREPARE = 2,
-    FINISH_APPLY = 3
+    None = 0,
+    Init = 1,
+    StartPrepare = 2,
+    FinishApply = 3
 }
 declare enum DraggableStartPredicateState {
-    PENDING = 0,
-    RESOLVED = 1,
-    REJECTED = 2
+    Pending = 0,
+    Resolved = 1,
+    Rejected = 2
 }
+declare const DraggableModifierPhase: {
+    readonly Start: "start";
+    readonly Move: "move";
+    readonly End: "end";
+};
+type DraggableModifierPhase = (typeof DraggableModifierPhase)[keyof typeof DraggableModifierPhase];
+declare const DraggableApplyPositionPhase: {
+    readonly Start: "start";
+    readonly Move: "move";
+    readonly End: "end";
+    readonly Align: "align";
+};
+type DraggableApplyPositionPhase = (typeof DraggableApplyPositionPhase)[keyof typeof DraggableApplyPositionPhase];
 type DraggableModifierData<S extends Sensor[], E extends S[number]['events']> = {
     draggable: Draggable<S, E>;
     drag: DraggableDrag<S, E>;
     item: DraggableDragItem<S, E>;
-    phase: 'start' | 'move' | 'end';
+    phase: DraggableModifierPhase;
 };
 type DraggableModifier<S extends Sensor[], E extends S[number]['events']> = (change: Point, data: DraggableModifierData<S, E>) => Point;
 interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
@@ -401,7 +415,7 @@ interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
         draggable: Draggable<S, E>;
         drag: DraggableDrag<S, E>;
         item: DraggableDragItem<S, E>;
-        phase: 'start' | 'move' | 'end' | 'align';
+        phase: DraggableApplyPositionPhase;
     }) => void;
 }
 interface DraggablePlugin {
@@ -409,13 +423,22 @@ interface DraggablePlugin {
     version: string;
 }
 type DraggablePluginMap = Record<string, DraggablePlugin | undefined>;
+declare const DraggableEventType: {
+    readonly PrepareStart: "preparestart";
+    readonly Start: "start";
+    readonly PrepareMove: "preparemove";
+    readonly Move: "move";
+    readonly End: "end";
+    readonly Destroy: "destroy";
+};
+type DraggableEventType = (typeof DraggableEventType)[keyof typeof DraggableEventType];
 interface DraggableEventCallbacks<E extends SensorEvents> {
-    preparestart(event: E['start'] | E['move']): void;
-    start(event: E['start'] | E['move']): void;
-    preparemove(event: E['move']): void;
-    move(event: E['move']): void;
-    end(event: E['end'] | E['cancel'] | E['destroy'] | null): void;
-    destroy(): void;
+    [DraggableEventType.PrepareStart]: (event: E['start'] | E['move']) => void;
+    [DraggableEventType.Start]: (event: E['start'] | E['move']) => void;
+    [DraggableEventType.PrepareMove]: (event: E['move']) => void;
+    [DraggableEventType.Move]: (event: E['move']) => void;
+    [DraggableEventType.End]: (event: E['end'] | E['cancel'] | E['destroy']) => void;
+    [DraggableEventType.Destroy]: () => void;
 }
 declare const DraggableDefaultSettings: DraggableSettings<any, any>;
 declare class Draggable<S extends Sensor[] = Sensor[], E extends S[number]['events'] = S[number]['events'], P extends DraggablePluginMap = {}> {
@@ -449,6 +472,7 @@ declare class Draggable<S extends Sensor[] = Sensor[], E extends S[number]['even
     protected _applyMove(): void;
     protected _prepareAlign(): void;
     protected _applyAlign(): void;
+    _applyModifiers(phase: DraggableModifierPhase, changeX: number, changeY: number): void;
     on<T extends keyof DraggableEventCallbacks<E>>(type: T, listener: DraggableEventCallbacks<E>[T], listenerId?: EventListenerId): EventListenerId;
     off<T extends keyof DraggableEventCallbacks<E>>(type: T, listenerId: EventListenerId): void;
     resolveStartPredicate(sensor: S[number], e?: E['start'] | E['move']): void;
@@ -688,4 +712,4 @@ declare const tickerPhases: {
 declare let ticker: AutoTicker<eventti.EventName, tikki.AutoTickerDefaultFrameCallback>;
 declare function setTicker(newTicker: AutoTicker<Phase, FrameCallback>, phases: typeof tickerPhases): void;
 
-export { AUTO_SCROLL_AXIS, AUTO_SCROLL_AXIS_DIRECTION, AUTO_SCROLL_DIRECTION, AutoScroll, type AutoScrollItem, type AutoScrollItemEffectCallback, type AutoScrollItemEventCallback, type AutoScrollItemSpeedCallback, type AutoScrollItemTarget, type AutoScrollOptions, type AutoScrollSettings, BaseMotionSensor, type BaseMotionSensorDragData, type BaseMotionSensorEvents, type BaseMotionSensorTickEvent, BaseSensor, type BaseSensorDragData, Draggable, DraggableAutoScroll, type DraggableAutoScrollOptions, type DraggableAutoScrollSettings, DraggableDefaultSettings, type DraggableEventCallbacks, type DraggableModifier, type DraggableModifierData, type DraggablePlugin, type DraggablePluginMap, type DraggableSettings, KeyboardMotionSensor, type KeyboardMotionSensorEvents, type KeyboardMotionSensorSettings, KeyboardSensor, type KeyboardSensorCancelEvent, type KeyboardSensorDestroyEvent, type KeyboardSensorEndEvent, type KeyboardSensorEvents, type KeyboardSensorMoveEvent, type KeyboardSensorPredicate, type KeyboardSensorSettings, type KeyboardSensorStartEvent, PointerSensor, type PointerSensorCancelEvent, type PointerSensorDestroyEvent, type PointerSensorDragData, type PointerSensorEndEvent, type PointerSensorEvents, type PointerSensorMoveEvent, type PointerSensorSettings, type PointerSensorStartEvent, type Sensor, type SensorCancelEvent, type SensorDestroyEvent, type SensorEndEvent, SensorEventType, type SensorEvents, type SensorMoveEvent, type SensorStartEvent, autoScroll, autoScrollPlugin, autoScrollSmoothSpeed, createContainmentModifier, createPointerSensorStartPredicate, createSnapModifier, keyboardMotionSensorDefaults, keyboardSensorDefaults, setTicker, ticker, tickerPhases };
+export { AUTO_SCROLL_AXIS, AUTO_SCROLL_AXIS_DIRECTION, AUTO_SCROLL_DIRECTION, AutoScroll, type AutoScrollItem, type AutoScrollItemEffectCallback, type AutoScrollItemEventCallback, type AutoScrollItemSpeedCallback, type AutoScrollItemTarget, type AutoScrollOptions, type AutoScrollSettings, BaseMotionSensor, type BaseMotionSensorDragData, type BaseMotionSensorEvents, type BaseMotionSensorTickEvent, BaseSensor, type BaseSensorDragData, Draggable, DraggableApplyPositionPhase, DraggableAutoScroll, type DraggableAutoScrollOptions, type DraggableAutoScrollSettings, DraggableDefaultSettings, type DraggableEventCallbacks, DraggableEventType, type DraggableModifier, type DraggableModifierData, DraggableModifierPhase, type DraggablePlugin, type DraggablePluginMap, type DraggableSettings, KeyboardMotionSensor, type KeyboardMotionSensorEvents, type KeyboardMotionSensorSettings, KeyboardSensor, type KeyboardSensorCancelEvent, type KeyboardSensorDestroyEvent, type KeyboardSensorEndEvent, type KeyboardSensorEvents, type KeyboardSensorMoveEvent, type KeyboardSensorPredicate, type KeyboardSensorSettings, type KeyboardSensorStartEvent, PointerSensor, type PointerSensorCancelEvent, type PointerSensorDestroyEvent, type PointerSensorDragData, type PointerSensorEndEvent, type PointerSensorEvents, type PointerSensorMoveEvent, type PointerSensorSettings, type PointerSensorStartEvent, type Sensor, type SensorCancelEvent, type SensorDestroyEvent, type SensorEndEvent, SensorEventType, type SensorEvents, type SensorMoveEvent, type SensorStartEvent, autoScroll, autoScrollPlugin, autoScrollSmoothSpeed, createContainmentModifier, createPointerSensorStartPredicate, createSnapModifier, keyboardMotionSensorDefaults, keyboardSensorDefaults, setTicker, ticker, tickerPhases };

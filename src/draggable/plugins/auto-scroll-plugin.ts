@@ -1,4 +1,4 @@
-import { Draggable, DraggablePluginMap } from '../draggable.js';
+import { Draggable, DraggableEventType, DraggablePluginMap } from '../draggable.js';
 
 import { Sensor } from '../../sensors/sensor.js';
 
@@ -171,14 +171,14 @@ export class DraggableAutoScroll<
     this.settings = this._parseSettings(options);
     this._autoScrollProxy = null;
 
-    draggable.on('start', () => {
+    draggable.on(DraggableEventType.Start, () => {
       if (!this._autoScrollProxy) {
         this._autoScrollProxy = new DraggableAutoScrollProxy(this, draggable);
         autoScroll.addItem(this._autoScrollProxy);
       }
     });
 
-    draggable.on('end', () => {
+    draggable.on(DraggableEventType.End, () => {
       if (this._autoScrollProxy) {
         autoScroll.removeItem(this._autoScrollProxy);
         this._autoScrollProxy = null;

@@ -1,9 +1,9 @@
 const $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5 = {
-    start: "start",
-    move: "move",
-    cancel: "cancel",
-    end: "end",
-    destroy: "destroy"
+    Start: "start",
+    Move: "move",
+    Cancel: "cancel",
+    End: "end",
+    Destroy: "destroy"
 };
 
 
@@ -117,23 +117,23 @@ class $b8cf3f0ef33e91cf$export$2176a6ff266bf511 {
     _start(data) {
         if (this.isDestroyed || this.drag) return;
         this.drag = this._createDragData(data);
-        this._emitter.emit((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).start, data);
+        this._emitter.emit((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Start, data);
     }
     _move(data) {
         if (!this.drag) return;
         this._updateDragData(data);
-        this._emitter.emit((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).move, data);
+        this._emitter.emit((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Move, data);
     }
     _end(data) {
         if (!this.drag) return;
         this._updateDragData(data);
-        this._emitter.emit((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).end, data);
+        this._emitter.emit((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).End, data);
         this._resetDragData();
     }
     _cancel(data) {
         if (!this.drag) return;
         this._updateDragData(data);
-        this._emitter.emit((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).cancel, data);
+        this._emitter.emit((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Cancel, data);
         this._resetDragData();
     }
     on(type, listener, listenerId) {
@@ -145,7 +145,7 @@ class $b8cf3f0ef33e91cf$export$2176a6ff266bf511 {
     cancel() {
         if (!this.drag) return;
         this._cancel({
-            type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).cancel,
+            type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Cancel,
             x: this.drag.x,
             y: this.drag.y
         });
@@ -154,12 +154,13 @@ class $b8cf3f0ef33e91cf$export$2176a6ff266bf511 {
         if (this.isDestroyed) return;
         this.isDestroyed = true;
         this.cancel();
-        this._emitter.emit((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).destroy, {
-            type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).destroy
+        this._emitter.emit((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Destroy, {
+            type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Destroy
         });
         this._emitter.off();
     }
 }
+
 
 
 
@@ -368,7 +369,7 @@ class $07403df99f68f50f$export$2f0ad9ba2f0800d extends (0, $b8cf3f0ef33e91cf$exp
             // this._move() automatically updates clientX/Y values also so we don't
             // need to do it here.
             if (deltaX || deltaY) this._move({
-                type: "move",
+                type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Move,
                 x: this.drag.x + deltaX,
                 y: this.drag.y + deltaY
             });
@@ -529,7 +530,7 @@ class $e72ff61c97f755fe$export$b26af955418d6638 {
         // Emit start event.
         const eventData = {
             ...dragData,
-            type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).start,
+            type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Start,
             srcEvent: e,
             target: pointerEventData.target
         };
@@ -547,7 +548,7 @@ class $e72ff61c97f755fe$export$b26af955418d6638 {
         this.drag.x = pointerEventData.clientX;
         this.drag.y = pointerEventData.clientY;
         const eventData = {
-            type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).move,
+            type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Move,
             srcEvent: e,
             target: pointerEventData.target,
             ...this.drag
@@ -563,7 +564,7 @@ class $e72ff61c97f755fe$export$b26af955418d6638 {
         this.drag.x = pointerEventData.clientX;
         this.drag.y = pointerEventData.clientY;
         const eventData = {
-            type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).cancel,
+            type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Cancel,
             srcEvent: e,
             target: pointerEventData.target,
             ...this.drag
@@ -580,7 +581,7 @@ class $e72ff61c97f755fe$export$b26af955418d6638 {
         this.drag.x = pointerEventData.clientX;
         this.drag.y = pointerEventData.clientY;
         const eventData = {
-            type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).end,
+            type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).End,
             srcEvent: e,
             target: pointerEventData.target,
             ...this.drag
@@ -620,7 +621,7 @@ class $e72ff61c97f755fe$export$b26af955418d6638 {
    */ cancel() {
         if (!this.drag) return;
         const eventData = {
-            type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).cancel,
+            type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Cancel,
             srcEvent: null,
             target: null,
             ...this.drag
@@ -671,8 +672,8 @@ class $e72ff61c97f755fe$export$b26af955418d6638 {
         // Cancel any ongoing drag process.
         this.cancel();
         // Emit destroy event.
-        this._emitter.emit((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).destroy, {
-            type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).destroy
+        this._emitter.emit((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Destroy, {
+            type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Destroy
         });
         // Destroy emitter.
         this._emitter.off();
@@ -680,6 +681,7 @@ class $e72ff61c97f755fe$export$b26af955418d6638 {
         this.element.removeEventListener($e72ff61c97f755fe$var$SOURCE_EVENTS[this._sourceEvents].start, this._onStart, this._listenerOptions);
     }
 }
+
 
 
 
@@ -793,7 +795,7 @@ class $2a9b1c646b3552c1$export$44d67f2a438aeba9 extends (0, $b8cf3f0ef33e91cf$ex
             if (startPosition) {
                 e.preventDefault();
                 this._start({
-                    type: "start",
+                    type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Start,
                     x: startPosition.x,
                     y: startPosition.y,
                     srcEvent: e
@@ -806,7 +808,7 @@ class $2a9b1c646b3552c1$export$44d67f2a438aeba9 extends (0, $b8cf3f0ef33e91cf$ex
         if (cancelPosition) {
             e.preventDefault();
             this._cancel({
-                type: "cancel",
+                type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Cancel,
                 x: cancelPosition.x,
                 y: cancelPosition.y,
                 srcEvent: e
@@ -818,7 +820,7 @@ class $2a9b1c646b3552c1$export$44d67f2a438aeba9 extends (0, $b8cf3f0ef33e91cf$ex
         if (endPosition) {
             e.preventDefault();
             this._end({
-                type: "end",
+                type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).End,
                 x: endPosition.x,
                 y: endPosition.y,
                 srcEvent: e
@@ -830,7 +832,7 @@ class $2a9b1c646b3552c1$export$44d67f2a438aeba9 extends (0, $b8cf3f0ef33e91cf$ex
         if (movePosition) {
             e.preventDefault();
             this._move({
-                type: "move",
+                type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Move,
                 x: movePosition.x,
                 y: movePosition.y,
                 srcEvent: e
@@ -870,6 +872,7 @@ class $2a9b1c646b3552c1$export$44d67f2a438aeba9 extends (0, $b8cf3f0ef33e91cf$ex
         if (this._cancelOnVisibilityChange) document.removeEventListener("visibilitychange", this._internalCancel);
     }
 }
+
 
 
 
@@ -1026,7 +1029,7 @@ class $7fff4587bd07df96$export$436f6efcc297171 extends (0, $07403df99f68f50f$exp
                 if (startPosition) {
                     e.preventDefault();
                     this._start({
-                        type: "start",
+                        type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Start,
                         x: startPosition.x,
                         y: startPosition.y
                     });
@@ -1044,7 +1047,7 @@ class $7fff4587bd07df96$export$436f6efcc297171 extends (0, $07403df99f68f50f$exp
         if (this._endKeys.has(e.key)) {
             e.preventDefault();
             this._end({
-                type: "end",
+                type: (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).End,
                 x: this.drag.x,
                 y: this.drag.y
             });
@@ -1113,6 +1116,7 @@ class $7fff4587bd07df96$export$436f6efcc297171 extends (0, $07403df99f68f50f$exp
         if (this._cancelOnVisibilityChange) document.removeEventListener("visibilitychange", this._internalCancel);
     }
 }
+
 
 
 
@@ -1683,10 +1687,6 @@ function $ba8ad8073c33464d$export$8317bebcfd6ca26c(m) {
 
 
 const $93e17dd02dc97955$var$MEASURE_ELEMENT = (0, $3625b5560175528a$export$8de5e08b53f62319)();
-const $93e17dd02dc97955$var$START_POINT = {
-    x: 0,
-    y: 0
-};
 class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
     constructor(element, draggable){
         // Make sure the element is in DOM.
@@ -1759,21 +1759,6 @@ class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
         // Compute container matrices and offset.
         this._updateContainerMatrices();
         this._updateContainerOffset();
-        // Compute start position.
-        const { positionModifiers: positionModifiers } = draggable.settings;
-        let startPoint = $93e17dd02dc97955$var$START_POINT;
-        startPoint.x = this.position.x;
-        startPoint.y = this.position.y;
-        for (const modifier of positionModifiers)startPoint = modifier(startPoint, {
-            draggable: draggable,
-            drag: drag,
-            item: this,
-            phase: "start"
-        });
-        this.position.x += startPoint.x;
-        this.position.y += startPoint.x;
-        this.clientRect.x += startPoint.x;
-        this.clientRect.y += startPoint.x;
         // Get element's frozen props.
         const frozenStyles = draggable.settings.frozenStyles({
             draggable: draggable,
@@ -1930,17 +1915,36 @@ const $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX = new DOMMatrix();
 const $0d0c72b4b6dc9dbb$var$TEMP_MATRIX = new DOMMatrix();
 var $0d0c72b4b6dc9dbb$var$DragStartPhase;
 (function(DragStartPhase) {
-    DragStartPhase[DragStartPhase["NONE"] = 0] = "NONE";
-    DragStartPhase[DragStartPhase["INIT"] = 1] = "INIT";
-    DragStartPhase[DragStartPhase["START_PREPARE"] = 2] = "START_PREPARE";
-    DragStartPhase[DragStartPhase["FINISH_APPLY"] = 3] = "FINISH_APPLY";
+    DragStartPhase[DragStartPhase["None"] = 0] = "None";
+    DragStartPhase[DragStartPhase["Init"] = 1] = "Init";
+    DragStartPhase[DragStartPhase["StartPrepare"] = 2] = "StartPrepare";
+    DragStartPhase[DragStartPhase["FinishApply"] = 3] = "FinishApply";
 })($0d0c72b4b6dc9dbb$var$DragStartPhase || ($0d0c72b4b6dc9dbb$var$DragStartPhase = {}));
 var $0d0c72b4b6dc9dbb$var$DraggableStartPredicateState;
 (function(DraggableStartPredicateState) {
-    DraggableStartPredicateState[DraggableStartPredicateState["PENDING"] = 0] = "PENDING";
-    DraggableStartPredicateState[DraggableStartPredicateState["RESOLVED"] = 1] = "RESOLVED";
-    DraggableStartPredicateState[DraggableStartPredicateState["REJECTED"] = 2] = "REJECTED";
+    DraggableStartPredicateState[DraggableStartPredicateState["Pending"] = 0] = "Pending";
+    DraggableStartPredicateState[DraggableStartPredicateState["Resolved"] = 1] = "Resolved";
+    DraggableStartPredicateState[DraggableStartPredicateState["Rejected"] = 2] = "Rejected";
 })($0d0c72b4b6dc9dbb$var$DraggableStartPredicateState || ($0d0c72b4b6dc9dbb$var$DraggableStartPredicateState = {}));
+const $0d0c72b4b6dc9dbb$export$44f02bfd7d637941 = {
+    Start: "start",
+    Move: "move",
+    End: "end"
+};
+const $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61 = {
+    Start: "start",
+    Move: "move",
+    End: "end",
+    Align: "align"
+};
+const $0d0c72b4b6dc9dbb$export$a85ab346e352a830 = {
+    PrepareStart: "preparestart",
+    Start: "start",
+    PrepareMove: "preparemove",
+    Move: "move",
+    End: "end",
+    Destroy: "destroy"
+};
 const $0d0c72b4b6dc9dbb$export$7ce0cd3869d5dcd9 = {
     container: null,
     startPredicate: ()=>true,
@@ -2021,11 +2025,11 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
                 onEnd: (e)=>this._onEnd(e, sensor)
             });
             const { onMove: onMove, onEnd: onEnd } = this._sensorData.get(sensor);
-            sensor.on("start", onMove, onMove);
-            sensor.on("move", onMove, onMove);
-            sensor.on("cancel", onEnd, onEnd);
-            sensor.on("end", onEnd, onEnd);
-            sensor.on("destroy", onEnd, onEnd);
+            sensor.on((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Start, onMove, onMove);
+            sensor.on((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Move, onMove, onMove);
+            sensor.on((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Cancel, onEnd, onEnd);
+            sensor.on((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).End, onEnd, onEnd);
+            sensor.on((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Destroy, onEnd, onEnd);
         });
     }
     _parseSettings(options, defaults = $0d0c72b4b6dc9dbb$export$7ce0cd3869d5dcd9) {
@@ -2106,8 +2110,10 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         drag.items = elements.map((element)=>{
             return new (0, $93e17dd02dc97955$export$b87fb2dc7f11ca52)(element, this);
         });
+        // Apply modifiers for the start phase.
+        this._applyModifiers($0d0c72b4b6dc9dbb$export$44f02bfd7d637941.Start, 0, 0);
         // Emit preparestart event.
-        this._emit("preparestart", drag.startEvent);
+        this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.PrepareStart, drag.startEvent);
     }
     _applyStart() {
         const drag = this.drag;
@@ -2119,7 +2125,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
             if (item.frozenStyles) Object.assign(item.element.style, item.frozenStyles);
             // Set element's start position.
             this.settings.applyPosition({
-                phase: "start",
+                phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.Start,
                 draggable: this,
                 drag: drag,
                 item: item
@@ -2145,7 +2151,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         for (const item of drag.items){
             const { alignmentOffset: alignmentOffset } = item;
             if (alignmentOffset.x !== 0 || alignmentOffset.y !== 0) this.settings.applyPosition({
-                phase: "align",
+                phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.Align,
                 draggable: this,
                 drag: drag,
                 item: item
@@ -2156,7 +2162,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         // Update start phase.
         this._startPhase = 3;
         // Emit start event.
-        this._emit("start", drag.startEvent);
+        this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.Start, drag.startEvent);
     }
     _prepareMove() {
         const drag = this.drag;
@@ -2165,38 +2171,12 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         // difference between the clientX/Y values.
         const { event: event, prevEvent: prevEvent } = drag;
         if (event === prevEvent) return;
-        // Compute the default movement diff.
-        const defaultChangeX = event.x - prevEvent.x;
-        const defaultChangeY = event.y - prevEvent.y;
-        // Run all modifiers for the move phase.
-        const { positionModifiers: positionModifiers } = this.settings;
-        for (const item of drag.items){
-            let positionChange = $0d0c72b4b6dc9dbb$var$POSITION_CHANGE;
-            positionChange.x = defaultChangeX;
-            positionChange.y = defaultChangeY;
-            for (const modifier of positionModifiers)positionChange = modifier(positionChange, {
-                draggable: this,
-                drag: drag,
-                item: item,
-                phase: "move"
-            });
-            // Update horizontal position data (if needed).
-            if (positionChange.x) {
-                item.position.x += positionChange.x;
-                item.clientRect.x += positionChange.x;
-                item["_moveDiff"].x += positionChange.x;
-            }
-            // Update vertical position data (if needed).
-            if (positionChange.y) {
-                item.position.y += positionChange.y;
-                item.clientRect.y += positionChange.y;
-                item["_moveDiff"].y += positionChange.y;
-            }
-        }
+        // Apply modifiers for the move phase.
+        this._applyModifiers($0d0c72b4b6dc9dbb$export$44f02bfd7d637941.Move, event.x - prevEvent.x, event.y - prevEvent.y);
         // Store next event as previous event.
         drag.prevEvent = event;
         // Emit preparemove event.
-        this._emit("preparemove", event);
+        this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.PrepareMove, event);
     }
     _applyMove() {
         const drag = this.drag;
@@ -2206,14 +2186,14 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
             item["_moveDiff"].x = 0;
             item["_moveDiff"].y = 0;
             this.settings.applyPosition({
-                phase: "move",
+                phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.Move,
                 draggable: this,
                 drag: drag,
                 item: item
             });
         }
         // Emit move event.
-        if (drag.event) this._emit("move", drag.event);
+        if (drag.event) this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.Move, drag.event);
     }
     _prepareAlign() {
         const { drag: drag } = this;
@@ -2241,11 +2221,35 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
             item["_alignDiff"].x = 0;
             item["_alignDiff"].y = 0;
             this.settings.applyPosition({
-                phase: "align",
+                phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.Align,
                 draggable: this,
                 drag: drag,
                 item: item
             });
+        }
+    }
+    _applyModifiers(phase, changeX, changeY) {
+        const { drag: drag } = this;
+        if (!drag) return;
+        const { positionModifiers: positionModifiers } = this.settings;
+        for (const item of drag.items){
+            let positionChange = $0d0c72b4b6dc9dbb$var$POSITION_CHANGE;
+            positionChange.x = changeX;
+            positionChange.y = changeY;
+            for (const modifier of positionModifiers)positionChange = modifier(positionChange, {
+                draggable: this,
+                drag: drag,
+                item: item,
+                phase: phase
+            });
+            item.position.x += positionChange.x;
+            item.position.y += positionChange.y;
+            item.clientRect.x += positionChange.x;
+            item.clientRect.y += positionChange.y;
+            if (phase === "move") {
+                item["_moveDiff"].x += positionChange.x;
+                item["_moveDiff"].y += positionChange.y;
+            }
         }
     }
     on(type, listener, listenerId) {
@@ -2292,8 +2296,8 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         // forcefully during the start phase.
         // NB: We reuse the `_startId` symbol to queue the stop procedure.
         if (this._startPhase === 2) {
-            this.off("start", this._startId);
-            this.on("start", ()=>this.stop(), this._startId);
+            this.off($0d0c72b4b6dc9dbb$export$a85ab346e352a830.Start, this._startId);
+            this.on($0d0c72b4b6dc9dbb$export$a85ab346e352a830.Start, ()=>this.stop(), this._startId);
             return;
         }
         // Reset drag start phase.
@@ -2309,8 +2313,6 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         (0, $e434efa1a293c3f2$export$e94d57566be028aa).off((0, $e434efa1a293c3f2$export$ef9171fc2626).write, this._alignId);
         // Unbind scroll listener.
         window.removeEventListener("scroll", this._onScroll, $0d0c72b4b6dc9dbb$var$SCROLL_LISTENER_OPTIONS);
-        // Get position modifiers.
-        const { positionModifiers: positionModifiers } = this.settings;
         // Adjust items' positions for the drop. When the drag starts the container
         // offset is computed once, but not updated during drag (because we don't
         // need to). But on drop we need to how much the offset diff has changed
@@ -2318,37 +2320,17 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         // reset the container offset. Let's do this procedure in a separate loop to
         // avoid layout thrashing.
         drag["_clientOffsetCache"].clear();
-        for (const item of drag.items){
-            if (item.elementContainer !== item.dragContainer) {
-                const { x: startX, y: startY } = item.containerOffset;
-                item["_updateContainerOffset"]();
-                const { x: endX, y: endY } = item.containerOffset;
-                item.alignmentOffset.x = startX - endX;
-                item.alignmentOffset.y = startY - endY;
-                item.containerOffset.x = 0;
-                item.containerOffset.y = 0;
-            }
-            // Run all modifiers for the end phase.
-            let positionChange = $0d0c72b4b6dc9dbb$var$POSITION_CHANGE;
-            positionChange.x = 0;
-            positionChange.y = 0;
-            for (const modifier of positionModifiers)positionChange = modifier(positionChange, {
-                draggable: this,
-                drag: drag,
-                item: item,
-                phase: "end"
-            });
-            // Update horizontal position data (if needed).
-            if (positionChange.x) {
-                item.position.x += positionChange.x;
-                item.clientRect.x += positionChange.x;
-            }
-            // Update vertical position data (if needed).
-            if (positionChange.y) {
-                item.position.y += positionChange.y;
-                item.clientRect.y += positionChange.y;
-            }
+        for (const item of drag.items)if (item.elementContainer !== item.dragContainer) {
+            const { x: startX, y: startY } = item.containerOffset;
+            item["_updateContainerOffset"]();
+            const { x: endX, y: endY } = item.containerOffset;
+            item.alignmentOffset.x = startX - endX;
+            item.alignmentOffset.y = startY - endY;
+            item.containerOffset.x = 0;
+            item.containerOffset.y = 0;
         }
+        // Apply modifiers for the end phase.
+        this._applyModifiers($0d0c72b4b6dc9dbb$export$44f02bfd7d637941.End, 0, 0);
         // Move elements within the root container.
         for (const item of drag.items){
             if (item.elementContainer !== item.dragContainer) (0, $3ba9e1e7a6850ba1$export$33e13bbfe889ab45)(item.element, item.elementContainer);
@@ -2356,14 +2338,14 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
             if (item.unfrozenStyles) for(const key in item.unfrozenStyles)item.element.style[key] = item.unfrozenStyles[key] || "";
             // Set final position after drag.
             this.settings.applyPosition({
-                phase: "end",
+                phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.End,
                 draggable: this,
                 drag: drag,
                 item: item
             });
         }
         // Emit end event.
-        this._emit("end", drag.endEvent);
+        this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.End, drag.endEvent);
         // Reset drag data.
         this.drag = null;
     }
@@ -2388,14 +2370,14 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         this.isDestroyed = true;
         this.stop();
         this._sensorData.forEach(({ onMove: onMove, onEnd: onEnd }, sensor)=>{
-            sensor.off("start", onMove);
-            sensor.off("move", onMove);
-            sensor.off("cancel", onEnd);
-            sensor.off("end", onEnd);
-            sensor.off("destroy", onEnd);
+            sensor.off((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Start, onMove);
+            sensor.off((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Move, onMove);
+            sensor.off((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Cancel, onEnd);
+            sensor.off((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).End, onEnd);
+            sensor.off((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Destroy, onEnd);
         });
         this._sensorData.clear();
-        this._emit("destroy");
+        this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.Destroy);
         this._emitter.off();
     }
 }
@@ -2528,6 +2510,7 @@ function $e4a9d189cff00937$export$b43dd221600cdb2e(getContainerRect, trackSensor
         return change;
     };
 }
+
 
 
 class $bfd9fff49b9cfdf1$export$14963ee5c8637e11 {
@@ -3444,13 +3427,13 @@ class $244877ffe9407e42$export$5059276ad4233de3 {
         this.version = "0.0.3";
         this.settings = this._parseSettings(options);
         this._autoScrollProxy = null;
-        draggable.on("start", ()=>{
+        draggable.on((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).Start, ()=>{
             if (!this._autoScrollProxy) {
                 this._autoScrollProxy = new $244877ffe9407e42$var$DraggableAutoScrollProxy(this, draggable);
                 (0, $92cd9a0cd3661853$export$d976747ecb966cea).addItem(this._autoScrollProxy);
             }
         });
-        draggable.on("end", ()=>{
+        draggable.on((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).End, ()=>{
             if (this._autoScrollProxy) {
                 (0, $92cd9a0cd3661853$export$d976747ecb966cea).removeItem(this._autoScrollProxy);
                 this._autoScrollProxy = null;
@@ -3482,6 +3465,8 @@ function $244877ffe9407e42$export$c0f5c18ade842ccd(options) {
         return d;
     };
 }
+
+
 
 
 
@@ -3553,7 +3538,7 @@ function $c26397d14873e1ed$export$88d83dc4a35d804f(options = {}) {
         if (e.pointerType === "touch") {
             // On first event (touchstart/pointerdown) we need to store the drag start
             // data and bind listeners for touchmove and contextmenu.
-            if (e.type === "start" && (e.srcEvent.type === "pointerdown" || e.srcEvent.type === "touchstart")) {
+            if (e.type === (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Start && (e.srcEvent.type === "pointerdown" || e.srcEvent.type === "touchstart")) {
                 // Prevent potentially scrollable nodes from scrolling to make sure
                 // native scrolling does not interfere with dragging.
                 targetElement = e.target;
@@ -3567,9 +3552,9 @@ function $c26397d14873e1ed$export$88d83dc4a35d804f(options = {}) {
                 const dragEndListener = ()=>{
                     if (!startTimeStamp) return;
                     // Unbind listeners.
-                    draggable.off("end", dragEndListener);
+                    draggable.off((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).End, dragEndListener);
                     draggable.sensors.forEach((sensor)=>{
-                        if (sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) sensor.off("end", dragEndListener);
+                        if (sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) sensor.off((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).End, dragEndListener);
                     });
                     targetElement?.removeEventListener("contextmenu", onContextMenu);
                     scrollables.forEach((scrollable)=>{
@@ -3588,10 +3573,11 @@ function $c26397d14873e1ed$export$88d83dc4a35d804f(options = {}) {
                 startTimeStamp = e.srcEvent.timeStamp;
                 // Prevent context menu popping up.
                 targetElement?.addEventListener("contextmenu", onContextMenu);
-                // Reset data on drag end.
-                draggable.on("end", dragEndListener);
+                // Reset data on drag end. We want to listen to all sensors as we don't
+                // know yet which one will start the drag.
+                draggable.on((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).End, dragEndListener);
                 draggable.sensors.forEach((sensor)=>{
-                    if (sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) sensor.off("end", dragEndListener);
+                    if (sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) sensor.on((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).End, dragEndListener);
                 });
                 // If we have timeout defined, let's set a timer that force starts
                 // the drag process after the timeout.
@@ -3612,7 +3598,7 @@ function $c26397d14873e1ed$export$88d83dc4a35d804f(options = {}) {
         }
         // On mouse/pen let's allow starting drag immediately if mouse's left button
         // is pressed down.
-        if (e.type === "start" && !e.srcEvent.button) return true;
+        if (e.type === (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Start && !e.srcEvent.button) return true;
         else return false;
     };
     return pointerSensorStartPredicate;
@@ -3624,37 +3610,42 @@ function $c26397d14873e1ed$export$88d83dc4a35d804f(options = {}) {
 
 
 
-let $40934f5a2cb9b57f$var$zIndex = 0;
-const $40934f5a2cb9b57f$var$draggableElements = [
-    ...document.querySelectorAll(".draggable")
-];
-$40934f5a2cb9b57f$var$draggableElements.forEach((element)=>{
-    const pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element);
-    const keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)(element);
-    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-        pointerSensor,
-        keyboardSensor
-    ], {
-        elements: ()=>[
-                element
-            ],
-        startPredicate: (0, $c26397d14873e1ed$export$88d83dc4a35d804f)(),
-        positionModifiers: (change, { item: item })=>{
-            const { element: element } = item;
-            const allowX = element.classList.contains("axis-x");
-            const allowY = element.classList.contains("axis-y");
-            if (allowX && !allowY) change.y = 0;
-            else if (allowY && !allowX) change.x = 0;
-            return change;
+const $72821dbb08df4f25$var$element = document.querySelector(".draggable");
+const $72821dbb08df4f25$var$dragContainer = document.querySelector(".drag-container");
+const $72821dbb08df4f25$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($72821dbb08df4f25$var$element);
+const $72821dbb08df4f25$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($72821dbb08df4f25$var$element, {
+    computeSpeed: ()=>100
+});
+const $72821dbb08df4f25$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $72821dbb08df4f25$var$pointerSensor,
+    $72821dbb08df4f25$var$keyboardSensor
+], {
+    container: $72821dbb08df4f25$var$dragContainer,
+    elements: ()=>[
+            $72821dbb08df4f25$var$element
+        ],
+    frozenStyles: ()=>[
+            "left",
+            "top"
+        ],
+    startPredicate: (0, $c26397d14873e1ed$export$88d83dc4a35d804f)()
+}).use((0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
+    targets: [
+        {
+            element: window,
+            axis: "y",
+            padding: {
+                top: Infinity,
+                bottom: Infinity
+            }
         }
-    });
-    draggable.on("start", ()=>{
-        element.classList.add("dragging");
-        element.style.zIndex = `${++$40934f5a2cb9b57f$var$zIndex}`;
-    });
-    draggable.on("end", ()=>{
-        element.classList.remove("dragging");
-    });
+    ]
+}));
+$72821dbb08df4f25$var$draggable.on("start", ()=>{
+    $72821dbb08df4f25$var$element.classList.add("dragging");
+});
+$72821dbb08df4f25$var$draggable.on("end", ()=>{
+    $72821dbb08df4f25$var$element.classList.remove("dragging");
 });
 
 

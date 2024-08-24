@@ -3657,11 +3657,11 @@ __name(use, "use");
 
 // src/sensors/sensor.ts
 var SensorEventType = {
-  start: "start",
-  move: "move",
-  cancel: "cancel",
-  end: "end",
-  destroy: "destroy"
+  Start: "start",
+  Move: "move",
+  Cancel: "cancel",
+  End: "end",
+  Destroy: "destroy"
 };
 
 // src/sensors/base-sensor.ts
@@ -3689,23 +3689,23 @@ var BaseSensor = class {
   _start(data) {
     if (this.isDestroyed || this.drag) return;
     this.drag = this._createDragData(data);
-    this._emitter.emit(SensorEventType.start, data);
+    this._emitter.emit(SensorEventType.Start, data);
   }
   _move(data) {
     if (!this.drag) return;
     this._updateDragData(data);
-    this._emitter.emit(SensorEventType.move, data);
+    this._emitter.emit(SensorEventType.Move, data);
   }
   _end(data) {
     if (!this.drag) return;
     this._updateDragData(data);
-    this._emitter.emit(SensorEventType.end, data);
+    this._emitter.emit(SensorEventType.End, data);
     this._resetDragData();
   }
   _cancel(data) {
     if (!this.drag) return;
     this._updateDragData(data);
-    this._emitter.emit(SensorEventType.cancel, data);
+    this._emitter.emit(SensorEventType.Cancel, data);
     this._resetDragData();
   }
   on(type3, listener, listenerId) {
@@ -3717,7 +3717,7 @@ var BaseSensor = class {
   cancel() {
     if (!this.drag) return;
     this._cancel({
-      type: SensorEventType.cancel,
+      type: SensorEventType.Cancel,
       x: this.drag.x,
       y: this.drag.y
     });
@@ -3726,8 +3726,8 @@ var BaseSensor = class {
     if (this.isDestroyed) return;
     this.isDestroyed = true;
     this.cancel();
-    this._emitter.emit(SensorEventType.destroy, {
-      type: SensorEventType.destroy
+    this._emitter.emit(SensorEventType.Destroy, {
+      type: SensorEventType.Destroy
     });
     this._emitter.off();
   }
@@ -3886,7 +3886,7 @@ var PointerSensor = class {
     this.drag = dragData;
     const eventData = {
       ...dragData,
-      type: SensorEventType.start,
+      type: SensorEventType.Start,
       srcEvent: e,
       target: pointerEventData.target
     };
@@ -3905,7 +3905,7 @@ var PointerSensor = class {
     this.drag.x = pointerEventData.clientX;
     this.drag.y = pointerEventData.clientY;
     const eventData = {
-      type: SensorEventType.move,
+      type: SensorEventType.Move,
       srcEvent: e,
       target: pointerEventData.target,
       ...this.drag
@@ -3922,7 +3922,7 @@ var PointerSensor = class {
     this.drag.x = pointerEventData.clientX;
     this.drag.y = pointerEventData.clientY;
     const eventData = {
-      type: SensorEventType.cancel,
+      type: SensorEventType.Cancel,
       srcEvent: e,
       target: pointerEventData.target,
       ...this.drag
@@ -3940,7 +3940,7 @@ var PointerSensor = class {
     this.drag.x = pointerEventData.clientX;
     this.drag.y = pointerEventData.clientY;
     const eventData = {
-      type: SensorEventType.end,
+      type: SensorEventType.End,
       srcEvent: e,
       target: pointerEventData.target,
       ...this.drag
@@ -3988,7 +3988,7 @@ var PointerSensor = class {
   cancel() {
     if (!this.drag) return;
     const eventData = {
-      type: SensorEventType.cancel,
+      type: SensorEventType.Cancel,
       srcEvent: null,
       target: null,
       ...this.drag
@@ -4047,8 +4047,8 @@ var PointerSensor = class {
     if (this.isDestroyed) return;
     this.isDestroyed = true;
     this.cancel();
-    this._emitter.emit(SensorEventType.destroy, {
-      type: SensorEventType.destroy
+    this._emitter.emit(SensorEventType.Destroy, {
+      type: SensorEventType.Destroy
     });
     this._emitter.off();
     this.element.removeEventListener(
@@ -4167,7 +4167,7 @@ var KeyboardSensor = class extends BaseSensor {
       if (startPosition) {
         e.preventDefault();
         this._start({
-          type: "start",
+          type: SensorEventType.Start,
           x: startPosition.x,
           y: startPosition.y,
           srcEvent: e
@@ -4179,7 +4179,7 @@ var KeyboardSensor = class extends BaseSensor {
     if (cancelPosition) {
       e.preventDefault();
       this._cancel({
-        type: "cancel",
+        type: SensorEventType.Cancel,
         x: cancelPosition.x,
         y: cancelPosition.y,
         srcEvent: e
@@ -4190,7 +4190,7 @@ var KeyboardSensor = class extends BaseSensor {
     if (endPosition) {
       e.preventDefault();
       this._end({
-        type: "end",
+        type: SensorEventType.End,
         x: endPosition.x,
         y: endPosition.y,
         srcEvent: e
@@ -4201,7 +4201,7 @@ var KeyboardSensor = class extends BaseSensor {
     if (movePosition) {
       e.preventDefault();
       this._move({
-        type: "move",
+        type: SensorEventType.Move,
         x: movePosition.x,
         y: movePosition.y,
         srcEvent: e
@@ -4468,7 +4468,6 @@ function isMatrixWarped(m) {
 
 // src/draggable/draggable-drag-item.ts
 var MEASURE_ELEMENT = createMeasureElement();
-var START_POINT = { x: 0, y: 0 };
 var DraggableDragItem = class {
   constructor(element, draggable) {
     if (!element.isConnected) {
@@ -4518,22 +4517,6 @@ var DraggableDragItem = class {
     }
     this._updateContainerMatrices();
     this._updateContainerOffset();
-    const { positionModifiers } = draggable.settings;
-    let startPoint = START_POINT;
-    startPoint.x = this.position.x;
-    startPoint.y = this.position.y;
-    for (const modifier of positionModifiers) {
-      startPoint = modifier(startPoint, {
-        draggable,
-        drag,
-        item: this,
-        phase: "start"
-      });
-    }
-    this.position.x += startPoint.x;
-    this.position.y += startPoint.x;
-    this.clientRect.x += startPoint.x;
-    this.clientRect.y += startPoint.x;
     const frozenStyles = draggable.settings.frozenStyles({
       draggable,
       drag,
@@ -4665,6 +4648,25 @@ var SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: tru
 var POSITION_CHANGE = { x: 0, y: 0 };
 var ELEMENT_MATRIX = new DOMMatrix();
 var TEMP_MATRIX = new DOMMatrix();
+var DraggableModifierPhase = {
+  Start: "start",
+  Move: "move",
+  End: "end"
+};
+var DraggableApplyPositionPhase = {
+  Start: "start",
+  Move: "move",
+  End: "end",
+  Align: "align"
+};
+var DraggableEventType = {
+  PrepareStart: "preparestart",
+  Start: "start",
+  PrepareMove: "preparemove",
+  Move: "move",
+  End: "end",
+  Destroy: "destroy"
+};
 var DraggableDefaultSettings = {
   container: null,
   startPredicate: () => true,
@@ -4727,7 +4729,7 @@ var Draggable = class {
     this.isDestroyed = false;
     this._sensorData = /* @__PURE__ */ new Map();
     this._emitter = new Emitter3();
-    this._startPhase = 0 /* NONE */;
+    this._startPhase = 0 /* None */;
     this._startId = Symbol();
     this._moveId = Symbol();
     this._alignId = Symbol();
@@ -4742,17 +4744,17 @@ var Draggable = class {
     this._applyAlign = this._applyAlign.bind(this);
     this.sensors.forEach((sensor) => {
       this._sensorData.set(sensor, {
-        predicateState: 0 /* PENDING */,
+        predicateState: 0 /* Pending */,
         predicateEvent: null,
         onMove: (e) => this._onMove(e, sensor),
         onEnd: (e) => this._onEnd(e, sensor)
       });
       const { onMove, onEnd } = this._sensorData.get(sensor);
-      sensor.on("start", onMove, onMove);
-      sensor.on("move", onMove, onMove);
-      sensor.on("cancel", onEnd, onEnd);
-      sensor.on("end", onEnd, onEnd);
-      sensor.on("destroy", onEnd, onEnd);
+      sensor.on(SensorEventType.Start, onMove, onMove);
+      sensor.on(SensorEventType.Move, onMove, onMove);
+      sensor.on(SensorEventType.Cancel, onEnd, onEnd);
+      sensor.on(SensorEventType.End, onEnd, onEnd);
+      sensor.on(SensorEventType.Destroy, onEnd, onEnd);
     });
   }
   _parseSettings(options, defaults = DraggableDefaultSettings) {
@@ -4780,7 +4782,7 @@ var Draggable = class {
     const sensorData = this._sensorData.get(sensor);
     if (!sensorData) return;
     switch (sensorData.predicateState) {
-      case 0 /* PENDING */: {
+      case 0 /* Pending */: {
         sensorData.predicateEvent = e;
         const shouldStart = this.settings.startPredicate({
           draggable: this,
@@ -4794,7 +4796,7 @@ var Draggable = class {
         }
         break;
       }
-      case 1 /* RESOLVED */: {
+      case 1 /* Resolved */: {
         if (this.drag) {
           this.drag.event = e;
           ticker.once(tickerPhases.read, this._prepareMove, this._moveId);
@@ -4811,12 +4813,12 @@ var Draggable = class {
     const sensorData = this._sensorData.get(sensor);
     if (!sensorData) return;
     if (!this.drag) {
-      sensorData.predicateState = 0 /* PENDING */;
+      sensorData.predicateState = 0 /* Pending */;
       sensorData.predicateEvent = null;
-    } else if (sensorData.predicateState === 1 /* RESOLVED */) {
+    } else if (sensorData.predicateState === 1 /* Resolved */) {
       this.drag.endEvent = e;
       this._sensorData.forEach((data) => {
-        data.predicateState = 0 /* PENDING */;
+        data.predicateState = 0 /* Pending */;
         data.predicateEvent = null;
       });
       this.stop();
@@ -4825,7 +4827,7 @@ var Draggable = class {
   _prepareStart() {
     const drag = this.drag;
     if (!drag) return;
-    this._startPhase = 2 /* START_PREPARE */;
+    this._startPhase = 2 /* StartPrepare */;
     const elements = this.settings.elements({
       draggable: this,
       drag
@@ -4833,7 +4835,8 @@ var Draggable = class {
     drag.items = elements.map((element) => {
       return new DraggableDragItem(element, this);
     });
-    this._emit("preparestart", drag.startEvent);
+    this._applyModifiers(DraggableModifierPhase.Start, 0, 0);
+    this._emit(DraggableEventType.PrepareStart, drag.startEvent);
   }
   _applyStart() {
     const drag = this.drag;
@@ -4846,7 +4849,7 @@ var Draggable = class {
         Object.assign(item.element.style, item.frozenStyles);
       }
       this.settings.applyPosition({
-        phase: "start",
+        phase: DraggableApplyPositionPhase.Start,
         draggable: this,
         drag,
         item
@@ -4870,7 +4873,7 @@ var Draggable = class {
       const { alignmentOffset } = item;
       if (alignmentOffset.x !== 0 || alignmentOffset.y !== 0) {
         this.settings.applyPosition({
-          phase: "align",
+          phase: DraggableApplyPositionPhase.Align,
           draggable: this,
           drag,
           item
@@ -4878,42 +4881,17 @@ var Draggable = class {
       }
     }
     window.addEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS);
-    this._startPhase = 3 /* FINISH_APPLY */;
-    this._emit("start", drag.startEvent);
+    this._startPhase = 3 /* FinishApply */;
+    this._emit(DraggableEventType.Start, drag.startEvent);
   }
   _prepareMove() {
     const drag = this.drag;
     if (!drag) return;
     const { event, prevEvent } = drag;
     if (event === prevEvent) return;
-    const defaultChangeX = event.x - prevEvent.x;
-    const defaultChangeY = event.y - prevEvent.y;
-    const { positionModifiers } = this.settings;
-    for (const item of drag.items) {
-      let positionChange = POSITION_CHANGE;
-      positionChange.x = defaultChangeX;
-      positionChange.y = defaultChangeY;
-      for (const modifier of positionModifiers) {
-        positionChange = modifier(positionChange, {
-          draggable: this,
-          drag,
-          item,
-          phase: "move"
-        });
-      }
-      if (positionChange.x) {
-        item.position.x += positionChange.x;
-        item.clientRect.x += positionChange.x;
-        item["_moveDiff"].x += positionChange.x;
-      }
-      if (positionChange.y) {
-        item.position.y += positionChange.y;
-        item.clientRect.y += positionChange.y;
-        item["_moveDiff"].y += positionChange.y;
-      }
-    }
+    this._applyModifiers(DraggableModifierPhase.Move, event.x - prevEvent.x, event.y - prevEvent.y);
     drag.prevEvent = event;
-    this._emit("preparemove", event);
+    this._emit(DraggableEventType.PrepareMove, event);
   }
   _applyMove() {
     const drag = this.drag;
@@ -4922,14 +4900,14 @@ var Draggable = class {
       item["_moveDiff"].x = 0;
       item["_moveDiff"].y = 0;
       this.settings.applyPosition({
-        phase: "move",
+        phase: DraggableApplyPositionPhase.Move,
         draggable: this,
         drag,
         item
       });
     }
     if (drag.event) {
-      this._emit("move", drag.event);
+      this._emit(DraggableEventType.Move, drag.event);
     }
   }
   _prepareAlign() {
@@ -4952,11 +4930,37 @@ var Draggable = class {
       item["_alignDiff"].x = 0;
       item["_alignDiff"].y = 0;
       this.settings.applyPosition({
-        phase: "align",
+        phase: DraggableApplyPositionPhase.Align,
         draggable: this,
         drag,
         item
       });
+    }
+  }
+  _applyModifiers(phase, changeX, changeY) {
+    const { drag } = this;
+    if (!drag) return;
+    const { positionModifiers } = this.settings;
+    for (const item of drag.items) {
+      let positionChange = POSITION_CHANGE;
+      positionChange.x = changeX;
+      positionChange.y = changeY;
+      for (const modifier of positionModifiers) {
+        positionChange = modifier(positionChange, {
+          draggable: this,
+          drag,
+          item,
+          phase
+        });
+      }
+      item.position.x += positionChange.x;
+      item.position.y += positionChange.y;
+      item.clientRect.x += positionChange.x;
+      item.clientRect.y += positionChange.y;
+      if (phase === "move") {
+        item["_moveDiff"].x += positionChange.x;
+        item["_moveDiff"].y += positionChange.y;
+      }
     }
   }
   on(type3, listener, listenerId) {
@@ -4969,14 +4973,14 @@ var Draggable = class {
     const sensorData = this._sensorData.get(sensor);
     if (!sensorData) return;
     const startEvent = e || sensorData.predicateEvent;
-    if (sensorData.predicateState === 0 /* PENDING */ && startEvent) {
-      this._startPhase = 1 /* INIT */;
-      sensorData.predicateState = 1 /* RESOLVED */;
+    if (sensorData.predicateState === 0 /* Pending */ && startEvent) {
+      this._startPhase = 1 /* Init */;
+      sensorData.predicateState = 1 /* Resolved */;
       sensorData.predicateEvent = null;
       this.drag = new DraggableDrag(sensor, startEvent);
       this._sensorData.forEach((data, s) => {
         if (s === sensor) return;
-        data.predicateState = 2 /* REJECTED */;
+        data.predicateState = 2 /* Rejected */;
         data.predicateEvent = null;
       });
       ticker.once(tickerPhases.read, this._prepareStart, this._startId);
@@ -4985,20 +4989,20 @@ var Draggable = class {
   }
   rejectStartPredicate(sensor) {
     const sensorData = this._sensorData.get(sensor);
-    if (sensorData?.predicateState === 0 /* PENDING */) {
-      sensorData.predicateState = 2 /* REJECTED */;
+    if (sensorData?.predicateState === 0 /* Pending */) {
+      sensorData.predicateState = 2 /* Rejected */;
       sensorData.predicateEvent = null;
     }
   }
   stop() {
     const drag = this.drag;
     if (!drag || drag.isEnded) return;
-    if (this._startPhase === 2 /* START_PREPARE */) {
-      this.off("start", this._startId);
-      this.on("start", () => this.stop(), this._startId);
+    if (this._startPhase === 2 /* StartPrepare */) {
+      this.off(DraggableEventType.Start, this._startId);
+      this.on(DraggableEventType.Start, () => this.stop(), this._startId);
       return;
     }
-    this._startPhase = 0 /* NONE */;
+    this._startPhase = 0 /* None */;
     drag.isEnded = true;
     ticker.off(tickerPhases.read, this._startId);
     ticker.off(tickerPhases.write, this._startId);
@@ -5007,7 +5011,6 @@ var Draggable = class {
     ticker.off(tickerPhases.read, this._alignId);
     ticker.off(tickerPhases.write, this._alignId);
     window.removeEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS);
-    const { positionModifiers } = this.settings;
     drag["_clientOffsetCache"].clear();
     for (const item of drag.items) {
       if (item.elementContainer !== item.dragContainer) {
@@ -5019,26 +5022,8 @@ var Draggable = class {
         item.containerOffset.x = 0;
         item.containerOffset.y = 0;
       }
-      let positionChange = POSITION_CHANGE;
-      positionChange.x = 0;
-      positionChange.y = 0;
-      for (const modifier of positionModifiers) {
-        positionChange = modifier(positionChange, {
-          draggable: this,
-          drag,
-          item,
-          phase: "end"
-        });
-      }
-      if (positionChange.x) {
-        item.position.x += positionChange.x;
-        item.clientRect.x += positionChange.x;
-      }
-      if (positionChange.y) {
-        item.position.y += positionChange.y;
-        item.clientRect.y += positionChange.y;
-      }
     }
+    this._applyModifiers(DraggableModifierPhase.End, 0, 0);
     for (const item of drag.items) {
       if (item.elementContainer !== item.dragContainer) {
         appendElement(item.element, item.elementContainer);
@@ -5049,13 +5034,13 @@ var Draggable = class {
         }
       }
       this.settings.applyPosition({
-        phase: "end",
+        phase: DraggableApplyPositionPhase.End,
         draggable: this,
         drag,
         item
       });
     }
-    this._emit("end", drag.endEvent);
+    this._emit(DraggableEventType.End, drag.endEvent);
     this.drag = null;
   }
   align(instant = false) {
@@ -5079,14 +5064,14 @@ var Draggable = class {
     this.isDestroyed = true;
     this.stop();
     this._sensorData.forEach(({ onMove, onEnd }, sensor) => {
-      sensor.off("start", onMove);
-      sensor.off("move", onMove);
-      sensor.off("cancel", onEnd);
-      sensor.off("end", onEnd);
-      sensor.off("destroy", onEnd);
+      sensor.off(SensorEventType.Start, onMove);
+      sensor.off(SensorEventType.Move, onMove);
+      sensor.off(SensorEventType.Cancel, onEnd);
+      sensor.off(SensorEventType.End, onEnd);
+      sensor.off(SensorEventType.Destroy, onEnd);
     });
     this._sensorData.clear();
-    this._emit("destroy");
+    this._emit(DraggableEventType.Destroy);
     this._emitter.off();
   }
 };

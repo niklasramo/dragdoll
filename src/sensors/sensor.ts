@@ -1,39 +1,41 @@
 import type { EventListenerId } from 'eventti';
 
 export const SensorEventType = {
-  start: 'start',
-  move: 'move',
-  cancel: 'cancel',
-  end: 'end',
-  destroy: 'destroy',
+  Start: 'start',
+  Move: 'move',
+  Cancel: 'cancel',
+  End: 'end',
+  Destroy: 'destroy',
 } as const;
 
+export type SensorEventType = (typeof SensorEventType)[keyof typeof SensorEventType];
+
 export interface SensorStartEvent {
-  type: typeof SensorEventType.start;
+  type: typeof SensorEventType.Start;
   x: number;
   y: number;
 }
 
 export interface SensorMoveEvent {
-  type: typeof SensorEventType.move;
+  type: typeof SensorEventType.Move;
   x: number;
   y: number;
 }
 
 export interface SensorCancelEvent {
-  type: typeof SensorEventType.cancel;
+  type: typeof SensorEventType.Cancel;
   x: number;
   y: number;
 }
 
 export interface SensorEndEvent {
-  type: typeof SensorEventType.end;
+  type: typeof SensorEventType.End;
   x: number;
   y: number;
 }
 
 export interface SensorDestroyEvent {
-  type: typeof SensorEventType.destroy;
+  type: typeof SensorEventType.Destroy;
 }
 
 export interface SensorEvents {

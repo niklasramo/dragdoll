@@ -17,7 +17,7 @@ const keyboardSensor = new KeyboardSensor(element, {
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
   startPredicate: createPointerSensorStartPredicate(),
-  positionModifiers: createSnapModifier(GRID_WIDTH, GRID_HEIGHT),
+  positionModifiers: [createSnapModifier(GRID_WIDTH, GRID_HEIGHT)],
 });
 
 draggable.on('start', () => {

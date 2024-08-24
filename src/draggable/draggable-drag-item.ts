@@ -24,8 +24,6 @@ import type { ObjectCache } from '../utils/object-cache.js';
 
 const MEASURE_ELEMENT = createMeasureElement();
 
-const START_POINT = { x: 0, y: 0 };
-
 export class DraggableDragItem<
   S extends Sensor[] = Sensor[],
   E extends S[number]['events'] = S[number]['events'],
@@ -121,24 +119,6 @@ export class DraggableDragItem<
     // Compute container matrices and offset.
     this._updateContainerMatrices();
     this._updateContainerOffset();
-
-    // Compute start position.
-    const { positionModifiers } = draggable.settings;
-    let startPoint = START_POINT;
-    startPoint.x = this.position.x;
-    startPoint.y = this.position.y;
-    for (const modifier of positionModifiers) {
-      startPoint = modifier(startPoint, {
-        draggable,
-        drag,
-        item: this,
-        phase: 'start',
-      });
-    }
-    this.position.x += startPoint.x;
-    this.position.y += startPoint.x;
-    this.clientRect.x += startPoint.x;
-    this.clientRect.y += startPoint.x;
 
     // Get element's frozen props.
     const frozenStyles = draggable.settings.frozenStyles({

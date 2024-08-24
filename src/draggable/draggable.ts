@@ -2,7 +2,7 @@ import { HAS_PASSIVE_EVENTS } from '../constants.js';
 
 import { Emitter, EventListenerId } from 'eventti';
 
-import { Sensor, SensorEvents } from '../sensors/sensor.js';
+import { Sensor, SensorEvents, SensorEventType } from '../sensors/sensor.js';
 
 import { DraggableDrag } from './draggable-drag.js';
 
@@ -31,23 +31,42 @@ const ELEMENT_MATRIX = new DOMMatrix();
 const TEMP_MATRIX = new DOMMatrix();
 
 enum DragStartPhase {
-  NONE = 0,
-  INIT = 1,
-  START_PREPARE = 2,
-  FINISH_APPLY = 3,
+  None = 0,
+  Init = 1,
+  StartPrepare = 2,
+  FinishApply = 3,
 }
 
 enum DraggableStartPredicateState {
-  PENDING = 0,
-  RESOLVED = 1,
-  REJECTED = 2,
+  Pending = 0,
+  Resolved = 1,
+  Rejected = 2,
 }
+
+export const DraggableModifierPhase = {
+  Start: 'start',
+  Move: 'move',
+  End: 'end',
+} as const;
+
+export type DraggableModifierPhase =
+  (typeof DraggableModifierPhase)[keyof typeof DraggableModifierPhase];
+
+export const DraggableApplyPositionPhase = {
+  Start: 'start',
+  Move: 'move',
+  End: 'end',
+  Align: 'align',
+} as const;
+
+export type DraggableApplyPositionPhase =
+  (typeof DraggableApplyPositionPhase)[keyof typeof DraggableApplyPositionPhase];
 
 export type DraggableModifierData<S extends Sensor[], E extends S[number]['events']> = {
   draggable: Draggable<S, E>;
   drag: DraggableDrag<S, E>;
   item: DraggableDragItem<S, E>;
-  phase: 'start' | 'move' | 'end';
+  phase: DraggableModifierPhase;
 };
 
 export type DraggableModifier<S extends Sensor[], E extends S[number]['events']> = (
@@ -77,7 +96,7 @@ export interface DraggableSettings<S extends Sensor[], E extends S[number]['even
     draggable: Draggable<S, E>;
     drag: DraggableDrag<S, E>;
     item: DraggableDragItem<S, E>;
-    phase: 'start' | 'move' | 'end' | 'align';
+    phase: DraggableApplyPositionPhase;
   }) => void;
 }
 
@@ -88,13 +107,24 @@ export interface DraggablePlugin {
 
 export type DraggablePluginMap = Record<string, DraggablePlugin | undefined>;
 
+export const DraggableEventType = {
+  PrepareStart: 'preparestart',
+  Start: 'start',
+  PrepareMove: 'preparemove',
+  Move: 'move',
+  End: 'end',
+  Destroy: 'destroy',
+} as const;
+
+export type DraggableEventType = (typeof DraggableEventType)[keyof typeof DraggableEventType];
+
 export interface DraggableEventCallbacks<E extends SensorEvents> {
-  preparestart(event: E['start'] | E['move']): void;
-  start(event: E['start'] | E['move']): void;
-  preparemove(event: E['move']): void;
-  move(event: E['move']): void;
-  end(event: E['end'] | E['cancel'] | E['destroy'] | null): void;
-  destroy(): void;
+  [DraggableEventType.PrepareStart]: (event: E['start'] | E['move']) => void;
+  [DraggableEventType.Start]: (event: E['start'] | E['move']) => void;
+  [DraggableEventType.PrepareMove]: (event: E['move']) => void;
+  [DraggableEventType.Move]: (event: E['move']) => void;
+  [DraggableEventType.End]: (event: E['end'] | E['cancel'] | E['destroy']) => void;
+  [DraggableEventType.Destroy]: () => void;
 }
 
 export const DraggableDefaultSettings: DraggableSettings<any, any> = {
@@ -210,7 +240,7 @@ export class Draggable<
 
     this._sensorData = new Map();
     this._emitter = new Emitter();
-    this._startPhase = DragStartPhase.NONE;
+    this._startPhase = DragStartPhase.None;
     this._startId = Symbol();
     this._moveId = Symbol();
     this._alignId = Symbol();
@@ -229,17 +259,17 @@ export class Draggable<
     // Bind drag sensor events.
     this.sensors.forEach((sensor) => {
       this._sensorData.set(sensor, {
-        predicateState: DraggableStartPredicateState.PENDING,
+        predicateState: DraggableStartPredicateState.Pending,
         predicateEvent: null,
         onMove: (e) => this._onMove(e, sensor),
         onEnd: (e) => this._onEnd(e, sensor),
       });
       const { onMove, onEnd } = this._sensorData.get(sensor)!;
-      sensor.on('start', onMove, onMove);
-      sensor.on('move', onMove, onMove);
-      sensor.on('cancel', onEnd, onEnd);
-      sensor.on('end', onEnd, onEnd);
-      sensor.on('destroy', onEnd, onEnd);
+      sensor.on(SensorEventType.Start, onMove, onMove);
+      sensor.on(SensorEventType.Move, onMove, onMove);
+      sensor.on(SensorEventType.Cancel, onEnd, onEnd);
+      sensor.on(SensorEventType.End, onEnd, onEnd);
+      sensor.on(SensorEventType.Destroy, onEnd, onEnd);
     });
   }
 
@@ -278,7 +308,7 @@ export class Draggable<
     if (!sensorData) return;
 
     switch (sensorData.predicateState) {
-      case DraggableStartPredicateState.PENDING: {
+      case DraggableStartPredicateState.Pending: {
         sensorData.predicateEvent = e;
 
         // Check if drag should start.
@@ -298,7 +328,7 @@ export class Draggable<
         }
         break;
       }
-      case DraggableStartPredicateState.RESOLVED: {
+      case DraggableStartPredicateState.Resolved: {
         // Move the element if dragging is active.
         if (this.drag) {
           (this.drag as Writeable<typeof this.drag>).event = e;
@@ -321,15 +351,15 @@ export class Draggable<
     // If there is no active drag yet, let's reset the sensor's start predicate
     // so that it can try starting drag again.
     if (!this.drag) {
-      sensorData.predicateState = DraggableStartPredicateState.PENDING;
+      sensorData.predicateState = DraggableStartPredicateState.Pending;
       sensorData.predicateEvent = null;
     }
     // Otherwise, if drag is active AND the sensor is the one that triggered the
     // drag process, let's reset all sensors' start preidcate states.
-    else if (sensorData.predicateState === DraggableStartPredicateState.RESOLVED) {
+    else if (sensorData.predicateState === DraggableStartPredicateState.Resolved) {
       (this.drag as Writeable<typeof this.drag>).endEvent = e;
       this._sensorData.forEach((data) => {
-        data.predicateState = DraggableStartPredicateState.PENDING;
+        data.predicateState = DraggableStartPredicateState.Pending;
         data.predicateEvent = null;
       });
       this.stop();
@@ -341,7 +371,7 @@ export class Draggable<
     if (!drag) return;
 
     // Update start phase.
-    this._startPhase = DragStartPhase.START_PREPARE;
+    this._startPhase = DragStartPhase.StartPrepare;
 
     // Get elements that we'll need to move with the drag.
     // NB: It is okay if there are no elements and thus no items. The drag
@@ -357,8 +387,11 @@ export class Draggable<
       return new DraggableDragItem(element, this);
     });
 
+    // Apply modifiers for the start phase.
+    this._applyModifiers(DraggableModifierPhase.Start, 0, 0);
+
     // Emit preparestart event.
-    this._emit('preparestart', drag.startEvent);
+    this._emit(DraggableEventType.PrepareStart, drag.startEvent);
   }
 
   protected _applyStart() {
@@ -378,7 +411,7 @@ export class Draggable<
 
       // Set element's start position.
       this.settings.applyPosition({
-        phase: 'start',
+        phase: DraggableApplyPositionPhase.Start,
         draggable: this,
         drag,
         item,
@@ -415,7 +448,7 @@ export class Draggable<
       const { alignmentOffset } = item;
       if (alignmentOffset.x !== 0 || alignmentOffset.y !== 0) {
         this.settings.applyPosition({
-          phase: 'align',
+          phase: DraggableApplyPositionPhase.Align,
           draggable: this,
           drag,
           item,
@@ -427,10 +460,10 @@ export class Draggable<
     window.addEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
 
     // Update start phase.
-    this._startPhase = DragStartPhase.FINISH_APPLY;
+    this._startPhase = DragStartPhase.FinishApply;
 
     // Emit start event.
-    this._emit('start', drag.startEvent);
+    this._emit(DraggableEventType.Start, drag.startEvent);
   }
 
   protected _prepareMove() {
@@ -442,45 +475,14 @@ export class Draggable<
     const { event, prevEvent } = drag;
     if (event === prevEvent) return;
 
-    // Compute the default movement diff.
-    const defaultChangeX = event.x - prevEvent.x;
-    const defaultChangeY = event.y - prevEvent.y;
-
-    // Run all modifiers for the move phase.
-    const { positionModifiers } = this.settings;
-    for (const item of drag.items) {
-      let positionChange = POSITION_CHANGE;
-      positionChange.x = defaultChangeX;
-      positionChange.y = defaultChangeY;
-      for (const modifier of positionModifiers) {
-        positionChange = modifier(positionChange, {
-          draggable: this,
-          drag,
-          item,
-          phase: 'move',
-        });
-      }
-
-      // Update horizontal position data (if needed).
-      if (positionChange.x) {
-        item.position.x += positionChange.x;
-        item.clientRect.x += positionChange.x;
-        item['_moveDiff'].x += positionChange.x;
-      }
-
-      // Update vertical position data (if needed).
-      if (positionChange.y) {
-        item.position.y += positionChange.y;
-        item.clientRect.y += positionChange.y;
-        item['_moveDiff'].y += positionChange.y;
-      }
-    }
+    // Apply modifiers for the move phase.
+    this._applyModifiers(DraggableModifierPhase.Move, event.x - prevEvent.x, event.y - prevEvent.y);
 
     // Store next event as previous event.
     (drag as Writeable<typeof drag>).prevEvent = event;
 
     // Emit preparemove event.
-    this._emit('preparemove', event as E['move']);
+    this._emit(DraggableEventType.PrepareMove, event as E['move']);
   }
 
   protected _applyMove() {
@@ -493,7 +495,7 @@ export class Draggable<
       item['_moveDiff'].y = 0;
 
       this.settings.applyPosition({
-        phase: 'move',
+        phase: DraggableApplyPositionPhase.Move,
         draggable: this,
         drag,
         item,
@@ -502,7 +504,7 @@ export class Draggable<
 
     // Emit move event.
     if (drag.event) {
-      this._emit('move', drag.event as E['move']);
+      this._emit(DraggableEventType.Move, drag.event as E['move']);
     }
   }
 
@@ -539,11 +541,39 @@ export class Draggable<
       item['_alignDiff'].y = 0;
 
       this.settings.applyPosition({
-        phase: 'align',
+        phase: DraggableApplyPositionPhase.Align,
         draggable: this,
         drag,
         item,
       });
+    }
+  }
+
+  _applyModifiers(phase: DraggableModifierPhase, changeX: number, changeY: number) {
+    const { drag } = this;
+    if (!drag) return;
+
+    const { positionModifiers } = this.settings;
+    for (const item of drag.items) {
+      let positionChange = POSITION_CHANGE;
+      positionChange.x = changeX;
+      positionChange.y = changeY;
+      for (const modifier of positionModifiers) {
+        positionChange = modifier(positionChange, {
+          draggable: this,
+          drag,
+          item,
+          phase,
+        });
+      }
+      item.position.x += positionChange.x;
+      item.position.y += positionChange.y;
+      item.clientRect.x += positionChange.x;
+      item.clientRect.y += positionChange.y;
+      if (phase === 'move') {
+        item['_moveDiff'].x += positionChange.x;
+        item['_moveDiff'].y += positionChange.y;
+      }
     }
   }
 
@@ -565,12 +595,12 @@ export class Draggable<
 
     const startEvent = e || sensorData.predicateEvent;
 
-    if (sensorData.predicateState === DraggableStartPredicateState.PENDING && startEvent) {
+    if (sensorData.predicateState === DraggableStartPredicateState.Pending && startEvent) {
       //  Update start phase.
-      this._startPhase = DragStartPhase.INIT;
+      this._startPhase = DragStartPhase.Init;
 
       // Resolve the provided sensor's start predicate.
-      sensorData.predicateState = DraggableStartPredicateState.RESOLVED;
+      sensorData.predicateState = DraggableStartPredicateState.Resolved;
       sensorData.predicateEvent = null;
 
       (this as Writeable<this>).drag = new DraggableDrag(sensor, startEvent);
@@ -578,7 +608,7 @@ export class Draggable<
       // Reject other sensors' start predicates.
       this._sensorData.forEach((data, s) => {
         if (s === sensor) return;
-        data.predicateState = DraggableStartPredicateState.REJECTED;
+        data.predicateState = DraggableStartPredicateState.Rejected;
         data.predicateEvent = null;
       });
 
@@ -590,8 +620,8 @@ export class Draggable<
 
   rejectStartPredicate(sensor: S[number]) {
     const sensorData = this._sensorData.get(sensor);
-    if (sensorData?.predicateState === DraggableStartPredicateState.PENDING) {
-      sensorData.predicateState = DraggableStartPredicateState.REJECTED;
+    if (sensorData?.predicateState === DraggableStartPredicateState.Pending) {
+      sensorData.predicateState = DraggableStartPredicateState.Rejected;
       sensorData.predicateEvent = null;
     }
   }
@@ -605,14 +635,14 @@ export class Draggable<
     // rare edge case, but it can happen if the drag process is stopped
     // forcefully during the start phase.
     // NB: We reuse the `_startId` symbol to queue the stop procedure.
-    if (this._startPhase === DragStartPhase.START_PREPARE) {
-      this.off('start', this._startId);
-      this.on('start', () => this.stop(), this._startId);
+    if (this._startPhase === DragStartPhase.StartPrepare) {
+      this.off(DraggableEventType.Start, this._startId);
+      this.on(DraggableEventType.Start, () => this.stop(), this._startId);
       return;
     }
 
     // Reset drag start phase.
-    this._startPhase = DragStartPhase.NONE;
+    this._startPhase = DragStartPhase.None;
 
     // Mark drag process as ended.
     (drag as Writeable<typeof drag>).isEnded = true;
@@ -627,9 +657,6 @@ export class Draggable<
 
     // Unbind scroll listener.
     window.removeEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
-
-    // Get position modifiers.
-    const { positionModifiers } = this.settings;
 
     // Adjust items' positions for the drop. When the drag starts the container
     // offset is computed once, but not updated during drag (because we don't
@@ -648,32 +675,10 @@ export class Draggable<
         item.containerOffset.x = 0;
         item.containerOffset.y = 0;
       }
-
-      // Run all modifiers for the end phase.
-      let positionChange = POSITION_CHANGE;
-      positionChange.x = 0;
-      positionChange.y = 0;
-      for (const modifier of positionModifiers) {
-        positionChange = modifier(positionChange, {
-          draggable: this,
-          drag,
-          item,
-          phase: 'end',
-        });
-      }
-
-      // Update horizontal position data (if needed).
-      if (positionChange.x) {
-        item.position.x += positionChange.x;
-        item.clientRect.x += positionChange.x;
-      }
-
-      // Update vertical position data (if needed).
-      if (positionChange.y) {
-        item.position.y += positionChange.y;
-        item.clientRect.y += positionChange.y;
-      }
     }
+
+    // Apply modifiers for the end phase.
+    this._applyModifiers(DraggableModifierPhase.End, 0, 0);
 
     // Move elements within the root container.
     for (const item of drag.items) {
@@ -690,7 +695,7 @@ export class Draggable<
 
       // Set final position after drag.
       this.settings.applyPosition({
-        phase: 'end',
+        phase: DraggableApplyPositionPhase.End,
         draggable: this,
         drag,
         item,
@@ -698,7 +703,7 @@ export class Draggable<
     }
 
     // Emit end event.
-    this._emit('end', drag.endEvent);
+    this._emit(DraggableEventType.End, drag.endEvent!);
 
     // Reset drag data.
     (this as Writeable<this>).drag = null;
@@ -732,16 +737,16 @@ export class Draggable<
     this.stop();
 
     this._sensorData.forEach(({ onMove, onEnd }, sensor) => {
-      sensor.off('start', onMove);
-      sensor.off('move', onMove);
-      sensor.off('cancel', onEnd);
-      sensor.off('end', onEnd);
-      sensor.off('destroy', onEnd);
+      sensor.off(SensorEventType.Start, onMove);
+      sensor.off(SensorEventType.Move, onMove);
+      sensor.off(SensorEventType.Cancel, onEnd);
+      sensor.off(SensorEventType.End, onEnd);
+      sensor.off(SensorEventType.Destroy, onEnd);
     });
 
     this._sensorData.clear();
 
-    this._emit('destroy');
+    this._emit(DraggableEventType.Destroy);
 
     this._emitter.off();
   }

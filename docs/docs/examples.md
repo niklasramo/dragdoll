@@ -634,7 +634,7 @@ const keyboardSensor = new KeyboardSensor(element, {
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
   startPredicate: createPointerSensorStartPredicate(),
-  positionModifiers: createSnapModifier(GRID_WIDTH, GRID_HEIGHT),
+  positionModifiers: [createSnapModifier(GRID_WIDTH, GRID_HEIGHT)],
 });
 
 draggable.on('start', () => {
@@ -797,17 +797,19 @@ draggableElements.forEach((element) => {
   const draggable = new Draggable([pointerSensor, keyboardSensor], {
     elements: () => [element],
     startPredicate: createPointerSensorStartPredicate(),
-    positionModifiers: (change, { item }) => {
-      const { element } = item;
-      const allowX = element.classList.contains('axis-x');
-      const allowY = element.classList.contains('axis-y');
-      if (allowX && !allowY) {
-        change.y = 0;
-      } else if (allowY && !allowX) {
-        change.x = 0;
-      }
-      return change;
-    },
+    positionModifiers: [
+      (change, { item }) => {
+        const { element } = item;
+        const allowX = element.classList.contains('axis-x');
+        const allowY = element.classList.contains('axis-y');
+        if (allowX && !allowY) {
+          change.y = 0;
+        } else if (allowY && !allowX) {
+          change.x = 0;
+        }
+        return change;
+      },
+    ],
   });
 
   draggable.on('start', () => {
@@ -994,14 +996,16 @@ const keyboardSensor = new KeyboardMotionSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
   startPredicate: createPointerSensorStartPredicate(),
-  positionModifiers: createContainmentModifier(() => {
-    return {
-      x: 0,
-      y: 0,
-      width: window.innerWidth,
-      height: window.innerHeight,
-    };
-  }),
+  positionModifiers: [
+    createContainmentModifier(() => {
+      return {
+        x: 0,
+        y: 0,
+        width: window.innerWidth,
+        height: window.innerHeight,
+      };
+    }),
+  ],
 });
 
 draggable.on('start', () => {
@@ -1041,12 +1045,210 @@ draggable.on('end', () => {
 ```
 
 ```css [index.css]
+body {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  gap: 10px 10px;
+}
+
 .draggable {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 80px;
-  height: 80px;
+  position: relative;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+```
+
+```css [base.css]
+:root {
+  --bg-color: #161618;
+  --color: rgba(255, 255, 245, 0.86);
+  --theme-color: #ff5555;
+  --card-color: rgba(0, 0, 0, 0.7);
+  --card-bgColor: var(--theme-color);
+  --card-color--focus: var(--card-color);
+  --card-bgColor--focus: #db55ff;
+  --card-color--drag: var(--card-color);
+  --card-bgColor--drag: #55ff9c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  background: var(--bg-color);
+  color: var(--color);
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+.card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  background-color: var(--card-bgColor);
+  color: var(--card-color);
+  border-radius: 7px;
+  border: 1.5px solid var(--bg-color);
+  font-size: 30px;
+
+  & > svg {
+    width: 1em;
+    height: 1em;
+    fill: var(--card-color);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover,
+    &:focus-visible {
+      background-color: var(--card-bgColor--focus);
+      color: var(--card-color--focus);
+
+      & > svg {
+        fill: var(--card-color--focus);
+      }
+    }
+
+    &:focus-visible {
+      outline-offset: 4px;
+      outline: 1px solid var(--card-bgColor--focus);
+    }
+  }
+
+  &.draggable {
+    cursor: grab;
+  }
+
+  &.dragging {
+    cursor: grabbing;
+    background-color: var(--card-bgColor--drag);
+    color: var(--card-color--drag);
+
+    & > svg {
+      fill: var(--card-color--drag);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:focus-visible {
+        outline: 1px solid var(--card-bgColor--drag);
+      }
+    }
+  }
+}
+```
+
+:::
+
+## Draggable - Center To Pointer
+
+<iframe src="/dragdoll/examples/007-draggable-center-to-pointer/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
+
+::: code-group
+
+```ts [index.ts]
+import {
+  Draggable,
+  PointerSensor,
+  KeyboardMotionSensor,
+  createPointerSensorStartPredicate,
+} from 'dragdoll';
+
+const element = document.querySelector('.draggable') as HTMLElement;
+const pointerSensor = new PointerSensor(element);
+const keyboardSensor = new KeyboardMotionSensor(element);
+const draggable = new Draggable([pointerSensor, keyboardSensor], {
+  elements: () => [element],
+  startPredicate: createPointerSensorStartPredicate(),
+  positionModifiers: [
+    (change, { drag, item, phase }) => {
+      // Align the dragged element so that the pointer
+      // is in the center of the element.
+      if (
+        // Only apply the alignment on the start phase.
+        phase === 'start' &&
+        // Only apply the alignment for the pointer sensor.
+        drag.sensor instanceof PointerSensor &&
+        // Only apply the alignment for the primary drag element.
+        drag.items[0].element === item.element
+      ) {
+        const { clientRect } = item;
+        const { x, y } = drag.startEvent;
+        const targetX = clientRect.x + clientRect.width / 2;
+        const targetY = clientRect.y + clientRect.height / 2;
+        change.x = x - targetX;
+        change.y = y - targetY;
+      }
+      return change;
+    },
+  ],
+});
+
+draggable.on('start', () => {
+  element.classList.add('dragging');
+});
+
+draggable.on('end', () => {
+  element.classList.remove('dragging');
+});
+```
+
+```html [index.html]
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Draggable - Center To Pointer</title>
+    <meta
+      name="viewport"
+      content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div class="card draggable" tabindex="0">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+        <path
+          d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"
+        />
+      </svg>
+    </div>
+    <script type="module" src="index.ts"></script>
+  </body>
+</html>
+```
+
+```css [index.css]
+body {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  gap: 10px 10px;
+}
+
+.draggable {
+  position: relative;
+  flex-grow: 0;
+  flex-shrink: 0;
 }
 ```
 
