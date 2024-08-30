@@ -12,13 +12,13 @@ export * from './sensors/keyboard-motion-sensor.js';
 
 export * from './draggable/draggable.js';
 
+export * from './draggable/helpers/create-pointer-sensor-start-predicate.js';
+
 export * from './draggable/modifiers/create-snap-modifier.js';
 
 export * from './draggable/modifiers/create-containment-modifier.js';
 
 export * from './draggable/plugins/auto-scroll-plugin.js';
-
-export * from './draggable/utils/create-pointer-sensor-start-predicate.js';
 
 export * from './auto-scroll/auto-scroll.js';
 

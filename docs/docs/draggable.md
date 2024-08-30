@@ -135,7 +135,7 @@ type DraggableModifier = (
   },
 ) => { x: number; y: number };
 
-type positionModifiers = DraggableModifier | DraggableModifier[];
+type positionModifiers = DraggableModifier[];
 ```
 
 An array of position modifier functions that should return the position change of a dragged element. Checkout the [Draggable Modifiers](/docs/draggable-modifiers) page for detailed information.
@@ -297,7 +297,7 @@ Registers a plugin to the Draggable instance. Returns the Draggable instance so 
 
 The plugin system is designed to be used so that you register the plugins right away when you instantiate the Draggable. This way you'll get the correct typings to the variable holding the instance. Also, there's no mechanism to unregister a plugin because there really should be no need for that.
 
-Check out the [plugin guide](#creating-plugins) to learn how to build custom plugins.
+Check out the [plugin guide](/docs/draggable-plugins) to learn how to build custom plugins.
 
 ### destroy
 

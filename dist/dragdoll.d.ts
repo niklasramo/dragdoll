@@ -484,6 +484,11 @@ declare class Draggable<S extends Sensor[] = Sensor[], E extends S[number]['even
     destroy(): void;
 }
 
+declare function createPointerSensorStartPredicate<S extends (Sensor | PointerSensor)[] = (Sensor | PointerSensor)[], D extends Draggable<S> = Draggable<S>>(options?: {
+    touchTimeout?: number;
+    fallback?: D['settings']['startPredicate'];
+}): D["settings"]["startPredicate"];
+
 declare function createSnapModifier<S extends Sensor[], E extends S[number]['events']>(cellWidth: number, cellHeight: number): DraggableModifier<S, E>;
 
 declare function createContainmentModifier<S extends Sensor[], E extends S[number]['events']>(getContainerRect: (data: DraggableModifierData<S, E>) => Rect, trackSensorDrift?: boolean | ((data: DraggableModifierData<S, E>) => boolean)): DraggableModifier<S, E>;
@@ -697,11 +702,6 @@ declare function autoScrollPlugin<S extends Sensor[], E extends S[number]['event
         autoscroll: DraggableAutoScroll<S, E>;
     };
 };
-
-declare function createPointerSensorStartPredicate<S extends (Sensor | PointerSensor)[] = (Sensor | PointerSensor)[], D extends Draggable<S> = Draggable<S>>(options?: {
-    timeout?: number;
-    fallback?: D['settings']['startPredicate'];
-}): D["settings"]["startPredicate"];
 
 declare const autoScroll: AutoScroll;
 

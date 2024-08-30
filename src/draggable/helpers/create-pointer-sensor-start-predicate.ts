@@ -25,7 +25,7 @@ export function createPointerSensorStartPredicate<
   D extends Draggable<S> = Draggable<S>,
 >(
   options: {
-    timeout?: number;
+    touchTimeout?: number;
     fallback?: D['settings']['startPredicate'];
   } = {},
 ) {
@@ -37,7 +37,7 @@ export function createPointerSensorStartPredicate<
 
   let timer: number | undefined = undefined;
 
-  const { timeout = 250, fallback = () => true } = options;
+  const { touchTimeout = 250, fallback = () => true } = options;
 
   const onContextMenu = (e: Event) => e.preventDefault();
 
@@ -50,7 +50,7 @@ export function createPointerSensorStartPredicate<
     }
 
     if (dragAllowed === undefined) {
-      if (e.cancelable && e.timeStamp - startTimeStamp > timeout) {
+      if (e.cancelable && e.timeStamp - startTimeStamp > touchTimeout) {
         dragAllowed = true;
         e.preventDefault();
       } else {
@@ -125,7 +125,7 @@ export function createPointerSensorStartPredicate<
           }
         });
 
-        // If we have timeout defined, let's set a timer that force starts
+        // If we have touchTimeout defined, let's set a timer that force starts
         // the drag process after the timeout.
         // TODO: This will start drag sometimes when it's not actually possible
         // to prevent the native scrolling on touch devices. We'd need a way
@@ -134,12 +134,12 @@ export function createPointerSensorStartPredicate<
         // get one touchmove event to check if we can prevent native scrolling
         // but that is kind of too late already.. let's see if we can detect
         // that earlier somehow.
-        if (timeout > 0) {
+        if (touchTimeout > 0) {
           timer = window.setTimeout(() => {
             draggable.resolveStartPredicate(sensor);
             dragAllowed = true;
             timer = undefined;
-          }, timeout);
+          }, touchTimeout);
         }
       }
 

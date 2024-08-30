@@ -51,3 +51,7 @@ type createSnapModifier = (
 
    - The height of a grid cell.
    - Required.
+
+## Returns
+
+A modifier function that can be provided to the [`positionModifiers`](/docs/draggable#positionmodifiers) option of the [`Draggable`](/docs/draggable) constructor.

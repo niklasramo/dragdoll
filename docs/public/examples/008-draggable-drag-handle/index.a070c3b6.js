@@ -2383,6 +2383,144 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
 }
 
 
+
+
+
+
+const $26b99708933973c1$var$SCROLLABLE_OVERFLOWS = new Set([
+    "auto",
+    "scroll",
+    "overlay"
+]);
+function $26b99708933973c1$export$2bb74740c4e19def(element) {
+    const style = (0, $b75b79b0209a801e$export$3d2f074408bd1b82)(element);
+    return !!($26b99708933973c1$var$SCROLLABLE_OVERFLOWS.has(style.overflowY) || $26b99708933973c1$var$SCROLLABLE_OVERFLOWS.has(style.overflowX));
+}
+
+
+/**
+ * Check if the current value is a document.
+ */ function $789757134a6ba490$export$62858bae88b53fd0(value) {
+    return value instanceof Document;
+}
+
+
+function $73a32fa1436292cd$export$e4864aa91b5ed091(element, result = []) {
+    let parent = element?.parentNode;
+    while(parent && !(0, $789757134a6ba490$export$62858bae88b53fd0)(parent)){
+        if (parent instanceof Element) {
+            if ((0, $26b99708933973c1$export$2bb74740c4e19def)(parent)) result.push(parent);
+            parent = parent.parentNode;
+        } else if (parent instanceof ShadowRoot) parent = parent.host;
+        else parent = parent.parentNode;
+    }
+    // Always push window to the results (as last scrollable element).
+    result.push(window);
+    return result;
+}
+
+
+
+function $8968a02849ea5e26$var$getScrollables(element) {
+    const scrollables = [];
+    if ((0, $26b99708933973c1$export$2bb74740c4e19def)(element)) scrollables.push(element);
+    (0, $73a32fa1436292cd$export$e4864aa91b5ed091)(element, scrollables);
+    return scrollables;
+}
+function $8968a02849ea5e26$export$88d83dc4a35d804f(options = {}) {
+    let dragAllowed = undefined;
+    let startTimeStamp = 0;
+    let targetElement = null;
+    let timer = undefined;
+    const { touchTimeout: touchTimeout = 250, fallback: fallback = ()=>true } = options;
+    const onContextMenu = (e)=>e.preventDefault();
+    const onTouchMove = (e)=>{
+        if (!startTimeStamp) return;
+        if (dragAllowed) {
+            e.cancelable && e.preventDefault();
+            return;
+        }
+        if (dragAllowed === undefined) {
+            if (e.cancelable && e.timeStamp - startTimeStamp > touchTimeout) {
+                dragAllowed = true;
+                e.preventDefault();
+            } else dragAllowed = false;
+        }
+    };
+    const pointerSensorStartPredicate = (data)=>{
+        if (!(data.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638))) return fallback(data);
+        const { draggable: draggable, sensor: sensor, event: event } = data;
+        const e = event;
+        if (e.pointerType === "touch") {
+            // On first event (touchstart/pointerdown) we need to store the drag start
+            // data and bind listeners for touchmove and contextmenu.
+            if (e.type === (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Start && (e.srcEvent.type === "pointerdown" || e.srcEvent.type === "touchstart")) {
+                // Prevent potentially scrollable nodes from scrolling to make sure
+                // native scrolling does not interfere with dragging.
+                targetElement = e.target;
+                const scrollables = targetElement ? $8968a02849ea5e26$var$getScrollables(targetElement) : [];
+                scrollables.forEach((scrollable)=>{
+                    scrollable.addEventListener("touchmove", onTouchMove, {
+                        passive: false,
+                        capture: true
+                    });
+                });
+                const dragEndListener = ()=>{
+                    if (!startTimeStamp) return;
+                    // Unbind listeners.
+                    draggable.off((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).End, dragEndListener);
+                    draggable.sensors.forEach((sensor)=>{
+                        if (sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) sensor.off((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).End, dragEndListener);
+                    });
+                    targetElement?.removeEventListener("contextmenu", onContextMenu);
+                    scrollables.forEach((scrollable)=>{
+                        scrollable.removeEventListener("touchmove", onTouchMove, {
+                            capture: true
+                        });
+                    });
+                    // Reset state.
+                    startTimeStamp = 0;
+                    dragAllowed = undefined;
+                    targetElement = null;
+                    timer = void window.clearTimeout(timer);
+                };
+                // Set start state.
+                dragAllowed = undefined;
+                startTimeStamp = e.srcEvent.timeStamp;
+                // Prevent context menu popping up.
+                targetElement?.addEventListener("contextmenu", onContextMenu);
+                // Reset data on drag end. We want to listen to all sensors as we don't
+                // know yet which one will start the drag.
+                draggable.on((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).End, dragEndListener);
+                draggable.sensors.forEach((sensor)=>{
+                    if (sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) sensor.on((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).End, dragEndListener);
+                });
+                // If we have touchTimeout defined, let's set a timer that force starts
+                // the drag process after the timeout.
+                // TODO: This will start drag sometimes when it's not actually possible
+                // to prevent the native scrolling on touch devices. We'd need a way
+                // to check if the first touchstart/touchmove is cancelable. Needs
+                // testing on real devices. The funky thing is that we seem to need to
+                // get one touchmove event to check if we can prevent native scrolling
+                // but that is kind of too late already.. let's see if we can detect
+                // that earlier somehow.
+                if (touchTimeout > 0) timer = window.setTimeout(()=>{
+                    draggable.resolveStartPredicate(sensor);
+                    dragAllowed = true;
+                    timer = undefined;
+                }, touchTimeout);
+            }
+            return dragAllowed;
+        }
+        // On mouse/pen let's allow starting drag immediately if mouse's left button
+        // is pressed down.
+        if (e.type === (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Start && !e.srcEvent.button) return true;
+        else return false;
+    };
+    return pointerSensorStartPredicate;
+}
+
+
 function $0b5391881dc2b3a6$var$round(value, multipleOf) {
     return Math.round(value / multipleOf) * multipleOf;
 }
@@ -3471,172 +3609,27 @@ function $244877ffe9407e42$export$c0f5c18ade842ccd(options) {
 
 
 
-const $26b99708933973c1$var$SCROLLABLE_OVERFLOWS = new Set([
-    "auto",
-    "scroll",
-    "overlay"
-]);
-function $26b99708933973c1$export$2bb74740c4e19def(element) {
-    const style = (0, $b75b79b0209a801e$export$3d2f074408bd1b82)(element);
-    return !!($26b99708933973c1$var$SCROLLABLE_OVERFLOWS.has(style.overflowY) || $26b99708933973c1$var$SCROLLABLE_OVERFLOWS.has(style.overflowX));
-}
 
-
-/**
- * Check if the current value is a document.
- */ function $789757134a6ba490$export$62858bae88b53fd0(value) {
-    return value instanceof Document;
-}
-
-
-function $73a32fa1436292cd$export$e4864aa91b5ed091(element, result = []) {
-    let parent = element?.parentNode;
-    while(parent && !(0, $789757134a6ba490$export$62858bae88b53fd0)(parent)){
-        if (parent instanceof Element) {
-            if ((0, $26b99708933973c1$export$2bb74740c4e19def)(parent)) result.push(parent);
-            parent = parent.parentNode;
-        } else if (parent instanceof ShadowRoot) parent = parent.host;
-        else parent = parent.parentNode;
-    }
-    // Always push window to the results (as last scrollable element).
-    result.push(window);
-    return result;
-}
-
-
-
-function $c26397d14873e1ed$var$getScrollables(element) {
-    const scrollables = [];
-    if ((0, $26b99708933973c1$export$2bb74740c4e19def)(element)) scrollables.push(element);
-    (0, $73a32fa1436292cd$export$e4864aa91b5ed091)(element, scrollables);
-    return scrollables;
-}
-function $c26397d14873e1ed$export$88d83dc4a35d804f(options = {}) {
-    let dragAllowed = undefined;
-    let startTimeStamp = 0;
-    let targetElement = null;
-    let timer = undefined;
-    const { timeout: timeout = 250, fallback: fallback = ()=>true } = options;
-    const onContextMenu = (e)=>e.preventDefault();
-    const onTouchMove = (e)=>{
-        if (!startTimeStamp) return;
-        if (dragAllowed) {
-            e.cancelable && e.preventDefault();
-            return;
-        }
-        if (dragAllowed === undefined) {
-            if (e.cancelable && e.timeStamp - startTimeStamp > timeout) {
-                dragAllowed = true;
-                e.preventDefault();
-            } else dragAllowed = false;
-        }
-    };
-    const pointerSensorStartPredicate = (data)=>{
-        if (!(data.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638))) return fallback(data);
-        const { draggable: draggable, sensor: sensor, event: event } = data;
-        const e = event;
-        if (e.pointerType === "touch") {
-            // On first event (touchstart/pointerdown) we need to store the drag start
-            // data and bind listeners for touchmove and contextmenu.
-            if (e.type === (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Start && (e.srcEvent.type === "pointerdown" || e.srcEvent.type === "touchstart")) {
-                // Prevent potentially scrollable nodes from scrolling to make sure
-                // native scrolling does not interfere with dragging.
-                targetElement = e.target;
-                const scrollables = targetElement ? $c26397d14873e1ed$var$getScrollables(targetElement) : [];
-                scrollables.forEach((scrollable)=>{
-                    scrollable.addEventListener("touchmove", onTouchMove, {
-                        passive: false,
-                        capture: true
-                    });
-                });
-                const dragEndListener = ()=>{
-                    if (!startTimeStamp) return;
-                    // Unbind listeners.
-                    draggable.off((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).End, dragEndListener);
-                    draggable.sensors.forEach((sensor)=>{
-                        if (sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) sensor.off((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).End, dragEndListener);
-                    });
-                    targetElement?.removeEventListener("contextmenu", onContextMenu);
-                    scrollables.forEach((scrollable)=>{
-                        scrollable.removeEventListener("touchmove", onTouchMove, {
-                            capture: true
-                        });
-                    });
-                    // Reset state.
-                    startTimeStamp = 0;
-                    dragAllowed = undefined;
-                    targetElement = null;
-                    timer = void window.clearTimeout(timer);
-                };
-                // Set start state.
-                dragAllowed = undefined;
-                startTimeStamp = e.srcEvent.timeStamp;
-                // Prevent context menu popping up.
-                targetElement?.addEventListener("contextmenu", onContextMenu);
-                // Reset data on drag end. We want to listen to all sensors as we don't
-                // know yet which one will start the drag.
-                draggable.on((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).End, dragEndListener);
-                draggable.sensors.forEach((sensor)=>{
-                    if (sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) sensor.on((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).End, dragEndListener);
-                });
-                // If we have timeout defined, let's set a timer that force starts
-                // the drag process after the timeout.
-                // TODO: This will start drag sometimes when it's not actually possible
-                // to prevent the native scrolling on touch devices. We'd need a way
-                // to check if the first touchstart/touchmove is cancelable. Needs
-                // testing on real devices. The funky thing is that we seem to need to
-                // get one touchmove event to check if we can prevent native scrolling
-                // but that is kind of too late already.. let's see if we can detect
-                // that earlier somehow.
-                if (timeout > 0) timer = window.setTimeout(()=>{
-                    draggable.resolveStartPredicate(sensor);
-                    dragAllowed = true;
-                    timer = undefined;
-                }, timeout);
-            }
-            return dragAllowed;
-        }
-        // On mouse/pen let's allow starting drag immediately if mouse's left button
-        // is pressed down.
-        if (e.type === (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Start && !e.srcEvent.button) return true;
-        else return false;
-    };
-    return pointerSensorStartPredicate;
-}
-
-
-
-
-
-
-
-const $c0eab10e01ec35b2$var$GRID_WIDTH = 40;
-const $c0eab10e01ec35b2$var$GRID_HEIGHT = 40;
-const $c0eab10e01ec35b2$var$element = document.querySelector(".draggable");
-const $c0eab10e01ec35b2$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($c0eab10e01ec35b2$var$element);
-const $c0eab10e01ec35b2$var$keyboardSensor = new (0, $2a9b1c646b3552c1$export$44d67f2a438aeba9)($c0eab10e01ec35b2$var$element, {
-    moveDistance: {
-        x: $c0eab10e01ec35b2$var$GRID_WIDTH,
-        y: $c0eab10e01ec35b2$var$GRID_HEIGHT
-    }
-});
-const $c0eab10e01ec35b2$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $c0eab10e01ec35b2$var$pointerSensor,
-    $c0eab10e01ec35b2$var$keyboardSensor
+const $dffb89cf206e4bcc$var$element = document.querySelector(".draggable");
+const $dffb89cf206e4bcc$var$handle = $dffb89cf206e4bcc$var$element.querySelector(".handle");
+const $dffb89cf206e4bcc$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($dffb89cf206e4bcc$var$handle);
+const $dffb89cf206e4bcc$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($dffb89cf206e4bcc$var$element);
+const $dffb89cf206e4bcc$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $dffb89cf206e4bcc$var$pointerSensor,
+    $dffb89cf206e4bcc$var$keyboardSensor
 ], {
     elements: ()=>[
-            $c0eab10e01ec35b2$var$element
+            $dffb89cf206e4bcc$var$element
         ],
-    startPredicate: (0, $c26397d14873e1ed$export$88d83dc4a35d804f)(),
-    positionModifiers: [
-        (0, $0b5391881dc2b3a6$export$7f11ea1f0ba255b5)($c0eab10e01ec35b2$var$GRID_WIDTH, $c0eab10e01ec35b2$var$GRID_HEIGHT)
-    ]
+    startPredicate: (0, $8968a02849ea5e26$export$88d83dc4a35d804f)()
 });
-$c0eab10e01ec35b2$var$draggable.on("start", ()=>{
-    $c0eab10e01ec35b2$var$element.classList.add("dragging");
+$dffb89cf206e4bcc$var$draggable.on("start", ()=>{
+    $dffb89cf206e4bcc$var$element.classList.add("dragging");
+    if ($dffb89cf206e4bcc$var$draggable.drag.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) $dffb89cf206e4bcc$var$element.classList.add("pointer-dragging");
+    else $dffb89cf206e4bcc$var$element.classList.add("keyboard-dragging");
 });
-$c0eab10e01ec35b2$var$draggable.on("end", ()=>{
-    $c0eab10e01ec35b2$var$element.classList.remove("dragging");
+$dffb89cf206e4bcc$var$draggable.on("end", ()=>{
+    $dffb89cf206e4bcc$var$element.classList.remove("dragging", "pointer-dragging", "keyboard-dragging");
 });
 
 

@@ -102,6 +102,11 @@ function sidebarGuide() {
           ],
         },
         {
+          text: 'Helpers',
+          link: '/docs/draggable-helpers',
+          collapsible: false,
+        },
+        {
           text: 'Modifiers',
           link: '/docs/draggable-modifiers',
           collapsible: false,

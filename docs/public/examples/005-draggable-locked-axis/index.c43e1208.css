@@ -39,7 +39,7 @@ body {
   font-size: 30px;
   display: flex;
 
-  & > svg {
+  & svg {
     fill: var(--card-color);
     width: 1em;
     height: 1em;
@@ -50,7 +50,7 @@ body {
       background-color: var(--card-bgColor--focus);
       color: var(--card-color--focus);
 
-      & > svg {
+      & svg {
         fill: var(--card-color--focus);
       }
     }
@@ -70,7 +70,7 @@ body {
     background-color: var(--card-bgColor--drag);
     color: var(--card-color--drag);
 
-    & > svg {
+    & svg {
       fill: var(--card-color--drag);
     }
 

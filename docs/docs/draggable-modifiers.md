@@ -12,20 +12,6 @@ The modifiers should be provided to the [`positionModifiers`](/docs/draggable#po
 
 You can store temporary state data, which exists only for the duration of the drag operation, within the draggable item's [`data`](/docs/draggable-drag-item#data) object. This data is automatically discarded (along with the whole [`DraggableDragItem`](/docs/draggable-drag-item) instance) when drag ends. Just remember to store the state under a unique key so that it doesn't clash with other systems/plugins utilizing the data object also.
 
-## Syntax
-
-```ts
-type DraggableModifier = (
-  change: { x: number; y: number },
-  data: {
-    draggable: Draggable;
-    drag: DraggableDrag;
-    item: DraggableDragItem;
-    phase: 'start' | 'move' | 'end';
-  },
-) => { x: number; y: number };
-```
-
 ## Example
 
 ```ts
@@ -59,3 +45,35 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
   ],
 });
 ```
+
+## Syntax
+
+```ts
+type DraggableModifier = (
+  change: { x: number; y: number },
+  data: {
+    draggable: Draggable;
+    drag: DraggableDrag;
+    item: DraggableDragItem;
+    phase: 'start' | 'move' | 'end';
+  },
+) => { x: number; y: number };
+```
+
+## Parameters
+
+1. **change**
+
+   - The current change data object with `x` and `y` properties representing the change in x and y coordinates.
+
+2. **data**
+
+   - An object containing the following properties:
+     - **draggable**: The [`Draggable`](/docs/draggable) instance.
+     - **drag**: The [`DraggableDrag`](/docs/draggable-drag) instance.
+     - **item**: The [`DraggableDragItem`](/docs/draggable-drag-item) instance.
+     - **phase**: The phase of the drag operation. Can be `'start'`, `'move'` or `'end'`.
+
+## Returns
+
+Returns the updated change data object with `x` and `y` properties representing the updated change in x and y coordinates. By default the `change` object is a reusable object which's value is reset after the modifier chain has been processed. So it's okay to mutate the object directly, but not store it for later use.

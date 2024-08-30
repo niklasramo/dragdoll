@@ -17,9 +17,7 @@ import {
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
-const keyboardSensor = new KeyboardSensor(element, {
-  moveDistance: { x: CELL_WIDTH, y: CELL_HEIGHT },
-});
+const keyboardSensor = new KeyboardSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
   startPredicate: createPointerSensorStartPredicate(),
@@ -70,3 +68,7 @@ type createContainmentModifier = (
    - A boolean or a callback that returns a boolean, which determines if the modifier should track and offset the drift between the sensor position and dragged element's position when the element collides to a container edge. You probably want to have this be `true` for any pointer-like sensors where the user can visually see the grab point and `false` for others, e.g. [`KeyboardSensor`](/docs/keyboard-sensor).
    - By default this is a function which will return `true` if the current sensor is an instance of the [`PointerSensor`](/docs/pointer-sensor) and `false` otherwise.
    - Optional.
+
+## Returns
+
+A modifier function that can be provided to the [`positionModifiers`](/docs/draggable#positionmodifiers) option of the [`Draggable`](/docs/draggable) constructor.

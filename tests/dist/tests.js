@@ -5154,9 +5154,9 @@ function getIntersectionScore(a, b) {
 }
 
 // src/utils/get-rect.ts
-import { getRect as _getRect } from "mezr";
+import { getRect as mezrGetRect } from "mezr";
 function getRect(...args) {
-  const { width, height, left: x, top: y } = _getRect(...args);
+  const { width, height, left: x, top: y } = mezrGetRect(...args);
   return { width, height, x, y };
 }
 
