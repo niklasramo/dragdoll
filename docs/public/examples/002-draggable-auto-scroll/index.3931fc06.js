@@ -3610,19 +3610,19 @@ function $244877ffe9407e42$export$c0f5c18ade842ccd(options) {
 
 
 
-const $a50640bfc6fe7c53$var$element = document.querySelector(".draggable");
-const $a50640bfc6fe7c53$var$dragContainer = document.querySelector(".drag-container");
-const $a50640bfc6fe7c53$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($a50640bfc6fe7c53$var$element);
-const $a50640bfc6fe7c53$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($a50640bfc6fe7c53$var$element, {
+const $6abf5f75f0c818c7$var$element = document.querySelector(".draggable");
+const $6abf5f75f0c818c7$var$dragContainer = document.querySelector(".drag-container");
+const $6abf5f75f0c818c7$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($6abf5f75f0c818c7$var$element);
+const $6abf5f75f0c818c7$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($6abf5f75f0c818c7$var$element, {
     computeSpeed: ()=>100
 });
-const $a50640bfc6fe7c53$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $a50640bfc6fe7c53$var$pointerSensor,
-    $a50640bfc6fe7c53$var$keyboardSensor
+const $6abf5f75f0c818c7$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $6abf5f75f0c818c7$var$pointerSensor,
+    $6abf5f75f0c818c7$var$keyboardSensor
 ], {
-    container: $a50640bfc6fe7c53$var$dragContainer,
+    container: $6abf5f75f0c818c7$var$dragContainer,
     elements: ()=>[
-            $a50640bfc6fe7c53$var$element
+            $6abf5f75f0c818c7$var$element
         ],
     frozenStyles: ()=>[
             "left",
@@ -3641,11 +3641,11 @@ const $a50640bfc6fe7c53$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e
         }
     ]
 }));
-$a50640bfc6fe7c53$var$draggable.on("start", ()=>{
-    $a50640bfc6fe7c53$var$element.classList.add("dragging");
+$6abf5f75f0c818c7$var$draggable.on("start", ()=>{
+    $6abf5f75f0c818c7$var$element.classList.add("dragging");
 });
-$a50640bfc6fe7c53$var$draggable.on("end", ()=>{
-    $a50640bfc6fe7c53$var$element.classList.remove("dragging");
+$6abf5f75f0c818c7$var$draggable.on("end", ()=>{
+    $6abf5f75f0c818c7$var$element.classList.remove("dragging");
 });
 
 

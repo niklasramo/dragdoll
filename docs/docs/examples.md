@@ -2,6 +2,8 @@
 
 ## Draggable - Basic
 
+A minimal setup with four draggable elements using pointer and keyboard (motion) sensor. You can drag them all at once too if you have a multi-touch device (e.g. phone or tablet).
+
 <iframe src="/dragdoll/examples/001-draggable-basic/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
 
 ::: code-group
@@ -43,6 +45,10 @@ draggableElements.forEach((element) => {
   <head>
     <meta charset="utf-8" />
     <title>Draggable - Basic</title>
+    <meta
+      name="description"
+      content="A minimal setup with four draggable elements using pointer and keyboard (motion) sensor. You can drag them all at once too if you have a multi-touch device (e.g. phone or tablet)."
+    />
     <meta
       name="viewport"
       content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
@@ -197,9 +203,11 @@ body {
 
 :::
 
-## Draggable - Autoscroll
+## Draggable - Auto Scroll
 
-<iframe src="/dragdoll/examples/002-draggable-autoscroll/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
+This example demonstrates quite a lot of things. We use a drag container and freeze `left` and `top` values before we move the dragged element into the drag container. The draggable element has percetage based left and top values, which would not be correct when the element is moved to the drag container, which has different dimensions. Lastly we use the auto scroll plugin and configure it to scroll the viewport on y-axis when the dragged element is close to it's edges. Note that we also set auto scroll target's `padding.top` and `padding.bottom` to `Infinity` to allow the scrolling to continue even if you drag the element past the edges.
+
+<iframe src="/dragdoll/examples/002-draggable-auto-scroll/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
 
 ::: code-group
 
@@ -249,7 +257,11 @@ draggable.on('end', () => {
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Draggable - Autoscroll</title>
+    <title>Draggable - Auto Scroll</title>
+    <meta
+      name="description"
+      content="This example demonstrates quite a lot of things. We use a drag container and freeze `left` and `top` values before we move the dragged element into the drag container. The draggable element has percetage based left and top values, which would not be correct when the element is moved to the drag container, which has different dimensions. Lastly we use the auto scroll plugin and configure it to scroll the viewport on y-axis when the dragged element is close to it's edges. Note that we also set auto scroll target's `padding.top` and `padding.bottom` to `Infinity` to allow the scrolling to continue even if you drag the element past the edges."
+    />
     <meta
       name="viewport"
       content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
@@ -393,6 +405,8 @@ body {
 
 ## Draggable - Transformed
 
+Draggable automagically handles (2D) transformed ancestors and the dragged element itself, out of the box, performantly. The draggable element is always guaranteed to move in sync with the active sensor, to the same direction and the same distance, regardless of any CSS transforms or zoom in any part of the document. In this example we showcase a scenario where the draggable element is within two differently transformed containers with different transform origins and uses a differently transformed drag container that's also wrapped in an extra transformed container. The draggable element itself also has transforms applied.
+
 <iframe src="/dragdoll/examples/003-draggable-transformed/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
 
 ::: code-group
@@ -444,6 +458,10 @@ draggable.on('end', () => {
   <head>
     <meta charset="utf-8" />
     <title>Draggable - Transformed</title>
+    <meta
+      name="description"
+      content="Draggable automagically handles (2D) transformed ancestors and the dragged element itself, out of the box, performantly. The draggable element is always guaranteed to move in sync with the active sensor, to the same direction and the same distance, regardless of any CSS transforms or zoom in any part of the document. In this example we showcase a scenario where the draggable element is within two differently transformed containers with different transform origins and uses a differently transformed drag container that's also wrapped in an extra transformed container. The draggable element itself also has transforms applied."
+    />
     <meta
       name="viewport"
       content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
@@ -608,174 +626,11 @@ body {
 
 :::
 
-## Draggable - Snap To Grid
-
-<iframe src="/dragdoll/examples/004-draggable-snap-to-grid/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
-
-::: code-group
-
-```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardSensor,
-  createPointerSensorStartPredicate,
-  createSnapModifier,
-} from 'dragdoll';
-
-const GRID_WIDTH = 40;
-const GRID_HEIGHT = 40;
-
-const element = document.querySelector('.draggable') as HTMLElement;
-const pointerSensor = new PointerSensor(element);
-const keyboardSensor = new KeyboardSensor(element, {
-  moveDistance: { x: GRID_WIDTH, y: GRID_HEIGHT },
-});
-const draggable = new Draggable([pointerSensor, keyboardSensor], {
-  elements: () => [element],
-  startPredicate: createPointerSensorStartPredicate(),
-  positionModifiers: [createSnapModifier(GRID_WIDTH, GRID_HEIGHT)],
-});
-
-draggable.on('start', () => {
-  element.classList.add('dragging');
-});
-
-draggable.on('end', () => {
-  element.classList.remove('dragging');
-});
-```
-
-```html [index.html]
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Draggable - Snap To Grid</title>
-    <meta
-      name="viewport"
-      content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
-    />
-    <link rel="stylesheet" href="base.css" />
-    <link rel="stylesheet" href="index.css" />
-  </head>
-  <body>
-    <div class="card draggable" tabindex="0">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-        <path
-          d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"
-        />
-      </svg>
-    </div>
-    <script type="module" src="index.ts"></script>
-  </body>
-</html>
-```
-
-```css [index.css]
-.draggable {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 80px;
-  height: 80px;
-}
-```
-
-```css [base.css]
-:root {
-  --bg-color: #161618;
-  --color: rgba(255, 255, 245, 0.86);
-  --theme-color: #ff5555;
-  --card-color: rgba(0, 0, 0, 0.7);
-  --card-bgColor: var(--theme-color);
-  --card-color--focus: var(--card-color);
-  --card-bgColor--focus: #db55ff;
-  --card-color--drag: var(--card-color);
-  --card-bgColor--drag: #55ff9c;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html {
-  height: 100%;
-  background: var(--bg-color);
-  color: var(--color);
-  background-size: 40px 40px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-}
-
-body {
-  margin: 0;
-  overflow: hidden;
-}
-
-.card {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100px;
-  height: 100px;
-  background-color: var(--card-bgColor);
-  color: var(--card-color);
-  border-radius: 7px;
-  border: 1.5px solid var(--bg-color);
-  font-size: 30px;
-
-  & svg {
-    width: 1em;
-    height: 1em;
-    fill: var(--card-color);
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover,
-    &:focus-visible {
-      background-color: var(--card-bgColor--focus);
-      color: var(--card-color--focus);
-
-      & svg {
-        fill: var(--card-color--focus);
-      }
-    }
-
-    &:focus-visible {
-      outline-offset: 4px;
-      outline: 1px solid var(--card-bgColor--focus);
-    }
-  }
-
-  &.draggable {
-    cursor: grab;
-  }
-
-  &.dragging {
-    cursor: grabbing;
-    background-color: var(--card-bgColor--drag);
-    color: var(--card-color--drag);
-
-    & svg {
-      fill: var(--card-color--drag);
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      &:focus-visible {
-        outline: 1px solid var(--card-bgColor--drag);
-      }
-    }
-  }
-}
-```
-
-:::
-
 ## Draggable - Locked Axis
 
-<iframe src="/dragdoll/examples/005-draggable-locked-axis/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
+Here we have two elements which can dragged on one axis only. You can use this example as the basis of building your own custom position modifiers (a powerful feature that allows you to control a dragged element's position at every step of the drag process).
+
+<iframe src="/dragdoll/examples/004-draggable-locked-axis/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
 
 ::: code-group
 
@@ -829,6 +684,10 @@ draggableElements.forEach((element) => {
   <head>
     <meta charset="utf-8" />
     <title>Draggable - Locked Axis</title>
+    <meta
+      name="description"
+      content="Here we have two elements which can dragged on one axis only. You can use this example as the basis of building your own custom position modifiers (a powerful feature that allows you to control a dragged element's position at every step of the drag process)."
+    />
     <meta
       name="viewport"
       content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
@@ -975,7 +834,177 @@ body {
 
 :::
 
+## Draggable - Snap To Grid
+
+A simple demo on how to use the built-in snap modifier.
+
+<iframe src="/dragdoll/examples/005-draggable-snap-to-grid/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
+
+::: code-group
+
+```ts [index.ts]
+import {
+  Draggable,
+  PointerSensor,
+  KeyboardSensor,
+  createPointerSensorStartPredicate,
+  createSnapModifier,
+} from 'dragdoll';
+
+const GRID_WIDTH = 40;
+const GRID_HEIGHT = 40;
+
+const element = document.querySelector('.draggable') as HTMLElement;
+const pointerSensor = new PointerSensor(element);
+const keyboardSensor = new KeyboardSensor(element, {
+  moveDistance: { x: GRID_WIDTH, y: GRID_HEIGHT },
+});
+const draggable = new Draggable([pointerSensor, keyboardSensor], {
+  elements: () => [element],
+  startPredicate: createPointerSensorStartPredicate(),
+  positionModifiers: [createSnapModifier(GRID_WIDTH, GRID_HEIGHT)],
+});
+
+draggable.on('start', () => {
+  element.classList.add('dragging');
+});
+
+draggable.on('end', () => {
+  element.classList.remove('dragging');
+});
+```
+
+```html [index.html]
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Draggable - Snap To Grid</title>
+    <meta name="description" content="A simple demo on how to use the built-in snap modifier." />
+    <meta
+      name="viewport"
+      content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div class="card draggable" tabindex="0">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+        <path
+          d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"
+        />
+      </svg>
+    </div>
+    <script type="module" src="index.ts"></script>
+  </body>
+</html>
+```
+
+```css [index.css]
+.draggable {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 80px;
+  height: 80px;
+}
+```
+
+```css [base.css]
+:root {
+  --bg-color: #161618;
+  --color: rgba(255, 255, 245, 0.86);
+  --theme-color: #ff5555;
+  --card-color: rgba(0, 0, 0, 0.7);
+  --card-bgColor: var(--theme-color);
+  --card-color--focus: var(--card-color);
+  --card-bgColor--focus: #db55ff;
+  --card-color--drag: var(--card-color);
+  --card-bgColor--drag: #55ff9c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  background: var(--bg-color);
+  color: var(--color);
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+.card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  background-color: var(--card-bgColor);
+  color: var(--card-color);
+  border-radius: 7px;
+  border: 1.5px solid var(--bg-color);
+  font-size: 30px;
+
+  & svg {
+    width: 1em;
+    height: 1em;
+    fill: var(--card-color);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover,
+    &:focus-visible {
+      background-color: var(--card-bgColor--focus);
+      color: var(--card-color--focus);
+
+      & svg {
+        fill: var(--card-color--focus);
+      }
+    }
+
+    &:focus-visible {
+      outline-offset: 4px;
+      outline: 1px solid var(--card-bgColor--focus);
+    }
+  }
+
+  &.draggable {
+    cursor: grab;
+  }
+
+  &.dragging {
+    cursor: grabbing;
+    background-color: var(--card-bgColor--drag);
+    color: var(--card-color--drag);
+
+    & svg {
+      fill: var(--card-color--drag);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:focus-visible {
+        outline: 1px solid var(--card-bgColor--drag);
+      }
+    }
+  }
+}
+```
+
+:::
+
 ## Draggable - Containment
+
+A simple demo on how to use the built-in containment modifier. The first argument of `createContainmentModifier` should be a function that returns the client rect of the containment area. That function is called on every drag 'move' event and also on 'start' and 'end' events. The second argument is a boolean which's value is cached on start event to define if the modifier should track drifting of the sensor when the dragged element hits an edge of the containment area and the sensor keeps on moving away. If the drift is being tracked the draggable element will not be moved to the opposing direction until the sensor is back inside the containment area. By default the drift is tracked only for `PointerSensor`.
 
 <iframe src="/dragdoll/examples/006-draggable-containment/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
 
@@ -1023,6 +1052,10 @@ draggable.on('end', () => {
   <head>
     <meta charset="utf-8" />
     <title>Draggable - Containment</title>
+    <meta
+      name="description"
+      content="A simple demo on how to use the built-in containment modifier. The first argument of `createContainmentModifier` should be a function that returns the client rect of the containment area. That function is called on every drag 'move' event and also on 'start' and 'end' events. The second argument is a boolean which's value is cached on start event to define if the modifier should track drifting of the sensor when the dragged element hits an edge of the containment area and the sensor keeps on moving away. If the drift is being tracked the draggable element will not be moved to the opposing direction until the sensor is back inside the containment area. By default the drift is tracked only for `PointerSensor`."
+    />
     <meta
       name="viewport"
       content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
@@ -1155,6 +1188,8 @@ body {
 
 ## Draggable - Center To Pointer
 
+Here we use a custom position modifier to align the dragged element's center with the pointer sensor's position on drag start.
+
 <iframe src="/dragdoll/examples/007-draggable-center-to-pointer/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
 
 ::: code-group
@@ -1212,6 +1247,10 @@ draggable.on('end', () => {
   <head>
     <meta charset="utf-8" />
     <title>Draggable - Center To Pointer</title>
+    <meta
+      name="description"
+      content="Here we use a custom position modifier to align the dragged element's center with the pointer sensor's position on drag start."
+    />
     <meta
       name="viewport"
       content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
@@ -1344,6 +1383,8 @@ body {
 
 ## Draggable - Drag Handle
 
+A simple example on how to create a drag handle. There is no built-in 'handle' option, because it would be too limiting. In this example the `PointerSensor` is used for the handle element while the `KeyboardMotionSensor` is used normally for the draggable element. You could also create the `KeyboardMotionSensor` for the handle element if you wished, it's really up to your preferences. Hopefully this showcases how flexible and customizable DragDoll really is with it's sensor system.
+
 <iframe src="/dragdoll/examples/008-draggable-drag-handle/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
 
 ::: code-group
@@ -1388,6 +1429,10 @@ draggable.on('end', () => {
     <meta
       name="viewport"
       content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <meta
+      name="description"
+      content="A simple example on how to create a drag handle. There is no built-in 'handle' option, because it would be too limiting. In this example the `PointerSensor` is used for the handle element while the `KeyboardMotionSensor` is used normally for the draggable element. You could also create the `KeyboardMotionSensor` for the handle element if you wished, it's really up to your preferences. Hopefully this showcases how flexible and customizable DragDoll really is with it's sensor system."
     />
     <link rel="stylesheet" href="base.css" />
     <link rel="stylesheet" href="index.css" />

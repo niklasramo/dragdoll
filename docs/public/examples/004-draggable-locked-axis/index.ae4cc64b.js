@@ -3610,33 +3610,39 @@ function $244877ffe9407e42$export$c0f5c18ade842ccd(options) {
 
 
 
-const $c0eab10e01ec35b2$var$GRID_WIDTH = 40;
-const $c0eab10e01ec35b2$var$GRID_HEIGHT = 40;
-const $c0eab10e01ec35b2$var$element = document.querySelector(".draggable");
-const $c0eab10e01ec35b2$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($c0eab10e01ec35b2$var$element);
-const $c0eab10e01ec35b2$var$keyboardSensor = new (0, $2a9b1c646b3552c1$export$44d67f2a438aeba9)($c0eab10e01ec35b2$var$element, {
-    moveDistance: {
-        x: $c0eab10e01ec35b2$var$GRID_WIDTH,
-        y: $c0eab10e01ec35b2$var$GRID_HEIGHT
-    }
-});
-const $c0eab10e01ec35b2$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $c0eab10e01ec35b2$var$pointerSensor,
-    $c0eab10e01ec35b2$var$keyboardSensor
-], {
-    elements: ()=>[
-            $c0eab10e01ec35b2$var$element
-        ],
-    startPredicate: (0, $8968a02849ea5e26$export$88d83dc4a35d804f)(),
-    positionModifiers: [
-        (0, $0b5391881dc2b3a6$export$7f11ea1f0ba255b5)($c0eab10e01ec35b2$var$GRID_WIDTH, $c0eab10e01ec35b2$var$GRID_HEIGHT)
-    ]
-});
-$c0eab10e01ec35b2$var$draggable.on("start", ()=>{
-    $c0eab10e01ec35b2$var$element.classList.add("dragging");
-});
-$c0eab10e01ec35b2$var$draggable.on("end", ()=>{
-    $c0eab10e01ec35b2$var$element.classList.remove("dragging");
+let $63994e3588ee9d7d$var$zIndex = 0;
+const $63994e3588ee9d7d$var$draggableElements = [
+    ...document.querySelectorAll(".draggable")
+];
+$63994e3588ee9d7d$var$draggableElements.forEach((element)=>{
+    const pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element);
+    const keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)(element);
+    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+        pointerSensor,
+        keyboardSensor
+    ], {
+        elements: ()=>[
+                element
+            ],
+        startPredicate: (0, $8968a02849ea5e26$export$88d83dc4a35d804f)(),
+        positionModifiers: [
+            (change, { item: item })=>{
+                const { element: element } = item;
+                const allowX = element.classList.contains("axis-x");
+                const allowY = element.classList.contains("axis-y");
+                if (allowX && !allowY) change.y = 0;
+                else if (allowY && !allowX) change.x = 0;
+                return change;
+            }
+        ]
+    });
+    draggable.on("start", ()=>{
+        element.classList.add("dragging");
+        element.style.zIndex = `${++$63994e3588ee9d7d$var$zIndex}`;
+    });
+    draggable.on("end", ()=>{
+        element.classList.remove("dragging");
+    });
 });
 
 
