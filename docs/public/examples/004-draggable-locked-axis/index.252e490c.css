@@ -8,8 +8,16 @@ body {
   display: flex;
 }
 
-.draggable {
+.card.draggable {
   flex-grow: 0;
   flex-shrink: 0;
   position: relative;
+
+  &.axis-x {
+    cursor: ew-resize;
+  }
+
+  &.axis-y {
+    cursor: ns-resize;
+  }
 }

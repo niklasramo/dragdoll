@@ -16,7 +16,7 @@ body {
   inset: 0;
 }
 
-.draggable {
+.card.draggable {
   position: absolute;
   top: 50%;
   left: 50%;

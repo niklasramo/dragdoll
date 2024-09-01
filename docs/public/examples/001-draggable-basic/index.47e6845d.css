@@ -8,7 +8,7 @@ body {
   display: flex;
 }
 
-.draggable {
+.card.draggable {
   flex-grow: 0;
   flex-shrink: 0;
   position: relative;

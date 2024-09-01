@@ -13,4 +13,8 @@ body {
   position: relative;
   flex-grow: 0;
   flex-shrink: 0;
+
+  &.dragging:not(.ghost) {
+    opacity: 0.5;
+  }
 }

@@ -35,7 +35,7 @@ body {
   transform: scale(.5)skew(-5deg, -5deg);
 }
 
-.draggable {
+.card.draggable {
   transform-origin: 50%;
   position: absolute;
   top: 50%;

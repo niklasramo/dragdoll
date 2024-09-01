@@ -9,7 +9,7 @@ body {
   gap: 10px 10px;
 }
 
-.draggable {
+.card.draggable {
   position: relative;
   flex-grow: 0;
   flex-shrink: 0;
