@@ -39,7 +39,7 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
       }
 
       // Fallback to the sensor's clientX/clientY values.
-      const e = drag && (drag.event || drag.startEvent);
+      const e = drag && (drag.moveEvent || drag.startEvent);
       AUTOSCROLL_POSITION.x = e ? e.x : 0;
       AUTOSCROLL_POSITION.y = e ? e.y : 0;
       return AUTOSCROLL_POSITION;
@@ -55,7 +55,7 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
 
       // Fallback to the sensor's clientX/clientY values and a static size of
       // 50x50px.
-      const e = drag && (drag.event || drag.startEvent);
+      const e = drag && (drag.moveEvent || drag.startEvent);
       AUTOSCROLL_CLIENT_RECT.width = e ? 50 : 0;
       AUTOSCROLL_CLIENT_RECT.height = e ? 50 : 0;
       AUTOSCROLL_CLIENT_RECT.x = e ? e.x - 25 : 0;

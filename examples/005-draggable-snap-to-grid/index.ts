@@ -18,12 +18,10 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
   startPredicate: createPointerSensorStartPredicate(),
   positionModifiers: [createSnapModifier(GRID_WIDTH, GRID_HEIGHT)],
-});
-
-draggable.on('start', () => {
-  element.classList.add('dragging');
-});
-
-draggable.on('end', () => {
-  element.classList.remove('dragging');
+  onStart: () => {
+    element.classList.add('dragging');
+  },
+  onEnd: () => {
+    element.classList.remove('dragging');
+  },
 });

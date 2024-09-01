@@ -6,7 +6,7 @@ Modifiers are a powerful feature of Draggable that allow you to fully control th
 
 A modifier function takes the current position change data, transforms it as needed and then returns the updated position change data. You can chain multiple modifiers and split the logic into multiple reusable modifiers.
 
-The first modifier in the chain will receive the "default" change data. For "move" event this is the diff between client x and y coordinates of [`event`](/docs/draggable-drag#event) and [`prevEvent`](/docs/draggable-drag#prevevent). The final result, after the change data is processed through all the modifiers, is applied to the element via [`applyPosition`](/docs/draggable#applyposition) function.
+The first modifier in the chain will receive the "default" change data. For "move" event this is the diff between client x and y coordinates of [`moveEvent`](/docs/draggable-drag#moveevent) and [`prevMoveEvent`](/docs/draggable-drag#prevmoveevent). The final result, after the change data is processed through all the modifiers, is applied to the element via [`applyPosition`](/docs/draggable#applyposition) function.
 
 The modifiers should be provided to the [`positionModifiers`](/docs/draggable#positionmodifiers) option. All the provided modifiers will be called for every draggable item on every "start", "move" and "end" event. The modifier function receives the phase of the drag operation as an argument, which can be used to apply different logic based on the current phase.
 

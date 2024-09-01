@@ -98,6 +98,12 @@ export interface DraggableSettings<S extends Sensor[], E extends S[number]['even
     item: DraggableDragItem<S, E>;
     phase: DraggableApplyPositionPhase;
   }) => void;
+  onPrepareStart?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
+  onStart?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
+  onPrepareMove?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
+  onMove?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
+  onEnd?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
+  onDestroy?: (draggable: Draggable<S, E>) => void;
 }
 
 export interface DraggablePlugin {
@@ -123,7 +129,7 @@ export interface DraggableEventCallbacks<E extends SensorEvents> {
   [DraggableEventType.Start]: (event: E['start'] | E['move']) => void;
   [DraggableEventType.PrepareMove]: (event: E['move']) => void;
   [DraggableEventType.Move]: (event: E['move']) => void;
-  [DraggableEventType.End]: (event: E['end'] | E['cancel'] | E['destroy']) => void;
+  [DraggableEventType.End]: (event: E['end'] | E['cancel'] | E['destroy'] | null) => void;
   [DraggableEventType.Destroy]: () => void;
 }
 
@@ -284,6 +290,12 @@ export class Draggable<
       frozenStyles = defaults.frozenStyles,
       positionModifiers = defaults.positionModifiers,
       applyPosition = defaults.applyPosition,
+      onPrepareStart = defaults.onPrepareStart,
+      onStart = defaults.onStart,
+      onPrepareMove = defaults.onPrepareMove,
+      onMove = defaults.onMove,
+      onEnd = defaults.onEnd,
+      onDestroy = defaults.onDestroy,
     } = options || {};
 
     return {
@@ -293,6 +305,12 @@ export class Draggable<
       frozenStyles,
       positionModifiers,
       applyPosition,
+      onPrepareStart,
+      onStart,
+      onPrepareMove,
+      onMove,
+      onEnd,
+      onDestroy,
     };
   }
 
@@ -331,7 +349,7 @@ export class Draggable<
       case DraggableStartPredicateState.Resolved: {
         // Move the element if dragging is active.
         if (this.drag) {
-          (this.drag as Writeable<typeof this.drag>).event = e;
+          (this.drag as Writeable<typeof this.drag>).moveEvent = e;
           ticker.once(tickerPhases.read, this._prepareMove, this._moveId);
           ticker.once(tickerPhases.write, this._applyMove, this._moveId);
         }
@@ -355,7 +373,7 @@ export class Draggable<
       sensorData.predicateEvent = null;
     }
     // Otherwise, if drag is active AND the sensor is the one that triggered the
-    // drag process, let's reset all sensors' start preidcate states.
+    // drag process, let's reset all sensors' start predicate states.
     else if (sensorData.predicateState === DraggableStartPredicateState.Resolved) {
       (this.drag as Writeable<typeof this.drag>).endEvent = e;
       this._sensorData.forEach((data) => {
@@ -392,6 +410,9 @@ export class Draggable<
 
     // Emit preparestart event.
     this._emit(DraggableEventType.PrepareStart, drag.startEvent);
+
+    // Call onPrepareStart callback.
+    this.settings.onPrepareStart?.(drag, this);
   }
 
   protected _applyStart() {
@@ -464,6 +485,9 @@ export class Draggable<
 
     // Emit start event.
     this._emit(DraggableEventType.Start, drag.startEvent);
+
+    // Call onStart callback.
+    this.settings.onStart?.(drag, this);
   }
 
   protected _prepareMove() {
@@ -472,17 +496,24 @@ export class Draggable<
 
     // Get next event and previous event so we can compute the movement
     // difference between the clientX/Y values.
-    const { event, prevEvent } = drag;
-    if (event === prevEvent) return;
+    const { moveEvent, prevMoveEvent } = drag;
+    if (moveEvent === prevMoveEvent) return;
 
     // Apply modifiers for the move phase.
-    this._applyModifiers(DraggableModifierPhase.Move, event.x - prevEvent.x, event.y - prevEvent.y);
-
-    // Store next event as previous event.
-    (drag as Writeable<typeof drag>).prevEvent = event;
+    this._applyModifiers(
+      DraggableModifierPhase.Move,
+      moveEvent.x - prevMoveEvent.x,
+      moveEvent.y - prevMoveEvent.y,
+    );
 
     // Emit preparemove event.
-    this._emit(DraggableEventType.PrepareMove, event as E['move']);
+    this._emit(DraggableEventType.PrepareMove, moveEvent as E['move']);
+
+    // Call onPrepareMove callback.
+    this.settings.onPrepareMove?.(drag, this);
+
+    // Store next move event as previous move event.
+    (drag as Writeable<typeof drag>).prevMoveEvent = moveEvent;
   }
 
   protected _applyMove() {
@@ -503,9 +534,10 @@ export class Draggable<
     }
 
     // Emit move event.
-    if (drag.event) {
-      this._emit(DraggableEventType.Move, drag.event as E['move']);
-    }
+    this._emit(DraggableEventType.Move, drag.moveEvent as E['move']);
+
+    // Call onMove callback.
+    this.settings.onMove?.(drag, this);
   }
 
   protected _prepareAlign() {
@@ -703,7 +735,10 @@ export class Draggable<
     }
 
     // Emit end event.
-    this._emit(DraggableEventType.End, drag.endEvent!);
+    this._emit(DraggableEventType.End, drag.endEvent);
+
+    // Call onEnd callback.
+    this.settings.onEnd?.(drag, this);
 
     // Reset drag data.
     (this as Writeable<this>).drag = null;
@@ -747,6 +782,8 @@ export class Draggable<
     this._sensorData.clear();
 
     this._emit(DraggableEventType.Destroy);
+
+    this.settings.onDestroy?.(this);
 
     this._emitter.off();
   }

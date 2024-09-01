@@ -26,15 +26,13 @@ draggableElements.forEach((element) => {
   const draggable = new Draggable([pointerSensor, keyboardSensor], {
     elements: () => [element],
     startPredicate: createPointerSensorStartPredicate(),
-  });
-
-  draggable.on('start', () => {
-    element.classList.add('dragging');
-    element.style.zIndex = `${++zIndex}`;
-  });
-
-  draggable.on('end', () => {
-    element.classList.remove('dragging');
+    onStart: () => {
+      element.classList.add('dragging');
+      element.style.zIndex = `${++zIndex}`;
+    },
+    onEnd: () => {
+      element.classList.remove('dragging');
+    },
   });
 });
 ```
@@ -231,6 +229,12 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
   frozenStyles: () => ['left', 'top'],
   startPredicate: createPointerSensorStartPredicate(),
+  onStart: () => {
+    element.classList.add('dragging');
+  },
+  onEnd: () => {
+    element.classList.remove('dragging');
+  },
 }).use(
   autoScrollPlugin({
     targets: [
@@ -242,14 +246,6 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
     ],
   }),
 );
-
-draggable.on('start', () => {
-  element.classList.add('dragging');
-});
-
-draggable.on('end', () => {
-  element.classList.remove('dragging');
-});
 ```
 
 ```html [index.html]
@@ -431,6 +427,12 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
   frozenStyles: () => ['left', 'top'],
   startPredicate: createPointerSensorStartPredicate(),
+  onStart: () => {
+    element.classList.add('dragging');
+  },
+  onEnd: () => {
+    element.classList.remove('dragging');
+  },
 }).use(
   autoScrollPlugin({
     targets: [
@@ -442,14 +444,6 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
     ],
   }),
 );
-
-draggable.on('start', () => {
-  element.classList.add('dragging');
-});
-
-draggable.on('end', () => {
-  element.classList.remove('dragging');
-});
 ```
 
 ```html [index.html]
@@ -665,15 +659,13 @@ draggableElements.forEach((element) => {
         return change;
       },
     ],
-  });
-
-  draggable.on('start', () => {
-    element.classList.add('dragging');
-    element.style.zIndex = `${++zIndex}`;
-  });
-
-  draggable.on('end', () => {
-    element.classList.remove('dragging');
+    onStart: () => {
+      element.classList.add('dragging');
+      element.style.zIndex = `${++zIndex}`;
+    },
+    onEnd: () => {
+      element.classList.remove('dragging');
+    },
   });
 });
 ```
@@ -863,14 +855,12 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
   startPredicate: createPointerSensorStartPredicate(),
   positionModifiers: [createSnapModifier(GRID_WIDTH, GRID_HEIGHT)],
-});
-
-draggable.on('start', () => {
-  element.classList.add('dragging');
-});
-
-draggable.on('end', () => {
-  element.classList.remove('dragging');
+  onStart: () => {
+    element.classList.add('dragging');
+  },
+  onEnd: () => {
+    element.classList.remove('dragging');
+  },
 });
 ```
 
@@ -1035,14 +1025,12 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
       };
     }),
   ],
-});
-
-draggable.on('start', () => {
-  element.classList.add('dragging');
-});
-
-draggable.on('end', () => {
-  element.classList.remove('dragging');
+  onStart: () => {
+    element.classList.add('dragging');
+  },
+  onEnd: () => {
+    element.classList.remove('dragging');
+  },
 });
 ```
 
@@ -1230,14 +1218,12 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
       return change;
     },
   ],
-});
-
-draggable.on('start', () => {
-  element.classList.add('dragging');
-});
-
-draggable.on('end', () => {
-  element.classList.remove('dragging');
+  onStart: () => {
+    element.classList.add('dragging');
+  },
+  onEnd: () => {
+    element.classList.remove('dragging');
+  },
 });
 ```
 
@@ -1404,19 +1390,17 @@ const keyboardSensor = new KeyboardMotionSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
   startPredicate: createPointerSensorStartPredicate(),
-});
-
-draggable.on('start', () => {
-  element.classList.add('dragging');
-  if (draggable.drag!.sensor instanceof PointerSensor) {
-    element.classList.add('pointer-dragging');
-  } else {
-    element.classList.add('keyboard-dragging');
-  }
-});
-
-draggable.on('end', () => {
-  element.classList.remove('dragging', 'pointer-dragging', 'keyboard-dragging');
+  onStart: () => {
+    element.classList.add('dragging');
+    if (draggable.drag!.sensor instanceof PointerSensor) {
+      element.classList.add('pointer-dragging');
+    } else {
+      element.classList.add('keyboard-dragging');
+    }
+  },
+  onEnd: () => {
+    element.classList.remove('dragging', 'pointer-dragging', 'keyboard-dragging');
+  },
 });
 ```
 
@@ -1642,29 +1626,25 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
     return [clone];
   },
   startPredicate: createPointerSensorStartPredicate(),
-});
+  onStart: () => {
+    element.classList.add('dragging');
+  },
+  onEnd: (drag) => {
+    const dragItem = drag.items[0];
 
-draggable.on('start', () => {
-  element.classList.add('dragging');
-});
+    // Move the original element to the ghost element's position. We use DOMMatrix
+    // to first combine the original element's transform with the ghost element's
+    // transform and then apply the combined transform to the original element.
+    const matrix = new DOMMatrix().setMatrixValue(
+      `translate(${dragItem.position.x}px, ${dragItem.position.y}px) ${element.style.transform}`,
+    );
+    element.style.transform = `${matrix}`;
 
-draggable.on('end', () => {
-  // Get the drag data.
-  const dragData = draggable.drag!;
-  const dragItem = dragData.items[0];
+    // Remove the ghost element.
+    dragItem.element.remove();
 
-  // Move the original element to the ghost element's position. We use DOMMatrix
-  // to first combine the original element's transform with the ghost element's
-  // transform and then apply the combined transform to the original element.
-  const matrix = new DOMMatrix().setMatrixValue(
-    `translate(${dragItem.position.x}px, ${dragItem.position.y}px) ${element.style.transform}`,
-  );
-  element.style.transform = `${matrix}`;
-
-  // Remove the ghost element.
-  dragItem.element.remove();
-
-  element.classList.remove('dragging');
+    element.classList.remove('dragging');
+  },
 });
 ```
 
@@ -1838,14 +1818,12 @@ draggableElements.forEach((element) => {
       return [element, ...draggableElements.filter((el) => el !== element)];
     },
     startPredicate: createPointerSensorStartPredicate(),
-  });
-
-  draggable.on('start', () => {
-    element.classList.add('dragging');
-  });
-
-  draggable.on('end', () => {
-    element.classList.remove('dragging');
+    onStart: () => {
+      element.classList.add('dragging');
+    },
+    onEnd: () => {
+      element.classList.remove('dragging');
+    },
   });
 });
 ```

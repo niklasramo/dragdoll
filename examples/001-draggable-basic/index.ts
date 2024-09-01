@@ -15,14 +15,12 @@ draggableElements.forEach((element) => {
   const draggable = new Draggable([pointerSensor, keyboardSensor], {
     elements: () => [element],
     startPredicate: createPointerSensorStartPredicate(),
-  });
-
-  draggable.on('start', () => {
-    element.classList.add('dragging');
-    element.style.zIndex = `${++zIndex}`;
-  });
-
-  draggable.on('end', () => {
-    element.classList.remove('dragging');
+    onStart: () => {
+      element.classList.add('dragging');
+      element.style.zIndex = `${++zIndex}`;
+    },
+    onEnd: () => {
+      element.classList.remove('dragging');
+    },
   });
 });

@@ -34,27 +34,23 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
     return [clone];
   },
   startPredicate: createPointerSensorStartPredicate(),
-});
+  onStart: () => {
+    element.classList.add('dragging');
+  },
+  onEnd: (drag) => {
+    const dragItem = drag.items[0];
 
-draggable.on('start', () => {
-  element.classList.add('dragging');
-});
+    // Move the original element to the ghost element's position. We use DOMMatrix
+    // to first combine the original element's transform with the ghost element's
+    // transform and then apply the combined transform to the original element.
+    const matrix = new DOMMatrix().setMatrixValue(
+      `translate(${dragItem.position.x}px, ${dragItem.position.y}px) ${element.style.transform}`,
+    );
+    element.style.transform = `${matrix}`;
 
-draggable.on('end', () => {
-  // Get the drag data.
-  const dragData = draggable.drag!;
-  const dragItem = dragData.items[0];
+    // Remove the ghost element.
+    dragItem.element.remove();
 
-  // Move the original element to the ghost element's position. We use DOMMatrix
-  // to first combine the original element's transform with the ghost element's
-  // transform and then apply the combined transform to the original element.
-  const matrix = new DOMMatrix().setMatrixValue(
-    `translate(${dragItem.position.x}px, ${dragItem.position.y}px) ${element.style.transform}`,
-  );
-  element.style.transform = `${matrix}`;
-
-  // Remove the ghost element.
-  dragItem.element.remove();
-
-  element.classList.remove('dragging');
+    element.classList.remove('dragging');
+  },
 });

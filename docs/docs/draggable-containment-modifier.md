@@ -36,15 +36,6 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
 ## Syntax
 
 ```ts
-type DraggableModifierData = {
-  draggable: Draggable;
-  sensor: Sensor;
-  item: DraggableDragItem;
-  event: SensorStartEvent | SensorMoveEvent;
-  prevEvent: SensorStartEvent | SensorMoveEvent;
-  startEvent: SensorStartEvent | SensorMoveEvent;
-};
-
 type createContainmentModifier = (
   getContainerRect: (data: DraggableModifierData) => {
     x: number;

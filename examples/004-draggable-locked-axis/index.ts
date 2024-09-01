@@ -28,14 +28,12 @@ draggableElements.forEach((element) => {
         return change;
       },
     ],
-  });
-
-  draggable.on('start', () => {
-    element.classList.add('dragging');
-    element.style.zIndex = `${++zIndex}`;
-  });
-
-  draggable.on('end', () => {
-    element.classList.remove('dragging');
+    onStart: () => {
+      element.classList.add('dragging');
+      element.style.zIndex = `${++zIndex}`;
+    },
+    onEnd: () => {
+      element.classList.remove('dragging');
+    },
   });
 });

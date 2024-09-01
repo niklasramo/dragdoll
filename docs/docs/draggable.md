@@ -140,6 +140,66 @@ type positionModifiers = DraggableModifier[];
 
 An array of position modifier functions that should return the position change of a dragged element. Checkout the [Draggable Modifiers](/docs/draggable-modifiers) page for detailed information.
 
+### onPrepareStart
+
+```ts
+type onPrepareStart = (drag: DraggableDrag, draggable: Draggable) => void;
+```
+
+A callback that is called at the end of drag start preparation phase. In this phase the draggable item instances are created and the initial position is computed. All the required DOM reading (for drag start) is also done in this phase.
+
+This callback is called immediately _after_ any `preparestart` events that are added via [`on`](#on) method.
+
+### onStart
+
+```ts
+type onStart = (drag: DraggableDrag, draggable: Draggable) => void;
+```
+
+A callback that is called at the end of drag start phase. This phase handles applying the initial positions to the dragged elements, setting up the frozen styles and any other initial setup that require writing to the DOM.
+
+This callback is called immediately _after_ any `start` events that are added via [`on`](#on) method.
+
+### onPrepareMove
+
+```ts
+type onPrepareMove = (drag: DraggableDrag, draggable: Draggable) => void;
+```
+
+A callback that is called at the end of drag move preparation phase. This phase handles computing the new position of the dragged elements based on the sensor data.
+
+This callback is called immediately _after_ any `preparemove` events that are added via [`on`](#on) method.
+
+### onMove
+
+```ts
+type onMove = (drag: DraggableDrag, draggable: Draggable) => void;
+```
+
+A callback that is called at the end of drag move phase. This phase applies the new positions to the dragged elements.
+
+This callback is called immediately _after_ any `move` events that are added via [`on`](#on) method.
+
+### onEnd
+
+```ts
+type onEnd = (drag: DraggableDrag, draggable: Draggable) => void;
+```
+
+A callback that is called at the very end of drag process after all the required cleanup has been done. You will still have access to the drag data when this callback is called, but it will be removed from the draggable instance right after this callback.
+
+This callback is called immediately _after_ any `end` events that are added via [`on`](#on) method.
+
+### onDestroy
+
+```ts
+type onDestroy = (draggable: Draggable) => void;
+```
+
+A callback that is called when the draggable is destroyed via [`destroy`](#destroy) method. This is the last callback that is called before the draggable instance is completely disposed. If there is an active drag when the draggable is destroyed, the [`onEnd`](#onend) callback will be called before this callback.
+
+This callback is called immediately _after_ any `destroy` events that are added via [`on`](#on) method.
+
 ## Properties
 
 ### sensors

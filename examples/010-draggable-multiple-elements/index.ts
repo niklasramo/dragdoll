@@ -15,13 +15,11 @@ draggableElements.forEach((element) => {
       return [element, ...draggableElements.filter((el) => el !== element)];
     },
     startPredicate: createPointerSensorStartPredicate(),
-  });
-
-  draggable.on('start', () => {
-    element.classList.add('dragging');
-  });
-
-  draggable.on('end', () => {
-    element.classList.remove('dragging');
+    onStart: () => {
+      element.classList.add('dragging');
+    },
+    onEnd: () => {
+      element.classList.remove('dragging');
+    },
   });
 });

@@ -351,12 +351,12 @@ declare class DraggableDragItem<S extends Sensor[] = Sensor[], E extends S[numbe
 
 declare class DraggableDrag<S extends Sensor[], E extends S[number]['events']> {
     readonly sensor: S[number];
-    readonly isEnded: boolean;
-    readonly event: E['start'] | E['move'];
-    readonly prevEvent: E['start'] | E['move'];
     readonly startEvent: E['start'] | E['move'];
+    readonly prevMoveEvent: E['start'] | E['move'];
+    readonly moveEvent: E['start'] | E['move'];
     readonly endEvent: E['end'] | E['cancel'] | E['destroy'] | null;
     readonly items: DraggableDragItem[];
+    readonly isEnded: boolean;
     protected _matrixCache: ObjectCache<HTMLElement | SVGSVGElement, [DOMMatrix, DOMMatrix]>;
     protected _clientOffsetCache: ObjectCache<HTMLElement | SVGSVGElement | Window | Document, Point>;
     constructor(sensor: S[number], startEvent: E['start'] | E['move']);
@@ -417,6 +417,12 @@ interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
         item: DraggableDragItem<S, E>;
         phase: DraggableApplyPositionPhase;
     }) => void;
+    onPrepareStart?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
+    onStart?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
+    onPrepareMove?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
+    onMove?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
+    onEnd?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
+    onDestroy?: (draggable: Draggable<S, E>) => void;
 }
 interface DraggablePlugin {
     name: string;
@@ -437,7 +443,7 @@ interface DraggableEventCallbacks<E extends SensorEvents> {
     [DraggableEventType.Start]: (event: E['start'] | E['move']) => void;
     [DraggableEventType.PrepareMove]: (event: E['move']) => void;
     [DraggableEventType.Move]: (event: E['move']) => void;
-    [DraggableEventType.End]: (event: E['end'] | E['cancel'] | E['destroy']) => void;
+    [DraggableEventType.End]: (event: E['end'] | E['cancel'] | E['destroy'] | null) => void;
     [DraggableEventType.Destroy]: () => void;
 }
 declare const DraggableDefaultSettings: DraggableSettings<any, any>;

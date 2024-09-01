@@ -1159,12 +1159,12 @@ class $dae2d52ffd859f14$export$ee7258b8691956a3 {
 class $ce7a95b3ae8104e2$export$12e4b40eac1bcb71 {
     constructor(sensor, startEvent){
         this.sensor = sensor;
-        this.isEnded = false;
-        this.event = startEvent;
-        this.prevEvent = startEvent;
         this.startEvent = startEvent;
+        this.prevMoveEvent = startEvent;
+        this.moveEvent = startEvent;
         this.endEvent = null;
         this.items = [];
+        this.isEnded = false;
         this._matrixCache = new (0, $dae2d52ffd859f14$export$ee7258b8691956a3)();
         this._clientOffsetCache = new (0, $dae2d52ffd859f14$export$ee7258b8691956a3)();
     }
@@ -2033,14 +2033,20 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         });
     }
     _parseSettings(options, defaults = $0d0c72b4b6dc9dbb$export$7ce0cd3869d5dcd9) {
-        const { container: container = defaults.container, startPredicate: startPredicate = defaults.startPredicate, elements: elements = defaults.elements, frozenStyles: frozenStyles = defaults.frozenStyles, positionModifiers: positionModifiers = defaults.positionModifiers, applyPosition: applyPosition = defaults.applyPosition } = options || {};
+        const { container: container = defaults.container, startPredicate: startPredicate = defaults.startPredicate, elements: elements = defaults.elements, frozenStyles: frozenStyles = defaults.frozenStyles, positionModifiers: positionModifiers = defaults.positionModifiers, applyPosition: applyPosition = defaults.applyPosition, onPrepareStart: onPrepareStart = defaults.onPrepareStart, onStart: onStart = defaults.onStart, onPrepareMove: onPrepareMove = defaults.onPrepareMove, onMove: onMove = defaults.onMove, onEnd: onEnd = defaults.onEnd, onDestroy: onDestroy = defaults.onDestroy } = options || {};
         return {
             container: container,
             startPredicate: startPredicate,
             elements: elements,
             frozenStyles: frozenStyles,
             positionModifiers: positionModifiers,
-            applyPosition: applyPosition
+            applyPosition: applyPosition,
+            onPrepareStart: onPrepareStart,
+            onStart: onStart,
+            onPrepareMove: onPrepareMove,
+            onMove: onMove,
+            onEnd: onEnd,
+            onDestroy: onDestroy
         };
     }
     _emit(type, ...e) {
@@ -2067,7 +2073,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
             case 1:
                 // Move the element if dragging is active.
                 if (this.drag) {
-                    this.drag.event = e;
+                    this.drag.moveEvent = e;
                     (0, $e434efa1a293c3f2$export$e94d57566be028aa).once((0, $e434efa1a293c3f2$export$ef9171fc2626).read, this._prepareMove, this._moveId);
                     (0, $e434efa1a293c3f2$export$e94d57566be028aa).once((0, $e434efa1a293c3f2$export$ef9171fc2626).write, this._applyMove, this._moveId);
                 }
@@ -2114,6 +2120,8 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         this._applyModifiers($0d0c72b4b6dc9dbb$export$44f02bfd7d637941.Start, 0, 0);
         // Emit preparestart event.
         this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.PrepareStart, drag.startEvent);
+        // Call onPrepareStart callback.
+        this.settings.onPrepareStart?.(drag, this);
     }
     _applyStart() {
         const drag = this.drag;
@@ -2163,20 +2171,24 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         this._startPhase = 3;
         // Emit start event.
         this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.Start, drag.startEvent);
+        // Call onStart callback.
+        this.settings.onStart?.(drag, this);
     }
     _prepareMove() {
         const drag = this.drag;
         if (!drag) return;
         // Get next event and previous event so we can compute the movement
         // difference between the clientX/Y values.
-        const { event: event, prevEvent: prevEvent } = drag;
-        if (event === prevEvent) return;
+        const { moveEvent: moveEvent, prevMoveEvent: prevMoveEvent } = drag;
+        if (moveEvent === prevMoveEvent) return;
         // Apply modifiers for the move phase.
-        this._applyModifiers($0d0c72b4b6dc9dbb$export$44f02bfd7d637941.Move, event.x - prevEvent.x, event.y - prevEvent.y);
-        // Store next event as previous event.
-        drag.prevEvent = event;
+        this._applyModifiers($0d0c72b4b6dc9dbb$export$44f02bfd7d637941.Move, moveEvent.x - prevMoveEvent.x, moveEvent.y - prevMoveEvent.y);
         // Emit preparemove event.
-        this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.PrepareMove, event);
+        this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.PrepareMove, moveEvent);
+        // Call onPrepareMove callback.
+        this.settings.onPrepareMove?.(drag, this);
+        // Store next move event as previous move event.
+        drag.prevMoveEvent = moveEvent;
     }
     _applyMove() {
         const drag = this.drag;
@@ -2193,7 +2205,9 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
             });
         }
         // Emit move event.
-        if (drag.event) this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.Move, drag.event);
+        this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.Move, drag.moveEvent);
+        // Call onMove callback.
+        this.settings.onMove?.(drag, this);
     }
     _prepareAlign() {
         const { drag: drag } = this;
@@ -2346,6 +2360,8 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         }
         // Emit end event.
         this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.End, drag.endEvent);
+        // Call onEnd callback.
+        this.settings.onEnd?.(drag, this);
         // Reset drag data.
         this.drag = null;
     }
@@ -2378,6 +2394,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         });
         this._sensorData.clear();
         this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.Destroy);
+        this.settings.onDestroy?.(this);
         this._emitter.off();
     }
 }
@@ -3475,7 +3492,7 @@ function $244877ffe9407e42$var$getDefaultSettings() {
             // Try to use the first item for the autoscroll data.
             if (primaryItem) return primaryItem.position;
             // Fallback to the sensor's clientX/clientY values.
-            const e = drag && (drag.event || drag.startEvent);
+            const e = drag && (drag.moveEvent || drag.startEvent);
             $244877ffe9407e42$var$AUTOSCROLL_POSITION.x = e ? e.x : 0;
             $244877ffe9407e42$var$AUTOSCROLL_POSITION.y = e ? e.y : 0;
             return $244877ffe9407e42$var$AUTOSCROLL_POSITION;
@@ -3487,7 +3504,7 @@ function $244877ffe9407e42$var$getDefaultSettings() {
             if (primaryItem && primaryItem.element) return primaryItem.clientRect;
             // Fallback to the sensor's clientX/clientY values and a static size of
             // 50x50px.
-            const e = drag && (drag.event || drag.startEvent);
+            const e = drag && (drag.moveEvent || drag.startEvent);
             $244877ffe9407e42$var$AUTOSCROLL_CLIENT_RECT.width = e ? 50 : 0;
             $244877ffe9407e42$var$AUTOSCROLL_CLIENT_RECT.height = e ? 50 : 0;
             $244877ffe9407e42$var$AUTOSCROLL_CLIENT_RECT.x = e ? e.x - 25 : 0;
@@ -3610,33 +3627,41 @@ function $244877ffe9407e42$export$c0f5c18ade842ccd(options) {
 
 
 
-const $f770251f4470ce8a$var$element = document.querySelector(".draggable");
-const $f770251f4470ce8a$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($f770251f4470ce8a$var$element);
-const $f770251f4470ce8a$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($f770251f4470ce8a$var$element);
-const $f770251f4470ce8a$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $f770251f4470ce8a$var$pointerSensor,
-    $f770251f4470ce8a$var$keyboardSensor
+const $36439aed3cd46e36$var$element = document.querySelector(".draggable");
+const $36439aed3cd46e36$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($36439aed3cd46e36$var$element);
+const $36439aed3cd46e36$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($36439aed3cd46e36$var$element);
+const $36439aed3cd46e36$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $36439aed3cd46e36$var$pointerSensor,
+    $36439aed3cd46e36$var$keyboardSensor
 ], {
     elements: ()=>[
-            $f770251f4470ce8a$var$element
+            $36439aed3cd46e36$var$element
         ],
     startPredicate: (0, $8968a02849ea5e26$export$88d83dc4a35d804f)(),
     positionModifiers: [
-        (0, $e4a9d189cff00937$export$b43dd221600cdb2e)(()=>{
-            return {
-                x: 0,
-                y: 0,
-                width: window.innerWidth,
-                height: window.innerHeight
-            };
-        })
-    ]
-});
-$f770251f4470ce8a$var$draggable.on("start", ()=>{
-    $f770251f4470ce8a$var$element.classList.add("dragging");
-});
-$f770251f4470ce8a$var$draggable.on("end", ()=>{
-    $f770251f4470ce8a$var$element.classList.remove("dragging");
+        (change, { drag: drag, item: item, phase: phase })=>{
+            // Align the dragged element so that the pointer
+            // is in the center of the element.
+            if (// Only apply the alignment on the start phase.
+            phase === "start" && // Only apply the alignment for the pointer sensor.
+            drag.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638) && // Only apply the alignment for the primary drag element.
+            drag.items[0].element === item.element) {
+                const { clientRect: clientRect } = item;
+                const { x: x, y: y } = drag.startEvent;
+                const targetX = clientRect.x + clientRect.width / 2;
+                const targetY = clientRect.y + clientRect.height / 2;
+                change.x = x - targetX;
+                change.y = y - targetY;
+            }
+            return change;
+        }
+    ],
+    onStart: ()=>{
+        $36439aed3cd46e36$var$element.classList.add("dragging");
+    },
+    onEnd: ()=>{
+        $36439aed3cd46e36$var$element.classList.remove("dragging");
+    }
 });
 
 

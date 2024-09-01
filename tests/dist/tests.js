@@ -4314,12 +4314,12 @@ var ObjectCache = class {
 var DraggableDrag = class {
   constructor(sensor, startEvent) {
     this.sensor = sensor;
-    this.isEnded = false;
-    this.event = startEvent;
-    this.prevEvent = startEvent;
     this.startEvent = startEvent;
+    this.prevMoveEvent = startEvent;
+    this.moveEvent = startEvent;
     this.endEvent = null;
     this.items = [];
+    this.isEnded = false;
     this._matrixCache = new ObjectCache();
     this._clientOffsetCache = new ObjectCache();
   }
@@ -4764,7 +4764,13 @@ var Draggable = class {
       elements = defaults.elements,
       frozenStyles = defaults.frozenStyles,
       positionModifiers = defaults.positionModifiers,
-      applyPosition = defaults.applyPosition
+      applyPosition = defaults.applyPosition,
+      onPrepareStart = defaults.onPrepareStart,
+      onStart = defaults.onStart,
+      onPrepareMove = defaults.onPrepareMove,
+      onMove = defaults.onMove,
+      onEnd = defaults.onEnd,
+      onDestroy = defaults.onDestroy
     } = options || {};
     return {
       container,
@@ -4772,7 +4778,13 @@ var Draggable = class {
       elements,
       frozenStyles,
       positionModifiers,
-      applyPosition
+      applyPosition,
+      onPrepareStart,
+      onStart,
+      onPrepareMove,
+      onMove,
+      onEnd,
+      onDestroy
     };
   }
   _emit(type3, ...e) {
@@ -4798,7 +4810,7 @@ var Draggable = class {
       }
       case 1 /* Resolved */: {
         if (this.drag) {
-          this.drag.event = e;
+          this.drag.moveEvent = e;
           ticker.once(tickerPhases.read, this._prepareMove, this._moveId);
           ticker.once(tickerPhases.write, this._applyMove, this._moveId);
         }
@@ -4837,6 +4849,7 @@ var Draggable = class {
     });
     this._applyModifiers(DraggableModifierPhase.Start, 0, 0);
     this._emit(DraggableEventType.PrepareStart, drag.startEvent);
+    this.settings.onPrepareStart?.(drag, this);
   }
   _applyStart() {
     const drag = this.drag;
@@ -4883,15 +4896,21 @@ var Draggable = class {
     window.addEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS);
     this._startPhase = 3 /* FinishApply */;
     this._emit(DraggableEventType.Start, drag.startEvent);
+    this.settings.onStart?.(drag, this);
   }
   _prepareMove() {
     const drag = this.drag;
     if (!drag) return;
-    const { event, prevEvent } = drag;
-    if (event === prevEvent) return;
-    this._applyModifiers(DraggableModifierPhase.Move, event.x - prevEvent.x, event.y - prevEvent.y);
-    drag.prevEvent = event;
-    this._emit(DraggableEventType.PrepareMove, event);
+    const { moveEvent, prevMoveEvent } = drag;
+    if (moveEvent === prevMoveEvent) return;
+    this._applyModifiers(
+      DraggableModifierPhase.Move,
+      moveEvent.x - prevMoveEvent.x,
+      moveEvent.y - prevMoveEvent.y
+    );
+    this._emit(DraggableEventType.PrepareMove, moveEvent);
+    this.settings.onPrepareMove?.(drag, this);
+    drag.prevMoveEvent = moveEvent;
   }
   _applyMove() {
     const drag = this.drag;
@@ -4906,9 +4925,8 @@ var Draggable = class {
         item
       });
     }
-    if (drag.event) {
-      this._emit(DraggableEventType.Move, drag.event);
-    }
+    this._emit(DraggableEventType.Move, drag.moveEvent);
+    this.settings.onMove?.(drag, this);
   }
   _prepareAlign() {
     const { drag } = this;
@@ -5041,6 +5059,7 @@ var Draggable = class {
       });
     }
     this._emit(DraggableEventType.End, drag.endEvent);
+    this.settings.onEnd?.(drag, this);
     this.drag = null;
   }
   align(instant = false) {
@@ -5072,6 +5091,7 @@ var Draggable = class {
     });
     this._sensorData.clear();
     this._emit(DraggableEventType.Destroy);
+    this.settings.onDestroy?.(this);
     this._emitter.off();
   }
 };

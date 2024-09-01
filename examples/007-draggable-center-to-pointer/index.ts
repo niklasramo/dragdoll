@@ -33,12 +33,10 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
       return change;
     },
   ],
-});
-
-draggable.on('start', () => {
-  element.classList.add('dragging');
-});
-
-draggable.on('end', () => {
-  element.classList.remove('dragging');
+  onStart: () => {
+    element.classList.add('dragging');
+  },
+  onEnd: () => {
+    element.classList.remove('dragging');
+  },
 });

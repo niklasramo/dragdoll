@@ -17,6 +17,12 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
   frozenStyles: () => ['left', 'top'],
   startPredicate: createPointerSensorStartPredicate(),
+  onStart: () => {
+    element.classList.add('dragging');
+  },
+  onEnd: () => {
+    element.classList.remove('dragging');
+  },
 }).use(
   autoScrollPlugin({
     targets: [
@@ -28,11 +34,3 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
     ],
   }),
 );
-
-draggable.on('start', () => {
-  element.classList.add('dragging');
-});
-
-draggable.on('end', () => {
-  element.classList.remove('dragging');
-});
