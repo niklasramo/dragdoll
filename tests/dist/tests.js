@@ -4655,9 +4655,11 @@ var DraggableModifierPhase = {
 };
 var DraggableApplyPositionPhase = {
   Start: "start",
+  StartAlign: "start-align",
   Move: "move",
+  Align: "align",
   End: "end",
-  Align: "align"
+  EndAlign: "end-align"
 };
 var DraggableEventType = {
   PrepareStart: "preparestart",
@@ -4673,7 +4675,7 @@ var DraggableDefaultSettings = {
   elements: () => null,
   frozenStyles: () => null,
   applyPosition: ({ item, phase }) => {
-    const isEndPhase = phase === "end";
+    const isEndPhase = phase === "end" || phase === "end-align";
     const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
     const [_dragContainerMatrix, inverseDragContainerMatrix] = item.getDragContainerMatrix();
     const {
@@ -5029,22 +5031,14 @@ var Draggable = class {
     ticker.off(tickerPhases.read, this._alignId);
     ticker.off(tickerPhases.write, this._alignId);
     window.removeEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS);
-    drag["_clientOffsetCache"].clear();
-    for (const item of drag.items) {
-      if (item.elementContainer !== item.dragContainer) {
-        const { x: startX, y: startY } = item.containerOffset;
-        item["_updateContainerOffset"]();
-        const { x: endX, y: endY } = item.containerOffset;
-        item.alignmentOffset.x = startX - endX;
-        item.alignmentOffset.y = startY - endY;
-        item.containerOffset.x = 0;
-        item.containerOffset.y = 0;
-      }
-    }
     this._applyModifiers(DraggableModifierPhase.End, 0, 0);
     for (const item of drag.items) {
       if (item.elementContainer !== item.dragContainer) {
         appendElement(item.element, item.elementContainer);
+        item.alignmentOffset.x = 0;
+        item.alignmentOffset.y = 0;
+        item.containerOffset.x = 0;
+        item.containerOffset.y = 0;
       }
       if (item.unfrozenStyles) {
         for (const key in item.unfrozenStyles) {
@@ -5057,6 +5051,23 @@ var Draggable = class {
         drag,
         item
       });
+    }
+    for (const item of drag.items) {
+      if (item.elementContainer !== item.dragContainer) {
+        const itemRect = item.element.getBoundingClientRect();
+        item.alignmentOffset.x = roundNumber(item.clientRect.x - itemRect.x, 3);
+        item.alignmentOffset.y = roundNumber(item.clientRect.y - itemRect.y, 3);
+      }
+    }
+    for (const item of drag.items) {
+      if (item.elementContainer !== item.dragContainer && (item.alignmentOffset.x !== 0 || item.alignmentOffset.y !== 0)) {
+        this.settings.applyPosition({
+          phase: DraggableApplyPositionPhase.EndAlign,
+          draggable: this,
+          drag,
+          item
+        });
+      }
     }
     this._emit(DraggableEventType.End, drag.endEvent);
     this.settings.onEnd?.(drag, this);

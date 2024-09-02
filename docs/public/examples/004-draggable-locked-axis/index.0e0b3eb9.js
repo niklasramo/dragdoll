@@ -1118,6 +1118,10 @@ class $7fff4587bd07df96$export$436f6efcc297171 extends (0, $07403df99f68f50f$exp
 }
 
 
+// TODO: If there is any transform in body element and you scroll the page the
+// drop location will be off. This might be an issue with scrolling transformed
+// containers. Investigate this further. The positoin is correct during the drag
+// process, but the drop location is off.
 
 
 
@@ -1933,9 +1937,11 @@ const $0d0c72b4b6dc9dbb$export$44f02bfd7d637941 = {
 };
 const $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61 = {
     Start: "start",
+    StartAlign: "start-align",
     Move: "move",
+    Align: "align",
     End: "end",
-    Align: "align"
+    EndAlign: "end-align"
 };
 const $0d0c72b4b6dc9dbb$export$a85ab346e352a830 = {
     PrepareStart: "preparestart",
@@ -1951,7 +1957,7 @@ const $0d0c72b4b6dc9dbb$export$7ce0cd3869d5dcd9 = {
     elements: ()=>null,
     frozenStyles: ()=>null,
     applyPosition: ({ item: item, phase: phase })=>{
-        const isEndPhase = phase === "end";
+        const isEndPhase = phase === "end" || phase === "end-align";
         const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
         const [_dragContainerMatrix, inverseDragContainerMatrix] = item.getDragContainerMatrix();
         const { position: position, alignmentOffset: alignmentOffset, containerOffset: containerOffset, elementTransformMatrix: elementTransformMatrix, elementTransformOrigin: elementTransformOrigin } = item;
@@ -2327,30 +2333,22 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         (0, $e434efa1a293c3f2$export$e94d57566be028aa).off((0, $e434efa1a293c3f2$export$ef9171fc2626).write, this._alignId);
         // Unbind scroll listener.
         window.removeEventListener("scroll", this._onScroll, $0d0c72b4b6dc9dbb$var$SCROLL_LISTENER_OPTIONS);
-        // Adjust items' positions for the drop. When the drag starts the container
-        // offset is computed once, but not updated during drag (because we don't
-        // need to). But on drop we need to how much the offset diff has changed
-        // from the start and then add the diff to the item's position, and finally
-        // reset the container offset. Let's do this procedure in a separate loop to
-        // avoid layout thrashing.
-        drag["_clientOffsetCache"].clear();
-        for (const item of drag.items)if (item.elementContainer !== item.dragContainer) {
-            const { x: startX, y: startY } = item.containerOffset;
-            item["_updateContainerOffset"]();
-            const { x: endX, y: endY } = item.containerOffset;
-            item.alignmentOffset.x = startX - endX;
-            item.alignmentOffset.y = startY - endY;
-            item.containerOffset.x = 0;
-            item.containerOffset.y = 0;
-        }
         // Apply modifiers for the end phase.
         this._applyModifiers($0d0c72b4b6dc9dbb$export$44f02bfd7d637941.End, 0, 0);
-        // Move elements within the root container.
         for (const item of drag.items){
-            if (item.elementContainer !== item.dragContainer) (0, $3ba9e1e7a6850ba1$export$33e13bbfe889ab45)(item.element, item.elementContainer);
+            // Move elements within the root container if they were moved to a
+            // different container during the drag process. Also reset alignment
+            // and container offsets for those elements.
+            if (item.elementContainer !== item.dragContainer) {
+                (0, $3ba9e1e7a6850ba1$export$33e13bbfe889ab45)(item.element, item.elementContainer);
+                item.alignmentOffset.x = 0;
+                item.alignmentOffset.y = 0;
+                item.containerOffset.x = 0;
+                item.containerOffset.y = 0;
+            }
             // Unfreeze element's props if such are provided.
             if (item.unfrozenStyles) for(const key in item.unfrozenStyles)item.element.style[key] = item.unfrozenStyles[key] || "";
-            // Set final position after drag.
+            // Set (maybe) final position after drag.
             this.settings.applyPosition({
                 phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.End,
                 draggable: this,
@@ -2358,6 +2356,26 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
                 item: item
             });
         }
+        // Make sure that all elements that were reparented during the drag process
+        // are actually aligned with the item's cached client rect data. NB: This
+        // procedure causes a reflow, but it's necessary to ensure that the elements
+        // are visually aligned correctly. We do the DOM reading in a separate loop
+        // to avoid layout thrashing more than necessary.
+        // TODO: See if we can opt out of this procedure in specific cases.
+        for (const item of drag.items)if (item.elementContainer !== item.dragContainer) {
+            const itemRect = item.element.getBoundingClientRect();
+            // Round the align diff to nearest 3rd decimal to avoid applying it if
+            // the value is so small that it's not visible.
+            item.alignmentOffset.x = (0, $b71b05db74a54e91$export$a3992db8dd0fd9e6)(item.clientRect.x - itemRect.x, 3);
+            item.alignmentOffset.y = (0, $b71b05db74a54e91$export$a3992db8dd0fd9e6)(item.clientRect.y - itemRect.y, 3);
+        }
+        // Apply final alignment to all the elements that need it.
+        for (const item of drag.items)if (item.elementContainer !== item.dragContainer && (item.alignmentOffset.x !== 0 || item.alignmentOffset.y !== 0)) this.settings.applyPosition({
+            phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.EndAlign,
+            draggable: this,
+            drag: drag,
+            item: item
+        });
         // Emit end event.
         this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.End, drag.endEvent);
         // Call onEnd callback.
@@ -3627,26 +3645,39 @@ function $244877ffe9407e42$export$c0f5c18ade842ccd(options) {
 
 
 
-const $dffb89cf206e4bcc$var$element = document.querySelector(".draggable");
-const $dffb89cf206e4bcc$var$handle = $dffb89cf206e4bcc$var$element.querySelector(".handle");
-const $dffb89cf206e4bcc$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($dffb89cf206e4bcc$var$handle);
-const $dffb89cf206e4bcc$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($dffb89cf206e4bcc$var$element);
-const $dffb89cf206e4bcc$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $dffb89cf206e4bcc$var$pointerSensor,
-    $dffb89cf206e4bcc$var$keyboardSensor
-], {
-    elements: ()=>[
-            $dffb89cf206e4bcc$var$element
+let $63994e3588ee9d7d$var$zIndex = 0;
+const $63994e3588ee9d7d$var$draggableElements = [
+    ...document.querySelectorAll(".draggable")
+];
+$63994e3588ee9d7d$var$draggableElements.forEach((element)=>{
+    const pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element);
+    const keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)(element);
+    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+        pointerSensor,
+        keyboardSensor
+    ], {
+        elements: ()=>[
+                element
+            ],
+        startPredicate: (0, $8968a02849ea5e26$export$88d83dc4a35d804f)(),
+        positionModifiers: [
+            (change, { item: item })=>{
+                const { element: element } = item;
+                const allowX = element.classList.contains("axis-x");
+                const allowY = element.classList.contains("axis-y");
+                if (allowX && !allowY) change.y = 0;
+                else if (allowY && !allowX) change.x = 0;
+                return change;
+            }
         ],
-    startPredicate: (0, $8968a02849ea5e26$export$88d83dc4a35d804f)(),
-    onStart: ()=>{
-        $dffb89cf206e4bcc$var$element.classList.add("dragging");
-        if ($dffb89cf206e4bcc$var$draggable.drag.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) $dffb89cf206e4bcc$var$element.classList.add("pointer-dragging");
-        else $dffb89cf206e4bcc$var$element.classList.add("keyboard-dragging");
-    },
-    onEnd: ()=>{
-        $dffb89cf206e4bcc$var$element.classList.remove("dragging", "pointer-dragging", "keyboard-dragging");
-    }
+        onStart: ()=>{
+            element.classList.add("dragging");
+            element.style.zIndex = `${++$63994e3588ee9d7d$var$zIndex}`;
+        },
+        onEnd: ()=>{
+            element.classList.remove("dragging");
+        }
+    });
 });
 
 

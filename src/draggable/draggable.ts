@@ -1,3 +1,8 @@
+// TODO: If there is any transform in body element and you scroll the page the
+// drop location will be off. This might be an issue with scrolling transformed
+// containers. Investigate this further. The positoin is correct during the drag
+// process, but the drop location is off.
+
 import { HAS_PASSIVE_EVENTS } from '../constants.js';
 
 import { Emitter, EventListenerId } from 'eventti';
@@ -54,9 +59,11 @@ export type DraggableModifierPhase =
 
 export const DraggableApplyPositionPhase = {
   Start: 'start',
+  StartAlign: 'start-align',
   Move: 'move',
-  End: 'end',
   Align: 'align',
+  End: 'end',
+  EndAlign: 'end-align',
 } as const;
 
 export type DraggableApplyPositionPhase =
@@ -139,7 +146,7 @@ export const DraggableDefaultSettings: DraggableSettings<any, any> = {
   elements: () => null,
   frozenStyles: () => null,
   applyPosition: ({ item, phase }) => {
-    const isEndPhase = phase === 'end';
+    const isEndPhase = phase === 'end' || phase === 'end-align';
     const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
     const [_dragContainerMatrix, inverseDragContainerMatrix] = item.getDragContainerMatrix();
     const {
@@ -690,32 +697,19 @@ export class Draggable<
     // Unbind scroll listener.
     window.removeEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
 
-    // Adjust items' positions for the drop. When the drag starts the container
-    // offset is computed once, but not updated during drag (because we don't
-    // need to). But on drop we need to how much the offset diff has changed
-    // from the start and then add the diff to the item's position, and finally
-    // reset the container offset. Let's do this procedure in a separate loop to
-    // avoid layout thrashing.
-    drag['_clientOffsetCache'].clear();
-    for (const item of drag.items) {
-      if (item.elementContainer !== item.dragContainer) {
-        const { x: startX, y: startY } = item.containerOffset;
-        item['_updateContainerOffset']();
-        const { x: endX, y: endY } = item.containerOffset;
-        item.alignmentOffset.x = startX - endX;
-        item.alignmentOffset.y = startY - endY;
-        item.containerOffset.x = 0;
-        item.containerOffset.y = 0;
-      }
-    }
-
     // Apply modifiers for the end phase.
     this._applyModifiers(DraggableModifierPhase.End, 0, 0);
 
-    // Move elements within the root container.
     for (const item of drag.items) {
+      // Move elements within the root container if they were moved to a
+      // different container during the drag process. Also reset alignment
+      // and container offsets for those elements.
       if (item.elementContainer !== item.dragContainer) {
         appendElement(item.element, item.elementContainer);
+        item.alignmentOffset.x = 0;
+        item.alignmentOffset.y = 0;
+        item.containerOffset.x = 0;
+        item.containerOffset.y = 0;
       }
 
       // Unfreeze element's props if such are provided.
@@ -725,13 +719,44 @@ export class Draggable<
         }
       }
 
-      // Set final position after drag.
+      // Set (maybe) final position after drag.
       this.settings.applyPosition({
         phase: DraggableApplyPositionPhase.End,
         draggable: this,
         drag,
         item,
       });
+    }
+
+    // Make sure that all elements that were reparented during the drag process
+    // are actually aligned with the item's cached client rect data. NB: This
+    // procedure causes a reflow, but it's necessary to ensure that the elements
+    // are visually aligned correctly. We do the DOM reading in a separate loop
+    // to avoid layout thrashing more than necessary.
+    // TODO: See if we can opt out of this procedure in specific cases.
+    for (const item of drag.items) {
+      if (item.elementContainer !== item.dragContainer) {
+        const itemRect = item.element.getBoundingClientRect();
+        // Round the align diff to nearest 3rd decimal to avoid applying it if
+        // the value is so small that it's not visible.
+        item.alignmentOffset.x = roundNumber(item.clientRect.x - itemRect.x, 3);
+        item.alignmentOffset.y = roundNumber(item.clientRect.y - itemRect.y, 3);
+      }
+    }
+
+    // Apply final alignment to all the elements that need it.
+    for (const item of drag.items) {
+      if (
+        item.elementContainer !== item.dragContainer &&
+        (item.alignmentOffset.x !== 0 || item.alignmentOffset.y !== 0)
+      ) {
+        this.settings.applyPosition({
+          phase: DraggableApplyPositionPhase.EndAlign,
+          draggable: this,
+          drag,
+          item,
+        });
+      }
     }
 
     // Emit end event.

@@ -381,9 +381,11 @@ declare const DraggableModifierPhase: {
 type DraggableModifierPhase = (typeof DraggableModifierPhase)[keyof typeof DraggableModifierPhase];
 declare const DraggableApplyPositionPhase: {
     readonly Start: "start";
+    readonly StartAlign: "start-align";
     readonly Move: "move";
-    readonly End: "end";
     readonly Align: "align";
+    readonly End: "end";
+    readonly EndAlign: "end-align";
 };
 type DraggableApplyPositionPhase = (typeof DraggableApplyPositionPhase)[keyof typeof DraggableApplyPositionPhase];
 type DraggableModifierData<S extends Sensor[], E extends S[number]['events']> = {
