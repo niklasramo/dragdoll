@@ -12,11 +12,11 @@ import {
   createPointerSensorStartPredicate,
 } from 'dragdoll';
 
-const dragElement = document.querySelector('.dragElement');
-const pointerSensor = new PointerSensor(dragElement);
-const keyboardSensor = new KeyboardSensor();
+const element = document.querySelector('.draggable') as HTMLElement;
+const pointerSensor = new PointerSensor(element);
+const keyboardSensor = new KeyboardSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
-  elements: () => [dragElement],
+  elements: () => [element],
   startPredicate: createPointerSensorStartPredicate(),
 });
 ```
@@ -29,7 +29,15 @@ class Draggable {
 }
 ```
 
-The constuctor accepts two arguments: `sensors` and `options`. The first argument is an array of sensors that the Draggable will use as inputs for moving the draggable elements around. The sensors are required and can't be changed after Draggable instantiation. The second argument is an optional [`DraggableSettings`](#settings) object, which you can also change later via [`updateSettings`](#updatesettings) method.
+### Parameters
+
+1. **sensors**
+
+   - An array of [sensors](/docs/sensor) that the Draggable will use as inputs for moving the provided elements around. The sensors are required and can't be changed after instantiation.
+
+2. **options**
+
+   - An optional [`DraggableSettings`](#settings) object, which you can also change later via [`updateSettings`](#updatesettings) method. You only need to provide the options you want to change, the rest will be left as default.
 
 ## Settings
 
@@ -304,7 +312,7 @@ type stop = () => void;
 draggable.stop();
 ```
 
-Forcefully stops the draggable's current drag process.
+Forcibly stops the draggable's current drag process.
 
 ### align
 
@@ -333,7 +341,7 @@ draggable.updateSettings({
 });
 ```
 
-Updates the the draggable's settings. Accepts [`DraggableSettings`](#settings) as the first argument, only the options you provide will be updated.
+Updates the the draggable's settings. Accepts [`DraggableSettings`](#settings) as the first argument, only the options you provide will be updated. Note that you only need to provide the options you want to change, the rest will be left as default.
 
 ### use
 

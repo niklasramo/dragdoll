@@ -12,7 +12,7 @@ import { KeyboardSensor, Draggable } from 'dragdoll';
 // Create a keyboard sensor instance that listens to keydown events and starts
 // emitting drag events when the provided element is focused and a start key
 // (enter or space) is pressed.
-const element = document.querySelector('.draggable');
+const element = document.querySelector('.draggable') as HTMLElement;
 const keyboardSensor = new KeyboardSensor(element);
 
 // Listen to drag events.

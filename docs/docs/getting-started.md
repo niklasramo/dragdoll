@@ -41,7 +41,7 @@ import {
 
 // Let's assume that you have this element in DOM and you want to drag it
 // around.
-const element = document.querySelector('.draggable');
+const element = document.querySelector('.draggable') as HTMLElement;
 
 // First we need to instantiate a new PointerSensor for the element, which
 // listens to DOM events and emits drag events for us to listen to. This does

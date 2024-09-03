@@ -15,9 +15,9 @@ import {
   createPointerSensorStartPredicate,
 } from 'dragdoll';
 
-const element = document.querySelector('.draggable');
+const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
-const keyboardSensor = new KeyboardSensor();
+const keyboardSensor = new KeyboardSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
   startPredicate: createPointerSensorStartPredicate(),

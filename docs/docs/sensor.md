@@ -55,7 +55,7 @@ Removes a listener (based on listener id) from a sensor event.
 type cancel = () => void;
 ```
 
-Forcefully cancel the sensor's current drag process. The purpose of this method is to have a manual way of aborting the drag procedure at all times.
+Forcibly cancel the sensor's current drag process. The purpose of this method is to have a manual way of aborting the drag procedure at all times.
 
 ### destroy
 
