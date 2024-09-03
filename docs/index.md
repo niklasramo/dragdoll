@@ -1,12 +1,12 @@
 ---
-title: Modular and extensible drag & drop system
+title: Modular and extensible drag system
 
 layout: home
 
 hero:
   name: DragDoll
   text:
-  tagline: Modular and extensible drag & drop system
+  tagline: Modular and extensible drag system
   actions:
     - theme: brand
       text: Get Started
@@ -22,12 +22,12 @@ features:
   - icon: 🤏
     title: Dynamic Draggables
     details: A highly customizable and pluggable Draggable system with autoscrolling superpowers.
+  - icon: 🪄
+    title: Magical Transforms
+    details: Transformed (2D) elements can be dragged normally, finally. Rotate, scale, skew and translate to your heart's content.
   - icon: 🧘
     title: Blissful DX
     details: Comes with strong types, smart defaults and prebaked solutions for common use cases.
-  - icon: 🎁
-    title: Tiny and Modular
-    details: Weighs around 11kB gzipped all in all, but you can use only the bits and pieces you need.
   - icon: 🍦
     title: Vanilla Flavour
     details: No frameworks were abused while writing this library. It's all vanilla framework-free TS down to the core.

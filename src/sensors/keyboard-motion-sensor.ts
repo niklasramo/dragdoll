@@ -1,4 +1,4 @@
-import { Sensor } from './sensor.js';
+import { Sensor, SensorEventType } from './sensor.js';
 
 import { BaseMotionSensor, BaseMotionSensorEvents } from './base-motion-sensor.js';
 
@@ -208,7 +208,7 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
         if (startPosition) {
           e.preventDefault();
           this._start({
-            type: 'start',
+            type: SensorEventType.Start,
             x: startPosition.x,
             y: startPosition.y,
           });
@@ -228,7 +228,7 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
     if (this._endKeys.has(e.key)) {
       e.preventDefault();
       this._end({
-        type: 'end',
+        type: SensorEventType.End,
         x: this.drag.x,
         y: this.drag.y,
       });

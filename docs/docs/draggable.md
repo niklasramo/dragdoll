@@ -12,11 +12,11 @@ import {
   createPointerSensorStartPredicate,
 } from 'dragdoll';
 
-const dragElement = document.querySelector('.dragElement');
-const pointerSensor = new PointerSensor(dragElement);
-const keyboardSensor = new KeyboardSensor();
+const element = document.querySelector('.draggable') as HTMLElement;
+const pointerSensor = new PointerSensor(element);
+const keyboardSensor = new KeyboardSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
-  getElements: () => [dragElement],
+  elements: () => [element],
   startPredicate: createPointerSensorStartPredicate(),
 });
 ```
@@ -29,7 +29,15 @@ class Draggable {
 }
 ```
 
-The constuctor accepts two arguments: `sensors` and `options`. The first argument is an array of sensors that the Draggable will use as inputs for moving the draggable elements around. The sensors are required and can't be changed after Draggable instantiation. The second argument is an optional [DraggableSettings](#settings) object, which you can also change later via [`updateSettings`](#updatesettings) method.
+### Parameters
+
+1. **sensors**
+
+   - An array of [sensors](/docs/sensor) that the Draggable will use as inputs for moving the provided elements around. The sensors are required and can't be changed after instantiation.
+
+2. **options**
+
+   - An optional [`DraggableSettings`](#settings) object, which you can also change later via [`updateSettings`](#updatesettings) method. You only need to provide the options you want to change, the rest will be left as default.
 
 ## Settings
 
@@ -46,7 +54,7 @@ The element the dragged elements should be appended to for the duration of the d
 Default is `null`.
 
 ::: info
-When using a custom container, the dragged element must be either `absolute` or `fixed` positioned. You can overcome this limitation by changing the element's CSS position to `absolute` or `fixed` just before the drag starts ([`getElements`](#getelements)) and then back to the original position after the drag ends ([`releaseElements`](#releaseelements)). Additionally you will need to offset the element's position to match the original position before the drag starts, e.g. by using `transform: translate(x, y)`.
+When using a custom container, the dragged element must be either `absolute` or `fixed` positioned. You can overcome this limitation by changing the element's CSS position to `absolute` or `fixed` just before the drag starts (e.g. using [`elements`](#elements)) and then back to the original position after the drag ends. Additionally you will need to offset the element's position to match the original position before the drag starts, e.g. by using `transform: translate(x, y)`.
 :::
 
 ### startPredicate
@@ -69,13 +77,13 @@ Return:
 
 Default is `() => true`.
 
-### getElements
+### elements
 
+<!-- prettier-ignore -->
 ```ts
-type getElements = (data: {
+type elements = (data: {
   draggable: Draggable;
-  sensor: Sensor;
-  startEvent: SensorStartEvent | SensorMoveEvent;
+  drag: DraggableDrag;
 }) => HTMLElement[] | null;
 ```
 
@@ -83,26 +91,12 @@ A function that should return all the elements you want to move during the drag.
 
 Default is `() => null`.
 
-### releaseElements
+### frozenStyles
 
 ```ts
-type releaseElements = (data: {
-  draggable: Draggable;
-  sensor: Sensor;
-  elements: HTMLElement[];
-}) => void;
-```
-
-A clean up function that should handle disposing the dragged elements, if necessary. This function is called when drag ends.
-
-Default is `() => {}`.
-
-### getFrozenProps
-
-```ts
-type getFrozenProps: (data: {
+type frozenStyles: (data: {
     draggable: Draggable;
-    sensor: S[number];
+    drag: DraggableDrag;
     item: DraggableDragItem;
     style: CSSStyleDeclaration;
   }) =>  string[] | {[key: string]: string} | null;
@@ -114,56 +108,107 @@ You can also return an object with key-value pairs where the key is the CSS prop
 
 By default nothing is frozen.
 
-### getStartPosition
+### applyPosition
 
 ```ts
-type getStartPosition = (data: {
+type applyPosition = (data: {
   draggable: Draggable;
-  sensor: Sensor;
+  drag: DraggableDrag;
   item: DraggableDragItem;
-}) => {
-  x: number;
-  y: number;
-};
-```
-
-A function that should return a dragged element's initial drag position. The value is stored to drag data and updated on sensor's events. Any container offsets, when the element is appended to drag container, are automatically added to the drag position. The drag position is provided to [`setPosition`](#setposition) function where you can apply the position to the element. In short, this function's return value is relative to your custom logic and only meaningful in the context of [`setPosition`](#setposition).
-
-Default is a function that stores the element's current computed transform and returns `{ x: 0, y: 0 }`.
-
-### setPosition
-
-```ts
-type setPosition = (data: {
-  draggable: Draggable;
-  sensor: Sensor;
-  phase: 'start' | 'move' | 'end';
-  item: DraggableDragItem;
-  x: number;
-  y: number;
+  phase: 'start' | 'start-align' | 'move' | 'align' | 'end' | 'end-align';
 }) => void;
 ```
 
-A function that should apply the current drag position (`x` and `y` coordinates) to the provided dragged element. Note that you can build custom behaviour here and e.g. update the element's "left" and "top" CSS properties instead of the default "transform".
+A function that should apply the current [`position`](/docs/draggable-drag-item#position) to a dragged [`element`](/docs/draggable-drag-item#element).
 
-Default is a function that applies the `x` and `y` coordinates to the element's transform, while respecting the element's original transform value.
+Default is a (very involved) function that applies the position, container offset, alignment offset and matrix transform offsets the element's transform property, while respecting the element's original transform and transform origin.
 
-### getPositionChange
+Also note that the `phase` argument is provided to the function to help you determine what phase of the drag process you are in:
+
+- `start`: Called when the drag starts.
+- `start-align`: Called during the start process after `start` phase if the element is moved within a drag container AND the drag container and the element container have different world matrices.
+- `move`: Called on every "move" event emitted by the currently tracked sensor during the drag.
+- `align`: Called when the element's position is realigned (via [`align`](#align) method).
+- `end`: Called when the drag ends.
+- `end-align`: Called after the `end` phase if the element was moved back to the original container from the drag container AND the element's position needs to be realigned to match the current client position.
+
+### positionModifiers
 
 ```ts
-type getPositionChange = (data: {
-  draggable: Draggable;
-  sensor: Sensor;
-  item: DraggableDragItem;
-  event: SensorMoveEvent;
-  prevEvent: SensorStartEvent | SensorMoveEvent;
-  startEvent: SensorStartEvent | SensorMoveEvent;
-}) => { x: number; y: number };
+type DraggableModifier = (
+  change: { x: number; y: number },
+  data: {
+    draggable: Draggable;
+    drag: DraggableDrag;
+    item: DraggableDragItem;
+    phase: 'start' | 'move' | 'end';
+  },
+) => { x: number; y: number };
+
+type positionModifiers = DraggableModifier[];
 ```
 
-A function that should return the position change of a dragged element. This function is called on every "move" event emitted by the currently tracked sensor during drag. Note that you can get creative here and build any kind of custom logic (e.g. snap to grid) you might need.
+An array of position modifier functions that should return the position change of a dragged element. Checkout the [Draggable Modifiers](/docs/draggable-modifiers) page for detailed information.
 
-Default is a function that returns the diff between (client) x and y coordinates of `event` and `prevEvent`.
+### onPrepareStart
+
+```ts
+type onPrepareStart = (drag: DraggableDrag, draggable: Draggable) => void;
+```
+
+A callback that is called at the end of drag start preparation phase. In this phase the draggable item instances are created and the initial position is computed. All the required DOM reading (for drag start) is also done in this phase.
+
+This callback is called immediately _after_ any `preparestart` events that are added via [`on`](#on) method.
+
+### onStart
+
+```ts
+type onStart = (drag: DraggableDrag, draggable: Draggable) => void;
+```
+
+A callback that is called at the end of drag start phase. This phase handles applying the initial positions to the dragged elements, setting up the frozen styles and any other initial setup that require writing to the DOM.
+
+This callback is called immediately _after_ any `start` events that are added via [`on`](#on) method.
+
+### onPrepareMove
+
+```ts
+type onPrepareMove = (drag: DraggableDrag, draggable: Draggable) => void;
+```
+
+A callback that is called at the end of drag move preparation phase. This phase handles computing the new position of the dragged elements based on the sensor data.
+
+This callback is called immediately _after_ any `preparemove` events that are added via [`on`](#on) method.
+
+### onMove
+
+```ts
+type onMove = (drag: DraggableDrag, draggable: Draggable) => void;
+```
+
+A callback that is called at the end of drag move phase. This phase applies the new positions to the dragged elements.
+
+This callback is called immediately _after_ any `move` events that are added via [`on`](#on) method.
+
+### onEnd
+
+```ts
+type onEnd = (drag: DraggableDrag, draggable: Draggable) => void;
+```
+
+A callback that is called at the very end of drag process after all the required cleanup has been done. You will still have access to the drag data when this callback is called, but it will be removed from the draggable instance right after this callback.
+
+This callback is called immediately _after_ any `end` events that are added via [`on`](#on) method.
+
+### onDestroy
+
+```ts
+type onDestroy = (draggable: Draggable) => void;
+```
+
+A callback that is called when the draggable is destroyed via [`destroy`](#destroy) method. This is the last callback that is called before the draggable instance is completely disposed. If there is an active drag when the draggable is destroyed, the [`onEnd`](#onend) callback will be called before this callback.
+
+This callback is called immediately _after_ any `destroy` events that are added via [`on`](#on) method.
 
 ## Properties
 
@@ -181,7 +226,7 @@ An array of all the sensors attached to the Draggable instance. Read-only.
 type settings = DraggableSettings;
 ```
 
-Current settings ([DraggableSettings](#settings)) of the Draggable instance. Read-only.
+Current [`settings`](#settings) of the Draggable instance. Read-only.
 
 ### drag
 
@@ -267,24 +312,22 @@ type stop = () => void;
 draggable.stop();
 ```
 
-Forcefully stops the draggable's current drag process.
+Forcibly stops the draggable's current drag process.
 
-### updatePosition
+### align
 
 ```ts
 // Type
-type updatePosition = (instant = false) => void;
+type align = (instant?: boolean) => void;
 
-// Usage: update asynchronously on the next animation frame (no extra reflows, jank-free).
-draggable.updatePosition();
+// Usage: update asynchronously on the next animation frame.
+draggable.align();
 
-// Usage: update instantly (causes extra reflows which may cause jank).
-draggable.updatePosition(true);
+// Usage: update instantly. May cause extra reflows (jank).
+draggable.align(true);
 ```
 
-Forcefully recomputes the positions and offsets of all dragged elements. This should be called if the positions/offsets of the dragged elements or any of their ancestors change during drag. Draggable is smart enough to call this automatically when scrolling occurs during dragging, but if you manually change dimensions or positions of any element that affects the position/size of a dragged element you should call this manually.
-
-By default the synchronization happens asynchronously in the next frame, but you can force it to happen instantly by providing `true` as the first argument. Note that there might be performance implications if you update instantly (in the form of extra reflows).
+Recomputes the positions of all dragged elements if they have drifted due to e.g. scrolling. This should be called if a dragged element's position goes out of sync inadvertently. Draggable is smart enough to call this automatically when scrolling occurs during dragging, but if you need to realign the elements manually you can call this method.
 
 ### updateSettings
 
@@ -298,7 +341,7 @@ draggable.updateSettings({
 });
 ```
 
-Updates the the draggable's settings. Accepts [DraggableSettings](#settings) as the first argument, only the options you provide will be updated.
+Updates the the draggable's settings. Accepts [`DraggableSettings`](#settings) as the first argument, only the options you provide will be updated. Note that you only need to provide the options you want to change, the rest will be left as default.
 
 ### use
 
@@ -324,7 +367,7 @@ Registers a plugin to the Draggable instance. Returns the Draggable instance so 
 
 The plugin system is designed to be used so that you register the plugins right away when you instantiate the Draggable. This way you'll get the correct typings to the variable holding the instance. Also, there's no mechanism to unregister a plugin because there really should be no need for that.
 
-Check out the [plugin guide](#creating-plugins) to learn how to build custom plugins.
+Check out the [plugin guide](/docs/draggable-plugins) to learn how to build custom plugins.
 
 ### destroy
 

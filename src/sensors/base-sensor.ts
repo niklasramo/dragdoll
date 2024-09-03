@@ -41,26 +41,26 @@ export class BaseSensor<E extends SensorEvents = SensorEvents> implements Sensor
   protected _start(data: E['start']) {
     if (this.isDestroyed || this.drag) return;
     (this as Writeable<this>).drag = this._createDragData(data);
-    this._emitter.emit(SensorEventType.start, data);
+    this._emitter.emit(SensorEventType.Start, data);
   }
 
   protected _move(data: E['move']) {
     if (!this.drag) return;
     this._updateDragData(data);
-    this._emitter.emit(SensorEventType.move, data);
+    this._emitter.emit(SensorEventType.Move, data);
   }
 
   protected _end(data: E['end']) {
     if (!this.drag) return;
     this._updateDragData(data);
-    this._emitter.emit(SensorEventType.end, data);
+    this._emitter.emit(SensorEventType.End, data);
     this._resetDragData();
   }
 
   protected _cancel(data: E['cancel']) {
     if (!this.drag) return;
     this._updateDragData(data);
-    this._emitter.emit(SensorEventType.cancel, data);
+    this._emitter.emit(SensorEventType.Cancel, data);
     this._resetDragData();
   }
 
@@ -79,7 +79,7 @@ export class BaseSensor<E extends SensorEvents = SensorEvents> implements Sensor
   cancel() {
     if (!this.drag) return;
     this._cancel({
-      type: SensorEventType.cancel,
+      type: SensorEventType.Cancel,
       x: this.drag.x,
       y: this.drag.y,
     } as E['cancel']);
@@ -89,8 +89,8 @@ export class BaseSensor<E extends SensorEvents = SensorEvents> implements Sensor
     if (this.isDestroyed) return;
     (this as Writeable<this>).isDestroyed = true;
     this.cancel();
-    this._emitter.emit(SensorEventType.destroy, {
-      type: SensorEventType.destroy,
+    this._emitter.emit(SensorEventType.Destroy, {
+      type: SensorEventType.Destroy,
     });
     this._emitter.off();
   }

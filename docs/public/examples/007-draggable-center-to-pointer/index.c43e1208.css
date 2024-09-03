@@ -1,0 +1,83 @@
+:root {
+  --bg-color: #161618;
+  --color: #fffff5db;
+  --theme-color: #f55;
+  --card-color: #000000b3;
+  --card-bgColor: var(--theme-color);
+  --card-color--focus: var(--card-color);
+  --card-bgColor--focus: #db55ff;
+  --card-color--drag: var(--card-color);
+  --card-bgColor--drag: #55ff9c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg-color);
+  color: var(--color);
+  background-image: linear-gradient(to right, #ffffff1a 1px, #0000 1px), linear-gradient(#ffffff1a 1px, #0000 1px);
+  background-size: 40px 40px;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+.card {
+  background-color: var(--card-bgColor);
+  color: var(--card-color);
+  border: 1.5px solid var(--bg-color);
+  border-radius: 7px;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  font-size: 30px;
+  display: flex;
+
+  & svg {
+    fill: var(--card-color);
+    width: 1em;
+    height: 1em;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover, &:focus-visible {
+      background-color: var(--card-bgColor--focus);
+      color: var(--card-color--focus);
+
+      & svg {
+        fill: var(--card-color--focus);
+      }
+    }
+
+    &:focus-visible {
+      outline-offset: 4px;
+      outline: 1px solid var(--card-bgColor--focus);
+    }
+  }
+
+  &.draggable {
+    cursor: grab;
+  }
+
+  &.dragging {
+    cursor: grabbing;
+    background-color: var(--card-bgColor--drag);
+    color: var(--card-color--drag);
+
+    & svg {
+      fill: var(--card-color--drag);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:focus-visible {
+        outline: 1px solid var(--card-bgColor--drag);
+      }
+    }
+  }
+}

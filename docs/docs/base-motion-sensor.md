@@ -2,7 +2,7 @@
 
 # BaseMotionSensor
 
-BaseMotionSensor is an extendable base class tailor-made for scenarios where you want to smoothly move an object, e.g. a car or a character in a 2D game, based on custom inputs. It extends [BaseSensor](/docs/base-sensor) and provides functionality for controlling the drag movement on every frame via protected `_speed` and `_direction` properties.
+BaseMotionSensor is an extendable base class tailor-made for scenarios where you want to smoothly move an object, e.g. a car or a character in a 2D game, based on custom inputs. It extends [`BaseSensor`](/docs/base-sensor) and provides functionality for controlling the drag movement on every frame via protected [`_speed`](#speed) and [`_direction`](#direction) properties.
 
 ## Example
 
@@ -95,7 +95,7 @@ customSensor.on('tick', () => console.log('tick'));
 
 // Use the sensor to move an element.
 const draggable = new Draggable([customSensor], {
-  getElements: () => [customSensor.element],
+  elements: () => [customSensor.element],
 });
 ```
 

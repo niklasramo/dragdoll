@@ -4,7 +4,7 @@ export default {
   base: '/dragdoll/',
   lang: 'en-US',
   title: 'DragDoll',
-  description: 'Modular and extensible TypeScript drag & drop system.',
+  description: 'Modular and extensible drag system.',
   appearance: true,
   head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/dragdoll-icon.svg' }]],
   markdown: {
@@ -99,6 +99,20 @@ function sidebarGuide() {
           items: [
             { text: 'DraggableDrag', link: '/docs/draggable-drag' },
             { text: 'DraggableDragItem', link: '/docs/draggable-drag-item' },
+          ],
+        },
+        {
+          text: 'Helpers',
+          link: '/docs/draggable-helpers',
+          collapsible: false,
+        },
+        {
+          text: 'Modifiers',
+          link: '/docs/draggable-modifiers',
+          collapsible: false,
+          items: [
+            { text: 'Containment', link: '/docs/draggable-containment-modifier' },
+            { text: 'Snap', link: '/docs/draggable-snap-modifier' },
           ],
         },
         {

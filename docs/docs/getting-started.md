@@ -19,7 +19,7 @@ $ npm install dragdoll eventti tikki mezr
       "eventti": "https://cdn.jsdelivr.net/npm/eventti@4.0.0/dist/eventti.js",
       "tikki": "https://cdn.jsdelivr.net/npm/tikki@3.0.1/dist/tikki.js",
       "mezr": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/index.js",
-      "dragdoll": "https://cdn.jsdelivr.net/npm/dragdoll@0.4.0/dist/dragdoll.js"
+      "dragdoll": "https://cdn.jsdelivr.net/npm/dragdoll@0.5.0/dist/dragdoll.js"
     }
   }
 </script>
@@ -41,7 +41,7 @@ import {
 
 // Let's assume that you have this element in DOM and you want to drag it
 // around.
-const element = document.querySelector('.draggable');
+const element = document.querySelector('.draggable') as HTMLElement;
 
 // First we need to instantiate a new PointerSensor for the element, which
 // listens to DOM events and emits drag events for us to listen to. This does
@@ -60,7 +60,7 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
   // elements that we want to move around based on the provided sensor's
   // events. In this case we just want to move the element which we are
   // monitoring.
-  getElements: () => [element],
+  elements: () => [element],
   // Start predicate is a function which determines when the dragging should
   // start. There's a really good ready-made start predicate available for
   // PointerSensor, which we are using here.

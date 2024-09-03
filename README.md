@@ -2,7 +2,7 @@
   <a id="dragdoll" href="#dragdoll" aria-hidden="true"><img src="https://niklasramo.github.io/dragdoll/dragdoll-logo.svg" alt="DragDoll" width="400" /></a>
 </h1>
 
-DragDoll is a modular and highly extensible drag & drop system written in TypeScript. It's originally based on [Muuri's](https://github.com/haltu/muuri) internal drag & drop system, but fully redesigned to be used as a general purpose drag & drop system.
+DragDoll is a modular and highly extensible drag system written in TypeScript. It's originally based on [Muuri's](https://github.com/haltu/muuri) internal drag system, but fully redesigned to be used as a general purpose drag system.
 
 📡 &nbsp; **Sweet Sensors**
 
@@ -12,13 +12,13 @@ A well documented and extendable Sensor system that normalizes any inputs into u
 
 A highly customizable and pluggable Draggable system with autoscrolling superpowers.
 
+🪄 &nbsp; **Magical Transforms**
+
+Transformed (2D) elements can be dragged normally, finally. Rotate, scale, skew and translate to your heart's content.
+
 🧘 &nbsp; **Blissful DX**
 
 Comes with strong types, smart defaults and prebaked solutions for common use cases.
-
-🎁 &nbsp; **Tiny and Modular**
-
-Weighs around 11kB gzipped all in all, but you can use only the bits and pieces you need.
 
 🍦 &nbsp; **Vanilla Flavour**
 

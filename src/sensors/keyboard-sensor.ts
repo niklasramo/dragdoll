@@ -5,6 +5,7 @@ import {
   SensorCancelEvent,
   SensorEndEvent,
   SensorDestroyEvent,
+  SensorEventType,
 } from './sensor.js';
 
 import { BaseSensor } from './base-sensor.js';
@@ -190,7 +191,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
       if (startPosition) {
         e.preventDefault();
         this._start({
-          type: 'start',
+          type: SensorEventType.Start,
           x: startPosition.x,
           y: startPosition.y,
           srcEvent: e,
@@ -204,7 +205,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
     if (cancelPosition) {
       e.preventDefault();
       this._cancel({
-        type: 'cancel',
+        type: SensorEventType.Cancel,
         x: cancelPosition.x,
         y: cancelPosition.y,
         srcEvent: e,
@@ -217,7 +218,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
     if (endPosition) {
       e.preventDefault();
       this._end({
-        type: 'end',
+        type: SensorEventType.End,
         x: endPosition.x,
         y: endPosition.y,
         srcEvent: e,
@@ -230,7 +231,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
     if (movePosition) {
       e.preventDefault();
       this._move({
-        type: 'move',
+        type: SensorEventType.Move,
         x: movePosition.x,
         y: movePosition.y,
         srcEvent: e,

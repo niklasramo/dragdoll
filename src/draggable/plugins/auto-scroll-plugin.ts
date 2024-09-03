@@ -1,6 +1,4 @@
-import { ticker, tickerReadPhase, tickerWritePhase } from '../../singletons/ticker.js';
-
-import { Draggable, DraggablePluginMap } from '../draggable.js';
+import { Draggable, DraggableEventType, DraggablePluginMap } from '../draggable.js';
 
 import { Sensor } from '../../sensors/sensor.js';
 
@@ -41,7 +39,7 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
       }
 
       // Fallback to the sensor's clientX/clientY values.
-      const e = drag && (drag.event || drag.startEvent);
+      const e = drag && (drag.moveEvent || drag.startEvent);
       AUTOSCROLL_POSITION.x = e ? e.x : 0;
       AUTOSCROLL_POSITION.y = e ? e.y : 0;
       return AUTOSCROLL_POSITION;
@@ -57,7 +55,7 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
 
       // Fallback to the sensor's clientX/clientY values and a static size of
       // 50x50px.
-      const e = drag && (drag.event || drag.startEvent);
+      const e = drag && (drag.moveEvent || drag.startEvent);
       AUTOSCROLL_CLIENT_RECT.width = e ? 50 : 0;
       AUTOSCROLL_CLIENT_RECT.height = e ? 50 : 0;
       AUTOSCROLL_CLIENT_RECT.x = e ? e.x - 25 : 0;
@@ -141,17 +139,6 @@ class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['events']
   get onStop() {
     return this._getSettings().onStop;
   }
-
-  onPrepareScrollEffect() {
-    const updateId = this._draggable['_updateId'];
-    ticker.off(tickerReadPhase, updateId);
-    ticker.off(tickerWritePhase, updateId);
-    this._draggable['_preparePositionUpdate']();
-  }
-
-  onApplyScrollEffect() {
-    this._draggable['_applyPositionUpdate']();
-  }
 }
 
 export interface DraggableAutoScrollSettings<S extends Sensor[], E extends S[number]['events']> {
@@ -184,14 +171,14 @@ export class DraggableAutoScroll<
     this.settings = this._parseSettings(options);
     this._autoScrollProxy = null;
 
-    draggable.on('start', () => {
+    draggable.on(DraggableEventType.Start, () => {
       if (!this._autoScrollProxy) {
         this._autoScrollProxy = new DraggableAutoScrollProxy(this, draggable);
         autoScroll.addItem(this._autoScrollProxy);
       }
     });
 
-    draggable.on('end', () => {
+    draggable.on(DraggableEventType.End, () => {
       if (this._autoScrollProxy) {
         autoScroll.removeItem(this._autoScrollProxy);
         this._autoScrollProxy = null;

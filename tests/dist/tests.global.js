@@ -2,10 +2,7 @@
 (() => {
   var __defProp = Object.defineProperty;
   var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __publicField = (obj, key, value) => {
-    __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-    return value;
-  };
+  var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 
   // node_modules/chai/chai.js
   var __defProp2 = Object.defineProperty;
@@ -44,6 +41,7 @@
     inspect: () => inspect2,
     isNaN: () => isNaN2,
     isProxyEnabled: () => isProxyEnabled,
+    isRegExp: () => isRegExp2,
     objDisplay: () => objDisplay,
     overwriteChainableMethod: () => overwriteChainableMethod,
     overwriteMethod: () => overwriteMethod,
@@ -61,14 +59,22 @@
     getConstructorName: () => getConstructorName,
     getMessage: () => getMessage
   });
+  function isErrorInstance(obj) {
+    return obj instanceof Error || Object.prototype.toString.call(obj) === "[object Error]";
+  }
+  __name(isErrorInstance, "isErrorInstance");
+  function isRegExp(obj) {
+    return Object.prototype.toString.call(obj) === "[object RegExp]";
+  }
+  __name(isRegExp, "isRegExp");
   function compatibleInstance(thrown, errorLike) {
-    return errorLike instanceof Error && thrown === errorLike;
+    return isErrorInstance(errorLike) && thrown === errorLike;
   }
   __name(compatibleInstance, "compatibleInstance");
   function compatibleConstructor(thrown, errorLike) {
-    if (errorLike instanceof Error) {
+    if (isErrorInstance(errorLike)) {
       return thrown.constructor === errorLike.constructor || thrown instanceof errorLike.constructor;
-    } else if (errorLike.prototype instanceof Error || errorLike === Error) {
+    } else if ((typeof errorLike === "object" || typeof errorLike === "function") && errorLike.prototype) {
       return thrown.constructor === errorLike || thrown instanceof errorLike;
     }
     return false;
@@ -76,7 +82,7 @@
   __name(compatibleConstructor, "compatibleConstructor");
   function compatibleMessage(thrown, errMatcher) {
     const comparisonString = typeof thrown === "string" ? thrown : thrown.message;
-    if (errMatcher instanceof RegExp) {
+    if (isRegExp(errMatcher)) {
       return errMatcher.test(comparisonString);
     } else if (typeof errMatcher === "string") {
       return comparisonString.indexOf(errMatcher) !== -1;
@@ -86,7 +92,7 @@
   __name(compatibleMessage, "compatibleMessage");
   function getConstructorName(errorLike) {
     let constructorName = errorLike;
-    if (errorLike instanceof Error) {
+    if (isErrorInstance(errorLike)) {
       constructorName = errorLike.constructor.name;
     } else if (typeof errorLike === "function") {
       constructorName = errorLike.name;
@@ -755,8 +761,8 @@
      *
      *     chai.config.includeStack = true;  // enable stack on error
      *
-     * @param {Boolean}
-     * @api public
+     * @param {boolean}
+     * @public
      */
     includeStack: false,
     /**
@@ -768,8 +774,8 @@
      * will be true when the assertion has requested a diff
      * be shown.
      *
-     * @param {Boolean}
-     * @api public
+     * @param {boolean}
+     * @public
      */
     showDiff: true,
     /**
@@ -788,8 +794,8 @@
      *
      *     chai.config.truncateThreshold = 0;  // disable truncating
      *
-     * @param {Number}
-     * @api public
+     * @param {number}
+     * @public
      */
     truncateThreshold: 40,
     /**
@@ -806,8 +812,8 @@
      * This feature is automatically disabled regardless of this config value
      * in environments that don't support proxies.
      *
-     * @param {Boolean}
-     * @api public
+     * @param {boolean}
+     * @public
      */
     useProxy: true,
     /**
@@ -825,7 +831,7 @@
      *     chai.config.proxyExcludedKeys = ['then', 'inspect'];
      *
      * @param {Array}
-     * @api public
+     * @public
      */
     proxyExcludedKeys: ["then", "catch", "inspect", "toJSON"],
     /**
@@ -837,18 +843,18 @@
      *
      *     // use a custom comparator
      *     chai.config.deepEqual = (expected, actual) => {
-     *        return chai.util.eql(expected, actual, {
-     *           comparator: (expected, actual) => {
-     *              // for non number comparison, use the default behavior
-     *              if(typeof expected !== 'number') return null;
-     *              // allow a difference of 10 between compared numbers
-     *              return typeof actual === 'number' && Math.abs(actual - expected) < 10
-     *           }
-     *        })
+     *         return chai.util.eql(expected, actual, {
+     *             comparator: (expected, actual) => {
+     *                 // for non number comparison, use the default behavior
+     *                 if(typeof expected !== 'number') return null;
+     *                 // allow a difference of 10 between compared numbers
+     *                 return typeof actual === 'number' && Math.abs(actual - expected) < 10
+     *             }
+     *         })
      *     };
      *
      * @param {Function}
-     * @api public
+     * @public
      */
     deepEqual: null
   };
@@ -1713,6 +1719,10 @@
     return fn.name;
   }
   __name(getName, "getName");
+  function isRegExp2(obj) {
+    return Object.prototype.toString.call(obj) === "[object RegExp]";
+  }
+  __name(isRegExp2, "isRegExp");
   var { flag: flag2 } = utils_exports;
   [
     "to",
@@ -2561,14 +2571,16 @@
       flag2(this, "message", msg);
     var obj = flag2(this, "object"), ssfi = flag2(this, "ssfi"), flagMsg = flag2(this, "message"), negate = flag2(this, "negate") || false;
     new Assertion(obj, flagMsg, ssfi, true).is.a("function");
-    if (errorLike instanceof RegExp || typeof errorLike === "string") {
+    if (isRegExp2(errorLike) || typeof errorLike === "string") {
       errMsgMatcher = errorLike;
       errorLike = null;
     }
-    var caughtErr;
+    let caughtErr;
+    let errorWasThrown = false;
     try {
       obj();
     } catch (err) {
+      errorWasThrown = true;
       caughtErr = err;
     }
     var everyArgIsUndefined = errorLike === void 0 && errMsgMatcher === void 0;
@@ -2582,12 +2594,23 @@
       } else if (errorLike) {
         errorLikeString = check_error_exports.getConstructorName(errorLike);
       }
+      let actual = caughtErr;
+      if (caughtErr instanceof Error) {
+        actual = caughtErr.toString();
+      } else if (typeof caughtErr === "string") {
+        actual = caughtErr;
+      } else if (caughtErr && (typeof caughtErr === "object" || typeof caughtErr === "function")) {
+        try {
+          actual = check_error_exports.getConstructorName(caughtErr);
+        } catch (_err) {
+        }
+      }
       this.assert(
-        caughtErr,
+        errorWasThrown,
         "expected #{this} to throw " + errorLikeString,
         "expected #{this} to not throw an error but #{act} was thrown",
         errorLike && errorLike.toString(),
-        caughtErr instanceof Error ? caughtErr.toString() : typeof caughtErr === "string" ? caughtErr : caughtErr && check_error_exports.getConstructorName(caughtErr)
+        actual
       );
     }
     if (errorLike && caughtErr) {
@@ -2624,7 +2647,7 @@
     }
     if (caughtErr && errMsgMatcher !== void 0 && errMsgMatcher !== null) {
       var placeholder = "including";
-      if (errMsgMatcher instanceof RegExp) {
+      if (isRegExp2(errMsgMatcher)) {
         placeholder = "matching";
       }
       var isCompatibleMessage = check_error_exports.compatibleMessage(caughtErr, errMsgMatcher);
@@ -3024,8 +3047,8 @@
         operator
       }, should2.fail);
     };
-    should2.equal = function(val1, val2, msg) {
-      new Assertion(val1, msg).to.equal(val2);
+    should2.equal = function(actual, expected, message) {
+      new Assertion(actual, message).to.equal(expected);
     };
     should2.Throw = function(fn, errt, errs, msg) {
       new Assertion(fn, msg).to.Throw(errt, errs);
@@ -3034,8 +3057,8 @@
       new Assertion(val, msg).to.exist;
     };
     should2.not = {};
-    should2.not.equal = function(val1, val2, msg) {
-      new Assertion(val1, msg).to.not.equal(val2);
+    should2.not.equal = function(actual, expected, msg) {
+      new Assertion(actual, msg).to.not.equal(expected);
     };
     should2.not.Throw = function(fn, errt, errs, msg) {
       new Assertion(fn, msg).to.not.Throw(errt, errs);
@@ -3144,8 +3167,8 @@
   assert.isNaN = function(val, msg) {
     new Assertion(val, msg, assert.isNaN, true).to.be.NaN;
   };
-  assert.isNotNaN = function(val, msg) {
-    new Assertion(val, msg, assert.isNotNaN, true).not.to.be.NaN;
+  assert.isNotNaN = function(value, message) {
+    new Assertion(value, message, assert.isNotNaN, true).not.to.be.NaN;
   };
   assert.exists = function(val, msg) {
     new Assertion(val, msg, assert.exists, true).to.exist;
@@ -3159,11 +3182,11 @@
   assert.isDefined = function(val, msg) {
     new Assertion(val, msg, assert.isDefined, true).to.not.equal(void 0);
   };
-  assert.isCallable = function(val, msg) {
-    new Assertion(val, msg, assert.isCallable, true).is.callable;
+  assert.isCallable = function(value, message) {
+    new Assertion(value, message, assert.isCallable, true).is.callable;
   };
-  assert.isNotCallable = function(val, msg) {
-    new Assertion(val, msg, assert.isNotCallable, true).is.not.callable;
+  assert.isNotCallable = function(value, message) {
+    new Assertion(value, message, assert.isNotCallable, true).is.not.callable;
   };
   assert.isObject = function(val, msg) {
     new Assertion(val, msg, assert.isObject, true).to.be.a("object");
@@ -3201,8 +3224,8 @@
   assert.typeOf = function(val, type3, msg) {
     new Assertion(val, msg, assert.typeOf, true).to.be.a(type3);
   };
-  assert.notTypeOf = function(val, type3, msg) {
-    new Assertion(val, msg, assert.notTypeOf, true).to.not.be.a(type3);
+  assert.notTypeOf = function(value, type3, message) {
+    new Assertion(value, message, assert.notTypeOf, true).to.not.be.a(type3);
   };
   assert.instanceOf = function(val, type3, msg) {
     new Assertion(val, msg, assert.instanceOf, true).to.be.instanceOf(type3);
@@ -3347,12 +3370,12 @@
     var assertErr = new Assertion(fn, msg, assert.throws, true).to.throw(errorLike, errMsgMatcher);
     return flag(assertErr, "object");
   };
-  assert.doesNotThrow = function(fn, errorLike, errMsgMatcher, msg) {
+  assert.doesNotThrow = function(fn, errorLike, errMsgMatcher, message) {
     if ("string" === typeof errorLike || errorLike instanceof RegExp) {
       errMsgMatcher = errorLike;
       errorLike = null;
     }
-    new Assertion(fn, msg, assert.doesNotThrow, true).to.not.throw(errorLike, errMsgMatcher);
+    new Assertion(fn, message, assert.doesNotThrow, true).to.not.throw(errorLike, errMsgMatcher);
   };
   assert.operator = function(val, operator, val2, msg) {
     var ok;
@@ -3636,11 +3659,11 @@
 
   // src/sensors/sensor.ts
   var SensorEventType = {
-    start: "start",
-    move: "move",
-    cancel: "cancel",
-    end: "end",
-    destroy: "destroy"
+    Start: "start",
+    Move: "move",
+    Cancel: "cancel",
+    End: "end",
+    Destroy: "destroy"
   };
 
   // node_modules/eventti/dist/index.js
@@ -3654,8 +3677,7 @@
       let t = this._events.get(n);
       if (t) {
         let { idMap: e } = t;
-        if (e.size)
-          return t.emitList = t.emitList || [...e.values()];
+        if (e.size) return t.emitList = t.emitList || [...e.values()];
       }
       return null;
     }
@@ -3663,19 +3685,18 @@
       let { _events: s } = this, i = s.get(n);
       i || (i = { idMap: /* @__PURE__ */ new Map(), emitList: null }, s.set(n, i));
       let { idMap: d, emitList: o2 } = i;
-      if (e = e === void 0 ? this.getId(t) : e, d.has(e))
-        switch (this.dedupe) {
-          case r.THROW:
-            throw new Error("Eventti: duplicate listener id!");
-          case r.IGNORE:
-            return e;
-          case r.UPDATE: {
-            i.emitList = null;
-            break;
-          }
-          default:
-            d.delete(e), i.emitList = null;
+      if (e = e === void 0 ? this.getId(t) : e, d.has(e)) switch (this.dedupe) {
+        case r.THROW:
+          throw new Error("Eventti: duplicate listener id!");
+        case r.IGNORE:
+          return e;
+        case r.UPDATE: {
+          i.emitList = null;
+          break;
         }
+        default:
+          d.delete(e), i.emitList = null;
+      }
       return d.set(e, t), o2?.push(t), e;
     }
     once(n, t, e) {
@@ -3698,23 +3719,17 @@
     }
     emit(n, ...t) {
       let e = this._getListeners(n);
-      if (!e)
-        return;
+      if (!e) return;
       let { length: s } = e;
-      if (t.length)
-        if (s === 1)
-          e[0](...t);
-        else {
-          let i = 0;
-          for (; i < s; i++)
-            e[i](...t);
-        }
-      else if (s === 1)
-        e[0]();
+      if (t.length) if (s === 1) e[0](...t);
       else {
         let i = 0;
-        for (; i < s; i++)
-          e[i]();
+        for (; i < s; i++) e[i](...t);
+      }
+      else if (s === 1) e[0]();
+      else {
+        let i = 0;
+        for (; i < s; i++) e[i]();
       }
     }
     listenerCount(n) {
@@ -3742,8 +3757,7 @@
       };
     }
     _updateDragData(data) {
-      if (!this.drag)
-        return;
+      if (!this.drag) return;
       this.drag.x = data.x;
       this.drag.y = data.y;
     }
@@ -3751,29 +3765,25 @@
       this.drag = null;
     }
     _start(data) {
-      if (this.isDestroyed || this.drag)
-        return;
+      if (this.isDestroyed || this.drag) return;
       this.drag = this._createDragData(data);
-      this._emitter.emit(SensorEventType.start, data);
+      this._emitter.emit(SensorEventType.Start, data);
     }
     _move(data) {
-      if (!this.drag)
-        return;
+      if (!this.drag) return;
       this._updateDragData(data);
-      this._emitter.emit(SensorEventType.move, data);
+      this._emitter.emit(SensorEventType.Move, data);
     }
     _end(data) {
-      if (!this.drag)
-        return;
+      if (!this.drag) return;
       this._updateDragData(data);
-      this._emitter.emit(SensorEventType.end, data);
+      this._emitter.emit(SensorEventType.End, data);
       this._resetDragData();
     }
     _cancel(data) {
-      if (!this.drag)
-        return;
+      if (!this.drag) return;
       this._updateDragData(data);
-      this._emitter.emit(SensorEventType.cancel, data);
+      this._emitter.emit(SensorEventType.Cancel, data);
       this._resetDragData();
     }
     on(type3, listener, listenerId) {
@@ -3783,21 +3793,19 @@
       this._emitter.off(type3, listenerId);
     }
     cancel() {
-      if (!this.drag)
-        return;
+      if (!this.drag) return;
       this._cancel({
-        type: SensorEventType.cancel,
+        type: SensorEventType.Cancel,
         x: this.drag.x,
         y: this.drag.y
       });
     }
     destroy() {
-      if (this.isDestroyed)
-        return;
+      if (this.isDestroyed) return;
       this.isDestroyed = true;
       this.cancel();
-      this._emitter.emit(SensorEventType.destroy, {
-        type: SensorEventType.destroy
+      this._emitter.emit(SensorEventType.Destroy, {
+        type: SensorEventType.Destroy
       });
       this._emitter.off();
     }
@@ -3843,32 +3851,26 @@
       return this._emitter.listenerCount(e);
     }
     _assertEmptyQueue() {
-      if (this._queue.length)
-        throw new Error("Ticker: Can't tick before the previous tick has finished!");
+      if (this._queue.length) throw new Error("Ticker: Can't tick before the previous tick has finished!");
     }
     _fillQueue() {
       let e = this._queue, t = this._phases, r2 = this._getListeners, s = 0, a2 = t.length, n;
-      for (; s < a2; s++)
-        n = r2(t[s]), n && e.push(n);
+      for (; s < a2; s++) n = r2(t[s]), n && e.push(n);
       return e;
     }
     _processQueue(...e) {
       let t = this._queue, r2 = t.length;
-      if (!r2)
-        return;
+      if (!r2) return;
       let s = 0, a2 = 0, n, c;
-      for (; s < r2; s++)
-        for (n = t[s], a2 = 0, c = n.length; a2 < c; a2++)
-          n[a2](...e);
+      for (; s < r2; s++) for (n = t[s], a2 = 0, c = n.length; a2 < c; a2++) n[a2](...e);
       t.length = 0;
     }
   };
   function u(i = 60) {
-    if (typeof requestAnimationFrame == "function" && typeof cancelAnimationFrame == "function")
-      return (e) => {
-        let t = requestAnimationFrame(e);
-        return () => cancelAnimationFrame(t);
-      };
+    if (typeof requestAnimationFrame == "function" && typeof cancelAnimationFrame == "function") return (e) => {
+      let t = requestAnimationFrame(e);
+      return () => cancelAnimationFrame(t);
+    };
     {
       let e = 1e3 / i, t = typeof performance > "u" ? () => Date.now() : () => performance.now();
       return (r2) => {
@@ -3932,9 +3934,13 @@
   };
 
   // src/singletons/ticker.ts
-  var tickerReadPhase = Symbol();
-  var tickerWritePhase = Symbol();
-  var ticker = new l({ phases: [tickerReadPhase, tickerWritePhase] });
+  var tickerPhases = {
+    read: Symbol(),
+    write: Symbol()
+  };
+  var ticker = new l({
+    phases: [tickerPhases.read, tickerPhases.write]
+  });
 
   // src/utils/get-pointer-event-data.ts
   function getPointerEventData(e, id) {
@@ -3960,10 +3966,8 @@
 
   // src/utils/get-pointer-id.ts
   function getPointerId(e) {
-    if ("pointerId" in e)
-      return e.pointerId;
-    if ("changedTouches" in e)
-      return e.changedTouches[0] ? e.changedTouches[0].identifier : null;
+    if ("pointerId" in e) return e.pointerId;
+    if ("changedTouches" in e) return e.changedTouches[0] ? e.changedTouches[0].identifier : null;
     return -1;
   }
 
@@ -4063,16 +4067,12 @@
      * Listener for start event.
      */
     _onStart(e) {
-      if (this.isDestroyed || this.drag)
-        return;
-      if (!this._startPredicate(e))
-        return;
+      if (this.isDestroyed || this.drag) return;
+      if (!this._startPredicate(e)) return;
       const pointerId = getPointerId(e);
-      if (pointerId === null)
-        return;
+      if (pointerId === null) return;
       const pointerEventData = getPointerEventData(e, pointerId);
-      if (pointerEventData === null)
-        return;
+      if (pointerEventData === null) return;
       const dragData = {
         pointerId,
         pointerType: getPointerType(e),
@@ -4082,7 +4082,7 @@
       this.drag = dragData;
       const eventData = {
         ...dragData,
-        type: SensorEventType.start,
+        type: SensorEventType.Start,
         srcEvent: e,
         target: pointerEventData.target
       };
@@ -4095,15 +4095,13 @@
      * Listener for move event.
      */
     _onMove(e) {
-      if (!this.drag)
-        return;
+      if (!this.drag) return;
       const pointerEventData = this._getTrackedPointerEventData(e);
-      if (!pointerEventData)
-        return;
+      if (!pointerEventData) return;
       this.drag.x = pointerEventData.clientX;
       this.drag.y = pointerEventData.clientY;
       const eventData = {
-        type: SensorEventType.move,
+        type: SensorEventType.Move,
         srcEvent: e,
         target: pointerEventData.target,
         ...this.drag
@@ -4114,15 +4112,13 @@
      * Listener for cancel event.
      */
     _onCancel(e) {
-      if (!this.drag)
-        return;
+      if (!this.drag) return;
       const pointerEventData = this._getTrackedPointerEventData(e);
-      if (!pointerEventData)
-        return;
+      if (!pointerEventData) return;
       this.drag.x = pointerEventData.clientX;
       this.drag.y = pointerEventData.clientY;
       const eventData = {
-        type: SensorEventType.cancel,
+        type: SensorEventType.Cancel,
         srcEvent: e,
         target: pointerEventData.target,
         ...this.drag
@@ -4134,15 +4130,13 @@
      * Listener for end event.
      */
     _onEnd(e) {
-      if (!this.drag)
-        return;
+      if (!this.drag) return;
       const pointerEventData = this._getTrackedPointerEventData(e);
-      if (!pointerEventData)
-        return;
+      if (!pointerEventData) return;
       this.drag.x = pointerEventData.clientX;
       this.drag.y = pointerEventData.clientY;
       const eventData = {
-        type: SensorEventType.end,
+        type: SensorEventType.End,
         srcEvent: e,
         target: pointerEventData.target,
         ...this.drag
@@ -4154,8 +4148,7 @@
      * Bind window event listeners for move/end/cancel.
      */
     _bindWindowListeners() {
-      if (this._areWindowListenersBound)
-        return;
+      if (this._areWindowListenersBound) return;
       const { move, end, cancel } = SOURCE_EVENTS[this._sourceEvents];
       window.addEventListener(move, this._onMove, this._listenerOptions);
       window.addEventListener(end, this._onEnd, this._listenerOptions);
@@ -4189,10 +4182,9 @@
      * Forcefully cancel the drag process.
      */
     cancel() {
-      if (!this.drag)
-        return;
+      if (!this.drag) return;
       const eventData = {
-        type: SensorEventType.cancel,
+        type: SensorEventType.Cancel,
         srcEvent: null,
         target: null,
         ...this.drag
@@ -4204,8 +4196,7 @@
      * Update the instance's settings.
      */
     updateSettings(options) {
-      if (this.isDestroyed)
-        return;
+      if (this.isDestroyed) return;
       const { listenerOptions, sourceEvents, startPredicate } = options;
       const nextSourceEvents = parseSourceEvents(sourceEvents);
       const nextListenerOptions = parseListenerOptions(listenerOptions);
@@ -4249,12 +4240,11 @@
      * Destroy the instance and unbind all drag event listeners.
      */
     destroy() {
-      if (this.isDestroyed)
-        return;
+      if (this.isDestroyed) return;
       this.isDestroyed = true;
       this.cancel();
-      this._emitter.emit(SensorEventType.destroy, {
-        type: SensorEventType.destroy
+      this._emitter.emit(SensorEventType.Destroy, {
+        type: SensorEventType.Destroy
       });
       this._emitter.off();
       this.element.removeEventListener(
@@ -4280,8 +4270,7 @@
       return null;
     },
     movePredicate: (e, sensor) => {
-      if (!sensor.drag)
-        return null;
+      if (!sensor.drag) return null;
       switch (e.key) {
         case "ArrowLeft": {
           return {
@@ -4374,7 +4363,7 @@
         if (startPosition) {
           e.preventDefault();
           this._start({
-            type: "start",
+            type: SensorEventType.Start,
             x: startPosition.x,
             y: startPosition.y,
             srcEvent: e
@@ -4386,7 +4375,7 @@
       if (cancelPosition) {
         e.preventDefault();
         this._cancel({
-          type: "cancel",
+          type: SensorEventType.Cancel,
           x: cancelPosition.x,
           y: cancelPosition.y,
           srcEvent: e
@@ -4397,7 +4386,7 @@
       if (endPosition) {
         e.preventDefault();
         this._end({
-          type: "end",
+          type: SensorEventType.End,
           x: endPosition.x,
           y: endPosition.y,
           srcEvent: e
@@ -4408,7 +4397,7 @@
       if (movePosition) {
         e.preventDefault();
         this._move({
-          type: "move",
+          type: SensorEventType.Move,
           x: movePosition.x,
           y: movePosition.y,
           srcEvent: e
@@ -4464,8 +4453,7 @@
       }
     }
     destroy() {
-      if (this.isDestroyed)
-        return;
+      if (this.isDestroyed) return;
       super.destroy();
       document.removeEventListener("keydown", this._onKeyDown);
       if (this._cancelOnBlur) {
@@ -4477,24 +4465,63 @@
     }
   };
 
+  // src/utils/object-cache.ts
+  var ObjectCache = class {
+    constructor() {
+      this.cache = /* @__PURE__ */ new Map();
+      this.validation = /* @__PURE__ */ new Map();
+      this.cache = /* @__PURE__ */ new Map();
+      this.validation = /* @__PURE__ */ new Map();
+    }
+    set(key, value) {
+      this.cache.set(key, value);
+      this.validation.set(key, void 0);
+    }
+    get(key) {
+      return this.cache.get(key);
+    }
+    has(key) {
+      return this.cache.has(key);
+    }
+    delete(key) {
+      this.cache.delete(key);
+      this.validation.delete(key);
+    }
+    isValid(key) {
+      return this.validation.has(key);
+    }
+    invalidate(key) {
+      if (key === void 0) {
+        this.validation.clear();
+      } else {
+        this.validation.delete(key);
+      }
+    }
+    clear() {
+      this.cache.clear();
+      this.validation.clear();
+    }
+  };
+
   // src/draggable/draggable-drag.ts
   var DraggableDrag = class {
     constructor(sensor, startEvent) {
       this.sensor = sensor;
-      this.isEnded = false;
-      this.event = startEvent;
-      this.prevEvent = startEvent;
       this.startEvent = startEvent;
+      this.prevMoveEvent = startEvent;
+      this.moveEvent = startEvent;
       this.endEvent = null;
       this.items = [];
+      this.isEnded = false;
+      this._matrixCache = new ObjectCache();
+      this._clientOffsetCache = new ObjectCache();
     }
   };
 
   // node_modules/mezr/dist/esm/utils/getStyle.js
   var STYLE_DECLARATION_CACHE = /* @__PURE__ */ new WeakMap();
   function getStyle(e, t) {
-    if (t)
-      return window.getComputedStyle(e, t);
+    if (t) return window.getComputedStyle(e, t);
     let C = STYLE_DECLARATION_CACHE.get(e)?.deref();
     return C || (C = window.getComputedStyle(e, null), STYLE_DECLARATION_CACHE.set(e, new WeakRef(C))), C;
   }
@@ -4531,30 +4558,22 @@
     const t = getStyle(n);
     if (!IS_SAFARI2) {
       const { filter: n2 } = t;
-      if (n2 && "none" !== n2)
-        return true;
+      if (n2 && "none" !== n2) return true;
       const { backdropFilter: e2 } = t;
-      if (e2 && "none" !== e2)
-        return true;
+      if (e2 && "none" !== e2) return true;
       const { willChange: i2 } = t;
-      if (i2 && (i2.indexOf("filter") > -1 || i2.indexOf("backdrop-filter") > -1))
-        return true;
+      if (i2 && (i2.indexOf("filter") > -1 || i2.indexOf("backdrop-filter") > -1)) return true;
     }
     const e = isBlockElement(n);
-    if (!e)
-      return e;
+    if (!e) return e;
     const { transform: i } = t;
-    if (i && "none" !== i)
-      return true;
+    if (i && "none" !== i) return true;
     const { perspective: r2 } = t;
-    if (r2 && "none" !== r2)
-      return true;
+    if (r2 && "none" !== r2) return true;
     const { contentVisibility: o2 } = t;
-    if (o2 && "auto" === o2)
-      return true;
+    if (o2 && "auto" === o2) return true;
     const { contain: f } = t;
-    if (f && ("strict" === f || "content" === f || f.indexOf("paint") > -1 || f.indexOf("layout") > -1))
-      return true;
+    if (f && ("strict" === f || "content" === f || f.indexOf("paint") > -1 || f.indexOf("layout") > -1)) return true;
     const { willChange: c } = t;
     return !(!c || !(c.indexOf("transform") > -1 || c.indexOf("perspective") > -1 || c.indexOf("contain") > -1)) || !!(IS_SAFARI2 && c && c.indexOf("filter") > -1);
   }
@@ -4571,8 +4590,7 @@
 
   // node_modules/mezr/dist/esm/getContainingBlock.js
   function getContainingBlock(e, t = {}) {
-    if (isDocumentElement(e))
-      return e.ownerDocument.defaultView;
+    if (isDocumentElement(e)) return e.ownerDocument.defaultView;
     const n = t.position || getStyle(e).position, { skipDisplayNone: i, container: o2 } = t;
     switch (n) {
       case "static":
@@ -4582,10 +4600,8 @@
         let t2 = o2 || e.parentElement;
         for (; t2; ) {
           const e2 = isBlockElement(t2);
-          if (e2)
-            return t2;
-          if (null === e2 && !i)
-            return null;
+          if (e2) return t2;
+          if (null === e2 && !i) return null;
           t2 = t2.parentElement;
         }
         return e.ownerDocument.documentElement;
@@ -4596,10 +4612,8 @@
         let l2 = o2 || e.parentElement;
         for (; l2; ) {
           const e2 = t2 ? isContainingBlockForFixedElement(l2) : isContainingBlockForAbsoluteElement(l2);
-          if (true === e2)
-            return l2;
-          if (null === e2 && !i)
-            return null;
+          if (true === e2) return l2;
+          if (null === e2 && !i) return null;
           l2 = l2.parentElement;
         }
         return e.ownerDocument.defaultView;
@@ -4621,8 +4635,7 @@
 
   // node_modules/mezr/dist/esm/utils/getDistanceBetweenRects.js
   function getDistanceBetweenRects(t, e) {
-    if (isIntersecting(t, e))
-      return null;
+    if (isIntersecting(t, e)) return null;
     const n = t.left + t.width, i = t.top + t.height, o2 = e.left + e.width, s = e.top + e.height;
     return n <= e.left ? i <= e.top ? getDistanceBetweenPoints(n, i, e.left, e.top) : t.top >= s ? getDistanceBetweenPoints(n, t.top, e.left, s) : e.left - n : t.left >= o2 ? i <= e.top ? getDistanceBetweenPoints(t.left, i, o2, e.top) : t.top >= s ? getDistanceBetweenPoints(t.left, t.top, o2, s) : t.left - o2 : i <= e.top ? e.top - i : t.top - s;
   }
@@ -4656,20 +4669,17 @@
     return e + l2;
   }
   function getPreciseScrollbarSize(t, e, n) {
-    if (n <= 0)
-      return 0;
+    if (n <= 0) return 0;
     if (IS_CHROMIUM) {
       const n2 = getStyle(t, "::-webkit-scrollbar"), l2 = "x" === e ? n2.height : n2.width, i = parseFloat(l2);
-      if (!Number.isNaN(i) && !Number.isInteger(i))
-        return getSubpixelScrollbarSize(l2, i);
+      if (!Number.isNaN(i) && !Number.isInteger(i)) return getSubpixelScrollbarSize(l2, i);
     }
     return n;
   }
 
   // node_modules/mezr/dist/esm/utils/getWindowWidth.js
   function getWindowWidth(e, r2 = false) {
-    if (r2)
-      return e.innerWidth;
+    if (r2) return e.innerWidth;
     const { innerWidth: t, document: i } = e, { documentElement: n } = i, { clientWidth: c } = n;
     return t - getPreciseScrollbarSize(n, "y", t - c);
   }
@@ -4682,8 +4692,7 @@
   // node_modules/mezr/dist/esm/utils/getElementWidth.js
   function getElementWidth(t, e = BOX_EDGE.border) {
     let { width: r2 } = t.getBoundingClientRect();
-    if (e === BOX_EDGE.border)
-      return r2;
+    if (e === BOX_EDGE.border) return r2;
     const o2 = getStyle(t);
     return e === BOX_EDGE.margin ? (r2 += Math.max(0, parseFloat(o2.marginLeft) || 0), r2 += Math.max(0, parseFloat(o2.marginRight) || 0), r2) : (r2 -= parseFloat(o2.borderLeftWidth) || 0, r2 -= parseFloat(o2.borderRightWidth) || 0, e === BOX_EDGE.scrollbar ? r2 : (!isDocumentElement(t) && SCROLLABLE_OVERFLOWS.has(o2.overflowY) && (r2 -= getPreciseScrollbarSize(t, "y", Math.round(r2) - t.clientWidth)), e === BOX_EDGE.padding || (r2 -= parseFloat(o2.paddingLeft) || 0, r2 -= parseFloat(o2.paddingRight) || 0), r2));
   }
@@ -4695,8 +4704,7 @@
 
   // node_modules/mezr/dist/esm/utils/getWindowHeight.js
   function getWindowHeight(e, r2 = false) {
-    if (r2)
-      return e.innerHeight;
+    if (r2) return e.innerHeight;
     const { innerHeight: t, document: i } = e, { documentElement: n } = i, { clientHeight: c } = n;
     return t - getPreciseScrollbarSize(n, "x", t - c);
   }
@@ -4709,8 +4717,7 @@
   // node_modules/mezr/dist/esm/utils/getElementHeight.js
   function getElementHeight(t, e = BOX_EDGE.border) {
     let { height: r2 } = t.getBoundingClientRect();
-    if (e === BOX_EDGE.border)
-      return r2;
+    if (e === BOX_EDGE.border) return r2;
     const o2 = getStyle(t);
     return e === BOX_EDGE.margin ? (r2 += Math.max(0, parseFloat(o2.marginTop) || 0), r2 += Math.max(0, parseFloat(o2.marginBottom) || 0), r2) : (r2 -= parseFloat(o2.borderTopWidth) || 0, r2 -= parseFloat(o2.borderBottomWidth) || 0, e === BOX_EDGE.scrollbar ? r2 : (!isDocumentElement(t) && SCROLLABLE_OVERFLOWS.has(o2.overflowX) && (r2 -= getPreciseScrollbarSize(t, "x", Math.round(r2) - t.clientHeight)), e === BOX_EDGE.padding || (r2 -= parseFloat(o2.paddingTop) || 0, r2 -= parseFloat(o2.paddingBottom) || 0), r2));
   }
@@ -4728,15 +4735,12 @@
   // node_modules/mezr/dist/esm/utils/getOffsetFromDocument.js
   function getOffsetFromDocument(t, o2 = BOX_EDGE.border) {
     const e = { left: 0, top: 0 };
-    if (isDocument(t))
-      return e;
-    if (isWindow(t))
-      return e.left += t.scrollX || 0, e.top += t.scrollY || 0, e;
+    if (isDocument(t)) return e;
+    if (isWindow(t)) return e.left += t.scrollX || 0, e.top += t.scrollY || 0, e;
     const r2 = t.ownerDocument.defaultView;
     r2 && (e.left += r2.scrollX || 0, e.top += r2.scrollY || 0);
     const n = t.getBoundingClientRect();
-    if (e.left += n.left, e.top += n.top, o2 === BOX_EDGE.border)
-      return e;
+    if (e.left += n.left, e.top += n.top, o2 === BOX_EDGE.border) return e;
     const l2 = getStyle(t);
     return o2 === BOX_EDGE.margin ? (e.left -= Math.max(0, parseFloat(l2.marginLeft) || 0), e.top -= Math.max(0, parseFloat(l2.marginTop) || 0), e) : (e.left += parseFloat(l2.borderLeftWidth) || 0, e.top += parseFloat(l2.borderTopWidth) || 0, o2 === BOX_EDGE.scrollbar || o2 === BOX_EDGE.padding || (e.left += parseFloat(l2.paddingLeft) || 0, e.top += parseFloat(l2.paddingTop) || 0), e);
   }
@@ -4773,8 +4777,7 @@
   // node_modules/mezr/dist/esm/getOffsetContainer.js
   function getOffsetContainer(n, t = {}) {
     const i = getStyle(n), { display: o2 } = i;
-    if ("none" === o2 || "contents" === o2)
-      return null;
+    if ("none" === o2 || "contents" === o2) return null;
     const e = t.position || getStyle(n).position, { skipDisplayNone: s, container: r2 } = t;
     switch (e) {
       case "relative":
@@ -4801,158 +4804,389 @@
     return styleDeclaration;
   }
 
-  // src/utils/get-offset-diff.ts
-  function getOffsetDiff(elemA, elemB, result = { left: 0, top: 0 }) {
-    result.left = 0;
-    result.top = 0;
-    if (elemA === elemB)
+  // src/utils/get-client-offset.ts
+  function getClientOffset(element, result = { x: 0, y: 0 }) {
+    result.x = 0;
+    result.y = 0;
+    if (element instanceof Window) {
       return result;
-    const offsetA = getOffset([elemA, "padding"]);
-    const offsetB = getOffset([elemB, "padding"]);
-    result.left = offsetB.left - offsetA.left;
-    result.top = offsetB.top - offsetA.top;
+    }
+    if (element instanceof Document) {
+      result.x = window.scrollX * -1;
+      result.y = window.scrollY * -1;
+      return result;
+    }
+    const { x, y } = element.getBoundingClientRect();
+    const style = getStyle2(element);
+    result.x = x + (parseFloat(style.borderLeftWidth) || 0);
+    result.y = y + (parseFloat(style.borderTopWidth) || 0);
     return result;
   }
 
+  // src/utils/is-point.ts
+  function isPoint(value) {
+    return typeof value === "object" && value !== null && "x" in value && "y" in value;
+  }
+
+  // src/utils/get-offset-diff.ts
+  var OFFSET_A = { x: 0, y: 0 };
+  var OFFSET_B = { x: 0, y: 0 };
+  function getOffsetDiff(elemA, elemB, result = { x: 0, y: 0 }) {
+    const offsetA = isPoint(elemA) ? elemA : getClientOffset(elemA, OFFSET_A);
+    const offsetB = isPoint(elemB) ? elemB : getClientOffset(elemB, OFFSET_B);
+    result.x = offsetB.x - offsetA.x;
+    result.y = offsetB.y - offsetA.y;
+    return result;
+  }
+
+  // src/utils/parse-transform-origin.ts
+  function parseTransformOrigin(transformOrigin) {
+    const values = transformOrigin.split(" ");
+    let originX = "";
+    let originY = "";
+    let originZ = "";
+    if (values.length === 1) {
+      originX = originY = values[0];
+    } else if (values.length === 2) {
+      [originX, originY] = values;
+    } else {
+      [originX, originY, originZ] = values;
+    }
+    return {
+      x: parseFloat(originX) || 0,
+      y: parseFloat(originY) || 0,
+      z: parseFloat(originZ) || 0
+    };
+  }
+
+  // src/utils/reset-matrix.ts
+  var RESET_TRANSFORM = "scale(1, 1)";
+  function resetMatrix(m) {
+    return m.setMatrixValue(RESET_TRANSFORM);
+  }
+
+  // src/utils/get-world-transform-matrix.ts
+  var MATRIX = new DOMMatrix();
+  function getWorldTransformMatrix(el, result = new DOMMatrix()) {
+    let currentElement = el;
+    resetMatrix(result);
+    while (currentElement) {
+      const { transform, transformOrigin } = getStyle2(currentElement);
+      if (transform && transform !== "none") {
+        MATRIX.setMatrixValue(transform);
+        if (!MATRIX.isIdentity) {
+          const { x, y, z } = parseTransformOrigin(transformOrigin);
+          if (z === 0) {
+            MATRIX.setMatrixValue(
+              `translate(${x}px, ${y}px) ${MATRIX} translate(${x * -1}px, ${y * -1}px)`
+            );
+          } else {
+            MATRIX.setMatrixValue(
+              `translate3d(${x}px, ${y}px, ${z}px) ${MATRIX} translate3d(${x * -1}px, ${y * -1}px, ${z * -1}px)`
+            );
+          }
+          result.preMultiplySelf(MATRIX);
+        }
+      }
+      currentElement = currentElement.parentElement;
+    }
+    return result;
+  }
+
+  // src/utils/set-styles.ts
+  function setStyles(el, styles2, important = false) {
+    const { style } = el;
+    for (const key in styles2) {
+      style.setProperty(key, styles2[key], important ? "important" : "");
+    }
+  }
+
+  // src/utils/create-measure-element.ts
+  function createMeasureElement() {
+    const el = document.createElement("div");
+    el.classList.add("dragdoll-measure");
+    setStyles(
+      el,
+      {
+        display: "block",
+        position: "absolute",
+        inset: "0px",
+        padding: "0px",
+        margin: "0px",
+        border: "none",
+        opacity: "0",
+        transform: "none",
+        "transform-origin": "0 0",
+        transition: "none",
+        animation: "none",
+        "pointer-events": "none"
+      },
+      true
+    );
+    return el;
+  }
+
+  // src/utils/is-matrix-warped.ts
+  function isMatrixWarped(m) {
+    return m.m11 !== 1 || m.m12 !== 0 || m.m13 !== 0 || m.m14 !== 0 || m.m21 !== 0 || m.m22 !== 1 || m.m23 !== 0 || m.m24 !== 0 || m.m31 !== 0 || m.m32 !== 0 || m.m33 !== 1 || m.m34 !== 0 || m.m43 !== 0 || m.m44 !== 1;
+  }
+
   // src/draggable/draggable-drag-item.ts
-  var OFFSET_DIFF = { left: 0, top: 0 };
-  var IDENTITY_MATRIX = "matrix(1, 0, 0, 1, 0, 0)";
-  var IDENTITY_MATRIX_3D = "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)";
+  var MEASURE_ELEMENT = createMeasureElement();
   var DraggableDragItem = class {
     constructor(element, draggable) {
       if (!element.isConnected) {
         throw new Error("Element is not connected");
       }
-      const sensor = draggable.drag?.sensor;
-      if (!sensor) {
-        throw new Error("Sensor is not defined");
+      const { drag } = draggable;
+      if (!drag) {
+        throw new Error("Drag is not defined");
       }
-      const item = this;
       const style = getStyle2(element);
       const clientRect = element.getBoundingClientRect();
       this.data = {};
       this.element = element;
-      this.frozenProps = null;
-      this.unfrozenProps = null;
+      this.elementTransformOrigin = parseTransformOrigin(style.transformOrigin);
+      this.elementTransformMatrix = new DOMMatrix().setMatrixValue(style.transform);
+      this.frozenStyles = null;
+      this.unfrozenStyles = null;
       this.position = { x: 0, y: 0 };
-      this._updateDiff = { x: 0, y: 0 };
+      this.containerOffset = { x: 0, y: 0 };
+      this.alignmentOffset = { x: 0, y: 0 };
       this._moveDiff = { x: 0, y: 0 };
-      this._containerDiff = { x: 0, y: 0 };
+      this._alignDiff = { x: 0, y: 0 };
+      this._matrixCache = drag["_matrixCache"];
+      this._clientOffsetCache = drag["_clientOffsetCache"];
       const elementContainer = element.parentElement;
       if (!elementContainer) {
-        throw new Error("Element does not have a parent element.");
+        throw new Error("Dragged element does not have a parent element.");
       }
       this.elementContainer = elementContainer;
-      const elementOffsetContainer = getOffsetContainer(element);
-      if (!elementOffsetContainer) {
-        throw new Error("Offset container could not be computed for the element!");
-      }
-      this.elementOffsetContainer = elementOffsetContainer;
       const dragContainer = draggable.settings.container || elementContainer;
       this.dragContainer = dragContainer;
-      const dragOffsetContainer = dragContainer === elementContainer ? elementOffsetContainer : getOffsetContainer(element, { container: dragContainer });
-      if (!dragOffsetContainer) {
-        throw new Error("Drag offset container could not be computed for the element!");
+      if (elementContainer !== dragContainer) {
+        const { position } = style;
+        if (position !== "fixed" && position !== "absolute") {
+          throw new Error(
+            `Dragged element has "${position}" position, but only "fixed" or "absolute" are allowed when using a custom drag container.`
+          );
+        }
       }
+      const elementOffsetContainer = getOffsetContainer(element) || element;
+      this.elementOffsetContainer = elementOffsetContainer;
+      const dragOffsetContainer = dragContainer === elementContainer ? elementOffsetContainer : getOffsetContainer(element, { container: dragContainer });
       this.dragOffsetContainer = dragOffsetContainer;
       {
-        const { width, height, x: x2, y: y2 } = clientRect;
-        this.clientRect = { width, height, x: x2, y: y2 };
+        const { width, height, x, y } = clientRect;
+        this.clientRect = { width, height, x, y };
       }
-      if (elementOffsetContainer !== dragOffsetContainer) {
-        const { left, top } = getOffsetDiff(dragOffsetContainer, elementOffsetContainer, OFFSET_DIFF);
-        this._containerDiff.x = left;
-        this._containerDiff.y = top;
-      }
-      const { transform } = style;
-      if (transform && transform !== "none" && transform !== IDENTITY_MATRIX && transform !== IDENTITY_MATRIX_3D) {
-        this.initialTransform = transform;
-      } else {
-        this.initialTransform = "";
-      }
-      const { x, y } = draggable.settings.getStartPosition({
+      this._updateContainerMatrices();
+      this._updateContainerOffset();
+      const frozenStyles = draggable.settings.frozenStyles({
         draggable,
-        sensor,
-        item,
+        drag,
+        item: this,
         style
       });
-      this.position.x = x;
-      this.position.y = y;
-      const frozenProps = draggable.settings.getFrozenProps({
-        draggable,
-        sensor,
-        item,
-        style
-      });
-      if (Array.isArray(frozenProps)) {
-        if (frozenProps.length) {
+      if (Array.isArray(frozenStyles)) {
+        if (frozenStyles.length) {
           const props = {};
-          for (const prop of frozenProps) {
+          for (const prop of frozenStyles) {
             props[prop] = style[prop];
           }
-          this.frozenProps = props;
+          this.frozenStyles = props;
         } else {
-          this.frozenProps = null;
+          this.frozenStyles = null;
         }
       } else {
-        this.frozenProps = frozenProps;
+        this.frozenStyles = frozenStyles;
       }
-      if (this.frozenProps) {
-        const unfrozenProps = {};
-        for (const key in this.frozenProps) {
-          if (this.frozenProps.hasOwnProperty(key)) {
-            unfrozenProps[key] = element.style[key];
+      if (this.frozenStyles) {
+        const unfrozenStyles = {};
+        for (const key in this.frozenStyles) {
+          if (this.frozenStyles.hasOwnProperty(key)) {
+            unfrozenStyles[key] = element.style[key];
           }
         }
-        this.unfrozenProps = unfrozenProps;
+        this.unfrozenStyles = unfrozenStyles;
       }
+    }
+    _updateContainerMatrices() {
+      [this.elementContainer, this.dragContainer].forEach((container) => {
+        if (!this._matrixCache.isValid(container)) {
+          const matrices = this._matrixCache.get(container) || [new DOMMatrix(), new DOMMatrix()];
+          const [matrix, inverseMatrix] = matrices;
+          getWorldTransformMatrix(container, matrix);
+          inverseMatrix.setMatrixValue(matrix.toString()).invertSelf();
+          this._matrixCache.set(container, matrices);
+        }
+      });
+    }
+    _updateContainerOffset() {
+      const {
+        elementOffsetContainer,
+        elementContainer,
+        dragOffsetContainer,
+        dragContainer,
+        containerOffset,
+        _clientOffsetCache,
+        _matrixCache
+      } = this;
+      if (elementOffsetContainer !== dragOffsetContainer) {
+        const [dragOffset, elementOffset] = [
+          [dragContainer, dragOffsetContainer],
+          [elementContainer, elementOffsetContainer]
+        ].map(([container, offsetContainer]) => {
+          const offset = _clientOffsetCache.get(offsetContainer) || { x: 0, y: 0 };
+          if (!_clientOffsetCache.isValid(offsetContainer)) {
+            const matrices = _matrixCache.get(container);
+            if (offsetContainer instanceof HTMLElement && matrices && !matrices[0].isIdentity) {
+              if (isMatrixWarped(matrices[0])) {
+                MEASURE_ELEMENT.style.setProperty("transform", matrices[1].toString(), "important");
+                offsetContainer.append(MEASURE_ELEMENT);
+                getClientOffset(MEASURE_ELEMENT, offset);
+                MEASURE_ELEMENT.remove();
+              } else {
+                getClientOffset(offsetContainer, offset);
+                offset.x -= matrices[0].m41;
+                offset.y -= matrices[0].m42;
+              }
+            } else {
+              getClientOffset(offsetContainer, offset);
+            }
+          }
+          _clientOffsetCache.set(offsetContainer, offset);
+          return offset;
+        });
+        getOffsetDiff(dragOffset, elementOffset, containerOffset);
+      } else {
+        containerOffset.x = 0;
+        containerOffset.y = 0;
+      }
+    }
+    getContainerMatrix() {
+      return this._matrixCache.get(this.elementContainer);
+    }
+    getDragContainerMatrix() {
+      return this._matrixCache.get(this.dragContainer);
     }
     updateSize(dimensions) {
       if (dimensions) {
         this.clientRect.width = dimensions.width;
         this.clientRect.height = dimensions.height;
       } else {
-        const rect = this.element.getBoundingClientRect();
-        this.clientRect.width = rect.width;
-        this.clientRect.height = rect.height;
+        const { width, height } = this.element.getBoundingClientRect();
+        this.clientRect.width = width;
+        this.clientRect.height = height;
       }
     }
   };
 
   // src/utils/append-element.ts
-  function appendElement(element, container) {
+  function appendElement(element, container, innerContainer) {
     const focusedElement = document.activeElement;
     const containsFocus = element.contains(focusedElement);
-    container.append(element);
+    if (innerContainer) innerContainer.append(element);
+    container.append(innerContainer || element);
     if (containsFocus && document.activeElement !== focusedElement) {
       focusedElement.focus({ preventScroll: true });
     }
   }
 
+  // src/utils/round-number.ts
+  function roundNumber(value, decimals = 0) {
+    const multiplier = Math.pow(10, decimals);
+    return Math.round((value + Number.EPSILON) * multiplier) / multiplier;
+  }
+
+  // src/utils/are-matrices-equal.ts
+  function areMatricesEqual(m1, m2) {
+    if (m1.isIdentity && m2.isIdentity) return true;
+    if (m1.is2D && m2.is2D) {
+      return m1.a === m2.a && m1.b === m2.b && m1.c === m2.c && m1.d === m2.d && m1.e === m2.e && m1.f === m2.f;
+    }
+    return m1.m11 === m2.m11 && m1.m12 === m2.m12 && m1.m13 === m2.m13 && m1.m14 === m2.m14 && m1.m21 === m2.m21 && m1.m22 === m2.m22 && m1.m23 === m2.m23 && m1.m24 === m2.m24 && m1.m31 === m2.m31 && m1.m32 === m2.m32 && m1.m33 === m2.m33 && m1.m34 === m2.m34 && m1.m41 === m2.m41 && m1.m42 === m2.m42 && m1.m43 === m2.m43 && m1.m44 === m2.m44;
+  }
+
   // src/draggable/draggable.ts
   var SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
-  var OFFSET_DIFF2 = { left: 0, top: 0 };
   var POSITION_CHANGE = { x: 0, y: 0 };
-  function getDefaultSettings() {
-    return {
-      container: null,
-      startPredicate: () => true,
-      getElements: () => null,
-      releaseElements: () => null,
-      getFrozenProps: () => null,
-      getStartPosition: () => {
-        return { x: 0, y: 0 };
-      },
-      setPosition: ({ item, x, y }) => {
-        item.element.style.transform = `translate(${x}px, ${y}px) ${item.initialTransform}`;
-      },
-      getPositionChange: ({ event, prevEvent }) => {
-        POSITION_CHANGE.x = event.x - prevEvent.x;
-        POSITION_CHANGE.y = event.y - prevEvent.y;
-        return POSITION_CHANGE;
+  var ELEMENT_MATRIX = new DOMMatrix();
+  var TEMP_MATRIX = new DOMMatrix();
+  var DraggableModifierPhase = {
+    Start: "start",
+    Move: "move",
+    End: "end"
+  };
+  var DraggableApplyPositionPhase = {
+    Start: "start",
+    StartAlign: "start-align",
+    Move: "move",
+    Align: "align",
+    End: "end",
+    EndAlign: "end-align"
+  };
+  var DraggableEventType = {
+    PrepareStart: "preparestart",
+    Start: "start",
+    PrepareMove: "preparemove",
+    Move: "move",
+    End: "end",
+    Destroy: "destroy"
+  };
+  var DraggableDefaultSettings = {
+    container: null,
+    startPredicate: () => true,
+    elements: () => null,
+    frozenStyles: () => null,
+    applyPosition: ({ item, phase }) => {
+      const isEndPhase = phase === "end" || phase === "end-align";
+      const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
+      const [_dragContainerMatrix, inverseDragContainerMatrix] = item.getDragContainerMatrix();
+      const {
+        position,
+        alignmentOffset,
+        containerOffset,
+        elementTransformMatrix,
+        elementTransformOrigin
+      } = item;
+      const { x: oX, y: oY, z: oZ } = elementTransformOrigin;
+      const needsOriginOffset = !elementTransformMatrix.isIdentity && (oX !== 0 || oY !== 0 || oZ !== 0);
+      const tX = position.x + alignmentOffset.x + containerOffset.x;
+      const tY = position.y + alignmentOffset.y + containerOffset.y;
+      resetMatrix(ELEMENT_MATRIX);
+      if (needsOriginOffset) {
+        if (oZ === 0) {
+          ELEMENT_MATRIX.translateSelf(-oX, -oY);
+        } else {
+          ELEMENT_MATRIX.translateSelf(-oX, -oY, -oZ);
+        }
       }
-    };
-  }
+      if (isEndPhase) {
+        if (!inverseContainerMatrix.isIdentity) {
+          ELEMENT_MATRIX.multiplySelf(inverseContainerMatrix);
+        }
+      } else {
+        if (!inverseDragContainerMatrix.isIdentity) {
+          ELEMENT_MATRIX.multiplySelf(inverseDragContainerMatrix);
+        }
+      }
+      resetMatrix(TEMP_MATRIX).translateSelf(tX, tY);
+      ELEMENT_MATRIX.multiplySelf(TEMP_MATRIX);
+      if (!containerMatrix.isIdentity) {
+        ELEMENT_MATRIX.multiplySelf(containerMatrix);
+      }
+      if (needsOriginOffset) {
+        resetMatrix(TEMP_MATRIX).translateSelf(oX, oY, oZ);
+        ELEMENT_MATRIX.multiplySelf(TEMP_MATRIX);
+      }
+      if (!elementTransformMatrix.isIdentity) {
+        ELEMENT_MATRIX.multiplySelf(elementTransformMatrix);
+      }
+      item.element.style.transform = `${ELEMENT_MATRIX}`;
+    },
+    positionModifiers: []
+  };
   var Draggable = class {
     constructor(sensors, options = {}) {
       this.sensors = sensors;
@@ -4962,10 +5196,10 @@
       this.isDestroyed = false;
       this._sensorData = /* @__PURE__ */ new Map();
       this._emitter = new a();
-      this._startPhase = 0 /* NONE */;
+      this._startPhase = 0 /* None */;
       this._startId = Symbol();
       this._moveId = Symbol();
-      this._updateId = Symbol();
+      this._alignId = Symbol();
       this._onMove = this._onMove.bind(this);
       this._onScroll = this._onScroll.bind(this);
       this._onEnd = this._onEnd.bind(this);
@@ -4973,43 +5207,51 @@
       this._applyStart = this._applyStart.bind(this);
       this._prepareMove = this._prepareMove.bind(this);
       this._applyMove = this._applyMove.bind(this);
-      this._preparePositionUpdate = this._preparePositionUpdate.bind(this);
-      this._applyPositionUpdate = this._applyPositionUpdate.bind(this);
+      this._prepareAlign = this._prepareAlign.bind(this);
+      this._applyAlign = this._applyAlign.bind(this);
       this.sensors.forEach((sensor) => {
         this._sensorData.set(sensor, {
-          predicateState: 0 /* PENDING */,
+          predicateState: 0 /* Pending */,
           predicateEvent: null,
           onMove: (e) => this._onMove(e, sensor),
           onEnd: (e) => this._onEnd(e, sensor)
         });
         const { onMove, onEnd } = this._sensorData.get(sensor);
-        sensor.on("start", onMove, onMove);
-        sensor.on("move", onMove, onMove);
-        sensor.on("cancel", onEnd, onEnd);
-        sensor.on("end", onEnd, onEnd);
-        sensor.on("destroy", onEnd, onEnd);
+        sensor.on(SensorEventType.Start, onMove, onMove);
+        sensor.on(SensorEventType.Move, onMove, onMove);
+        sensor.on(SensorEventType.Cancel, onEnd, onEnd);
+        sensor.on(SensorEventType.End, onEnd, onEnd);
+        sensor.on(SensorEventType.Destroy, onEnd, onEnd);
       });
     }
-    _parseSettings(options, defaults = getDefaultSettings()) {
+    _parseSettings(options, defaults = DraggableDefaultSettings) {
       const {
         container = defaults.container,
         startPredicate = defaults.startPredicate,
-        getElements = defaults.getElements,
-        releaseElements = defaults.releaseElements,
-        getFrozenProps = defaults.getFrozenProps,
-        getStartPosition = defaults.getStartPosition,
-        setPosition = defaults.setPosition,
-        getPositionChange = defaults.getPositionChange
+        elements = defaults.elements,
+        frozenStyles = defaults.frozenStyles,
+        positionModifiers = defaults.positionModifiers,
+        applyPosition = defaults.applyPosition,
+        onPrepareStart = defaults.onPrepareStart,
+        onStart = defaults.onStart,
+        onPrepareMove = defaults.onPrepareMove,
+        onMove = defaults.onMove,
+        onEnd = defaults.onEnd,
+        onDestroy = defaults.onDestroy
       } = options || {};
       return {
         container,
         startPredicate,
-        getElements,
-        releaseElements,
-        getFrozenProps,
-        getStartPosition,
-        setPosition,
-        getPositionChange
+        elements,
+        frozenStyles,
+        positionModifiers,
+        applyPosition,
+        onPrepareStart,
+        onStart,
+        onPrepareMove,
+        onMove,
+        onEnd,
+        onDestroy
       };
     }
     _emit(type3, ...e) {
@@ -5017,10 +5259,9 @@
     }
     _onMove(e, sensor) {
       const sensorData = this._sensorData.get(sensor);
-      if (!sensorData)
-        return;
+      if (!sensorData) return;
       switch (sensorData.predicateState) {
-        case 0 /* PENDING */: {
+        case 0 /* Pending */: {
           sensorData.predicateEvent = e;
           const shouldStart = this.settings.startPredicate({
             draggable: this,
@@ -5034,30 +5275,29 @@
           }
           break;
         }
-        case 1 /* RESOLVED */: {
+        case 1 /* Resolved */: {
           if (this.drag) {
-            this.drag.event = e;
-            ticker.once(tickerReadPhase, this._prepareMove, this._moveId);
-            ticker.once(tickerWritePhase, this._applyMove, this._moveId);
+            this.drag.moveEvent = e;
+            ticker.once(tickerPhases.read, this._prepareMove, this._moveId);
+            ticker.once(tickerPhases.write, this._applyMove, this._moveId);
           }
           break;
         }
       }
     }
     _onScroll() {
-      this.updatePosition();
+      this.align();
     }
     _onEnd(e, sensor) {
       const sensorData = this._sensorData.get(sensor);
-      if (!sensorData)
-        return;
+      if (!sensorData) return;
       if (!this.drag) {
-        sensorData.predicateState = 0 /* PENDING */;
+        sensorData.predicateState = 0 /* Pending */;
         sensorData.predicateEvent = null;
-      } else if (sensorData.predicateState === 1 /* RESOLVED */) {
+      } else if (sensorData.predicateState === 1 /* Resolved */) {
         this.drag.endEvent = e;
         this._sensorData.forEach((data) => {
-          data.predicateState = 0 /* PENDING */;
+          data.predicateState = 0 /* Pending */;
           data.predicateEvent = null;
         });
         this.stop();
@@ -5065,135 +5305,147 @@
     }
     _prepareStart() {
       const drag = this.drag;
-      if (!drag)
-        return;
-      this._startPhase = 2 /* START_PREPARE */;
-      const elements = this.settings.getElements({
+      if (!drag) return;
+      this._startPhase = 2 /* StartPrepare */;
+      const elements = this.settings.elements({
         draggable: this,
-        sensor: drag.sensor,
-        startEvent: drag.startEvent
+        drag
       }) || [];
       drag.items = elements.map((element) => {
         return new DraggableDragItem(element, this);
       });
-      this._emit("preparestart", drag.startEvent);
+      this._applyModifiers(DraggableModifierPhase.Start, 0, 0);
+      this._emit(DraggableEventType.PrepareStart, drag.startEvent);
+      this.settings.onPrepareStart?.(drag, this);
     }
     _applyStart() {
       const drag = this.drag;
-      if (!drag)
-        return;
+      if (!drag) return;
       for (const item of drag.items) {
         if (item.dragContainer !== item.elementContainer) {
-          item.position.x += item._containerDiff.x;
-          item.position.y += item._containerDiff.y;
           appendElement(item.element, item.dragContainer);
         }
-        if (item.frozenProps) {
-          Object.assign(item.element.style, item.frozenProps);
+        if (item.frozenStyles) {
+          Object.assign(item.element.style, item.frozenStyles);
         }
-        this.settings.setPosition({
-          phase: "start",
+        this.settings.applyPosition({
+          phase: DraggableApplyPositionPhase.Start,
           draggable: this,
-          sensor: drag.sensor,
-          item,
-          x: item.position.x,
-          y: item.position.y
+          drag,
+          item
         });
       }
+      for (const item of drag.items) {
+        const containerMatrix = item.getContainerMatrix()[0];
+        const dragContainerMatrix = item.getDragContainerMatrix()[0];
+        if (areMatricesEqual(containerMatrix, dragContainerMatrix)) {
+          continue;
+        }
+        if (!isMatrixWarped(containerMatrix) && !isMatrixWarped(dragContainerMatrix)) {
+          continue;
+        }
+        const rect = item.element.getBoundingClientRect();
+        const { alignmentOffset } = item;
+        alignmentOffset.x += roundNumber(item.clientRect.x - rect.x, 3);
+        alignmentOffset.y += roundNumber(item.clientRect.y - rect.y, 3);
+      }
+      for (const item of drag.items) {
+        const { alignmentOffset } = item;
+        if (alignmentOffset.x !== 0 || alignmentOffset.y !== 0) {
+          this.settings.applyPosition({
+            phase: DraggableApplyPositionPhase.StartAlign,
+            draggable: this,
+            drag,
+            item
+          });
+        }
+      }
       window.addEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS);
-      this._startPhase = 3 /* FINISH_APPLY */;
-      this._emit("start", drag.startEvent);
+      this._startPhase = 3 /* FinishApply */;
+      this._emit(DraggableEventType.Start, drag.startEvent);
+      this.settings.onStart?.(drag, this);
     }
     _prepareMove() {
       const drag = this.drag;
-      if (!drag)
-        return;
-      const { event, prevEvent, startEvent, sensor } = drag;
-      if (event === prevEvent)
-        return;
-      for (const item of drag.items) {
-        const { x: changeX, y: changeY } = this.settings.getPositionChange({
-          draggable: this,
-          sensor,
-          item,
-          event,
-          prevEvent,
-          startEvent
-        });
-        if (changeX) {
-          item.position.x += changeX;
-          item.clientRect.x += changeX;
-          item._moveDiff.x += changeX;
-        }
-        if (changeY) {
-          item.position.y += changeY;
-          item.clientRect.y += changeY;
-          item._moveDiff.y += changeY;
-        }
-      }
-      drag.prevEvent = event;
-      this._emit("preparemove", event);
+      if (!drag) return;
+      const { moveEvent, prevMoveEvent } = drag;
+      if (moveEvent === prevMoveEvent) return;
+      this._applyModifiers(
+        DraggableModifierPhase.Move,
+        moveEvent.x - prevMoveEvent.x,
+        moveEvent.y - prevMoveEvent.y
+      );
+      this._emit(DraggableEventType.PrepareMove, moveEvent);
+      this.settings.onPrepareMove?.(drag, this);
+      drag.prevMoveEvent = moveEvent;
     }
     _applyMove() {
       const drag = this.drag;
-      if (!drag)
-        return;
+      if (!drag) return;
       for (const item of drag.items) {
-        item._moveDiff.x = 0;
-        item._moveDiff.y = 0;
-        this.settings.setPosition({
-          phase: "move",
+        item["_moveDiff"].x = 0;
+        item["_moveDiff"].y = 0;
+        this.settings.applyPosition({
+          phase: DraggableApplyPositionPhase.Move,
           draggable: this,
-          sensor: drag.sensor,
-          item,
-          x: item.position.x,
-          y: item.position.y
+          drag,
+          item
         });
       }
-      if (drag.event) {
-        this._emit("move", drag.event);
+      this._emit(DraggableEventType.Move, drag.moveEvent);
+      this.settings.onMove?.(drag, this);
+    }
+    _prepareAlign() {
+      const { drag } = this;
+      if (!drag) return;
+      for (const item of drag.items) {
+        const { x, y } = item.element.getBoundingClientRect();
+        const alignDiffX = item.clientRect.x - item["_moveDiff"].x - x;
+        item.alignmentOffset.x = item.alignmentOffset.x - item["_alignDiff"].x + alignDiffX;
+        item["_alignDiff"].x = alignDiffX;
+        const alignDiffY = item.clientRect.y - item["_moveDiff"].y - y;
+        item.alignmentOffset.y = item.alignmentOffset.y - item["_alignDiff"].y + alignDiffY;
+        item["_alignDiff"].y = alignDiffY;
       }
     }
-    _preparePositionUpdate() {
+    _applyAlign() {
       const { drag } = this;
-      if (!drag)
-        return;
+      if (!drag) return;
       for (const item of drag.items) {
-        if (item.elementOffsetContainer !== item.dragOffsetContainer) {
-          const { left: left2, top: top2 } = getOffsetDiff(
-            item.dragOffsetContainer,
-            item.elementOffsetContainer,
-            OFFSET_DIFF2
-          );
-          item._containerDiff.x = left2;
-          item._containerDiff.y = top2;
+        item["_alignDiff"].x = 0;
+        item["_alignDiff"].y = 0;
+        this.settings.applyPosition({
+          phase: DraggableApplyPositionPhase.Align,
+          draggable: this,
+          drag,
+          item
+        });
+      }
+    }
+    _applyModifiers(phase, changeX, changeY) {
+      const { drag } = this;
+      if (!drag) return;
+      const { positionModifiers } = this.settings;
+      for (const item of drag.items) {
+        let positionChange = POSITION_CHANGE;
+        positionChange.x = changeX;
+        positionChange.y = changeY;
+        for (const modifier of positionModifiers) {
+          positionChange = modifier(positionChange, {
+            draggable: this,
+            drag,
+            item,
+            phase
+          });
         }
-        const { left, top, width, height } = item.element.getBoundingClientRect();
-        const updateDiffX = item.clientRect.x - item._moveDiff.x - left;
-        item.position.x = item.position.x - item._updateDiff.x + updateDiffX;
-        item._updateDiff.x = updateDiffX;
-        const updateDiffY = item.clientRect.y - item._moveDiff.y - top;
-        item.position.y = item.position.y - item._updateDiff.y + updateDiffY;
-        item._updateDiff.y = updateDiffY;
-        item.clientRect.width = width;
-        item.clientRect.height = height;
-      }
-    }
-    _applyPositionUpdate() {
-      const { drag } = this;
-      if (!drag)
-        return;
-      for (const item of drag.items) {
-        item._updateDiff.x = 0;
-        item._updateDiff.y = 0;
-        this.settings.setPosition({
-          phase: "move",
-          draggable: this,
-          sensor: drag.sensor,
-          item,
-          x: item.position.x,
-          y: item.position.y
-        });
+        item.position.x += positionChange.x;
+        item.position.y += positionChange.y;
+        item.clientRect.x += positionChange.x;
+        item.clientRect.y += positionChange.y;
+        if (phase === "move") {
+          item["_moveDiff"].x += positionChange.x;
+          item["_moveDiff"].y += positionChange.y;
+        }
       }
     }
     on(type3, listener, listenerId) {
@@ -5204,92 +5456,96 @@
     }
     resolveStartPredicate(sensor, e) {
       const sensorData = this._sensorData.get(sensor);
-      if (!sensorData)
-        return;
+      if (!sensorData) return;
       const startEvent = e || sensorData.predicateEvent;
-      if (sensorData.predicateState === 0 /* PENDING */ && startEvent) {
-        this._startPhase = 1 /* INIT */;
-        sensorData.predicateState = 1 /* RESOLVED */;
+      if (sensorData.predicateState === 0 /* Pending */ && startEvent) {
+        this._startPhase = 1 /* Init */;
+        sensorData.predicateState = 1 /* Resolved */;
         sensorData.predicateEvent = null;
         this.drag = new DraggableDrag(sensor, startEvent);
         this._sensorData.forEach((data, s) => {
-          if (s === sensor)
-            return;
-          data.predicateState = 2 /* REJECTED */;
+          if (s === sensor) return;
+          data.predicateState = 2 /* Rejected */;
           data.predicateEvent = null;
         });
-        ticker.once(tickerReadPhase, this._prepareStart, this._startId);
-        ticker.once(tickerWritePhase, this._applyStart, this._startId);
+        ticker.once(tickerPhases.read, this._prepareStart, this._startId);
+        ticker.once(tickerPhases.write, this._applyStart, this._startId);
       }
     }
     rejectStartPredicate(sensor) {
       const sensorData = this._sensorData.get(sensor);
-      if (sensorData?.predicateState === 0 /* PENDING */) {
-        sensorData.predicateState = 2 /* REJECTED */;
+      if (sensorData?.predicateState === 0 /* Pending */) {
+        sensorData.predicateState = 2 /* Rejected */;
         sensorData.predicateEvent = null;
       }
     }
     stop() {
       const drag = this.drag;
-      if (!drag || drag.isEnded)
-        return;
-      if (this._startPhase === 2 /* START_PREPARE */) {
-        this.off("start", this._startId);
-        this.on("start", () => this.stop(), this._startId);
+      if (!drag || drag.isEnded) return;
+      if (this._startPhase === 2 /* StartPrepare */) {
+        this.off(DraggableEventType.Start, this._startId);
+        this.on(DraggableEventType.Start, () => this.stop(), this._startId);
         return;
       }
-      this._startPhase = 0 /* NONE */;
+      this._startPhase = 0 /* None */;
       drag.isEnded = true;
-      ticker.off(tickerReadPhase, this._startId);
-      ticker.off(tickerWritePhase, this._startId);
-      ticker.off(tickerReadPhase, this._moveId);
-      ticker.off(tickerWritePhase, this._moveId);
-      ticker.off(tickerReadPhase, this._updateId);
-      ticker.off(tickerWritePhase, this._updateId);
+      ticker.off(tickerPhases.read, this._startId);
+      ticker.off(tickerPhases.write, this._startId);
+      ticker.off(tickerPhases.read, this._moveId);
+      ticker.off(tickerPhases.write, this._moveId);
+      ticker.off(tickerPhases.read, this._alignId);
+      ticker.off(tickerPhases.write, this._alignId);
       window.removeEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS);
-      const elements = [];
+      this._applyModifiers(DraggableModifierPhase.End, 0, 0);
       for (const item of drag.items) {
-        elements.push(item.element);
         if (item.elementContainer !== item.dragContainer) {
-          item.position.x -= item._containerDiff.x;
-          item.position.y -= item._containerDiff.y;
-          item._containerDiff.x = 0;
-          item._containerDiff.y = 0;
           appendElement(item.element, item.elementContainer);
+          item.alignmentOffset.x = 0;
+          item.alignmentOffset.y = 0;
+          item.containerOffset.x = 0;
+          item.containerOffset.y = 0;
         }
-        if (item.unfrozenProps) {
-          for (const key in item.unfrozenProps) {
-            item.element.style[key] = item.unfrozenProps[key] || "";
+        if (item.unfrozenStyles) {
+          for (const key in item.unfrozenStyles) {
+            item.element.style[key] = item.unfrozenStyles[key] || "";
           }
         }
-        this.settings.setPosition({
-          phase: "end",
+        this.settings.applyPosition({
+          phase: DraggableApplyPositionPhase.End,
           draggable: this,
-          sensor: drag.sensor,
-          item,
-          x: item.position.x,
-          y: item.position.y
+          drag,
+          item
         });
       }
-      if (elements.length) {
-        this.settings.releaseElements({
-          draggable: this,
-          sensor: drag.sensor,
-          elements
-        });
+      for (const item of drag.items) {
+        if (item.elementContainer !== item.dragContainer) {
+          const itemRect = item.element.getBoundingClientRect();
+          item.alignmentOffset.x = roundNumber(item.clientRect.x - itemRect.x, 3);
+          item.alignmentOffset.y = roundNumber(item.clientRect.y - itemRect.y, 3);
+        }
       }
-      this._emit("end", drag.endEvent);
+      for (const item of drag.items) {
+        if (item.elementContainer !== item.dragContainer && (item.alignmentOffset.x !== 0 || item.alignmentOffset.y !== 0)) {
+          this.settings.applyPosition({
+            phase: DraggableApplyPositionPhase.EndAlign,
+            draggable: this,
+            drag,
+            item
+          });
+        }
+      }
+      this._emit(DraggableEventType.End, drag.endEvent);
+      this.settings.onEnd?.(drag, this);
       this.drag = null;
     }
-    updatePosition(instant = false) {
-      if (!this.drag)
-        return;
+    align(instant = false) {
+      if (!this.drag) return;
       if (instant) {
-        this._preparePositionUpdate();
-        this._applyPositionUpdate();
+        this._prepareAlign();
+        this._applyAlign();
       } else {
-        ticker.once(tickerReadPhase, this._preparePositionUpdate, this._updateId);
-        ticker.once(tickerWritePhase, this._applyPositionUpdate, this._updateId);
+        ticker.once(tickerPhases.read, this._prepareAlign, this._alignId);
+        ticker.once(tickerPhases.write, this._applyAlign, this._alignId);
       }
     }
     updateSettings(options = {}) {
@@ -5299,22 +5555,41 @@
       return plugin(this);
     }
     destroy() {
-      if (this.isDestroyed)
-        return;
+      if (this.isDestroyed) return;
       this.isDestroyed = true;
       this.stop();
       this._sensorData.forEach(({ onMove, onEnd }, sensor) => {
-        sensor.off("start", onMove);
-        sensor.off("move", onMove);
-        sensor.off("cancel", onEnd);
-        sensor.off("end", onEnd);
-        sensor.off("destroy", onEnd);
+        sensor.off(SensorEventType.Start, onMove);
+        sensor.off(SensorEventType.Move, onMove);
+        sensor.off(SensorEventType.Cancel, onEnd);
+        sensor.off(SensorEventType.End, onEnd);
+        sensor.off(SensorEventType.Destroy, onEnd);
       });
       this._sensorData.clear();
-      this._emit("destroy");
+      this._emit(DraggableEventType.Destroy);
+      this.settings.onDestroy?.(this);
       this._emitter.off();
     }
   };
+
+  // src/utils/create-full-rect.ts
+  function createFullRect(sourceRect, result = { width: 0, height: 0, x: 0, y: 0, left: 0, top: 0, right: 0, bottom: 0 }) {
+    if (sourceRect) {
+      result.width = sourceRect.width;
+      result.height = sourceRect.height;
+      result.x = sourceRect.x;
+      result.y = sourceRect.y;
+      result.left = sourceRect.x;
+      result.top = sourceRect.y;
+      result.right = sourceRect.x + sourceRect.width;
+      result.bottom = sourceRect.y + sourceRect.height;
+    }
+    return result;
+  }
+
+  // src/draggable/modifiers/create-containment-modifier.ts
+  var TEMP_RECT_1 = createFullRect();
+  var TEMP_RECT_2 = createFullRect();
 
   // src/pool.ts
   var Pool = class {
@@ -5337,21 +5612,6 @@
     }
   };
 
-  // src/utils/create-full-rect.ts
-  function createFullRect(sourceRect, result = { width: 0, height: 0, x: 0, y: 0, left: 0, top: 0, right: 0, bottom: 0 }) {
-    if (sourceRect) {
-      result.width = sourceRect.width;
-      result.height = sourceRect.height;
-      result.x = sourceRect.x;
-      result.y = sourceRect.y;
-      result.left = sourceRect.x;
-      result.top = sourceRect.y;
-      result.right = sourceRect.x + sourceRect.width;
-      result.bottom = sourceRect.y + sourceRect.height;
-    }
-    return result;
-  }
-
   // src/utils/get-distance.ts
   var RECT_A = createFullRect();
   var RECT_B = createFullRect();
@@ -5363,12 +5623,10 @@
   function getIntersection(a2, b, result = { width: 0, height: 0, x: 0, y: 0 }) {
     const x1 = Math.max(a2.x, b.x);
     const x2 = Math.min(a2.x + a2.width, b.x + b.width);
-    if (x2 <= x1)
-      return null;
+    if (x2 <= x1) return null;
     const y1 = Math.max(a2.y, b.y);
     const y2 = Math.min(a2.y + a2.height, b.y + b.height);
-    if (y2 <= y1)
-      return null;
+    if (y2 <= y1) return null;
     result.x = x1;
     result.y = y1;
     result.width = x2 - x1;
@@ -5385,8 +5643,7 @@
   // src/utils/get-intersection-score.ts
   function getIntersectionScore(a2, b) {
     const area = getIntersectionArea(a2, b);
-    if (!area)
-      return 0;
+    if (!area) return 0;
     const maxArea = Math.min(a2.width, b.width) * Math.min(a2.height, b.height);
     return area / maxArea * 100;
   }
@@ -5413,25 +5670,23 @@
 
   // src/utils/get-scroll-left.ts
   function getScrollLeft(element) {
-    return isWindow2(element) ? element.pageXOffset : element.scrollLeft;
+    return isWindow2(element) ? element.scrollX : element.scrollLeft;
   }
 
   // src/utils/get-scroll-left-max.ts
   function getScrollLeftMax(element) {
-    if (isWindow2(element))
-      element = document.documentElement;
+    if (isWindow2(element)) element = document.documentElement;
     return element.scrollWidth - element.clientWidth;
   }
 
   // src/utils/get-scroll-top.ts
   function getScrollTop(element) {
-    return isWindow2(element) ? element.pageYOffset : element.scrollTop;
+    return isWindow2(element) ? element.scrollY : element.scrollTop;
   }
 
   // src/utils/get-scroll-top-max.ts
   function getScrollTopMax(element) {
-    if (isWindow2(element))
-      element = document.documentElement;
+    if (isWindow2(element)) element = document.documentElement;
     return element.scrollHeight - element.clientHeight;
   }
 
@@ -5537,10 +5792,8 @@
       this.scrollTop = 0;
     }
     reset() {
-      if (this.requestX)
-        this.requestX.action = null;
-      if (this.requestY)
-        this.requestY.action = null;
+      if (this.requestX) this.requestX.action = null;
+      if (this.requestY) this.requestY.action = null;
       this.element = null;
       this.requestX = null;
       this.requestY = null;
@@ -5567,14 +5820,12 @@
       }
     }
     computeScrollValues() {
-      if (!this.element)
-        return;
+      if (!this.element) return;
       this.scrollLeft = this.requestX ? this.requestX.value : getScrollLeft(this.element);
       this.scrollTop = this.requestY ? this.requestY.value : getScrollTop(this.element);
     }
     scroll() {
-      if (!this.element)
-        return;
+      if (!this.element) return;
       if (this.element.scrollTo) {
         this.element.scrollTo(this.scrollLeft, this.scrollTop);
       } else {
@@ -5600,8 +5851,7 @@
       this.action = null;
     }
     reset() {
-      if (this.isActive)
-        this.onStop();
+      if (this.isActive) this.onStop();
       this.item = null;
       this.element = null;
       this.isActive = false;
@@ -5620,8 +5870,7 @@
       return AUTO_SCROLL_AXIS_DIRECTION.forward & this.direction ? isScrolledToMax(this.value, this.maxValue) : this.value <= 0;
     }
     computeCurrentScrollValue() {
-      if (!this.element)
-        return 0;
+      if (!this.element) return 0;
       if (this.value !== this.value) {
         return AUTO_SCROLL_AXIS.x & this.direction ? getScrollLeft(this.element) : getScrollTop(this.element);
       }
@@ -5633,8 +5882,7 @@
       return Math.max(0, Math.min(nextValue, this.maxValue));
     }
     computeSpeed() {
-      if (!this.item || !this.element)
-        return 0;
+      if (!this.item || !this.element) return 0;
       const { speed } = this.item;
       if (typeof speed === "function") {
         SPEED_DATA.direction = getDirectionAsString(this.direction);
@@ -5664,16 +5912,14 @@
       return this.value;
     }
     onStart() {
-      if (!this.item || !this.element)
-        return;
+      if (!this.item || !this.element) return;
       const { onStart } = this.item;
       if (typeof onStart === "function") {
         onStart(this.element, getDirectionAsString(this.direction));
       }
     }
     onStop() {
-      if (!this.item || !this.element)
-        return;
+      if (!this.item || !this.element) return;
       const { onStop } = this.item;
       if (typeof onStop === "function") {
         onStop(this.element, getDirectionAsString(this.direction));
@@ -5705,13 +5951,11 @@
         () => new AutoScrollAction(),
         (action) => action.reset()
       );
-      this._emitter = new a();
       this._frameRead = this._frameRead.bind(this);
       this._frameWrite = this._frameWrite.bind(this);
     }
     _frameRead(time) {
-      if (this._isDestroyed)
-        return;
+      if (this._isDestroyed) return;
       if (time && this._tickTime) {
         this._tickDeltaTime = time - this._tickTime;
         this._tickTime = time;
@@ -5724,25 +5968,22 @@
       }
     }
     _frameWrite() {
-      if (this._isDestroyed)
-        return;
+      if (this._isDestroyed) return;
       this._applyActions();
     }
     _startTicking() {
-      if (this._isTicking)
-        return;
+      if (this._isTicking) return;
       this._isTicking = true;
-      ticker.on(tickerReadPhase, this._frameRead, this._frameRead);
-      ticker.on(tickerWritePhase, this._frameWrite, this._frameWrite);
+      ticker.on(tickerPhases.read, this._frameRead, this._frameRead);
+      ticker.on(tickerPhases.write, this._frameWrite, this._frameWrite);
     }
     _stopTicking() {
-      if (!this._isTicking)
-        return;
+      if (!this._isTicking) return;
       this._isTicking = false;
       this._tickTime = 0;
       this._tickDeltaTime = 0;
-      ticker.off(tickerReadPhase, this._frameRead);
-      ticker.off(tickerWritePhase, this._frameWrite);
+      ticker.off(tickerPhases.read, this._frameRead);
+      ticker.off(tickerPhases.write, this._frameWrite);
     }
     _requestItemScroll(item, axis, element, direction, threshold, distance, maxValue) {
       const reqMap = this._requests[axis];
@@ -5765,10 +6006,8 @@
     _cancelItemScroll(item, axis) {
       const reqMap = this._requests[axis];
       const request = reqMap.get(item);
-      if (!request)
-        return;
-      if (request.action)
-        request.action.removeRequest(request);
+      if (!request) return;
+      if (request.action) request.action.removeRequest(request);
       this._requestPool.put(request);
       reqMap.delete(item);
     }
@@ -5814,8 +6053,7 @@
         const testElement = getScrollElement(target.element || target);
         const testMaxScrollX = testAxisX ? getScrollLeftMax(testElement) : -1;
         const testMaxScrollY = testAxisY ? getScrollTopMax(testElement) : -1;
-        if (testMaxScrollX <= 0 && testMaxScrollY <= 0)
-          continue;
+        if (testMaxScrollX <= 0 && testMaxScrollY <= 0) continue;
         const testRect = getRect2([testElement, "padding"], window);
         let testScore = getIntersectionScore(clientRect, testRect) || -Infinity;
         if (testScore === -Infinity) {
@@ -5927,15 +6165,12 @@
       for (; i < targets.length; i++) {
         const target = targets[i];
         const testElement = getScrollElement(target.element || target);
-        if (testElement !== scrollRequest.element)
-          continue;
+        if (testElement !== scrollRequest.element) continue;
         const testIsAxisX = !!(AUTO_SCROLL_AXIS.x & scrollRequest.direction);
         if (testIsAxisX) {
-          if (target.axis === "y")
-            continue;
+          if (target.axis === "y") continue;
         } else {
-          if (target.axis === "x")
-            continue;
+          if (target.axis === "x") continue;
         }
         const testMaxScroll = testIsAxisX ? getScrollLeftMax(testElement) : getScrollTopMax(testElement);
         if (testMaxScroll <= 0) {
@@ -5975,8 +6210,7 @@
         }
         const testScroll = testIsAxisX ? getScrollLeft(testElement) : getScrollTop(testElement);
         hasReachedEnd = AUTO_SCROLL_AXIS_DIRECTION.forward & scrollRequest.direction ? isScrolledToMax(testScroll, testMaxScroll) : testScroll <= 0;
-        if (hasReachedEnd)
-          break;
+        if (hasReachedEnd) break;
         scrollRequest.maxValue = testMaxScroll;
         scrollRequest.threshold = testThreshold;
         scrollRequest.distance = testDistance;
@@ -5984,8 +6218,7 @@
         return true;
       }
       if (smoothStop === true && scrollRequest.speed > 0) {
-        if (hasReachedEnd === null)
-          hasReachedEnd = scrollRequest.hasReachedEnd();
+        if (hasReachedEnd === null) hasReachedEnd = scrollRequest.hasReachedEnd();
         scrollRequest.isEnding = hasReachedEnd ? false : true;
       } else {
         scrollRequest.isEnding = false;
@@ -6061,8 +6294,7 @@
         }
         break;
       }
-      if (!action)
-        action = this._actionPool.pick();
+      if (!action) action = this._actionPool.pick();
       action.element = request.element;
       action.addRequest(request);
       request.tick(this._tickDeltaTime);
@@ -6074,55 +6306,24 @@
         const item = this.items[i];
         const reqX = this._requests[AUTO_SCROLL_AXIS.x].get(item);
         const reqY = this._requests[AUTO_SCROLL_AXIS.y].get(item);
-        if (reqX)
-          this._requestAction(reqX, AUTO_SCROLL_AXIS.x);
-        if (reqY)
-          this._requestAction(reqY, AUTO_SCROLL_AXIS.y);
+        if (reqX) this._requestAction(reqX, AUTO_SCROLL_AXIS.x);
+        if (reqY) this._requestAction(reqY, AUTO_SCROLL_AXIS.y);
       }
       for (i = 0; i < this._actions.length; i++) {
         this._actions[i].computeScrollValues();
       }
     }
     _applyActions() {
-      if (!this._actions.length)
-        return;
-      this._emitter.emit("beforescroll");
+      if (!this._actions.length) return;
       let i = 0;
       for (i = 0; i < this._actions.length; i++) {
         this._actions[i].scroll();
         this._actionPool.put(this._actions[i]);
       }
       this._actions.length = 0;
-      let item;
-      for (i = 0; i < this.items.length; i++) {
-        item = this.items[i];
-        if (item.onPrepareScrollEffect) {
-          item.onPrepareScrollEffect();
-        }
-      }
-      for (i = 0; i < this.items.length; i++) {
-        item = this.items[i];
-        if (item.onApplyScrollEffect) {
-          item.onApplyScrollEffect();
-        }
-      }
-      this._emitter.emit("afterscroll");
-    }
-    /**
-     * Bind a listener.
-     */
-    on(type3, listener, listenerId) {
-      return this._emitter.on(type3, listener, listenerId);
-    }
-    /**
-     * Unbind a listener.
-     */
-    off(type3, listenerId) {
-      this._emitter.off(type3, listenerId);
     }
     addItem(item) {
-      if (this._isDestroyed || this._itemData.has(item))
-        return;
+      if (this._isDestroyed || this._itemData.has(item)) return;
       const { x, y } = item.position;
       const itemData = new AutoScrollItemData();
       itemData.positionX = x;
@@ -6132,15 +6333,12 @@
       itemData.overlapCheckRequestTime = this._tickTime;
       this._itemData.set(item, itemData);
       this.items.push(item);
-      if (!this._isTicking)
-        this._startTicking();
+      if (!this._isTicking) this._startTicking();
     }
     removeItem(item) {
-      if (this._isDestroyed)
-        return;
+      if (this._isDestroyed) return;
       const index = this.items.indexOf(item);
-      if (index === -1)
-        return;
+      if (index === -1) return;
       if (this._requests[AUTO_SCROLL_AXIS.x].get(item)) {
         this._cancelItemScroll(item, AUTO_SCROLL_AXIS.x);
         this._requests[AUTO_SCROLL_AXIS.x].delete(item);
@@ -6172,8 +6370,7 @@
       this.settings.overlapCheckInterval = overlapCheckInterval;
     }
     destroy() {
-      if (this._isDestroyed)
-        return;
+      if (this._isDestroyed) return;
       const items = this.items.slice(0);
       let i = 0;
       for (; i < items.length; i++) {
@@ -6182,7 +6379,6 @@
       this._actions.length = 0;
       this._requestPool.reset();
       this._actionPool.reset();
-      this._emitter.off();
       this._isDestroyed = true;
     }
   };
@@ -6717,8 +6913,7 @@
         await new Promise((resolve) => setTimeout(resolve, stepDuration));
       }
       const target = document.elementFromPoint(x, y);
-      if (!target)
-        throw new Error("No event target found!");
+      if (!target) throw new Error("No event target found!");
       switch (eventType) {
         case "mouse": {
           const eventName = isStart ? "mousedown" : isEnd ? "mouseup" : "mousemove";
@@ -6730,8 +6925,7 @@
             view: window
           });
           target.dispatchEvent(event);
-          if (onAfterStep)
-            onAfterStep(event);
+          if (onAfterStep) onAfterStep(event);
           break;
         }
         case "touch": {
@@ -6746,8 +6940,7 @@
             identifier: pointerId
           });
           target.dispatchEvent(event);
-          if (onAfterStep)
-            onAfterStep(event);
+          if (onAfterStep) onAfterStep(event);
           break;
         }
         case "pointer": {
@@ -6765,8 +6958,7 @@
             height: 100
           });
           target.dispatchEvent(event);
-          if (onAfterStep)
-            onAfterStep(event);
+          if (onAfterStep) onAfterStep(event);
           break;
         }
       }
@@ -6822,7 +7014,7 @@
       const el = createTestElement();
       const pointerSensor = new PointerSensor(el, { sourceEvents: "mouse" });
       const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-      const draggable = new Draggable([pointerSensor, keyboardSensor], { getElements: () => [el] });
+      const draggable = new Draggable([pointerSensor, keyboardSensor], { elements: () => [el] });
       let rect = el.getBoundingClientRect();
       assert.equal(rect.x, 0);
       assert.equal(rect.y, 0);
@@ -6863,19 +7055,46 @@
       keyboardSensor.destroy();
       el.remove();
     });
+    it("should work with transformed elements", async () => {
+      const el = createTestElement({
+        transform: "scale(1.2) translate(-5px, -6px) rotate(33deg) skew(31deg, 43deg)",
+        transformOrigin: "21px 22px"
+      });
+      const container = createTestElement({
+        transform: "scale(0.5) translate(3px, 4px) rotate(77deg) skew(11deg, 22deg)",
+        transformOrigin: "12px 13px"
+      });
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
+      container.appendChild(el);
+      const startRect = el.getBoundingClientRect();
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+      await wait(100);
+      const endRect = el.getBoundingClientRect();
+      assert.equal(Math.round((endRect.x - startRect.x) * 1e3) / 1e3, 1, "x");
+      assert.equal(Math.round((endRect.y - startRect.y) * 1e3) / 1e3, 1, "y");
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+      container.remove();
+    });
     describe("options", () => {
       describe("container", () => {
         it("should define the drag container", async () => {
           const container = createTestElement();
           const el = createTestElement();
           const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-          const draggable = new Draggable([keyboardSensor], { container, getElements: () => [el] });
+          const draggable = new Draggable([keyboardSensor], { container, elements: () => [el] });
           const originalContainer = el.parentNode;
           focusElement(el);
           document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
           await wait(100);
           assert.notEqual(draggable.drag, null);
-          assert.equal(el.parentNode, container);
+          assert.ok(container.contains(el));
+          assert.equal(el.parentElement, container);
           document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
           await wait(100);
           assert.equal(draggable.drag, null);
@@ -6885,7 +7104,7 @@
           el.remove();
           container.remove();
         });
-        it(`should not offset client position`, async () => {
+        it(`should maintain client position`, async () => {
           const containerPositions = ["static", "relative", "fixed", "absolute"];
           const elPositions = ["fixed", "absolute"];
           for (const containerPosition of containerPositions) {
@@ -6908,7 +7127,7 @@
               });
               const draggable = new Draggable([keyboardSensor], {
                 container,
-                getElements: () => [el]
+                elements: () => [el]
               });
               const originalContainer = el.parentNode;
               let containerRect = container.getBoundingClientRect();
@@ -6918,7 +7137,7 @@
               focusElement(el);
               document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
               await wait(100);
-              assert.equal(el.parentNode, container, "3: " + assertMsg);
+              assert.ok(container.contains(el), "3: " + assertMsg);
               let rect = el.getBoundingClientRect();
               assert.equal(rect.x, elRect.x, "4: " + assertMsg);
               assert.equal(rect.y, elRect.y, "5: " + assertMsg);
@@ -6930,9 +7149,9 @@
               document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
               await wait(100);
               rect = el.getBoundingClientRect();
-              assert.equal(rect.x, elRect.x + 1, "8: " + assertMsg);
-              assert.equal(rect.y, elRect.y, "9: " + assertMsg);
-              assert.equal(el.parentNode, originalContainer, "10: " + assertMsg);
+              assert.equal(rect.x, elRect.x + 1, "9: " + assertMsg);
+              assert.equal(rect.y, elRect.y, "10: " + assertMsg);
+              assert.equal(el.parentNode, originalContainer, "11: " + assertMsg);
               draggable.destroy();
               keyboardSensor.destroy();
               el.remove();
@@ -6940,15 +7159,49 @@
             }
           }
         });
+        it("should work with transformed elements", async () => {
+          const el = createTestElement({
+            transform: "scale(1.2) translate(-5px, -6px) rotate(33deg) skew(31deg, 43deg)",
+            transformOrigin: "21px 22px"
+          });
+          const container = createTestElement({
+            transform: "scale(0.5) translate(3px, 4px) rotate(77deg) skew(11deg, 22deg)",
+            transformOrigin: "12px 13px"
+          });
+          const dragContainer = createTestElement({
+            transform: "scale(0.75) translate(-30px, 79px) rotate(31deg) skew(3deg, 4deg)",
+            transformOrigin: "120px 130px"
+          });
+          const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+          const draggable = new Draggable([keyboardSensor], {
+            elements: () => [el],
+            container: dragContainer
+          });
+          container.appendChild(el);
+          const startRect = el.getBoundingClientRect();
+          focusElement(el);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+          await wait(100);
+          const endRect = el.getBoundingClientRect();
+          assert.equal(Math.round((endRect.x - startRect.x) * 1e3) / 1e3, 1, "x");
+          assert.equal(Math.round((endRect.y - startRect.y) * 1e3) / 1e3, 1, "y");
+          draggable.destroy();
+          keyboardSensor.destroy();
+          el.remove();
+          container.remove();
+          dragContainer.remove();
+        });
       });
-      describe("getElements", () => {
+      describe("elements", () => {
         it("should be a function that returns an array of the dragged elements", async () => {
           const elA = createTestElement();
           const elB = createTestElement();
           const elC = createTestElement();
           const keyboardSensor = new KeyboardSensor(elA, { moveDistance: 1 });
           const draggable = new Draggable([keyboardSensor], {
-            getElements: () => [elB, elC]
+            elements: () => [elB, elC]
           });
           focusElement(elA);
           document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
@@ -6989,8 +7242,7 @@
 
   // tests/src/utils/defaultPageStyles.ts
   function addDefaultPageStyles(doc) {
-    if (doc.getElementById("default-page-styles"))
-      return;
+    if (doc.getElementById("default-page-styles")) return;
     const styleSheet = doc.createElement("style");
     styleSheet.id = "default-page-styles";
     styleSheet.type = "text/css";

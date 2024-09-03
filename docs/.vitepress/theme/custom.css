@@ -2,6 +2,7 @@
   --vp-c-brand-1: #ff5555;
   --vp-c-brand-2: #ff5555;
   --vp-c-brand-3: #ff5555;
+  --vp-code-color: #7cbdff;
   --vp-nav-logo-height: 32px;
 }
 .VPFeatures .VPFeature {
@@ -17,4 +18,24 @@
   background-color: transparent;
   width: 60px;
   font-size: 24px;
+}
+.VPSidebar {
+  padding-bottom: 0 !important;
+  .VPLink,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    & > :first-child {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
 }

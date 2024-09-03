@@ -1,24 +1,21 @@
-import { getOffset } from 'mezr';
+import { Point } from 'types.js';
+import { getClientOffset } from './get-client-offset.js';
+import { isPoint } from './is-point.js';
+
+const OFFSET_A = { x: 0, y: 0 };
+const OFFSET_B = { x: 0, y: 0 };
 
 /**
  * Calculate the offset difference two elements.
  */
 export function getOffsetDiff(
-  elemA: Element | Window | Document,
-  elemB: Element | Window | Document,
-  result: { left: number; top: number } = { left: 0, top: 0 },
+  elemA: HTMLElement | SVGSVGElement | Window | Document | Point,
+  elemB: HTMLElement | SVGSVGElement | Window | Document | Point,
+  result: Point = { x: 0, y: 0 },
 ) {
-  result.left = 0;
-  result.top = 0;
-
-  // If elements are same let's return early.
-  if (elemA === elemB) return result;
-
-  // Finally, let's calculate the offset diff.
-  const offsetA = getOffset([elemA, 'padding']);
-  const offsetB = getOffset([elemB, 'padding']);
-  result.left = offsetB.left - offsetA.left;
-  result.top = offsetB.top - offsetA.top;
-
+  const offsetA = isPoint(elemA) ? elemA : getClientOffset(elemA, OFFSET_A);
+  const offsetB = isPoint(elemB) ? elemB : getClientOffset(elemB, OFFSET_B);
+  result.x = offsetB.x - offsetA.x;
+  result.y = offsetB.y - offsetA.y;
   return result;
 }

@@ -32,9 +32,10 @@ async function buildExampleDirectories() {
       mode: 'production',
       shouldDisableCache: true,
       defaultTargetOptions: {
-        shouldOptimize: true,
         distDir: outputDir,
         publicUrl: `./`,
+        sourceMaps: false,
+        shouldOptimize: false,
       },
     });
     await parcel.run();
@@ -76,9 +77,11 @@ async function buildExamplesMarkdown() {
       let indexCssContent = await fs.readFile(indexCssPath, 'utf8');
       let baseCssContent = await fs.readFile(baseCssPath, 'utf8');
 
-      // Parse the title from the HTML content.
+      // Parse the title and description from the HTML content.
       const dom = new JSDOM(indexHtmlContent);
-      const title = dom.window.document.title;
+      const { document } = dom.window;
+      const title = document.title;
+      const description = document.querySelector('meta[name="description"]')?.content || '';
 
       // Modify the index.ts content to include the correct import path.
       indexTsContent = indexTsContent.replace('../../src', 'dragdoll');
@@ -88,6 +91,9 @@ async function buildExamplesMarkdown() {
 
       // Append to markdown content.
       markdownContent += `## ${title}\n\n`;
+      if (description.length) {
+        markdownContent += `${description}\n\n`;
+      }
       markdownContent += `<iframe src="/dragdoll/examples/${exampleName}/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>\n\n`;
       markdownContent += `::: code-group\n\n`;
       markdownContent += '```ts [index.ts]\n' + indexTsContent + '\n```\n\n';
