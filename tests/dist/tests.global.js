@@ -5353,7 +5353,7 @@
         const { alignmentOffset } = item;
         if (alignmentOffset.x !== 0 || alignmentOffset.y !== 0) {
           this.settings.applyPosition({
-            phase: DraggableApplyPositionPhase.Align,
+            phase: DraggableApplyPositionPhase.StartAlign,
             draggable: this,
             drag,
             item

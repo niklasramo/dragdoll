@@ -1118,10 +1118,6 @@ class $7fff4587bd07df96$export$436f6efcc297171 extends (0, $07403df99f68f50f$exp
 }
 
 
-// TODO: If there is any transform in body element and you scroll the page the
-// drop location will be off. This might be an issue with scrolling transformed
-// containers. Investigate this further. The positoin is correct during the drag
-// process, but the drop location is off.
 
 
 
@@ -2165,7 +2161,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         for (const item of drag.items){
             const { alignmentOffset: alignmentOffset } = item;
             if (alignmentOffset.x !== 0 || alignmentOffset.y !== 0) this.settings.applyPosition({
-                phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.Align,
+                phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.StartAlign,
                 draggable: this,
                 drag: drag,
                 item: item
@@ -2361,7 +2357,6 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         // procedure causes a reflow, but it's necessary to ensure that the elements
         // are visually aligned correctly. We do the DOM reading in a separate loop
         // to avoid layout thrashing more than necessary.
-        // TODO: See if we can opt out of this procedure in specific cases.
         for (const item of drag.items)if (item.elementContainer !== item.dragContainer) {
             const itemRect = item.element.getBoundingClientRect();
             // Round the align diff to nearest 3rd decimal to avoid applying it if
@@ -3645,33 +3640,42 @@ function $244877ffe9407e42$export$c0f5c18ade842ccd(options) {
 
 
 
-const $9ce708fa4d5ed47d$var$GRID_WIDTH = 40;
-const $9ce708fa4d5ed47d$var$GRID_HEIGHT = 40;
-const $9ce708fa4d5ed47d$var$element = document.querySelector(".draggable");
-const $9ce708fa4d5ed47d$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($9ce708fa4d5ed47d$var$element);
-const $9ce708fa4d5ed47d$var$keyboardSensor = new (0, $2a9b1c646b3552c1$export$44d67f2a438aeba9)($9ce708fa4d5ed47d$var$element, {
-    moveDistance: {
-        x: $9ce708fa4d5ed47d$var$GRID_WIDTH,
-        y: $9ce708fa4d5ed47d$var$GRID_HEIGHT
-    }
+const $72821dbb08df4f25$var$element = document.querySelector(".draggable");
+const $72821dbb08df4f25$var$dragContainer = document.querySelector(".drag-container");
+const $72821dbb08df4f25$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($72821dbb08df4f25$var$element);
+const $72821dbb08df4f25$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($72821dbb08df4f25$var$element, {
+    computeSpeed: ()=>100
 });
-const $9ce708fa4d5ed47d$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $9ce708fa4d5ed47d$var$pointerSensor,
-    $9ce708fa4d5ed47d$var$keyboardSensor
+const $72821dbb08df4f25$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $72821dbb08df4f25$var$pointerSensor,
+    $72821dbb08df4f25$var$keyboardSensor
 ], {
+    container: $72821dbb08df4f25$var$dragContainer,
     elements: ()=>[
-            $9ce708fa4d5ed47d$var$element
+            $72821dbb08df4f25$var$element
+        ],
+    frozenStyles: ()=>[
+            "left",
+            "top"
         ],
     startPredicate: (0, $8968a02849ea5e26$export$88d83dc4a35d804f)(),
-    positionModifiers: [
-        (0, $0b5391881dc2b3a6$export$7f11ea1f0ba255b5)($9ce708fa4d5ed47d$var$GRID_WIDTH, $9ce708fa4d5ed47d$var$GRID_HEIGHT)
-    ],
     onStart: ()=>{
-        $9ce708fa4d5ed47d$var$element.classList.add("dragging");
+        $72821dbb08df4f25$var$element.classList.add("dragging");
     },
     onEnd: ()=>{
-        $9ce708fa4d5ed47d$var$element.classList.remove("dragging");
+        $72821dbb08df4f25$var$element.classList.remove("dragging");
     }
-});
+}).use((0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
+    targets: [
+        {
+            element: window,
+            axis: "y",
+            padding: {
+                top: Infinity,
+                bottom: Infinity
+            }
+        }
+    ]
+}));
 
 

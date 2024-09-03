@@ -1,8 +1,3 @@
-// TODO: If there is any transform in body element and you scroll the page the
-// drop location will be off. This might be an issue with scrolling transformed
-// containers. Investigate this further. The positoin is correct during the drag
-// process, but the drop location is off.
-
 import { HAS_PASSIVE_EVENTS } from '../constants.js';
 
 import { Emitter, EventListenerId } from 'eventti';
@@ -476,7 +471,7 @@ export class Draggable<
       const { alignmentOffset } = item;
       if (alignmentOffset.x !== 0 || alignmentOffset.y !== 0) {
         this.settings.applyPosition({
-          phase: DraggableApplyPositionPhase.Align,
+          phase: DraggableApplyPositionPhase.StartAlign,
           draggable: this,
           drag,
           item,
@@ -733,7 +728,6 @@ export class Draggable<
     // procedure causes a reflow, but it's necessary to ensure that the elements
     // are visually aligned correctly. We do the DOM reading in a separate loop
     // to avoid layout thrashing more than necessary.
-    // TODO: See if we can opt out of this procedure in specific cases.
     for (const item of drag.items) {
       if (item.elementContainer !== item.dragContainer) {
         const itemRect = item.element.getBoundingClientRect();

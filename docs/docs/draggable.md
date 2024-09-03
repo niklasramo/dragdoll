@@ -107,7 +107,7 @@ type applyPosition = (data: {
   draggable: Draggable;
   drag: DraggableDrag;
   item: DraggableDragItem;
-  phase: 'start' | 'move' | 'end' | 'align' | 'start-align';
+  phase: 'start' | 'start-align' | 'move' | 'align' | 'end' | 'end-align';
 }) => void;
 ```
 
@@ -118,9 +118,11 @@ Default is a (very involved) function that applies the position, container offse
 Also note that the `phase` argument is provided to the function to help you determine what phase of the drag process you are in:
 
 - `start`: Called when the drag starts.
+- `start-align`: Called during the start process after `start` phase if the element is moved within a drag container AND the drag container and the element container have different world matrices.
 - `move`: Called on every "move" event emitted by the currently tracked sensor during the drag.
+- `align`: Called when the element's position is realigned (via [`align`](#align) method).
 - `end`: Called when the drag ends.
-- `align`: Called when the element's position is realigned (mostly via [`align`](#align) method).
+- `end-align`: Called after the `end` phase if the element was moved back to the original container from the drag container AND the element's position needs to be realigned to match the current client position.
 
 ### positionModifiers
 

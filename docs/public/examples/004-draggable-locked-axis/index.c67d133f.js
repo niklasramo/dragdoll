@@ -1118,10 +1118,6 @@ class $7fff4587bd07df96$export$436f6efcc297171 extends (0, $07403df99f68f50f$exp
 }
 
 
-// TODO: If there is any transform in body element and you scroll the page the
-// drop location will be off. This might be an issue with scrolling transformed
-// containers. Investigate this further. The positoin is correct during the drag
-// process, but the drop location is off.
 
 
 
@@ -2165,7 +2161,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         for (const item of drag.items){
             const { alignmentOffset: alignmentOffset } = item;
             if (alignmentOffset.x !== 0 || alignmentOffset.y !== 0) this.settings.applyPosition({
-                phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.Align,
+                phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.StartAlign,
                 draggable: this,
                 drag: drag,
                 item: item
@@ -2361,7 +2357,6 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         // procedure causes a reflow, but it's necessary to ensure that the elements
         // are visually aligned correctly. We do the DOM reading in a separate loop
         // to avoid layout thrashing more than necessary.
-        // TODO: See if we can opt out of this procedure in specific cases.
         for (const item of drag.items)if (item.elementContainer !== item.dragContainer) {
             const itemRect = item.element.getBoundingClientRect();
             // Round the align diff to nearest 3rd decimal to avoid applying it if
@@ -3645,25 +3640,34 @@ function $244877ffe9407e42$export$c0f5c18ade842ccd(options) {
 
 
 
-const $9d29fe00413f3681$var$draggableElements = [
+let $63994e3588ee9d7d$var$zIndex = 0;
+const $63994e3588ee9d7d$var$draggableElements = [
     ...document.querySelectorAll(".draggable")
 ];
-$9d29fe00413f3681$var$draggableElements.forEach((element)=>{
+$63994e3588ee9d7d$var$draggableElements.forEach((element)=>{
     const pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element);
     const keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)(element);
     const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
         pointerSensor,
         keyboardSensor
     ], {
-        elements: ()=>{
-            return [
-                element,
-                ...$9d29fe00413f3681$var$draggableElements.filter((el)=>el !== element)
-            ];
-        },
+        elements: ()=>[
+                element
+            ],
         startPredicate: (0, $8968a02849ea5e26$export$88d83dc4a35d804f)(),
+        positionModifiers: [
+            (change, { item: item })=>{
+                const { element: element } = item;
+                const allowX = element.classList.contains("axis-x");
+                const allowY = element.classList.contains("axis-y");
+                if (allowX && !allowY) change.y = 0;
+                else if (allowY && !allowX) change.x = 0;
+                return change;
+            }
+        ],
         onStart: ()=>{
             element.classList.add("dragging");
+            element.style.zIndex = `${++$63994e3588ee9d7d$var$zIndex}`;
         },
         onEnd: ()=>{
             element.classList.remove("dragging");

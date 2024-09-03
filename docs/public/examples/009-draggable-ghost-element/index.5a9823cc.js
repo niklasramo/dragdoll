@@ -1118,10 +1118,6 @@ class $7fff4587bd07df96$export$436f6efcc297171 extends (0, $07403df99f68f50f$exp
 }
 
 
-// TODO: If there is any transform in body element and you scroll the page the
-// drop location will be off. This might be an issue with scrolling transformed
-// containers. Investigate this further. The positoin is correct during the drag
-// process, but the drop location is off.
 
 
 
@@ -2165,7 +2161,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         for (const item of drag.items){
             const { alignmentOffset: alignmentOffset } = item;
             if (alignmentOffset.x !== 0 || alignmentOffset.y !== 0) this.settings.applyPosition({
-                phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.Align,
+                phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.StartAlign,
                 draggable: this,
                 drag: drag,
                 item: item
@@ -2361,7 +2357,6 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         // procedure causes a reflow, but it's necessary to ensure that the elements
         // are visually aligned correctly. We do the DOM reading in a separate loop
         // to avoid layout thrashing more than necessary.
-        // TODO: See if we can opt out of this procedure in specific cases.
         for (const item of drag.items)if (item.elementContainer !== item.dragContainer) {
             const itemRect = item.element.getBoundingClientRect();
             // Round the align diff to nearest 3rd decimal to avoid applying it if
@@ -3645,25 +3640,49 @@ function $244877ffe9407e42$export$c0f5c18ade842ccd(options) {
 
 
 
-const $dffb89cf206e4bcc$var$element = document.querySelector(".draggable");
-const $dffb89cf206e4bcc$var$handle = $dffb89cf206e4bcc$var$element.querySelector(".handle");
-const $dffb89cf206e4bcc$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($dffb89cf206e4bcc$var$handle);
-const $dffb89cf206e4bcc$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($dffb89cf206e4bcc$var$element);
-const $dffb89cf206e4bcc$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $dffb89cf206e4bcc$var$pointerSensor,
-    $dffb89cf206e4bcc$var$keyboardSensor
+const $fbef1913897e270e$var$element = document.querySelector(".draggable");
+const $fbef1913897e270e$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($fbef1913897e270e$var$element);
+const $fbef1913897e270e$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($fbef1913897e270e$var$element);
+const $fbef1913897e270e$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $fbef1913897e270e$var$pointerSensor,
+    $fbef1913897e270e$var$keyboardSensor
 ], {
-    elements: ()=>[
-            $dffb89cf206e4bcc$var$element
-        ],
+    elements: ()=>{
+        // Clone the element and align the clone with the original element.
+        const elemRect = $fbef1913897e270e$var$element.getBoundingClientRect();
+        const clone = $fbef1913897e270e$var$element.cloneNode(true);
+        clone.style.position = "fixed";
+        clone.style.width = `${elemRect.width}px`;
+        clone.style.height = `${elemRect.height}px`;
+        clone.style.left = `${elemRect.left}px`;
+        clone.style.top = `${elemRect.top}px`;
+        // Add the ghost and dragging class to the clone. The ghost element will be
+        // in dragging state for the duration of it's existence.
+        clone.classList.add("ghost", "dragging");
+        // We need to reset the transform to avoid the ghost element being offset
+        // unintentionally. In this specific case, if we don't reset the transform,
+        // the ghost element will be offset by the original element's transform.
+        clone.style.transform = "";
+        // Append the ghost element to the body.
+        document.body.appendChild(clone);
+        return [
+            clone
+        ];
+    },
     startPredicate: (0, $8968a02849ea5e26$export$88d83dc4a35d804f)(),
     onStart: ()=>{
-        $dffb89cf206e4bcc$var$element.classList.add("dragging");
-        if ($dffb89cf206e4bcc$var$draggable.drag.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) $dffb89cf206e4bcc$var$element.classList.add("pointer-dragging");
-        else $dffb89cf206e4bcc$var$element.classList.add("keyboard-dragging");
+        $fbef1913897e270e$var$element.classList.add("dragging");
     },
-    onEnd: ()=>{
-        $dffb89cf206e4bcc$var$element.classList.remove("dragging", "pointer-dragging", "keyboard-dragging");
+    onEnd: (drag)=>{
+        const dragItem = drag.items[0];
+        // Move the original element to the ghost element's position. We use DOMMatrix
+        // to first combine the original element's transform with the ghost element's
+        // transform and then apply the combined transform to the original element.
+        const matrix = new DOMMatrix().setMatrixValue(`translate(${dragItem.position.x}px, ${dragItem.position.y}px) ${$fbef1913897e270e$var$element.style.transform}`);
+        $fbef1913897e270e$var$element.style.transform = `${matrix}`;
+        // Remove the ghost element.
+        dragItem.element.remove();
+        $fbef1913897e270e$var$element.classList.remove("dragging");
     }
 });
 
