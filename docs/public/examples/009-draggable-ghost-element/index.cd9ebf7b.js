@@ -5,6 +5,8 @@ const $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5 = {
     End: "end",
     Destroy: "destroy"
 };
+class $b7f29e04c7dc9749$export$f5fe6b3a9dfe845b {
+}
 
 
 var $e4e7a534e772252d$export$242b5ede4c93f7ba = {
@@ -3640,39 +3642,50 @@ function $244877ffe9407e42$export$c0f5c18ade842ccd(options) {
 
 
 
-let $63994e3588ee9d7d$var$zIndex = 0;
-const $63994e3588ee9d7d$var$draggableElements = [
-    ...document.querySelectorAll(".draggable")
-];
-$63994e3588ee9d7d$var$draggableElements.forEach((element)=>{
-    const pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element);
-    const keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)(element);
-    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-        pointerSensor,
-        keyboardSensor
-    ], {
-        elements: ()=>[
-                element
-            ],
-        startPredicate: (0, $8968a02849ea5e26$export$88d83dc4a35d804f)(),
-        positionModifiers: [
-            (change, { item: item })=>{
-                const { element: element } = item;
-                const allowX = element.classList.contains("axis-x");
-                const allowY = element.classList.contains("axis-y");
-                if (allowX && !allowY) change.y = 0;
-                else if (allowY && !allowX) change.x = 0;
-                return change;
-            }
-        ],
-        onStart: ()=>{
-            element.classList.add("dragging");
-            element.style.zIndex = `${++$63994e3588ee9d7d$var$zIndex}`;
-        },
-        onEnd: ()=>{
-            element.classList.remove("dragging");
-        }
-    });
+const $fbef1913897e270e$var$element = document.querySelector(".draggable");
+const $fbef1913897e270e$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($fbef1913897e270e$var$element);
+const $fbef1913897e270e$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($fbef1913897e270e$var$element);
+const $fbef1913897e270e$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $fbef1913897e270e$var$pointerSensor,
+    $fbef1913897e270e$var$keyboardSensor
+], {
+    elements: ()=>{
+        // Clone the element and align the clone with the original element.
+        const elemRect = $fbef1913897e270e$var$element.getBoundingClientRect();
+        const clone = $fbef1913897e270e$var$element.cloneNode(true);
+        clone.style.position = "fixed";
+        clone.style.width = `${elemRect.width}px`;
+        clone.style.height = `${elemRect.height}px`;
+        clone.style.left = `${elemRect.left}px`;
+        clone.style.top = `${elemRect.top}px`;
+        // Add the ghost and dragging class to the clone. The ghost element will be
+        // in dragging state for the duration of it's existence.
+        clone.classList.add("ghost", "dragging");
+        // We need to reset the transform to avoid the ghost element being offset
+        // unintentionally. In this specific case, if we don't reset the transform,
+        // the ghost element will be offset by the original element's transform.
+        clone.style.transform = "";
+        // Append the ghost element to the body.
+        document.body.appendChild(clone);
+        return [
+            clone
+        ];
+    },
+    startPredicate: (0, $8968a02849ea5e26$export$88d83dc4a35d804f)(),
+    onStart: ()=>{
+        $fbef1913897e270e$var$element.classList.add("dragging");
+    },
+    onEnd: (drag)=>{
+        const dragItem = drag.items[0];
+        // Move the original element to the ghost element's position. We use DOMMatrix
+        // to first combine the original element's transform with the ghost element's
+        // transform and then apply the combined transform to the original element.
+        const matrix = new DOMMatrix().setMatrixValue(`translate(${dragItem.position.x}px, ${dragItem.position.y}px) ${$fbef1913897e270e$var$element.style.transform}`);
+        $fbef1913897e270e$var$element.style.transform = `${matrix}`;
+        // Remove the ghost element.
+        dragItem.element.remove();
+        $fbef1913897e270e$var$element.classList.remove("dragging");
+    }
 });
 
 

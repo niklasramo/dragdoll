@@ -1,9 +1,9 @@
 import { assert } from 'chai';
-import { createTestElement } from './utils/createTestElement.js';
-import { focusElement } from './utils/focusElement.js';
-import { blurElement } from './utils/blurElement.js';
+import { createTestElement } from './utils/create-test-element.js';
+import { focusElement } from './utils/focus-element.js';
+import { blurElement } from './utils/blur-element.js';
 import { wait } from './utils/wait.js';
-import { addDefaultPageStyles, removeDefaultPageStyles } from './utils/defaultPageStyles.js';
+import { addDefaultPageStyles, removeDefaultPageStyles } from './utils/default-page-styles.js';
 import { KeyboardSensor } from '../../src/index.js';
 
 // TODO:

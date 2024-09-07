@@ -25,7 +25,7 @@ export class BaseMotionSensor<E extends BaseMotionSensorEvents = BaseMotionSenso
   extends BaseSensor<E>
   implements Sensor<E>
 {
-  declare events: E;
+  declare _events_type: E;
   readonly drag: BaseMotionSensorDragData | null;
   protected _direction: Point;
   protected _speed: number;

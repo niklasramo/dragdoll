@@ -5,6 +5,8 @@ const $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5 = {
     End: "end",
     Destroy: "destroy"
 };
+class $b7f29e04c7dc9749$export$f5fe6b3a9dfe845b {
+}
 
 
 var $e4e7a534e772252d$export$242b5ede4c93f7ba = {
@@ -3640,42 +3642,41 @@ function $244877ffe9407e42$export$c0f5c18ade842ccd(options) {
 
 
 
-const $6abf5f75f0c818c7$var$element = document.querySelector(".draggable");
-const $6abf5f75f0c818c7$var$dragContainer = document.querySelector(".drag-container");
-const $6abf5f75f0c818c7$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($6abf5f75f0c818c7$var$element);
-const $6abf5f75f0c818c7$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($6abf5f75f0c818c7$var$element, {
-    computeSpeed: ()=>100
-});
-const $6abf5f75f0c818c7$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $6abf5f75f0c818c7$var$pointerSensor,
-    $6abf5f75f0c818c7$var$keyboardSensor
+const $36439aed3cd46e36$var$element = document.querySelector(".draggable");
+const $36439aed3cd46e36$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($36439aed3cd46e36$var$element);
+const $36439aed3cd46e36$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($36439aed3cd46e36$var$element);
+const $36439aed3cd46e36$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $36439aed3cd46e36$var$pointerSensor,
+    $36439aed3cd46e36$var$keyboardSensor
 ], {
-    container: $6abf5f75f0c818c7$var$dragContainer,
     elements: ()=>[
-            $6abf5f75f0c818c7$var$element
-        ],
-    frozenStyles: ()=>[
-            "left",
-            "top"
+            $36439aed3cd46e36$var$element
         ],
     startPredicate: (0, $8968a02849ea5e26$export$88d83dc4a35d804f)(),
+    positionModifiers: [
+        (change, { drag: drag, item: item, phase: phase })=>{
+            // Align the dragged element so that the pointer
+            // is in the center of the element.
+            if (// Only apply the alignment on the start phase.
+            phase === "start" && // Only apply the alignment for the pointer sensor.
+            drag.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638) && // Only apply the alignment for the primary drag element.
+            drag.items[0].element === item.element) {
+                const { clientRect: clientRect } = item;
+                const { x: x, y: y } = drag.startEvent;
+                const targetX = clientRect.x + clientRect.width / 2;
+                const targetY = clientRect.y + clientRect.height / 2;
+                change.x = x - targetX;
+                change.y = y - targetY;
+            }
+            return change;
+        }
+    ],
     onStart: ()=>{
-        $6abf5f75f0c818c7$var$element.classList.add("dragging");
+        $36439aed3cd46e36$var$element.classList.add("dragging");
     },
     onEnd: ()=>{
-        $6abf5f75f0c818c7$var$element.classList.remove("dragging");
+        $36439aed3cd46e36$var$element.classList.remove("dragging");
     }
-}).use((0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
-    targets: [
-        {
-            element: window,
-            axis: "y",
-            padding: {
-                top: Infinity,
-                bottom: Infinity
-            }
-        }
-    ]
-}));
+});
 
 

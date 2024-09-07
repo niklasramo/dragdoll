@@ -5,6 +5,8 @@ const $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5 = {
     End: "end",
     Destroy: "destroy"
 };
+class $b7f29e04c7dc9749$export$f5fe6b3a9dfe845b {
+}
 
 
 var $e4e7a534e772252d$export$242b5ede4c93f7ba = {
@@ -3640,40 +3642,25 @@ function $244877ffe9407e42$export$c0f5c18ade842ccd(options) {
 
 
 
-const $36439aed3cd46e36$var$element = document.querySelector(".draggable");
-const $36439aed3cd46e36$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($36439aed3cd46e36$var$element);
-const $36439aed3cd46e36$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($36439aed3cd46e36$var$element);
-const $36439aed3cd46e36$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $36439aed3cd46e36$var$pointerSensor,
-    $36439aed3cd46e36$var$keyboardSensor
+const $dffb89cf206e4bcc$var$element = document.querySelector(".draggable");
+const $dffb89cf206e4bcc$var$handle = $dffb89cf206e4bcc$var$element.querySelector(".handle");
+const $dffb89cf206e4bcc$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($dffb89cf206e4bcc$var$handle);
+const $dffb89cf206e4bcc$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($dffb89cf206e4bcc$var$element);
+const $dffb89cf206e4bcc$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $dffb89cf206e4bcc$var$pointerSensor,
+    $dffb89cf206e4bcc$var$keyboardSensor
 ], {
     elements: ()=>[
-            $36439aed3cd46e36$var$element
+            $dffb89cf206e4bcc$var$element
         ],
     startPredicate: (0, $8968a02849ea5e26$export$88d83dc4a35d804f)(),
-    positionModifiers: [
-        (change, { drag: drag, item: item, phase: phase })=>{
-            // Align the dragged element so that the pointer
-            // is in the center of the element.
-            if (// Only apply the alignment on the start phase.
-            phase === "start" && // Only apply the alignment for the pointer sensor.
-            drag.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638) && // Only apply the alignment for the primary drag element.
-            drag.items[0].element === item.element) {
-                const { clientRect: clientRect } = item;
-                const { x: x, y: y } = drag.startEvent;
-                const targetX = clientRect.x + clientRect.width / 2;
-                const targetY = clientRect.y + clientRect.height / 2;
-                change.x = x - targetX;
-                change.y = y - targetY;
-            }
-            return change;
-        }
-    ],
     onStart: ()=>{
-        $36439aed3cd46e36$var$element.classList.add("dragging");
+        $dffb89cf206e4bcc$var$element.classList.add("dragging");
+        if ($dffb89cf206e4bcc$var$draggable.drag.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) $dffb89cf206e4bcc$var$element.classList.add("pointer-dragging");
+        else $dffb89cf206e4bcc$var$element.classList.add("keyboard-dragging");
     },
     onEnd: ()=>{
-        $36439aed3cd46e36$var$element.classList.remove("dragging");
+        $dffb89cf206e4bcc$var$element.classList.remove("dragging", "pointer-dragging", "keyboard-dragging");
     }
 });
 

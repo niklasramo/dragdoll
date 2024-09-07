@@ -10,7 +10,7 @@ export interface BaseSensorDragData {
 }
 
 export class BaseSensor<E extends SensorEvents = SensorEvents> implements Sensor<E> {
-  declare events: E;
+  declare _events_type: E;
   readonly drag: BaseSensorDragData | null;
   readonly isDestroyed: boolean;
   protected _emitter: Emitter<Events>;

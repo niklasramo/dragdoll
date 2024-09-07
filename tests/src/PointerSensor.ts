@@ -1,7 +1,7 @@
 import { assert } from 'chai';
-import { createTestElement } from './utils/createTestElement.js';
-import { createFakeDrag } from './utils/createFakeDrag.js';
-import { addDefaultPageStyles, removeDefaultPageStyles } from './utils/defaultPageStyles.js';
+import { createTestElement } from './utils/create-test-element.js';
+import { createFakeDrag } from './utils/create-fake-drag.js';
+import { addDefaultPageStyles, removeDefaultPageStyles } from './utils/default-page-styles.js';
 import {
   PointerSensor,
   PointerSensorCancelEvent,

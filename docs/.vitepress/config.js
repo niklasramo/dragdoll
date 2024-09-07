@@ -20,7 +20,7 @@ export default {
     },
     outline: [2, 3],
     editLink: {
-      pattern: 'https://github.com/niklasramo/dragdoll/edit/master/docs/:path',
+      pattern: 'https://github.com/niklasramo/dragdoll/edit/main/docs/:path',
       text: 'Edit this page on GitHub',
     },
     socialLinks: [{ icon: 'github', link: 'https://github.com/niklasramo/dragdoll' }],
