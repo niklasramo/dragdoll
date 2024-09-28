@@ -5923,7 +5923,7 @@ var AutoScroll = class {
 // src/singletons/auto-scroll.ts
 var autoScroll = new AutoScroll();
 
-// tests/src/BaseSensor.ts
+// tests/src/base-sensor/index.ts
 describe("BaseSensor", () => {
   describe("drag property", () => {
     it(`should be null on init`, function() {
@@ -6246,11 +6246,11 @@ describe("BaseSensor", () => {
        `, function() {
       const s = new BaseSensor();
       const startArgs = { type: "start", x: 1, y: 2 };
-      let events = [];
+      let events2 = [];
       s["_start"](startArgs);
-      s.on("start", (data) => void events.push(data.type));
-      s.on("move", (data) => void events.push(data.type));
-      s.on("end", (data) => void events.push(data.type));
+      s.on("start", (data) => void events2.push(data.type));
+      s.on("move", (data) => void events2.push(data.type));
+      s.on("end", (data) => void events2.push(data.type));
       s.on("cancel", (data) => {
         assert.deepEqual(s.drag, { x: startArgs.x, y: startArgs.y });
         assert.equal(s.isDestroyed, true);
@@ -6259,7 +6259,7 @@ describe("BaseSensor", () => {
           x: startArgs.x,
           y: startArgs.y
         });
-        events.push(data.type);
+        events2.push(data.type);
       });
       s.on("destroy", (data) => {
         assert.equal(s.drag, null);
@@ -6267,13 +6267,13 @@ describe("BaseSensor", () => {
         assert.deepEqual(data, {
           type: "destroy"
         });
-        events.push(data.type);
+        events2.push(data.type);
       });
       assert.equal(s["_emitter"].listenerCount(), 5);
       s.destroy();
       assert.equal(s.drag, null);
       assert.equal(s.isDestroyed, true);
-      assert.deepEqual(events, ["cancel", "destroy"]);
+      assert.deepEqual(events2, ["cancel", "destroy"]);
       assert.equal(s["_emitter"].listenerCount(), 0);
     });
     it(`should (if drag is not active):
@@ -6282,39 +6282,39 @@ describe("BaseSensor", () => {
           3. remove all listeners from the internal emitter
        `, function() {
       const s = new BaseSensor();
-      let events = [];
-      s.on("start", (data) => void events.push(data.type));
-      s.on("move", (data) => void events.push(data.type));
-      s.on("end", (data) => void events.push(data.type));
-      s.on("cancel", (data) => void events.push(data.type));
+      let events2 = [];
+      s.on("start", (data) => void events2.push(data.type));
+      s.on("move", (data) => void events2.push(data.type));
+      s.on("end", (data) => void events2.push(data.type));
+      s.on("cancel", (data) => void events2.push(data.type));
       s.on("destroy", (data) => {
         assert.equal(s.drag, null);
         assert.equal(s.isDestroyed, true);
         assert.deepEqual(data, {
           type: "destroy"
         });
-        events.push(data.type);
+        events2.push(data.type);
       });
       assert.equal(s["_emitter"].listenerCount(), 5);
       s.destroy();
       assert.equal(s.drag, null);
       assert.equal(s.isDestroyed, true);
-      assert.deepEqual(events, ["destroy"]);
+      assert.deepEqual(events2, ["destroy"]);
       assert.equal(s["_emitter"].listenerCount(), 0);
     });
     it("should not do anything if the sensor is already destroyed", () => {
       const s = new BaseSensor();
       s.destroy();
-      let events = [];
-      s.on("start", (data) => void events.push(data.type));
-      s.on("move", (data) => void events.push(data.type));
-      s.on("end", (data) => void events.push(data.type));
-      s.on("cancel", (data) => void events.push(data.type));
-      s.on("destroy", (data) => void events.push(data.type));
+      let events2 = [];
+      s.on("start", (data) => void events2.push(data.type));
+      s.on("move", (data) => void events2.push(data.type));
+      s.on("end", (data) => void events2.push(data.type));
+      s.on("cancel", (data) => void events2.push(data.type));
+      s.on("destroy", (data) => void events2.push(data.type));
       s.destroy();
       assert.equal(s.drag, null);
       assert.equal(s.isDestroyed, true);
-      assert.deepEqual(events, []);
+      assert.deepEqual(events2, []);
     });
   });
 });
@@ -6551,643 +6551,205 @@ function waitNextFrame() {
   });
 }
 
-// tests/src/Draggable.ts
-describe("Draggable", () => {
-  it("should drag an element using the provided sensors", async () => {
-    const el = createTestElement();
-    const pointerSensor = new PointerSensor(el, { sourceEvents: "mouse" });
-    const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-    const draggable = new Draggable([pointerSensor, keyboardSensor], { elements: () => [el] });
-    let rect = el.getBoundingClientRect();
-    assert.equal(rect.x, 0);
-    assert.equal(rect.y, 0);
-    focusElement(el);
-    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-    document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-    await waitNextFrame();
-    rect = el.getBoundingClientRect();
-    assert.equal(rect.x, 1);
-    assert.equal(rect.y, 0);
-    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-    assert.equal(draggable.drag, null);
-    await createFakeDrag(
-      [
-        { x: 1, y: 1 },
-        // mouse down
-        { x: 2, y: 2 },
-        // mouse move
-        { x: 3, y: 3 },
-        // mouse move
-        { x: 3, y: 3 }
-        // mouse up
-      ],
-      {
-        eventType: "mouse",
-        stepDuration: 50
-      }
-    );
-    await waitNextFrame();
-    assert.equal(draggable.drag, null);
-    rect = el.getBoundingClientRect();
-    assert.equal(rect.x, 3);
-    assert.equal(rect.y, 2);
-    draggable.destroy();
-    pointerSensor.destroy();
-    keyboardSensor.destroy();
-    el.remove();
+// tests/src/draggable/base.ts
+function base() {
+  describe("base", () => {
+    it("should drag an element using the provided sensors", async () => {
+      const el = createTestElement();
+      const pointerSensor = new PointerSensor(el, { sourceEvents: "mouse" });
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([pointerSensor, keyboardSensor], { elements: () => [el] });
+      let rect = el.getBoundingClientRect();
+      assert.equal(rect.x, 0);
+      assert.equal(rect.y, 0);
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      rect = el.getBoundingClientRect();
+      console.log(rect.x, rect.y);
+      assert.equal(rect.x, 1);
+      assert.equal(rect.y, 0);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(draggable.drag, null);
+      await createFakeDrag(
+        [
+          { x: 1, y: 1 },
+          // mouse down
+          { x: 2, y: 2 },
+          // mouse move
+          { x: 3, y: 3 },
+          // mouse move
+          { x: 3, y: 3 }
+          // mouse up
+        ],
+        {
+          eventType: "mouse",
+          stepDuration: 50
+        }
+      );
+      await waitNextFrame();
+      assert.equal(draggable.drag, null);
+      rect = el.getBoundingClientRect();
+      assert.equal(rect.x, 3);
+      assert.equal(rect.y, 2);
+      draggable.destroy();
+      pointerSensor.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+    });
+    it("should work with transformed elements", async () => {
+      const el = createTestElement({
+        transform: "scale(1.2) translate(-5px, -6px) rotate(33deg) skew(30deg, -40deg)",
+        transformOrigin: "21px 22px"
+      });
+      const container1 = createTestElement({
+        transform: "scale(0.9) translate(3px, 4px) rotate(-10deg) skew(5deg, 10deg)",
+        transformOrigin: "5px 10px"
+      });
+      const container2 = createTestElement({
+        transform: "scale(0.8) translate(4px, 5px) rotate(-20deg) skew(10deg, 15deg)",
+        transformOrigin: "10px 15px"
+      });
+      const container3 = createTestElement({
+        transform: "scale(0.7) translate(5px, 6px) rotate(-30deg) skew(15deg, 20deg)",
+        transformOrigin: "15px 20px"
+      });
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
+      container1.appendChild(container2);
+      container2.appendChild(container3);
+      container3.appendChild(el);
+      const startRect = el.getBoundingClientRect();
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+      await waitNextFrame();
+      const endRect = el.getBoundingClientRect();
+      assert.equal(roundNumber2(endRect.x - startRect.x, 3), 1, "x");
+      assert.equal(roundNumber2(endRect.y - startRect.y, 3), 1, "y");
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+      container1.remove();
+      container2.remove();
+      container3.remove();
+    });
   });
-  it("should work with transformed elements", async () => {
-    const el = createTestElement({
-      transform: "scale(1.2) translate(-5px, -6px) rotate(33deg) skew(30deg, -40deg)",
-      transformOrigin: "21px 22px"
+}
+
+// tests/src/draggable/events.ts
+function events() {
+  describe("events", () => {
+    it("should be called at the right time with the right arguments", async () => {
+      let events2 = [];
+      let currentKeyboardEvent = null;
+      const el = createTestElement();
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [el]
+      });
+      draggable.on("preparestart", (...args) => {
+        assert.equal(args.length, 1);
+        assert.equal(args[0].type, "start");
+        assert.equal(args[0].srcEvent, currentKeyboardEvent);
+        events2.push("preparestart");
+      });
+      draggable.on("start", (...args) => {
+        assert.equal(args.length, 1);
+        assert.equal(args[0].type, "start");
+        assert.equal(args[0].srcEvent, currentKeyboardEvent);
+        events2.push("start");
+      });
+      draggable.on("preparemove", (...args) => {
+        assert.equal(args.length, 1);
+        assert.equal(args[0].type, "move");
+        assert.equal(args[0].srcEvent, currentKeyboardEvent);
+        events2.push("preparemove");
+      });
+      draggable.on("move", (...args) => {
+        assert.equal(args.length, 1);
+        assert.equal(args[0].type, "move");
+        assert.equal(args[0].srcEvent, currentKeyboardEvent);
+        events2.push("move");
+      });
+      draggable.on("end", (...args) => {
+        assert.equal(args.length, 1);
+        assert.equal(args[0]?.type, "end");
+        assert.equal(args[0]?.srcEvent, currentKeyboardEvent);
+        events2.push("end");
+      });
+      draggable.on("destroy", (...args) => {
+        assert.equal(args.length, 0);
+        events2.push("destroy");
+      });
+      focusElement(el);
+      currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
+      document.dispatchEvent(currentKeyboardEvent);
+      await waitNextFrame();
+      assert.deepEqual(events2, ["preparestart", "start"]);
+      events2.length = 0;
+      currentKeyboardEvent = new KeyboardEvent("keydown", { key: "ArrowRight" });
+      document.dispatchEvent(currentKeyboardEvent);
+      await waitNextFrame();
+      assert.deepEqual(events2, ["preparemove", "move"]);
+      events2.length = 0;
+      currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
+      document.dispatchEvent(currentKeyboardEvent);
+      assert.deepEqual(events2, ["end"]);
+      events2.length = 0;
+      draggable.destroy();
+      assert.deepEqual(events2, ["destroy"]);
+      keyboardSensor.destroy();
+      el.remove();
     });
-    const container1 = createTestElement({
-      transform: "scale(0.9) translate(3px, 4px) rotate(-10deg) skew(5deg, 10deg)",
-      transformOrigin: "5px 10px"
-    });
-    const container2 = createTestElement({
-      transform: "scale(0.8) translate(4px, 5px) rotate(-20deg) skew(10deg, 15deg)",
-      transformOrigin: "10px 15px"
-    });
-    const container3 = createTestElement({
-      transform: "scale(0.7) translate(5px, 6px) rotate(-30deg) skew(15deg, 20deg)",
-      transformOrigin: "15px 20px"
-    });
-    const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-    const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
-    container1.appendChild(container2);
-    container2.appendChild(container3);
-    container3.appendChild(el);
-    const startRect = el.getBoundingClientRect();
-    focusElement(el);
-    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-    document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-    document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
-    await waitNextFrame();
-    const endRect = el.getBoundingClientRect();
-    assert.equal(roundNumber2(endRect.x - startRect.x, 3), 1, "x");
-    assert.equal(roundNumber2(endRect.y - startRect.y, 3), 1, "y");
-    draggable.destroy();
-    keyboardSensor.destroy();
-    el.remove();
-    container1.remove();
-    container2.remove();
-    container3.remove();
   });
-  describe("options", () => {
-    describe("startPredicate", () => {
-      it("should be called only on start and move events of the sensors", async () => {
-        let callCount = 0;
-        const el = createTestElement();
-        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-        const draggable = new Draggable([keyboardSensor], {
-          elements: () => [el],
-          startPredicate: () => {
-            ++callCount;
-            return void 0;
-          }
-        });
-        focusElement(el);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(callCount, 1);
-        callCount = 0;
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        assert.equal(callCount, 1);
-        callCount = 0;
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        assert.equal(callCount, 1);
-        callCount = 0;
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(callCount, 0);
-        focusElement(el);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(callCount, 1);
-        callCount = 0;
-        keyboardSensor.cancel();
-        assert.equal(callCount, 0);
-        draggable.destroy();
-        keyboardSensor.destroy();
-        el.remove();
-      });
-      it("should receive the correct arguments", async () => {
-        let callCount = 0;
-        let keyboardEvent = null;
-        const el = createTestElement();
-        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-        const draggable = new Draggable([keyboardSensor], {
-          elements: () => [el],
-          startPredicate: (args) => {
-            ++callCount;
-            assert.equal(Object.keys(args).length, 3);
-            assert.equal(args.draggable, draggable);
-            assert.equal(args.sensor, keyboardSensor);
-            assert.equal(typeof args.event.x, "number");
-            assert.equal(typeof args.event.y, "number");
-            assert.ok(["move", "start"].includes(args.event.type));
-            assert.equal(args.event.srcEvent, keyboardEvent);
-            return void 0;
-          }
-        });
-        focusElement(el);
-        keyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
-        document.dispatchEvent(keyboardEvent);
-        assert.equal(callCount, 1);
-        keyboardEvent = new KeyboardEvent("keydown", { key: "ArrowDown" });
-        document.dispatchEvent(keyboardEvent);
-        assert.equal(callCount, 2);
-        keyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
-        document.dispatchEvent(keyboardEvent);
-        assert.equal(callCount, 2);
-        draggable.destroy();
-        keyboardSensor.destroy();
-        el.remove();
-      });
-      it("should remain in pending state when `undefined` is returned", async () => {
-        let callCount = 0;
-        const el = createTestElement();
-        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-        const draggable = new Draggable([keyboardSensor], {
-          elements: () => [el],
-          startPredicate: () => {
-            ++callCount;
-            return void 0;
-          }
-        });
-        focusElement(el);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(callCount, 1);
-        assert.equal(draggable.drag, null);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        assert.equal(callCount, 2);
-        assert.equal(draggable.drag, null);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        assert.equal(callCount, 3);
-        assert.equal(draggable.drag, null);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(callCount, 3);
-        assert.equal(draggable.drag, null);
-        draggable.destroy();
-        keyboardSensor.destroy();
-        el.remove();
-      });
-      it("should resolve when `true` is returned", async () => {
-        let callCount = 0;
-        const el = createTestElement();
-        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-        const draggable = new Draggable([keyboardSensor], {
-          elements: () => [el],
-          startPredicate: () => {
-            ++callCount;
-            return true;
-          }
-        });
-        focusElement(el);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(callCount, 1);
-        assert.notEqual(draggable.drag, null);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
-        assert.equal(callCount, 1);
-        assert.notEqual(draggable.drag, null);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(draggable.drag, null);
-        assert.equal(callCount, 1);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(callCount, 2);
-        assert.notEqual(draggable.drag, null);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
-        assert.equal(callCount, 2);
-        assert.notEqual(draggable.drag, null);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(callCount, 2);
-        assert.equal(draggable.drag, null);
-        draggable.destroy();
-        keyboardSensor.destroy();
-        el.remove();
-      });
-      it("should reject when `false` is returned", async () => {
-        let callCount = 0;
-        const el = createTestElement();
-        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-        const draggable = new Draggable([keyboardSensor], {
-          elements: () => [el],
-          startPredicate: () => {
-            ++callCount;
-            return false;
-          }
-        });
-        focusElement(el);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(callCount, 1);
-        assert.equal(draggable.drag, null);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
-        assert.equal(callCount, 1);
-        assert.equal(draggable.drag, null);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(callCount, 1);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(callCount, 2);
-        assert.equal(draggable.drag, null);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
-        assert.equal(callCount, 2);
-        assert.equal(draggable.drag, null);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(callCount, 2);
-        assert.equal(draggable.drag, null);
-        draggable.destroy();
-        keyboardSensor.destroy();
-        el.remove();
-      });
-    });
-    describe("container", () => {
-      it("should define the drag container", async () => {
-        const container = createTestElement();
-        const el = createTestElement();
-        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-        const draggable = new Draggable([keyboardSensor], { container, elements: () => [el] });
-        const originalContainer = el.parentNode;
-        focusElement(el);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.notEqual(draggable.drag, null);
-        await waitNextFrame();
-        assert.ok(container.contains(el));
-        assert.equal(el.parentElement, container);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(draggable.drag, null);
-        assert.equal(el.parentNode, originalContainer);
-        draggable.destroy();
-        keyboardSensor.destroy();
-        el.remove();
-        container.remove();
-      });
-      it(`should maintain client position`, async () => {
-        const containerPositions = ["static", "relative", "fixed", "absolute"];
-        const elPositions = ["fixed", "absolute"];
-        for (const containerPosition of containerPositions) {
-          for (const elPosition of elPositions) {
-            const assertMsg = `element ${elPosition} - container ${containerPosition}`;
-            const container = createTestElement({
-              position: containerPosition,
-              left: "0px",
-              top: "0px",
-              transform: "translate(7px, 8px)"
-            });
-            const el = createTestElement({
-              position: elPosition,
-              left: "19px",
-              top: "20px",
-              transform: "translate(-1px, -5px)"
-            });
-            const keyboardSensor = new KeyboardSensor(el, {
-              moveDistance: 1
-            });
-            const draggable = new Draggable([keyboardSensor], {
-              container,
-              elements: () => [el]
-            });
-            const originalContainer = el.parentNode;
-            let containerRect = container.getBoundingClientRect();
-            let elRect = el.getBoundingClientRect();
-            assert.notEqual(elRect.x, containerRect.x, "1: " + assertMsg);
-            assert.notEqual(elRect.y, containerRect.y, "2: " + assertMsg);
-            focusElement(el);
-            document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-            await waitNextFrame();
-            assert.ok(container.contains(el), "3: " + assertMsg);
-            let rect = el.getBoundingClientRect();
-            assert.equal(rect.x, elRect.x, "4: " + assertMsg);
-            assert.equal(rect.y, elRect.y, "5: " + assertMsg);
-            document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-            await waitNextFrame();
-            rect = el.getBoundingClientRect();
-            assert.equal(rect.x, elRect.x + 1, "6: " + assertMsg);
-            assert.equal(rect.y, elRect.y, "7: " + assertMsg);
-            document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-            rect = el.getBoundingClientRect();
-            assert.equal(rect.x, elRect.x + 1, "9: " + assertMsg);
-            assert.equal(rect.y, elRect.y, "10: " + assertMsg);
-            assert.equal(el.parentNode, originalContainer, "11: " + assertMsg);
-            draggable.destroy();
-            keyboardSensor.destroy();
-            el.remove();
-            container.remove();
-          }
+}
+
+// tests/src/draggable/option-apply-position.ts
+function optionApplyPosition() {
+  describe("option - applyPosition", () => {
+    it("should receive the correct arguments", async () => {
+      let callCount = 0;
+      let expectedPhase = "";
+      const el = createTestElement();
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [el],
+        applyPosition: (args) => {
+          ++callCount;
+          assert.equal(Object.keys(args).length, 4);
+          assert.equal(args.draggable, draggable);
+          assert.equal(args.drag, draggable.drag);
+          assert.equal(args.item, draggable.drag?.items[0]);
+          assert.equal(args.phase, expectedPhase);
         }
       });
-      it("should work with transformed elements", async () => {
-        const el = createTestElement({
-          transform: "scale(1.2) translate(-5px, -6px) rotate(33deg) skew(31deg, 43deg)",
-          transformOrigin: "21px 22px"
-        });
-        const scrollContainer = createTestElement({
-          overflow: "auto",
-          width: "100%",
-          height: "100%"
-        });
-        const scrollContent = createTestElement({
-          position: "relative",
-          width: "calc(100% + 100px)",
-          height: "calc(100% + 100px)"
-        });
-        const container1 = createTestElement({
-          transform: "scale(0.9) translate(3px, 4px) rotate(-10deg) skew(5deg, 10deg)",
-          transformOrigin: "5px 10px"
-        });
-        const container2 = createTestElement({
-          transform: "scale(0.8) translate(4px, 5px) rotate(-20deg) skew(10deg, 15deg)",
-          transformOrigin: "10px 15px"
-        });
-        const container3 = createTestElement({
-          transform: "scale(0.7) translate(5px, 6px) rotate(-30deg) skew(15deg, 20deg)",
-          transformOrigin: "15px 20px"
-        });
-        const dragContainer1 = createTestElement({
-          transform: "scale(0.6) translate(6px, 7px) rotate(-35deg) skew(20deg, 25deg)",
-          transformOrigin: "20px 25px"
-        });
-        const dragContainer2 = createTestElement({
-          transform: "scale(0.5) translate(7px, 8px) rotate(-40deg) skew(25deg, 30deg)",
-          transformOrigin: "25px 30px"
-        });
-        const dragContainer3 = createTestElement({
-          transform: "scale(0.4) translate(8px, 9px) rotate(-45deg) skew(30deg, 35deg)",
-          transformOrigin: "30px 35px"
-        });
-        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-        const draggable = new Draggable([keyboardSensor], {
-          elements: () => [el],
-          container: dragContainer1
-        });
-        scrollContainer.appendChild(scrollContent);
-        scrollContent.appendChild(container1);
-        scrollContent.appendChild(dragContainer1);
-        dragContainer1.appendChild(dragContainer2);
-        dragContainer2.appendChild(dragContainer3);
-        container1.appendChild(container2);
-        container2.appendChild(container3);
-        container3.appendChild(el);
-        const startRect = el.getBoundingClientRect();
-        focusElement(el);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
-        await waitNextFrame();
-        scrollContainer.scrollBy(25, 50);
-        await waitNextFrame();
-        const moveRect = el.getBoundingClientRect();
-        assert.equal(roundNumber2(moveRect.x - startRect.x, 3), 1, "x");
-        assert.equal(roundNumber2(moveRect.y - startRect.y, 3), 1, "y");
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        const endRect = el.getBoundingClientRect();
-        assert.equal(roundNumber2(endRect.x - startRect.x, 3), 1, "x");
-        assert.equal(roundNumber2(endRect.y - startRect.y, 3), 1, "y");
-        draggable.destroy();
-        keyboardSensor.destroy();
-        el.remove();
-        container1.remove();
-        container2.remove();
-        container3.remove();
-        dragContainer1.remove();
-        dragContainer2.remove();
-        dragContainer3.remove();
-      });
-    });
-    describe("elements", () => {
-      it("should be a function that returns an array of the dragged elements", async () => {
-        const elA = createTestElement();
-        const elB = createTestElement();
-        const elC = createTestElement();
-        const keyboardSensor = new KeyboardSensor(elA, { moveDistance: 1 });
-        const draggable = new Draggable([keyboardSensor], {
-          elements: () => [elB, elC]
-        });
-        focusElement(elA);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        await waitNextFrame();
-        const rectA = elA.getBoundingClientRect();
-        assert.equal(rectA.x, 0);
-        assert.equal(rectA.y, 0);
-        const rectB = elB.getBoundingClientRect();
-        assert.equal(rectB.x, 1);
-        assert.equal(rectB.y, 0);
-        const rectC = elC.getBoundingClientRect();
-        assert.equal(rectC.x, 1);
-        assert.equal(rectC.y, 0);
-        draggable.destroy();
-        keyboardSensor.destroy();
-        elA.remove();
-        elB.remove();
-        elC.remove();
-      });
-    });
-    describe("positionModifiers", () => {
-      it("should modify the dragged element position", async () => {
-        let phaseCounter = { start: 0, move: 0, end: 0 };
-        const el = createTestElement();
-        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-        const draggable = new Draggable([keyboardSensor], {
-          elements: () => [el],
-          positionModifiers: [
-            (position, args) => {
-              assert.equal(args.draggable, draggable);
-              assert.equal(args.drag, draggable.drag);
-              assert.equal(args.item, draggable.drag?.items[0]);
-              switch (args.phase) {
-                case "start": {
-                  ++phaseCounter.start;
-                  position.x += 1;
-                  position.y += 1;
-                  break;
-                }
-                case "move": {
-                  ++phaseCounter.move;
-                  position.x += 2;
-                  position.y += 2;
-                  break;
-                }
-                case "end": {
-                  ++phaseCounter.end;
-                  position.x += 3;
-                  position.y += 3;
-                  break;
-                }
-              }
-              return position;
-            }
-          ]
-        });
-        let rect = el.getBoundingClientRect();
-        assert.equal(rect.x, 0);
-        assert.equal(rect.y, 0);
-        focusElement(el);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
-        rect = el.getBoundingClientRect();
-        assert.equal(rect.x, 1);
-        assert.equal(rect.y, 1);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        await waitNextFrame();
-        rect = el.getBoundingClientRect();
-        assert.equal(rect.x, 4);
-        assert.equal(rect.y, 3);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
-        await waitNextFrame();
-        rect = el.getBoundingClientRect();
-        assert.equal(rect.x, 6);
-        assert.equal(rect.y, 6);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        rect = el.getBoundingClientRect();
-        assert.equal(rect.x, 9);
-        assert.equal(rect.y, 9);
-        assert.equal(phaseCounter.start, 1);
-        assert.equal(phaseCounter.move, 2);
-        assert.equal(phaseCounter.end, 1);
-        draggable.destroy();
-        keyboardSensor.destroy();
-        el.remove();
-      });
-    });
-    describe("frozenStyles", async () => {
-      it("should receive the correct arguments", async () => {
-        let callCount = 0;
-        const el = createTestElement();
-        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-        const draggable = new Draggable([keyboardSensor], {
-          elements: () => [el],
-          frozenStyles: (args) => {
-            ++callCount;
-            assert.equal(Object.keys(args).length, 4);
-            assert.equal(args.draggable, draggable);
-            assert.equal(args.drag, draggable.drag);
-            assert.equal(args.item.element, el);
-            assert.deepEqual(args.style, window.getComputedStyle(el));
-            return null;
-          }
-        });
-        focusElement(el);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
-        assert.equal(callCount, 1);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        await waitNextFrame();
-        assert.equal(callCount, 1);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(callCount, 1);
-        draggable.destroy();
-        keyboardSensor.destroy();
-        el.remove();
-      });
-      it("should freeze the styles of the dragged element", async () => {
-        const container = createTestElement();
-        const el = createTestElement();
-        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-        const draggable = new Draggable([keyboardSensor], {
-          container,
-          elements: () => [el],
-          frozenStyles: () => {
-            return ["width", "height", "left", "top"];
-          }
-        });
-        el.style.width = "10vw";
-        el.style.height = "10vh";
-        el.style.left = "10vw";
-        el.style.top = "10vh";
-        const expectedFrozenStyles = {
-          width: getComputedStyle(el).width,
-          height: getComputedStyle(el).height,
-          left: getComputedStyle(el).left,
-          top: getComputedStyle(el).top
-        };
-        focusElement(el);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
-        assert.equal(el.style.width, expectedFrozenStyles.width);
-        assert.equal(el.style.height, expectedFrozenStyles.height);
-        assert.equal(el.style.left, expectedFrozenStyles.left);
-        assert.equal(el.style.top, expectedFrozenStyles.top);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(el.style.width, "10vw");
-        assert.equal(el.style.height, "10vh");
-        assert.equal(el.style.left, "10vw");
-        assert.equal(el.style.top, "10vh");
-        draggable.destroy();
-        keyboardSensor.destroy();
-        el.remove();
-      });
-      it("should set the explicitly provided styles if object is provided", async () => {
-        const container = createTestElement();
-        const el = createTestElement();
-        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-        const draggable = new Draggable([keyboardSensor], {
-          container,
-          elements: () => [el],
-          frozenStyles: () => {
-            return { width: "10px", height: "20px", left: "30px", top: "40px" };
-          }
-        });
-        el.style.width = "10vw";
-        el.style.height = "10vh";
-        el.style.left = "10vw";
-        el.style.top = "10vh";
-        focusElement(el);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
-        assert.equal(el.style.width, "10px");
-        assert.equal(el.style.height, "20px");
-        assert.equal(el.style.left, "30px");
-        assert.equal(el.style.top, "40px");
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(el.style.width, "10vw");
-        assert.equal(el.style.height, "10vh");
-        assert.equal(el.style.left, "10vw");
-        assert.equal(el.style.top, "10vh");
-        draggable.destroy();
-        keyboardSensor.destroy();
-        el.remove();
-      });
-    });
-    describe("applyPosition", () => {
-      it("should receive the correct arguments", async () => {
-        let callCount = 0;
-        let expectedPhase = "";
-        const el = createTestElement();
-        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-        const draggable = new Draggable([keyboardSensor], {
-          elements: () => [el],
-          applyPosition: (args) => {
-            ++callCount;
-            assert.equal(Object.keys(args).length, 4);
-            assert.equal(args.draggable, draggable);
-            assert.equal(args.drag, draggable.drag);
-            assert.equal(args.item, draggable.drag?.items[0]);
-            assert.equal(args.phase, expectedPhase);
-          }
-        });
-        focusElement(el);
-        expectedPhase = "start";
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
-        assert.equal(callCount, 1);
-        expectedPhase = "move";
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        await waitNextFrame();
-        assert.equal(callCount, 2);
-        expectedPhase = "end";
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(callCount, 3);
-        draggable.destroy();
-        keyboardSensor.destroy();
-        el.remove();
-      });
+      focusElement(el);
+      expectedPhase = "start";
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.equal(callCount, 1);
+      expectedPhase = "move";
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      assert.equal(callCount, 2);
+      expectedPhase = "end";
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(callCount, 3);
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
     });
   });
-  describe("callbacks and events", () => {
-    it("should call the provided callbacks and events in correct order with the right arguments", async () => {
-      let events = [];
+}
+
+// tests/src/draggable/option-callbacks.ts
+function optionCallbacks() {
+  describe("option - callbacks", () => {
+    it("callbacks should be called at the right time with the right arguments", async () => {
+      let events2 = [];
       let currentKeyboardEvent = null;
       const el = createTestElement();
       const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
@@ -7200,7 +6762,7 @@ describe("Draggable", () => {
           assert.equal(args[0].startEvent.srcEvent, currentKeyboardEvent);
           assert.equal(args[0].prevMoveEvent.srcEvent, currentKeyboardEvent);
           assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
-          events.push("onPrepareStart");
+          events2.push("onPrepareStart");
         },
         onStart(...args) {
           assert.equal(args.length, 2);
@@ -7209,90 +6771,622 @@ describe("Draggable", () => {
           assert.equal(args[0].startEvent.srcEvent, currentKeyboardEvent);
           assert.equal(args[0].prevMoveEvent.srcEvent, currentKeyboardEvent);
           assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
-          events.push("onStart");
+          events2.push("onStart");
         },
         onPrepareMove(...args) {
           assert.equal(args.length, 2);
           assert.equal(args[0], draggable.drag);
           assert.equal(args[1], draggable);
           assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
-          events.push("onPrepareMove");
+          events2.push("onPrepareMove");
         },
         onMove(...args) {
           assert.equal(args.length, 2);
           assert.equal(args[0], draggable.drag);
           assert.equal(args[1], draggable);
           assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
-          events.push("onMove");
+          events2.push("onMove");
         },
         onEnd(...args) {
           assert.equal(args.length, 2);
           assert.equal(args[0], draggable.drag);
           assert.equal(args[1], draggable);
           assert.equal(args[0].endEvent?.srcEvent, currentKeyboardEvent);
-          events.push("onEnd");
+          events2.push("onEnd");
         },
         onDestroy(...args) {
           assert.equal(args.length, 1);
           assert.equal(args[0], draggable);
-          events.push("onDestroy");
+          events2.push("onDestroy");
         }
       });
-      draggable.on("preparestart", (...args) => {
-        assert.equal(args.length, 1);
-        assert.equal(args[0].type, "start");
-        assert.equal(args[0].srcEvent, currentKeyboardEvent);
-        events.push("preparestart");
+      draggable.on("preparestart", () => {
+        events2.push("preparestart");
       });
-      draggable.on("start", (...args) => {
-        assert.equal(args.length, 1);
-        assert.equal(args[0].type, "start");
-        assert.equal(args[0].srcEvent, currentKeyboardEvent);
-        events.push("start");
+      draggable.on("start", () => {
+        events2.push("start");
       });
-      draggable.on("preparemove", (...args) => {
-        assert.equal(args.length, 1);
-        assert.equal(args[0].type, "move");
-        assert.equal(args[0].srcEvent, currentKeyboardEvent);
-        events.push("preparemove");
+      draggable.on("preparemove", () => {
+        events2.push("preparemove");
       });
-      draggable.on("move", (...args) => {
-        assert.equal(args.length, 1);
-        assert.equal(args[0].type, "move");
-        assert.equal(args[0].srcEvent, currentKeyboardEvent);
-        events.push("move");
+      draggable.on("move", () => {
+        events2.push("move");
       });
-      draggable.on("end", (...args) => {
-        assert.equal(args.length, 1);
-        assert.equal(args[0]?.type, "end");
-        assert.equal(args[0]?.srcEvent, currentKeyboardEvent);
-        events.push("end");
+      draggable.on("end", () => {
+        events2.push("end");
       });
-      draggable.on("destroy", (...args) => {
-        assert.equal(args.length, 0);
-        events.push("destroy");
+      draggable.on("destroy", () => {
+        events2.push("destroy");
       });
       focusElement(el);
       currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
       document.dispatchEvent(currentKeyboardEvent);
       await waitNextFrame();
-      assert.deepEqual(events, ["preparestart", "onPrepareStart", "start", "onStart"]);
-      events.length = 0;
+      assert.deepEqual(events2, ["preparestart", "onPrepareStart", "start", "onStart"]);
+      events2.length = 0;
       currentKeyboardEvent = new KeyboardEvent("keydown", { key: "ArrowRight" });
       document.dispatchEvent(currentKeyboardEvent);
       await waitNextFrame();
-      assert.deepEqual(events, ["preparemove", "onPrepareMove", "move", "onMove"]);
-      events.length = 0;
+      assert.deepEqual(events2, ["preparemove", "onPrepareMove", "move", "onMove"]);
+      events2.length = 0;
       currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
       document.dispatchEvent(currentKeyboardEvent);
-      assert.deepEqual(events, ["end", "onEnd"]);
-      events.length = 0;
+      assert.deepEqual(events2, ["end", "onEnd"]);
+      events2.length = 0;
       draggable.destroy();
-      assert.deepEqual(events, ["destroy", "onDestroy"]);
+      assert.deepEqual(events2, ["destroy", "onDestroy"]);
       keyboardSensor.destroy();
       el.remove();
     });
   });
+}
+
+// tests/src/draggable/option-container.ts
+function optionContainer() {
+  describe("option - container", () => {
+    it("should define the drag container", async () => {
+      const container = createTestElement();
+      const el = createTestElement();
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], { container, elements: () => [el] });
+      const originalContainer = el.parentNode;
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.notEqual(draggable.drag, null);
+      await waitNextFrame();
+      assert.ok(container.contains(el));
+      assert.equal(el.parentElement, container);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(draggable.drag, null);
+      assert.equal(el.parentNode, originalContainer);
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+      container.remove();
+    });
+    it(`should maintain client position`, async () => {
+      const containerPositions = ["static", "relative", "fixed", "absolute"];
+      const elPositions = ["fixed", "absolute"];
+      for (const containerPosition of containerPositions) {
+        for (const elPosition of elPositions) {
+          const assertMsg = `element ${elPosition} - container ${containerPosition}`;
+          const container = createTestElement({
+            position: containerPosition,
+            left: "0px",
+            top: "0px",
+            transform: "translate(7px, 8px)"
+          });
+          const el = createTestElement({
+            position: elPosition,
+            left: "19px",
+            top: "20px",
+            transform: "translate(-1px, -5px)"
+          });
+          const keyboardSensor = new KeyboardSensor(el, {
+            moveDistance: 1
+          });
+          const draggable = new Draggable([keyboardSensor], {
+            container,
+            elements: () => [el]
+          });
+          const originalContainer = el.parentNode;
+          let containerRect = container.getBoundingClientRect();
+          let elRect = el.getBoundingClientRect();
+          assert.notEqual(elRect.x, containerRect.x, "1: " + assertMsg);
+          assert.notEqual(elRect.y, containerRect.y, "2: " + assertMsg);
+          focusElement(el);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          await waitNextFrame();
+          assert.ok(container.contains(el), "3: " + assertMsg);
+          let rect = el.getBoundingClientRect();
+          assert.equal(rect.x, elRect.x, "4: " + assertMsg);
+          assert.equal(rect.y, elRect.y, "5: " + assertMsg);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+          await waitNextFrame();
+          rect = el.getBoundingClientRect();
+          assert.equal(rect.x, elRect.x + 1, "6: " + assertMsg);
+          assert.equal(rect.y, elRect.y, "7: " + assertMsg);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          rect = el.getBoundingClientRect();
+          assert.equal(rect.x, elRect.x + 1, "9: " + assertMsg);
+          assert.equal(rect.y, elRect.y, "10: " + assertMsg);
+          assert.equal(el.parentNode, originalContainer, "11: " + assertMsg);
+          draggable.destroy();
+          keyboardSensor.destroy();
+          el.remove();
+          container.remove();
+        }
+      }
+    });
+    it("should work with transformed elements", async () => {
+      const el = createTestElement({
+        transform: "scale(1.2) translate(-5px, -6px) rotate(33deg) skew(31deg, 43deg)",
+        transformOrigin: "21px 22px"
+      });
+      const scrollContainer = createTestElement({
+        overflow: "auto",
+        width: "100%",
+        height: "100%"
+      });
+      const scrollContent = createTestElement({
+        position: "relative",
+        width: "calc(100% + 100px)",
+        height: "calc(100% + 100px)"
+      });
+      const container1 = createTestElement({
+        transform: "scale(0.9) translate(3px, 4px) rotate(-10deg) skew(5deg, 10deg)",
+        transformOrigin: "5px 10px"
+      });
+      const container2 = createTestElement({
+        transform: "scale(0.8) translate(4px, 5px) rotate(-20deg) skew(10deg, 15deg)",
+        transformOrigin: "10px 15px"
+      });
+      const container3 = createTestElement({
+        transform: "scale(0.7) translate(5px, 6px) rotate(-30deg) skew(15deg, 20deg)",
+        transformOrigin: "15px 20px"
+      });
+      const dragContainer1 = createTestElement({
+        transform: "scale(0.6) translate(6px, 7px) rotate(-35deg) skew(20deg, 25deg)",
+        transformOrigin: "20px 25px"
+      });
+      const dragContainer2 = createTestElement({
+        transform: "scale(0.5) translate(7px, 8px) rotate(-40deg) skew(25deg, 30deg)",
+        transformOrigin: "25px 30px"
+      });
+      const dragContainer3 = createTestElement({
+        transform: "scale(0.4) translate(8px, 9px) rotate(-45deg) skew(30deg, 35deg)",
+        transformOrigin: "30px 35px"
+      });
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [el],
+        container: dragContainer1
+      });
+      scrollContainer.appendChild(scrollContent);
+      scrollContent.appendChild(container1);
+      scrollContent.appendChild(dragContainer1);
+      dragContainer1.appendChild(dragContainer2);
+      dragContainer2.appendChild(dragContainer3);
+      container1.appendChild(container2);
+      container2.appendChild(container3);
+      container3.appendChild(el);
+      const startRect = el.getBoundingClientRect();
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+      await waitNextFrame();
+      scrollContainer.scrollBy(25, 50);
+      await waitNextFrame();
+      const moveRect = el.getBoundingClientRect();
+      assert.equal(roundNumber2(moveRect.x - startRect.x, 3), 1, "x");
+      assert.equal(roundNumber2(moveRect.y - startRect.y, 3), 1, "y");
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      const endRect = el.getBoundingClientRect();
+      assert.equal(roundNumber2(endRect.x - startRect.x, 3), 1, "x");
+      assert.equal(roundNumber2(endRect.y - startRect.y, 3), 1, "y");
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+      container1.remove();
+      container2.remove();
+      container3.remove();
+      dragContainer1.remove();
+      dragContainer2.remove();
+      dragContainer3.remove();
+    });
+  });
+}
+
+// tests/src/draggable/option-elements.ts
+function optionElements() {
+  describe("option - elements", () => {
+    it("should be a function that returns an array of the dragged elements", async () => {
+      const elA = createTestElement();
+      const elB = createTestElement();
+      const elC = createTestElement();
+      const keyboardSensor = new KeyboardSensor(elA, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [elB, elC]
+      });
+      focusElement(elA);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      const rectA = elA.getBoundingClientRect();
+      assert.equal(rectA.x, 0);
+      assert.equal(rectA.y, 0);
+      const rectB = elB.getBoundingClientRect();
+      assert.equal(rectB.x, 1);
+      assert.equal(rectB.y, 0);
+      const rectC = elC.getBoundingClientRect();
+      assert.equal(rectC.x, 1);
+      assert.equal(rectC.y, 0);
+      draggable.destroy();
+      keyboardSensor.destroy();
+      elA.remove();
+      elB.remove();
+      elC.remove();
+    });
+  });
+}
+
+// tests/src/draggable/option-frozen-styles.ts
+function optionFrozenStyles() {
+  describe("option - frozenStyles", async () => {
+    it("should receive the correct arguments", async () => {
+      let callCount = 0;
+      const el = createTestElement();
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [el],
+        frozenStyles: (args) => {
+          ++callCount;
+          assert.equal(Object.keys(args).length, 4);
+          assert.equal(args.draggable, draggable);
+          assert.equal(args.drag, draggable.drag);
+          assert.equal(args.item.element, el);
+          assert.deepEqual(args.style, window.getComputedStyle(el));
+          return null;
+        }
+      });
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.equal(callCount, 1);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      assert.equal(callCount, 1);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(callCount, 1);
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+    });
+    it("should freeze the styles of the dragged element", async () => {
+      const container = createTestElement();
+      const el = createTestElement();
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], {
+        container,
+        elements: () => [el],
+        frozenStyles: () => {
+          return ["width", "height", "left", "top"];
+        }
+      });
+      el.style.width = "10vw";
+      el.style.height = "10vh";
+      el.style.left = "10vw";
+      el.style.top = "10vh";
+      const expectedFrozenStyles = {
+        width: getComputedStyle(el).width,
+        height: getComputedStyle(el).height,
+        left: getComputedStyle(el).left,
+        top: getComputedStyle(el).top
+      };
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.equal(el.style.width, expectedFrozenStyles.width);
+      assert.equal(el.style.height, expectedFrozenStyles.height);
+      assert.equal(el.style.left, expectedFrozenStyles.left);
+      assert.equal(el.style.top, expectedFrozenStyles.top);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(el.style.width, "10vw");
+      assert.equal(el.style.height, "10vh");
+      assert.equal(el.style.left, "10vw");
+      assert.equal(el.style.top, "10vh");
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+    });
+    it("should set the explicitly provided styles if object is provided", async () => {
+      const container = createTestElement();
+      const el = createTestElement();
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], {
+        container,
+        elements: () => [el],
+        frozenStyles: () => {
+          return { width: "10px", height: "20px", left: "30px", top: "40px" };
+        }
+      });
+      el.style.width = "10vw";
+      el.style.height = "10vh";
+      el.style.left = "10vw";
+      el.style.top = "10vh";
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.equal(el.style.width, "10px");
+      assert.equal(el.style.height, "20px");
+      assert.equal(el.style.left, "30px");
+      assert.equal(el.style.top, "40px");
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(el.style.width, "10vw");
+      assert.equal(el.style.height, "10vh");
+      assert.equal(el.style.left, "10vw");
+      assert.equal(el.style.top, "10vh");
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+    });
+  });
+}
+
+// tests/src/draggable/option-position-modifiers.ts
+function optionPositionModifiers() {
+  describe("option - positionModifiers", () => {
+    it("should modify the dragged element position", async () => {
+      let phaseCounter = { start: 0, move: 0, end: 0 };
+      const el = createTestElement();
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [el],
+        positionModifiers: [
+          (position, args) => {
+            assert.equal(args.draggable, draggable);
+            assert.equal(args.drag, draggable.drag);
+            assert.equal(args.item, draggable.drag?.items[0]);
+            switch (args.phase) {
+              case "start": {
+                ++phaseCounter.start;
+                position.x += 1;
+                position.y += 1;
+                break;
+              }
+              case "move": {
+                ++phaseCounter.move;
+                position.x += 2;
+                position.y += 2;
+                break;
+              }
+              case "end": {
+                ++phaseCounter.end;
+                position.x += 3;
+                position.y += 3;
+                break;
+              }
+            }
+            return position;
+          }
+        ]
+      });
+      let rect = el.getBoundingClientRect();
+      assert.equal(rect.x, 0);
+      assert.equal(rect.y, 0);
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      rect = el.getBoundingClientRect();
+      assert.equal(rect.x, 1);
+      assert.equal(rect.y, 1);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      rect = el.getBoundingClientRect();
+      assert.equal(rect.x, 4);
+      assert.equal(rect.y, 3);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+      await waitNextFrame();
+      rect = el.getBoundingClientRect();
+      assert.equal(rect.x, 6);
+      assert.equal(rect.y, 6);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      rect = el.getBoundingClientRect();
+      assert.equal(rect.x, 9);
+      assert.equal(rect.y, 9);
+      assert.equal(phaseCounter.start, 1);
+      assert.equal(phaseCounter.move, 2);
+      assert.equal(phaseCounter.end, 1);
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+    });
+  });
+}
+
+// tests/src/draggable/option-start-predicate.ts
+function optionStartPredicate() {
+  describe("option - startPredicate", () => {
+    it("should be called only on start and move events of the sensors", async () => {
+      let callCount = 0;
+      const el = createTestElement();
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [el],
+        startPredicate: () => {
+          ++callCount;
+          return void 0;
+        }
+      });
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(callCount, 1);
+      callCount = 0;
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      assert.equal(callCount, 1);
+      callCount = 0;
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      assert.equal(callCount, 1);
+      callCount = 0;
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(callCount, 0);
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(callCount, 1);
+      callCount = 0;
+      keyboardSensor.cancel();
+      assert.equal(callCount, 0);
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+    });
+    it("should receive the correct arguments", async () => {
+      let callCount = 0;
+      let keyboardEvent = null;
+      const el = createTestElement();
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [el],
+        startPredicate: (args) => {
+          ++callCount;
+          assert.equal(Object.keys(args).length, 3);
+          assert.equal(args.draggable, draggable);
+          assert.equal(args.sensor, keyboardSensor);
+          assert.equal(typeof args.event.x, "number");
+          assert.equal(typeof args.event.y, "number");
+          assert.ok(["move", "start"].includes(args.event.type));
+          assert.equal(args.event.srcEvent, keyboardEvent);
+          return void 0;
+        }
+      });
+      focusElement(el);
+      keyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
+      document.dispatchEvent(keyboardEvent);
+      assert.equal(callCount, 1);
+      keyboardEvent = new KeyboardEvent("keydown", { key: "ArrowDown" });
+      document.dispatchEvent(keyboardEvent);
+      assert.equal(callCount, 2);
+      keyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
+      document.dispatchEvent(keyboardEvent);
+      assert.equal(callCount, 2);
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+    });
+    it("should remain in pending state when `undefined` is returned", async () => {
+      let callCount = 0;
+      const el = createTestElement();
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [el],
+        startPredicate: () => {
+          ++callCount;
+          return void 0;
+        }
+      });
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(callCount, 1);
+      assert.equal(draggable.drag, null);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      assert.equal(callCount, 2);
+      assert.equal(draggable.drag, null);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      assert.equal(callCount, 3);
+      assert.equal(draggable.drag, null);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(callCount, 3);
+      assert.equal(draggable.drag, null);
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+    });
+    it("should resolve when `true` is returned", async () => {
+      let callCount = 0;
+      const el = createTestElement();
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [el],
+        startPredicate: () => {
+          ++callCount;
+          return true;
+        }
+      });
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(callCount, 1);
+      assert.notEqual(draggable.drag, null);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+      assert.equal(callCount, 1);
+      assert.notEqual(draggable.drag, null);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(draggable.drag, null);
+      assert.equal(callCount, 1);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(callCount, 2);
+      assert.notEqual(draggable.drag, null);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+      assert.equal(callCount, 2);
+      assert.notEqual(draggable.drag, null);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(callCount, 2);
+      assert.equal(draggable.drag, null);
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+    });
+    it("should reject when `false` is returned", async () => {
+      let callCount = 0;
+      const el = createTestElement();
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [el],
+        startPredicate: () => {
+          ++callCount;
+          return false;
+        }
+      });
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(callCount, 1);
+      assert.equal(draggable.drag, null);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+      assert.equal(callCount, 1);
+      assert.equal(draggable.drag, null);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(callCount, 1);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(callCount, 2);
+      assert.equal(draggable.drag, null);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+      assert.equal(callCount, 2);
+      assert.equal(draggable.drag, null);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(callCount, 2);
+      assert.equal(draggable.drag, null);
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+    });
+  });
+}
+
+// tests/src/draggable/index.ts
+describe("Draggable", () => {
+  base();
+  events();
+  optionApplyPosition();
+  optionCallbacks();
+  optionContainer();
+  optionElements();
+  optionFrozenStyles();
+  optionPositionModifiers();
+  optionStartPredicate();
 });
 
 // tests/src/utils/default-page-styles.ts
@@ -7321,7 +7415,7 @@ function removeDefaultPageStyles(doc) {
   doc.getElementById("default-page-styles")?.remove();
 }
 
-// tests/src/PointerSensor.ts
+// tests/src/pointer-sensor/index.ts
 describe("PointerSensor", () => {
   beforeEach(() => {
     addDefaultPageStyles(document);
@@ -7951,7 +8045,7 @@ function wait(time) {
   });
 }
 
-// tests/src/KeyboardSensor.ts
+// tests/src/keyboard-sensor/index.ts
 describe("KeyboardSensor", () => {
   beforeEach(() => {
     addDefaultPageStyles(document);

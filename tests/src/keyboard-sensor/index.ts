@@ -1,10 +1,10 @@
 import { assert } from 'chai';
-import { createTestElement } from './utils/create-test-element.js';
-import { focusElement } from './utils/focus-element.js';
-import { blurElement } from './utils/blur-element.js';
-import { wait } from './utils/wait.js';
-import { addDefaultPageStyles, removeDefaultPageStyles } from './utils/default-page-styles.js';
-import { KeyboardSensor } from '../../src/index.js';
+import { createTestElement } from '../utils/create-test-element.js';
+import { focusElement } from '../utils/focus-element.js';
+import { blurElement } from '../utils/blur-element.js';
+import { wait } from '../utils/wait.js';
+import { addDefaultPageStyles, removeDefaultPageStyles } from '../utils/default-page-styles.js';
+import { KeyboardSensor } from '../../../src/index.js';
 
 // TODO:
 // - Make sure you change settings on the fly during drag.

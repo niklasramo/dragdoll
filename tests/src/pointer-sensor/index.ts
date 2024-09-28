@@ -1,14 +1,14 @@
 import { assert } from 'chai';
-import { createTestElement } from './utils/create-test-element.js';
-import { createFakeDrag } from './utils/create-fake-drag.js';
-import { addDefaultPageStyles, removeDefaultPageStyles } from './utils/default-page-styles.js';
+import { createTestElement } from '../utils/create-test-element.js';
+import { createFakeDrag } from '../utils/create-fake-drag.js';
+import { addDefaultPageStyles, removeDefaultPageStyles } from '../utils/default-page-styles.js';
 import {
   PointerSensor,
   PointerSensorCancelEvent,
   PointerSensorEndEvent,
   PointerSensorMoveEvent,
   PointerSensorStartEvent,
-} from '../../src/index.js';
+} from '../../../src/index.js';
 
 describe('PointerSensor', () => {
   beforeEach(() => {
