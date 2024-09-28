@@ -1,11 +1,11 @@
 import { assert } from 'chai';
-import { createTestElement } from '../utils/create-test-element.js';
-import { focusElement } from '../utils/focus-element.js';
-import { waitNextFrame } from '../utils/wait-next-frame.js';
-import { Draggable, KeyboardSensor } from '../../../src/index.js';
+import { createTestElement } from '../../utils/create-test-element.js';
+import { focusElement } from '../../utils/focus-element.js';
+import { waitNextFrame } from '../../utils/wait-next-frame.js';
+import { Draggable, KeyboardSensor } from '../../../../src/index.js';
 
 export function optionFrozenStyles() {
-  describe('option - frozenStyles', async () => {
+  describe('frozenStyles', async () => {
     it('should receive the correct arguments', async () => {
       let callCount = 0;
       const el = createTestElement();

@@ -268,7 +268,7 @@
     truncate: truncate2 = Infinity,
     stylize = String
   } = {}, inspect3) {
-    const options2 = {
+    const options4 = {
       showHidden: Boolean(showHidden),
       depth: Number(depth),
       colors: Boolean(colors),
@@ -281,10 +281,10 @@
       inspect: inspect3,
       stylize
     };
-    if (options2.colors) {
-      options2.stylize = colorise;
+    if (options4.colors) {
+      options4.stylize = colorise;
     }
-    return options2;
+    return options4;
   }
   __name(normaliseOptions, "normaliseOptions");
   function truncate(string, length, tail = truncator) {
@@ -300,12 +300,12 @@
     return string;
   }
   __name(truncate, "truncate");
-  function inspectList(list, options2, inspectItem, separator = ", ") {
-    inspectItem = inspectItem || options2.inspect;
+  function inspectList(list, options4, inspectItem, separator = ", ") {
+    inspectItem = inspectItem || options4.inspect;
     const size = list.length;
     if (size === 0)
       return "";
-    const originalLength = options2.truncate;
+    const originalLength = options4.truncate;
     let output = "";
     let peek = "";
     let truncated = "";
@@ -314,8 +314,8 @@
       const secondToLast = i + 2 === list.length;
       truncated = `${truncator}(${list.length - i})`;
       const value = list[i];
-      options2.truncate = originalLength - output.length - (last ? 0 : separator.length);
-      const string = peek || inspectItem(value, options2) + (last ? "" : separator);
+      options4.truncate = originalLength - output.length - (last ? 0 : separator.length);
+      const string = peek || inspectItem(value, options4) + (last ? "" : separator);
       const nextLength = output.length + string.length;
       const truncatedLength = nextLength + truncated.length;
       if (last && nextLength > originalLength && output.length + truncated.length <= originalLength) {
@@ -324,7 +324,7 @@
       if (!last && !secondToLast && truncatedLength > originalLength) {
         break;
       }
-      peek = last ? "" : inspectItem(list[i + 1], options2) + (secondToLast ? "" : separator);
+      peek = last ? "" : inspectItem(list[i + 1], options4) + (secondToLast ? "" : separator);
       if (!last && secondToLast && truncatedLength > originalLength && nextLength + peek.length > originalLength) {
         break;
       }
@@ -345,28 +345,28 @@
     return JSON.stringify(key).replace(/'/g, "\\'").replace(/\\"/g, '"').replace(/(^"|"$)/g, "'");
   }
   __name(quoteComplexKey, "quoteComplexKey");
-  function inspectProperty([key, value], options2) {
-    options2.truncate -= 2;
+  function inspectProperty([key, value], options4) {
+    options4.truncate -= 2;
     if (typeof key === "string") {
       key = quoteComplexKey(key);
     } else if (typeof key !== "number") {
-      key = `[${options2.inspect(key, options2)}]`;
+      key = `[${options4.inspect(key, options4)}]`;
     }
-    options2.truncate -= key.length;
-    value = options2.inspect(value, options2);
+    options4.truncate -= key.length;
+    value = options4.inspect(value, options4);
     return `${key}: ${value}`;
   }
   __name(inspectProperty, "inspectProperty");
-  function inspectArray(array, options2) {
+  function inspectArray(array, options4) {
     const nonIndexProperties = Object.keys(array).slice(array.length);
     if (!array.length && !nonIndexProperties.length)
       return "[]";
-    options2.truncate -= 4;
-    const listContents = inspectList(array, options2);
-    options2.truncate -= listContents.length;
+    options4.truncate -= 4;
+    const listContents = inspectList(array, options4);
+    options4.truncate -= listContents.length;
     let propertyContents = "";
     if (nonIndexProperties.length) {
-      propertyContents = inspectList(nonIndexProperties.map((key) => [key, array[key]]), options2, inspectProperty);
+      propertyContents = inspectList(nonIndexProperties.map((key) => [key, array[key]]), options4, inspectProperty);
     }
     return `[ ${listContents}${propertyContents ? `, ${propertyContents}` : ""} ]`;
   }
@@ -380,17 +380,17 @@
     }
     return array.constructor.name;
   }, "getArrayName");
-  function inspectTypedArray(array, options2) {
+  function inspectTypedArray(array, options4) {
     const name = getArrayName(array);
-    options2.truncate -= name.length + 4;
+    options4.truncate -= name.length + 4;
     const nonIndexProperties = Object.keys(array).slice(array.length);
     if (!array.length && !nonIndexProperties.length)
       return `${name}[]`;
     let output = "";
     for (let i = 0; i < array.length; i++) {
-      const string = `${options2.stylize(truncate(array[i], options2.truncate), "number")}${i === array.length - 1 ? "" : ", "}`;
-      options2.truncate -= string.length;
-      if (array[i] !== array.length && options2.truncate <= 3) {
+      const string = `${options4.stylize(truncate(array[i], options4.truncate), "number")}${i === array.length - 1 ? "" : ", "}`;
+      options4.truncate -= string.length;
+      if (array[i] !== array.length && options4.truncate <= 3) {
         output += `${truncator}(${array.length - array[i] + 1})`;
         break;
       }
@@ -398,35 +398,35 @@
     }
     let propertyContents = "";
     if (nonIndexProperties.length) {
-      propertyContents = inspectList(nonIndexProperties.map((key) => [key, array[key]]), options2, inspectProperty);
+      propertyContents = inspectList(nonIndexProperties.map((key) => [key, array[key]]), options4, inspectProperty);
     }
     return `${name}[ ${output}${propertyContents ? `, ${propertyContents}` : ""} ]`;
   }
   __name(inspectTypedArray, "inspectTypedArray");
-  function inspectDate(dateObject, options2) {
+  function inspectDate(dateObject, options4) {
     const stringRepresentation = dateObject.toJSON();
     if (stringRepresentation === null) {
       return "Invalid Date";
     }
     const split = stringRepresentation.split("T");
     const date = split[0];
-    return options2.stylize(`${date}T${truncate(split[1], options2.truncate - date.length - 1)}`, "date");
+    return options4.stylize(`${date}T${truncate(split[1], options4.truncate - date.length - 1)}`, "date");
   }
   __name(inspectDate, "inspectDate");
-  function inspectFunction(func, options2) {
+  function inspectFunction(func, options4) {
     const functionType = func[Symbol.toStringTag] || "Function";
     const name = func.name;
     if (!name) {
-      return options2.stylize(`[${functionType}]`, "special");
+      return options4.stylize(`[${functionType}]`, "special");
     }
-    return options2.stylize(`[${functionType} ${truncate(name, options2.truncate - 11)}]`, "special");
+    return options4.stylize(`[${functionType} ${truncate(name, options4.truncate - 11)}]`, "special");
   }
   __name(inspectFunction, "inspectFunction");
-  function inspectMapEntry([key, value], options2) {
-    options2.truncate -= 4;
-    key = options2.inspect(key, options2);
-    options2.truncate -= key.length;
-    value = options2.inspect(value, options2);
+  function inspectMapEntry([key, value], options4) {
+    options4.truncate -= 4;
+    key = options4.inspect(key, options4);
+    options4.truncate -= key.length;
+    value = options4.inspect(value, options4);
     return `${key} => ${value}`;
   }
   __name(inspectMapEntry, "inspectMapEntry");
@@ -438,44 +438,44 @@
     return entries;
   }
   __name(mapToEntries, "mapToEntries");
-  function inspectMap(map, options2) {
+  function inspectMap(map, options4) {
     const size = map.size - 1;
     if (size <= 0) {
       return "Map{}";
     }
-    options2.truncate -= 7;
-    return `Map{ ${inspectList(mapToEntries(map), options2, inspectMapEntry)} }`;
+    options4.truncate -= 7;
+    return `Map{ ${inspectList(mapToEntries(map), options4, inspectMapEntry)} }`;
   }
   __name(inspectMap, "inspectMap");
   var isNaN = Number.isNaN || ((i) => i !== i);
-  function inspectNumber(number, options2) {
+  function inspectNumber(number, options4) {
     if (isNaN(number)) {
-      return options2.stylize("NaN", "number");
+      return options4.stylize("NaN", "number");
     }
     if (number === Infinity) {
-      return options2.stylize("Infinity", "number");
+      return options4.stylize("Infinity", "number");
     }
     if (number === -Infinity) {
-      return options2.stylize("-Infinity", "number");
+      return options4.stylize("-Infinity", "number");
     }
     if (number === 0) {
-      return options2.stylize(1 / number === Infinity ? "+0" : "-0", "number");
+      return options4.stylize(1 / number === Infinity ? "+0" : "-0", "number");
     }
-    return options2.stylize(truncate(String(number), options2.truncate), "number");
+    return options4.stylize(truncate(String(number), options4.truncate), "number");
   }
   __name(inspectNumber, "inspectNumber");
-  function inspectBigInt(number, options2) {
-    let nums = truncate(number.toString(), options2.truncate - 1);
+  function inspectBigInt(number, options4) {
+    let nums = truncate(number.toString(), options4.truncate - 1);
     if (nums !== truncator)
       nums += "n";
-    return options2.stylize(nums, "bigint");
+    return options4.stylize(nums, "bigint");
   }
   __name(inspectBigInt, "inspectBigInt");
-  function inspectRegExp(value, options2) {
+  function inspectRegExp(value, options4) {
     const flags = value.toString().split("/")[2];
-    const sourceLength = options2.truncate - (2 + flags.length);
+    const sourceLength = options4.truncate - (2 + flags.length);
     const source = value.source;
-    return options2.stylize(`/${truncate(source, sourceLength)}/${flags}`, "regexp");
+    return options4.stylize(`/${truncate(source, sourceLength)}/${flags}`, "regexp");
   }
   __name(inspectRegExp, "inspectRegExp");
   function arrayFromSet(set2) {
@@ -486,11 +486,11 @@
     return values;
   }
   __name(arrayFromSet, "arrayFromSet");
-  function inspectSet(set2, options2) {
+  function inspectSet(set2, options4) {
     if (set2.size === 0)
       return "Set{}";
-    options2.truncate -= 7;
-    return `Set{ ${inspectList(arrayFromSet(set2), options2)} }`;
+    options4.truncate -= 7;
+    return `Set{ ${inspectList(arrayFromSet(set2), options4)} }`;
   }
   __name(inspectSet, "inspectSet");
   var stringEscapeChars = new RegExp("['\\u0000-\\u001f\\u007f-\\u009f\\u00ad\\u0600-\\u0604\\u070f\\u17b4\\u17b5\\u200c-\\u200f\\u2028-\\u202f\\u2060-\\u206f\\ufeff\\ufff0-\\uffff]", "g");
@@ -509,11 +509,11 @@
     return escapeCharacters[char] || `\\u${`0000${char.charCodeAt(0).toString(hex)}`.slice(-unicodeLength)}`;
   }
   __name(escape, "escape");
-  function inspectString(string, options2) {
+  function inspectString(string, options4) {
     if (stringEscapeChars.test(string)) {
       string = string.replace(stringEscapeChars, escape);
     }
-    return options2.stylize(`'${truncate(string, options2.truncate - 2)}'`, "string");
+    return options4.stylize(`'${truncate(string, options4.truncate - 2)}'`, "string");
   }
   __name(inspectString, "inspectString");
   function inspectSymbol(value) {
@@ -527,32 +527,32 @@
   try {
     const { getPromiseDetails, kPending, kRejected } = process.binding("util");
     if (Array.isArray(getPromiseDetails(Promise.resolve()))) {
-      getPromiseValue = /* @__PURE__ */ __name((value, options2) => {
+      getPromiseValue = /* @__PURE__ */ __name((value, options4) => {
         const [state, innerValue] = getPromiseDetails(value);
         if (state === kPending) {
           return "Promise{<pending>}";
         }
-        return `Promise${state === kRejected ? "!" : ""}{${options2.inspect(innerValue, options2)}}`;
+        return `Promise${state === kRejected ? "!" : ""}{${options4.inspect(innerValue, options4)}}`;
       }, "getPromiseValue");
     }
   } catch (notNode) {
   }
   var promise_default = getPromiseValue;
-  function inspectObject(object, options2) {
-    const properties2 = Object.getOwnPropertyNames(object);
+  function inspectObject(object, options4) {
+    const properties3 = Object.getOwnPropertyNames(object);
     const symbols = Object.getOwnPropertySymbols ? Object.getOwnPropertySymbols(object) : [];
-    if (properties2.length === 0 && symbols.length === 0) {
+    if (properties3.length === 0 && symbols.length === 0) {
       return "{}";
     }
-    options2.truncate -= 4;
-    options2.seen = options2.seen || [];
-    if (options2.seen.indexOf(object) >= 0) {
+    options4.truncate -= 4;
+    options4.seen = options4.seen || [];
+    if (options4.seen.indexOf(object) >= 0) {
       return "[Circular]";
     }
-    options2.seen.push(object);
-    const propertyContents = inspectList(properties2.map((key) => [key, object[key]]), options2, inspectProperty);
-    const symbolContents = inspectList(symbols.map((key) => [key, object[key]]), options2, inspectProperty);
-    options2.seen.pop();
+    options4.seen.push(object);
+    const propertyContents = inspectList(properties3.map((key) => [key, object[key]]), options4, inspectProperty);
+    const symbolContents = inspectList(symbols.map((key) => [key, object[key]]), options4, inspectProperty);
+    options4.seen.pop();
     let sep = "";
     if (propertyContents && symbolContents) {
       sep = ", ";
@@ -561,7 +561,7 @@
   }
   __name(inspectObject, "inspectObject");
   var toStringTag = typeof Symbol !== "undefined" && Symbol.toStringTag ? Symbol.toStringTag : false;
-  function inspectClass(value, options2) {
+  function inspectClass(value, options4) {
     let name = "";
     if (toStringTag && toStringTag in value) {
       name = value[toStringTag];
@@ -570,15 +570,15 @@
     if (!name || name === "_class") {
       name = "<Anonymous Class>";
     }
-    options2.truncate -= name.length;
-    return `${name}${inspectObject(value, options2)}`;
+    options4.truncate -= name.length;
+    return `${name}${inspectObject(value, options4)}`;
   }
   __name(inspectClass, "inspectClass");
-  function inspectArguments(args, options2) {
+  function inspectArguments(args, options4) {
     if (args.length === 0)
       return "Arguments[]";
-    options2.truncate -= 13;
-    return `Arguments[ ${inspectList(args, options2)} ]`;
+    options4.truncate -= 13;
+    return `Arguments[ ${inspectList(args, options4)} ]`;
   }
   __name(inspectArguments, "inspectArguments");
   var errorKeys = [
@@ -593,49 +593,49 @@
     "number",
     "description"
   ];
-  function inspectObject2(error, options2) {
-    const properties2 = Object.getOwnPropertyNames(error).filter((key) => errorKeys.indexOf(key) === -1);
+  function inspectObject2(error, options4) {
+    const properties3 = Object.getOwnPropertyNames(error).filter((key) => errorKeys.indexOf(key) === -1);
     const name = error.name;
-    options2.truncate -= name.length;
+    options4.truncate -= name.length;
     let message = "";
     if (typeof error.message === "string") {
-      message = truncate(error.message, options2.truncate);
+      message = truncate(error.message, options4.truncate);
     } else {
-      properties2.unshift("message");
+      properties3.unshift("message");
     }
     message = message ? `: ${message}` : "";
-    options2.truncate -= message.length + 5;
-    const propertyContents = inspectList(properties2.map((key) => [key, error[key]]), options2, inspectProperty);
+    options4.truncate -= message.length + 5;
+    const propertyContents = inspectList(properties3.map((key) => [key, error[key]]), options4, inspectProperty);
     return `${name}${message}${propertyContents ? ` { ${propertyContents} }` : ""}`;
   }
   __name(inspectObject2, "inspectObject");
-  function inspectAttribute([key, value], options2) {
-    options2.truncate -= 3;
+  function inspectAttribute([key, value], options4) {
+    options4.truncate -= 3;
     if (!value) {
-      return `${options2.stylize(String(key), "yellow")}`;
+      return `${options4.stylize(String(key), "yellow")}`;
     }
-    return `${options2.stylize(String(key), "yellow")}=${options2.stylize(`"${value}"`, "string")}`;
+    return `${options4.stylize(String(key), "yellow")}=${options4.stylize(`"${value}"`, "string")}`;
   }
   __name(inspectAttribute, "inspectAttribute");
-  function inspectHTMLCollection(collection, options2) {
-    return inspectList(collection, options2, inspectHTML, "\n");
+  function inspectHTMLCollection(collection, options4) {
+    return inspectList(collection, options4, inspectHTML, "\n");
   }
   __name(inspectHTMLCollection, "inspectHTMLCollection");
-  function inspectHTML(element, options2) {
-    const properties2 = element.getAttributeNames();
+  function inspectHTML(element, options4) {
+    const properties3 = element.getAttributeNames();
     const name = element.tagName.toLowerCase();
-    const head = options2.stylize(`<${name}`, "special");
-    const headClose = options2.stylize(`>`, "special");
-    const tail = options2.stylize(`</${name}>`, "special");
-    options2.truncate -= name.length * 2 + 5;
+    const head = options4.stylize(`<${name}`, "special");
+    const headClose = options4.stylize(`>`, "special");
+    const tail = options4.stylize(`</${name}>`, "special");
+    options4.truncate -= name.length * 2 + 5;
     let propertyContents = "";
-    if (properties2.length > 0) {
+    if (properties3.length > 0) {
       propertyContents += " ";
-      propertyContents += inspectList(properties2.map((key) => [key, element.getAttribute(key)]), options2, inspectAttribute, " ");
+      propertyContents += inspectList(properties3.map((key) => [key, element.getAttribute(key)]), options4, inspectAttribute, " ");
     }
-    options2.truncate -= propertyContents.length;
-    const truncate2 = options2.truncate;
-    let children = inspectHTMLCollection(element.children, options2);
+    options4.truncate -= propertyContents.length;
+    const truncate2 = options4.truncate;
+    let children = inspectHTMLCollection(element.children, options4);
     if (children && children.length > truncate2) {
       children = `${truncator}(${element.children.length})`;
     }
@@ -654,10 +654,10 @@
   var constructorMap = /* @__PURE__ */ new WeakMap();
   var stringTagMap = {};
   var baseTypesMap = {
-    undefined: (value, options2) => options2.stylize("undefined", "undefined"),
-    null: (value, options2) => options2.stylize("null", "null"),
-    boolean: (value, options2) => options2.stylize(String(value), "boolean"),
-    Boolean: (value, options2) => options2.stylize(String(value), "boolean"),
+    undefined: (value, options4) => options4.stylize("undefined", "undefined"),
+    null: (value, options4) => options4.stylize("null", "null"),
+    boolean: (value, options4) => options4.stylize(String(value), "boolean"),
+    Boolean: (value, options4) => options4.stylize(String(value), "boolean"),
     number: inspectNumber,
     Number: inspectNumber,
     bigint: inspectBigInt,
@@ -676,8 +676,8 @@
     RegExp: inspectRegExp,
     Promise: promise_default,
     // WeakSet, WeakMap are totally opaque to us
-    WeakSet: (value, options2) => options2.stylize("WeakSet{\u2026}", "special"),
-    WeakMap: (value, options2) => options2.stylize("WeakMap{\u2026}", "special"),
+    WeakSet: (value, options4) => options4.stylize("WeakSet{\u2026}", "special"),
+    WeakMap: (value, options4) => options4.stylize("WeakMap{\u2026}", "special"),
     Arguments: inspectArguments,
     Int8Array: inspectTypedArray,
     Uint8Array: inspectTypedArray,
@@ -695,60 +695,60 @@
     HTMLCollection: inspectHTMLCollection,
     NodeList: inspectHTMLCollection
   };
-  var inspectCustom = /* @__PURE__ */ __name((value, options2, type3) => {
+  var inspectCustom = /* @__PURE__ */ __name((value, options4, type3) => {
     if (chaiInspect in value && typeof value[chaiInspect] === "function") {
-      return value[chaiInspect](options2);
+      return value[chaiInspect](options4);
     }
     if (nodeInspect && nodeInspect in value && typeof value[nodeInspect] === "function") {
-      return value[nodeInspect](options2.depth, options2);
+      return value[nodeInspect](options4.depth, options4);
     }
     if ("inspect" in value && typeof value.inspect === "function") {
-      return value.inspect(options2.depth, options2);
+      return value.inspect(options4.depth, options4);
     }
     if ("constructor" in value && constructorMap.has(value.constructor)) {
-      return constructorMap.get(value.constructor)(value, options2);
+      return constructorMap.get(value.constructor)(value, options4);
     }
     if (stringTagMap[type3]) {
-      return stringTagMap[type3](value, options2);
+      return stringTagMap[type3](value, options4);
     }
     return "";
   }, "inspectCustom");
   var toString = Object.prototype.toString;
   function inspect(value, opts = {}) {
-    const options2 = normaliseOptions(opts, inspect);
-    const { customInspect } = options2;
+    const options4 = normaliseOptions(opts, inspect);
+    const { customInspect } = options4;
     let type3 = value === null ? "null" : typeof value;
     if (type3 === "object") {
       type3 = toString.call(value).slice(8, -1);
     }
     if (type3 in baseTypesMap) {
-      return baseTypesMap[type3](value, options2);
+      return baseTypesMap[type3](value, options4);
     }
     if (customInspect && value) {
-      const output = inspectCustom(value, options2, type3);
+      const output = inspectCustom(value, options4, type3);
       if (output) {
         if (typeof output === "string")
           return output;
-        return inspect(output, options2);
+        return inspect(output, options4);
       }
     }
     const proto = value ? Object.getPrototypeOf(value) : false;
     if (proto === Object.prototype || proto === null) {
-      return inspectObject(value, options2);
+      return inspectObject(value, options4);
     }
     if (value && typeof HTMLElement === "function" && value instanceof HTMLElement) {
-      return inspectHTML(value, options2);
+      return inspectHTML(value, options4);
     }
     if ("constructor" in value) {
       if (value.constructor !== Object) {
-        return inspectClass(value, options2);
+        return inspectClass(value, options4);
       }
-      return inspectObject(value, options2);
+      return inspectObject(value, options4);
     }
     if (value === Object(value)) {
-      return inspectObject(value, options2);
+      return inspectObject(value, options4);
     }
-    return options2.stylize(String(value), type3);
+    return options4.stylize(String(value), type3);
   }
   __name(inspect, "inspect");
   var config = {
@@ -859,13 +859,13 @@
     deepEqual: null
   };
   function inspect2(obj, showHidden, depth, colors) {
-    var options2 = {
+    var options4 = {
       colors,
       depth: typeof depth === "undefined" ? 2 : depth,
       showHidden,
       truncate: config.truncateThreshold ? config.truncateThreshold : Infinity
     };
-    return inspect(obj, options2);
+    return inspect(obj, options4);
   }
   __name(inspect2, "inspect");
   function objDisplay(obj) {
@@ -977,15 +977,15 @@
   }
   __name(memoizeSet, "memoizeSet");
   var deep_eql_default = deepEqual;
-  function deepEqual(leftHandOperand, rightHandOperand, options2) {
-    if (options2 && options2.comparator) {
-      return extensiveDeepEqual(leftHandOperand, rightHandOperand, options2);
+  function deepEqual(leftHandOperand, rightHandOperand, options4) {
+    if (options4 && options4.comparator) {
+      return extensiveDeepEqual(leftHandOperand, rightHandOperand, options4);
     }
     var simpleResult = simpleEqual(leftHandOperand, rightHandOperand);
     if (simpleResult !== null) {
       return simpleResult;
     }
-    return extensiveDeepEqual(leftHandOperand, rightHandOperand, options2);
+    return extensiveDeepEqual(leftHandOperand, rightHandOperand, options4);
   }
   __name(deepEqual, "deepEqual");
   function simpleEqual(leftHandOperand, rightHandOperand) {
@@ -1002,22 +1002,22 @@
     return null;
   }
   __name(simpleEqual, "simpleEqual");
-  function extensiveDeepEqual(leftHandOperand, rightHandOperand, options2) {
-    options2 = options2 || {};
-    options2.memoize = options2.memoize === false ? false : options2.memoize || new MemoizeMap();
-    var comparator = options2 && options2.comparator;
-    var memoizeResultLeft = memoizeCompare(leftHandOperand, rightHandOperand, options2.memoize);
+  function extensiveDeepEqual(leftHandOperand, rightHandOperand, options4) {
+    options4 = options4 || {};
+    options4.memoize = options4.memoize === false ? false : options4.memoize || new MemoizeMap();
+    var comparator = options4 && options4.comparator;
+    var memoizeResultLeft = memoizeCompare(leftHandOperand, rightHandOperand, options4.memoize);
     if (memoizeResultLeft !== null) {
       return memoizeResultLeft;
     }
-    var memoizeResultRight = memoizeCompare(rightHandOperand, leftHandOperand, options2.memoize);
+    var memoizeResultRight = memoizeCompare(rightHandOperand, leftHandOperand, options4.memoize);
     if (memoizeResultRight !== null) {
       return memoizeResultRight;
     }
     if (comparator) {
       var comparatorResult = comparator(leftHandOperand, rightHandOperand);
       if (comparatorResult === false || comparatorResult === true) {
-        memoizeSet(leftHandOperand, rightHandOperand, options2.memoize, comparatorResult);
+        memoizeSet(leftHandOperand, rightHandOperand, options4.memoize, comparatorResult);
         return comparatorResult;
       }
       var simpleResult = simpleEqual(leftHandOperand, rightHandOperand);
@@ -1027,16 +1027,16 @@
     }
     var leftHandType = type2(leftHandOperand);
     if (leftHandType !== type2(rightHandOperand)) {
-      memoizeSet(leftHandOperand, rightHandOperand, options2.memoize, false);
+      memoizeSet(leftHandOperand, rightHandOperand, options4.memoize, false);
       return false;
     }
-    memoizeSet(leftHandOperand, rightHandOperand, options2.memoize, true);
-    var result = extensiveDeepEqualByType(leftHandOperand, rightHandOperand, leftHandType, options2);
-    memoizeSet(leftHandOperand, rightHandOperand, options2.memoize, result);
+    memoizeSet(leftHandOperand, rightHandOperand, options4.memoize, true);
+    var result = extensiveDeepEqualByType(leftHandOperand, rightHandOperand, leftHandType, options4);
+    memoizeSet(leftHandOperand, rightHandOperand, options4.memoize, result);
     return result;
   }
   __name(extensiveDeepEqual, "extensiveDeepEqual");
-  function extensiveDeepEqualByType(leftHandOperand, rightHandOperand, leftHandType, options2) {
+  function extensiveDeepEqualByType(leftHandOperand, rightHandOperand, leftHandType, options4) {
     switch (leftHandType) {
       case "String":
       case "Number":
@@ -1050,7 +1050,7 @@
       case "WeakSet":
         return leftHandOperand === rightHandOperand;
       case "Error":
-        return keysEqual(leftHandOperand, rightHandOperand, ["name", "message", "code"], options2);
+        return keysEqual(leftHandOperand, rightHandOperand, ["name", "message", "code"], options4);
       case "Arguments":
       case "Int8Array":
       case "Uint8Array":
@@ -1062,19 +1062,19 @@
       case "Float32Array":
       case "Float64Array":
       case "Array":
-        return iterableEqual(leftHandOperand, rightHandOperand, options2);
+        return iterableEqual(leftHandOperand, rightHandOperand, options4);
       case "RegExp":
         return regexpEqual(leftHandOperand, rightHandOperand);
       case "Generator":
-        return generatorEqual(leftHandOperand, rightHandOperand, options2);
+        return generatorEqual(leftHandOperand, rightHandOperand, options4);
       case "DataView":
-        return iterableEqual(new Uint8Array(leftHandOperand.buffer), new Uint8Array(rightHandOperand.buffer), options2);
+        return iterableEqual(new Uint8Array(leftHandOperand.buffer), new Uint8Array(rightHandOperand.buffer), options4);
       case "ArrayBuffer":
-        return iterableEqual(new Uint8Array(leftHandOperand), new Uint8Array(rightHandOperand), options2);
+        return iterableEqual(new Uint8Array(leftHandOperand), new Uint8Array(rightHandOperand), options4);
       case "Set":
-        return entriesEqual(leftHandOperand, rightHandOperand, options2);
+        return entriesEqual(leftHandOperand, rightHandOperand, options4);
       case "Map":
-        return entriesEqual(leftHandOperand, rightHandOperand, options2);
+        return entriesEqual(leftHandOperand, rightHandOperand, options4);
       case "Temporal.PlainDate":
       case "Temporal.PlainTime":
       case "Temporal.PlainDateTime":
@@ -1089,7 +1089,7 @@
       case "Temporal.Calendar":
         return leftHandOperand.toString() === rightHandOperand.toString();
       default:
-        return objectEqual(leftHandOperand, rightHandOperand, options2);
+        return objectEqual(leftHandOperand, rightHandOperand, options4);
     }
   }
   __name(extensiveDeepEqualByType, "extensiveDeepEqualByType");
@@ -1097,7 +1097,7 @@
     return leftHandOperand.toString() === rightHandOperand.toString();
   }
   __name(regexpEqual, "regexpEqual");
-  function entriesEqual(leftHandOperand, rightHandOperand, options2) {
+  function entriesEqual(leftHandOperand, rightHandOperand, options4) {
     if (leftHandOperand.size !== rightHandOperand.size) {
       return false;
     }
@@ -1112,10 +1112,10 @@
     rightHandOperand.forEach(/* @__PURE__ */ __name(function gatherEntries(key, value) {
       rightHandItems.push([key, value]);
     }, "gatherEntries"));
-    return iterableEqual(leftHandItems.sort(), rightHandItems.sort(), options2);
+    return iterableEqual(leftHandItems.sort(), rightHandItems.sort(), options4);
   }
   __name(entriesEqual, "entriesEqual");
-  function iterableEqual(leftHandOperand, rightHandOperand, options2) {
+  function iterableEqual(leftHandOperand, rightHandOperand, options4) {
     var length = leftHandOperand.length;
     if (length !== rightHandOperand.length) {
       return false;
@@ -1125,15 +1125,15 @@
     }
     var index = -1;
     while (++index < length) {
-      if (deepEqual(leftHandOperand[index], rightHandOperand[index], options2) === false) {
+      if (deepEqual(leftHandOperand[index], rightHandOperand[index], options4) === false) {
         return false;
       }
     }
     return true;
   }
   __name(iterableEqual, "iterableEqual");
-  function generatorEqual(leftHandOperand, rightHandOperand, options2) {
-    return iterableEqual(getGeneratorEntries(leftHandOperand), getGeneratorEntries(rightHandOperand), options2);
+  function generatorEqual(leftHandOperand, rightHandOperand, options4) {
+    return iterableEqual(getGeneratorEntries(leftHandOperand), getGeneratorEntries(rightHandOperand), options4);
   }
   __name(generatorEqual, "generatorEqual");
   function hasIteratorFunction(target) {
@@ -1181,20 +1181,20 @@
     return keys;
   }
   __name(getEnumerableSymbols, "getEnumerableSymbols");
-  function keysEqual(leftHandOperand, rightHandOperand, keys, options2) {
+  function keysEqual(leftHandOperand, rightHandOperand, keys, options4) {
     var length = keys.length;
     if (length === 0) {
       return true;
     }
     for (var i = 0; i < length; i += 1) {
-      if (deepEqual(leftHandOperand[keys[i]], rightHandOperand[keys[i]], options2) === false) {
+      if (deepEqual(leftHandOperand[keys[i]], rightHandOperand[keys[i]], options4) === false) {
         return false;
       }
     }
     return true;
   }
   __name(keysEqual, "keysEqual");
-  function objectEqual(leftHandOperand, rightHandOperand, options2) {
+  function objectEqual(leftHandOperand, rightHandOperand, options4) {
     var leftHandKeys = getEnumerableKeys(leftHandOperand);
     var rightHandKeys = getEnumerableKeys(rightHandOperand);
     var leftHandSymbols = getEnumerableSymbols(leftHandOperand);
@@ -1205,14 +1205,14 @@
       if (iterableEqual(mapSymbols(leftHandKeys).sort(), mapSymbols(rightHandKeys).sort()) === false) {
         return false;
       }
-      return keysEqual(leftHandOperand, rightHandOperand, leftHandKeys, options2);
+      return keysEqual(leftHandOperand, rightHandOperand, leftHandKeys, options4);
     }
     var leftHandEntries = getIteratorEntries(leftHandOperand);
     var rightHandEntries = getIteratorEntries(rightHandOperand);
     if (leftHandEntries.length && leftHandEntries.length === rightHandEntries.length) {
       leftHandEntries.sort();
       rightHandEntries.sort();
-      return iterableEqual(leftHandEntries, rightHandEntries, options2);
+      return iterableEqual(leftHandEntries, rightHandEntries, options4);
     }
     if (leftHandKeys.length === 0 && leftHandEntries.length === 0 && rightHandKeys.length === 0 && rightHandEntries.length === 0) {
       return true;
@@ -3992,8 +3992,8 @@
   var IS_SAFARI = !!(IS_BROWSER && navigator.vendor && navigator.vendor.indexOf("Apple") > -1 && navigator.userAgent && navigator.userAgent.indexOf("CriOS") == -1 && navigator.userAgent.indexOf("FxiOS") == -1);
 
   // src/utils/parse-listener-options.ts
-  function parseListenerOptions(options2 = {}) {
-    const { capture = true, passive = true } = options2;
+  function parseListenerOptions(options4 = {}) {
+    const { capture = true, passive = true } = options4;
     if (HAS_PASSIVE_EVENTS) {
       return { capture, passive };
     } else {
@@ -4031,12 +4031,12 @@
     mouse: MOUSE_EVENTS
   };
   var PointerSensor = class {
-    constructor(element, options2 = {}) {
+    constructor(element, options4 = {}) {
       const {
         listenerOptions = {},
         sourceEvents = "auto",
         startPredicate = (e) => "button" in e && e.button > 0 ? false : true
-      } = options2;
+      } = options4;
       this.element = element;
       this.drag = null;
       this.isDestroyed = false;
@@ -4195,9 +4195,9 @@
     /**
      * Update the instance's settings.
      */
-    updateSettings(options2) {
+    updateSettings(options4) {
       if (this.isDestroyed) return;
-      const { listenerOptions, sourceEvents, startPredicate } = options2;
+      const { listenerOptions, sourceEvents, startPredicate } = options4;
       const nextSourceEvents = parseSourceEvents(sourceEvents);
       const nextListenerOptions = parseListenerOptions(listenerOptions);
       if (startPredicate && this._startPredicate !== startPredicate) {
@@ -4317,7 +4317,7 @@
     }
   };
   var KeyboardSensor = class extends BaseSensor {
-    constructor(element, options2 = {}) {
+    constructor(element, options4 = {}) {
       super();
       const {
         moveDistance = keyboardSensorDefaults.moveDistance,
@@ -4327,7 +4327,7 @@
         movePredicate = keyboardSensorDefaults.movePredicate,
         cancelPredicate = keyboardSensorDefaults.cancelPredicate,
         endPredicate = keyboardSensorDefaults.endPredicate
-      } = options2;
+      } = options4;
       this.element = element;
       this.moveDistance = typeof moveDistance === "number" ? { x: moveDistance, y: moveDistance } : { ...moveDistance };
       this._cancelOnBlur = cancelOnBlur;
@@ -4405,7 +4405,7 @@
         return;
       }
     }
-    updateSettings(options2 = {}) {
+    updateSettings(options4 = {}) {
       const {
         moveDistance,
         cancelOnBlur,
@@ -4414,7 +4414,7 @@
         movePredicate,
         cancelPredicate,
         endPredicate
-      } = options2;
+      } = options4;
       if (moveDistance !== void 0) {
         if (typeof moveDistance === "number") {
           this.moveDistance.x = this.moveDistance.y = moveDistance;
@@ -5188,9 +5188,9 @@
     positionModifiers: []
   };
   var Draggable = class {
-    constructor(sensors, options2 = {}) {
+    constructor(sensors, options4 = {}) {
       this.sensors = sensors;
-      this.settings = this._parseSettings(options2);
+      this.settings = this._parseSettings(options4);
       this.plugins = {};
       this.drag = null;
       this.isDestroyed = false;
@@ -5224,7 +5224,7 @@
         sensor.on(SensorEventType.Destroy, onEnd, onEnd);
       });
     }
-    _parseSettings(options2, defaults = DraggableDefaultSettings) {
+    _parseSettings(options4, defaults = DraggableDefaultSettings) {
       const {
         container = defaults.container,
         startPredicate = defaults.startPredicate,
@@ -5238,7 +5238,7 @@
         onMove = defaults.onMove,
         onEnd = defaults.onEnd,
         onDestroy = defaults.onDestroy
-      } = options2 || {};
+      } = options4 || {};
       return {
         container,
         startPredicate,
@@ -5548,8 +5548,8 @@
         ticker.once(tickerPhases.write, this._applyAlign, this._alignId);
       }
     }
-    updateSettings(options2 = {}) {
-      this.settings = this._parseSettings(options2, this.settings);
+    updateSettings(options4 = {}) {
+      this.settings = this._parseSettings(options4, this.settings);
     }
     use(plugin) {
       return plugin(this);
@@ -5927,8 +5927,8 @@
     }
   };
   var AutoScroll = class {
-    constructor(options2 = {}) {
-      const { overlapCheckInterval = 150 } = options2;
+    constructor(options4 = {}) {
+      const { overlapCheckInterval = 150 } = options4;
       this.items = [];
       this.settings = {
         overlapCheckInterval
@@ -6365,8 +6365,8 @@
     isItemScrolling(item) {
       return this.isItemScrollingX(item) || this.isItemScrollingY(item);
     }
-    updateSettings(options2 = {}) {
-      const { overlapCheckInterval = this.settings.overlapCheckInterval } = options2;
+    updateSettings(options4 = {}) {
+      const { overlapCheckInterval = this.settings.overlapCheckInterval } = options4;
       this.settings.overlapCheckInterval = overlapCheckInterval;
     }
     destroy() {
@@ -6709,11 +6709,11 @@
        `, function() {
         const s = new BaseSensor();
         const startArgs = { type: "start", x: 1, y: 2 };
-        let events3 = [];
+        let events4 = [];
         s["_start"](startArgs);
-        s.on("start", (data) => void events3.push(data.type));
-        s.on("move", (data) => void events3.push(data.type));
-        s.on("end", (data) => void events3.push(data.type));
+        s.on("start", (data) => void events4.push(data.type));
+        s.on("move", (data) => void events4.push(data.type));
+        s.on("end", (data) => void events4.push(data.type));
         s.on("cancel", (data) => {
           assert.deepEqual(s.drag, { x: startArgs.x, y: startArgs.y });
           assert.equal(s.isDestroyed, true);
@@ -6722,7 +6722,7 @@
             x: startArgs.x,
             y: startArgs.y
           });
-          events3.push(data.type);
+          events4.push(data.type);
         });
         s.on("destroy", (data) => {
           assert.equal(s.drag, null);
@@ -6730,13 +6730,13 @@
           assert.deepEqual(data, {
             type: "destroy"
           });
-          events3.push(data.type);
+          events4.push(data.type);
         });
         assert.equal(s["_emitter"].listenerCount(), 5);
         s.destroy();
         assert.equal(s.drag, null);
         assert.equal(s.isDestroyed, true);
-        assert.deepEqual(events3, ["cancel", "destroy"]);
+        assert.deepEqual(events4, ["cancel", "destroy"]);
         assert.equal(s["_emitter"].listenerCount(), 0);
       });
       it(`should (if drag is not active):
@@ -6745,46 +6745,46 @@
           3. remove all listeners from the internal emitter
        `, function() {
         const s = new BaseSensor();
-        let events3 = [];
-        s.on("start", (data) => void events3.push(data.type));
-        s.on("move", (data) => void events3.push(data.type));
-        s.on("end", (data) => void events3.push(data.type));
-        s.on("cancel", (data) => void events3.push(data.type));
+        let events4 = [];
+        s.on("start", (data) => void events4.push(data.type));
+        s.on("move", (data) => void events4.push(data.type));
+        s.on("end", (data) => void events4.push(data.type));
+        s.on("cancel", (data) => void events4.push(data.type));
         s.on("destroy", (data) => {
           assert.equal(s.drag, null);
           assert.equal(s.isDestroyed, true);
           assert.deepEqual(data, {
             type: "destroy"
           });
-          events3.push(data.type);
+          events4.push(data.type);
         });
         assert.equal(s["_emitter"].listenerCount(), 5);
         s.destroy();
         assert.equal(s.drag, null);
         assert.equal(s.isDestroyed, true);
-        assert.deepEqual(events3, ["destroy"]);
+        assert.deepEqual(events4, ["destroy"]);
         assert.equal(s["_emitter"].listenerCount(), 0);
       });
       it("should not do anything if the sensor is already destroyed", () => {
         const s = new BaseSensor();
         s.destroy();
-        let events3 = [];
-        s.on("start", (data) => void events3.push(data.type));
-        s.on("move", (data) => void events3.push(data.type));
-        s.on("end", (data) => void events3.push(data.type));
-        s.on("cancel", (data) => void events3.push(data.type));
-        s.on("destroy", (data) => void events3.push(data.type));
+        let events4 = [];
+        s.on("start", (data) => void events4.push(data.type));
+        s.on("move", (data) => void events4.push(data.type));
+        s.on("end", (data) => void events4.push(data.type));
+        s.on("cancel", (data) => void events4.push(data.type));
+        s.on("destroy", (data) => void events4.push(data.type));
         s.destroy();
         assert.equal(s.drag, null);
         assert.equal(s.isDestroyed, true);
-        assert.deepEqual(events3, []);
+        assert.deepEqual(events4, []);
       });
     });
   });
 
   // tests/src/utils/fake-touch.ts
   var FakeTouch = class {
-    constructor(options2 = {}) {
+    constructor(options4 = {}) {
       const {
         identifier = 0,
         target = null,
@@ -6796,7 +6796,7 @@
         radiusY = 0,
         rotationAngle = 0,
         force = 0
-      } = options2;
+      } = options4;
       const mouseEvent = new MouseEvent("mousedown", { clientX, clientY, screenX, screenY });
       this.identifier = identifier;
       this.target = target || document.elementFromPoint(mouseEvent.clientX, mouseEvent.clientY) || document.documentElement;
@@ -6813,7 +6813,7 @@
     }
   };
   var FakeTouchEvent = class extends UIEvent {
-    constructor(type3, options2 = {}) {
+    constructor(type3, options4 = {}) {
       const {
         altKey = false,
         ctrlKey = false,
@@ -6823,7 +6823,7 @@
         targetTouches = [],
         changedTouches = [],
         ...parentOptions
-      } = options2;
+      } = options4;
       super(type3, parentOptions);
       this.altKey = altKey;
       this.ctrlKey = ctrlKey;
@@ -6836,7 +6836,7 @@
   };
 
   // tests/src/utils/create-fake-touch-event.ts
-  function createFakeTouchEvent(type3, options2 = {}) {
+  function createFakeTouchEvent(type3, options4 = {}) {
     const {
       identifier,
       target,
@@ -6849,7 +6849,7 @@
       rotationAngle,
       force,
       ...eventOptions
-    } = options2;
+    } = options4;
     const touch = new FakeTouch({
       identifier,
       target,
@@ -6873,7 +6873,7 @@
 
   // tests/src/utils/create-fake-drag.ts
   var idCounter = 100;
-  async function createFakeDrag(steps, options2) {
+  async function createFakeDrag(steps, options4) {
     const {
       eventType = "mouse",
       stepDuration = 16,
@@ -6882,7 +6882,7 @@
       pointerId = ++idCounter,
       pointerType = "touch",
       onAfterStep
-    } = options2;
+    } = options4;
     const finalSteps = [...steps];
     if (extraSteps > 0) {
       const stepTo = finalSteps.pop();
@@ -7016,88 +7016,86 @@
 
   // tests/src/draggable/base.ts
   function base() {
-    describe("base", () => {
-      it("should drag an element using the provided sensors", async () => {
-        const el = createTestElement();
-        const pointerSensor = new PointerSensor(el, { sourceEvents: "mouse" });
-        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-        const draggable = new Draggable([pointerSensor, keyboardSensor], { elements: () => [el] });
-        let rect = el.getBoundingClientRect();
-        assert.equal(rect.x, 0);
-        assert.equal(rect.y, 0);
-        focusElement(el);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        await waitNextFrame();
-        rect = el.getBoundingClientRect();
-        assert.equal(rect.x, 1);
-        assert.equal(rect.y, 0);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        assert.equal(draggable.drag, null);
-        await createFakeDrag(
-          [
-            { x: 1, y: 1 },
-            // mouse down
-            { x: 2, y: 2 },
-            // mouse move
-            { x: 3, y: 3 },
-            // mouse move
-            { x: 3, y: 3 }
-            // mouse up
-          ],
-          {
-            eventType: "mouse",
-            stepDuration: 50
-          }
-        );
-        await waitNextFrame();
-        assert.equal(draggable.drag, null);
-        rect = el.getBoundingClientRect();
-        assert.equal(rect.x, 3);
-        assert.equal(rect.y, 2);
-        draggable.destroy();
-        pointerSensor.destroy();
-        keyboardSensor.destroy();
-        el.remove();
+    it("should drag an element using the provided sensors", async () => {
+      const el = createTestElement();
+      const pointerSensor = new PointerSensor(el, { sourceEvents: "mouse" });
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([pointerSensor, keyboardSensor], { elements: () => [el] });
+      let rect = el.getBoundingClientRect();
+      assert.equal(rect.x, 0);
+      assert.equal(rect.y, 0);
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      rect = el.getBoundingClientRect();
+      assert.equal(rect.x, 1);
+      assert.equal(rect.y, 0);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(draggable.drag, null);
+      await createFakeDrag(
+        [
+          { x: 1, y: 1 },
+          // mouse down
+          { x: 2, y: 2 },
+          // mouse move
+          { x: 3, y: 3 },
+          // mouse move
+          { x: 3, y: 3 }
+          // mouse up
+        ],
+        {
+          eventType: "mouse",
+          stepDuration: 50
+        }
+      );
+      await waitNextFrame();
+      assert.equal(draggable.drag, null);
+      rect = el.getBoundingClientRect();
+      assert.equal(rect.x, 3);
+      assert.equal(rect.y, 2);
+      draggable.destroy();
+      pointerSensor.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+    });
+    it("should work with transformed elements", async () => {
+      const el = createTestElement({
+        transform: "scale(1.2) translate(-5px, -6px) rotate(33deg) skew(30deg, -40deg)",
+        transformOrigin: "21px 22px"
       });
-      it("should work with transformed elements", async () => {
-        const el = createTestElement({
-          transform: "scale(1.2) translate(-5px, -6px) rotate(33deg) skew(30deg, -40deg)",
-          transformOrigin: "21px 22px"
-        });
-        const container1 = createTestElement({
-          transform: "scale(0.9) translate(3px, 4px) rotate(-10deg) skew(5deg, 10deg)",
-          transformOrigin: "5px 10px"
-        });
-        const container2 = createTestElement({
-          transform: "scale(0.8) translate(4px, 5px) rotate(-20deg) skew(10deg, 15deg)",
-          transformOrigin: "10px 15px"
-        });
-        const container3 = createTestElement({
-          transform: "scale(0.7) translate(5px, 6px) rotate(-30deg) skew(15deg, 20deg)",
-          transformOrigin: "15px 20px"
-        });
-        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-        const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
-        container1.appendChild(container2);
-        container2.appendChild(container3);
-        container3.appendChild(el);
-        const startRect = el.getBoundingClientRect();
-        focusElement(el);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
-        await waitNextFrame();
-        const endRect = el.getBoundingClientRect();
-        assert.equal(roundNumber2(endRect.x - startRect.x, 3), 1, "x");
-        assert.equal(roundNumber2(endRect.y - startRect.y, 3), 1, "y");
-        draggable.destroy();
-        keyboardSensor.destroy();
-        el.remove();
-        container1.remove();
-        container2.remove();
-        container3.remove();
+      const container1 = createTestElement({
+        transform: "scale(0.9) translate(3px, 4px) rotate(-10deg) skew(5deg, 10deg)",
+        transformOrigin: "5px 10px"
       });
+      const container2 = createTestElement({
+        transform: "scale(0.8) translate(4px, 5px) rotate(-20deg) skew(10deg, 15deg)",
+        transformOrigin: "10px 15px"
+      });
+      const container3 = createTestElement({
+        transform: "scale(0.7) translate(5px, 6px) rotate(-30deg) skew(15deg, 20deg)",
+        transformOrigin: "15px 20px"
+      });
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
+      container1.appendChild(container2);
+      container2.appendChild(container3);
+      container3.appendChild(el);
+      const startRect = el.getBoundingClientRect();
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+      await waitNextFrame();
+      const endRect = el.getBoundingClientRect();
+      assert.equal(roundNumber2(endRect.x - startRect.x, 3), 1, "x");
+      assert.equal(roundNumber2(endRect.y - startRect.y, 3), 1, "y");
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+      container1.remove();
+      container2.remove();
+      container3.remove();
     });
   }
 
@@ -7105,7 +7103,7 @@
   function events() {
     describe("events", () => {
       it("should be called at the right time with the right arguments", async () => {
-        let events3 = [];
+        let events4 = [];
         let currentKeyboardEvent = null;
         const el = createTestElement();
         const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
@@ -7116,62 +7114,117 @@
           assert.equal(args.length, 1);
           assert.equal(args[0].type, "start");
           assert.equal(args[0].srcEvent, currentKeyboardEvent);
-          events3.push("preparestart");
+          events4.push("preparestart");
         });
         draggable.on("start", (...args) => {
           assert.equal(args.length, 1);
           assert.equal(args[0].type, "start");
           assert.equal(args[0].srcEvent, currentKeyboardEvent);
-          events3.push("start");
+          events4.push("start");
         });
         draggable.on("preparemove", (...args) => {
           assert.equal(args.length, 1);
           assert.equal(args[0].type, "move");
           assert.equal(args[0].srcEvent, currentKeyboardEvent);
-          events3.push("preparemove");
+          events4.push("preparemove");
         });
         draggable.on("move", (...args) => {
           assert.equal(args.length, 1);
           assert.equal(args[0].type, "move");
           assert.equal(args[0].srcEvent, currentKeyboardEvent);
-          events3.push("move");
+          events4.push("move");
         });
         draggable.on("end", (...args) => {
           assert.equal(args.length, 1);
           assert.equal(args[0]?.type, "end");
           assert.equal(args[0]?.srcEvent, currentKeyboardEvent);
-          events3.push("end");
+          events4.push("end");
         });
         draggable.on("destroy", (...args) => {
           assert.equal(args.length, 0);
-          events3.push("destroy");
+          events4.push("destroy");
         });
         focusElement(el);
         currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
         document.dispatchEvent(currentKeyboardEvent);
         await waitNextFrame();
-        assert.deepEqual(events3, ["preparestart", "start"]);
-        events3.length = 0;
+        assert.deepEqual(events4, ["preparestart", "start"]);
+        events4.length = 0;
         currentKeyboardEvent = new KeyboardEvent("keydown", { key: "ArrowRight" });
         document.dispatchEvent(currentKeyboardEvent);
         await waitNextFrame();
-        assert.deepEqual(events3, ["preparemove", "move"]);
-        events3.length = 0;
+        assert.deepEqual(events4, ["preparemove", "move"]);
+        events4.length = 0;
         currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
         document.dispatchEvent(currentKeyboardEvent);
-        assert.deepEqual(events3, ["end"]);
-        events3.length = 0;
+        assert.deepEqual(events4, ["end"]);
+        events4.length = 0;
         draggable.destroy();
-        assert.deepEqual(events3, ["destroy"]);
+        assert.deepEqual(events4, ["destroy"]);
         keyboardSensor.destroy();
         el.remove();
       });
     });
   }
 
-  // tests/src/draggable/option-apply-position.ts
+  // tests/src/draggable/methods/align.ts
+  function methodAlign() {
+    describe("align", () => {
+    });
+  }
+
+  // tests/src/draggable/methods/destroy.ts
+  function methodDestroy() {
+    describe("destroy", () => {
+    });
+  }
+
+  // tests/src/draggable/methods/off.ts
+  function methodOff() {
+    describe("off", () => {
+    });
+  }
+
+  // tests/src/draggable/methods/on.ts
+  function methodOn() {
+    describe("on", () => {
+    });
+  }
+
+  // tests/src/draggable/methods/stop.ts
+  function methodStop() {
+    describe("stop", () => {
+    });
+  }
+
+  // tests/src/draggable/methods/update-settings.ts
+  function methodUpdateSettings() {
+    describe("updateSettings", () => {
+    });
+  }
+
+  // tests/src/draggable/methods/use.ts
+  function methodUse() {
+    describe("use", () => {
+    });
+  }
+
+  // tests/src/draggable/methods/index.ts
+  function methods() {
+    describe("methods", () => {
+      methodAlign();
+      methodDestroy();
+      methodOff();
+      methodOn();
+      methodStop();
+      methodUpdateSettings();
+      methodUse();
+    });
+  }
+
+  // tests/src/draggable/options/apply-position.ts
   function optionApplyPosition() {
-    describe("option - applyPosition", () => {
+    describe("applyPosition", () => {
       it("should receive the correct arguments", async () => {
         let callCount = 0;
         let expectedPhase = "";
@@ -7207,11 +7260,11 @@
     });
   }
 
-  // tests/src/draggable/option-callbacks.ts
+  // tests/src/draggable/options/callbacks.ts
   function optionCallbacks() {
-    describe("option - callbacks", () => {
-      it("callbacks should be called at the right time with the right arguments", async () => {
-        let events3 = [];
+    describe("callbacks", () => {
+      it("should be called at the right time with the right arguments", async () => {
+        let events4 = [];
         let currentKeyboardEvent = null;
         const el = createTestElement();
         const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
@@ -7224,7 +7277,7 @@
             assert.equal(args[0].startEvent.srcEvent, currentKeyboardEvent);
             assert.equal(args[0].prevMoveEvent.srcEvent, currentKeyboardEvent);
             assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
-            events3.push("onPrepareStart");
+            events4.push("onPrepareStart");
           },
           onStart(...args) {
             assert.equal(args.length, 2);
@@ -7233,79 +7286,79 @@
             assert.equal(args[0].startEvent.srcEvent, currentKeyboardEvent);
             assert.equal(args[0].prevMoveEvent.srcEvent, currentKeyboardEvent);
             assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
-            events3.push("onStart");
+            events4.push("onStart");
           },
           onPrepareMove(...args) {
             assert.equal(args.length, 2);
             assert.equal(args[0], draggable.drag);
             assert.equal(args[1], draggable);
             assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
-            events3.push("onPrepareMove");
+            events4.push("onPrepareMove");
           },
           onMove(...args) {
             assert.equal(args.length, 2);
             assert.equal(args[0], draggable.drag);
             assert.equal(args[1], draggable);
             assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
-            events3.push("onMove");
+            events4.push("onMove");
           },
           onEnd(...args) {
             assert.equal(args.length, 2);
             assert.equal(args[0], draggable.drag);
             assert.equal(args[1], draggable);
             assert.equal(args[0].endEvent?.srcEvent, currentKeyboardEvent);
-            events3.push("onEnd");
+            events4.push("onEnd");
           },
           onDestroy(...args) {
             assert.equal(args.length, 1);
             assert.equal(args[0], draggable);
-            events3.push("onDestroy");
+            events4.push("onDestroy");
           }
         });
         draggable.on("preparestart", () => {
-          events3.push("preparestart");
+          events4.push("preparestart");
         });
         draggable.on("start", () => {
-          events3.push("start");
+          events4.push("start");
         });
         draggable.on("preparemove", () => {
-          events3.push("preparemove");
+          events4.push("preparemove");
         });
         draggable.on("move", () => {
-          events3.push("move");
+          events4.push("move");
         });
         draggable.on("end", () => {
-          events3.push("end");
+          events4.push("end");
         });
         draggable.on("destroy", () => {
-          events3.push("destroy");
+          events4.push("destroy");
         });
         focusElement(el);
         currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
         document.dispatchEvent(currentKeyboardEvent);
         await waitNextFrame();
-        assert.deepEqual(events3, ["preparestart", "onPrepareStart", "start", "onStart"]);
-        events3.length = 0;
+        assert.deepEqual(events4, ["preparestart", "onPrepareStart", "start", "onStart"]);
+        events4.length = 0;
         currentKeyboardEvent = new KeyboardEvent("keydown", { key: "ArrowRight" });
         document.dispatchEvent(currentKeyboardEvent);
         await waitNextFrame();
-        assert.deepEqual(events3, ["preparemove", "onPrepareMove", "move", "onMove"]);
-        events3.length = 0;
+        assert.deepEqual(events4, ["preparemove", "onPrepareMove", "move", "onMove"]);
+        events4.length = 0;
         currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
         document.dispatchEvent(currentKeyboardEvent);
-        assert.deepEqual(events3, ["end", "onEnd"]);
-        events3.length = 0;
+        assert.deepEqual(events4, ["end", "onEnd"]);
+        events4.length = 0;
         draggable.destroy();
-        assert.deepEqual(events3, ["destroy", "onDestroy"]);
+        assert.deepEqual(events4, ["destroy", "onDestroy"]);
         keyboardSensor.destroy();
         el.remove();
       });
     });
   }
 
-  // tests/src/draggable/option-container.ts
+  // tests/src/draggable/options/container.ts
   function optionContainer() {
-    describe("option - container", () => {
+    describe("container", () => {
       it("should define the drag container", async () => {
         const container = createTestElement();
         const el = createTestElement();
@@ -7460,9 +7513,9 @@
     });
   }
 
-  // tests/src/draggable/option-elements.ts
+  // tests/src/draggable/options/elements.ts
   function optionElements() {
-    describe("option - elements", () => {
+    describe("elements", () => {
       it("should be a function that returns an array of the dragged elements", async () => {
         const elA = createTestElement();
         const elB = createTestElement();
@@ -7493,9 +7546,9 @@
     });
   }
 
-  // tests/src/draggable/option-frozen-styles.ts
+  // tests/src/draggable/options/frozen-styles.ts
   function optionFrozenStyles() {
-    describe("option - frozenStyles", async () => {
+    describe("frozenStyles", async () => {
       it("should receive the correct arguments", async () => {
         let callCount = 0;
         const el = createTestElement();
@@ -7596,9 +7649,9 @@
     });
   }
 
-  // tests/src/draggable/option-position-modifiers.ts
+  // tests/src/draggable/options/position-modifiers.ts
   function optionPositionModifiers() {
-    describe("option - positionModifiers", () => {
+    describe("positionModifiers", () => {
       it("should modify the dragged element position", async () => {
         let phaseCounter = { start: 0, move: 0, end: 0 };
         const el = createTestElement();
@@ -7667,9 +7720,9 @@
     });
   }
 
-  // tests/src/draggable/option-start-predicate.ts
+  // tests/src/draggable/options/start-predicate.ts
   function optionStartPredicate() {
-    describe("option - startPredicate", () => {
+    describe("startPredicate", () => {
       it("should be called only on start and move events of the sensors", async () => {
         let callCount = 0;
         const el = createTestElement();
@@ -7838,17 +7891,25 @@
     });
   }
 
+  // tests/src/draggable/options/index.ts
+  function options() {
+    describe("options", () => {
+      optionApplyPosition();
+      optionCallbacks();
+      optionContainer();
+      optionElements();
+      optionFrozenStyles();
+      optionPositionModifiers();
+      optionStartPredicate();
+    });
+  }
+
   // tests/src/draggable/index.ts
   describe("Draggable", () => {
     base();
     events();
-    optionApplyPosition();
-    optionCallbacks();
-    optionContainer();
-    optionElements();
-    optionFrozenStyles();
-    optionPositionModifiers();
-    optionStartPredicate();
+    options();
+    methods();
   });
 
   // tests/src/utils/default-page-styles.ts
@@ -7877,30 +7938,8 @@
     doc.getElementById("default-page-styles")?.remove();
   }
 
-  // tests/src/pointer-sensor/index.ts
-  describe("PointerSensor", () => {
-    beforeEach(() => {
-      addDefaultPageStyles(document);
-      return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-    });
-    afterEach(() => {
-      removeDefaultPageStyles(document);
-      return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-    });
-    describe("drag property", () => {
-      it(`should be null on init`, function() {
-        const s = new PointerSensor(document.body);
-        assert.equal(s.drag, null);
-        s.destroy();
-      });
-    });
-    describe("isDestroyed property", () => {
-      it(`should be false on init`, function() {
-        const s = new PointerSensor(document.body);
-        assert.equal(s.isDestroyed, false);
-        s.destroy();
-      });
-    });
+  // tests/src/pointer-sensor/base.ts
+  function base2() {
     describe("target element parameter", () => {
       it("should accept document.documentElement", function() {
         const s = new PointerSensor(document.documentElement, { sourceEvents: "mouse" });
@@ -7923,172 +7962,21 @@
         s.destroy();
       });
     });
-    describe("sourceEvents option", () => {
-      it('should listen to mouse/pointer/touch events when set to "mouse"/"pointer"/"touch"', function() {
-        const mouseSensor = new PointerSensor(document.body, { sourceEvents: "mouse" });
-        const pointerSensor = new PointerSensor(document.body, { sourceEvents: "pointer" });
-        const touchSensor = new PointerSensor(document.body, { sourceEvents: "touch" });
-        const mouseList = [];
-        const pointerList = [];
-        const touchList = [];
-        mouseSensor.on("start", (e) => mouseList.push(e.type));
-        mouseSensor.on("move", (e) => mouseList.push(e.type));
-        mouseSensor.on("end", (e) => mouseList.push(e.type));
-        pointerSensor.on("start", (e) => pointerList.push(e.type));
-        pointerSensor.on("move", (e) => pointerList.push(e.type));
-        pointerSensor.on("end", (e) => pointerList.push(e.type));
-        touchSensor.on("start", (e) => touchList.push(e.type));
-        touchSensor.on("move", (e) => touchList.push(e.type));
-        touchSensor.on("end", (e) => touchList.push(e.type));
-        createFakeDrag(
-          [
-            { x: 1, y: 1 },
-            { x: 2, y: 2 },
-            { x: 2, y: 2 }
-          ],
-          {
-            eventType: "mouse",
-            stepDuration: 0
-          }
-        );
-        assert.deepEqual(mouseList, ["start", "move", "end"]);
-        assert.deepEqual(pointerList, []);
-        assert.deepEqual(touchList, []);
-        mouseList.length = 0;
-        createFakeDrag(
-          [
-            { x: 1, y: 1 },
-            { x: 2, y: 2 },
-            { x: 2, y: 2 }
-          ],
-          {
-            eventType: "pointer",
-            stepDuration: 0
-          }
-        );
-        assert.deepEqual(mouseList, []);
-        assert.deepEqual(pointerList, ["start", "move", "end"]);
-        assert.deepEqual(touchList, []);
-        pointerList.length = 0;
-        createFakeDrag(
-          [
-            { x: 1, y: 1 },
-            { x: 2, y: 2 },
-            { x: 2, y: 2 }
-          ],
-          {
-            eventType: "touch",
-            stepDuration: 0
-          }
-        );
-        assert.deepEqual(mouseList, []);
-        assert.deepEqual(pointerList, []);
-        assert.deepEqual(touchList, ["start", "move", "end"]);
-        mouseSensor.destroy();
-        pointerSensor.destroy();
-        touchSensor.destroy();
-      });
-    });
-    describe("startPredicate option", () => {
-      it("should allow start only when e.button is 0 by default", function() {
-        const s = new PointerSensor(document.body, { sourceEvents: "mouse" });
-        document.body.dispatchEvent(new MouseEvent("mousedown", { button: 1 }));
-        assert.equal(s.drag, null);
-        document.body.dispatchEvent(new MouseEvent("mousedown", { button: 0 }));
-        assert.notEqual(s.drag, null);
-        s.destroy();
-      });
-      it("should allow start when true is returned and prevent start when false is returned", function() {
-        const s1 = new PointerSensor(document.body, {
-          sourceEvents: "mouse",
-          startPredicate: () => true
-        });
-        const s2 = new PointerSensor(document.body, {
-          sourceEvents: "mouse",
-          startPredicate: () => false
-        });
-        document.body.dispatchEvent(new MouseEvent("mousedown"));
-        assert.notEqual(s1.drag, null);
-        assert.equal(s2.drag, null);
-        s1.destroy();
-        s2.destroy();
-      });
-    });
-    describe("updateSettings method", () => {
-      it(`should update startPredicate setting`, function() {
-        const s = new PointerSensor(document.body, {
-          sourceEvents: "mouse",
-          startPredicate: () => false
-        });
-        document.body.dispatchEvent(new MouseEvent("mousedown"));
-        assert.equal(s.drag, null);
-        s.updateSettings({ startPredicate: () => true });
-        document.body.dispatchEvent(new MouseEvent("mousedown"));
-        assert.notEqual(s.drag, null);
-      });
-      it(`should update sourceEvents setting`, function() {
-        const s = new PointerSensor(document.body, {
-          sourceEvents: "pointer",
-          startPredicate: () => true
-        });
-        document.body.dispatchEvent(new MouseEvent("mousedown"));
-        assert.equal(s.drag, null);
-        s.updateSettings({ sourceEvents: "mouse" });
-        document.body.dispatchEvent(new MouseEvent("mousedown"));
-        assert.notEqual(s.drag, null);
-      });
-    });
-    describe("start event", () => {
-      it(`should be triggered correctly on mousedown`, function() {
-        const el = createTestElement();
-        const s = new PointerSensor(el, { sourceEvents: "mouse" });
-        let startEvent = null;
-        let sourceEvent;
-        s.on("start", (e) => {
-          if (startEvent === null) {
-            startEvent = e;
-          } else {
-            assert.fail("start event listener called twice");
-          }
-        });
-        createFakeDrag(
-          [
-            { x: 1, y: 1 },
-            { x: 2, y: 2 },
-            { x: 2, y: 2 }
-          ],
-          {
-            eventType: "mouse",
-            stepDuration: 0,
-            onAfterStep: (e) => {
-              if (e.type === "mousedown") {
-                sourceEvent = e;
-              }
-            }
-          }
-        );
-        assert.deepEqual(startEvent, {
-          type: "start",
-          srcEvent: sourceEvent,
-          target: el,
-          pointerId: -1,
-          pointerType: "mouse",
-          x: 1,
-          y: 1
-        });
-        s.destroy();
-        el.remove();
-      });
-      it(`should be triggered correctly on pointerdown`, function() {
+  }
+
+  // tests/src/pointer-sensor/events/cancel.ts
+  function eventCancel() {
+    describe("cancel", () => {
+      it(`should be triggered correctly on pointercancel`, function() {
         const el = createTestElement();
         const s = new PointerSensor(el, { sourceEvents: "pointer" });
-        let startEvent = null;
+        let cancelEvent = null;
         let sourceEvent;
-        s.on("start", (e) => {
-          if (startEvent === null) {
-            startEvent = e;
+        s.on("cancel", (e) => {
+          if (cancelEvent === null) {
+            cancelEvent = e;
           } else {
-            assert.fail("start event listener called twice");
+            assert.fail("cancel event listener called twice");
           }
         });
         createFakeDrag(
@@ -8100,137 +7988,16 @@
           {
             eventType: "pointer",
             stepDuration: 0,
+            cancelAtEnd: true,
             onAfterStep: (e) => {
-              if (e.type === "pointerdown") {
+              if (e.type === "pointercancel") {
                 sourceEvent = e;
               }
             }
           }
         );
-        assert.deepEqual(startEvent, {
-          type: "start",
-          srcEvent: sourceEvent,
-          target: el,
-          pointerId: sourceEvent.pointerId,
-          pointerType: sourceEvent.pointerType,
-          x: 1,
-          y: 1
-        });
-        s.destroy();
-        el.remove();
-      });
-      it(`should be triggered correctly on touchstart`, function() {
-        const el = createTestElement();
-        const s = new PointerSensor(el, { sourceEvents: "touch" });
-        let startEvent = null;
-        let sourceEvent;
-        s.on("start", (e) => {
-          if (startEvent === null) {
-            startEvent = e;
-          } else {
-            assert.fail("start event listener called twice");
-          }
-        });
-        createFakeDrag(
-          [
-            { x: 1, y: 1 },
-            { x: 2, y: 2 },
-            { x: 2, y: 2 }
-          ],
-          {
-            eventType: "touch",
-            stepDuration: 0,
-            onAfterStep: (e) => {
-              if (e.type === "touchstart") {
-                sourceEvent = e;
-              }
-            }
-          }
-        );
-        assert.deepEqual(startEvent, {
-          type: "start",
-          srcEvent: sourceEvent,
-          target: el,
-          pointerId: sourceEvent.changedTouches[0].identifier,
-          pointerType: "touch",
-          x: 1,
-          y: 1
-        });
-        s.destroy();
-        el.remove();
-      });
-    });
-    describe("move event", () => {
-      it(`should be triggered correctly on mousemove`, function() {
-        const el = createTestElement();
-        const s = new PointerSensor(el, { sourceEvents: "mouse" });
-        let moveEvent = null;
-        let sourceEvent;
-        s.on("move", (e) => {
-          if (moveEvent === null) {
-            moveEvent = e;
-          } else {
-            assert.fail("move event listener called twice");
-          }
-        });
-        createFakeDrag(
-          [
-            { x: 1, y: 1 },
-            { x: 2, y: 2 },
-            { x: 2, y: 2 }
-          ],
-          {
-            eventType: "mouse",
-            stepDuration: 0,
-            onAfterStep: (e) => {
-              if (e.type === "mousemove") {
-                sourceEvent = e;
-              }
-            }
-          }
-        );
-        assert.deepEqual(moveEvent, {
-          type: "move",
-          srcEvent: sourceEvent,
-          target: el,
-          pointerId: -1,
-          pointerType: "mouse",
-          x: 2,
-          y: 2
-        });
-        s.destroy();
-        el.remove();
-      });
-      it(`should be triggered correctly on pointermove`, function() {
-        const el = createTestElement();
-        const s = new PointerSensor(el, { sourceEvents: "pointer" });
-        let moveEvent = null;
-        let sourceEvent;
-        s.on("move", (e) => {
-          if (moveEvent === null) {
-            moveEvent = e;
-          } else {
-            assert.fail("move event listener called twice");
-          }
-        });
-        createFakeDrag(
-          [
-            { x: 1, y: 1 },
-            { x: 2, y: 2 },
-            { x: 2, y: 2 }
-          ],
-          {
-            eventType: "pointer",
-            stepDuration: 0,
-            onAfterStep: (e) => {
-              if (e.type === "pointermove") {
-                sourceEvent = e;
-              }
-            }
-          }
-        );
-        assert.deepEqual(moveEvent, {
-          type: "move",
+        assert.deepEqual(cancelEvent, {
+          type: "cancel",
           srcEvent: sourceEvent,
           target: el,
           pointerId: sourceEvent.pointerId,
@@ -8241,16 +8008,16 @@
         s.destroy();
         el.remove();
       });
-      it(`should be triggered correctly on touchmove`, function() {
+      it(`should be triggered correctly on touchcancel`, function() {
         const el = createTestElement();
         const s = new PointerSensor(el, { sourceEvents: "touch" });
-        let moveEvent = null;
+        let cancelEvent = null;
         let sourceEvent;
-        s.on("move", (e) => {
-          if (moveEvent === null) {
-            moveEvent = e;
+        s.on("cancel", (e) => {
+          if (cancelEvent === null) {
+            cancelEvent = e;
           } else {
-            assert.fail("start event listener called twice");
+            assert.fail("cancel event listener called twice");
           }
         });
         createFakeDrag(
@@ -8262,15 +8029,16 @@
           {
             eventType: "touch",
             stepDuration: 0,
+            cancelAtEnd: true,
             onAfterStep: (e) => {
-              if (e.type === "touchmove") {
+              if (e.type === "touchcancel") {
                 sourceEvent = e;
               }
             }
           }
         );
-        assert.deepEqual(moveEvent, {
-          type: "move",
+        assert.deepEqual(cancelEvent, {
+          type: "cancel",
           srcEvent: sourceEvent,
           target: el,
           pointerId: sourceEvent.changedTouches[0].identifier,
@@ -8282,7 +8050,11 @@
         el.remove();
       });
     });
-    describe("end event", () => {
+  }
+
+  // tests/src/pointer-sensor/events/end.ts
+  function eventEnd() {
+    describe("end", () => {
       it(`should be triggered correctly on mouseup`, function() {
         const el = createTestElement();
         const s = new PointerSensor(el, { sourceEvents: "mouse" });
@@ -8404,17 +8176,61 @@
         el.remove();
       });
     });
-    describe("cancel event", () => {
-      it(`should be triggered correctly on pointercancel`, function() {
+  }
+
+  // tests/src/pointer-sensor/events/move.ts
+  function eventMove() {
+    describe("move", () => {
+      it(`should be triggered correctly on mousemove`, function() {
+        const el = createTestElement();
+        const s = new PointerSensor(el, { sourceEvents: "mouse" });
+        let moveEvent = null;
+        let sourceEvent;
+        s.on("move", (e) => {
+          if (moveEvent === null) {
+            moveEvent = e;
+          } else {
+            assert.fail("move event listener called twice");
+          }
+        });
+        createFakeDrag(
+          [
+            { x: 1, y: 1 },
+            { x: 2, y: 2 },
+            { x: 2, y: 2 }
+          ],
+          {
+            eventType: "mouse",
+            stepDuration: 0,
+            onAfterStep: (e) => {
+              if (e.type === "mousemove") {
+                sourceEvent = e;
+              }
+            }
+          }
+        );
+        assert.deepEqual(moveEvent, {
+          type: "move",
+          srcEvent: sourceEvent,
+          target: el,
+          pointerId: -1,
+          pointerType: "mouse",
+          x: 2,
+          y: 2
+        });
+        s.destroy();
+        el.remove();
+      });
+      it(`should be triggered correctly on pointermove`, function() {
         const el = createTestElement();
         const s = new PointerSensor(el, { sourceEvents: "pointer" });
-        let cancelEvent = null;
+        let moveEvent = null;
         let sourceEvent;
-        s.on("cancel", (e) => {
-          if (cancelEvent === null) {
-            cancelEvent = e;
+        s.on("move", (e) => {
+          if (moveEvent === null) {
+            moveEvent = e;
           } else {
-            assert.fail("cancel event listener called twice");
+            assert.fail("move event listener called twice");
           }
         });
         createFakeDrag(
@@ -8426,16 +8242,15 @@
           {
             eventType: "pointer",
             stepDuration: 0,
-            cancelAtEnd: true,
             onAfterStep: (e) => {
-              if (e.type === "pointercancel") {
+              if (e.type === "pointermove") {
                 sourceEvent = e;
               }
             }
           }
         );
-        assert.deepEqual(cancelEvent, {
-          type: "cancel",
+        assert.deepEqual(moveEvent, {
+          type: "move",
           srcEvent: sourceEvent,
           target: el,
           pointerId: sourceEvent.pointerId,
@@ -8446,16 +8261,16 @@
         s.destroy();
         el.remove();
       });
-      it(`should be triggered correctly on touchcancel`, function() {
+      it(`should be triggered correctly on touchmove`, function() {
         const el = createTestElement();
         const s = new PointerSensor(el, { sourceEvents: "touch" });
-        let cancelEvent = null;
+        let moveEvent = null;
         let sourceEvent;
-        s.on("cancel", (e) => {
-          if (cancelEvent === null) {
-            cancelEvent = e;
+        s.on("move", (e) => {
+          if (moveEvent === null) {
+            moveEvent = e;
           } else {
-            assert.fail("cancel event listener called twice");
+            assert.fail("start event listener called twice");
           }
         });
         createFakeDrag(
@@ -8467,16 +8282,15 @@
           {
             eventType: "touch",
             stepDuration: 0,
-            cancelAtEnd: true,
             onAfterStep: (e) => {
-              if (e.type === "touchcancel") {
+              if (e.type === "touchmove") {
                 sourceEvent = e;
               }
             }
           }
         );
-        assert.deepEqual(cancelEvent, {
-          type: "cancel",
+        assert.deepEqual(moveEvent, {
+          type: "move",
           srcEvent: sourceEvent,
           target: el,
           pointerId: sourceEvent.changedTouches[0].identifier,
@@ -8488,6 +8302,331 @@
         el.remove();
       });
     });
+  }
+
+  // tests/src/pointer-sensor/events/start.ts
+  function eventStart() {
+    describe("start", () => {
+      it(`should be triggered correctly on mousedown`, function() {
+        const el = createTestElement();
+        const s = new PointerSensor(el, { sourceEvents: "mouse" });
+        let startEvent = null;
+        let sourceEvent;
+        s.on("start", (e) => {
+          if (startEvent === null) {
+            startEvent = e;
+          } else {
+            assert.fail("start event listener called twice");
+          }
+        });
+        createFakeDrag(
+          [
+            { x: 1, y: 1 },
+            { x: 2, y: 2 },
+            { x: 2, y: 2 }
+          ],
+          {
+            eventType: "mouse",
+            stepDuration: 0,
+            onAfterStep: (e) => {
+              if (e.type === "mousedown") {
+                sourceEvent = e;
+              }
+            }
+          }
+        );
+        assert.deepEqual(startEvent, {
+          type: "start",
+          srcEvent: sourceEvent,
+          target: el,
+          pointerId: -1,
+          pointerType: "mouse",
+          x: 1,
+          y: 1
+        });
+        s.destroy();
+        el.remove();
+      });
+      it(`should be triggered correctly on pointerdown`, function() {
+        const el = createTestElement();
+        const s = new PointerSensor(el, { sourceEvents: "pointer" });
+        let startEvent = null;
+        let sourceEvent;
+        s.on("start", (e) => {
+          if (startEvent === null) {
+            startEvent = e;
+          } else {
+            assert.fail("start event listener called twice");
+          }
+        });
+        createFakeDrag(
+          [
+            { x: 1, y: 1 },
+            { x: 2, y: 2 },
+            { x: 2, y: 2 }
+          ],
+          {
+            eventType: "pointer",
+            stepDuration: 0,
+            onAfterStep: (e) => {
+              if (e.type === "pointerdown") {
+                sourceEvent = e;
+              }
+            }
+          }
+        );
+        assert.deepEqual(startEvent, {
+          type: "start",
+          srcEvent: sourceEvent,
+          target: el,
+          pointerId: sourceEvent.pointerId,
+          pointerType: sourceEvent.pointerType,
+          x: 1,
+          y: 1
+        });
+        s.destroy();
+        el.remove();
+      });
+      it(`should be triggered correctly on touchstart`, function() {
+        const el = createTestElement();
+        const s = new PointerSensor(el, { sourceEvents: "touch" });
+        let startEvent = null;
+        let sourceEvent;
+        s.on("start", (e) => {
+          if (startEvent === null) {
+            startEvent = e;
+          } else {
+            assert.fail("start event listener called twice");
+          }
+        });
+        createFakeDrag(
+          [
+            { x: 1, y: 1 },
+            { x: 2, y: 2 },
+            { x: 2, y: 2 }
+          ],
+          {
+            eventType: "touch",
+            stepDuration: 0,
+            onAfterStep: (e) => {
+              if (e.type === "touchstart") {
+                sourceEvent = e;
+              }
+            }
+          }
+        );
+        assert.deepEqual(startEvent, {
+          type: "start",
+          srcEvent: sourceEvent,
+          target: el,
+          pointerId: sourceEvent.changedTouches[0].identifier,
+          pointerType: "touch",
+          x: 1,
+          y: 1
+        });
+        s.destroy();
+        el.remove();
+      });
+    });
+  }
+
+  // tests/src/pointer-sensor/events/index.ts
+  function events2() {
+    describe("events", () => {
+      eventCancel();
+      eventEnd();
+      eventMove();
+      eventStart();
+    });
+  }
+
+  // tests/src/pointer-sensor/methods/update-settings.ts
+  function methodUpdateSettings2() {
+    describe("updateSettings", () => {
+      it(`should update startPredicate setting`, function() {
+        const s = new PointerSensor(document.body, {
+          sourceEvents: "mouse",
+          startPredicate: () => false
+        });
+        document.body.dispatchEvent(new MouseEvent("mousedown"));
+        assert.equal(s.drag, null);
+        s.updateSettings({ startPredicate: () => true });
+        document.body.dispatchEvent(new MouseEvent("mousedown"));
+        assert.notEqual(s.drag, null);
+      });
+      it(`should update sourceEvents setting`, function() {
+        const s = new PointerSensor(document.body, {
+          sourceEvents: "pointer",
+          startPredicate: () => true
+        });
+        document.body.dispatchEvent(new MouseEvent("mousedown"));
+        assert.equal(s.drag, null);
+        s.updateSettings({ sourceEvents: "mouse" });
+        document.body.dispatchEvent(new MouseEvent("mousedown"));
+        assert.notEqual(s.drag, null);
+      });
+    });
+  }
+
+  // tests/src/pointer-sensor/methods/index.ts
+  function methods2() {
+    describe("methods", () => {
+      methodUpdateSettings2();
+    });
+  }
+
+  // tests/src/pointer-sensor/options/source-events.ts
+  function optionSourceEvents() {
+    describe("sourceEvents", () => {
+      it('should listen to mouse/pointer/touch events when set to "mouse"/"pointer"/"touch"', function() {
+        const mouseSensor = new PointerSensor(document.body, { sourceEvents: "mouse" });
+        const pointerSensor = new PointerSensor(document.body, { sourceEvents: "pointer" });
+        const touchSensor = new PointerSensor(document.body, { sourceEvents: "touch" });
+        const mouseList = [];
+        const pointerList = [];
+        const touchList = [];
+        mouseSensor.on("start", (e) => mouseList.push(e.type));
+        mouseSensor.on("move", (e) => mouseList.push(e.type));
+        mouseSensor.on("end", (e) => mouseList.push(e.type));
+        pointerSensor.on("start", (e) => pointerList.push(e.type));
+        pointerSensor.on("move", (e) => pointerList.push(e.type));
+        pointerSensor.on("end", (e) => pointerList.push(e.type));
+        touchSensor.on("start", (e) => touchList.push(e.type));
+        touchSensor.on("move", (e) => touchList.push(e.type));
+        touchSensor.on("end", (e) => touchList.push(e.type));
+        createFakeDrag(
+          [
+            { x: 1, y: 1 },
+            { x: 2, y: 2 },
+            { x: 2, y: 2 }
+          ],
+          {
+            eventType: "mouse",
+            stepDuration: 0
+          }
+        );
+        assert.deepEqual(mouseList, ["start", "move", "end"]);
+        assert.deepEqual(pointerList, []);
+        assert.deepEqual(touchList, []);
+        mouseList.length = 0;
+        createFakeDrag(
+          [
+            { x: 1, y: 1 },
+            { x: 2, y: 2 },
+            { x: 2, y: 2 }
+          ],
+          {
+            eventType: "pointer",
+            stepDuration: 0
+          }
+        );
+        assert.deepEqual(mouseList, []);
+        assert.deepEqual(pointerList, ["start", "move", "end"]);
+        assert.deepEqual(touchList, []);
+        pointerList.length = 0;
+        createFakeDrag(
+          [
+            { x: 1, y: 1 },
+            { x: 2, y: 2 },
+            { x: 2, y: 2 }
+          ],
+          {
+            eventType: "touch",
+            stepDuration: 0
+          }
+        );
+        assert.deepEqual(mouseList, []);
+        assert.deepEqual(pointerList, []);
+        assert.deepEqual(touchList, ["start", "move", "end"]);
+        mouseSensor.destroy();
+        pointerSensor.destroy();
+        touchSensor.destroy();
+      });
+    });
+  }
+
+  // tests/src/pointer-sensor/options/start-predicate.ts
+  function optionStartPredicate2() {
+    describe("startPredicate", () => {
+      it("should allow start only when e.button is 0 by default", function() {
+        const s = new PointerSensor(document.body, { sourceEvents: "mouse" });
+        document.body.dispatchEvent(new MouseEvent("mousedown", { button: 1 }));
+        assert.equal(s.drag, null);
+        document.body.dispatchEvent(new MouseEvent("mousedown", { button: 0 }));
+        assert.notEqual(s.drag, null);
+        s.destroy();
+      });
+      it("should allow start when true is returned and prevent start when false is returned", function() {
+        const s1 = new PointerSensor(document.body, {
+          sourceEvents: "mouse",
+          startPredicate: () => true
+        });
+        const s2 = new PointerSensor(document.body, {
+          sourceEvents: "mouse",
+          startPredicate: () => false
+        });
+        document.body.dispatchEvent(new MouseEvent("mousedown"));
+        assert.notEqual(s1.drag, null);
+        assert.equal(s2.drag, null);
+        s1.destroy();
+        s2.destroy();
+      });
+    });
+  }
+
+  // tests/src/pointer-sensor/options/index.ts
+  function options2() {
+    describe("options", () => {
+      optionSourceEvents();
+      optionStartPredicate2();
+    });
+  }
+
+  // tests/src/pointer-sensor/properties/drag.ts
+  function propDrag() {
+    describe("drag", () => {
+      it(`should be null on init`, function() {
+        const s = new PointerSensor(document.body);
+        assert.equal(s.drag, null);
+        s.destroy();
+      });
+    });
+  }
+
+  // tests/src/pointer-sensor/properties/is-destroyed.ts
+  function propIsDestroyed() {
+    describe("isDestroyed", () => {
+      it(`should be false on init`, function() {
+        const s = new PointerSensor(document.body);
+        assert.equal(s.isDestroyed, false);
+        s.destroy();
+      });
+    });
+  }
+
+  // tests/src/pointer-sensor/properties/index.ts
+  function properties() {
+    describe("properties", () => {
+      propDrag();
+      propIsDestroyed();
+    });
+  }
+
+  // tests/src/pointer-sensor/index.ts
+  describe("PointerSensor", () => {
+    beforeEach(() => {
+      addDefaultPageStyles(document);
+      return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    });
+    afterEach(() => {
+      removeDefaultPageStyles(document);
+      return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    });
+    base2();
+    events2();
+    methods2();
+    options2();
+    properties();
   });
 
   // tests/src/utils/blur-element.ts
@@ -8714,7 +8853,7 @@
   }
 
   // tests/src/keyboard-sensor/options/start-predicate.ts
-  function optionStartPredicate2() {
+  function optionStartPredicate3() {
     describe("startPredicate", () => {
       it("should define the start predicate", () => {
         let returnValue = null;
@@ -8761,19 +8900,19 @@
   }
 
   // tests/src/keyboard-sensor/options/index.ts
-  function options() {
+  function options3() {
     describe("options", () => {
       optionCancelOnBlur();
       optionCancelPredicate();
       optionEndPredicate();
       optionMoveDistance();
       optionMovePredicate();
-      optionStartPredicate2();
+      optionStartPredicate3();
     });
   }
 
   // tests/src/keyboard-sensor/properties/drag.ts
-  function propDrag() {
+  function propDrag2() {
     describe("drag", () => {
       it(`should be null on init`, function() {
         const el = createTestElement();
@@ -8813,7 +8952,7 @@
   }
 
   // tests/src/keyboard-sensor/properties/is-destroyed.ts
-  function propIsDestroyed() {
+  function propIsDestroyed2() {
     describe("isDestroyed", () => {
       it(`should be false on init`, function() {
         const el = createTestElement();
@@ -8833,15 +8972,27 @@
   }
 
   // tests/src/keyboard-sensor/properties/index.ts
-  function properties() {
+  function properties2() {
     describe("properties", () => {
-      propDrag();
-      propIsDestroyed();
+      propDrag2();
+      propIsDestroyed2();
+    });
+  }
+
+  // tests/src/keyboard-sensor/methods/cancel.ts
+  function methodCancel() {
+    describe("cancel", () => {
+    });
+  }
+
+  // tests/src/keyboard-sensor/methods/destroy.ts
+  function methodDestroy2() {
+    describe("destroy", () => {
     });
   }
 
   // tests/src/keyboard-sensor/methods/off.ts
-  function methodOff() {
+  function methodOff2() {
     describe("off", () => {
       it("should remove an event listener based on id", () => {
         const el = createTestElement();
@@ -8858,7 +9009,7 @@
   }
 
   // tests/src/keyboard-sensor/methods/on.ts
-  function methodOn() {
+  function methodOn2() {
     describe("on", () => {
       it("should return a unique symbol by default", () => {
         const el = createTestElement();
@@ -8928,7 +9079,7 @@
   }
 
   // tests/src/keyboard-sensor/methods/update-settings.ts
-  function methodUpdateSettings() {
+  function methodUpdateSettings3() {
     describe("updateSettings", () => {
       it(`should update settings`, function() {
         const initSettings = {
@@ -8975,16 +9126,18 @@
   }
 
   // tests/src/keyboard-sensor/methods/index.ts
-  function methods() {
+  function methods3() {
     describe("methods", () => {
-      methodOff();
-      methodOn();
-      methodUpdateSettings();
+      methodCancel();
+      methodDestroy2();
+      methodOff2();
+      methodOn2();
+      methodUpdateSettings3();
     });
   }
 
   // tests/src/keyboard-sensor/events/cancel.ts
-  function eventCancel() {
+  function eventCancel2() {
     describe("cancel", () => {
       it("should be triggered on drag cancel", () => {
         const el = createTestElement();
@@ -9011,7 +9164,7 @@
   }
 
   // tests/src/keyboard-sensor/events/end.ts
-  function eventEnd() {
+  function eventEnd2() {
     describe("end", () => {
       it("should be triggered on drag end", () => {
         const el = createTestElement();
@@ -9038,7 +9191,7 @@
   }
 
   // tests/src/keyboard-sensor/events/move.ts
-  function eventMove() {
+  function eventMove2() {
     describe("move", () => {
       it("should be triggered on drag move", () => {
         const el = createTestElement();
@@ -9088,7 +9241,7 @@
   }
 
   // tests/src/keyboard-sensor/events/start.ts
-  function eventStart() {
+  function eventStart2() {
     describe("start", () => {
       it(`should be triggered on drag start`, function() {
         const el = createTestElement({ left: "10px", top: "20px" });
@@ -9114,12 +9267,12 @@
   }
 
   // tests/src/keyboard-sensor/events/index.ts
-  function events2() {
+  function events3() {
     describe("events", () => {
-      eventCancel();
-      eventEnd();
-      eventMove();
-      eventStart();
+      eventCancel2();
+      eventEnd2();
+      eventMove2();
+      eventStart2();
     });
   }
 
@@ -9133,10 +9286,10 @@
       removeDefaultPageStyles(document);
       return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     });
-    options();
-    properties();
-    methods();
-    events2();
+    options3();
+    properties2();
+    methods3();
+    events3();
   });
 })();
 /*! Bundled license information:

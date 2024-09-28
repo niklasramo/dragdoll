@@ -1,11 +1,11 @@
 import { assert } from 'chai';
-import { createTestElement } from '../utils/create-test-element.js';
-import { focusElement } from '../utils/focus-element.js';
-import { waitNextFrame } from '../utils/wait-next-frame.js';
-import { Draggable, KeyboardSensor } from '../../../src/index.js';
+import { createTestElement } from '../../utils/create-test-element.js';
+import { focusElement } from '../../utils/focus-element.js';
+import { waitNextFrame } from '../../utils/wait-next-frame.js';
+import { Draggable, KeyboardSensor } from '../../../../src/index.js';
 
 export function optionPositionModifiers() {
-  describe('option - positionModifiers', () => {
+  describe('positionModifiers', () => {
     it('should modify the dragged element position', async () => {
       let phaseCounter = { start: 0, move: 0, end: 0 };
       const el = createTestElement();

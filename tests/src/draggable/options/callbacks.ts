@@ -1,12 +1,12 @@
 import { assert } from 'chai';
-import { createTestElement } from '../utils/create-test-element.js';
-import { focusElement } from '../utils/focus-element.js';
-import { waitNextFrame } from '../utils/wait-next-frame.js';
-import { Draggable, KeyboardSensor } from '../../../src/index.js';
+import { createTestElement } from '../../utils/create-test-element.js';
+import { focusElement } from '../../utils/focus-element.js';
+import { waitNextFrame } from '../../utils/wait-next-frame.js';
+import { Draggable, KeyboardSensor } from '../../../../src/index.js';
 
 export function optionCallbacks() {
-  describe('option - callbacks', () => {
-    it('callbacks should be called at the right time with the right arguments', async () => {
+  describe('callbacks', () => {
+    it('should be called at the right time with the right arguments', async () => {
       let events: string[] = [];
       let currentKeyboardEvent: KeyboardEvent | null = null;
       const el = createTestElement();

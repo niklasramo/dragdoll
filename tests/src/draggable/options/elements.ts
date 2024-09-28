@@ -1,11 +1,11 @@
 import { assert } from 'chai';
-import { createTestElement } from '../utils/create-test-element.js';
-import { focusElement } from '../utils/focus-element.js';
-import { waitNextFrame } from '../utils/wait-next-frame.js';
-import { Draggable, KeyboardSensor } from '../../../src/index.js';
+import { createTestElement } from '../../utils/create-test-element.js';
+import { focusElement } from '../../utils/focus-element.js';
+import { waitNextFrame } from '../../utils/wait-next-frame.js';
+import { Draggable, KeyboardSensor } from '../../../../src/index.js';
 
 export function optionElements() {
-  describe('option - elements', () => {
+  describe('elements', () => {
     it('should be a function that returns an array of the dragged elements', async () => {
       const elA = createTestElement();
       const elB = createTestElement();

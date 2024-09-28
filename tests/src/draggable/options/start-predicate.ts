@@ -1,10 +1,10 @@
 import { assert } from 'chai';
-import { createTestElement } from '../utils/create-test-element.js';
-import { focusElement } from '../utils/focus-element.js';
-import { Draggable, KeyboardSensor } from '../../../src/index.js';
+import { createTestElement } from '../../utils/create-test-element.js';
+import { focusElement } from '../../utils/focus-element.js';
+import { Draggable, KeyboardSensor } from '../../../../src/index.js';
 
 export function optionStartPredicate() {
-  describe('option - startPredicate', () => {
+  describe('startPredicate', () => {
     it('should be called only on start and move events of the sensors', async () => {
       let callCount = 0;
       const el = createTestElement();
