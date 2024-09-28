@@ -7030,7 +7030,6 @@
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
         await waitNextFrame();
         rect = el.getBoundingClientRect();
-        console.log(rect.x, rect.y);
         assert.equal(rect.x, 1);
         assert.equal(rect.y, 0);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
