@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a id="dragdoll" href="#dragdoll" aria-hidden="true"><img src="https://niklasramo.github.io/dragdoll/dragdoll-logo.svg" alt="DragDoll" width="400" /></a>
+  <a id="dragdoll" href="#dragdoll" aria-hidden="true"><img src="https://niklasramo.github.io/dragdoll/dragdoll-logo.png" alt="DragDoll" width="600" /></a>
 </h1>
 
 DragDoll is a modular and highly extensible drag system written in TypeScript. It's originally based on [Muuri's](https://github.com/haltu/muuri) internal drag system, but fully redesigned to be used as a general purpose drag system.

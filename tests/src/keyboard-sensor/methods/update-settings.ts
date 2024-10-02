@@ -2,6 +2,8 @@ import { assert } from 'chai';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { KeyboardSensor } from '../../../../src/index.js';
 
+// TODO: Make sure you change settings on the fly during drag.
+
 export function methodUpdateSettings() {
   describe('updateSettings', () => {
     it(`should update settings`, function () {

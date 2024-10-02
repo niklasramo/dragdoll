@@ -36,7 +36,7 @@ export interface KeyboardSensorMoveEvent extends SensorMoveEvent {
 }
 
 export interface KeyboardSensorCancelEvent extends SensorCancelEvent {
-  srcEvent: KeyboardEvent;
+  srcEvent?: KeyboardEvent;
 }
 
 export interface KeyboardSensorEndEvent extends SensorEndEvent {

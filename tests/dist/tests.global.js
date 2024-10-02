@@ -6389,39 +6389,39 @@
   // tests/src/base-sensor/index.ts
   describe("BaseSensor", () => {
     describe("drag property", () => {
-      it(`should be null on init`, function() {
+      it(`should be null on init`, () => {
         const s = new BaseSensor();
         assert.equal(s.drag, null);
         s.destroy();
       });
     });
     describe("isDestroyed property", () => {
-      it(`should be false on init`, function() {
+      it(`should be false on init`, () => {
         const s = new BaseSensor();
         assert.equal(s.isDestroyed, false);
         s.destroy();
       });
-      it(`should be true after destroy method is called`, function() {
+      it(`should be true after destroy method is called`, () => {
         const s = new BaseSensor();
         s.destroy();
         assert.equal(s.isDestroyed, true);
       });
     });
     describe("_start method", () => {
-      it(`should create drag data`, function() {
+      it(`should create drag data`, () => {
         const s = new BaseSensor();
         s["_start"]({ type: "start", x: 1, y: 2 });
         assert.deepEqual(s.drag, { x: 1, y: 2 });
         s.destroy();
       });
-      it(`should not modify isDestroyed property`, function() {
+      it(`should not modify isDestroyed property`, () => {
         const s = new BaseSensor();
         assert.equal(s.isDestroyed, false);
         s["_start"]({ type: "start", x: 1, y: 2 });
         assert.equal(s.isDestroyed, false);
         s.destroy();
       });
-      it(`should emit "start" event with correct arguments after updating instance properties`, function() {
+      it(`should emit "start" event with correct arguments after updating instance properties`, () => {
         const s = new BaseSensor();
         const startArgs = { type: "start", x: 1, y: 2 };
         let emitCount = 0;
@@ -6435,7 +6435,7 @@
         assert.equal(emitCount, 1);
         s.destroy();
       });
-      it(`should not do anything if drag is already active`, function() {
+      it(`should not do anything if drag is already active`, () => {
         const s = new BaseSensor();
         let emitCount = 0;
         s.on("start", () => void ++emitCount);
@@ -6448,7 +6448,7 @@
         assert.equal(emitCount, 1);
         s.destroy();
       });
-      it(`should not do anything if instance is destroyed (isDestroyed is true)`, function() {
+      it(`should not do anything if instance is destroyed (isDestroyed is true)`, () => {
         const s = new BaseSensor();
         let emitCount = 0;
         s.on("start", () => void ++emitCount);
@@ -6462,14 +6462,14 @@
       });
     });
     describe("_move method", () => {
-      it(`should update drag data to reflect the provided coordinates`, function() {
+      it(`should update drag data to reflect the provided coordinates`, () => {
         const s = new BaseSensor();
         s["_start"]({ type: "start", x: 1, y: 2 });
         s["_move"]({ type: "move", x: 3, y: 4 });
         assert.deepEqual(s.drag, { x: 3, y: 4 });
         s.destroy();
       });
-      it(`should not modify isDestroyed property`, function() {
+      it(`should not modify isDestroyed property`, () => {
         const s = new BaseSensor();
         s["_start"]({ type: "start", x: 1, y: 2 });
         assert.equal(s.isDestroyed, false);
@@ -6477,7 +6477,7 @@
         assert.equal(s.isDestroyed, false);
         s.destroy();
       });
-      it(`should emit "move" event with correct arguments after updating instance properties`, function() {
+      it(`should emit "move" event with correct arguments after updating instance properties`, () => {
         const s = new BaseSensor();
         const moveArgs = { type: "move", x: 3, y: 4 };
         let emitCount = 0;
@@ -6492,7 +6492,7 @@
         assert.equal(emitCount, 1);
         s.destroy();
       });
-      it(`should not do anything if drag is not active`, function() {
+      it(`should not do anything if drag is not active`, () => {
         const s = new BaseSensor();
         const { drag, isDestroyed } = s;
         let emitCount = 0;
@@ -6505,14 +6505,14 @@
       });
     });
     describe("_cancel method", () => {
-      it(`should reset drag data`, function() {
+      it(`should reset drag data`, () => {
         const s = new BaseSensor();
         s["_start"]({ type: "start", x: 1, y: 2 });
         s["_cancel"]({ type: "cancel", x: 5, y: 6 });
         assert.equal(s.drag, null);
         s.destroy();
       });
-      it(`should not modify isDestroyed property`, function() {
+      it(`should not modify isDestroyed property`, () => {
         const s = new BaseSensor();
         s["_start"]({ type: "start", x: 1, y: 2 });
         assert.equal(s.isDestroyed, false);
@@ -6520,7 +6520,7 @@
         assert.equal(s.isDestroyed, false);
         s.destroy();
       });
-      it(`should emit "cancel" event with correct arguments after updating instance properties`, function() {
+      it(`should emit "cancel" event with correct arguments after updating instance properties`, () => {
         const s = new BaseSensor();
         const cancelArgs = { type: "cancel", x: 5, y: 6 };
         let emitCount = 0;
@@ -6535,7 +6535,7 @@
         assert.equal(emitCount, 1);
         s.destroy();
       });
-      it(`should not do anything if drag is not active`, function() {
+      it(`should not do anything if drag is not active`, () => {
         const s = new BaseSensor();
         const { drag, isDestroyed } = s;
         let emitCount = 0;
@@ -6548,14 +6548,14 @@
       });
     });
     describe("_end method", () => {
-      it(`should reset drag data`, function() {
+      it(`should reset drag data`, () => {
         const s = new BaseSensor();
         s["_start"]({ type: "start", x: 1, y: 2 });
         s["_end"]({ type: "end", x: 5, y: 6 });
         assert.equal(s.drag, null);
         s.destroy();
       });
-      it(`should not modify isDestroyed property`, function() {
+      it(`should not modify isDestroyed property`, () => {
         const s = new BaseSensor();
         s["_start"]({ type: "start", x: 1, y: 2 });
         assert.equal(s.isDestroyed, false);
@@ -6563,7 +6563,7 @@
         assert.equal(s.isDestroyed, false);
         s.destroy();
       });
-      it(`should emit "end" event with correct arguments after updating instance properties`, function() {
+      it(`should emit "end" event with correct arguments after updating instance properties`, () => {
         const s = new BaseSensor();
         const endArgs = { type: "end", x: 5, y: 6 };
         let emitCount = 0;
@@ -6578,7 +6578,7 @@
         assert.equal(emitCount, 1);
         s.destroy();
       });
-      it(`should not do anything if drag is not active`, function() {
+      it(`should not do anything if drag is not active`, () => {
         const s = new BaseSensor();
         const { drag, isDestroyed } = s;
         let emitCount = 0;
@@ -6591,14 +6591,14 @@
       });
     });
     describe("cancel method", () => {
-      it(`should reset drag data`, function() {
+      it(`should reset drag data`, () => {
         const s = new BaseSensor();
         s["_start"]({ type: "start", x: 1, y: 2 });
         s.cancel();
         assert.equal(s.drag, null);
         s.destroy();
       });
-      it(`should not modify isDestroyed property`, function() {
+      it(`should not modify isDestroyed property`, () => {
         const s = new BaseSensor();
         s["_start"]({ type: "start", x: 1, y: 2 });
         assert.equal(s.isDestroyed, false);
@@ -6606,7 +6606,7 @@
         assert.equal(s.isDestroyed, false);
         s.destroy();
       });
-      it(`should emit "cancel" event with correct arguments after updating instance properties`, function() {
+      it(`should emit "cancel" event with correct arguments after updating instance properties`, () => {
         const s = new BaseSensor();
         let emitCount = 0;
         s.on("cancel", (data) => {
@@ -6624,7 +6624,7 @@
         assert.equal(emitCount, 1);
         s.destroy();
       });
-      it(`should not do anything if drag is not active`, function() {
+      it(`should not do anything if drag is not active`, () => {
         const s = new BaseSensor();
         const { drag, isDestroyed } = s;
         let emitCount = 0;
@@ -6706,7 +6706,7 @@
           3. reset drag data
           4. emit "destroy" event
           5. remove all listeners from the internal emitter
-       `, function() {
+       `, () => {
         const s = new BaseSensor();
         const startArgs = { type: "start", x: 1, y: 2 };
         let events4 = [];
@@ -6743,7 +6743,7 @@
           1. set isDestroyed property to true
           2. emit "destroy" event
           3. remove all listeners from the internal emitter
-       `, function() {
+       `, () => {
         const s = new BaseSensor();
         let events4 = [];
         s.on("start", (data) => void events4.push(data.type));
@@ -6782,189 +6782,6 @@
     });
   });
 
-  // tests/src/utils/fake-touch.ts
-  var FakeTouch = class {
-    constructor(options4 = {}) {
-      const {
-        identifier = 0,
-        target = null,
-        clientX = 0,
-        clientY = 0,
-        screenX = 0,
-        screenY = 0,
-        radiusX = 0,
-        radiusY = 0,
-        rotationAngle = 0,
-        force = 0
-      } = options4;
-      const mouseEvent = new MouseEvent("mousedown", { clientX, clientY, screenX, screenY });
-      this.identifier = identifier;
-      this.target = target || document.elementFromPoint(mouseEvent.clientX, mouseEvent.clientY) || document.documentElement;
-      this.clientX = mouseEvent.clientX;
-      this.clientY = mouseEvent.clientY;
-      this.screenX = mouseEvent.screenX;
-      this.screenY = mouseEvent.screenY;
-      this.pageX = mouseEvent.pageX;
-      this.pageY = mouseEvent.pageY;
-      this.radiusX = radiusX;
-      this.radiusY = radiusY;
-      this.rotationAngle = rotationAngle;
-      this.force = force;
-    }
-  };
-  var FakeTouchEvent = class extends UIEvent {
-    constructor(type3, options4 = {}) {
-      const {
-        altKey = false,
-        ctrlKey = false,
-        metaKey = false,
-        shiftKey = false,
-        touches = [],
-        targetTouches = [],
-        changedTouches = [],
-        ...parentOptions
-      } = options4;
-      super(type3, parentOptions);
-      this.altKey = altKey;
-      this.ctrlKey = ctrlKey;
-      this.metaKey = metaKey;
-      this.shiftKey = shiftKey;
-      this.touches = touches;
-      this.targetTouches = targetTouches;
-      this.changedTouches = changedTouches;
-    }
-  };
-
-  // tests/src/utils/create-fake-touch-event.ts
-  function createFakeTouchEvent(type3, options4 = {}) {
-    const {
-      identifier,
-      target,
-      clientX,
-      clientY,
-      screenX,
-      screenY,
-      radiusX,
-      radiusY,
-      rotationAngle,
-      force,
-      ...eventOptions
-    } = options4;
-    const touch = new FakeTouch({
-      identifier,
-      target,
-      clientX,
-      clientY,
-      screenX,
-      screenY,
-      radiusX,
-      radiusY,
-      rotationAngle,
-      force
-    });
-    const touchEvent = new FakeTouchEvent(type3, {
-      ...eventOptions,
-      touches: [touch],
-      changedTouches: [touch],
-      targetTouches: [touch]
-    });
-    return touchEvent;
-  }
-
-  // tests/src/utils/create-fake-drag.ts
-  var idCounter = 100;
-  async function createFakeDrag(steps, options4) {
-    const {
-      eventType = "mouse",
-      stepDuration = 16,
-      extraSteps = 0,
-      cancelAtEnd = false,
-      pointerId = ++idCounter,
-      pointerType = "touch",
-      onAfterStep
-    } = options4;
-    const finalSteps = [...steps];
-    if (extraSteps > 0) {
-      const stepTo = finalSteps.pop();
-      const stepFrom = finalSteps.pop();
-      finalSteps.push(stepFrom);
-      for (let i = 0; i < extraSteps; i++) {
-        const alpha = (i + 1) / (extraSteps + 1);
-        const x = stepFrom.x + (stepTo.x - stepFrom.x) * alpha;
-        const y = stepFrom.y + (stepTo.y - stepFrom.y) * alpha;
-        finalSteps.push({
-          x: Math.round(x),
-          y: Math.round(y)
-        });
-      }
-      finalSteps.push(stepTo);
-    }
-    for (let i = 0; i < finalSteps.length; i++) {
-      const isStart = i === 0;
-      const isEnd = i === finalSteps.length - 1;
-      const { x, y } = finalSteps[i];
-      if (!isStart && !isEnd) {
-        const prevStep = finalSteps[i - 1];
-        if (prevStep.x === x && prevStep.y === y) {
-          continue;
-        }
-      }
-      if (!isStart && stepDuration > 0) {
-        await new Promise((resolve) => setTimeout(resolve, stepDuration));
-      }
-      const target = document.elementFromPoint(x, y);
-      if (!target) throw new Error("No event target found!");
-      switch (eventType) {
-        case "mouse": {
-          const eventName = isStart ? "mousedown" : isEnd ? "mouseup" : "mousemove";
-          const event = new MouseEvent(eventName, {
-            clientX: x,
-            clientY: y,
-            bubbles: true,
-            cancelable: true,
-            view: window
-          });
-          target.dispatchEvent(event);
-          if (onAfterStep) onAfterStep(event);
-          break;
-        }
-        case "touch": {
-          const eventName = isStart ? "touchstart" : isEnd ? cancelAtEnd ? "touchcancel" : "touchend" : "touchmove";
-          const event = createFakeTouchEvent(eventName, {
-            clientX: x,
-            clientY: y,
-            bubbles: true,
-            cancelable: true,
-            view: window,
-            target,
-            identifier: pointerId
-          });
-          target.dispatchEvent(event);
-          if (onAfterStep) onAfterStep(event);
-          break;
-        }
-        case "pointer": {
-          const eventName = isStart ? "pointerdown" : isEnd ? cancelAtEnd ? "pointercancel" : "pointerup" : "pointermove";
-          const event = new PointerEvent(eventName, {
-            clientX: x,
-            clientY: y,
-            bubbles: true,
-            cancelable: true,
-            view: window,
-            pointerId,
-            pointerType,
-            isPrimary: true,
-            width: 100,
-            height: 100
-          });
-          target.dispatchEvent(event);
-          if (onAfterStep) onAfterStep(event);
-          break;
-        }
-      }
-    }
-  }
-
   // tests/src/utils/create-test-element.ts
   var defaultStyles = {
     display: "block",
@@ -6999,103 +6816,12 @@
     }
   }
 
-  // tests/src/utils/round-number.ts
-  function roundNumber2(value, decimals = 0) {
-    const multiplier = Math.pow(10, decimals);
-    return Math.round((value + Number.EPSILON) * multiplier) / multiplier;
-  }
-
   // tests/src/utils/wait-next-frame.ts
   function waitNextFrame() {
     return new Promise((resolve) => {
       window.requestAnimationFrame(() => {
         resolve(void 0);
       });
-    });
-  }
-
-  // tests/src/draggable/base.ts
-  function base() {
-    it("should drag an element using the provided sensors", async () => {
-      const el = createTestElement();
-      const pointerSensor = new PointerSensor(el, { sourceEvents: "mouse" });
-      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-      const draggable = new Draggable([pointerSensor, keyboardSensor], { elements: () => [el] });
-      let rect = el.getBoundingClientRect();
-      assert.equal(rect.x, 0);
-      assert.equal(rect.y, 0);
-      focusElement(el);
-      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-      await waitNextFrame();
-      rect = el.getBoundingClientRect();
-      assert.equal(rect.x, 1);
-      assert.equal(rect.y, 0);
-      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-      assert.equal(draggable.drag, null);
-      await createFakeDrag(
-        [
-          { x: 1, y: 1 },
-          // mouse down
-          { x: 2, y: 2 },
-          // mouse move
-          { x: 3, y: 3 },
-          // mouse move
-          { x: 3, y: 3 }
-          // mouse up
-        ],
-        {
-          eventType: "mouse",
-          stepDuration: 50
-        }
-      );
-      await waitNextFrame();
-      assert.equal(draggable.drag, null);
-      rect = el.getBoundingClientRect();
-      assert.equal(rect.x, 3);
-      assert.equal(rect.y, 2);
-      draggable.destroy();
-      pointerSensor.destroy();
-      keyboardSensor.destroy();
-      el.remove();
-    });
-    it("should work with transformed elements", async () => {
-      const el = createTestElement({
-        transform: "scale(1.2) translate(-5px, -6px) rotate(33deg) skew(30deg, -40deg)",
-        transformOrigin: "21px 22px"
-      });
-      const container1 = createTestElement({
-        transform: "scale(0.9) translate(3px, 4px) rotate(-10deg) skew(5deg, 10deg)",
-        transformOrigin: "5px 10px"
-      });
-      const container2 = createTestElement({
-        transform: "scale(0.8) translate(4px, 5px) rotate(-20deg) skew(10deg, 15deg)",
-        transformOrigin: "10px 15px"
-      });
-      const container3 = createTestElement({
-        transform: "scale(0.7) translate(5px, 6px) rotate(-30deg) skew(15deg, 20deg)",
-        transformOrigin: "15px 20px"
-      });
-      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
-      const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
-      container1.appendChild(container2);
-      container2.appendChild(container3);
-      container3.appendChild(el);
-      const startRect = el.getBoundingClientRect();
-      focusElement(el);
-      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
-      await waitNextFrame();
-      const endRect = el.getBoundingClientRect();
-      assert.equal(roundNumber2(endRect.x - startRect.x, 3), 1, "x");
-      assert.equal(roundNumber2(endRect.y - startRect.y, 3), 1, "y");
-      draggable.destroy();
-      keyboardSensor.destroy();
-      el.remove();
-      container1.remove();
-      container2.remove();
-      container3.remove();
     });
   }
 
@@ -7354,6 +7080,12 @@
         el.remove();
       });
     });
+  }
+
+  // tests/src/utils/round-number.ts
+  function roundNumber2(value, decimals = 0) {
+    const multiplier = Math.pow(10, decimals);
+    return Math.round((value + Number.EPSILON) * multiplier) / multiplier;
   }
 
   // tests/src/draggable/options/container.ts
@@ -7904,12 +7636,282 @@
     });
   }
 
+  // tests/src/utils/fake-touch.ts
+  var FakeTouch = class {
+    constructor(options4 = {}) {
+      const {
+        identifier = 0,
+        target = null,
+        clientX = 0,
+        clientY = 0,
+        screenX = 0,
+        screenY = 0,
+        radiusX = 0,
+        radiusY = 0,
+        rotationAngle = 0,
+        force = 0
+      } = options4;
+      const mouseEvent = new MouseEvent("mousedown", { clientX, clientY, screenX, screenY });
+      this.identifier = identifier;
+      this.target = target || document.elementFromPoint(mouseEvent.clientX, mouseEvent.clientY) || document.documentElement;
+      this.clientX = mouseEvent.clientX;
+      this.clientY = mouseEvent.clientY;
+      this.screenX = mouseEvent.screenX;
+      this.screenY = mouseEvent.screenY;
+      this.pageX = mouseEvent.pageX;
+      this.pageY = mouseEvent.pageY;
+      this.radiusX = radiusX;
+      this.radiusY = radiusY;
+      this.rotationAngle = rotationAngle;
+      this.force = force;
+    }
+  };
+  var FakeTouchEvent = class extends UIEvent {
+    constructor(type3, options4 = {}) {
+      const {
+        altKey = false,
+        ctrlKey = false,
+        metaKey = false,
+        shiftKey = false,
+        touches = [],
+        targetTouches = [],
+        changedTouches = [],
+        ...parentOptions
+      } = options4;
+      super(type3, parentOptions);
+      this.altKey = altKey;
+      this.ctrlKey = ctrlKey;
+      this.metaKey = metaKey;
+      this.shiftKey = shiftKey;
+      this.touches = touches;
+      this.targetTouches = targetTouches;
+      this.changedTouches = changedTouches;
+    }
+  };
+
+  // tests/src/utils/create-fake-touch-event.ts
+  function createFakeTouchEvent(type3, options4 = {}) {
+    const {
+      identifier,
+      target,
+      clientX,
+      clientY,
+      screenX,
+      screenY,
+      radiusX,
+      radiusY,
+      rotationAngle,
+      force,
+      ...eventOptions
+    } = options4;
+    const touch = new FakeTouch({
+      identifier,
+      target,
+      clientX,
+      clientY,
+      screenX,
+      screenY,
+      radiusX,
+      radiusY,
+      rotationAngle,
+      force
+    });
+    const touchEvent = new FakeTouchEvent(type3, {
+      ...eventOptions,
+      touches: [touch],
+      changedTouches: [touch],
+      targetTouches: [touch]
+    });
+    return touchEvent;
+  }
+
+  // tests/src/utils/create-fake-drag.ts
+  var idCounter = 100;
+  async function createFakeDrag(steps, options4) {
+    const {
+      eventType = "mouse",
+      stepDuration = 16,
+      extraSteps = 0,
+      cancelAtEnd = false,
+      pointerId = ++idCounter,
+      pointerType = "touch",
+      onAfterStep
+    } = options4;
+    const finalSteps = [...steps];
+    if (extraSteps > 0) {
+      const stepTo = finalSteps.pop();
+      const stepFrom = finalSteps.pop();
+      finalSteps.push(stepFrom);
+      for (let i = 0; i < extraSteps; i++) {
+        const alpha = (i + 1) / (extraSteps + 1);
+        const x = stepFrom.x + (stepTo.x - stepFrom.x) * alpha;
+        const y = stepFrom.y + (stepTo.y - stepFrom.y) * alpha;
+        finalSteps.push({
+          x: Math.round(x),
+          y: Math.round(y)
+        });
+      }
+      finalSteps.push(stepTo);
+    }
+    for (let i = 0; i < finalSteps.length; i++) {
+      const isStart = i === 0;
+      const isEnd = i === finalSteps.length - 1;
+      const { x, y } = finalSteps[i];
+      if (!isStart && !isEnd) {
+        const prevStep = finalSteps[i - 1];
+        if (prevStep.x === x && prevStep.y === y) {
+          continue;
+        }
+      }
+      if (!isStart && stepDuration > 0) {
+        await new Promise((resolve) => setTimeout(resolve, stepDuration));
+      }
+      const target = document.elementFromPoint(x, y);
+      if (!target) throw new Error("No event target found!");
+      switch (eventType) {
+        case "mouse": {
+          const eventName = isStart ? "mousedown" : isEnd ? "mouseup" : "mousemove";
+          const event = new MouseEvent(eventName, {
+            clientX: x,
+            clientY: y,
+            bubbles: true,
+            cancelable: true,
+            view: window
+          });
+          target.dispatchEvent(event);
+          if (onAfterStep) onAfterStep(event);
+          break;
+        }
+        case "touch": {
+          const eventName = isStart ? "touchstart" : isEnd ? cancelAtEnd ? "touchcancel" : "touchend" : "touchmove";
+          const event = createFakeTouchEvent(eventName, {
+            clientX: x,
+            clientY: y,
+            bubbles: true,
+            cancelable: true,
+            view: window,
+            target,
+            identifier: pointerId
+          });
+          target.dispatchEvent(event);
+          if (onAfterStep) onAfterStep(event);
+          break;
+        }
+        case "pointer": {
+          const eventName = isStart ? "pointerdown" : isEnd ? cancelAtEnd ? "pointercancel" : "pointerup" : "pointermove";
+          const event = new PointerEvent(eventName, {
+            clientX: x,
+            clientY: y,
+            bubbles: true,
+            cancelable: true,
+            view: window,
+            pointerId,
+            pointerType,
+            isPrimary: true,
+            width: 100,
+            height: 100
+          });
+          target.dispatchEvent(event);
+          if (onAfterStep) onAfterStep(event);
+          break;
+        }
+      }
+    }
+  }
+
+  // tests/src/draggable/misc.ts
+  function misc() {
+    describe("misc", () => {
+      it("should drag an element using the provided sensors", async () => {
+        const el = createTestElement();
+        const pointerSensor = new PointerSensor(el, { sourceEvents: "mouse" });
+        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+        const draggable = new Draggable([pointerSensor, keyboardSensor], { elements: () => [el] });
+        let rect = el.getBoundingClientRect();
+        assert.equal(rect.x, 0);
+        assert.equal(rect.y, 0);
+        focusElement(el);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+        await waitNextFrame();
+        rect = el.getBoundingClientRect();
+        assert.equal(rect.x, 1);
+        assert.equal(rect.y, 0);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        assert.equal(draggable.drag, null);
+        await createFakeDrag(
+          [
+            { x: 1, y: 1 },
+            // mouse down
+            { x: 2, y: 2 },
+            // mouse move
+            { x: 3, y: 3 },
+            // mouse move
+            { x: 3, y: 3 }
+            // mouse up
+          ],
+          {
+            eventType: "mouse",
+            stepDuration: 50
+          }
+        );
+        await waitNextFrame();
+        assert.equal(draggable.drag, null);
+        rect = el.getBoundingClientRect();
+        assert.equal(rect.x, 3);
+        assert.equal(rect.y, 2);
+        draggable.destroy();
+        pointerSensor.destroy();
+        keyboardSensor.destroy();
+        el.remove();
+      });
+      it("should work with transformed elements", async () => {
+        const el = createTestElement({
+          transform: "scale(1.2) translate(-5px, -6px) rotate(33deg) skew(30deg, -40deg)",
+          transformOrigin: "21px 22px"
+        });
+        const container1 = createTestElement({
+          transform: "scale(0.9) translate(3px, 4px) rotate(-10deg) skew(5deg, 10deg)",
+          transformOrigin: "5px 10px"
+        });
+        const container2 = createTestElement({
+          transform: "scale(0.8) translate(4px, 5px) rotate(-20deg) skew(10deg, 15deg)",
+          transformOrigin: "10px 15px"
+        });
+        const container3 = createTestElement({
+          transform: "scale(0.7) translate(5px, 6px) rotate(-30deg) skew(15deg, 20deg)",
+          transformOrigin: "15px 20px"
+        });
+        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+        const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
+        container1.appendChild(container2);
+        container2.appendChild(container3);
+        container3.appendChild(el);
+        const startRect = el.getBoundingClientRect();
+        focusElement(el);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+        await waitNextFrame();
+        const endRect = el.getBoundingClientRect();
+        assert.equal(roundNumber2(endRect.x - startRect.x, 3), 1, "x");
+        assert.equal(roundNumber2(endRect.y - startRect.y, 3), 1, "y");
+        draggable.destroy();
+        keyboardSensor.destroy();
+        el.remove();
+        container1.remove();
+        container2.remove();
+        container3.remove();
+      });
+    });
+  }
+
   // tests/src/draggable/index.ts
   describe("Draggable", () => {
-    base();
     events();
     options();
     methods();
+    misc();
   });
 
   // tests/src/utils/default-page-styles.ts
@@ -7936,32 +7938,6 @@
   }
   function removeDefaultPageStyles(doc) {
     doc.getElementById("default-page-styles")?.remove();
-  }
-
-  // tests/src/pointer-sensor/base.ts
-  function base2() {
-    describe("target element parameter", () => {
-      it("should accept document.documentElement", function() {
-        const s = new PointerSensor(document.documentElement, { sourceEvents: "mouse" });
-        document.documentElement.dispatchEvent(new MouseEvent("mousedown"));
-        assert.notEqual(s.drag, null);
-        s.destroy();
-      });
-      it("should accept document.body", function() {
-        const s = new PointerSensor(document.body, { sourceEvents: "mouse" });
-        document.body.dispatchEvent(new MouseEvent("mousedown"));
-        assert.notEqual(s.drag, null);
-        s.destroy();
-      });
-      it("should accept a descendant of document.body", function() {
-        const el = createTestElement();
-        const s = new PointerSensor(el, { sourceEvents: "mouse" });
-        el.dispatchEvent(new MouseEvent("mousedown"));
-        assert.notEqual(s.drag, null);
-        el.remove();
-        s.destroy();
-      });
-    });
   }
 
   // tests/src/pointer-sensor/events/cancel.ts
@@ -8049,6 +8025,12 @@
         s.destroy();
         el.remove();
       });
+    });
+  }
+
+  // tests/src/pointer-sensor/events/destroy.ts
+  function eventDestroy() {
+    describe("destroy", () => {
     });
   }
 
@@ -8434,9 +8416,34 @@
   function events2() {
     describe("events", () => {
       eventCancel();
+      eventDestroy();
       eventEnd();
       eventMove();
       eventStart();
+    });
+  }
+
+  // tests/src/pointer-sensor/methods/cancel.ts
+  function methodCancel() {
+    describe("cancel", () => {
+    });
+  }
+
+  // tests/src/pointer-sensor/methods/destroy.ts
+  function methodDestroy2() {
+    describe("destroy", () => {
+    });
+  }
+
+  // tests/src/pointer-sensor/methods/off.ts
+  function methodOff2() {
+    describe("off", () => {
+    });
+  }
+
+  // tests/src/pointer-sensor/methods/on.ts
+  function methodOn2() {
+    describe("on", () => {
     });
   }
 
@@ -8471,6 +8478,10 @@
   // tests/src/pointer-sensor/methods/index.ts
   function methods2() {
     describe("methods", () => {
+      methodCancel();
+      methodDestroy2();
+      methodOff2();
+      methodOn2();
       methodUpdateSettings2();
     });
   }
@@ -8601,6 +8612,32 @@
         assert.equal(s.isDestroyed, false);
         s.destroy();
       });
+      it(`should be true after destroy method is called`, function() {
+        const s = new PointerSensor(document.body);
+        s.destroy();
+        assert.equal(s.isDestroyed, true);
+      });
+      it(`should prevent drag from starting when true`, () => {
+        const el = createTestElement();
+        const s = new PointerSensor(el, { sourceEvents: "mouse" });
+        s.destroy();
+        createFakeDrag(
+          [
+            { x: 1, y: 1 },
+            { x: 2, y: 2 },
+            { x: 2, y: 2 }
+          ],
+          {
+            eventType: "mouse",
+            stepDuration: 0,
+            onAfterStep: () => {
+              assert.equal(s.drag, null);
+            }
+          }
+        );
+        assert.equal(s.drag, null);
+        el.remove();
+      });
     });
   }
 
@@ -8609,6 +8646,34 @@
     describe("properties", () => {
       propDrag();
       propIsDestroyed();
+    });
+  }
+
+  // tests/src/pointer-sensor/misc.ts
+  function misc2() {
+    describe("misc", () => {
+      describe("target element parameter", () => {
+        it("should accept document.documentElement", function() {
+          const s = new PointerSensor(document.documentElement, { sourceEvents: "mouse" });
+          document.documentElement.dispatchEvent(new MouseEvent("mousedown"));
+          assert.notEqual(s.drag, null);
+          s.destroy();
+        });
+        it("should accept document.body", function() {
+          const s = new PointerSensor(document.body, { sourceEvents: "mouse" });
+          document.body.dispatchEvent(new MouseEvent("mousedown"));
+          assert.notEqual(s.drag, null);
+          s.destroy();
+        });
+        it("should accept a descendant of document.body", function() {
+          const el = createTestElement();
+          const s = new PointerSensor(el, { sourceEvents: "mouse" });
+          el.dispatchEvent(new MouseEvent("mousedown"));
+          assert.notEqual(s.drag, null);
+          el.remove();
+          s.destroy();
+        });
+      });
     });
   }
 
@@ -8622,11 +8687,11 @@
       removeDefaultPageStyles(document);
       return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     });
-    base2();
     events2();
     methods2();
     options2();
     properties();
+    misc2();
   });
 
   // tests/src/utils/blur-element.ts
@@ -8968,6 +9033,15 @@
         assert.equal(s.isDestroyed, true);
         el.remove();
       });
+      it(`should prevent drag from starting when true`, () => {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el);
+        s.destroy();
+        focusElement(el);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        assert.equal(s.drag, null);
+        el.remove();
+      });
     });
   }
 
@@ -8980,19 +9054,127 @@
   }
 
   // tests/src/keyboard-sensor/methods/cancel.ts
-  function methodCancel() {
+  function methodCancel2() {
     describe("cancel", () => {
+      it(`should emit "cancel" event with correct arguments after updating instance properties`, () => {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el);
+        let events4 = [];
+        s.on("start", (data) => void events4.push(data.type));
+        s.on("move", (data) => void events4.push(data.type));
+        s.on("end", (data) => void events4.push(data.type));
+        s.on("destroy", (data) => void events4.push(data.type));
+        s.on("cancel", (data) => {
+          assert.deepEqual(data, {
+            type: "cancel",
+            x: s.drag.x,
+            y: s.drag.y
+          });
+          events4.push(data.type);
+        });
+        focusElement(el);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        assert.notEqual(s.drag, null);
+        s.cancel();
+        assert.equal(s.drag, null);
+        assert.deepEqual(events4, ["start", "cancel"]);
+        s.destroy();
+        el.remove();
+      });
+      it(`should not do anything if drag is not active`, () => {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el);
+        let events4 = [];
+        s.on("start", (data) => void events4.push(data.type));
+        s.on("move", (data) => void events4.push(data.type));
+        s.on("end", (data) => void events4.push(data.type));
+        s.on("destroy", (data) => void events4.push(data.type));
+        s.on("cancel", (data) => void events4.push(data.type));
+        s.cancel();
+        assert.deepEqual(events4, []);
+        s.destroy();
+        el.remove();
+      });
     });
   }
 
   // tests/src/keyboard-sensor/methods/destroy.ts
-  function methodDestroy2() {
+  function methodDestroy3() {
     describe("destroy", () => {
+      it("should allow destroying only once", () => {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el);
+        let events4 = [];
+        s.destroy();
+        s.on("destroy", (data) => void events4.push(data.type));
+        s.destroy();
+        assert.deepEqual(events4, []);
+        el.remove();
+      });
+      describe("if drag active", () => {
+        it(`should set isDestroyed property to true, emit "cancel" event with the current x/y coordinates, reset drag data, emit "destroy" event and remove all listeners`, () => {
+          const el = createTestElement();
+          const s = new KeyboardSensor(el);
+          let events4 = [];
+          s.on("start", (data) => void events4.push(data.type));
+          s.on("move", (data) => void events4.push(data.type));
+          s.on("end", (data) => void events4.push(data.type));
+          s.on("cancel", (data) => {
+            assert.notEqual(s.drag, null);
+            assert.equal(s.isDestroyed, true);
+            assert.deepEqual(data, {
+              type: "cancel",
+              x: s.drag.x,
+              y: s.drag.y
+            });
+            events4.push(data.type);
+          });
+          s.on("destroy", (data) => {
+            assert.equal(s.drag, null);
+            assert.equal(s.isDestroyed, true);
+            assert.deepEqual(data, { type: "destroy" });
+            events4.push(data.type);
+          });
+          assert.equal(s["_emitter"].listenerCount(), 5);
+          focusElement(el);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          s.destroy();
+          el.remove();
+          assert.equal(s.drag, null);
+          assert.equal(s.isDestroyed, true);
+          assert.deepEqual(events4, ["start", "cancel", "destroy"]);
+          assert.equal(s["_emitter"].listenerCount(), 0);
+        });
+      });
+      describe("if drag is not active", () => {
+        it(`should set isDestroyed property to true, emit "destroy" event and remove all listeners`, () => {
+          const el = createTestElement();
+          const s = new KeyboardSensor(el);
+          let events4 = [];
+          s.on("start", (data) => void events4.push(data.type));
+          s.on("move", (data) => void events4.push(data.type));
+          s.on("end", (data) => void events4.push(data.type));
+          s.on("cancel", (data) => void events4.push(data.type));
+          s.on("destroy", (data) => {
+            assert.equal(s.drag, null);
+            assert.equal(s.isDestroyed, true);
+            assert.deepEqual(data, { type: "destroy" });
+            events4.push(data.type);
+          });
+          assert.equal(s["_emitter"].listenerCount(), 5);
+          s.destroy();
+          el.remove();
+          assert.equal(s.drag, null);
+          assert.equal(s.isDestroyed, true);
+          assert.deepEqual(events4, ["destroy"]);
+          assert.equal(s["_emitter"].listenerCount(), 0);
+        });
+      });
     });
   }
 
   // tests/src/keyboard-sensor/methods/off.ts
-  function methodOff2() {
+  function methodOff3() {
     describe("off", () => {
       it("should remove an event listener based on id", () => {
         const el = createTestElement();
@@ -9009,7 +9191,7 @@
   }
 
   // tests/src/keyboard-sensor/methods/on.ts
-  function methodOn2() {
+  function methodOn3() {
     describe("on", () => {
       it("should return a unique symbol by default", () => {
         const el = createTestElement();
@@ -9128,10 +9310,10 @@
   // tests/src/keyboard-sensor/methods/index.ts
   function methods3() {
     describe("methods", () => {
-      methodCancel();
-      methodDestroy2();
-      methodOff2();
-      methodOn2();
+      methodCancel2();
+      methodDestroy3();
+      methodOff3();
+      methodOn3();
       methodUpdateSettings3();
     });
   }
@@ -9160,6 +9342,12 @@
         el.remove();
         s.destroy();
       });
+    });
+  }
+
+  // tests/src/keyboard-sensor/events/destroy.ts
+  function eventDestroy2() {
+    describe("destroy", () => {
     });
   }
 
@@ -9270,6 +9458,7 @@
   function events3() {
     describe("events", () => {
       eventCancel2();
+      eventDestroy2();
       eventEnd2();
       eventMove2();
       eventStart2();

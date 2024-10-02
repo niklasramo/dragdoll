@@ -3,7 +3,7 @@ import { BaseSensor } from '../../../src/index.js';
 
 describe('BaseSensor', () => {
   describe('drag property', () => {
-    it(`should be null on init`, function () {
+    it(`should be null on init`, () => {
       const s = new BaseSensor();
       assert.equal(s.drag, null);
       s.destroy();
@@ -11,13 +11,13 @@ describe('BaseSensor', () => {
   });
 
   describe('isDestroyed property', () => {
-    it(`should be false on init`, function () {
+    it(`should be false on init`, () => {
       const s = new BaseSensor();
       assert.equal(s.isDestroyed, false);
       s.destroy();
     });
 
-    it(`should be true after destroy method is called`, function () {
+    it(`should be true after destroy method is called`, () => {
       const s = new BaseSensor();
       s.destroy();
       assert.equal(s.isDestroyed, true);
@@ -25,14 +25,14 @@ describe('BaseSensor', () => {
   });
 
   describe('_start method', () => {
-    it(`should create drag data`, function () {
+    it(`should create drag data`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
       assert.deepEqual(s.drag, { x: 1, y: 2 });
       s.destroy();
     });
 
-    it(`should not modify isDestroyed property`, function () {
+    it(`should not modify isDestroyed property`, () => {
       const s = new BaseSensor();
       assert.equal(s.isDestroyed, false);
       s['_start']({ type: 'start', x: 1, y: 2 });
@@ -40,7 +40,7 @@ describe('BaseSensor', () => {
       s.destroy();
     });
 
-    it(`should emit "start" event with correct arguments after updating instance properties`, function () {
+    it(`should emit "start" event with correct arguments after updating instance properties`, () => {
       const s = new BaseSensor();
       const startArgs = { type: 'start', x: 1, y: 2 } as const;
       let emitCount = 0;
@@ -55,7 +55,7 @@ describe('BaseSensor', () => {
       s.destroy();
     });
 
-    it(`should not do anything if drag is already active`, function () {
+    it(`should not do anything if drag is already active`, () => {
       const s = new BaseSensor();
       let emitCount = 0;
       s.on('start', () => void ++emitCount);
@@ -69,7 +69,7 @@ describe('BaseSensor', () => {
       s.destroy();
     });
 
-    it(`should not do anything if instance is destroyed (isDestroyed is true)`, function () {
+    it(`should not do anything if instance is destroyed (isDestroyed is true)`, () => {
       const s = new BaseSensor();
       let emitCount = 0;
       s.on('start', () => void ++emitCount);
@@ -84,7 +84,7 @@ describe('BaseSensor', () => {
   });
 
   describe('_move method', () => {
-    it(`should update drag data to reflect the provided coordinates`, function () {
+    it(`should update drag data to reflect the provided coordinates`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
       s['_move']({ type: 'move', x: 3, y: 4 });
@@ -92,7 +92,7 @@ describe('BaseSensor', () => {
       s.destroy();
     });
 
-    it(`should not modify isDestroyed property`, function () {
+    it(`should not modify isDestroyed property`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
       assert.equal(s.isDestroyed, false);
@@ -101,7 +101,7 @@ describe('BaseSensor', () => {
       s.destroy();
     });
 
-    it(`should emit "move" event with correct arguments after updating instance properties`, function () {
+    it(`should emit "move" event with correct arguments after updating instance properties`, () => {
       const s = new BaseSensor();
       const moveArgs = { type: 'move', x: 3, y: 4 } as const;
       let emitCount = 0;
@@ -117,7 +117,7 @@ describe('BaseSensor', () => {
       s.destroy();
     });
 
-    it(`should not do anything if drag is not active`, function () {
+    it(`should not do anything if drag is not active`, () => {
       const s = new BaseSensor();
       const { drag, isDestroyed } = s;
       let emitCount = 0;
@@ -131,7 +131,7 @@ describe('BaseSensor', () => {
   });
 
   describe('_cancel method', () => {
-    it(`should reset drag data`, function () {
+    it(`should reset drag data`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
       s['_cancel']({ type: 'cancel', x: 5, y: 6 });
@@ -139,7 +139,7 @@ describe('BaseSensor', () => {
       s.destroy();
     });
 
-    it(`should not modify isDestroyed property`, function () {
+    it(`should not modify isDestroyed property`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
       assert.equal(s.isDestroyed, false);
@@ -148,7 +148,7 @@ describe('BaseSensor', () => {
       s.destroy();
     });
 
-    it(`should emit "cancel" event with correct arguments after updating instance properties`, function () {
+    it(`should emit "cancel" event with correct arguments after updating instance properties`, () => {
       const s = new BaseSensor();
       const cancelArgs = { type: 'cancel', x: 5, y: 6 } as const;
       let emitCount = 0;
@@ -164,7 +164,7 @@ describe('BaseSensor', () => {
       s.destroy();
     });
 
-    it(`should not do anything if drag is not active`, function () {
+    it(`should not do anything if drag is not active`, () => {
       const s = new BaseSensor();
       const { drag, isDestroyed } = s;
       let emitCount = 0;
@@ -178,7 +178,7 @@ describe('BaseSensor', () => {
   });
 
   describe('_end method', () => {
-    it(`should reset drag data`, function () {
+    it(`should reset drag data`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
       s['_end']({ type: 'end', x: 5, y: 6 });
@@ -186,7 +186,7 @@ describe('BaseSensor', () => {
       s.destroy();
     });
 
-    it(`should not modify isDestroyed property`, function () {
+    it(`should not modify isDestroyed property`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
       assert.equal(s.isDestroyed, false);
@@ -195,7 +195,7 @@ describe('BaseSensor', () => {
       s.destroy();
     });
 
-    it(`should emit "end" event with correct arguments after updating instance properties`, function () {
+    it(`should emit "end" event with correct arguments after updating instance properties`, () => {
       const s = new BaseSensor();
       const endArgs = { type: 'end', x: 5, y: 6 } as const;
       let emitCount = 0;
@@ -211,7 +211,7 @@ describe('BaseSensor', () => {
       s.destroy();
     });
 
-    it(`should not do anything if drag is not active`, function () {
+    it(`should not do anything if drag is not active`, () => {
       const s = new BaseSensor();
       const { drag, isDestroyed } = s;
       let emitCount = 0;
@@ -225,7 +225,7 @@ describe('BaseSensor', () => {
   });
 
   describe('cancel method', () => {
-    it(`should reset drag data`, function () {
+    it(`should reset drag data`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
       s.cancel();
@@ -233,7 +233,7 @@ describe('BaseSensor', () => {
       s.destroy();
     });
 
-    it(`should not modify isDestroyed property`, function () {
+    it(`should not modify isDestroyed property`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
       assert.equal(s.isDestroyed, false);
@@ -242,7 +242,7 @@ describe('BaseSensor', () => {
       s.destroy();
     });
 
-    it(`should emit "cancel" event with correct arguments after updating instance properties`, function () {
+    it(`should emit "cancel" event with correct arguments after updating instance properties`, () => {
       const s = new BaseSensor();
       let emitCount = 0;
       s.on('cancel', (data) => {
@@ -261,7 +261,7 @@ describe('BaseSensor', () => {
       s.destroy();
     });
 
-    it(`should not do anything if drag is not active`, function () {
+    it(`should not do anything if drag is not active`, () => {
       const s = new BaseSensor();
       const { drag, isDestroyed } = s;
       let emitCount = 0;
@@ -347,7 +347,7 @@ describe('BaseSensor', () => {
           3. reset drag data
           4. emit "destroy" event
           5. remove all listeners from the internal emitter
-       `, function () {
+       `, () => {
       const s = new BaseSensor();
       const startArgs = { type: 'start', x: 1, y: 2 } as const;
       let events: string[] = [];
@@ -385,7 +385,7 @@ describe('BaseSensor', () => {
           1. set isDestroyed property to true
           2. emit "destroy" event
           3. remove all listeners from the internal emitter
-       `, function () {
+       `, () => {
       const s = new BaseSensor();
       let events: string[] = [];
       s.on('start', (data) => void events.push(data.type));

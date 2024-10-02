@@ -222,7 +222,7 @@ interface KeyboardSensorMoveEvent extends SensorMoveEvent {
     srcEvent: KeyboardEvent;
 }
 interface KeyboardSensorCancelEvent extends SensorCancelEvent {
-    srcEvent: KeyboardEvent;
+    srcEvent?: KeyboardEvent;
 }
 interface KeyboardSensorEndEvent extends SensorEndEvent {
     srcEvent: KeyboardEvent;

@@ -3,6 +3,8 @@ import { createTestElement } from '../../utils/create-test-element.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { KeyboardSensor } from '../../../../src/index.js';
 
+// TODO: Make sure you can define moveDistance as a point object also.
+
 export function optionMoveDistance() {
   describe('moveDistance', () => {
     it('should define the drag movement distance', () => {

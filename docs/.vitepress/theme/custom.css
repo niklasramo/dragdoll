@@ -3,31 +3,35 @@
   --vp-c-brand-2: #ff5555;
   --vp-c-brand-3: #ff5555;
   --vp-code-color: #7cbdff;
-  --vp-nav-logo-height: 32px;
+  --vp-nav-logo-height: 24px;
 }
+
 .VPFeatures .VPFeature {
   position: relative;
   padding-left: 34px;
+
+  & .icon {
+    position: absolute;
+    align-items: baseline;
+    margin: 0;
+    margin-left: -60px;
+    border-radius: 0px;
+    background-color: transparent;
+    width: 60px;
+    font-size: 24px;
+  }
 }
-.VPFeatures .VPFeature .icon {
-  position: absolute;
-  align-items: baseline;
-  margin: 0;
-  margin-left: -60px;
-  border-radius: 0px;
-  background-color: transparent;
-  width: 60px;
-  font-size: 24px;
-}
+
 .VPSidebar {
   padding-bottom: 0 !important;
-  .VPLink,
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+
+  & .VPLink,
+  & h1,
+  & h2,
+  & h3,
+  & h4,
+  & h5,
+  & h6 {
     max-width: 100%;
     overflow: hidden;
     white-space: nowrap;
@@ -36,6 +40,121 @@
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+    }
+  }
+}
+
+/* Landing page */
+
+*:has(.landing):not(.landing) {
+  height: 100%;
+  overflow: hidden;
+}
+
+body:has(.landing) {
+  background-color: #000;
+}
+
+*:has(> .landing) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.landing {
+  position: relative;
+  height: 90svh;
+  width: 80svw;
+  max-width: 800px;
+  max-height: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+
+  & h1 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: max(10%, 60px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+    font-style: italic;
+    font-weight: 500;
+    color: #f9ff9e;
+  }
+
+  & .logo {
+    max-width: 100%;
+    max-height: min(80%, 100% - 120px, 800px);
+  }
+
+  & nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: max(10%, 60px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    & ul {
+      display: flex;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+
+      & li {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+
+        & a {
+          position: relative;
+          display: inline-flex;
+          height: 100%;
+          padding: 0 20px;
+          align-items: center;
+          justify-content: center;
+          transition: color 0.3s;
+          font-size: 1.2rem;
+          color: #f9ff9e;
+          text-decoration: none;
+
+          &:hover {
+            color: var(--vp-c-brand-1);
+          }
+
+          &:focus {
+            outline: none;
+          }
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--vp-c-brand-1);
+            opacity: 0;
+            transform: scale(0, 1) rotate(0deg);
+            transition:
+              transform 0.3s,
+              opacity 0.3s;
+            border-radius: 100%;
+          }
+
+          &:focus-visible::after {
+            transform: scale(1, 1) rotate(-3deg);
+            opacity: 1;
+          }
+        }
+      }
     }
   }
 }

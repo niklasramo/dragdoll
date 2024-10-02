@@ -13,7 +13,7 @@ export function eventCancel() {
         x: 0,
         y: 0,
         srcEvent: new KeyboardEvent('keydown', { key: 'Escape' }),
-      };
+      } as const;
 
       let cancelEventCount = 0;
 
