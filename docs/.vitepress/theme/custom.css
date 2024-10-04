@@ -3,7 +3,113 @@
   --vp-c-brand-2: #ff5555;
   --vp-c-brand-3: #ff5555;
   --vp-code-color: #7cbdff;
+  --vp-c-bg: #111;
+  --vp-c-bg-alt: #000;
+  --vp-c-bg-elv: #111;
+  --vp-c-bg-soft: #111;
   --vp-nav-logo-height: 24px;
+}
+
+.custom-block.info {
+  background-color: #1c2535;
+}
+
+.VPNavBarSearch {
+  .DocSearch-Button {
+    background: transparent !important;
+
+    @media (min-width: 768px) {
+      &:hover {
+        border-color: #222 !important;
+      }
+    }
+  }
+}
+
+.VPLocalSearchBox {
+  & .backdrop {
+    backdrop-filter: blur(4px) grayscale(1);
+  }
+
+  & .search-bar:focus-within {
+    border-color: #444 !important;
+  }
+
+  & .result {
+    border: 0 !important;
+    color: var(--vp-c-text-2) !important;
+
+    .titles mark,
+    .excerpt mark {
+      border-radius: 0px !important;
+      background-color: inherit !important;
+      color: inherit !important;
+      padding: 0 !important;
+      text-decoration: underline !important;
+      text-decoration-color: var(--vp-c-brand-1) !important;
+      text-underline-offset: 3px !important;
+    }
+
+    &.selected {
+      background-color: #171717 !important;
+
+      & .titles.titles {
+        color: var(--vp-c-text-1) !important;
+      }
+    }
+  }
+}
+
+.VPMenu {
+  padding: 4px !important;
+}
+
+.VPNavBarTitle {
+  --vp-c-divider: transparent;
+}
+
+.VPSocialLinks {
+  @media (min-width: 768px) {
+    & {
+      display: flex !important;
+      align-items: center !important;
+    }
+  }
+
+  &::before {
+    display: none !important;
+  }
+
+  & a {
+    width: 50px !important;
+
+    &[href="https://github.com/sponsors/niklasramo"]
+    {
+      color: #1da344;
+      transition:
+        color 0.2s ease-out,
+        transform 0.2s ease-out;
+
+      &:hover,
+      &:focus {
+        color: #1cd551;
+        transform: scale(1.2);
+        transition:
+          color 0.15s ease-out,
+          transform 0.15s ease-out;
+      }
+    }
+
+    & > svg,
+    & > span {
+      width: 24px !important;
+      height: 24px !important;
+    }
+  }
+}
+
+.VPNavBarExtra {
+  display: none !important;
 }
 
 .VPFeatures .VPFeature {
@@ -23,7 +129,19 @@
 }
 
 .VPSidebar {
+  --vp-c-divider: transparent;
+
   padding-bottom: 0 !important;
+
+  @media (min-width: 960px) {
+    .curtain {
+      margin-left: -68px !important;
+    }
+  }
+
+  .VPSidebarItem.level-0 {
+    padding-bottom: 8px;
+  }
 
   & .VPLink,
   & h1,
@@ -42,6 +160,24 @@
       text-overflow: ellipsis;
     }
   }
+
+  & .VPSidebarItem.level-1.is-active > .item > .indicator {
+    background-color: var(--vp-c-brand-1);
+  }
+
+  & .indicator {
+    top: calc(50% - 0.75px);
+    bottom: auto;
+    right: auto;
+    left: -202px;
+    width: 200px;
+    height: 1.5px;
+    border-radius: 0;
+  }
+}
+
+.aside {
+  --vp-c-divider: transparent;
 }
 
 /* Landing page */
