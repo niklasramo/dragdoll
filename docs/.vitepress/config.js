@@ -34,7 +34,7 @@ export default {
       },
     ],
     footer: {
-      message: 'Released under the MIT License.',
+      message: 'DragDoll is released under the MIT License.',
       copyright: 'Copyright © 2022-present Niklas Rämö',
     },
     search: {
@@ -59,7 +59,7 @@ export default {
 function nav() {
   return [
     {
-      text: version,
+      text: `v${version}`,
       items: [
         {
           text: 'Releases',
@@ -68,6 +68,10 @@ function nav() {
         {
           text: 'Contributing',
           link: 'https://github.com/niklasramo/dragdoll/blob/master/CONTRIBUTING.md',
+        },
+        {
+          text: 'License',
+          link: 'https://github.com/niklasramo/dragdoll/blob/master/LICENSE.md',
         },
       ],
     },
@@ -79,6 +83,7 @@ function sidebarGuide() {
     {
       collapsible: false,
       items: [
+        { text: 'Introduction', link: '/docs/' },
         { text: 'Getting Started', link: '/docs/getting-started' },
         { text: 'Examples', link: '/docs/examples' },
       ],

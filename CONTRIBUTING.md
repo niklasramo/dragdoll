@@ -25,15 +25,19 @@ Please [create an issue](https://github.com/niklasramo/dragdoll/issues/new) and 
    - [Fork DragDoll](https://github.com/niklasramo/dragdoll#fork-destination-box).
    - Create a new branch for your pull request from the master branch. The name of the pull request branch should start with the id of the issue you opened for the pull request, e.g. `#123-fix-something`.
 3. **Setup the development environment.**
-   - Run `npm install` in the repository's directory.
+   - Run `npm ci` in the root.
    - You can now run the following commands:
      - `npm run build`
        - Builds the distributable files from `src` directory into the `dist` directory.
      - `npm run format`
        - Formats all files in `src` directory with Prettier.
+     - `npm run lint`
+       - Lints all files in `src` directory with Prettier and validates TS types.
      - `npm run test`
-       - Runs Node.ks unit tests locally and browser unit tests in Browserstack.
+       - Runs unit tests in Browserstack.
        - To make this work you need to create an `.env` file the project root, which should contain `BROWSERSTACK_USERNAME` and `BROWSERSTACK_ACCESS_KEY` variables.
+     - `npm run test-local`
+       - Runs unit tests locally in Chrome and Firefox. You have to have them both installed.
 4. **Do the updates.**
    - Remember scope. Don't refactor things that are not related to the pull request.
    - After you're done update unit tests and docs (`README.md`) if necessary.

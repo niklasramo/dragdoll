@@ -10,29 +10,81 @@
   --vp-nav-logo-height: 24px;
 }
 
+/* Info block */
 .custom-block.info {
   background-color: #1c2535;
-}
 
-.VPNavBarSearch {
-  .DocSearch-Button {
-    background: transparent !important;
-
-    @media (min-width: 768px) {
-      &:hover {
-        border-color: #222 !important;
-      }
+  & code {
+    &:not(a > &) {
+      color: var(--vp-code-color);
     }
   }
 }
 
+/* Nav bar */
+.VPNavBar {
+  /* Logo */
+  & .VPNavBarTitle {
+    --vp-c-divider: transparent;
+  }
+
+  /* Search button */
+  & .VPNavBarSearch {
+    & .DocSearch-Button {
+      background: transparent !important;
+    }
+  }
+
+  /* Social links */
+  & .VPSocialLinks {
+    @media (min-width: 768px) {
+      & {
+        display: flex !important;
+        align-items: center !important;
+      }
+    }
+
+    &::before {
+      display: none !important;
+    }
+
+    & a {
+      width: 50px !important;
+
+      &[href="https://github.com/sponsors/niklasramo"]
+      {
+        color: #1da344;
+        transition:
+          color 0.2s ease-out,
+          transform 0.2s ease-out;
+
+        &:hover,
+        &:focus {
+          color: #1cd551;
+          transform: scale(1.2);
+          transition:
+            color 0.15s ease-out,
+            transform 0.15s ease-out;
+        }
+      }
+
+      & > svg,
+      & > span {
+        width: 24px !important;
+        height: 24px !important;
+      }
+    }
+  }
+
+  & .VPNavBarExtra {
+    display: none !important;
+  }
+}
+
+/*  Search modal */
 .VPLocalSearchBox {
   & .backdrop {
     backdrop-filter: blur(4px) grayscale(1);
-  }
-
-  & .search-bar:focus-within {
-    border-color: #444 !important;
   }
 
   & .result {
@@ -51,7 +103,7 @@
     }
 
     &.selected {
-      background-color: #171717 !important;
+      background-color: #222 !important;
 
       & .titles.titles {
         color: var(--vp-c-text-1) !important;
@@ -60,74 +112,12 @@
   }
 }
 
+/* Dropdown menus */
 .VPMenu {
   padding: 4px !important;
 }
 
-.VPNavBarTitle {
-  --vp-c-divider: transparent;
-}
-
-.VPSocialLinks {
-  @media (min-width: 768px) {
-    & {
-      display: flex !important;
-      align-items: center !important;
-    }
-  }
-
-  &::before {
-    display: none !important;
-  }
-
-  & a {
-    width: 50px !important;
-
-    &[href="https://github.com/sponsors/niklasramo"]
-    {
-      color: #1da344;
-      transition:
-        color 0.2s ease-out,
-        transform 0.2s ease-out;
-
-      &:hover,
-      &:focus {
-        color: #1cd551;
-        transform: scale(1.2);
-        transition:
-          color 0.15s ease-out,
-          transform 0.15s ease-out;
-      }
-    }
-
-    & > svg,
-    & > span {
-      width: 24px !important;
-      height: 24px !important;
-    }
-  }
-}
-
-.VPNavBarExtra {
-  display: none !important;
-}
-
-.VPFeatures .VPFeature {
-  position: relative;
-  padding-left: 34px;
-
-  & .icon {
-    position: absolute;
-    align-items: baseline;
-    margin: 0;
-    margin-left: -60px;
-    border-radius: 0px;
-    background-color: transparent;
-    width: 60px;
-    font-size: 24px;
-  }
-}
-
+/* Sidebar */
 .VPSidebar {
   --vp-c-divider: transparent;
 
@@ -139,10 +129,11 @@
     }
   }
 
-  .VPSidebarItem.level-0 {
+  & .VPSidebarItem.level-0 {
     padding-bottom: 8px;
   }
 
+  /* Don't allow text go to two lines. */
   & .VPLink,
   & h1,
   & h2,
@@ -161,8 +152,25 @@
     }
   }
 
-  & .VPSidebarItem.level-1.is-active > .item > .indicator {
-    background-color: var(--vp-c-brand-1);
+  & .VPSidebarItem.level-0 > .item > .text {
+    color: #f9ff9e !important;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+
+  & .VPSidebarItem.is-link > .item > .link > .text {
+    color: var(--vp-c-text-2) !important;
+  }
+
+  & .VPSidebarItem.is-link > .item > .link:hover > .text,
+  & .VPSidebarItem.is-link > .item > .link:focus > .text {
+    color: var(--vp-c-text-1) !important;
+  }
+
+  & .VPSidebarItem.is-link.is-active > .item > .link > .text {
+    color: var(--vp-c-brand-1) !important;
   }
 
   & .indicator {
@@ -173,11 +181,47 @@
     width: 200px;
     height: 1.5px;
     border-radius: 0;
+
+    .VPSidebarItem.is-active > .item > & {
+      background-color: var(--vp-c-brand-1);
+    }
   }
 }
 
-.aside {
-  --vp-c-divider: transparent;
+/* Content area */
+.VPDoc {
+  /* "On this page" menu */
+  & .aside {
+    --vp-c-divider: transparent;
+  }
+
+  /* Main content */
+  & .content {
+    & iframe {
+      width: 100%;
+      height: 300px;
+      border: 1px solid var(--vp-c-brand-1);
+      border-radius: 8px;
+    }
+  }
+}
+
+/* Footer */
+.VPFooter {
+  padding: 64px 0 !important;
+  margin-top: -128px !important;
+  pointer-events: none !important;
+  border: 0 !important;
+  background: transparent !important;
+  display: block !important;
+  @media (min-width: 960px) and (max-width: 1279px) {
+    margin-left: var(--vp-sidebar-width);
+  }
+
+  & .container {
+    max-width: 600px !important;
+    pointer-events: auto !important;
+  }
 }
 
 /* Landing page */
