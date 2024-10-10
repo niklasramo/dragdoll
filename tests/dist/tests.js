@@ -7642,6 +7642,18 @@ function eventCancel() {
 // tests/src/pointer-sensor/events/destroy.ts
 function eventDestroy() {
   describe("destroy", () => {
+    it(`should be triggered on destroy`, function() {
+      const el = createTestElement();
+      const s = new PointerSensor(el);
+      let destroyEventCount = 0;
+      s.on("destroy", (e) => {
+        ++destroyEventCount;
+        assert.deepEqual(e, { type: "destroy" });
+      });
+      s.destroy();
+      assert.equal(destroyEventCount, 1);
+      el.remove();
+    });
   });
 }
 
@@ -8959,6 +8971,18 @@ function eventCancel2() {
 // tests/src/keyboard-sensor/events/destroy.ts
 function eventDestroy2() {
   describe("destroy", () => {
+    it("should be triggered on destroy", () => {
+      const el = createTestElement();
+      const s = new KeyboardSensor(el);
+      let destroyEventCount = 0;
+      s.on("destroy", (e) => {
+        assert.deepEqual(e, { type: "destroy" });
+        ++destroyEventCount;
+      });
+      s.destroy();
+      assert.equal(destroyEventCount, 1);
+      el.remove();
+    });
   });
 }
 
