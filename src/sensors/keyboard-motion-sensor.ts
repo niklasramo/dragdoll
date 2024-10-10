@@ -68,7 +68,7 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
   extends BaseMotionSensor<E>
   implements Sensor<E>
 {
-  declare events: E;
+  declare _events_type: E;
   readonly element: Element | null;
   protected _moveKeys: Set<string>;
   protected _moveKeyTimestamps: Map<string, number>;

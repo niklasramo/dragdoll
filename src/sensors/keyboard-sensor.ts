@@ -36,7 +36,7 @@ export interface KeyboardSensorMoveEvent extends SensorMoveEvent {
 }
 
 export interface KeyboardSensorCancelEvent extends SensorCancelEvent {
-  srcEvent: KeyboardEvent;
+  srcEvent?: KeyboardEvent;
 }
 
 export interface KeyboardSensorEndEvent extends SensorEndEvent {
@@ -119,7 +119,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
   extends BaseSensor<E>
   implements Sensor<E>
 {
-  declare events: E;
+  declare _events_type: E;
   readonly element: Element | null;
   readonly moveDistance: Point;
   protected _cancelOnBlur: boolean;

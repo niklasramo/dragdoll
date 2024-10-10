@@ -64,19 +64,19 @@ export const DraggableApplyPositionPhase = {
 export type DraggableApplyPositionPhase =
   (typeof DraggableApplyPositionPhase)[keyof typeof DraggableApplyPositionPhase];
 
-export type DraggableModifierData<S extends Sensor[], E extends S[number]['events']> = {
+export type DraggableModifierData<S extends Sensor[], E extends S[number]['_events_type']> = {
   draggable: Draggable<S, E>;
   drag: DraggableDrag<S, E>;
   item: DraggableDragItem<S, E>;
   phase: DraggableModifierPhase;
 };
 
-export type DraggableModifier<S extends Sensor[], E extends S[number]['events']> = (
+export type DraggableModifier<S extends Sensor[], E extends S[number]['_events_type']> = (
   change: Point,
   data: DraggableModifierData<S, E>,
 ) => Point;
 
-export interface DraggableSettings<S extends Sensor[], E extends S[number]['events']> {
+export interface DraggableSettings<S extends Sensor[], E extends S[number]['_events_type']> {
   container: HTMLElement | null;
   startPredicate: (data: {
     draggable: Draggable<S, E>;
@@ -214,7 +214,7 @@ export const DraggableDefaultSettings: DraggableSettings<any, any> = {
 
 export class Draggable<
   S extends Sensor[] = Sensor[],
-  E extends S[number]['events'] = S[number]['events'],
+  E extends S[number]['_events_type'] = S[number]['_events_type'],
   P extends DraggablePluginMap = {},
 > {
   readonly sensors: S;
@@ -778,7 +778,7 @@ export class Draggable<
     (this as Writeable<this>).settings = this._parseSettings(options, this.settings);
   }
 
-  use<SS extends S, EE extends SS[number]['events'], PP extends P>(
+  use<SS extends S, EE extends SS[number]['_events_type'], PP extends P>(
     plugin: (draggable: this) => Draggable<SS, EE, PP>,
   ) {
     return plugin(this);

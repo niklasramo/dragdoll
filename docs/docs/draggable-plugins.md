@@ -26,7 +26,7 @@ type LoggerPluginOptions = {
 
 // The actual plugin is wrapped in a function via which we can pass user
 // options to the plugin.
-function loggerPlugin<S extends Sensor[], E extends S[number]['events']>(
+function loggerPlugin<S extends Sensor[], E extends S[number]['_events_type']>(
   options: LoggerPluginOptions = {},
 ) {
   // This is the actual Draggable plugin, a function which:

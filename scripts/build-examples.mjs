@@ -94,7 +94,7 @@ async function buildExamplesMarkdown() {
       if (description.length) {
         markdownContent += `${description}\n\n`;
       }
-      markdownContent += `<iframe src="/dragdoll/examples/${exampleName}/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>\n\n`;
+      markdownContent += `<iframe src="/dragdoll/examples/${exampleName}/index.html"></iframe>\n\n`;
       markdownContent += `::: code-group\n\n`;
       markdownContent += '```ts [index.ts]\n' + indexTsContent + '\n```\n\n';
       markdownContent += '```html [index.html]\n' + indexHtmlContent + '\n```\n\n';
