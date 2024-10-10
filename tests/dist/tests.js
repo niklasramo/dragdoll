@@ -537,9 +537,9 @@ try {
 }
 var promise_default = getPromiseValue;
 function inspectObject(object, options4) {
-  const properties3 = Object.getOwnPropertyNames(object);
+  const properties4 = Object.getOwnPropertyNames(object);
   const symbols = Object.getOwnPropertySymbols ? Object.getOwnPropertySymbols(object) : [];
-  if (properties3.length === 0 && symbols.length === 0) {
+  if (properties4.length === 0 && symbols.length === 0) {
     return "{}";
   }
   options4.truncate -= 4;
@@ -548,7 +548,7 @@ function inspectObject(object, options4) {
     return "[Circular]";
   }
   options4.seen.push(object);
-  const propertyContents = inspectList(properties3.map((key) => [key, object[key]]), options4, inspectProperty);
+  const propertyContents = inspectList(properties4.map((key) => [key, object[key]]), options4, inspectProperty);
   const symbolContents = inspectList(symbols.map((key) => [key, object[key]]), options4, inspectProperty);
   options4.seen.pop();
   let sep = "";
@@ -592,18 +592,18 @@ var errorKeys = [
   "description"
 ];
 function inspectObject2(error, options4) {
-  const properties3 = Object.getOwnPropertyNames(error).filter((key) => errorKeys.indexOf(key) === -1);
+  const properties4 = Object.getOwnPropertyNames(error).filter((key) => errorKeys.indexOf(key) === -1);
   const name = error.name;
   options4.truncate -= name.length;
   let message = "";
   if (typeof error.message === "string") {
     message = truncate(error.message, options4.truncate);
   } else {
-    properties3.unshift("message");
+    properties4.unshift("message");
   }
   message = message ? `: ${message}` : "";
   options4.truncate -= message.length + 5;
-  const propertyContents = inspectList(properties3.map((key) => [key, error[key]]), options4, inspectProperty);
+  const propertyContents = inspectList(properties4.map((key) => [key, error[key]]), options4, inspectProperty);
   return `${name}${message}${propertyContents ? ` { ${propertyContents} }` : ""}`;
 }
 __name(inspectObject2, "inspectObject");
@@ -620,16 +620,16 @@ function inspectHTMLCollection(collection, options4) {
 }
 __name(inspectHTMLCollection, "inspectHTMLCollection");
 function inspectHTML(element, options4) {
-  const properties3 = element.getAttributeNames();
+  const properties4 = element.getAttributeNames();
   const name = element.tagName.toLowerCase();
   const head = options4.stylize(`<${name}`, "special");
   const headClose = options4.stylize(`>`, "special");
   const tail = options4.stylize(`</${name}>`, "special");
   options4.truncate -= name.length * 2 + 5;
   let propertyContents = "";
-  if (properties3.length > 0) {
+  if (properties4.length > 0) {
     propertyContents += " ";
-    propertyContents += inspectList(properties3.map((key) => [key, element.getAttribute(key)]), options4, inspectAttribute, " ");
+    propertyContents += inspectList(properties4.map((key) => [key, element.getAttribute(key)]), options4, inspectAttribute, " ");
   }
   options4.truncate -= propertyContents.length;
   const truncate2 = options4.truncate;
@@ -5923,28 +5923,150 @@ var AutoScroll = class {
 // src/singletons/auto-scroll.ts
 var autoScroll = new AutoScroll();
 
-// tests/src/base-sensor/index.ts
-describe("BaseSensor", () => {
-  describe("drag property", () => {
-    it(`should be null on init`, () => {
+// tests/src/base-sensor/methods/_cancel.ts
+function methodProtectedCancel() {
+  describe("_cancel", () => {
+    it(`should reset drag data`, () => {
       const s = new BaseSensor();
+      s["_start"]({ type: "start", x: 1, y: 2 });
+      s["_cancel"]({ type: "cancel", x: 5, y: 6 });
       assert.equal(s.drag, null);
       s.destroy();
     });
-  });
-  describe("isDestroyed property", () => {
-    it(`should be false on init`, () => {
+    it(`should not modify isDestroyed property`, () => {
       const s = new BaseSensor();
+      s["_start"]({ type: "start", x: 1, y: 2 });
+      assert.equal(s.isDestroyed, false);
+      s["_cancel"]({ type: "cancel", x: 5, y: 6 });
       assert.equal(s.isDestroyed, false);
       s.destroy();
     });
-    it(`should be true after destroy method is called`, () => {
+    it(`should emit "cancel" event with correct arguments after updating instance properties`, () => {
       const s = new BaseSensor();
+      const cancelArgs = { type: "cancel", x: 5, y: 6 };
+      let emitCount = 0;
+      s.on("cancel", (data) => {
+        assert.deepEqual(s.drag, { x: data.x, y: data.y });
+        assert.equal(s.isDestroyed, false);
+        assert.deepEqual(data, cancelArgs);
+        ++emitCount;
+      });
+      s["_start"]({ type: "start", x: 1, y: 2 });
+      s["_cancel"](cancelArgs);
+      assert.equal(emitCount, 1);
       s.destroy();
-      assert.equal(s.isDestroyed, true);
+    });
+    it(`should not do anything if drag is not active`, () => {
+      const s = new BaseSensor();
+      const { drag, isDestroyed } = s;
+      let emitCount = 0;
+      s.on("cancel", () => void ++emitCount);
+      s["_cancel"]({ type: "cancel", x: 3, y: 4 });
+      assert.deepEqual(s.drag, drag);
+      assert.equal(s.isDestroyed, isDestroyed);
+      assert.equal(emitCount, 0);
+      s.destroy();
     });
   });
-  describe("_start method", () => {
+}
+
+// tests/src/base-sensor/methods/_end.ts
+function methodProtectedEnd() {
+  describe("_end", () => {
+    it(`should reset drag data`, () => {
+      const s = new BaseSensor();
+      s["_start"]({ type: "start", x: 1, y: 2 });
+      s["_end"]({ type: "end", x: 5, y: 6 });
+      assert.equal(s.drag, null);
+      s.destroy();
+    });
+    it(`should not modify isDestroyed property`, () => {
+      const s = new BaseSensor();
+      s["_start"]({ type: "start", x: 1, y: 2 });
+      assert.equal(s.isDestroyed, false);
+      s["_end"]({ type: "end", x: 5, y: 6 });
+      assert.equal(s.isDestroyed, false);
+      s.destroy();
+    });
+    it(`should emit "end" event with correct arguments after updating instance properties`, () => {
+      const s = new BaseSensor();
+      const endArgs = { type: "end", x: 5, y: 6 };
+      let emitCount = 0;
+      s.on("end", (data) => {
+        assert.deepEqual(s.drag, { x: data.x, y: data.y });
+        assert.equal(s.isDestroyed, false);
+        assert.deepEqual(data, endArgs);
+        ++emitCount;
+      });
+      s["_start"]({ type: "start", x: 1, y: 2 });
+      s["_end"](endArgs);
+      assert.equal(emitCount, 1);
+      s.destroy();
+    });
+    it(`should not do anything if drag is not active`, () => {
+      const s = new BaseSensor();
+      const { drag, isDestroyed } = s;
+      let emitCount = 0;
+      s.on("end", () => void ++emitCount);
+      s["_end"]({ type: "end", x: 3, y: 4 });
+      assert.deepEqual(s.drag, drag);
+      assert.equal(s.isDestroyed, isDestroyed);
+      assert.equal(emitCount, 0);
+      s.destroy();
+    });
+  });
+}
+
+// tests/src/base-sensor/methods/_move.ts
+function methodProtectedMove() {
+  describe("_move", () => {
+    it(`should update drag data to reflect the provided coordinates`, () => {
+      const s = new BaseSensor();
+      s["_start"]({ type: "start", x: 1, y: 2 });
+      s["_move"]({ type: "move", x: 3, y: 4 });
+      assert.deepEqual(s.drag, { x: 3, y: 4 });
+      s.destroy();
+    });
+    it(`should not modify isDestroyed property`, () => {
+      const s = new BaseSensor();
+      s["_start"]({ type: "start", x: 1, y: 2 });
+      assert.equal(s.isDestroyed, false);
+      s["_move"]({ type: "move", x: 3, y: 4 });
+      assert.equal(s.isDestroyed, false);
+      s.destroy();
+    });
+    it(`should emit "move" event with correct arguments after updating instance properties`, () => {
+      const s = new BaseSensor();
+      const moveArgs = { type: "move", x: 3, y: 4 };
+      let emitCount = 0;
+      s.on("move", (data) => {
+        assert.deepEqual(s.drag, { x: data.x, y: data.y });
+        assert.equal(s.isDestroyed, false);
+        assert.deepEqual(data, moveArgs);
+        ++emitCount;
+      });
+      s["_start"]({ type: "start", x: 1, y: 2 });
+      s["_move"](moveArgs);
+      assert.equal(emitCount, 1);
+      s.destroy();
+    });
+    it(`should not do anything if drag is not active`, () => {
+      const s = new BaseSensor();
+      const { drag, isDestroyed } = s;
+      let emitCount = 0;
+      s.on("move", () => void ++emitCount);
+      s["_move"]({ type: "move", x: 3, y: 4 });
+      assert.deepEqual(s.drag, drag);
+      assert.equal(s.isDestroyed, isDestroyed);
+      assert.equal(emitCount, 0);
+      s.destroy();
+    });
+  });
+}
+
+// tests/src/base-sensor/methods/_start.ts
+function methodProtectedStart() {
+  describe("_start", () => {
     it(`should create drag data`, () => {
       const s = new BaseSensor();
       s["_start"]({ type: "start", x: 1, y: 2 });
@@ -5998,136 +6120,11 @@ describe("BaseSensor", () => {
       s.destroy();
     });
   });
-  describe("_move method", () => {
-    it(`should update drag data to reflect the provided coordinates`, () => {
-      const s = new BaseSensor();
-      s["_start"]({ type: "start", x: 1, y: 2 });
-      s["_move"]({ type: "move", x: 3, y: 4 });
-      assert.deepEqual(s.drag, { x: 3, y: 4 });
-      s.destroy();
-    });
-    it(`should not modify isDestroyed property`, () => {
-      const s = new BaseSensor();
-      s["_start"]({ type: "start", x: 1, y: 2 });
-      assert.equal(s.isDestroyed, false);
-      s["_move"]({ type: "move", x: 3, y: 4 });
-      assert.equal(s.isDestroyed, false);
-      s.destroy();
-    });
-    it(`should emit "move" event with correct arguments after updating instance properties`, () => {
-      const s = new BaseSensor();
-      const moveArgs = { type: "move", x: 3, y: 4 };
-      let emitCount = 0;
-      s.on("move", (data) => {
-        assert.deepEqual(s.drag, { x: data.x, y: data.y });
-        assert.equal(s.isDestroyed, false);
-        assert.deepEqual(data, moveArgs);
-        ++emitCount;
-      });
-      s["_start"]({ type: "start", x: 1, y: 2 });
-      s["_move"](moveArgs);
-      assert.equal(emitCount, 1);
-      s.destroy();
-    });
-    it(`should not do anything if drag is not active`, () => {
-      const s = new BaseSensor();
-      const { drag, isDestroyed } = s;
-      let emitCount = 0;
-      s.on("move", () => void ++emitCount);
-      s["_move"]({ type: "move", x: 3, y: 4 });
-      assert.deepEqual(s.drag, drag);
-      assert.equal(s.isDestroyed, isDestroyed);
-      assert.equal(emitCount, 0);
-      s.destroy();
-    });
-  });
-  describe("_cancel method", () => {
-    it(`should reset drag data`, () => {
-      const s = new BaseSensor();
-      s["_start"]({ type: "start", x: 1, y: 2 });
-      s["_cancel"]({ type: "cancel", x: 5, y: 6 });
-      assert.equal(s.drag, null);
-      s.destroy();
-    });
-    it(`should not modify isDestroyed property`, () => {
-      const s = new BaseSensor();
-      s["_start"]({ type: "start", x: 1, y: 2 });
-      assert.equal(s.isDestroyed, false);
-      s["_cancel"]({ type: "cancel", x: 5, y: 6 });
-      assert.equal(s.isDestroyed, false);
-      s.destroy();
-    });
-    it(`should emit "cancel" event with correct arguments after updating instance properties`, () => {
-      const s = new BaseSensor();
-      const cancelArgs = { type: "cancel", x: 5, y: 6 };
-      let emitCount = 0;
-      s.on("cancel", (data) => {
-        assert.deepEqual(s.drag, { x: data.x, y: data.y });
-        assert.equal(s.isDestroyed, false);
-        assert.deepEqual(data, cancelArgs);
-        ++emitCount;
-      });
-      s["_start"]({ type: "start", x: 1, y: 2 });
-      s["_cancel"](cancelArgs);
-      assert.equal(emitCount, 1);
-      s.destroy();
-    });
-    it(`should not do anything if drag is not active`, () => {
-      const s = new BaseSensor();
-      const { drag, isDestroyed } = s;
-      let emitCount = 0;
-      s.on("cancel", () => void ++emitCount);
-      s["_cancel"]({ type: "cancel", x: 3, y: 4 });
-      assert.deepEqual(s.drag, drag);
-      assert.equal(s.isDestroyed, isDestroyed);
-      assert.equal(emitCount, 0);
-      s.destroy();
-    });
-  });
-  describe("_end method", () => {
-    it(`should reset drag data`, () => {
-      const s = new BaseSensor();
-      s["_start"]({ type: "start", x: 1, y: 2 });
-      s["_end"]({ type: "end", x: 5, y: 6 });
-      assert.equal(s.drag, null);
-      s.destroy();
-    });
-    it(`should not modify isDestroyed property`, () => {
-      const s = new BaseSensor();
-      s["_start"]({ type: "start", x: 1, y: 2 });
-      assert.equal(s.isDestroyed, false);
-      s["_end"]({ type: "end", x: 5, y: 6 });
-      assert.equal(s.isDestroyed, false);
-      s.destroy();
-    });
-    it(`should emit "end" event with correct arguments after updating instance properties`, () => {
-      const s = new BaseSensor();
-      const endArgs = { type: "end", x: 5, y: 6 };
-      let emitCount = 0;
-      s.on("end", (data) => {
-        assert.deepEqual(s.drag, { x: data.x, y: data.y });
-        assert.equal(s.isDestroyed, false);
-        assert.deepEqual(data, endArgs);
-        ++emitCount;
-      });
-      s["_start"]({ type: "start", x: 1, y: 2 });
-      s["_end"](endArgs);
-      assert.equal(emitCount, 1);
-      s.destroy();
-    });
-    it(`should not do anything if drag is not active`, () => {
-      const s = new BaseSensor();
-      const { drag, isDestroyed } = s;
-      let emitCount = 0;
-      s.on("end", () => void ++emitCount);
-      s["_end"]({ type: "end", x: 3, y: 4 });
-      assert.deepEqual(s.drag, drag);
-      assert.equal(s.isDestroyed, isDestroyed);
-      assert.equal(emitCount, 0);
-      s.destroy();
-    });
-  });
-  describe("cancel method", () => {
+}
+
+// tests/src/base-sensor/methods/cancel.ts
+function methodCancel() {
+  describe("cancel", () => {
     it(`should reset drag data`, () => {
       const s = new BaseSensor();
       s["_start"]({ type: "start", x: 1, y: 2 });
@@ -6173,70 +6170,11 @@ describe("BaseSensor", () => {
       s.destroy();
     });
   });
-  describe("on method", () => {
-    it("should return a unique symbol by default", () => {
-      const s = new BaseSensor();
-      const idA = s.on("start", () => {
-      });
-      const idB = s.on("start", () => {
-      });
-      assert.equal(typeof idA, "symbol");
-      assert.notEqual(idA, idB);
-    });
-    it("should allow duplicate event listeners", () => {
-      const s = new BaseSensor();
-      let counter = 0;
-      const listener = () => {
-        ++counter;
-      };
-      s.on("start", listener);
-      s.on("start", listener);
-      s["_start"]({ type: "start", x: 1, y: 2 });
-      assert.equal(counter, 2);
-    });
-    it("should remove the existing listener and add the new one if the same id is used", () => {
-      const s = new BaseSensor();
-      let msg = "";
-      s.on("start", () => void (msg += "a"), 1);
-      s.on("start", () => void (msg += "b"), 2);
-      s.on("start", () => void (msg += "c"), 1);
-      s["_start"]({ type: "start", x: 1, y: 2 });
-      assert.equal(msg, "bc");
-    });
-    it("should allow defining a custom id (string/symbol/number) for the event listener via third argument", () => {
-      const s = new BaseSensor();
-      const idA = Symbol();
-      assert.equal(
-        s.on("start", () => {
-        }, idA),
-        idA
-      );
-      const idB = 1;
-      assert.equal(
-        s.on("start", () => {
-        }, idB),
-        idB
-      );
-      const idC = "foo";
-      assert.equal(
-        s.on("start", () => {
-        }, idC),
-        idC
-      );
-    });
-  });
-  describe("off method", () => {
-    it("should remove an event listener based on id", () => {
-      const s = new BaseSensor();
-      let msg = "";
-      const idA = s.on("start", () => void (msg += "a"));
-      s.on("start", () => void (msg += "b"));
-      s.off("start", idA);
-      s["_start"]({ type: "start", x: 1, y: 2 });
-      assert.equal(msg, "b");
-    });
-  });
-  describe("destroy method", () => {
+}
+
+// tests/src/base-sensor/methods/destroy.ts
+function methodDestroy() {
+  describe("destroy", () => {
     it(`should (if drag is active):
           1. set isDestroyed property to true
           2. emit "cancel" event with the current x/y coordinates
@@ -6317,6 +6255,142 @@ describe("BaseSensor", () => {
       assert.deepEqual(events4, []);
     });
   });
+}
+
+// tests/src/base-sensor/methods/off.ts
+function methodOff() {
+  describe("off", () => {
+    it("should remove an event listener based on id", () => {
+      const s = new BaseSensor();
+      let msg = "";
+      const idA = s.on("start", () => void (msg += "a"));
+      s.on("start", () => void (msg += "b"));
+      s.off("start", idA);
+      s["_start"]({ type: "start", x: 1, y: 2 });
+      assert.equal(msg, "b");
+    });
+  });
+}
+
+// tests/src/base-sensor/methods/on.ts
+function methodOn() {
+  describe("on", () => {
+    it("should return a unique symbol by default", () => {
+      const s = new BaseSensor();
+      const idA = s.on("start", () => {
+      });
+      const idB = s.on("start", () => {
+      });
+      assert.equal(typeof idA, "symbol");
+      assert.notEqual(idA, idB);
+    });
+    it("should allow duplicate event listeners", () => {
+      const s = new BaseSensor();
+      let counter = 0;
+      const listener = () => {
+        ++counter;
+      };
+      s.on("start", listener);
+      s.on("start", listener);
+      s["_start"]({ type: "start", x: 1, y: 2 });
+      assert.equal(counter, 2);
+    });
+    it("should remove the existing listener and add the new one if the same id is used", () => {
+      const s = new BaseSensor();
+      let msg = "";
+      s.on("start", () => void (msg += "a"), 1);
+      s.on("start", () => void (msg += "b"), 2);
+      s.on("start", () => void (msg += "c"), 1);
+      s["_start"]({ type: "start", x: 1, y: 2 });
+      assert.equal(msg, "bc");
+    });
+    it("should allow defining a custom id (string/symbol/number) for the event listener via third argument", () => {
+      const s = new BaseSensor();
+      const idA = Symbol();
+      assert.equal(
+        s.on("start", () => {
+        }, idA),
+        idA
+      );
+      const idB = 1;
+      assert.equal(
+        s.on("start", () => {
+        }, idB),
+        idB
+      );
+      const idC = "foo";
+      assert.equal(
+        s.on("start", () => {
+        }, idC),
+        idC
+      );
+    });
+  });
+}
+
+// tests/src/base-sensor/methods/index.ts
+function methods() {
+  describe("methods", () => {
+    methodProtectedCancel();
+    methodProtectedEnd();
+    methodProtectedMove();
+    methodProtectedStart();
+    methodCancel();
+    methodDestroy();
+    methodOff();
+    methodOn();
+  });
+}
+
+// tests/src/base-sensor/properties/drag.ts
+function propDrag() {
+  describe("drag", () => {
+    it(`should be null on init`, () => {
+      const s = new BaseSensor();
+      assert.equal(s.drag, null);
+      s.destroy();
+    });
+    it(`should contain drag data during drag`, () => {
+      const s = new BaseSensor();
+      s["_start"]({
+        type: "start",
+        x: 0,
+        y: 0
+      });
+      assert.deepEqual(s.drag, { x: 0, y: 0 });
+      s.destroy();
+    });
+  });
+}
+
+// tests/src/base-sensor/properties/is-destroyed.ts
+function propIsDestroyed() {
+  describe("isDestroyed", () => {
+    it(`should be false on init`, () => {
+      const s = new BaseSensor();
+      assert.equal(s.isDestroyed, false);
+      s.destroy();
+    });
+    it(`should be true after destroy method is called`, () => {
+      const s = new BaseSensor();
+      s.destroy();
+      assert.equal(s.isDestroyed, true);
+    });
+  });
+}
+
+// tests/src/base-sensor/properties/index.ts
+function properties() {
+  describe("properties", () => {
+    propDrag();
+    propIsDestroyed();
+  });
+}
+
+// tests/src/base-sensor/index.ts
+describe("BaseSensor", () => {
+  methods();
+  properties();
 });
 
 // tests/src/utils/create-test-element.ts
@@ -6437,19 +6511,19 @@ function methodAlign() {
 }
 
 // tests/src/draggable/methods/destroy.ts
-function methodDestroy() {
+function methodDestroy2() {
   describe("destroy", () => {
   });
 }
 
 // tests/src/draggable/methods/off.ts
-function methodOff() {
+function methodOff2() {
   describe("off", () => {
   });
 }
 
 // tests/src/draggable/methods/on.ts
-function methodOn() {
+function methodOn2() {
   describe("on", () => {
   });
 }
@@ -6473,12 +6547,12 @@ function methodUse() {
 }
 
 // tests/src/draggable/methods/index.ts
-function methods() {
+function methods2() {
   describe("methods", () => {
     methodAlign();
-    methodDestroy();
-    methodOff();
-    methodOn();
+    methodDestroy2();
+    methodOff2();
+    methodOn2();
     methodStop();
     methodUpdateSettings();
     methodUse();
@@ -7447,7 +7521,7 @@ function misc() {
 describe("Draggable", () => {
   events();
   options();
-  methods();
+  methods2();
   misc();
 });
 
@@ -7961,25 +8035,25 @@ function events2() {
 }
 
 // tests/src/pointer-sensor/methods/cancel.ts
-function methodCancel() {
+function methodCancel2() {
   describe("cancel", () => {
   });
 }
 
 // tests/src/pointer-sensor/methods/destroy.ts
-function methodDestroy2() {
+function methodDestroy3() {
   describe("destroy", () => {
   });
 }
 
 // tests/src/pointer-sensor/methods/off.ts
-function methodOff2() {
+function methodOff3() {
   describe("off", () => {
   });
 }
 
 // tests/src/pointer-sensor/methods/on.ts
-function methodOn2() {
+function methodOn3() {
   describe("on", () => {
   });
 }
@@ -8013,12 +8087,12 @@ function methodUpdateSettings2() {
 }
 
 // tests/src/pointer-sensor/methods/index.ts
-function methods2() {
+function methods3() {
   describe("methods", () => {
-    methodCancel();
-    methodDestroy2();
-    methodOff2();
-    methodOn2();
+    methodCancel2();
+    methodDestroy3();
+    methodOff3();
+    methodOn3();
     methodUpdateSettings2();
   });
 }
@@ -8131,7 +8205,7 @@ function options2() {
 }
 
 // tests/src/pointer-sensor/properties/drag.ts
-function propDrag() {
+function propDrag2() {
   describe("drag", () => {
     it(`should be null on init`, function() {
       const s = new PointerSensor(document.body);
@@ -8142,7 +8216,7 @@ function propDrag() {
 }
 
 // tests/src/pointer-sensor/properties/is-destroyed.ts
-function propIsDestroyed() {
+function propIsDestroyed2() {
   describe("isDestroyed", () => {
     it(`should be false on init`, function() {
       const s = new PointerSensor(document.body);
@@ -8179,10 +8253,10 @@ function propIsDestroyed() {
 }
 
 // tests/src/pointer-sensor/properties/index.ts
-function properties() {
+function properties2() {
   describe("properties", () => {
-    propDrag();
-    propIsDestroyed();
+    propDrag2();
+    propIsDestroyed2();
   });
 }
 
@@ -8225,9 +8299,9 @@ describe("PointerSensor", () => {
     return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   });
   events2();
-  methods2();
+  methods3();
   options2();
-  properties();
+  properties2();
   misc2();
 });
 
@@ -8514,7 +8588,7 @@ function options3() {
 }
 
 // tests/src/keyboard-sensor/properties/drag.ts
-function propDrag2() {
+function propDrag3() {
   describe("drag", () => {
     it(`should be null on init`, function() {
       const el = createTestElement();
@@ -8554,7 +8628,7 @@ function propDrag2() {
 }
 
 // tests/src/keyboard-sensor/properties/is-destroyed.ts
-function propIsDestroyed2() {
+function propIsDestroyed3() {
   describe("isDestroyed", () => {
     it(`should be false on init`, function() {
       const el = createTestElement();
@@ -8583,15 +8657,15 @@ function propIsDestroyed2() {
 }
 
 // tests/src/keyboard-sensor/properties/index.ts
-function properties2() {
+function properties3() {
   describe("properties", () => {
-    propDrag2();
-    propIsDestroyed2();
+    propDrag3();
+    propIsDestroyed3();
   });
 }
 
 // tests/src/keyboard-sensor/methods/cancel.ts
-function methodCancel2() {
+function methodCancel3() {
   describe("cancel", () => {
     it(`should emit "cancel" event with correct arguments after updating instance properties`, () => {
       const el = createTestElement();
@@ -8636,7 +8710,7 @@ function methodCancel2() {
 }
 
 // tests/src/keyboard-sensor/methods/destroy.ts
-function methodDestroy3() {
+function methodDestroy4() {
   describe("destroy", () => {
     it("should allow destroying only once", () => {
       const el = createTestElement();
@@ -8711,7 +8785,7 @@ function methodDestroy3() {
 }
 
 // tests/src/keyboard-sensor/methods/off.ts
-function methodOff3() {
+function methodOff4() {
   describe("off", () => {
     it("should remove an event listener based on id", () => {
       const el = createTestElement();
@@ -8728,7 +8802,7 @@ function methodOff3() {
 }
 
 // tests/src/keyboard-sensor/methods/on.ts
-function methodOn3() {
+function methodOn4() {
   describe("on", () => {
     it("should return a unique symbol by default", () => {
       const el = createTestElement();
@@ -8845,12 +8919,12 @@ function methodUpdateSettings3() {
 }
 
 // tests/src/keyboard-sensor/methods/index.ts
-function methods3() {
+function methods4() {
   describe("methods", () => {
-    methodCancel2();
-    methodDestroy3();
-    methodOff3();
-    methodOn3();
+    methodCancel3();
+    methodDestroy4();
+    methodOff4();
+    methodOn4();
     methodUpdateSettings3();
   });
 }
@@ -9013,8 +9087,8 @@ describe("KeyboardSensor", () => {
     return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   });
   options3();
-  properties2();
-  methods3();
+  properties3();
+  methods4();
   events3();
 });
 /*! Bundled license information:
