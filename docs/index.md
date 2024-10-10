@@ -4,7 +4,10 @@ layout: false
 
 <main class="landing">
   <h1>a draggable lib called...</h1>
-  <img class="logo" src="/dragdoll-logo.png" alt="DragDoll" draggable="false" />
+  <div class="logo">
+    <img src="/dragdoll-logo-transparent.png" alt="DragDoll" draggable="false" />
+    <img src="/dragdoll-logo-transparent.png" alt="DragDoll" draggable="false" />
+  </div>
   <nav>
     <ul>
       <li><a href="/dragdoll/docs/">docs</a></li>

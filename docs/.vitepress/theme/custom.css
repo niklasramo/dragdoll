@@ -268,8 +268,26 @@ body:has(.landing) {
   }
 
   & .logo {
-    max-width: 100%;
-    max-height: min(80%, 100% - 120px, 800px);
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: min(80%, 100% - 120px, 800px);
+    justify-content: center;
+    align-items: center;
+
+    & img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    & img + img {
+      position: absolute;
+      mix-blend-mode: color-burn;
+      filter: invert(1) sepia(0.2);
+      animation: logo-glitch 4s linear infinite forwards;
+      animation-timing-function: linear;
+      opacity: 0;
+    }
   }
 
   & nav {
@@ -329,12 +347,51 @@ body:has(.landing) {
             border-radius: 100%;
           }
 
-          &:focus-visible::after {
+          &:focus-visible::after,
+          nav:not(:has(:focus-visible)) &:hover::after {
             transform: scale(1, 1) rotate(-3deg);
             opacity: 1;
           }
         }
       }
     }
+  }
+}
+
+@keyframes logo-glitch {
+  0% {
+    opacity: 0;
+  }
+  90% {
+    opacity: 0;
+  }
+  91% {
+    opacity: 1;
+    transform: translate(1px, 1px);
+  }
+  92% {
+    opacity: 0;
+  }
+  93% {
+    opacity: 1;
+    transform: translate(-1px, -1px);
+  }
+  94% {
+    opacity: 0;
+  }
+  97% {
+    opacity: 1;
+    transform: translate(1px, -2px);
+  }
+  98% {
+    opacity: 0;
+  }
+  99% {
+    opacity: 1;
+    transform: translate(-1px, 2px);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(0px, 0px);
   }
 }
