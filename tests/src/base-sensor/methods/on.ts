@@ -9,6 +9,7 @@ export function methodOn() {
       const idB = s.on('start', () => {});
       assert.equal(typeof idA, 'symbol');
       assert.notEqual(idA, idB);
+      s.destroy();
     });
 
     it('should allow duplicate event listeners', () => {
@@ -21,6 +22,7 @@ export function methodOn() {
       s.on('start', listener);
       s['_start']({ type: 'start', x: 1, y: 2 });
       assert.equal(counter, 2);
+      s.destroy();
     });
 
     it('should remove the existing listener and add the new one if the same id is used', () => {
@@ -31,6 +33,7 @@ export function methodOn() {
       s.on('start', () => void (msg += 'c'), 1);
       s['_start']({ type: 'start', x: 1, y: 2 });
       assert.equal(msg, 'bc');
+      s.destroy();
     });
 
     it('should allow defining a custom id (string/symbol/number) for the event listener via third argument', () => {
@@ -53,6 +56,8 @@ export function methodOn() {
         s.on('start', () => {}, idC),
         idC,
       );
+
+      s.destroy();
     });
   });
 }

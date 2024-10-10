@@ -18,6 +18,9 @@ export function methodOff() {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       assert.equal(msg, 'b');
+
+      s.destroy();
+      el.remove();
     });
   });
 }

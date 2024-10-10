@@ -6268,6 +6268,7 @@ function methodOff() {
       s.off("start", idA);
       s["_start"]({ type: "start", x: 1, y: 2 });
       assert.equal(msg, "b");
+      s.destroy();
     });
   });
 }
@@ -6283,6 +6284,7 @@ function methodOn() {
       });
       assert.equal(typeof idA, "symbol");
       assert.notEqual(idA, idB);
+      s.destroy();
     });
     it("should allow duplicate event listeners", () => {
       const s = new BaseSensor();
@@ -6294,6 +6296,7 @@ function methodOn() {
       s.on("start", listener);
       s["_start"]({ type: "start", x: 1, y: 2 });
       assert.equal(counter, 2);
+      s.destroy();
     });
     it("should remove the existing listener and add the new one if the same id is used", () => {
       const s = new BaseSensor();
@@ -6303,6 +6306,7 @@ function methodOn() {
       s.on("start", () => void (msg += "c"), 1);
       s["_start"]({ type: "start", x: 1, y: 2 });
       assert.equal(msg, "bc");
+      s.destroy();
     });
     it("should allow defining a custom id (string/symbol/number) for the event listener via third argument", () => {
       const s = new BaseSensor();
@@ -6324,6 +6328,7 @@ function methodOn() {
         }, idC),
         idC
       );
+      s.destroy();
     });
   });
 }
@@ -8137,12 +8142,110 @@ function methodDestroy3() {
 // tests/src/pointer-sensor/methods/off.ts
 function methodOff3() {
   describe("off", () => {
+    it("should remove an event listener based on id", () => {
+      const el = createTestElement();
+      const s = new PointerSensor(el, { sourceEvents: "mouse" });
+      let msg = "";
+      const idA = s.on("start", () => void (msg += "a"));
+      s.on("start", () => void (msg += "b"));
+      s.off("start", idA);
+      el.dispatchEvent(
+        new MouseEvent("mousedown", {
+          clientX: 0,
+          clientY: 0,
+          bubbles: true,
+          cancelable: true,
+          view: window
+        })
+      );
+      assert.equal(msg, "b");
+      s.destroy();
+      el.remove();
+    });
   });
 }
 
 // tests/src/pointer-sensor/methods/on.ts
 function methodOn3() {
   describe("on", () => {
+    it("should return a unique symbol by default", () => {
+      const el = createTestElement();
+      const s = new PointerSensor(el);
+      const idA = s.on("start", () => {
+      });
+      const idB = s.on("start", () => {
+      });
+      assert.equal(typeof idA, "symbol");
+      assert.notEqual(idA, idB);
+      el.remove();
+      s.destroy();
+    });
+    it("should allow duplicate event listeners", () => {
+      const el = createTestElement();
+      const s = new PointerSensor(el, { sourceEvents: "mouse" });
+      let counter = 0;
+      const listener = () => {
+        ++counter;
+      };
+      s.on("start", listener);
+      s.on("start", listener);
+      el.dispatchEvent(
+        new MouseEvent("mousedown", {
+          clientX: 0,
+          clientY: 0,
+          bubbles: true,
+          cancelable: true,
+          view: window
+        })
+      );
+      assert.equal(counter, 2);
+      el.remove();
+      s.destroy();
+    });
+    it("should remove the existing listener and add the new one if the same id is used", () => {
+      const el = createTestElement();
+      const s = new PointerSensor(el, { sourceEvents: "mouse" });
+      let msg = "";
+      s.on("start", () => void (msg += "a"), 1);
+      s.on("start", () => void (msg += "b"), 2);
+      s.on("start", () => void (msg += "c"), 1);
+      el.dispatchEvent(
+        new MouseEvent("mousedown", {
+          clientX: 0,
+          clientY: 0,
+          bubbles: true,
+          cancelable: true,
+          view: window
+        })
+      );
+      assert.equal(msg, "bc");
+      el.remove();
+      s.destroy();
+    });
+    it("should allow defining a custom id (string/symbol/number) for the event listener via third argument", () => {
+      const el = createTestElement();
+      const s = new PointerSensor(el);
+      const idA = Symbol();
+      assert.equal(
+        s.on("start", () => {
+        }, idA),
+        idA
+      );
+      const idB = 1;
+      assert.equal(
+        s.on("start", () => {
+        }, idB),
+        idB
+      );
+      const idC = "foo";
+      assert.equal(
+        s.on("start", () => {
+        }, idC),
+        idC
+      );
+      el.remove();
+      s.destroy();
+    });
   });
 }
 
@@ -8885,6 +8988,8 @@ function methodOff4() {
       focusElement(el);
       document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
       assert.equal(msg, "b");
+      s.destroy();
+      el.remove();
     });
   });
 }

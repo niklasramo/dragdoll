@@ -11,6 +11,7 @@ export function methodOff() {
       s.off('start', idA);
       s['_start']({ type: 'start', x: 1, y: 2 });
       assert.equal(msg, 'b');
+      s.destroy();
     });
   });
 }
