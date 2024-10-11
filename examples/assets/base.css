@@ -65,6 +65,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {

@@ -10,11 +10,13 @@ body {
 
 .card.draggable {
   cursor: auto;
+  touch-action: auto;
   flex-grow: 0;
   flex-shrink: 0;
   position: relative;
 
   & .handle {
+    touch-action: none;
     cursor: grab;
     background-color: #0003;
     border-radius: 4px;

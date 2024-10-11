@@ -20,7 +20,7 @@ function getScrollables(element: Element) {
   return scrollables;
 }
 
-export function createPointerSensorStartPredicate<
+export function createTouchDelayPredicate<
   S extends (Sensor | PointerSensor)[] = (Sensor | PointerSensor)[],
   D extends Draggable<S> = Draggable<S>,
 >(

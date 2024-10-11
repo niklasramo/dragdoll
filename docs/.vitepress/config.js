@@ -85,6 +85,7 @@ function sidebarGuide() {
       items: [
         { text: 'Introduction', link: '/docs/' },
         { text: 'Getting Started', link: '/docs/getting-started' },
+        { text: 'Touch Devices', link: '/docs/touch-devices' },
         { text: 'Examples', link: '/docs/examples' },
       ],
     },

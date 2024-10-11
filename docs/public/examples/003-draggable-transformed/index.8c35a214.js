@@ -2453,13 +2453,13 @@ function $73a32fa1436292cd$export$e4864aa91b5ed091(element, result = []) {
 
 
 
-function $8968a02849ea5e26$var$getScrollables(element) {
+function $0dfdc060a41a8f62$var$getScrollables(element) {
     const scrollables = [];
     if ((0, $26b99708933973c1$export$2bb74740c4e19def)(element)) scrollables.push(element);
     (0, $73a32fa1436292cd$export$e4864aa91b5ed091)(element, scrollables);
     return scrollables;
 }
-function $8968a02849ea5e26$export$88d83dc4a35d804f(options = {}) {
+function $0dfdc060a41a8f62$export$42a28ce04aa194cc(options = {}) {
     let dragAllowed = undefined;
     let startTimeStamp = 0;
     let targetElement = null;
@@ -2490,7 +2490,7 @@ function $8968a02849ea5e26$export$88d83dc4a35d804f(options = {}) {
                 // Prevent potentially scrollable nodes from scrolling to make sure
                 // native scrolling does not interfere with dragging.
                 targetElement = e.target;
-                const scrollables = targetElement ? $8968a02849ea5e26$var$getScrollables(targetElement) : [];
+                const scrollables = targetElement ? $0dfdc060a41a8f62$var$getScrollables(targetElement) : [];
                 scrollables.forEach((scrollable)=>{
                     scrollable.addEventListener("touchmove", onTouchMove, {
                         passive: false,
@@ -3642,29 +3642,41 @@ function $244877ffe9407e42$export$c0f5c18ade842ccd(options) {
 
 
 
-let $1721b684b57c24ff$var$zIndex = 0;
-const $1721b684b57c24ff$var$draggableElements = [
-    ...document.querySelectorAll(".draggable")
-];
-$1721b684b57c24ff$var$draggableElements.forEach((element)=>{
-    const pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element);
-    const keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)(element);
-    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-        pointerSensor,
-        keyboardSensor
-    ], {
-        elements: ()=>[
-                element
-            ],
-        startPredicate: (0, $8968a02849ea5e26$export$88d83dc4a35d804f)(),
-        onStart: ()=>{
-            element.classList.add("dragging");
-            element.style.zIndex = `${++$1721b684b57c24ff$var$zIndex}`;
-        },
-        onEnd: ()=>{
-            element.classList.remove("dragging");
-        }
-    });
+const $72821dbb08df4f25$var$element = document.querySelector(".draggable");
+const $72821dbb08df4f25$var$dragContainer = document.querySelector(".drag-container");
+const $72821dbb08df4f25$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($72821dbb08df4f25$var$element);
+const $72821dbb08df4f25$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($72821dbb08df4f25$var$element, {
+    computeSpeed: ()=>100
 });
+const $72821dbb08df4f25$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $72821dbb08df4f25$var$pointerSensor,
+    $72821dbb08df4f25$var$keyboardSensor
+], {
+    container: $72821dbb08df4f25$var$dragContainer,
+    elements: ()=>[
+            $72821dbb08df4f25$var$element
+        ],
+    frozenStyles: ()=>[
+            "left",
+            "top"
+        ],
+    onStart: ()=>{
+        $72821dbb08df4f25$var$element.classList.add("dragging");
+    },
+    onEnd: ()=>{
+        $72821dbb08df4f25$var$element.classList.remove("dragging");
+    }
+}).use((0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
+    targets: [
+        {
+            element: window,
+            axis: "y",
+            padding: {
+                top: Infinity,
+                bottom: Infinity
+            }
+        }
+    ]
+}));
 
 

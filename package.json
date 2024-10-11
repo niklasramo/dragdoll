@@ -45,7 +45,7 @@
     "build-examples": "node ./scripts/build-examples.mjs",
     "clean-build": "rimraf ./dist && rimraf ./tests/dist && rimraf ./docs/public/examples",
     "docs-build": "vitepress build docs",
-    "docs-dev": "vitepress dev docs",
+    "docs-dev": "vitepress dev docs --host",
     "docs-serve": "vitepress serve docs",
     "lint": "npm run prettier-check && npm run ts-check",
     "format": "npm run prettier-fix",

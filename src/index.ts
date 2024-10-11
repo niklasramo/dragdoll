@@ -12,7 +12,7 @@ export * from './sensors/keyboard-motion-sensor.js';
 
 export * from './draggable/draggable.js';
 
-export * from './draggable/helpers/create-pointer-sensor-start-predicate.js';
+export * from './draggable/helpers/create-touch-delay-predicate.js';
 
 export * from './draggable/modifiers/create-snap-modifier.js';
 

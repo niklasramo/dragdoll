@@ -9,12 +9,7 @@ A minimal setup with four draggable elements using pointer and keyboard (motion)
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-} from 'dragdoll';
+import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
 
 let zIndex = 0;
 
@@ -25,7 +20,6 @@ draggableElements.forEach((element) => {
   const keyboardSensor = new KeyboardMotionSensor(element);
   const draggable = new Draggable([pointerSensor, keyboardSensor], {
     elements: () => [element],
-    startPredicate: createPointerSensorStartPredicate(),
     onStart: () => {
       element.classList.add('dragging');
       element.style.zIndex = `${++zIndex}`;
@@ -179,6 +173,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {
@@ -210,13 +205,7 @@ This example demonstrates quite a lot of things. We use a drag container and fre
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-  autoScrollPlugin,
-} from 'dragdoll';
+import { Draggable, PointerSensor, KeyboardMotionSensor, autoScrollPlugin } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const dragContainer = document.querySelector('.drag-container') as HTMLElement;
@@ -228,7 +217,6 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
   container: dragContainer,
   elements: () => [element],
   frozenStyles: () => ['left', 'top'],
-  startPredicate: createPointerSensorStartPredicate(),
   onStart: () => {
     element.classList.add('dragging');
   },
@@ -377,6 +365,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {
@@ -408,13 +397,7 @@ Draggable automagically handles (2D) transformed ancestors and the dragged eleme
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-  autoScrollPlugin,
-} from 'dragdoll';
+import { Draggable, PointerSensor, KeyboardMotionSensor, autoScrollPlugin } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const dragContainer = document.querySelector('.drag-container') as HTMLElement;
@@ -426,7 +409,6 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
   container: dragContainer,
   elements: () => [element],
   frozenStyles: () => ['left', 'top'],
-  startPredicate: createPointerSensorStartPredicate(),
   onStart: () => {
     element.classList.add('dragging');
   },
@@ -515,6 +497,7 @@ body {
   inset: 0;
   transform: scale(1.2);
 }
+
 .card-container {
   position: absolute;
   inset: 0;
@@ -598,6 +581,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {
@@ -629,12 +613,7 @@ Here we have two elements which can be dragged on one axis only. You can use thi
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-} from 'dragdoll';
+import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
 
 let zIndex = 0;
 
@@ -645,7 +624,6 @@ draggableElements.forEach((element) => {
   const keyboardSensor = new KeyboardMotionSensor(element);
   const draggable = new Draggable([pointerSensor, keyboardSensor], {
     elements: () => [element],
-    startPredicate: createPointerSensorStartPredicate(),
     positionModifiers: [
       (change, { item }) => {
         const { element } = item;
@@ -804,6 +782,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {
@@ -835,13 +814,7 @@ A simple demo on how to use the built-in snap modifier.
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardSensor,
-  createPointerSensorStartPredicate,
-  createSnapModifier,
-} from 'dragdoll';
+import { Draggable, PointerSensor, KeyboardSensor, createSnapModifier } from 'dragdoll';
 
 const GRID_WIDTH = 40;
 const GRID_HEIGHT = 40;
@@ -853,7 +826,7 @@ const keyboardSensor = new KeyboardSensor(element, {
 });
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
-  startPredicate: createPointerSensorStartPredicate(),
+
   positionModifiers: [createSnapModifier(GRID_WIDTH, GRID_HEIGHT)],
   onStart: () => {
     element.classList.add('dragging');
@@ -970,6 +943,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {
@@ -1005,7 +979,6 @@ import {
   Draggable,
   PointerSensor,
   KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
   createContainmentModifier,
 } from 'dragdoll';
 
@@ -1014,7 +987,6 @@ const pointerSensor = new PointerSensor(element);
 const keyboardSensor = new KeyboardMotionSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
-  startPredicate: createPointerSensorStartPredicate(),
   positionModifiers: [
     createContainmentModifier(() => {
       return {
@@ -1152,6 +1124,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {
@@ -1183,19 +1156,13 @@ Here we use a custom position modifier to align the dragged element's center wit
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-} from 'dragdoll';
+import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
 const keyboardSensor = new KeyboardMotionSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
-  startPredicate: createPointerSensorStartPredicate(),
   positionModifiers: [
     (change, { drag, item, phase }) => {
       // Align the dragged element so that the pointer
@@ -1345,6 +1312,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {
@@ -1376,12 +1344,7 @@ A simple example on how to create a drag handle. There is no built-in 'handle' o
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-} from 'dragdoll';
+import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const handle = element.querySelector('.handle') as HTMLElement;
@@ -1389,7 +1352,6 @@ const pointerSensor = new PointerSensor(handle);
 const keyboardSensor = new KeyboardMotionSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
-  startPredicate: createPointerSensorStartPredicate(),
   onStart: () => {
     element.classList.add('dragging');
     if (draggable.drag!.sensor instanceof PointerSensor) {
@@ -1454,8 +1416,10 @@ body {
   flex-grow: 0;
   flex-shrink: 0;
   cursor: auto;
+  touch-action: auto;
 
-  .handle {
+  & .handle {
+    touch-action: none;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1559,6 +1523,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {
@@ -1590,12 +1555,7 @@ A commong drag and drop pattern is using a temporary 'ghost' element during the 
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-} from 'dragdoll';
+import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
@@ -1625,7 +1585,6 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
 
     return [clone];
   },
-  startPredicate: createPointerSensorStartPredicate(),
   onStart: () => {
     element.classList.add('dragging');
   },
@@ -1770,6 +1729,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {
@@ -1801,28 +1761,30 @@ Sometimes you might want to drag multiple elements at once and DragDoll provides
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-} from 'dragdoll';
+import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
 
 const draggableElements = [...document.querySelectorAll('.draggable')] as HTMLElement[];
 
 draggableElements.forEach((element) => {
+  const otherElements = draggableElements.filter((el) => el !== element);
   const pointerSensor = new PointerSensor(element);
   const keyboardSensor = new KeyboardMotionSensor(element);
   const draggable = new Draggable([pointerSensor, keyboardSensor], {
     elements: () => {
-      return [element, ...draggableElements.filter((el) => el !== element)];
+      return [element, ...otherElements];
     },
-    startPredicate: createPointerSensorStartPredicate(),
-    onStart: () => {
-      element.classList.add('dragging');
+    startPredicate: () => {
+      return !element.classList.contains('dragging');
     },
-    onEnd: () => {
-      element.classList.remove('dragging');
+    onStart: (drag) => {
+      drag.items.forEach((item) => {
+        item.element.classList.add('dragging');
+      });
+    },
+    onEnd: (drag) => {
+      drag.items.forEach((item) => {
+        item.element.classList.remove('dragging');
+      });
     },
   });
 });
@@ -1970,6 +1932,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {

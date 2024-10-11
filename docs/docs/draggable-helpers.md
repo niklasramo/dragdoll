@@ -4,28 +4,26 @@
 
 A collection of official helper functions for creating custom draggable logic.
 
-## `createPointerSensorStartPredicate`
+## `createTouchDelayPredicate`
 
-A smart start predicate creator for [`Draggable`](/docs/draggable) when using [`PointerSensor`](/docs/pointer-sensor).
+> [!DANGER]
+> This helper is experimental, unfortunately. Preventing native scroll on touch devices _after_ touchstart event is finicky. It doesn't always work reliably. And it gets especially tricky within iframes. Use with caution and test thoroughly.
+
+A custom start predicate for starting drag after a long press on touch devices. Assumes you are using [`PointerSensor`](/docs/pointer-sensor) for the [`Draggable`](/docs/draggable) instance.
 
 For `mouse` and `pen` events the predicate is resolved immediately. For `touch` events the predicate has special logic to start the drag after a long press, which's duration can be adjusted with `touchDelay` parameter. If scrolling is detected before the long press finishes, the drag will not start.
 
-### Example
+### Examples
 
 ```ts
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardSensor,
-  createPointerSensorStartPredicate,
-} from 'draggable';
+import { Draggable, PointerSensor, KeyboardSensor, createTouchDelayPredicate } from 'draggable';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
 const keyboardSensor = new KeyboardSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
-  startPredicate: createPointerSensorStartPredicate({
+  startPredicate: createTouchDelayPredicate({
     // The amount of time in milliseconds to wait before trying to start
     // dragging after the user has touched the pointer sensor element.
     touchDelay: 200,
@@ -51,7 +49,7 @@ type DraggableStartPredicate = (data: {
   event: SensorStartEvent | SensorMoveEvent;
 }) => boolean | undefined;
 
-type createPointerSensorStartPredicate = (
+type createTouchDelayPredicate = (
   touchDelay?: number,
   fallback?: DraggableStartPredicate,
 ) => DraggableStartPredicate;
