@@ -4,17 +4,12 @@
 
 A minimal setup with four draggable elements using pointer and keyboard (motion) sensor. You can drag them all at once too if you have a multi-touch device (e.g. phone or tablet).
 
-<iframe src="/dragdoll/examples/001-draggable-basic/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
+<div class="example"><iframe src="/dragdoll/examples/001-draggable-basic/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/001-draggable-basic/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-} from 'dragdoll';
+import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
 
 let zIndex = 0;
 
@@ -25,7 +20,6 @@ draggableElements.forEach((element) => {
   const keyboardSensor = new KeyboardMotionSensor(element);
   const draggable = new Draggable([pointerSensor, keyboardSensor], {
     elements: () => [element],
-    startPredicate: createPointerSensorStartPredicate(),
     onStart: () => {
       element.classList.add('dragging');
       element.style.zIndex = `${++zIndex}`;
@@ -113,7 +107,7 @@ body {
 
 ```css [base.css]
 :root {
-  --bg-color: #161618;
+  --bg-color: #111;
   --color: rgba(255, 255, 245, 0.86);
   --theme-color: #ff5555;
   --card-color: rgba(0, 0, 0, 0.7);
@@ -179,6 +173,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {
@@ -205,18 +200,12 @@ body {
 
 This example demonstrates quite a lot of things. We use a drag container and freeze `left` and `top` values before we move the dragged element into the drag container. The draggable element has percetage based left and top values, which would not be correct when the element is moved to the drag container, which has different dimensions. Lastly we use the auto scroll plugin and configure it to scroll the viewport on y-axis when the dragged element is close to it's edges. Note that we also set auto scroll target's `padding.top` and `padding.bottom` to `Infinity` to allow the scrolling to continue even if you drag the element past the edges.
 
-<iframe src="/dragdoll/examples/002-draggable-auto-scroll/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
+<div class="example"><iframe src="/dragdoll/examples/002-draggable-auto-scroll/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/002-draggable-auto-scroll/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-  autoScrollPlugin,
-} from 'dragdoll';
+import { Draggable, PointerSensor, KeyboardMotionSensor, autoScrollPlugin } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const dragContainer = document.querySelector('.drag-container') as HTMLElement;
@@ -228,7 +217,6 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
   container: dragContainer,
   elements: () => [element],
   frozenStyles: () => ['left', 'top'],
-  startPredicate: createPointerSensorStartPredicate(),
   onStart: () => {
     element.classList.add('dragging');
   },
@@ -311,7 +299,7 @@ body {
 
 ```css [base.css]
 :root {
-  --bg-color: #161618;
+  --bg-color: #111;
   --color: rgba(255, 255, 245, 0.86);
   --theme-color: #ff5555;
   --card-color: rgba(0, 0, 0, 0.7);
@@ -377,6 +365,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {
@@ -403,18 +392,12 @@ body {
 
 Draggable automagically handles (2D) transformed ancestors and the dragged element itself, out of the box, performantly. The draggable element is always guaranteed to move in sync with the active sensor, to the same direction and the same distance, regardless of any CSS transforms or zoom in any part of the document. In this example we showcase a scenario where the draggable element is within two differently transformed containers with different transform origins and uses a differently transformed drag container that's also wrapped in an extra transformed container. The draggable element itself also has transforms applied.
 
-<iframe src="/dragdoll/examples/003-draggable-transformed/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
+<div class="example"><iframe src="/dragdoll/examples/003-draggable-transformed/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/003-draggable-transformed/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-  autoScrollPlugin,
-} from 'dragdoll';
+import { Draggable, PointerSensor, KeyboardMotionSensor, autoScrollPlugin } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const dragContainer = document.querySelector('.drag-container') as HTMLElement;
@@ -426,7 +409,6 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
   container: dragContainer,
   elements: () => [element],
   frozenStyles: () => ['left', 'top'],
-  startPredicate: createPointerSensorStartPredicate(),
   onStart: () => {
     element.classList.add('dragging');
   },
@@ -515,6 +497,7 @@ body {
   inset: 0;
   transform: scale(1.2);
 }
+
 .card-container {
   position: absolute;
   inset: 0;
@@ -532,7 +515,7 @@ body {
 
 ```css [base.css]
 :root {
-  --bg-color: #161618;
+  --bg-color: #111;
   --color: rgba(255, 255, 245, 0.86);
   --theme-color: #ff5555;
   --card-color: rgba(0, 0, 0, 0.7);
@@ -598,6 +581,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {
@@ -624,17 +608,12 @@ body {
 
 Here we have two elements which can be dragged on one axis only. You can use this example as the basis of building your own custom position modifiers (a powerful feature that allows you to control a dragged element's position at every step of the drag process).
 
-<iframe src="/dragdoll/examples/004-draggable-locked-axis/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
+<div class="example"><iframe src="/dragdoll/examples/004-draggable-locked-axis/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/004-draggable-locked-axis/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-} from 'dragdoll';
+import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
 
 let zIndex = 0;
 
@@ -645,7 +624,6 @@ draggableElements.forEach((element) => {
   const keyboardSensor = new KeyboardMotionSensor(element);
   const draggable = new Draggable([pointerSensor, keyboardSensor], {
     elements: () => [element],
-    startPredicate: createPointerSensorStartPredicate(),
     positionModifiers: [
       (change, { item }) => {
         const { element } = item;
@@ -738,7 +716,7 @@ body {
 
 ```css [base.css]
 :root {
-  --bg-color: #161618;
+  --bg-color: #111;
   --color: rgba(255, 255, 245, 0.86);
   --theme-color: #ff5555;
   --card-color: rgba(0, 0, 0, 0.7);
@@ -804,6 +782,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {
@@ -830,18 +809,12 @@ body {
 
 A simple demo on how to use the built-in snap modifier.
 
-<iframe src="/dragdoll/examples/005-draggable-snap-to-grid/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
+<div class="example"><iframe src="/dragdoll/examples/005-draggable-snap-to-grid/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/005-draggable-snap-to-grid/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardSensor,
-  createPointerSensorStartPredicate,
-  createSnapModifier,
-} from 'dragdoll';
+import { Draggable, PointerSensor, KeyboardSensor, createSnapModifier } from 'dragdoll';
 
 const GRID_WIDTH = 40;
 const GRID_HEIGHT = 40;
@@ -853,7 +826,7 @@ const keyboardSensor = new KeyboardSensor(element, {
 });
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
-  startPredicate: createPointerSensorStartPredicate(),
+
   positionModifiers: [createSnapModifier(GRID_WIDTH, GRID_HEIGHT)],
   onStart: () => {
     element.classList.add('dragging');
@@ -904,7 +877,7 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
 
 ```css [base.css]
 :root {
-  --bg-color: #161618;
+  --bg-color: #111;
   --color: rgba(255, 255, 245, 0.86);
   --theme-color: #ff5555;
   --card-color: rgba(0, 0, 0, 0.7);
@@ -970,6 +943,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {
@@ -996,7 +970,7 @@ body {
 
 A simple demo on how to use the built-in containment modifier. The first argument of `createContainmentModifier` should be a function that returns the client rect of the containment area. That function is called on every drag 'move' event and also on 'start' and 'end' events. The second argument is a boolean which's value is cached on start event to define if the modifier should track drifting of the sensor when the dragged element hits an edge of the containment area and the sensor keeps on moving away. If the drift is being tracked the draggable element will not be moved to the opposing direction until the sensor is back inside the containment area. By default the drift is tracked only for `PointerSensor`.
 
-<iframe src="/dragdoll/examples/006-draggable-containment/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
+<div class="example"><iframe src="/dragdoll/examples/006-draggable-containment/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/006-draggable-containment/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -1005,7 +979,6 @@ import {
   Draggable,
   PointerSensor,
   KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
   createContainmentModifier,
 } from 'dragdoll';
 
@@ -1014,7 +987,6 @@ const pointerSensor = new PointerSensor(element);
 const keyboardSensor = new KeyboardMotionSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
-  startPredicate: createPointerSensorStartPredicate(),
   positionModifiers: [
     createContainmentModifier(() => {
       return {
@@ -1086,7 +1058,7 @@ body {
 
 ```css [base.css]
 :root {
-  --bg-color: #161618;
+  --bg-color: #111;
   --color: rgba(255, 255, 245, 0.86);
   --theme-color: #ff5555;
   --card-color: rgba(0, 0, 0, 0.7);
@@ -1152,6 +1124,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {
@@ -1178,24 +1151,18 @@ body {
 
 Here we use a custom position modifier to align the dragged element's center with the pointer sensor's position on drag start.
 
-<iframe src="/dragdoll/examples/007-draggable-center-to-pointer/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
+<div class="example"><iframe src="/dragdoll/examples/007-draggable-center-to-pointer/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/007-draggable-center-to-pointer/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-} from 'dragdoll';
+import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
 const keyboardSensor = new KeyboardMotionSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
-  startPredicate: createPointerSensorStartPredicate(),
   positionModifiers: [
     (change, { drag, item, phase }) => {
       // Align the dragged element so that the pointer
@@ -1279,7 +1246,7 @@ body {
 
 ```css [base.css]
 :root {
-  --bg-color: #161618;
+  --bg-color: #111;
   --color: rgba(255, 255, 245, 0.86);
   --theme-color: #ff5555;
   --card-color: rgba(0, 0, 0, 0.7);
@@ -1345,6 +1312,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {
@@ -1371,17 +1339,12 @@ body {
 
 A simple example on how to create a drag handle. There is no built-in 'handle' option, because it would be too limiting. In this example the `PointerSensor` is used for the handle element while the `KeyboardMotionSensor` is used normally for the draggable element. You could also create the `KeyboardMotionSensor` for the handle element if you wished, it's really up to your preferences. Hopefully this showcases how flexible and customizable DragDoll really is with it's sensor system.
 
-<iframe src="/dragdoll/examples/008-draggable-drag-handle/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
+<div class="example"><iframe src="/dragdoll/examples/008-draggable-drag-handle/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/008-draggable-drag-handle/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-} from 'dragdoll';
+import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const handle = element.querySelector('.handle') as HTMLElement;
@@ -1389,7 +1352,6 @@ const pointerSensor = new PointerSensor(handle);
 const keyboardSensor = new KeyboardMotionSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
-  startPredicate: createPointerSensorStartPredicate(),
   onStart: () => {
     element.classList.add('dragging');
     if (draggable.drag!.sensor instanceof PointerSensor) {
@@ -1454,8 +1416,10 @@ body {
   flex-grow: 0;
   flex-shrink: 0;
   cursor: auto;
+  touch-action: auto;
 
-  .handle {
+  & .handle {
+    touch-action: none;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1493,7 +1457,7 @@ body {
 
 ```css [base.css]
 :root {
-  --bg-color: #161618;
+  --bg-color: #111;
   --color: rgba(255, 255, 245, 0.86);
   --theme-color: #ff5555;
   --card-color: rgba(0, 0, 0, 0.7);
@@ -1559,6 +1523,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {
@@ -1585,17 +1550,12 @@ body {
 
 A commong drag and drop pattern is using a temporary 'ghost' element during the drag operation while letting the actual draggable element stay in the DOM as is. This example demonstrates how easy it is to accomplish that with DragDoll. The first step is _conjuring_ (it's up to you how) the ghost element within the `elements` option and aligning it visually with the draggable element. Then just return the ghost element (in an array) instead of the draggable element in the `elements` callback. Finally, on drag `end` event, you'll need to align the draggable element with the ghost element and hide/remove the ghost element. That's it. This way you have full programmatic power to build any kind of custom scenario with your ghost elements.
 
-<iframe src="/dragdoll/examples/009-draggable-ghost-element/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
+<div class="example"><iframe src="/dragdoll/examples/009-draggable-ghost-element/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/009-draggable-ghost-element/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-} from 'dragdoll';
+import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
@@ -1625,7 +1585,6 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
 
     return [clone];
   },
-  startPredicate: createPointerSensorStartPredicate(),
   onStart: () => {
     element.classList.add('dragging');
   },
@@ -1704,7 +1663,7 @@ body {
 
 ```css [base.css]
 :root {
-  --bg-color: #161618;
+  --bg-color: #111;
   --color: rgba(255, 255, 245, 0.86);
   --theme-color: #ff5555;
   --card-color: rgba(0, 0, 0, 0.7);
@@ -1770,6 +1729,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {
@@ -1796,33 +1756,35 @@ body {
 
 Sometimes you might want to drag multiple elements at once and DragDoll provides you an easy way to do that. Just return an array of elements in the `elements` callback and you're good to go.
 
-<iframe src="/dragdoll/examples/010-draggable-multiple-elements/index.html" style="width:100%;height: 300px; border: 1px solid #ff5555; border-radius: 8px;"></iframe>
+<div class="example"><iframe src="/dragdoll/examples/010-draggable-multiple-elements/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/010-draggable-multiple-elements/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-} from 'dragdoll';
+import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
 
 const draggableElements = [...document.querySelectorAll('.draggable')] as HTMLElement[];
 
 draggableElements.forEach((element) => {
+  const otherElements = draggableElements.filter((el) => el !== element);
   const pointerSensor = new PointerSensor(element);
   const keyboardSensor = new KeyboardMotionSensor(element);
   const draggable = new Draggable([pointerSensor, keyboardSensor], {
     elements: () => {
-      return [element, ...draggableElements.filter((el) => el !== element)];
+      return [element, ...otherElements];
     },
-    startPredicate: createPointerSensorStartPredicate(),
-    onStart: () => {
-      element.classList.add('dragging');
+    startPredicate: () => {
+      return !element.classList.contains('dragging');
     },
-    onEnd: () => {
-      element.classList.remove('dragging');
+    onStart: (drag) => {
+      drag.items.forEach((item) => {
+        item.element.classList.add('dragging');
+      });
+    },
+    onEnd: (drag) => {
+      drag.items.forEach((item) => {
+        item.element.classList.remove('dragging');
+      });
     },
   });
 });
@@ -1904,7 +1866,7 @@ body {
 
 ```css [base.css]
 :root {
-  --bg-color: #161618;
+  --bg-color: #111;
   --color: rgba(255, 255, 245, 0.86);
   --theme-color: #ff5555;
   --card-color: rgba(0, 0, 0, 0.7);
@@ -1970,6 +1932,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {

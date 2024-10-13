@@ -1,9 +1,4 @@
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-} from '../../src';
+import { Draggable, PointerSensor, KeyboardMotionSensor } from '../../src';
 
 let zIndex = 0;
 
@@ -14,7 +9,6 @@ draggableElements.forEach((element) => {
   const keyboardSensor = new KeyboardMotionSensor(element);
   const draggable = new Draggable([pointerSensor, keyboardSensor], {
     elements: () => [element],
-    startPredicate: createPointerSensorStartPredicate(),
     onStart: () => {
       element.classList.add('dragging');
       element.style.zIndex = `${++zIndex}`;

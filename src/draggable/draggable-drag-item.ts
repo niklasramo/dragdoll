@@ -26,7 +26,7 @@ const MEASURE_ELEMENT = createMeasureElement();
 
 export class DraggableDragItem<
   S extends Sensor[] = Sensor[],
-  E extends S[number]['events'] = S[number]['events'],
+  E extends S[number]['_events_type'] = S[number]['_events_type'],
 > {
   data: { [key: string]: any };
   readonly element: HTMLElement | SVGSVGElement;

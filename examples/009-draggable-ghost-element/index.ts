@@ -1,9 +1,4 @@
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-} from '../../src';
+import { Draggable, PointerSensor, KeyboardMotionSensor } from '../../src';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
@@ -33,7 +28,6 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
 
     return [clone];
   },
-  startPredicate: createPointerSensorStartPredicate(),
   onStart: () => {
     element.classList.add('dragging');
   },

@@ -16,7 +16,7 @@ function getAxisChange(cellSize: number, snapPosition: number, sensorPosition: n
   return 0;
 }
 
-export function createSnapModifier<S extends Sensor[], E extends S[number]['events']>(
+export function createSnapModifier<S extends Sensor[], E extends S[number]['_events_type']>(
   cellWidth: number,
   cellHeight: number,
 ) {

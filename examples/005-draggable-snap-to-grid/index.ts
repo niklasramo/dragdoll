@@ -1,10 +1,4 @@
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardSensor,
-  createPointerSensorStartPredicate,
-  createSnapModifier,
-} from '../../src';
+import { Draggable, PointerSensor, KeyboardSensor, createSnapModifier } from '../../src';
 
 const GRID_WIDTH = 40;
 const GRID_HEIGHT = 40;
@@ -16,7 +10,7 @@ const keyboardSensor = new KeyboardSensor(element, {
 });
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
-  startPredicate: createPointerSensorStartPredicate(),
+
   positionModifiers: [createSnapModifier(GRID_WIDTH, GRID_HEIGHT)],
   onStart: () => {
     element.classList.add('dragging');

@@ -32,12 +32,7 @@ $ npm install dragdoll eventti tikki mezr
 ## Usage
 
 ```ts
-import {
-  PointerSensor,
-  KeyboardSensor,
-  Draggable,
-  createPointerSensorStartPredicate,
-} from 'dragdoll';
+import { PointerSensor, KeyboardSensor, Draggable } from 'dragdoll';
 
 // Let's assume that you have this element in DOM and you want to drag it
 // around.
@@ -61,10 +56,6 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
   // events. In this case we just want to move the element which we are
   // monitoring.
   elements: () => [element],
-  // Start predicate is a function which determines when the dragging should
-  // start. There's a really good ready-made start predicate available for
-  // PointerSensor, which we are using here.
-  startPredicate: createPointerSensorStartPredicate(),
 });
 
 // Now you should be able to drag the element around using mouse, touch or

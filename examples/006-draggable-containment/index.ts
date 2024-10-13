@@ -2,7 +2,6 @@ import {
   Draggable,
   PointerSensor,
   KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
   createContainmentModifier,
 } from '../../src';
 
@@ -11,7 +10,6 @@ const pointerSensor = new PointerSensor(element);
 const keyboardSensor = new KeyboardMotionSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
-  startPredicate: createPointerSensorStartPredicate(),
   positionModifiers: [
     createContainmentModifier(() => {
       return {

@@ -105,7 +105,7 @@ export interface PointerSensorEvents {
 export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
   implements Sensor<E>
 {
-  declare events: E;
+  declare _events_type: E;
 
   /**
    * The observed element or window.

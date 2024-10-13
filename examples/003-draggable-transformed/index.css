@@ -28,6 +28,7 @@ body {
   inset: 0;
   transform: scale(1.2);
 }
+
 .card-container {
   position: absolute;
   inset: 0;

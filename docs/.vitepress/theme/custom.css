@@ -3,31 +3,145 @@
   --vp-c-brand-2: #ff5555;
   --vp-c-brand-3: #ff5555;
   --vp-code-color: #7cbdff;
-  --vp-nav-logo-height: 32px;
+  --vp-c-bg: #111;
+  --vp-c-bg-alt: #000;
+  --vp-c-bg-elv: #111;
+  --vp-c-bg-soft: #111;
+  --vp-c-red-soft: rgb(255 2 0 / 50%);
+  --vp-nav-logo-height: 24px;
 }
-.VPFeatures .VPFeature {
-  position: relative;
-  padding-left: 34px;
+
+/* Info block */
+.custom-block.info {
+  background-color: #1c2535;
+
+  & code {
+    &:not(a > &) {
+      color: var(--vp-code-color);
+    }
+  }
 }
-.VPFeatures .VPFeature .icon {
-  position: absolute;
-  align-items: baseline;
-  margin: 0;
-  margin-left: -60px;
-  border-radius: 0px;
-  background-color: transparent;
-  width: 60px;
-  font-size: 24px;
+
+/* Nav bar */
+.VPNavBar {
+  /* Logo */
+  & .VPNavBarTitle {
+    --vp-c-divider: transparent;
+  }
+
+  /* Search button */
+  & .VPNavBarSearch {
+    & .DocSearch-Button {
+      background: transparent !important;
+    }
+  }
+
+  /* Social links */
+  & .VPSocialLinks {
+    @media (min-width: 768px) {
+      & {
+        display: flex !important;
+        align-items: center !important;
+      }
+    }
+
+    &::before {
+      display: none !important;
+    }
+
+    & a {
+      width: 50px !important;
+
+      &[href="https://github.com/sponsors/niklasramo"]
+      {
+        color: #1da344;
+        transition:
+          color 0.2s ease-out,
+          transform 0.2s ease-out;
+
+        &:hover,
+        &:focus {
+          color: #1cd551;
+          transform: scale(1.2);
+          transition:
+            color 0.15s ease-out,
+            transform 0.15s ease-out;
+        }
+      }
+
+      & > svg,
+      & > span {
+        width: 24px !important;
+        height: 24px !important;
+      }
+    }
+  }
+
+  & .VPNavBarExtra {
+    display: none !important;
+  }
 }
+
+/*  Search modal */
+.VPLocalSearchBox {
+  & .backdrop {
+    backdrop-filter: blur(4px) grayscale(1);
+  }
+
+  & .result {
+    border: 0 !important;
+    color: var(--vp-c-text-2) !important;
+
+    .titles mark,
+    .excerpt mark {
+      border-radius: 0px !important;
+      background-color: inherit !important;
+      color: inherit !important;
+      padding: 0 !important;
+      text-decoration: underline !important;
+      text-decoration-color: var(--vp-c-brand-1) !important;
+      text-underline-offset: 3px !important;
+    }
+
+    &.selected {
+      background-color: #222 !important;
+
+      & .titles.titles {
+        color: var(--vp-c-text-1) !important;
+      }
+    }
+  }
+}
+
+/* Dropdown menus */
+.VPMenu {
+  padding: 4px !important;
+}
+
+/* Sidebar */
 .VPSidebar {
+  --vp-c-divider: transparent;
+
   padding-bottom: 0 !important;
-  .VPLink,
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+
+  @media (min-width: 960px) {
+    .curtain {
+      margin-left: -68px !important;
+    }
+  }
+
+  & .VPSidebarItem.level-0 {
+    padding-bottom: 8px;
+  }
+
+  /* Don't allow text go to two lines. */
+  & .VPLink,
+  & h1,
+  & h2,
+  & h3,
+  & h4,
+  & h5,
+  & h6 {
     max-width: 100%;
     overflow: hidden;
     white-space: nowrap;
@@ -37,5 +151,280 @@
       white-space: nowrap;
       text-overflow: ellipsis;
     }
+  }
+
+  & .VPSidebarItem.level-0 > .item > .text {
+    color: #f9ff9e !important;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+
+  & .VPSidebarItem.is-link > .item > .link > .text {
+    color: var(--vp-c-text-2) !important;
+  }
+
+  & .VPSidebarItem.is-link > .item > .link:hover > .text,
+  & .VPSidebarItem.is-link > .item > .link:focus > .text {
+    color: var(--vp-c-text-1) !important;
+  }
+
+  & .VPSidebarItem.is-link.is-active > .item > .link > .text {
+    color: var(--vp-c-brand-1) !important;
+  }
+
+  & .indicator {
+    top: calc(50% - 0.75px);
+    bottom: auto;
+    right: auto;
+    left: -202px;
+    width: 200px;
+    height: 1.5px;
+    border-radius: 0;
+
+    .VPSidebarItem.is-active > .item > & {
+      background-color: var(--vp-c-brand-1);
+    }
+  }
+}
+
+/* Content area */
+.VPDoc {
+  /* "On this page" menu */
+  & .aside {
+    --vp-c-divider: transparent;
+  }
+
+  /* Main content */
+  & .content {
+    & .example {
+      position: relative;
+
+      & iframe {
+        width: 100%;
+        height: 300px;
+        border: 1px solid var(--vp-c-brand-1);
+        border-radius: 8px;
+      }
+
+      & .example-link {
+        position: absolute;
+        right: 5px;
+        top: 5px;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        width: 32px;
+        height: 32px;
+        border-radius: 5px;
+
+        background: var(--vp-c-bg);
+        color: var(--vp-c-text-2);
+        text-decoration: none;
+
+        &:hover {
+          background: var(--vp-c-bg);
+          color: var(--vp-c-brand-1);
+        }
+
+        & svg {
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+  }
+}
+
+/* Footer */
+.VPFooter {
+  padding: 64px 0 !important;
+  margin-top: -128px !important;
+  pointer-events: none !important;
+  border: 0 !important;
+  background: transparent !important;
+  display: block !important;
+  @media (min-width: 960px) and (max-width: 1279px) {
+    margin-left: var(--vp-sidebar-width);
+  }
+
+  & .container {
+    max-width: 600px !important;
+    pointer-events: auto !important;
+  }
+}
+
+/* Landing page */
+
+*:has(.landing):not(.landing) {
+  height: 100%;
+  overflow: hidden;
+}
+
+body:has(.landing) {
+  background-color: #000;
+}
+
+*:has(> .landing) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.landing {
+  position: relative;
+  height: 90svh;
+  width: 80svw;
+  max-width: 800px;
+  max-height: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+
+  & h1 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: max(10%, 60px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+    font-style: italic;
+    font-weight: 500;
+    color: #f9ff9e;
+  }
+
+  & .logo {
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: min(80%, 100% - 120px, 800px);
+    justify-content: center;
+    align-items: center;
+
+    & img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    & img + img {
+      position: absolute;
+      mix-blend-mode: color-burn;
+      filter: invert(1) sepia(0.2);
+      animation: logo-glitch 4s linear infinite forwards;
+      animation-timing-function: linear;
+      opacity: 0;
+    }
+  }
+
+  & nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: max(10%, 60px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    & ul {
+      display: flex;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+
+      & li {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+
+        & a {
+          position: relative;
+          display: inline-flex;
+          height: 100%;
+          padding: 0 20px;
+          align-items: center;
+          justify-content: center;
+          transition: color 0.3s;
+          font-size: 1.2rem;
+          color: #f9ff9e;
+          text-decoration: none;
+
+          &:hover {
+            color: var(--vp-c-brand-1);
+          }
+
+          &:focus {
+            outline: none;
+          }
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--vp-c-brand-1);
+            opacity: 0;
+            transform: scale(0, 1) rotate(0deg);
+            transition:
+              transform 0.3s,
+              opacity 0.3s;
+            border-radius: 100%;
+          }
+
+          &:focus-visible::after,
+          nav:not(:has(:focus-visible)) &:hover::after {
+            transform: scale(1, 1) rotate(-3deg);
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes logo-glitch {
+  0% {
+    opacity: 0;
+  }
+  90% {
+    opacity: 0;
+  }
+  91% {
+    opacity: 1;
+    transform: translate(1px, 1px);
+  }
+  92% {
+    opacity: 0;
+  }
+  93% {
+    opacity: 1;
+    transform: translate(-1px, -1px);
+  }
+  94% {
+    opacity: 0;
+  }
+  97% {
+    opacity: 1;
+    transform: translate(1px, -2px);
+  }
+  98% {
+    opacity: 0;
+  }
+  99% {
+    opacity: 1;
+    transform: translate(-1px, 2px);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(0px, 0px);
   }
 }

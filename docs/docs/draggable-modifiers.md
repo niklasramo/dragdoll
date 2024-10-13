@@ -15,19 +15,13 @@ You can store temporary state data, which exists only for the duration of the dr
 ## Example
 
 ```ts
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardSensor,
-  createPointerSensorStartPredicate,
-} from 'draggable';
+import { Draggable, PointerSensor, KeyboardSensor } from 'draggable';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
 const keyboardSensor = new KeyboardSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
-  startPredicate: createPointerSensorStartPredicate(),
   positionModifiers: [
     // First modifier, which resets the
     // x-axis change to allow only y-axis

@@ -14,8 +14,10 @@ body {
   flex-grow: 0;
   flex-shrink: 0;
   cursor: auto;
+  touch-action: auto;
 
-  .handle {
+  & .handle {
+    touch-action: none;
     display: flex;
     justify-content: center;
     align-items: center;

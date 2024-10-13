@@ -23,7 +23,7 @@ const AUTOSCROLL_CLIENT_RECT: Rect = {
   y: 0,
 };
 
-function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>() {
+function getDefaultSettings<S extends Sensor[], E extends S[number]['_events_type']>() {
   return {
     targets: [],
     inertAreaSize: 0.2,
@@ -67,7 +67,7 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['events']>()
   };
 }
 
-class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['events']>
+class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['_events_type']>
   implements AutoScrollItem
 {
   protected _draggableAutoScroll: DraggableAutoScroll<S, E>;
@@ -141,7 +141,10 @@ class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['events']
   }
 }
 
-export interface DraggableAutoScrollSettings<S extends Sensor[], E extends S[number]['events']> {
+export interface DraggableAutoScrollSettings<
+  S extends Sensor[],
+  E extends S[number]['_events_type'],
+> {
   targets: AutoScrollItemTarget[] | ((draggable: Draggable<S, E>) => AutoScrollItemTarget[]);
   inertAreaSize: number;
   speed: number | AutoScrollItemSpeedCallback;
@@ -152,13 +155,14 @@ export interface DraggableAutoScrollSettings<S extends Sensor[], E extends S[num
   onStop: AutoScrollItemEventCallback | null;
 }
 
-export type DraggableAutoScrollOptions<S extends Sensor[], E extends S[number]['events']> = Partial<
-  DraggableAutoScrollSettings<S, E>
->;
+export type DraggableAutoScrollOptions<
+  S extends Sensor[],
+  E extends S[number]['_events_type'],
+> = Partial<DraggableAutoScrollSettings<S, E>>;
 
 export class DraggableAutoScroll<
   S extends Sensor[] = Sensor[],
-  E extends S[number]['events'] = S[number]['events'],
+  E extends S[number]['_events_type'] = S[number]['_events_type'],
 > {
   readonly name: 'autoscroll';
   readonly version: string;
@@ -220,7 +224,7 @@ export class DraggableAutoScroll<
 
 export function autoScrollPlugin<
   S extends Sensor[],
-  E extends S[number]['events'],
+  E extends S[number]['_events_type'],
   P extends DraggablePluginMap,
 >(options?: DraggableAutoScrollOptions<S, E>) {
   return (draggable: Draggable<S, E, P>) => {
