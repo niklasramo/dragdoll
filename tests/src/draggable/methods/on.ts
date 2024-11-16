@@ -4,8 +4,6 @@ import { focusElement } from '../../utils/focus-element.js';
 import { Draggable, KeyboardSensor } from '../../../../src/index.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
 
-// TODO: Finish the tests...
-
 export function methodOn() {
   describe('on', () => {
     it('should return a unique symbol by default', () => {
