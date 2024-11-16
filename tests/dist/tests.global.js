@@ -6975,12 +6975,76 @@
   // tests/src/draggable/methods/align.ts
   function methodAlign() {
     describe("align", () => {
+      it("should align the element visually", async () => {
+        const el = createTestElement();
+        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+        const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
+        let rect = el.getBoundingClientRect();
+        assert.equal(rect.x, 0);
+        assert.equal(rect.y, 0);
+        focusElement(el);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+        await waitNextFrame();
+        rect = el.getBoundingClientRect();
+        assert.equal(rect.x, 1);
+        assert.equal(rect.y, 0);
+        el.style.left = parseFloat(el.style.left) + 10 + "px";
+        el.style.top = parseFloat(el.style.top) + 10 + "px";
+        rect = el.getBoundingClientRect();
+        assert.equal(rect.x, 11);
+        assert.equal(rect.y, 10);
+        draggable.align();
+        rect = el.getBoundingClientRect();
+        assert.equal(rect.x, 11);
+        assert.equal(rect.y, 10);
+        await waitNextFrame();
+        rect = el.getBoundingClientRect();
+        assert.equal(rect.x, 1);
+        assert.equal(rect.y, 0);
+        el.style.left = parseFloat(el.style.left) + 10 + "px";
+        el.style.top = parseFloat(el.style.top) + 10 + "px";
+        rect = el.getBoundingClientRect();
+        assert.equal(rect.x, 11);
+        assert.equal(rect.y, 10);
+        draggable.align(true);
+        rect = el.getBoundingClientRect();
+        assert.equal(rect.x, 1);
+        assert.equal(rect.y, 0);
+        draggable.destroy();
+        keyboardSensor.destroy();
+        el.remove();
+      });
     });
   }
 
   // tests/src/draggable/methods/destroy.ts
   function methodDestroy2() {
     describe("destroy", () => {
+      it("should destroy the draggable instance", async () => {
+        const el = createTestElement();
+        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+        const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
+        let destroyEventCount = 0;
+        draggable.on("destroy", () => {
+          ++destroyEventCount;
+        });
+        draggable.destroy();
+        assert.equal(draggable.isDestroyed, true);
+        assert.equal(destroyEventCount, 1);
+        focusElement(el);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+        await waitNextFrame();
+        const rect = el.getBoundingClientRect();
+        assert.equal(draggable.drag, null);
+        assert.equal(rect.x, 0);
+        assert.equal(rect.y, 0);
+        draggable.destroy();
+        assert.equal(destroyEventCount, 1);
+        keyboardSensor.destroy();
+        el.remove();
+      });
     });
   }
 
@@ -6993,6 +7057,80 @@
   // tests/src/draggable/methods/on.ts
   function methodOn2() {
     describe("on", () => {
+      it("should return a unique symbol by default", () => {
+        const el = createTestElement();
+        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+        const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
+        const idA = draggable.on("start", () => {
+        });
+        const idB = draggable.on("start", () => {
+        });
+        assert.equal(typeof idA, "symbol");
+        assert.notEqual(idA, idB);
+        keyboardSensor.destroy();
+        draggable.destroy();
+        el.remove();
+      });
+      it("should allow duplicate event listeners", async () => {
+        const el = createTestElement();
+        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+        const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
+        let counter = 0;
+        const listener = () => {
+          ++counter;
+        };
+        draggable.on("start", listener);
+        draggable.on("start", listener);
+        focusElement(el);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        await waitNextFrame();
+        assert.equal(counter, 2);
+        keyboardSensor.destroy();
+        draggable.destroy();
+        el.remove();
+      });
+      it("should remove the existing listener and add the new one if the same id is used", async () => {
+        const el = createTestElement();
+        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+        const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
+        let msg = "";
+        draggable.on("start", () => void (msg += "a"), 1);
+        draggable.on("start", () => void (msg += "b"), 2);
+        draggable.on("start", () => void (msg += "c"), 1);
+        focusElement(el);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        await waitNextFrame();
+        assert.equal(msg, "bc");
+        keyboardSensor.destroy();
+        draggable.destroy();
+        el.remove();
+      });
+      it("should allow defining a custom id (string/symbol/number) for the event listener via third argument", () => {
+        const el = createTestElement();
+        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+        const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
+        const idA = Symbol();
+        assert.equal(
+          draggable.on("start", () => {
+          }, idA),
+          idA
+        );
+        const idB = 1;
+        assert.equal(
+          draggable.on("start", () => {
+          }, idB),
+          idB
+        );
+        const idC = "foo";
+        assert.equal(
+          draggable.on("start", () => {
+          }, idC),
+          idC
+        );
+        keyboardSensor.destroy();
+        draggable.destroy();
+        el.remove();
+      });
     });
   }
 
