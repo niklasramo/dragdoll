@@ -16,10 +16,10 @@
 
 html {
   background: var(--bg-color);
+  height: 100%;
   color: var(--color);
   background-image: linear-gradient(to right, #ffffff1a 1px, #0000 1px), linear-gradient(#ffffff1a 1px, #0000 1px);
   background-size: 40px 40px;
-  height: 100%;
 }
 
 body {
@@ -29,20 +29,20 @@ body {
 
 .card {
   background-color: var(--card-bgColor);
+  width: 100px;
+  height: 100px;
   color: var(--card-color);
   border: 1.5px solid var(--bg-color);
   border-radius: 7px;
   justify-content: center;
   align-items: center;
-  width: 100px;
-  height: 100px;
   font-size: 30px;
   display: flex;
 
   & svg {
-    fill: var(--card-color);
     width: 1em;
     height: 1em;
+    fill: var(--card-color);
   }
 
   @media (hover: hover) and (pointer: fine) {

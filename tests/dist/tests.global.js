@@ -40,6 +40,7 @@
     hasProperty: () => hasProperty,
     inspect: () => inspect2,
     isNaN: () => isNaN2,
+    isNumeric: () => isNumeric,
     isProxyEnabled: () => isProxyEnabled,
     isRegExp: () => isRegExp2,
     objDisplay: () => objDisplay,
@@ -287,6 +288,10 @@
     return options4;
   }
   __name(normaliseOptions, "normaliseOptions");
+  function isHighSurrogate(char) {
+    return char >= "\uD800" && char <= "\uDBFF";
+  }
+  __name(isHighSurrogate, "isHighSurrogate");
   function truncate(string, length, tail = truncator) {
     string = String(string);
     const tailLength = tail.length;
@@ -295,7 +300,11 @@
       return tail;
     }
     if (stringLength > length && stringLength > tailLength) {
-      return `${string.slice(0, length - tailLength)}${tail}`;
+      let end = length - tailLength;
+      if (end > 0 && isHighSurrogate(string[end - 1])) {
+        end = end - 1;
+      }
+      return `${string.slice(0, end)}${tail}`;
     }
     return string;
   }
@@ -546,7 +555,7 @@
     }
     options4.truncate -= 4;
     options4.seen = options4.seen || [];
-    if (options4.seen.indexOf(object) >= 0) {
+    if (options4.seen.includes(object)) {
       return "[Circular]";
     }
     options4.seen.push(object);
@@ -591,7 +600,8 @@
     "lineNumber",
     "columnNumber",
     "number",
-    "description"
+    "description",
+    "cause"
   ];
   function inspectObject2(error, options4) {
     const properties4 = Object.getOwnPropertyNames(error).filter((key) => errorKeys.indexOf(key) === -1);
@@ -605,6 +615,11 @@
     }
     message = message ? `: ${message}` : "";
     options4.truncate -= message.length + 5;
+    options4.seen = options4.seen || [];
+    if (options4.seen.includes(error)) {
+      return "[Circular]";
+    }
+    options4.seen.push(error);
     const propertyContents = inspectList(properties4.map((key) => [key, error[key]]), options4, inspectProperty);
     return `${name}${message}${propertyContents ? ` { ${propertyContents} }` : ""}`;
   }
@@ -1098,11 +1113,15 @@
   }
   __name(regexpEqual, "regexpEqual");
   function entriesEqual(leftHandOperand, rightHandOperand, options4) {
-    if (leftHandOperand.size !== rightHandOperand.size) {
+    try {
+      if (leftHandOperand.size !== rightHandOperand.size) {
+        return false;
+      }
+      if (leftHandOperand.size === 0) {
+        return true;
+      }
+    } catch (sizeError) {
       return false;
-    }
-    if (leftHandOperand.size === 0) {
-      return true;
     }
     var leftHandItems = [];
     var rightHandItems = [];
@@ -1723,6 +1742,10 @@
     return Object.prototype.toString.call(obj) === "[object RegExp]";
   }
   __name(isRegExp2, "isRegExp");
+  function isNumeric(obj) {
+    return ["Number", "BigInt"].includes(type(obj));
+  }
+  __name(isNumeric, "isNumeric");
   var { flag: flag2 } = utils_exports;
   [
     "to",
@@ -1907,6 +1930,15 @@
       flag2(this, "negate") ? false : true
     );
   });
+  Assertion.addProperty("numeric", function() {
+    const object = flag2(this, "object");
+    this.assert(
+      ["Number", "BigInt"].includes(type(object)),
+      "expected #{this} to be numeric",
+      "expected #{this} to not be numeric",
+      flag2(this, "negate") ? false : true
+    );
+  });
   Assertion.addProperty("callable", function() {
     const val = flag2(this, "object");
     const ssfi = flag2(this, "ssfi");
@@ -2055,22 +2087,17 @@
   function assertAbove(n, msg) {
     if (msg)
       flag2(this, "message", msg);
-    var obj = flag2(this, "object"), doLength = flag2(this, "doLength"), flagMsg = flag2(this, "message"), msgPrefix = flagMsg ? flagMsg + ": " : "", ssfi = flag2(this, "ssfi"), objType = type(obj).toLowerCase(), nType = type(n).toLowerCase(), errorMessage, shouldThrow = true;
+    var obj = flag2(this, "object"), doLength = flag2(this, "doLength"), flagMsg = flag2(this, "message"), msgPrefix = flagMsg ? flagMsg + ": " : "", ssfi = flag2(this, "ssfi"), objType = type(obj).toLowerCase(), nType = type(n).toLowerCase();
     if (doLength && objType !== "map" && objType !== "set") {
       new Assertion(obj, flagMsg, ssfi, true).to.have.property("length");
     }
     if (!doLength && (objType === "date" && nType !== "date")) {
-      errorMessage = msgPrefix + "the argument to above must be a date";
-    } else if (nType !== "number" && (doLength || objType === "number")) {
-      errorMessage = msgPrefix + "the argument to above must be a number";
-    } else if (!doLength && (objType !== "date" && objType !== "number")) {
+      throw new AssertionError(msgPrefix + "the argument to above must be a date", void 0, ssfi);
+    } else if (!isNumeric(n) && (doLength || isNumeric(obj))) {
+      throw new AssertionError(msgPrefix + "the argument to above must be a number", void 0, ssfi);
+    } else if (!doLength && (objType !== "date" && !isNumeric(obj))) {
       var printObj = objType === "string" ? "'" + obj + "'" : obj;
-      errorMessage = msgPrefix + "expected " + printObj + " to be a number or a date";
-    } else {
-      shouldThrow = false;
-    }
-    if (shouldThrow) {
-      throw new AssertionError(errorMessage, void 0, ssfi);
+      throw new AssertionError(msgPrefix + "expected " + printObj + " to be a number or a date", void 0, ssfi);
     }
     if (doLength) {
       var descriptor = "length", itemsCount;
@@ -2109,9 +2136,9 @@
     }
     if (!doLength && (objType === "date" && nType !== "date")) {
       errorMessage = msgPrefix + "the argument to least must be a date";
-    } else if (nType !== "number" && (doLength || objType === "number")) {
+    } else if (!isNumeric(n) && (doLength || isNumeric(obj))) {
       errorMessage = msgPrefix + "the argument to least must be a number";
-    } else if (!doLength && (objType !== "date" && objType !== "number")) {
+    } else if (!doLength && (objType !== "date" && !isNumeric(obj))) {
       var printObj = objType === "string" ? "'" + obj + "'" : obj;
       errorMessage = msgPrefix + "expected " + printObj + " to be a number or a date";
     } else {
@@ -2157,9 +2184,9 @@
     }
     if (!doLength && (objType === "date" && nType !== "date")) {
       errorMessage = msgPrefix + "the argument to below must be a date";
-    } else if (nType !== "number" && (doLength || objType === "number")) {
+    } else if (!isNumeric(n) && (doLength || isNumeric(obj))) {
       errorMessage = msgPrefix + "the argument to below must be a number";
-    } else if (!doLength && (objType !== "date" && objType !== "number")) {
+    } else if (!doLength && (objType !== "date" && !isNumeric(obj))) {
       var printObj = objType === "string" ? "'" + obj + "'" : obj;
       errorMessage = msgPrefix + "expected " + printObj + " to be a number or a date";
     } else {
@@ -2205,9 +2232,9 @@
     }
     if (!doLength && (objType === "date" && nType !== "date")) {
       errorMessage = msgPrefix + "the argument to most must be a date";
-    } else if (nType !== "number" && (doLength || objType === "number")) {
+    } else if (!isNumeric(n) && (doLength || isNumeric(obj))) {
       errorMessage = msgPrefix + "the argument to most must be a number";
-    } else if (!doLength && (objType !== "date" && objType !== "number")) {
+    } else if (!doLength && (objType !== "date" && !isNumeric(obj))) {
       var printObj = objType === "string" ? "'" + obj + "'" : obj;
       errorMessage = msgPrefix + "expected " + printObj + " to be a number or a date";
     } else {
@@ -2253,9 +2280,9 @@
     }
     if (!doLength && (objType === "date" && (startType !== "date" || finishType !== "date"))) {
       errorMessage = msgPrefix + "the arguments to within must be dates";
-    } else if ((startType !== "number" || finishType !== "number") && (doLength || objType === "number")) {
+    } else if ((!isNumeric(start) || !isNumeric(finish)) && (doLength || isNumeric(obj))) {
       errorMessage = msgPrefix + "the arguments to within must be numbers";
-    } else if (!doLength && (objType !== "date" && objType !== "number")) {
+    } else if (!doLength && (objType !== "date" && !isNumeric(obj))) {
       var printObj = objType === "string" ? "'" + obj + "'" : obj;
       errorMessage = msgPrefix + "expected " + printObj + " to be a number or a date";
     } else {
@@ -2716,18 +2743,18 @@
     if (msg)
       flag2(this, "message", msg);
     var obj = flag2(this, "object"), flagMsg = flag2(this, "message"), ssfi = flag2(this, "ssfi");
-    new Assertion(obj, flagMsg, ssfi, true).is.a("number");
-    if (typeof expected !== "number" || typeof delta !== "number") {
-      flagMsg = flagMsg ? flagMsg + ": " : "";
-      var deltaMessage = delta === void 0 ? ", and a delta is required" : "";
-      throw new AssertionError(
-        flagMsg + "the arguments to closeTo or approximately must be numbers" + deltaMessage,
-        void 0,
-        ssfi
-      );
-    }
+    new Assertion(obj, flagMsg, ssfi, true).is.numeric;
+    let message = "A `delta` value is required for `closeTo`";
+    if (delta == void 0)
+      throw new AssertionError(flagMsg ? `${flagMsg}: ${message}` : message, void 0, ssfi);
+    new Assertion(delta, flagMsg, ssfi, true).is.numeric;
+    message = "A `expected` value is required for `closeTo`";
+    if (expected == void 0)
+      throw new AssertionError(flagMsg ? `${flagMsg}: ${message}` : message, void 0, ssfi);
+    new Assertion(expected, flagMsg, ssfi, true).is.numeric;
+    const abs = /* @__PURE__ */ __name((x) => x < 0n ? -x : x, "abs");
     this.assert(
-      Math.abs(obj - expected) <= delta,
+      abs(obj - expected) <= delta,
       "expected #{this} to be close to " + expected + " +/- " + delta,
       "expected #{this} not to be close to " + expected + " +/- " + delta
     );
@@ -3211,6 +3238,12 @@
   };
   assert.isNotNumber = function(val, msg) {
     new Assertion(val, msg, assert.isNotNumber, true).to.not.be.a("number");
+  };
+  assert.isNumeric = function(val, msg) {
+    new Assertion(val, msg, assert.isNumeric, true).is.numeric;
+  };
+  assert.isNotNumeric = function(val, msg) {
+    new Assertion(val, msg, assert.isNotNumeric, true).is.not.numeric;
   };
   assert.isFinite = function(val, msg) {
     new Assertion(val, msg, assert.isFinite, true).to.be.finite;

@@ -1,9 +1,9 @@
 const $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5 = {
-    Start: "start",
-    Move: "move",
-    Cancel: "cancel",
-    End: "end",
-    Destroy: "destroy"
+    Start: 'start',
+    Move: 'move',
+    Cancel: 'cancel',
+    End: 'end',
+    Destroy: 'destroy'
 };
 class $b7f29e04c7dc9749$export$f5fe6b3a9dfe845b {
 }
@@ -355,11 +355,11 @@ class $07403df99f68f50f$export$2f0ad9ba2f0800d extends (0, $b8cf3f0ef33e91cf$exp
             this.drag.time = time;
             // Emit tick event.
             const tickEvent = {
-                type: "tick",
+                type: 'tick',
                 time: this.drag.time,
                 deltaTime: this.drag.deltaTime
             };
-            this._emitter.emit("tick", tickEvent);
+            this._emitter.emit('tick', tickEvent);
             // Make sure the sensor is still active.
             if (!this.drag) return;
             // Compute the movement offset (delta) by applying time factor to
@@ -388,10 +388,10 @@ class $07403df99f68f50f$export$2f0ad9ba2f0800d extends (0, $b8cf3f0ef33e91cf$exp
 function $aeb1faa61a1da9e9$export$6e8069a9617a39e2(e, id) {
     // If we have a pointer event return the whole event if there's a match, and
     // null otherwise.
-    if ("pointerId" in e) return e.pointerId === id ? e : null;
+    if ('pointerId' in e) return e.pointerId === id ? e : null;
     // For touch events let's check if there's a changed touch object that matches
     // the pointerId in which case return the touch object.
-    if ("changedTouches" in e) {
+    if ('changedTouches' in e) {
         let i = 0;
         for(; i < e.changedTouches.length; i++){
             if (e.changedTouches[i].identifier === id) return e.changedTouches[i];
@@ -405,15 +405,15 @@ function $aeb1faa61a1da9e9$export$6e8069a9617a39e2(e, id) {
 
 
 function $3ce9f989e3b1215a$export$887a228355cf7d95(e) {
-    return "pointerType" in e ? e.pointerType : "touches" in e ? "touch" : "mouse";
+    return 'pointerType' in e ? e.pointerType : 'touches' in e ? 'touch' : 'mouse';
 }
 
 
 function $c295f9e09f57d107$export$a845ff6c553b3014(e) {
     // If we have pointer id available let's use it.
-    if ("pointerId" in e) return e.pointerId;
+    if ('pointerId' in e) return e.pointerId;
     // For touch events let's get the first changed touch's identifier.
-    if ("changedTouches" in e) return e.changedTouches[0] ? e.changedTouches[0].identifier : null;
+    if ('changedTouches' in e) return e.changedTouches[0] ? e.changedTouches[0].identifier : null;
     // For mouse/other events let's provide a static id. And let's make it a
     // negative number so it has it has not chance of clashing with touch/pointer
     // ids.
@@ -421,25 +421,25 @@ function $c295f9e09f57d107$export$a845ff6c553b3014(e) {
 }
 
 
-const $b85aa28c289cb8ee$export$e44ffb50cc242ec5 = typeof window !== "undefined" && typeof window.document !== "undefined";
+const $b85aa28c289cb8ee$export$e44ffb50cc242ec5 = typeof window !== 'undefined' && typeof window.document !== 'undefined';
 const $b85aa28c289cb8ee$export$ffcf6b6ce241bd05 = (()=>{
     let isPassiveEventsSupported = false;
     try {
-        const passiveOpts = Object.defineProperty({}, "passive", {
+        const passiveOpts = Object.defineProperty({}, 'passive', {
             get: function() {
                 isPassiveEventsSupported = true;
             }
         });
         // @ts-ignore
-        window.addEventListener("testPassive", null, passiveOpts);
+        window.addEventListener('testPassive', null, passiveOpts);
         // @ts-ignore
-        window.removeEventListener("testPassive", null, passiveOpts);
+        window.removeEventListener('testPassive', null, passiveOpts);
     } catch (e) {}
     return isPassiveEventsSupported;
 })();
-const $b85aa28c289cb8ee$export$4af9b1d833a619de = $b85aa28c289cb8ee$export$e44ffb50cc242ec5 && "ontouchstart" in window;
+const $b85aa28c289cb8ee$export$4af9b1d833a619de = $b85aa28c289cb8ee$export$e44ffb50cc242ec5 && 'ontouchstart' in window;
 const $b85aa28c289cb8ee$export$7728c852ca75bb6d = $b85aa28c289cb8ee$export$e44ffb50cc242ec5 && !!window.PointerEvent;
-const $b85aa28c289cb8ee$export$af54264dae9065e6 = !!($b85aa28c289cb8ee$export$e44ffb50cc242ec5 && navigator.vendor && navigator.vendor.indexOf("Apple") > -1 && navigator.userAgent && navigator.userAgent.indexOf("CriOS") == -1 && navigator.userAgent.indexOf("FxiOS") == -1);
+const $b85aa28c289cb8ee$export$af54264dae9065e6 = !!($b85aa28c289cb8ee$export$e44ffb50cc242ec5 && navigator.vendor && navigator.vendor.indexOf('Apple') > -1 && navigator.userAgent && navigator.userAgent.indexOf('CriOS') == -1 && navigator.userAgent.indexOf('FxiOS') == -1);
 
 
 function $28cac6dbd0c9b92c$export$4d6c83612522bb80(options = {}) {
@@ -456,27 +456,27 @@ function $28cac6dbd0c9b92c$export$4d6c83612522bb80(options = {}) {
 
 
 function $d7b9fe5a227ed738$export$6475a94861c59472(sourceEvents) {
-    return sourceEvents === "auto" || sourceEvents === undefined ? (0, $b85aa28c289cb8ee$export$7728c852ca75bb6d) ? "pointer" : (0, $b85aa28c289cb8ee$export$4af9b1d833a619de) ? "touch" : "mouse" : sourceEvents;
+    return sourceEvents === 'auto' || sourceEvents === undefined ? (0, $b85aa28c289cb8ee$export$7728c852ca75bb6d) ? 'pointer' : (0, $b85aa28c289cb8ee$export$4af9b1d833a619de) ? 'touch' : 'mouse' : sourceEvents;
 }
 
 
 const $e72ff61c97f755fe$var$POINTER_EVENTS = {
-    start: "pointerdown",
-    move: "pointermove",
-    cancel: "pointercancel",
-    end: "pointerup"
+    start: 'pointerdown',
+    move: 'pointermove',
+    cancel: 'pointercancel',
+    end: 'pointerup'
 };
 const $e72ff61c97f755fe$var$TOUCH_EVENTS = {
-    start: "touchstart",
-    move: "touchmove",
-    cancel: "touchcancel",
-    end: "touchend"
+    start: 'touchstart',
+    move: 'touchmove',
+    cancel: 'touchcancel',
+    end: 'touchend'
 };
 const $e72ff61c97f755fe$var$MOUSE_EVENTS = {
-    start: "mousedown",
-    move: "mousemove",
-    cancel: "",
-    end: "mouseup"
+    start: 'mousedown',
+    move: 'mousemove',
+    cancel: '',
+    end: 'mouseup'
 };
 const $e72ff61c97f755fe$var$SOURCE_EVENTS = {
     pointer: $e72ff61c97f755fe$var$POINTER_EVENTS,
@@ -485,7 +485,7 @@ const $e72ff61c97f755fe$var$SOURCE_EVENTS = {
 };
 class $e72ff61c97f755fe$export$b26af955418d6638 {
     constructor(element, options = {}){
-        const { listenerOptions: listenerOptions = {}, sourceEvents: sourceEvents = "auto", startPredicate: startPredicate = (e)=>"button" in e && e.button > 0 ? false : true } = options;
+        const { listenerOptions: listenerOptions = {}, sourceEvents: sourceEvents = 'auto', startPredicate: startPredicate = (e)=>'button' in e && e.button > 0 ? false : true } = options;
         this.element = element;
         this.drag = null;
         this.isDestroyed = false;
@@ -692,7 +692,7 @@ const $2a9b1c646b3552c1$export$247491620fa01a28 = {
     cancelOnBlur: true,
     cancelOnVisibilityChange: true,
     startPredicate: (e, sensor)=>{
-        if (sensor.element && (e.key === "Enter" || e.key === " ")) {
+        if (sensor.element && (e.key === 'Enter' || e.key === ' ')) {
             if (document.activeElement === sensor.element) {
                 const { x: x, y: y } = sensor.element.getBoundingClientRect();
                 return {
@@ -706,22 +706,22 @@ const $2a9b1c646b3552c1$export$247491620fa01a28 = {
     movePredicate: (e, sensor)=>{
         if (!sensor.drag) return null;
         switch(e.key){
-            case "ArrowLeft":
+            case 'ArrowLeft':
                 return {
                     x: sensor.drag.x - sensor.moveDistance.x,
                     y: sensor.drag.y
                 };
-            case "ArrowRight":
+            case 'ArrowRight':
                 return {
                     x: sensor.drag.x + sensor.moveDistance.x,
                     y: sensor.drag.y
                 };
-            case "ArrowUp":
+            case 'ArrowUp':
                 return {
                     x: sensor.drag.x,
                     y: sensor.drag.y - sensor.moveDistance.y
                 };
-            case "ArrowDown":
+            case 'ArrowDown':
                 return {
                     x: sensor.drag.x,
                     y: sensor.drag.y + sensor.moveDistance.y
@@ -731,7 +731,7 @@ const $2a9b1c646b3552c1$export$247491620fa01a28 = {
         }
     },
     cancelPredicate: (e, sensor)=>{
-        if (sensor.drag && e.key === "Escape") {
+        if (sensor.drag && e.key === 'Escape') {
             const { x: x, y: y } = sensor.drag;
             return {
                 x: x,
@@ -741,7 +741,7 @@ const $2a9b1c646b3552c1$export$247491620fa01a28 = {
         return null;
     },
     endPredicate: (e, sensor)=>{
-        if (sensor.drag && (e.key === "Enter" || e.key === " ")) {
+        if (sensor.drag && (e.key === 'Enter' || e.key === ' ')) {
             const { x: x, y: y } = sensor.drag;
             return {
                 x: x,
@@ -756,7 +756,7 @@ class $2a9b1c646b3552c1$export$44d67f2a438aeba9 extends (0, $b8cf3f0ef33e91cf$ex
         super();
         const { moveDistance: moveDistance = $2a9b1c646b3552c1$export$247491620fa01a28.moveDistance, cancelOnBlur: cancelOnBlur = $2a9b1c646b3552c1$export$247491620fa01a28.cancelOnBlur, cancelOnVisibilityChange: cancelOnVisibilityChange = $2a9b1c646b3552c1$export$247491620fa01a28.cancelOnVisibilityChange, startPredicate: startPredicate = $2a9b1c646b3552c1$export$247491620fa01a28.startPredicate, movePredicate: movePredicate = $2a9b1c646b3552c1$export$247491620fa01a28.movePredicate, cancelPredicate: cancelPredicate = $2a9b1c646b3552c1$export$247491620fa01a28.cancelPredicate, endPredicate: endPredicate = $2a9b1c646b3552c1$export$247491620fa01a28.endPredicate } = options;
         this.element = element;
-        this.moveDistance = typeof moveDistance === "number" ? {
+        this.moveDistance = typeof moveDistance === 'number' ? {
             x: moveDistance,
             y: moveDistance
         } : {
@@ -771,9 +771,9 @@ class $2a9b1c646b3552c1$export$44d67f2a438aeba9 extends (0, $b8cf3f0ef33e91cf$ex
         this._onKeyDown = this._onKeyDown.bind(this);
         this._internalCancel = this._internalCancel.bind(this);
         this._blurCancelHandler = this._blurCancelHandler.bind(this);
-        document.addEventListener("keydown", this._onKeyDown);
-        if (cancelOnBlur) element?.addEventListener("blur", this._blurCancelHandler);
-        if (cancelOnVisibilityChange) document.addEventListener("visibilitychange", this._internalCancel);
+        document.addEventListener('keydown', this._onKeyDown);
+        if (cancelOnBlur) element?.addEventListener('blur', this._blurCancelHandler);
+        if (cancelOnVisibilityChange) document.addEventListener('visibilitychange', this._internalCancel);
     }
     _internalCancel() {
         this.cancel();
@@ -845,7 +845,7 @@ class $2a9b1c646b3552c1$export$44d67f2a438aeba9 extends (0, $b8cf3f0ef33e91cf$ex
     updateSettings(options = {}) {
         const { moveDistance: moveDistance, cancelOnBlur: cancelOnBlur, cancelOnVisibilityChange: cancelOnVisibilityChange, startPredicate: startPredicate, movePredicate: movePredicate, cancelPredicate: cancelPredicate, endPredicate: endPredicate } = options;
         if (moveDistance !== undefined) {
-            if (typeof moveDistance === "number") this.moveDistance.x = this.moveDistance.y = moveDistance;
+            if (typeof moveDistance === 'number') this.moveDistance.x = this.moveDistance.y = moveDistance;
             else {
                 this.moveDistance.x = moveDistance.x;
                 this.moveDistance.y = moveDistance.y;
@@ -853,13 +853,13 @@ class $2a9b1c646b3552c1$export$44d67f2a438aeba9 extends (0, $b8cf3f0ef33e91cf$ex
         }
         if (cancelOnBlur !== undefined && this._cancelOnBlur !== cancelOnBlur) {
             this._cancelOnBlur = cancelOnBlur;
-            if (cancelOnBlur) this.element?.addEventListener("blur", this._blurCancelHandler);
-            else this.element?.removeEventListener("blur", this._blurCancelHandler);
+            if (cancelOnBlur) this.element?.addEventListener('blur', this._blurCancelHandler);
+            else this.element?.removeEventListener('blur', this._blurCancelHandler);
         }
         if (cancelOnVisibilityChange !== undefined && this._cancelOnVisibilityChange !== cancelOnVisibilityChange) {
             this._cancelOnVisibilityChange = cancelOnVisibilityChange;
-            if (cancelOnVisibilityChange) document.addEventListener("visibilitychange", this._internalCancel);
-            else document.removeEventListener("visibilitychange", this._internalCancel);
+            if (cancelOnVisibilityChange) document.addEventListener('visibilitychange', this._internalCancel);
+            else document.removeEventListener('visibilitychange', this._internalCancel);
         }
         if (startPredicate) this._startPredicate = startPredicate;
         if (movePredicate) this._movePredicate = movePredicate;
@@ -869,9 +869,9 @@ class $2a9b1c646b3552c1$export$44d67f2a438aeba9 extends (0, $b8cf3f0ef33e91cf$ex
     destroy() {
         if (this.isDestroyed) return;
         super.destroy();
-        document.removeEventListener("keydown", this._onKeyDown);
-        if (this._cancelOnBlur) this.element?.removeEventListener("blur", this._blurCancelHandler);
-        if (this._cancelOnVisibilityChange) document.removeEventListener("visibilitychange", this._internalCancel);
+        document.removeEventListener('keydown', this._onKeyDown);
+        if (this._cancelOnBlur) this.element?.removeEventListener('blur', this._blurCancelHandler);
+        if (this._cancelOnVisibilityChange) document.removeEventListener('visibilitychange', this._internalCancel);
     }
 }
 
@@ -879,13 +879,13 @@ class $2a9b1c646b3552c1$export$44d67f2a438aeba9 extends (0, $b8cf3f0ef33e91cf$ex
 
 
 const $7fff4587bd07df96$var$KEY_TYPES = [
-    "start",
-    "cancel",
-    "end",
-    "moveLeft",
-    "moveRight",
-    "moveUp",
-    "moveDown"
+    'start',
+    'cancel',
+    'end',
+    'moveLeft',
+    'moveRight',
+    'moveUp',
+    'moveDown'
 ];
 function $7fff4587bd07df96$var$getEarliestTimestamp(keys, timestamps) {
     if (!keys.size || !timestamps.size) return Infinity;
@@ -898,27 +898,27 @@ function $7fff4587bd07df96$var$getEarliestTimestamp(keys, timestamps) {
 }
 const $7fff4587bd07df96$export$fbce5a9938cd33df = {
     startKeys: [
-        " ",
-        "Enter"
+        ' ',
+        'Enter'
     ],
     moveLeftKeys: [
-        "ArrowLeft"
+        'ArrowLeft'
     ],
     moveRightKeys: [
-        "ArrowRight"
+        'ArrowRight'
     ],
     moveUpKeys: [
-        "ArrowUp"
+        'ArrowUp'
     ],
     moveDownKeys: [
-        "ArrowDown"
+        'ArrowDown'
     ],
     cancelKeys: [
-        "Escape"
+        'Escape'
     ],
     endKeys: [
-        " ",
-        "Enter"
+        ' ',
+        'Enter'
     ],
     cancelOnBlur: true,
     cancelOnVisibilityChange: true,
@@ -962,11 +962,11 @@ class $7fff4587bd07df96$export$436f6efcc297171 extends (0, $07403df99f68f50f$exp
         this._onTick = this._onTick.bind(this);
         this._internalCancel = this._internalCancel.bind(this);
         this._blurCancelHandler = this._blurCancelHandler.bind(this);
-        this.on("tick", this._onTick, this._onTick);
-        document.addEventListener("keydown", this._onKeyDown);
-        document.addEventListener("keyup", this._onKeyUp);
-        if (cancelOnBlur) element?.addEventListener("blur", this._blurCancelHandler);
-        if (cancelOnVisibilityChange) document.addEventListener("visibilitychange", this._internalCancel);
+        this.on('tick', this._onTick, this._onTick);
+        document.addEventListener('keydown', this._onKeyDown);
+        document.addEventListener('keyup', this._onKeyUp);
+        if (cancelOnBlur) element?.addEventListener('blur', this._blurCancelHandler);
+        if (cancelOnVisibilityChange) document.addEventListener('visibilitychange', this._internalCancel);
     }
     _end(data) {
         if (!this.drag) return;
@@ -1070,13 +1070,13 @@ class $7fff4587bd07df96$export$436f6efcc297171 extends (0, $07403df99f68f50f$exp
         const { cancelOnBlur: cancelOnBlur, cancelOnVisibilityChange: cancelOnVisibilityChange, startPredicate: startPredicate, computeSpeed: computeSpeed } = options;
         if (cancelOnBlur !== undefined && this._cancelOnBlur !== cancelOnBlur) {
             this._cancelOnBlur = cancelOnBlur;
-            if (cancelOnBlur) this.element?.addEventListener("blur", this._blurCancelHandler);
-            else this.element?.removeEventListener("blur", this._blurCancelHandler);
+            if (cancelOnBlur) this.element?.addEventListener('blur', this._blurCancelHandler);
+            else this.element?.removeEventListener('blur', this._blurCancelHandler);
         }
         if (cancelOnVisibilityChange !== undefined && this._cancelOnVisibilityChange !== cancelOnVisibilityChange) {
             this._cancelOnVisibilityChange = cancelOnVisibilityChange;
-            if (cancelOnVisibilityChange) document.addEventListener("visibilitychange", this._internalCancel);
-            else document.removeEventListener("visibilitychange", this._internalCancel);
+            if (cancelOnVisibilityChange) document.addEventListener('visibilitychange', this._internalCancel);
+            else document.removeEventListener('visibilitychange', this._internalCancel);
         }
         if (startPredicate !== undefined) this._startPredicate = startPredicate;
         if (computeSpeed !== undefined) this._computeSpeed = computeSpeed;
@@ -1111,11 +1111,11 @@ class $7fff4587bd07df96$export$436f6efcc297171 extends (0, $07403df99f68f50f$exp
     destroy() {
         if (this.isDestroyed) return;
         super.destroy();
-        this.off("tick", this._onTick);
-        document.removeEventListener("keydown", this._onKeyDown);
-        document.removeEventListener("keyup", this._onKeyUp);
-        if (this._cancelOnBlur) this.element?.removeEventListener("blur", this._blurCancelHandler);
-        if (this._cancelOnVisibilityChange) document.removeEventListener("visibilitychange", this._internalCancel);
+        this.off('tick', this._onTick);
+        document.removeEventListener('keydown', this._onKeyDown);
+        document.removeEventListener('keyup', this._onKeyUp);
+        if (this._cancelOnBlur) this.element?.removeEventListener('blur', this._blurCancelHandler);
+        if (this._cancelOnVisibilityChange) document.removeEventListener('visibilitychange', this._internalCancel);
     }
 }
 
@@ -1584,7 +1584,7 @@ function $b573589083190077$export$ee9ce4f6079fba39(element, result = {
 
 
 function $b460b3fb12ddb1cf$export$aff838a5553f2a92(value) {
-    return typeof value === "object" && value !== null && "x" in value && "y" in value;
+    return typeof value === 'object' && value !== null && 'x' in value && 'y' in value;
 }
 
 
@@ -1610,10 +1610,10 @@ function $ac3b89bdbc283306$export$5e94c6e790b2d913(elemA, elemB, result = {
 
 
 function $7e1617964030f7dd$export$808822009ec670b1(transformOrigin) {
-    const values = transformOrigin.split(" ");
-    let originX = "";
-    let originY = "";
-    let originZ = "";
+    const values = transformOrigin.split(' ');
+    let originX = '';
+    let originY = '';
+    let originZ = '';
     if (values.length === 1) originX = originY = values[0];
     else if (values.length === 2) [originX, originY] = values;
     else [originX, originY, originZ] = values;
@@ -1625,7 +1625,7 @@ function $7e1617964030f7dd$export$808822009ec670b1(transformOrigin) {
 }
 
 
-const $c87c13e795b928df$var$RESET_TRANSFORM = "scale(1, 1)";
+const $c87c13e795b928df$var$RESET_TRANSFORM = 'scale(1, 1)';
 function $c87c13e795b928df$export$5e2c7a53f84076f2(m) {
     return m.setMatrixValue($c87c13e795b928df$var$RESET_TRANSFORM);
 }
@@ -1638,7 +1638,7 @@ function $1271bf80faee7ee7$export$10e4b24b91657790(el, result = new DOMMatrix())
     (0, $c87c13e795b928df$export$5e2c7a53f84076f2)(result);
     while(currentElement){
         const { transform: transform, transformOrigin: transformOrigin } = (0, $b75b79b0209a801e$export$3d2f074408bd1b82)(currentElement);
-        if (transform && transform !== "none") {
+        if (transform && transform !== 'none') {
             $1271bf80faee7ee7$var$MATRIX.setMatrixValue(transform);
             if (!$1271bf80faee7ee7$var$MATRIX.isIdentity) {
                 const { x: x, y: y, z: z } = (0, $7e1617964030f7dd$export$808822009ec670b1)(transformOrigin);
@@ -1655,26 +1655,26 @@ function $1271bf80faee7ee7$export$10e4b24b91657790(el, result = new DOMMatrix())
 
 function $d39c1430c2c971fe$export$ac3d318a39e8020a(el, styles, important = false) {
     const { style: style } = el;
-    for(const key in styles)style.setProperty(key, styles[key], important ? "important" : "");
+    for(const key in styles)style.setProperty(key, styles[key], important ? 'important' : '');
 }
 
 
 function $3625b5560175528a$export$8de5e08b53f62319() {
-    const el = document.createElement("div");
-    el.classList.add("dragdoll-measure");
+    const el = document.createElement('div');
+    el.classList.add('dragdoll-measure');
     (0, $d39c1430c2c971fe$export$ac3d318a39e8020a)(el, {
-        display: "block",
-        position: "absolute",
-        inset: "0px",
-        padding: "0px",
-        margin: "0px",
-        border: "none",
-        opacity: "0",
-        transform: "none",
-        "transform-origin": "0 0",
-        transition: "none",
-        animation: "none",
-        "pointer-events": "none"
+        display: 'block',
+        position: 'absolute',
+        inset: '0px',
+        padding: '0px',
+        margin: '0px',
+        border: 'none',
+        opacity: '0',
+        transform: 'none',
+        'transform-origin': '0 0',
+        transition: 'none',
+        animation: 'none',
+        'pointer-events': 'none'
     }, true);
     return el;
 }
@@ -1693,10 +1693,10 @@ class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
     constructor(element, draggable){
         // Make sure the element is in DOM.
         // https://developer.mozilla.org/en-US/docs/Web/API/Node/isConnected
-        if (!element.isConnected) throw new Error("Element is not connected");
+        if (!element.isConnected) throw new Error('Element is not connected');
         // Make sure drag is defined.
         const { drag: drag } = draggable;
-        if (!drag) throw new Error("Drag is not defined");
+        if (!drag) throw new Error('Drag is not defined');
         const style = (0, $b75b79b0209a801e$export$3d2f074408bd1b82)(element);
         const clientRect = element.getBoundingClientRect();
         this.data = {};
@@ -1725,11 +1725,11 @@ class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
             x: 0,
             y: 0
         };
-        this._matrixCache = drag["_matrixCache"];
-        this._clientOffsetCache = drag["_clientOffsetCache"];
+        this._matrixCache = drag['_matrixCache'];
+        this._clientOffsetCache = drag['_clientOffsetCache'];
         // Use element's parent element as the element container.
         const elementContainer = element.parentElement;
-        if (!elementContainer) throw new Error("Dragged element does not have a parent element.");
+        if (!elementContainer) throw new Error('Dragged element does not have a parent element.');
         this.elementContainer = elementContainer;
         // Get element's drag parent, default to element's parent element.
         const dragContainer = draggable.settings.container || elementContainer;
@@ -1738,7 +1738,7 @@ class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
         // is a drag container.
         if (elementContainer !== dragContainer) {
             const { position: position } = style;
-            if (position !== "fixed" && position !== "absolute") throw new Error(`Dragged element has "${position}" position, but only "fixed" or "absolute" are allowed when using a custom drag container.`);
+            if (position !== 'fixed' && position !== 'absolute') throw new Error(`Dragged element has "${position}" position, but only "fixed" or "absolute" are allowed when using a custom drag container.`);
         }
         // Compute element's offset container.
         const elementOffsetContainer = (0, $b2d9660139a5b6b9$export$243d7fadef466e38)(element) || element;
@@ -1837,7 +1837,7 @@ class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
                         // unfortunately, there seems to be no way to do that accurately
                         // with subpixel precision.
                         if ((0, $ba8ad8073c33464d$export$8317bebcfd6ca26c)(matrices[0])) {
-                            $93e17dd02dc97955$var$MEASURE_ELEMENT.style.setProperty("transform", matrices[1].toString(), "important");
+                            $93e17dd02dc97955$var$MEASURE_ELEMENT.style.setProperty('transform', matrices[1].toString(), 'important');
                             offsetContainer.append($93e17dd02dc97955$var$MEASURE_ELEMENT);
                             (0, $b573589083190077$export$ee9ce4f6079fba39)($93e17dd02dc97955$var$MEASURE_ELEMENT, offset);
                             $93e17dd02dc97955$var$MEASURE_ELEMENT.remove();
@@ -1915,39 +1915,39 @@ const $0d0c72b4b6dc9dbb$var$POSITION_CHANGE = {
 };
 const $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX = new DOMMatrix();
 const $0d0c72b4b6dc9dbb$var$TEMP_MATRIX = new DOMMatrix();
-var $0d0c72b4b6dc9dbb$var$DragStartPhase;
-(function(DragStartPhase) {
+var $0d0c72b4b6dc9dbb$var$DragStartPhase = /*#__PURE__*/ function(DragStartPhase) {
     DragStartPhase[DragStartPhase["None"] = 0] = "None";
     DragStartPhase[DragStartPhase["Init"] = 1] = "Init";
     DragStartPhase[DragStartPhase["StartPrepare"] = 2] = "StartPrepare";
     DragStartPhase[DragStartPhase["FinishApply"] = 3] = "FinishApply";
-})($0d0c72b4b6dc9dbb$var$DragStartPhase || ($0d0c72b4b6dc9dbb$var$DragStartPhase = {}));
-var $0d0c72b4b6dc9dbb$var$DraggableStartPredicateState;
-(function(DraggableStartPredicateState) {
+    return DragStartPhase;
+}($0d0c72b4b6dc9dbb$var$DragStartPhase || {});
+var $0d0c72b4b6dc9dbb$var$DraggableStartPredicateState = /*#__PURE__*/ function(DraggableStartPredicateState) {
     DraggableStartPredicateState[DraggableStartPredicateState["Pending"] = 0] = "Pending";
     DraggableStartPredicateState[DraggableStartPredicateState["Resolved"] = 1] = "Resolved";
     DraggableStartPredicateState[DraggableStartPredicateState["Rejected"] = 2] = "Rejected";
-})($0d0c72b4b6dc9dbb$var$DraggableStartPredicateState || ($0d0c72b4b6dc9dbb$var$DraggableStartPredicateState = {}));
+    return DraggableStartPredicateState;
+}($0d0c72b4b6dc9dbb$var$DraggableStartPredicateState || {});
 const $0d0c72b4b6dc9dbb$export$44f02bfd7d637941 = {
-    Start: "start",
-    Move: "move",
-    End: "end"
+    Start: 'start',
+    Move: 'move',
+    End: 'end'
 };
 const $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61 = {
-    Start: "start",
-    StartAlign: "start-align",
-    Move: "move",
-    Align: "align",
-    End: "end",
-    EndAlign: "end-align"
+    Start: 'start',
+    StartAlign: 'start-align',
+    Move: 'move',
+    Align: 'align',
+    End: 'end',
+    EndAlign: 'end-align'
 };
 const $0d0c72b4b6dc9dbb$export$a85ab346e352a830 = {
-    PrepareStart: "preparestart",
-    Start: "start",
-    PrepareMove: "preparemove",
-    Move: "move",
-    End: "end",
-    Destroy: "destroy"
+    PrepareStart: 'preparestart',
+    Start: 'start',
+    PrepareMove: 'preparemove',
+    Move: 'move',
+    End: 'end',
+    Destroy: 'destroy'
 };
 const $0d0c72b4b6dc9dbb$export$7ce0cd3869d5dcd9 = {
     container: null,
@@ -1955,7 +1955,7 @@ const $0d0c72b4b6dc9dbb$export$7ce0cd3869d5dcd9 = {
     elements: ()=>null,
     frozenStyles: ()=>null,
     applyPosition: ({ item: item, phase: phase })=>{
-        const isEndPhase = phase === "end" || phase === "end-align";
+        const isEndPhase = phase === 'end' || phase === 'end-align';
         const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
         const [_dragContainerMatrix, inverseDragContainerMatrix] = item.getDragContainerMatrix();
         const { position: position, alignmentOffset: alignmentOffset, containerOffset: containerOffset, elementTransformMatrix: elementTransformMatrix, elementTransformOrigin: elementTransformOrigin } = item;
@@ -2170,7 +2170,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
             });
         }
         // Bind scroll listeners.
-        window.addEventListener("scroll", this._onScroll, $0d0c72b4b6dc9dbb$var$SCROLL_LISTENER_OPTIONS);
+        window.addEventListener('scroll', this._onScroll, $0d0c72b4b6dc9dbb$var$SCROLL_LISTENER_OPTIONS);
         // Update start phase.
         this._startPhase = 3;
         // Emit start event.
@@ -2199,8 +2199,8 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         if (!drag) return;
         // Reset movement diff and move the element.
         for (const item of drag.items){
-            item["_moveDiff"].x = 0;
-            item["_moveDiff"].y = 0;
+            item['_moveDiff'].x = 0;
+            item['_moveDiff'].y = 0;
             this.settings.applyPosition({
                 phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.Move,
                 draggable: this,
@@ -2223,21 +2223,21 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
             // draggable item based on how much the client rect has drifted so that
             // the element is visually repostioned to the correct place.
             // Update horizontal position data.
-            const alignDiffX = item.clientRect.x - item["_moveDiff"].x - x;
-            item.alignmentOffset.x = item.alignmentOffset.x - item["_alignDiff"].x + alignDiffX;
-            item["_alignDiff"].x = alignDiffX;
+            const alignDiffX = item.clientRect.x - item['_moveDiff'].x - x;
+            item.alignmentOffset.x = item.alignmentOffset.x - item['_alignDiff'].x + alignDiffX;
+            item['_alignDiff'].x = alignDiffX;
             // Update vertical position data.
-            const alignDiffY = item.clientRect.y - item["_moveDiff"].y - y;
-            item.alignmentOffset.y = item.alignmentOffset.y - item["_alignDiff"].y + alignDiffY;
-            item["_alignDiff"].y = alignDiffY;
+            const alignDiffY = item.clientRect.y - item['_moveDiff'].y - y;
+            item.alignmentOffset.y = item.alignmentOffset.y - item['_alignDiff'].y + alignDiffY;
+            item['_alignDiff'].y = alignDiffY;
         }
     }
     _applyAlign() {
         const { drag: drag } = this;
         if (!drag) return;
         for (const item of drag.items){
-            item["_alignDiff"].x = 0;
-            item["_alignDiff"].y = 0;
+            item['_alignDiff'].x = 0;
+            item['_alignDiff'].y = 0;
             this.settings.applyPosition({
                 phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.Align,
                 draggable: this,
@@ -2264,9 +2264,9 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
             item.position.y += positionChange.y;
             item.clientRect.x += positionChange.x;
             item.clientRect.y += positionChange.y;
-            if (phase === "move") {
-                item["_moveDiff"].x += positionChange.x;
-                item["_moveDiff"].y += positionChange.y;
+            if (phase === 'move') {
+                item['_moveDiff'].x += positionChange.x;
+                item['_moveDiff'].y += positionChange.y;
             }
         }
     }
@@ -2330,7 +2330,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         (0, $e434efa1a293c3f2$export$e94d57566be028aa).off((0, $e434efa1a293c3f2$export$ef9171fc2626).read, this._alignId);
         (0, $e434efa1a293c3f2$export$e94d57566be028aa).off((0, $e434efa1a293c3f2$export$ef9171fc2626).write, this._alignId);
         // Unbind scroll listener.
-        window.removeEventListener("scroll", this._onScroll, $0d0c72b4b6dc9dbb$var$SCROLL_LISTENER_OPTIONS);
+        window.removeEventListener('scroll', this._onScroll, $0d0c72b4b6dc9dbb$var$SCROLL_LISTENER_OPTIONS);
         // Apply modifiers for the end phase.
         this._applyModifiers($0d0c72b4b6dc9dbb$export$44f02bfd7d637941.End, 0, 0);
         for (const item of drag.items){
@@ -2345,7 +2345,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
                 item.containerOffset.y = 0;
             }
             // Unfreeze element's props if such are provided.
-            if (item.unfrozenStyles) for(const key in item.unfrozenStyles)item.element.style[key] = item.unfrozenStyles[key] || "";
+            if (item.unfrozenStyles) for(const key in item.unfrozenStyles)item.element.style[key] = item.unfrozenStyles[key] || '';
             // Set (maybe) final position after drag.
             this.settings.applyPosition({
                 phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.End,
@@ -2420,9 +2420,9 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
 
 
 const $26b99708933973c1$var$SCROLLABLE_OVERFLOWS = new Set([
-    "auto",
-    "scroll",
-    "overlay"
+    'auto',
+    'scroll',
+    'overlay'
 ]);
 function $26b99708933973c1$export$2bb74740c4e19def(element) {
     const style = (0, $b75b79b0209a801e$export$3d2f074408bd1b82)(element);
@@ -2483,16 +2483,16 @@ function $0dfdc060a41a8f62$export$42a28ce04aa194cc(options = {}) {
         if (!(data.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638))) return fallback(data);
         const { draggable: draggable, sensor: sensor, event: event } = data;
         const e = event;
-        if (e.pointerType === "touch") {
+        if (e.pointerType === 'touch') {
             // On first event (touchstart/pointerdown) we need to store the drag start
             // data and bind listeners for touchmove and contextmenu.
-            if (e.type === (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Start && (e.srcEvent.type === "pointerdown" || e.srcEvent.type === "touchstart")) {
+            if (e.type === (0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).Start && (e.srcEvent.type === 'pointerdown' || e.srcEvent.type === 'touchstart')) {
                 // Prevent potentially scrollable nodes from scrolling to make sure
                 // native scrolling does not interfere with dragging.
                 targetElement = e.target;
                 const scrollables = targetElement ? $0dfdc060a41a8f62$var$getScrollables(targetElement) : [];
                 scrollables.forEach((scrollable)=>{
-                    scrollable.addEventListener("touchmove", onTouchMove, {
+                    scrollable.addEventListener('touchmove', onTouchMove, {
                         passive: false,
                         capture: true
                     });
@@ -2504,9 +2504,9 @@ function $0dfdc060a41a8f62$export$42a28ce04aa194cc(options = {}) {
                     draggable.sensors.forEach((sensor)=>{
                         if (sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) sensor.off((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).End, dragEndListener);
                     });
-                    targetElement?.removeEventListener("contextmenu", onContextMenu);
+                    targetElement?.removeEventListener('contextmenu', onContextMenu);
                     scrollables.forEach((scrollable)=>{
-                        scrollable.removeEventListener("touchmove", onTouchMove, {
+                        scrollable.removeEventListener('touchmove', onTouchMove, {
                             capture: true
                         });
                     });
@@ -2520,7 +2520,7 @@ function $0dfdc060a41a8f62$export$42a28ce04aa194cc(options = {}) {
                 dragAllowed = undefined;
                 startTimeStamp = e.srcEvent.timeStamp;
                 // Prevent context menu popping up.
-                targetElement?.addEventListener("contextmenu", onContextMenu);
+                targetElement?.addEventListener('contextmenu', onContextMenu);
                 // Reset data on drag end. We want to listen to all sensors as we don't
                 // know yet which one will start the drag.
                 draggable.on((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).End, dragEndListener);
@@ -2663,7 +2663,7 @@ function $e4a9d189cff00937$export$b43dd221600cdb2e(getContainerRect, trackSensor
         // On first move, store the containment state. Item data will be kept alive
         // for the duration of the drag, but it will be removed once the drag ends.
         if (!itemData.__containment__) {
-            containmentState.trackDrift = typeof trackSensorDrift === "function" ? trackSensorDrift(data) : trackSensorDrift;
+            containmentState.trackDrift = typeof trackSensorDrift === 'function' ? trackSensorDrift(data) : trackSensorDrift;
             itemData.__containment__ = containmentState;
         }
         const { drift: drift, trackDrift: trackDrift } = containmentState;
@@ -2815,7 +2815,7 @@ const $45f763d3a9362ecf$var$TEMP_RECT = {
 };
 const $45f763d3a9362ecf$var$DEFAULT_THRESHOLD = 50;
 const $45f763d3a9362ecf$var$SPEED_DATA = {
-    direction: "none",
+    direction: 'none',
     threshold: 0,
     distance: 0,
     value: 0,
@@ -2851,15 +2851,15 @@ function $45f763d3a9362ecf$var$getDirectionAsString(direction) {
     switch(direction){
         case $45f763d3a9362ecf$var$AUTO_SCROLL_DIRECTION_X.none:
         case $45f763d3a9362ecf$var$AUTO_SCROLL_DIRECTION_Y.none:
-            return "none";
+            return 'none';
         case $45f763d3a9362ecf$var$AUTO_SCROLL_DIRECTION_X.left:
-            return "left";
+            return 'left';
         case $45f763d3a9362ecf$var$AUTO_SCROLL_DIRECTION_X.right:
-            return "right";
+            return 'right';
         case $45f763d3a9362ecf$var$AUTO_SCROLL_DIRECTION_Y.up:
-            return "up";
+            return 'up';
         case $45f763d3a9362ecf$var$AUTO_SCROLL_DIRECTION_Y.down:
-            return "down";
+            return 'down';
         default:
             throw new Error(`Unknown direction value: ${direction}`);
     }
@@ -3001,7 +3001,7 @@ class $45f763d3a9362ecf$var$AutoScrollRequest {
     computeSpeed() {
         if (!this.item || !this.element) return 0;
         const { speed: speed } = this.item;
-        if (typeof speed === "function") {
+        if (typeof speed === 'function') {
             $45f763d3a9362ecf$var$SPEED_DATA.direction = $45f763d3a9362ecf$var$getDirectionAsString(this.direction);
             $45f763d3a9362ecf$var$SPEED_DATA.threshold = this.threshold;
             $45f763d3a9362ecf$var$SPEED_DATA.distance = this.distance;
@@ -3029,12 +3029,12 @@ class $45f763d3a9362ecf$var$AutoScrollRequest {
     onStart() {
         if (!this.item || !this.element) return;
         const { onStart: onStart } = this.item;
-        if (typeof onStart === "function") onStart(this.element, $45f763d3a9362ecf$var$getDirectionAsString(this.direction));
+        if (typeof onStart === 'function') onStart(this.element, $45f763d3a9362ecf$var$getDirectionAsString(this.direction));
     }
     onStop() {
         if (!this.item || !this.element) return;
         const { onStop: onStop } = this.item;
-        if (typeof onStop === "function") onStop(this.element, $45f763d3a9362ecf$var$getDirectionAsString(this.direction));
+        if (typeof onStop === 'function') onStop(this.element, $45f763d3a9362ecf$var$getDirectionAsString(this.direction));
     }
 }
 function $45f763d3a9362ecf$export$55a384729d91296b(// Pixels per second.
@@ -3172,9 +3172,9 @@ class $45f763d3a9362ecf$export$3fb39aee5567f02e {
         let i = 0;
         for(; i < targets.length; i++){
             const target = targets[i];
-            const targetThreshold = typeof target.threshold === "number" ? target.threshold : $45f763d3a9362ecf$var$DEFAULT_THRESHOLD;
-            const testAxisX = !!(checkX && moveDirectionX && target.axis !== "y");
-            const testAxisY = !!(checkY && moveDirectionY && target.axis !== "x");
+            const targetThreshold = typeof target.threshold === 'number' ? target.threshold : $45f763d3a9362ecf$var$DEFAULT_THRESHOLD;
+            const testAxisX = !!(checkX && moveDirectionX && target.axis !== 'y');
+            const testAxisY = !!(checkY && moveDirectionY && target.axis !== 'x');
             const testPriority = target.priority || 0;
             // Ignore this item if it's x-axis and y-axis priority is lower than
             // the currently matching item's.
@@ -3186,7 +3186,7 @@ class $45f763d3a9362ecf$export$3fb39aee5567f02e {
             if (testMaxScrollX <= 0 && testMaxScrollY <= 0) continue;
             const testRect = (0, $ef561677d46962d4$export$4b834cebd9e5cebe)([
                 testElement,
-                "padding"
+                'padding'
             ], window);
             let testScore = (0, $ec0caa97c3c0620a$export$25b3e1e24e1ba229)(clientRect, testRect) || -Infinity;
             // If the item has no overlap with the target.
@@ -3268,16 +3268,16 @@ class $45f763d3a9362ecf$export$3fb39aee5567f02e {
             // Make sure we have a matching axis.
             const testIsAxisX = !!($45f763d3a9362ecf$export$5bbd74ab6c855dff.x & scrollRequest.direction);
             if (testIsAxisX) {
-                if (target.axis === "y") continue;
+                if (target.axis === 'y') continue;
             } else {
-                if (target.axis === "x") continue;
+                if (target.axis === 'x') continue;
             }
             // Make sure the element is still scrollable.
             const testMaxScroll = testIsAxisX ? (0, $cdf903cd8fa4370b$export$c16047c7a398106d)(testElement) : (0, $7a2ca2d47a2a34d5$export$39d53b245a98193e)(testElement);
             if (testMaxScroll <= 0) break;
             const testRect = (0, $ef561677d46962d4$export$4b834cebd9e5cebe)([
                 testElement,
-                "padding"
+                'padding'
             ], window);
             const testScore = (0, $ec0caa97c3c0620a$export$25b3e1e24e1ba229)(clientRect, testRect) || -Infinity;
             // If the item has no overlap with the target nor the padded target rect
@@ -3287,7 +3287,7 @@ class $45f763d3a9362ecf$export$3fb39aee5567f02e {
                 if (!(padding && (0, $e2a0efbe7e37d8be$export$8d3dd0be5eb9f11f)(clientRect, $45f763d3a9362ecf$var$getPaddedRect(testRect, padding, $45f763d3a9362ecf$var$TEMP_RECT)))) break;
             }
             // Compute threshold.
-            const targetThreshold = typeof target.threshold === "number" ? target.threshold : $45f763d3a9362ecf$var$DEFAULT_THRESHOLD;
+            const targetThreshold = typeof target.threshold === 'number' ? target.threshold : $45f763d3a9362ecf$var$DEFAULT_THRESHOLD;
             const testThreshold = $45f763d3a9362ecf$var$computeThreshold(targetThreshold, testIsAxisX ? testRect.width : testRect.height);
             // Compute edge offset.
             const testEdgeOffset = $45f763d3a9362ecf$var$computeEdgeOffset(testThreshold, inertAreaSize, testIsAxisX ? clientRect.width : clientRect.height, testIsAxisX ? testRect.width : testRect.height);
@@ -3550,13 +3550,13 @@ class $244877ffe9407e42$var$DraggableAutoScrollProxy {
     }
     get targets() {
         let { targets: targets } = this._getSettings();
-        if (typeof targets === "function") targets = targets(this._draggable);
+        if (typeof targets === 'function') targets = targets(this._draggable);
         return targets;
     }
     get position() {
         const position = this._position;
         const { getPosition: getPosition } = this._getSettings();
-        if (typeof getPosition === "function") Object.assign(position, getPosition(this._draggable));
+        if (typeof getPosition === 'function') Object.assign(position, getPosition(this._draggable));
         else {
             position.x = 0;
             position.y = 0;
@@ -3566,7 +3566,7 @@ class $244877ffe9407e42$var$DraggableAutoScrollProxy {
     get clientRect() {
         const rect = this._clientRect;
         const { getClientRect: getClientRect } = this._getSettings();
-        if (typeof getClientRect === "function") Object.assign(rect, getClientRect(this._draggable));
+        if (typeof getClientRect === 'function') Object.assign(rect, getClientRect(this._draggable));
         else {
             rect.width = 0;
             rect.height = 0;
@@ -3593,8 +3593,8 @@ class $244877ffe9407e42$var$DraggableAutoScrollProxy {
 }
 class $244877ffe9407e42$export$5059276ad4233de3 {
     constructor(draggable, options = {}){
-        this.name = "autoscroll";
-        this.version = "0.0.3";
+        this.name = 'autoscroll';
+        this.version = '0.0.3';
         this.settings = this._parseSettings(options);
         this._autoScrollProxy = null;
         draggable.on((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).Start, ()=>{
@@ -3642,32 +3642,41 @@ function $244877ffe9407e42$export$c0f5c18ade842ccd(options) {
 
 
 
-const $9ce708fa4d5ed47d$var$GRID_WIDTH = 40;
-const $9ce708fa4d5ed47d$var$GRID_HEIGHT = 40;
-const $9ce708fa4d5ed47d$var$element = document.querySelector(".draggable");
-const $9ce708fa4d5ed47d$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($9ce708fa4d5ed47d$var$element);
-const $9ce708fa4d5ed47d$var$keyboardSensor = new (0, $2a9b1c646b3552c1$export$44d67f2a438aeba9)($9ce708fa4d5ed47d$var$element, {
-    moveDistance: {
-        x: $9ce708fa4d5ed47d$var$GRID_WIDTH,
-        y: $9ce708fa4d5ed47d$var$GRID_HEIGHT
-    }
+const $6abf5f75f0c818c7$var$element = document.querySelector('.draggable');
+const $6abf5f75f0c818c7$var$dragContainer = document.querySelector('.drag-container');
+const $6abf5f75f0c818c7$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($6abf5f75f0c818c7$var$element);
+const $6abf5f75f0c818c7$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($6abf5f75f0c818c7$var$element, {
+    computeSpeed: ()=>100
 });
-const $9ce708fa4d5ed47d$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $9ce708fa4d5ed47d$var$pointerSensor,
-    $9ce708fa4d5ed47d$var$keyboardSensor
+const $6abf5f75f0c818c7$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $6abf5f75f0c818c7$var$pointerSensor,
+    $6abf5f75f0c818c7$var$keyboardSensor
 ], {
+    container: $6abf5f75f0c818c7$var$dragContainer,
     elements: ()=>[
-            $9ce708fa4d5ed47d$var$element
+            $6abf5f75f0c818c7$var$element
         ],
-    positionModifiers: [
-        (0, $0b5391881dc2b3a6$export$7f11ea1f0ba255b5)($9ce708fa4d5ed47d$var$GRID_WIDTH, $9ce708fa4d5ed47d$var$GRID_HEIGHT)
-    ],
+    frozenStyles: ()=>[
+            'left',
+            'top'
+        ],
     onStart: ()=>{
-        $9ce708fa4d5ed47d$var$element.classList.add("dragging");
+        $6abf5f75f0c818c7$var$element.classList.add('dragging');
     },
     onEnd: ()=>{
-        $9ce708fa4d5ed47d$var$element.classList.remove("dragging");
+        $6abf5f75f0c818c7$var$element.classList.remove('dragging');
     }
-});
+}).use((0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
+    targets: [
+        {
+            element: window,
+            axis: 'y',
+            padding: {
+                top: Infinity,
+                bottom: Infinity
+            }
+        }
+    ]
+}));
 
 
