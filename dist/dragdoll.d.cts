@@ -365,8 +365,10 @@ declare class DraggableDrag<S extends Sensor[], E extends S[number]['_events_typ
 declare enum DragStartPhase {
     None = 0,
     Init = 1,
-    StartPrepare = 2,
-    FinishApply = 3
+    Prepare = 2,
+    FinishPrepare = 3,
+    Apply = 4,
+    FinishApply = 5
 }
 declare enum DraggableStartPredicateState {
     Pending = 0,

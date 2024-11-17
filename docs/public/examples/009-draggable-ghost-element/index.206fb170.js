@@ -1918,8 +1918,10 @@ const $0d0c72b4b6dc9dbb$var$TEMP_MATRIX = new DOMMatrix();
 var $0d0c72b4b6dc9dbb$var$DragStartPhase = /*#__PURE__*/ function(DragStartPhase) {
     DragStartPhase[DragStartPhase["None"] = 0] = "None";
     DragStartPhase[DragStartPhase["Init"] = 1] = "Init";
-    DragStartPhase[DragStartPhase["StartPrepare"] = 2] = "StartPrepare";
-    DragStartPhase[DragStartPhase["FinishApply"] = 3] = "FinishApply";
+    DragStartPhase[DragStartPhase["Prepare"] = 2] = "Prepare";
+    DragStartPhase[DragStartPhase["FinishPrepare"] = 3] = "FinishPrepare";
+    DragStartPhase[DragStartPhase["Apply"] = 4] = "Apply";
+    DragStartPhase[DragStartPhase["FinishApply"] = 5] = "FinishApply";
     return DragStartPhase;
 }($0d0c72b4b6dc9dbb$var$DragStartPhase || {});
 var $0d0c72b4b6dc9dbb$var$DraggableStartPredicateState = /*#__PURE__*/ function(DraggableStartPredicateState) {
@@ -1955,7 +1957,7 @@ const $0d0c72b4b6dc9dbb$export$7ce0cd3869d5dcd9 = {
     elements: ()=>null,
     frozenStyles: ()=>null,
     applyPosition: ({ item: item, phase: phase })=>{
-        const isEndPhase = phase === 'end' || phase === 'end-align';
+        const isEndPhase = phase === $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.End || phase === $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.EndAlign;
         const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
         const [_dragContainerMatrix, inverseDragContainerMatrix] = item.getDragContainerMatrix();
         const { position: position, alignmentOffset: alignmentOffset, containerOffset: containerOffset, elementTransformMatrix: elementTransformMatrix, elementTransformOrigin: elementTransformOrigin } = item;
@@ -2126,10 +2128,14 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.PrepareStart, drag.startEvent);
         // Call onPrepareStart callback.
         this.settings.onPrepareStart?.(drag, this);
+        // Update start phase.
+        this._startPhase = 3;
     }
     _applyStart() {
         const drag = this.drag;
         if (!drag) return;
+        // Update start phase.
+        this._startPhase = 4;
         for (const item of drag.items){
             // Append element within the container element if such is provided.
             if (item.dragContainer !== item.elementContainer) (0, $3ba9e1e7a6850ba1$export$33e13bbfe889ab45)(item.element, item.dragContainer);
@@ -2171,12 +2177,12 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         }
         // Bind scroll listeners.
         window.addEventListener('scroll', this._onScroll, $0d0c72b4b6dc9dbb$var$SCROLL_LISTENER_OPTIONS);
-        // Update start phase.
-        this._startPhase = 3;
         // Emit start event.
         this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.Start, drag.startEvent);
         // Call onStart callback.
         this.settings.onStart?.(drag, this);
+        // Update start phase.
+        this._startPhase = 5;
     }
     _prepareMove() {
         const drag = this.drag;
@@ -2189,8 +2195,12 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         this._applyModifiers($0d0c72b4b6dc9dbb$export$44f02bfd7d637941.Move, moveEvent.x - prevMoveEvent.x, moveEvent.y - prevMoveEvent.y);
         // Emit preparemove event.
         this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.PrepareMove, moveEvent);
+        // Make sure that the drag is still active.
+        if (drag.isEnded) return;
         // Call onPrepareMove callback.
         this.settings.onPrepareMove?.(drag, this);
+        // Make sure that the drag is still active.
+        if (drag.isEnded) return;
         // Store next move event as previous move event.
         drag.prevMoveEvent = moveEvent;
     }
@@ -2210,6 +2220,8 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         }
         // Emit move event.
         this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.Move, drag.moveEvent);
+        // Make sure that the drag is still active.
+        if (drag.isEnded) return;
         // Call onMove callback.
         this.settings.onMove?.(drag, this);
     }
@@ -2221,7 +2233,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
             // Note that we INTENTIONALLY DO NOT UPDATE THE CLIENT RECT COORDINATES
             // here. The point of this method is to update the POSITION of the
             // draggable item based on how much the client rect has drifted so that
-            // the element is visually repostioned to the correct place.
+            // the element is visually repositioned to the correct place.
             // Update horizontal position data.
             const alignDiffX = item.clientRect.x - item['_moveDiff'].x - x;
             item.alignmentOffset.x = item.alignmentOffset.x - item['_alignDiff'].x + alignDiffX;
@@ -2308,16 +2320,11 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
     stop() {
         const drag = this.drag;
         if (!drag || drag.isEnded) return;
-        // If drag start process is still in the prepare and apply phase, let's
-        // wait for it to finish before stopping the drag process. This is a very
-        // rare edge case, but it can happen if the drag process is stopped
-        // forcefully during the start phase.
-        // NB: We reuse the `_startId` symbol to queue the stop procedure.
-        if (this._startPhase === 2) {
-            this.off($0d0c72b4b6dc9dbb$export$a85ab346e352a830.Start, this._startId);
-            this.on($0d0c72b4b6dc9dbb$export$a85ab346e352a830.Start, ()=>this.stop(), this._startId);
-            return;
-        }
+        // Get current start phase.
+        const startPhase = this._startPhase;
+        // Throw an error if drag is being stopped in the middle of the start
+        // prepare or apply process. This is not allowed.
+        if (startPhase === 2 || startPhase === 4) throw new Error('Cannot stop drag start process at this point');
         // Reset drag start phase.
         this._startPhase = 0;
         // Mark drag process as ended.
@@ -2331,48 +2338,66 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         (0, $e434efa1a293c3f2$export$e94d57566be028aa).off((0, $e434efa1a293c3f2$export$ef9171fc2626).write, this._alignId);
         // Unbind scroll listener.
         window.removeEventListener('scroll', this._onScroll, $0d0c72b4b6dc9dbb$var$SCROLL_LISTENER_OPTIONS);
-        // Apply modifiers for the end phase.
-        this._applyModifiers($0d0c72b4b6dc9dbb$export$44f02bfd7d637941.End, 0, 0);
-        for (const item of drag.items){
-            // Move elements within the root container if they were moved to a
-            // different container during the drag process. Also reset alignment
-            // and container offsets for those elements.
+        // Apply modifiers for the end phase, if needed.
+        if (startPhase > 1) this._applyModifiers($0d0c72b4b6dc9dbb$export$44f02bfd7d637941.End, 0, 0);
+        // If the drag start process was successfully finished before stopping it,
+        // we need to do quite a bit of cleanup and finalization.
+        if (startPhase === 5) {
+            for (const item of drag.items){
+                // Move elements within the root container if they were moved to a
+                // different container during the drag process. Also reset alignment
+                // and container offsets for those elements.
+                if (item.elementContainer !== item.dragContainer) {
+                    (0, $3ba9e1e7a6850ba1$export$33e13bbfe889ab45)(item.element, item.elementContainer);
+                    item.alignmentOffset.x = 0;
+                    item.alignmentOffset.y = 0;
+                    item.containerOffset.x = 0;
+                    item.containerOffset.y = 0;
+                }
+                // Unfreeze element's props if such are provided.
+                if (item.unfrozenStyles) for(const key in item.unfrozenStyles)item.element.style[key] = item.unfrozenStyles[key] || '';
+                // Set (maybe) final position after drag.
+                this.settings.applyPosition({
+                    phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.End,
+                    draggable: this,
+                    drag: drag,
+                    item: item
+                });
+            }
+            // Make sure that all elements that were reparented during the drag process
+            // are actually aligned with the item's cached client rect data. NB: This
+            // procedure causes a reflow, but it's necessary to ensure that the elements
+            // are visually aligned correctly. We do the DOM reading in a separate loop
+            // to avoid layout thrashing more than necessary.
+            for (const item of drag.items)if (item.elementContainer !== item.dragContainer) {
+                const itemRect = item.element.getBoundingClientRect();
+                // Round the align diff to nearest 3rd decimal to avoid applying it if
+                // the value is so small that it's not visible.
+                item.alignmentOffset.x = (0, $b71b05db74a54e91$export$a3992db8dd0fd9e6)(item.clientRect.x - itemRect.x, 3);
+                item.alignmentOffset.y = (0, $b71b05db74a54e91$export$a3992db8dd0fd9e6)(item.clientRect.y - itemRect.y, 3);
+            }
+            // Apply final alignment to all the elements that need it.
+            for (const item of drag.items)if (item.elementContainer !== item.dragContainer && (item.alignmentOffset.x !== 0 || item.alignmentOffset.y !== 0)) this.settings.applyPosition({
+                phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.EndAlign,
+                draggable: this,
+                drag: drag,
+                item: item
+            });
+        } else if (startPhase === 3) for (const item of drag.items){
+            // Make sure the client rect and position data reflects the reality. As
+            // the item was never moved, we can just reset the position data.
+            item.clientRect.x -= item.position.x;
+            item.clientRect.y -= item.position.y;
+            item.position.x = 0;
+            item.position.y = 0;
+            // Reset alignment and container offsets.
             if (item.elementContainer !== item.dragContainer) {
-                (0, $3ba9e1e7a6850ba1$export$33e13bbfe889ab45)(item.element, item.elementContainer);
                 item.alignmentOffset.x = 0;
                 item.alignmentOffset.y = 0;
                 item.containerOffset.x = 0;
                 item.containerOffset.y = 0;
             }
-            // Unfreeze element's props if such are provided.
-            if (item.unfrozenStyles) for(const key in item.unfrozenStyles)item.element.style[key] = item.unfrozenStyles[key] || '';
-            // Set (maybe) final position after drag.
-            this.settings.applyPosition({
-                phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.End,
-                draggable: this,
-                drag: drag,
-                item: item
-            });
         }
-        // Make sure that all elements that were reparented during the drag process
-        // are actually aligned with the item's cached client rect data. NB: This
-        // procedure causes a reflow, but it's necessary to ensure that the elements
-        // are visually aligned correctly. We do the DOM reading in a separate loop
-        // to avoid layout thrashing more than necessary.
-        for (const item of drag.items)if (item.elementContainer !== item.dragContainer) {
-            const itemRect = item.element.getBoundingClientRect();
-            // Round the align diff to nearest 3rd decimal to avoid applying it if
-            // the value is so small that it's not visible.
-            item.alignmentOffset.x = (0, $b71b05db74a54e91$export$a3992db8dd0fd9e6)(item.clientRect.x - itemRect.x, 3);
-            item.alignmentOffset.y = (0, $b71b05db74a54e91$export$a3992db8dd0fd9e6)(item.clientRect.y - itemRect.y, 3);
-        }
-        // Apply final alignment to all the elements that need it.
-        for (const item of drag.items)if (item.elementContainer !== item.dragContainer && (item.alignmentOffset.x !== 0 || item.alignmentOffset.y !== 0)) this.settings.applyPosition({
-            phase: $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.EndAlign,
-            draggable: this,
-            drag: drag,
-            item: item
-        });
         // Emit end event.
         this._emit($0d0c72b4b6dc9dbb$export$a85ab346e352a830.End, drag.endEvent);
         // Call onEnd callback.
@@ -3642,41 +3667,49 @@ function $244877ffe9407e42$export$c0f5c18ade842ccd(options) {
 
 
 
-const $6abf5f75f0c818c7$var$element = document.querySelector('.draggable');
-const $6abf5f75f0c818c7$var$dragContainer = document.querySelector('.drag-container');
-const $6abf5f75f0c818c7$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($6abf5f75f0c818c7$var$element);
-const $6abf5f75f0c818c7$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($6abf5f75f0c818c7$var$element, {
-    computeSpeed: ()=>100
-});
-const $6abf5f75f0c818c7$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $6abf5f75f0c818c7$var$pointerSensor,
-    $6abf5f75f0c818c7$var$keyboardSensor
+const $fbef1913897e270e$var$element = document.querySelector('.draggable');
+const $fbef1913897e270e$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($fbef1913897e270e$var$element);
+const $fbef1913897e270e$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($fbef1913897e270e$var$element);
+const $fbef1913897e270e$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $fbef1913897e270e$var$pointerSensor,
+    $fbef1913897e270e$var$keyboardSensor
 ], {
-    container: $6abf5f75f0c818c7$var$dragContainer,
-    elements: ()=>[
-            $6abf5f75f0c818c7$var$element
-        ],
-    frozenStyles: ()=>[
-            'left',
-            'top'
-        ],
-    onStart: ()=>{
-        $6abf5f75f0c818c7$var$element.classList.add('dragging');
+    elements: ()=>{
+        // Clone the element and align the clone with the original element.
+        const elemRect = $fbef1913897e270e$var$element.getBoundingClientRect();
+        const clone = $fbef1913897e270e$var$element.cloneNode(true);
+        clone.style.position = 'fixed';
+        clone.style.width = `${elemRect.width}px`;
+        clone.style.height = `${elemRect.height}px`;
+        clone.style.left = `${elemRect.left}px`;
+        clone.style.top = `${elemRect.top}px`;
+        // Add the ghost and dragging class to the clone. The ghost element will be
+        // in dragging state for the duration of it's existence.
+        clone.classList.add('ghost', 'dragging');
+        // We need to reset the transform to avoid the ghost element being offset
+        // unintentionally. In this specific case, if we don't reset the transform,
+        // the ghost element will be offset by the original element's transform.
+        clone.style.transform = '';
+        // Append the ghost element to the body.
+        document.body.appendChild(clone);
+        return [
+            clone
+        ];
     },
-    onEnd: ()=>{
-        $6abf5f75f0c818c7$var$element.classList.remove('dragging');
+    onStart: ()=>{
+        $fbef1913897e270e$var$element.classList.add('dragging');
+    },
+    onEnd: (drag)=>{
+        const dragItem = drag.items[0];
+        // Move the original element to the ghost element's position. We use DOMMatrix
+        // to first combine the original element's transform with the ghost element's
+        // transform and then apply the combined transform to the original element.
+        const matrix = new DOMMatrix().setMatrixValue(`translate(${dragItem.position.x}px, ${dragItem.position.y}px) ${$fbef1913897e270e$var$element.style.transform}`);
+        $fbef1913897e270e$var$element.style.transform = `${matrix}`;
+        // Remove the ghost element.
+        dragItem.element.remove();
+        $fbef1913897e270e$var$element.classList.remove('dragging');
     }
-}).use((0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
-    targets: [
-        {
-            element: window,
-            axis: 'y',
-            padding: {
-                top: Infinity,
-                bottom: Infinity
-            }
-        }
-    ]
-}));
+});
 
 

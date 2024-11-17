@@ -4708,7 +4708,7 @@ var DraggableDefaultSettings = {
   elements: () => null,
   frozenStyles: () => null,
   applyPosition: ({ item, phase }) => {
-    const isEndPhase = phase === "end" || phase === "end-align";
+    const isEndPhase = phase === DraggableApplyPositionPhase.End || phase === DraggableApplyPositionPhase.EndAlign;
     const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
     const [_dragContainerMatrix, inverseDragContainerMatrix] = item.getDragContainerMatrix();
     const {
@@ -4874,7 +4874,7 @@ var Draggable = class {
   _prepareStart() {
     const drag = this.drag;
     if (!drag) return;
-    this._startPhase = 2 /* StartPrepare */;
+    this._startPhase = 2 /* Prepare */;
     const elements = this.settings.elements({
       draggable: this,
       drag
@@ -4885,10 +4885,12 @@ var Draggable = class {
     this._applyModifiers(DraggableModifierPhase.Start, 0, 0);
     this._emit(DraggableEventType.PrepareStart, drag.startEvent);
     this.settings.onPrepareStart?.(drag, this);
+    this._startPhase = 3 /* FinishPrepare */;
   }
   _applyStart() {
     const drag = this.drag;
     if (!drag) return;
+    this._startPhase = 4 /* Apply */;
     for (const item of drag.items) {
       if (item.dragContainer !== item.elementContainer) {
         appendElement(item.element, item.dragContainer);
@@ -4929,9 +4931,9 @@ var Draggable = class {
       }
     }
     window.addEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS);
-    this._startPhase = 3 /* FinishApply */;
     this._emit(DraggableEventType.Start, drag.startEvent);
     this.settings.onStart?.(drag, this);
+    this._startPhase = 5 /* FinishApply */;
   }
   _prepareMove() {
     const drag = this.drag;
@@ -4944,7 +4946,9 @@ var Draggable = class {
       moveEvent.y - prevMoveEvent.y
     );
     this._emit(DraggableEventType.PrepareMove, moveEvent);
+    if (drag.isEnded) return;
     this.settings.onPrepareMove?.(drag, this);
+    if (drag.isEnded) return;
     drag.prevMoveEvent = moveEvent;
   }
   _applyMove() {
@@ -4961,6 +4965,7 @@ var Draggable = class {
       });
     }
     this._emit(DraggableEventType.Move, drag.moveEvent);
+    if (drag.isEnded) return;
     this.settings.onMove?.(drag, this);
   }
   _prepareAlign() {
@@ -5050,10 +5055,9 @@ var Draggable = class {
   stop() {
     const drag = this.drag;
     if (!drag || drag.isEnded) return;
-    if (this._startPhase === 2 /* StartPrepare */) {
-      this.off(DraggableEventType.Start, this._startId);
-      this.on(DraggableEventType.Start, () => this.stop(), this._startId);
-      return;
+    const startPhase = this._startPhase;
+    if (startPhase === 2 /* Prepare */ || startPhase === 4 /* Apply */) {
+      throw new Error("Cannot stop drag start process at this point");
     }
     this._startPhase = 0 /* None */;
     drag.isEnded = true;
@@ -5064,42 +5068,59 @@ var Draggable = class {
     ticker.off(tickerPhases.read, this._alignId);
     ticker.off(tickerPhases.write, this._alignId);
     window.removeEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS);
-    this._applyModifiers(DraggableModifierPhase.End, 0, 0);
-    for (const item of drag.items) {
-      if (item.elementContainer !== item.dragContainer) {
-        appendElement(item.element, item.elementContainer);
-        item.alignmentOffset.x = 0;
-        item.alignmentOffset.y = 0;
-        item.containerOffset.x = 0;
-        item.containerOffset.y = 0;
-      }
-      if (item.unfrozenStyles) {
-        for (const key in item.unfrozenStyles) {
-          item.element.style[key] = item.unfrozenStyles[key] || "";
+    if (startPhase > 1 /* Init */) {
+      this._applyModifiers(DraggableModifierPhase.End, 0, 0);
+    }
+    if (startPhase === 5 /* FinishApply */) {
+      for (const item of drag.items) {
+        if (item.elementContainer !== item.dragContainer) {
+          appendElement(item.element, item.elementContainer);
+          item.alignmentOffset.x = 0;
+          item.alignmentOffset.y = 0;
+          item.containerOffset.x = 0;
+          item.containerOffset.y = 0;
         }
-      }
-      this.settings.applyPosition({
-        phase: DraggableApplyPositionPhase.End,
-        draggable: this,
-        drag,
-        item
-      });
-    }
-    for (const item of drag.items) {
-      if (item.elementContainer !== item.dragContainer) {
-        const itemRect = item.element.getBoundingClientRect();
-        item.alignmentOffset.x = roundNumber(item.clientRect.x - itemRect.x, 3);
-        item.alignmentOffset.y = roundNumber(item.clientRect.y - itemRect.y, 3);
-      }
-    }
-    for (const item of drag.items) {
-      if (item.elementContainer !== item.dragContainer && (item.alignmentOffset.x !== 0 || item.alignmentOffset.y !== 0)) {
+        if (item.unfrozenStyles) {
+          for (const key in item.unfrozenStyles) {
+            item.element.style[key] = item.unfrozenStyles[key] || "";
+          }
+        }
         this.settings.applyPosition({
-          phase: DraggableApplyPositionPhase.EndAlign,
+          phase: DraggableApplyPositionPhase.End,
           draggable: this,
           drag,
           item
         });
+      }
+      for (const item of drag.items) {
+        if (item.elementContainer !== item.dragContainer) {
+          const itemRect = item.element.getBoundingClientRect();
+          item.alignmentOffset.x = roundNumber(item.clientRect.x - itemRect.x, 3);
+          item.alignmentOffset.y = roundNumber(item.clientRect.y - itemRect.y, 3);
+        }
+      }
+      for (const item of drag.items) {
+        if (item.elementContainer !== item.dragContainer && (item.alignmentOffset.x !== 0 || item.alignmentOffset.y !== 0)) {
+          this.settings.applyPosition({
+            phase: DraggableApplyPositionPhase.EndAlign,
+            draggable: this,
+            drag,
+            item
+          });
+        }
+      }
+    } else if (startPhase === 3 /* FinishPrepare */) {
+      for (const item of drag.items) {
+        item.clientRect.x -= item.position.x;
+        item.clientRect.y -= item.position.y;
+        item.position.x = 0;
+        item.position.y = 0;
+        if (item.elementContainer !== item.dragContainer) {
+          item.alignmentOffset.x = 0;
+          item.alignmentOffset.y = 0;
+          item.containerOffset.x = 0;
+          item.containerOffset.y = 0;
+        }
       }
     }
     this._emit(DraggableEventType.End, drag.endEvent);
@@ -6707,6 +6728,71 @@ function methodOn2() {
 // tests/src/draggable/methods/stop.ts
 function methodStop() {
   describe("stop", () => {
+    it("should stop the drag after it has started", async () => {
+      const el = createTestElement();
+      const elRect = el.getBoundingClientRect();
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [el],
+        onEnd: (drag) => {
+          onEndCalled = true;
+          assert.equal(drag.isEnded, true);
+        }
+      });
+      let endEventTriggered = false;
+      let onEndCalled = false;
+      draggable.on("end", () => {
+        endEventTriggered = true;
+      });
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.notEqual(draggable.drag, null, "Drag should have started");
+      draggable.stop();
+      assert.equal(draggable.drag, null, "Drag should have stopped instantly");
+      assert.equal(endEventTriggered, true, "end event should have been triggered");
+      assert.equal(onEndCalled, true, "onEnd callback should have been called");
+      assert.deepEqual(
+        elRect,
+        el.getBoundingClientRect(),
+        "Element's bounding client rect should not change after stopping the drag"
+      );
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+    });
+    it("should stop the drag synchronously after it is triggered to be start", async () => {
+      const el = createTestElement();
+      const elRect = el.getBoundingClientRect();
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [el],
+        onEnd: (drag) => {
+          onEndCalled = true;
+          assert.equal(drag.isEnded, true);
+        }
+      });
+      let endEventTriggered = false;
+      let onEndCalled = false;
+      draggable.on("end", () => {
+        endEventTriggered = true;
+      });
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.notEqual(draggable.drag, null, "Drag should have started");
+      draggable.stop();
+      assert.equal(draggable.drag, null, "Drag should have stopped instantly");
+      assert.equal(endEventTriggered, true, "end event should have been triggered");
+      assert.equal(onEndCalled, true, "onEnd callback should have been called");
+      assert.deepEqual(
+        elRect,
+        el.getBoundingClientRect(),
+        "Element's bounding client rect should not change after stopping the drag"
+      );
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+    });
   });
 }
 

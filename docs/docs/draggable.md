@@ -308,6 +308,9 @@ draggable.stop();
 
 Forcibly stops the draggable's current drag process.
 
+> [!IMPORTANT]  
+> You can't call this method within the `preparestart` or `start` event listeners nor within the `onPrepareStart` or `onStart` callbacks. An error will be thrown if you try to do so. The reason for this is that the drag start process can't be interrupted during the prepare/apply phases. You can call this method before, after and between those phases though.
+
 ### align
 
 ```ts
