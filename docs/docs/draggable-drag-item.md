@@ -56,13 +56,21 @@ type dragOffsetContainer = HTMLElement | SVGSVGElement | Window | Document;
 
 The dragged element's offset container during the drag. Read-only.
 
-### elementMatrix
+### elementTransformMatrix
 
 ```ts
 type elementMatrix = DOMMatrix;
 ```
 
-The dragged element's original computed transform matrix. Read-only.
+The dragged element's original computed transform and all the [individual transforms](https://drafts.csswg.org/css-transforms-2/#individual-transforms) (translate, rotate and scale) combined into one matrix. Read-only.
+
+### elementOffsetMatrix
+
+```ts
+type elementOffsetMatrix = DOMMatrix;
+```
+
+The dragged element's original computed [individual transforms](https://drafts.csswg.org/css-transforms-2/#individual-transforms) (translate, rotate and scale) combined into one matrix and inversed. This is needed for offsetting the individual transforms when computing the element's transform during drag. Read-only.
 
 ### frozenStyles
 

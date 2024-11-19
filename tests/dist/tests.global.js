@@ -4872,6 +4872,80 @@
     return result;
   }
 
+  // src/utils/get-intrinsic-height.ts
+  function getIntrinsicHeight(element) {
+    const style = getStyle2(element);
+    let height = parseFloat(style.height) || 0;
+    if (style.boxSizing === "border-box") {
+      return height;
+    }
+    height += parseFloat(style.borderTopWidth) || 0;
+    height += parseFloat(style.borderBottomWidth) || 0;
+    height += parseFloat(style.paddingTop) || 0;
+    height += parseFloat(style.paddingBottom) || 0;
+    if (element instanceof HTMLElement) {
+      height += element.offsetHeight - element.clientHeight;
+    }
+    return height;
+  }
+
+  // src/utils/get-intrinsic-width.ts
+  function getIntrinsicWidth(element) {
+    const style = getStyle2(element);
+    let width = parseFloat(style.width) || 0;
+    if (style.boxSizing === "border-box") {
+      return width;
+    }
+    width += parseFloat(style.borderLeftWidth) || 0;
+    width += parseFloat(style.borderRightWidth) || 0;
+    width += parseFloat(style.paddingLeft) || 0;
+    width += parseFloat(style.paddingRight) || 0;
+    if (element instanceof HTMLElement) {
+      width += element.offsetWidth - element.clientWidth;
+    }
+    return width;
+  }
+
+  // src/utils/get-element-transform-string.ts
+  function getElementTransformString(el, ignoreNormalTransform = false) {
+    const { translate, rotate, scale, transform } = getStyle2(el);
+    let transformString = "";
+    if (translate && translate !== "none") {
+      let [x = "0px", y = "0px", z] = translate.split(" ");
+      if (x.includes("%")) {
+        x = `${parseFloat(x) / 100 * getIntrinsicWidth(el)}px`;
+      }
+      if (y.includes("%")) {
+        y = `${parseFloat(y) / 100 * getIntrinsicHeight(el)}px`;
+      }
+      if (z) {
+        transformString += `translate3d(${x},${y},${z})`;
+      } else {
+        transformString += `translate(${x},${y})`;
+      }
+    }
+    if (rotate && rotate !== "none") {
+      const rotateValues = rotate.split(" ");
+      if (rotateValues.length > 1) {
+        transformString += `rotate3d(${rotateValues.join(",")})`;
+      } else {
+        transformString += `rotate(${rotateValues.join(",")})`;
+      }
+    }
+    if (scale && scale !== "none") {
+      const scaleValues = scale.split(" ");
+      if (scaleValues.length === 3) {
+        transformString += `scale3d(${scaleValues.join(",")})`;
+      } else {
+        transformString += `scale(${scaleValues.join(",")})`;
+      }
+    }
+    if (!ignoreNormalTransform && transform && transform !== "none") {
+      transformString += transform;
+    }
+    return transformString;
+  }
+
   // src/utils/parse-transform-origin.ts
   function parseTransformOrigin(transformOrigin) {
     const values = transformOrigin.split(" ");
@@ -4904,18 +4978,19 @@
     let currentElement = el;
     resetMatrix(result);
     while (currentElement) {
-      const { transform, transformOrigin } = getStyle2(currentElement);
-      if (transform && transform !== "none") {
-        MATRIX.setMatrixValue(transform);
+      const transformString = getElementTransformString(currentElement);
+      if (transformString) {
+        MATRIX.setMatrixValue(transformString);
         if (!MATRIX.isIdentity) {
+          const { transformOrigin } = getStyle2(currentElement);
           const { x, y, z } = parseTransformOrigin(transformOrigin);
           if (z === 0) {
             MATRIX.setMatrixValue(
-              `translate(${x}px, ${y}px) ${MATRIX} translate(${x * -1}px, ${y * -1}px)`
+              `translate(${x}px,${y}px) ${MATRIX} translate(${x * -1}px,${y * -1}px)`
             );
           } else {
             MATRIX.setMatrixValue(
-              `translate3d(${x}px, ${y}px, ${z}px) ${MATRIX} translate3d(${x * -1}px, ${y * -1}px, ${z * -1}px)`
+              `translate3d(${x}px,${y}px,${z}px) ${MATRIX} translate3d(${x * -1}px,${y * -1}px,${z * -1}px)`
             );
           }
           result.preMultiplySelf(MATRIX);
@@ -4977,10 +5052,14 @@
       }
       const style = getStyle2(element);
       const clientRect = element.getBoundingClientRect();
+      const individualTransforms = getElementTransformString(element, true);
       this.data = {};
       this.element = element;
       this.elementTransformOrigin = parseTransformOrigin(style.transformOrigin);
-      this.elementTransformMatrix = new DOMMatrix().setMatrixValue(style.transform);
+      this.elementTransformMatrix = new DOMMatrix().setMatrixValue(
+        individualTransforms + style.transform
+      );
+      this.elementOffsetMatrix = new DOMMatrix(individualTransforms).invertSelf();
       this.frozenStyles = null;
       this.unfrozenStyles = null;
       this.position = { x: 0, y: 0 };
@@ -5181,7 +5260,8 @@
         alignmentOffset,
         containerOffset,
         elementTransformMatrix,
-        elementTransformOrigin
+        elementTransformOrigin,
+        elementOffsetMatrix
       } = item;
       const { x: oX, y: oY, z: oZ } = elementTransformOrigin;
       const needsOriginOffset = !elementTransformMatrix.isIdentity && (oX !== 0 || oY !== 0 || oZ !== 0);
@@ -5215,6 +5295,9 @@
       }
       if (!elementTransformMatrix.isIdentity) {
         ELEMENT_MATRIX.multiplySelf(elementTransformMatrix);
+      }
+      if (!elementOffsetMatrix.isIdentity) {
+        ELEMENT_MATRIX.preMultiplySelf(elementOffsetMatrix);
       }
       item.element.style.transform = `${ELEMENT_MATRIX}`;
     },

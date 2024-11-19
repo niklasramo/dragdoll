@@ -153,6 +153,7 @@ export const DraggableDefaultSettings: DraggableSettings<any, any> = {
       containerOffset,
       elementTransformMatrix,
       elementTransformOrigin,
+      elementOffsetMatrix,
     } = item;
     const { x: oX, y: oY, z: oZ } = elementTransformOrigin;
     const needsOriginOffset =
@@ -207,6 +208,15 @@ export const DraggableDefaultSettings: DraggableSettings<any, any> = {
     // Apply the element's original transform.
     if (!elementTransformMatrix.isIdentity) {
       ELEMENT_MATRIX.multiplySelf(elementTransformMatrix);
+    }
+
+    // Apply the element's offset matrix. The offset matrix is in practice the
+    // inverse transform matrix of the element's individual transforms
+    // (translate, rotate and scale). These individual transforms are applied
+    // before the element's transform matrix, so we need to premultiply the
+    // final matrix with the offset matrix.
+    if (!elementOffsetMatrix.isIdentity) {
+      ELEMENT_MATRIX.preMultiplySelf(elementOffsetMatrix);
     }
 
     // Apply the matrix to the element.

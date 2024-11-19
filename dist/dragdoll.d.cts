@@ -328,6 +328,7 @@ declare class DraggableDragItem<S extends Sensor[] = Sensor[], E extends S[numbe
         z: number;
     };
     readonly elementTransformMatrix: DOMMatrix;
+    readonly elementOffsetMatrix: DOMMatrix;
     readonly frozenStyles: CSSProperties | null;
     readonly unfrozenStyles: CSSProperties | null;
     readonly clientRect: Rect;

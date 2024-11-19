@@ -1609,6 +1609,74 @@ function $ac3b89bdbc283306$export$5e94c6e790b2d913(elemA, elemB, result = {
 
 
 
+function $6810de09ef7bb8d4$export$b3766677c9f6af1c(element) {
+    const style = (0, $b75b79b0209a801e$export$3d2f074408bd1b82)(element);
+    let height = parseFloat(style.height) || 0;
+    if (style.boxSizing === 'border-box') return height;
+    // Add border.
+    height += parseFloat(style.borderTopWidth) || 0;
+    height += parseFloat(style.borderBottomWidth) || 0;
+    // Add padding.
+    height += parseFloat(style.paddingTop) || 0;
+    height += parseFloat(style.paddingBottom) || 0;
+    // Add scrollbar height.
+    if (element instanceof HTMLElement) height += element.offsetHeight - element.clientHeight;
+    return height;
+}
+
+
+
+function $a03fb573c6dac2c9$export$615771b112a2e273(element) {
+    const style = (0, $b75b79b0209a801e$export$3d2f074408bd1b82)(element);
+    let width = parseFloat(style.width) || 0;
+    if (style.boxSizing === 'border-box') return width;
+    // Add border.
+    width += parseFloat(style.borderLeftWidth) || 0;
+    width += parseFloat(style.borderRightWidth) || 0;
+    // Add padding.
+    width += parseFloat(style.paddingLeft) || 0;
+    width += parseFloat(style.paddingRight) || 0;
+    // Add scrollbar width.
+    if (element instanceof HTMLElement) width += element.offsetWidth - element.clientWidth;
+    return width;
+}
+
+
+
+function $821e825ab0888da6$export$44ca8ec68e5a97e(el, ignoreNormalTransform = false) {
+    const { translate: translate, rotate: rotate, scale: scale, transform: transform } = (0, $b75b79b0209a801e$export$3d2f074408bd1b82)(el);
+    let transformString = '';
+    // Parse translate shorthand.
+    if (translate && translate !== 'none') {
+        let [x = '0px', y = '0px', z] = translate.split(' ');
+        // Transform x to pixels if it's a percentage.
+        if (x.includes('%')) x = `${parseFloat(x) / 100 * (0, $a03fb573c6dac2c9$export$615771b112a2e273)(el)}px`;
+        // Transform y to pixels if it's a percentage.
+        if (y.includes('%')) y = `${parseFloat(y) / 100 * (0, $6810de09ef7bb8d4$export$b3766677c9f6af1c)(el)}px`;
+        // z can never be a percentage, but if it is defined we need to use
+        // translate3d instead of translate.
+        if (z) transformString += `translate3d(${x},${y},${z})`;
+        else transformString += `translate(${x},${y})`;
+    }
+    // Parse rotate shorthand.
+    if (rotate && rotate !== 'none') {
+        const rotateValues = rotate.split(' ');
+        if (rotateValues.length > 1) transformString += `rotate3d(${rotateValues.join(',')})`;
+        else transformString += `rotate(${rotateValues.join(',')})`;
+    }
+    // Parse scale shorthand.
+    if (scale && scale !== 'none') {
+        const scaleValues = scale.split(' ');
+        if (scaleValues.length === 3) transformString += `scale3d(${scaleValues.join(',')})`;
+        else transformString += `scale(${scaleValues.join(',')})`;
+    }
+    // Parse transform.
+    if (!ignoreNormalTransform && transform && transform !== 'none') transformString += transform;
+    return transformString;
+}
+
+
+
 function $7e1617964030f7dd$export$808822009ec670b1(transformOrigin) {
     const values = transformOrigin.split(' ');
     let originX = '';
@@ -1637,13 +1705,14 @@ function $1271bf80faee7ee7$export$10e4b24b91657790(el, result = new DOMMatrix())
     // Reset the result matrix to identity.
     (0, $c87c13e795b928df$export$5e2c7a53f84076f2)(result);
     while(currentElement){
-        const { transform: transform, transformOrigin: transformOrigin } = (0, $b75b79b0209a801e$export$3d2f074408bd1b82)(currentElement);
-        if (transform && transform !== 'none') {
-            $1271bf80faee7ee7$var$MATRIX.setMatrixValue(transform);
+        const transformString = (0, $821e825ab0888da6$export$44ca8ec68e5a97e)(currentElement);
+        if (transformString) {
+            $1271bf80faee7ee7$var$MATRIX.setMatrixValue(transformString);
             if (!$1271bf80faee7ee7$var$MATRIX.isIdentity) {
+                const { transformOrigin: transformOrigin } = (0, $b75b79b0209a801e$export$3d2f074408bd1b82)(currentElement);
                 const { x: x, y: y, z: z } = (0, $7e1617964030f7dd$export$808822009ec670b1)(transformOrigin);
-                if (z === 0) $1271bf80faee7ee7$var$MATRIX.setMatrixValue(`translate(${x}px, ${y}px) ${$1271bf80faee7ee7$var$MATRIX} translate(${x * -1}px, ${y * -1}px)`);
-                else $1271bf80faee7ee7$var$MATRIX.setMatrixValue(`translate3d(${x}px, ${y}px, ${z}px) ${$1271bf80faee7ee7$var$MATRIX} translate3d(${x * -1}px, ${y * -1}px, ${z * -1}px)`);
+                if (z === 0) $1271bf80faee7ee7$var$MATRIX.setMatrixValue(`translate(${x}px,${y}px) ${$1271bf80faee7ee7$var$MATRIX} translate(${x * -1}px,${y * -1}px)`);
+                else $1271bf80faee7ee7$var$MATRIX.setMatrixValue(`translate3d(${x}px,${y}px,${z}px) ${$1271bf80faee7ee7$var$MATRIX} translate3d(${x * -1}px,${y * -1}px,${z * -1}px)`);
                 result.preMultiplySelf($1271bf80faee7ee7$var$MATRIX);
             }
         }
@@ -1688,6 +1757,7 @@ function $ba8ad8073c33464d$export$8317bebcfd6ca26c(m) {
 
 
 
+
 const $93e17dd02dc97955$var$MEASURE_ELEMENT = (0, $3625b5560175528a$export$8de5e08b53f62319)();
 class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
     constructor(element, draggable){
@@ -1699,10 +1769,12 @@ class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
         if (!drag) throw new Error('Drag is not defined');
         const style = (0, $b75b79b0209a801e$export$3d2f074408bd1b82)(element);
         const clientRect = element.getBoundingClientRect();
+        const individualTransforms = (0, $821e825ab0888da6$export$44ca8ec68e5a97e)(element, true);
         this.data = {};
         this.element = element;
         this.elementTransformOrigin = (0, $7e1617964030f7dd$export$808822009ec670b1)(style.transformOrigin);
-        this.elementTransformMatrix = new DOMMatrix().setMatrixValue(style.transform);
+        this.elementTransformMatrix = new DOMMatrix().setMatrixValue(individualTransforms + style.transform);
+        this.elementOffsetMatrix = new DOMMatrix(individualTransforms).invertSelf();
         this.frozenStyles = null;
         this.unfrozenStyles = null;
         this.position = {
@@ -1960,7 +2032,7 @@ const $0d0c72b4b6dc9dbb$export$7ce0cd3869d5dcd9 = {
         const isEndPhase = phase === $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.End || phase === $0d0c72b4b6dc9dbb$export$41e4de7bbd8ceb61.EndAlign;
         const [containerMatrix, inverseContainerMatrix] = item.getContainerMatrix();
         const [_dragContainerMatrix, inverseDragContainerMatrix] = item.getDragContainerMatrix();
-        const { position: position, alignmentOffset: alignmentOffset, containerOffset: containerOffset, elementTransformMatrix: elementTransformMatrix, elementTransformOrigin: elementTransformOrigin } = item;
+        const { position: position, alignmentOffset: alignmentOffset, containerOffset: containerOffset, elementTransformMatrix: elementTransformMatrix, elementTransformOrigin: elementTransformOrigin, elementOffsetMatrix: elementOffsetMatrix } = item;
         const { x: oX, y: oY, z: oZ } = elementTransformOrigin;
         const needsOriginOffset = !elementTransformMatrix.isIdentity && (oX !== 0 || oY !== 0 || oZ !== 0);
         const tX = position.x + alignmentOffset.x + containerOffset.x;
@@ -1994,6 +2066,12 @@ const $0d0c72b4b6dc9dbb$export$7ce0cd3869d5dcd9 = {
         }
         // Apply the element's original transform.
         if (!elementTransformMatrix.isIdentity) $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX.multiplySelf(elementTransformMatrix);
+        // Apply the element's offset matrix. The offset matrix is in practice the
+        // inverse transform matrix of the element's individual transforms
+        // (translate, rotate and scale). These individual transforms are applied
+        // before the element's transform matrix, so we need to premultiply the
+        // final matrix with the offset matrix.
+        if (!elementOffsetMatrix.isIdentity) $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX.preMultiplySelf(elementOffsetMatrix);
         // Apply the matrix to the element.
         item.element.style.transform = `${$0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX}`;
     },
