@@ -1,16 +1,10 @@
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-} from '../../src';
+import { Draggable, PointerSensor, KeyboardMotionSensor } from '../../src';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
 const keyboardSensor = new KeyboardMotionSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
-  startPredicate: createPointerSensorStartPredicate(),
   positionModifiers: [
     (change, { drag, item, phase }) => {
       // Align the dragged element so that the pointer

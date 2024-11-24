@@ -18,6 +18,8 @@ import { isMatrixWarped } from '../utils/is-matrix-warped.js';
 
 import { parseTransformOrigin } from '../utils/parse-transform-origin.js';
 
+import { getElementTransformString } from 'utils/get-element-transform-string.js';
+
 import type { Draggable } from './draggable.js';
 
 import type { ObjectCache } from '../utils/object-cache.js';
@@ -26,7 +28,7 @@ const MEASURE_ELEMENT = createMeasureElement();
 
 export class DraggableDragItem<
   S extends Sensor[] = Sensor[],
-  E extends S[number]['events'] = S[number]['events'],
+  E extends S[number]['_events_type'] = S[number]['_events_type'],
 > {
   data: { [key: string]: any };
   readonly element: HTMLElement | SVGSVGElement;
@@ -36,6 +38,7 @@ export class DraggableDragItem<
   readonly dragOffsetContainer: HTMLElement | SVGSVGElement | Window | Document;
   readonly elementTransformOrigin: { x: number; y: number; z: number };
   readonly elementTransformMatrix: DOMMatrix;
+  readonly elementOffsetMatrix: DOMMatrix;
   readonly frozenStyles: CSSProperties | null;
   readonly unfrozenStyles: CSSProperties | null;
   readonly clientRect: Rect;
@@ -62,11 +65,15 @@ export class DraggableDragItem<
 
     const style = getStyle(element);
     const clientRect = element.getBoundingClientRect();
+    const individualTransforms = getElementTransformString(element, true);
 
     this.data = {};
     this.element = element;
     this.elementTransformOrigin = parseTransformOrigin(style.transformOrigin);
-    this.elementTransformMatrix = new DOMMatrix().setMatrixValue(style.transform);
+    this.elementTransformMatrix = new DOMMatrix().setMatrixValue(
+      individualTransforms + style.transform,
+    );
+    this.elementOffsetMatrix = new DOMMatrix(individualTransforms).invertSelf();
     this.frozenStyles = null;
     this.unfrozenStyles = null;
     this.position = { x: 0, y: 0 };

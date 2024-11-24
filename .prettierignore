@@ -1,6 +1,7 @@
 **/*.log
 **/*.map
 **/*.svg
+**/*.png
 **/.env
 **/.git
 **/.gitignore

@@ -1,4 +1,4 @@
-import './BaseSensor.js';
-import './Draggable.js';
-import './PointerSensor.js';
-import './KeyboardSensor.js';
+import './base-sensor/index.js';
+import './draggable/index.js';
+import './pointer-sensor/index.js';
+import './keyboard-sensor/index.js';

@@ -6,7 +6,7 @@ import { ObjectCache } from '../utils/object-cache.js';
 
 import { Point } from '../types.js';
 
-export class DraggableDrag<S extends Sensor[], E extends S[number]['events']> {
+export class DraggableDrag<S extends Sensor[], E extends S[number]['_events_type']> {
   readonly sensor: S[number];
   readonly startEvent: E['start'] | E['move'];
   readonly prevMoveEvent: E['start'] | E['move'];

@@ -1,10 +1,4 @@
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createPointerSensorStartPredicate,
-  autoScrollPlugin,
-} from '../../src';
+import { Draggable, PointerSensor, KeyboardMotionSensor, autoScrollPlugin } from '../../src';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const dragContainer = document.querySelector('.drag-container') as HTMLElement;
@@ -16,7 +10,6 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
   container: dragContainer,
   elements: () => [element],
   frozenStyles: () => ['left', 'top'],
-  startPredicate: createPointerSensorStartPredicate(),
   onStart: () => {
     element.classList.add('dragging');
   },

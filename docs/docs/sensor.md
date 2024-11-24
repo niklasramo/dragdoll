@@ -5,10 +5,22 @@ A sensor, in the context of DragDoll, is conceptually a constrained event emitte
 DragDoll provides a TypeScript interface for validating base functionality of a sensor. Your custom sensor can extend the Sensor API as much as it needs as long as it doesn't break it.
 
 ```ts
-import { Sensor } from 'dragdoll';
+import { Sensor, SensorEvents } from 'dragdoll';
 
-class CustomSensor implements Sensor {
-  // ...
+class CustomSensor<E extends SensorEvents = SensorEvents> implements Sensor<E> {
+  declare _events_type: E;
+  on(type, listener, listenerId) {
+    // ...
+  }
+  off(type, listenerId) {
+    // ...
+  }
+  cancel() {
+    // ...
+  }
+  destroy() {
+    // ...
+  }
 }
 ```
 
@@ -64,3 +76,22 @@ type destroy = () => void;
 ```
 
 Destroy the sensor. Disposes all allocated memory and removes all bound event listeners.
+
+## Type-only field declarations
+
+### \_events_type
+
+To make TypeScript happy, you need to declare `_events_type` field in your sensor class as a [type-only field decalaration](https://www.typescriptlang.org/docs/handbook/2/classes.html#type-only-field-declarations). This allows, for example, the [`Draggable`](/docs/draggable) class to infer the correct event types for your sensor.
+
+The field is not actually outputted to the JavaScript code, so it doesn't affect the runtime behavior of your sensor. However, when used within a TypeScript project, it will _look_ like a normal field when your sensor instance is accessed, so keep in mind that it's only a type declaration.
+
+If you don't use TypeScript, you can ignore this field completely.
+
+```ts
+import { Sensor, SensorEvents } from 'dragdoll';
+
+class CustomSensor<E extends SensorEvents = SensorEvents> implements Sensor<E> {
+  declare _events_type: E;
+  // ...
+}
+```

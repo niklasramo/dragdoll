@@ -1,5 +1,5 @@
 :root {
-  --bg-color: #161618;
+  --bg-color: #111;
   --color: rgba(255, 255, 245, 0.86);
   --theme-color: #ff5555;
   --card-color: rgba(0, 0, 0, 0.7);
@@ -65,6 +65,7 @@ body {
 
   &.draggable {
     cursor: grab;
+    touch-action: none;
   }
 
   &.dragging {

@@ -5,19 +5,13 @@ Draggable class acts as an orchestrator for any amount of sensors and moves DOM 
 ## Example
 
 ```ts
-import {
-  PointerSensor,
-  KeyboardSensor,
-  Draggable,
-  createPointerSensorStartPredicate,
-} from 'dragdoll';
+import { PointerSensor, KeyboardSensor, Draggable } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
 const keyboardSensor = new KeyboardSensor(element);
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
-  startPredicate: createPointerSensorStartPredicate(),
 });
 ```
 
@@ -313,6 +307,9 @@ draggable.stop();
 ```
 
 Forcibly stops the draggable's current drag process.
+
+> [!IMPORTANT]  
+> You can't call this method within the `preparestart` or `start` event listeners nor within the `onPrepareStart` or `onStart` callbacks. An error will be thrown if you try to do so. The reason for this is that the drag start process can't be interrupted during the prepare/apply phases. You can call this method before, after and between those phases though.
 
 ### align
 
