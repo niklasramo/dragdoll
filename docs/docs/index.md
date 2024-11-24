@@ -6,12 +6,6 @@ At its core, DragDoll is built on the concept of [_sensors_](/docs/sensor), whic
 
 To actually move elements around, DragDoll provides the [`Draggable`](/docs/draggable) class. This class acts as an orchestrator for any number of sensors and moves DOM elements based on the drag events emitted by the provided sensors. The [`Draggable`](/docs/draggable) class features a simple and functional API that allows you to control the drag process explicitly from start to finish.
 
-## Motivation
-
-Drag and drop is hard. DragDoll aims to make it less so.
-
-More specifically, DragDoll is an attempt to provide a simple, flexible, and powerful drag system that can be used to build a wide variety of drag-and-drop interfaces. It's designed to be easy to use, easy to extend, and easy to integrate into any kind of project.
-
 ## Features
 
 📡 &nbsp; **Sweet Sensors**: A well-documented and extendable Sensor system that normalizes any input into unified drag events, giving you complete control over user interactions.
