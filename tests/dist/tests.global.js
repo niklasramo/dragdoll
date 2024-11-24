@@ -7188,6 +7188,26 @@
   // tests/src/draggable/methods/off.ts
   function methodOff2() {
     describe("off", () => {
+      it("should remove an event listener based on id", async () => {
+        const el = createTestElement();
+        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+        const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
+        let result = "";
+        const idA = draggable.on("start", () => {
+          result += "a";
+        });
+        draggable.on("start", () => {
+          result += "b";
+        });
+        draggable.off("start", idA);
+        focusElement(el);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        await waitNextFrame();
+        assert.equal(result, "b", "Only the second event listener should have been triggered");
+        draggable.destroy();
+        keyboardSensor.destroy();
+        el.remove();
+      });
     });
   }
 
@@ -8488,6 +8508,56 @@
         container2.remove();
         container3.remove();
       });
+      it("should work with individual transforms (translate, rotate, scale)", async () => {
+        const el = createTestElement({
+          translate: "100px 20%",
+          scale: "1.2",
+          rotate: "45deg",
+          transform: "scale(1.2) translate(-5px, -6px) rotate(33deg) skew(30deg, -40deg)",
+          transformOrigin: "21px 22px"
+        });
+        const container1 = createTestElement({
+          translate: "10% -45px",
+          scale: "0.5",
+          rotate: "-25deg",
+          transform: "scale(0.9) translate(3px, 4px) rotate(-10deg) skew(5deg, 10deg)",
+          transformOrigin: "5px 10px"
+        });
+        const container2 = createTestElement({
+          translate: "5% 10%",
+          scale: "1.6",
+          rotate: "189deg",
+          transform: "scale(0.8) translate(4px, 5px) rotate(-20deg) skew(10deg, 15deg)",
+          transformOrigin: "10px 15px"
+        });
+        const container3 = createTestElement({
+          translate: "-20px -30px",
+          scale: "0.4",
+          rotate: "10deg",
+          transform: "scale(0.7) translate(5px, 6px) rotate(-30deg) skew(15deg, 20deg)",
+          transformOrigin: "15px 20px"
+        });
+        const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+        const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
+        container1.appendChild(container2);
+        container2.appendChild(container3);
+        container3.appendChild(el);
+        const startRect = el.getBoundingClientRect();
+        focusElement(el);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+        await waitNextFrame();
+        const endRect = el.getBoundingClientRect();
+        assert.equal(roundNumber2(endRect.x - startRect.x, 3), 1, "x");
+        assert.equal(roundNumber2(endRect.y - startRect.y, 3), 1, "y");
+        draggable.destroy();
+        keyboardSensor.destroy();
+        el.remove();
+        container1.remove();
+        container2.remove();
+        container3.remove();
+      });
     });
   }
 
@@ -9652,7 +9722,7 @@
   // tests/src/keyboard-sensor/options/move-distance.ts
   function optionMoveDistance() {
     describe("moveDistance", () => {
-      it("should define the drag movement distance", () => {
+      it("should define the drag movement distance for x-axis and y-axis separately with an object", () => {
         const el = createTestElement();
         const s = new KeyboardSensor(el, { moveDistance: { x: 7, y: 9 } });
         assert.deepEqual(s.moveDistance, { x: 7, y: 9 });
@@ -9665,6 +9735,24 @@
         assert.deepEqual(s.drag, { x: 7, y: 9 });
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft" }));
         assert.deepEqual(s.drag, { x: 0, y: 9 });
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp" }));
+        assert.deepEqual(s.drag, { x: 0, y: 0 });
+        el.remove();
+        s.destroy();
+      });
+      it("should define the drag movement distance for both axes with a number", () => {
+        const el = createTestElement();
+        const s = new KeyboardSensor(el, { moveDistance: 5 });
+        assert.deepEqual(s.moveDistance, { x: 5, y: 5 });
+        focusElement(el);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        assert.deepEqual(s.drag, { x: 0, y: 0 });
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+        assert.deepEqual(s.drag, { x: 5, y: 0 });
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+        assert.deepEqual(s.drag, { x: 5, y: 5 });
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft" }));
+        assert.deepEqual(s.drag, { x: 0, y: 5 });
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp" }));
         assert.deepEqual(s.drag, { x: 0, y: 0 });
         el.remove();

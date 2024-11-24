@@ -116,5 +116,66 @@ export function misc() {
       container2.remove();
       container3.remove();
     });
+
+    it('should work with individual transforms (translate, rotate, scale)', async () => {
+      const el = createTestElement({
+        translate: '100px 20%',
+        scale: '1.2',
+        rotate: '45deg',
+        transform: 'scale(1.2) translate(-5px, -6px) rotate(33deg) skew(30deg, -40deg)',
+        transformOrigin: '21px 22px',
+      });
+      const container1 = createTestElement({
+        translate: '10% -45px',
+        scale: '0.5',
+        rotate: '-25deg',
+        transform: 'scale(0.9) translate(3px, 4px) rotate(-10deg) skew(5deg, 10deg)',
+        transformOrigin: '5px 10px',
+      });
+      const container2 = createTestElement({
+        translate: '5% 10%',
+        scale: '1.6',
+        rotate: '189deg',
+        transform: 'scale(0.8) translate(4px, 5px) rotate(-20deg) skew(10deg, 15deg)',
+        transformOrigin: '10px 15px',
+      });
+      const container3 = createTestElement({
+        translate: '-20px -30px',
+        scale: '0.4',
+        rotate: '10deg',
+        transform: 'scale(0.7) translate(5px, 6px) rotate(-30deg) skew(15deg, 20deg)',
+        transformOrigin: '15px 20px',
+      });
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
+
+      // Add the element to a container.
+      container1.appendChild(container2);
+      container2.appendChild(container3);
+      container3.appendChild(el);
+
+      const startRect = el.getBoundingClientRect();
+
+      // Drag element 1px right and down.
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
+
+      await waitNextFrame();
+
+      // Make sure the element has moved 1px, approximately.
+      const endRect = el.getBoundingClientRect();
+      assert.equal(roundNumber(endRect.x - startRect.x, 3), 1, 'x');
+      assert.equal(roundNumber(endRect.y - startRect.y, 3), 1, 'y');
+
+      // Reset stuff.
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+      container1.remove();
+      container2.remove();
+      container3.remove();
+    });
   });
 }
