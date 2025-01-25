@@ -15,82 +15,73 @@ var $e4e7a534e772252d$export$242b5ede4c93f7ba = {
     IGNORE: "ignore",
     THROW: "throw"
 }, $e4e7a534e772252d$export$4293555f241ae35a = class {
-    constructor(n = {}){
-        let { dedupe: t = $e4e7a534e772252d$export$242b5ede4c93f7ba.ADD, getId: e = ()=>Symbol() } = n;
-        this.dedupe = t, this.getId = e, this._events = new Map;
+    constructor(t = {}){
+        this.dedupe = t.dedupe || $e4e7a534e772252d$export$242b5ede4c93f7ba.ADD, this.getId = t.getId || (()=>Symbol()), this._events = new Map;
     }
-    _getListeners(n) {
-        let t = this._events.get(n);
-        if (t) {
-            let { idMap: e } = t;
-            if (e.size) return t.emitList = t.emitList || [
+    _getListeners(t) {
+        let n = this._events.get(t);
+        if (n) {
+            let e = n.m;
+            if (e.size) return n.l = n.l || [
                 ...e.values()
             ];
         }
         return null;
     }
-    on(n, t, e) {
-        let { _events: s } = this, i = s.get(n);
-        i || (i = {
-            idMap: new Map,
-            emitList: null
-        }, s.set(n, i));
-        let { idMap: d, emitList: o } = i;
-        if (e = e === void 0 ? this.getId(t) : e, d.has(e)) switch(this.dedupe){
+    on(t, n, e) {
+        let i = this._events, s = i.get(t);
+        s || (s = {
+            m: new Map,
+            l: null
+        }, i.set(t, s));
+        let d = s.m;
+        if (e = e === void 0 ? this.getId(n) : e, d.has(e)) switch(this.dedupe){
             case $e4e7a534e772252d$export$242b5ede4c93f7ba.THROW:
                 throw new Error("Eventti: duplicate listener id!");
             case $e4e7a534e772252d$export$242b5ede4c93f7ba.IGNORE:
                 return e;
             case $e4e7a534e772252d$export$242b5ede4c93f7ba.UPDATE:
-                i.emitList = null;
+                s.l = null;
                 break;
             default:
-                d.delete(e), i.emitList = null;
+                d.delete(e), s.l = null;
         }
-        return d.set(e, t), o?.push(t), e;
+        return d.set(e, n), s.l?.push(n), e;
     }
-    once(n, t, e) {
-        let s = !1;
-        return e = e === void 0 ? this.getId(t) : e, this.on(n, (...i)=>{
-            s || (s = !0, this.off(n, e), t(...i));
+    once(t, n, e) {
+        let i = !1;
+        return e = e === void 0 ? this.getId(n) : e, this.on(t, (...s)=>{
+            i || (i = !0, this.off(t, e), n(...s));
         }, e);
     }
-    off(n, t) {
-        if (n === void 0) {
+    off(t, n) {
+        if (t === void 0) {
             this._events.clear();
             return;
         }
-        if (t === void 0) {
-            this._events.delete(n);
+        if (n === void 0) {
+            this._events.delete(t);
             return;
         }
-        let e = this._events.get(n);
-        e && e.idMap.delete(t) && (e.emitList = null, e.idMap.size || this._events.delete(n));
+        let e = this._events.get(t);
+        e && e.m.delete(n) && (e.l = null, e.m.size || this._events.delete(t));
     }
-    emit(n, ...t) {
-        let e = this._getListeners(n);
-        if (!e) return;
-        let { length: s } = e;
-        if (t.length) {
-            if (s === 1) e[0](...t);
-            else {
-                let i = 0;
-                for(; i < s; i++)e[i](...t);
-            }
-        } else if (s === 1) e[0]();
-        else {
-            let i = 0;
-            for(; i < s; i++)e[i]();
+    emit(t, ...n) {
+        let e = this._getListeners(t);
+        if (e) {
+            let i = e.length, s = 0;
+            if (n.length) for(; s < i; s++)e[s](...n);
+            else for(; s < i; s++)e[s]();
         }
     }
-    listenerCount(n) {
-        if (n === void 0) {
-            let t = 0;
-            return this._events.forEach((e, s)=>{
-                t += this.listenerCount(s);
-            }), t;
+    listenerCount(t) {
+        if (t === void 0) {
+            let n = 0;
+            return this._events.forEach((e)=>{
+                n += e.m.size;
+            }), n;
         }
-        return this._events.get(n)?.idMap.size || 0;
+        return this._events.get(t)?.m.size || 0;
     }
 };
 
@@ -3745,25 +3736,37 @@ function $244877ffe9407e42$export$c0f5c18ade842ccd(options) {
 
 
 
-const $dffb89cf206e4bcc$var$element = document.querySelector('.draggable');
-const $dffb89cf206e4bcc$var$handle = $dffb89cf206e4bcc$var$element.querySelector('.handle');
-const $dffb89cf206e4bcc$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($dffb89cf206e4bcc$var$handle);
-const $dffb89cf206e4bcc$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($dffb89cf206e4bcc$var$element);
-const $dffb89cf206e4bcc$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $dffb89cf206e4bcc$var$pointerSensor,
-    $dffb89cf206e4bcc$var$keyboardSensor
-], {
-    elements: ()=>[
-            $dffb89cf206e4bcc$var$element
-        ],
-    onStart: ()=>{
-        $dffb89cf206e4bcc$var$element.classList.add('dragging');
-        if ($dffb89cf206e4bcc$var$draggable.drag.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) $dffb89cf206e4bcc$var$element.classList.add('pointer-dragging');
-        else $dffb89cf206e4bcc$var$element.classList.add('keyboard-dragging');
-    },
-    onEnd: ()=>{
-        $dffb89cf206e4bcc$var$element.classList.remove('dragging', 'pointer-dragging', 'keyboard-dragging');
-    }
+const $9d29fe00413f3681$var$draggableElements = [
+    ...document.querySelectorAll('.draggable')
+];
+$9d29fe00413f3681$var$draggableElements.forEach((element)=>{
+    const otherElements = $9d29fe00413f3681$var$draggableElements.filter((el)=>el !== element);
+    const pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element);
+    const keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)(element);
+    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+        pointerSensor,
+        keyboardSensor
+    ], {
+        elements: ()=>{
+            return [
+                element,
+                ...otherElements
+            ];
+        },
+        startPredicate: ()=>{
+            return !element.classList.contains('dragging');
+        },
+        onStart: (drag)=>{
+            drag.items.forEach((item)=>{
+                item.element.classList.add('dragging');
+            });
+        },
+        onEnd: (drag)=>{
+            drag.items.forEach((item)=>{
+                item.element.classList.remove('dragging');
+            });
+        }
+    });
 });
 
 
