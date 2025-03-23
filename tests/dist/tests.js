@@ -4836,7 +4836,11 @@ var DraggableDefaultSettings = {
     }
     item.element.style.transform = `${ELEMENT_MATRIX}`;
   },
-  positionModifiers: []
+  computeClientRect: ({ drag }) => {
+    return drag.items[0].clientRect || null;
+  },
+  positionModifiers: [],
+  group: null
 };
 var Draggable = class {
   constructor(sensors, options4 = {}) {
@@ -4883,6 +4887,8 @@ var Draggable = class {
       frozenStyles = defaults.frozenStyles,
       positionModifiers = defaults.positionModifiers,
       applyPosition = defaults.applyPosition,
+      computeClientRect = defaults.computeClientRect,
+      group = defaults.group,
       onPrepareStart = defaults.onPrepareStart,
       onStart = defaults.onStart,
       onPrepareMove = defaults.onPrepareMove,
@@ -4897,6 +4903,8 @@ var Draggable = class {
       frozenStyles,
       positionModifiers,
       applyPosition,
+      computeClientRect,
+      group,
       onPrepareStart,
       onStart,
       onPrepareMove,
@@ -5219,6 +5227,11 @@ var Draggable = class {
       ticker.once(tickerPhases.read, this._prepareAlign, this._alignId);
       ticker.once(tickerPhases.write, this._applyAlign, this._alignId);
     }
+  }
+  getClientRect() {
+    const { drag, settings } = this;
+    if (!drag) return null;
+    return settings.computeClientRect?.({ draggable: this, drag }) || null;
   }
   updateSettings(options4 = {}) {
     this.settings = this._parseSettings(options4, this.settings);
@@ -6059,6 +6072,12 @@ var AutoScroll = class {
 
 // src/singletons/auto-scroll.ts
 var autoScroll = new AutoScroll();
+
+// src/dnd-context/dnd-context.ts
+import { Emitter as Emitter5 } from "eventti";
+
+// src/droppable/droppable.ts
+import { Emitter as Emitter4 } from "eventti";
 
 // tests/src/base-sensor/methods/_cancel.ts
 function methodProtectedCancel() {

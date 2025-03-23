@@ -20,7 +20,7 @@ import { areMatricesEqual } from '../utils/are-matrices-equal.js';
 
 import { isMatrixWarped } from '../utils/is-matrix-warped.js';
 
-import { Writeable, CSSProperties, Point } from '../types.js';
+import { Writeable, CSSProperties, Point, Rect } from '../types.js';
 
 const SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
 
@@ -102,6 +102,11 @@ export interface DraggableSettings<S extends Sensor[], E extends S[number]['_eve
     item: DraggableDragItem<S, E>;
     phase: DraggableApplyPositionPhase;
   }) => void;
+  computeClientRect?: (data: {
+    draggable: Draggable<S, E>;
+    drag: DraggableDrag<S, E>;
+  }) => Readonly<Rect> | null;
+  group?: string | number | symbol | null;
   onPrepareStart?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
   onStart?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
   onPrepareMove?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
@@ -222,7 +227,11 @@ export const DraggableDefaultSettings: DraggableSettings<any, any> = {
     // Apply the matrix to the element.
     item.element.style.transform = `${ELEMENT_MATRIX}`;
   },
+  computeClientRect: ({ drag }) => {
+    return drag.items[0].clientRect || null;
+  },
   positionModifiers: [],
+  group: null,
 } as const;
 
 export class Draggable<
@@ -305,6 +314,8 @@ export class Draggable<
       frozenStyles = defaults.frozenStyles,
       positionModifiers = defaults.positionModifiers,
       applyPosition = defaults.applyPosition,
+      computeClientRect = defaults.computeClientRect,
+      group = defaults.group,
       onPrepareStart = defaults.onPrepareStart,
       onStart = defaults.onStart,
       onPrepareMove = defaults.onPrepareMove,
@@ -320,6 +331,8 @@ export class Draggable<
       frozenStyles,
       positionModifiers,
       applyPosition,
+      computeClientRect,
+      group,
       onPrepareStart,
       onStart,
       onPrepareMove,
@@ -825,6 +838,12 @@ export class Draggable<
       ticker.once(tickerPhases.read, this._prepareAlign, this._alignId);
       ticker.once(tickerPhases.write, this._applyAlign, this._alignId);
     }
+  }
+
+  getClientRect() {
+    const { drag, settings } = this;
+    if (!drag) return null;
+    return settings.computeClientRect?.({ draggable: this, drag }) || null;
   }
 
   updateSettings(options: Partial<this['settings']> = {}) {

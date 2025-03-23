@@ -46,12 +46,10 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['_events_typ
     },
     getClientRect: (draggable: Draggable<S, E>) => {
       const { drag } = draggable;
-      const primaryItem = drag?.items[0];
 
-      // Try to use the first item for the autoscroll data.
-      if (primaryItem && primaryItem.element) {
-        return primaryItem.clientRect;
-      }
+      // Try to use the default draggable client rect.
+      const clientRect = draggable.getClientRect();
+      if (clientRect) return clientRect;
 
       // Fallback to the sensor's clientX/clientY values and a static size of
       // 50x50px.

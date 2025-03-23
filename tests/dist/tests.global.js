@@ -5293,7 +5293,11 @@
       }
       item.element.style.transform = `${ELEMENT_MATRIX}`;
     },
-    positionModifiers: []
+    computeClientRect: ({ drag }) => {
+      return drag.items[0].clientRect || null;
+    },
+    positionModifiers: [],
+    group: null
   };
   var Draggable = class {
     constructor(sensors, options4 = {}) {
@@ -5340,6 +5344,8 @@
         frozenStyles = defaults.frozenStyles,
         positionModifiers = defaults.positionModifiers,
         applyPosition = defaults.applyPosition,
+        computeClientRect = defaults.computeClientRect,
+        group = defaults.group,
         onPrepareStart = defaults.onPrepareStart,
         onStart = defaults.onStart,
         onPrepareMove = defaults.onPrepareMove,
@@ -5354,6 +5360,8 @@
         frozenStyles,
         positionModifiers,
         applyPosition,
+        computeClientRect,
+        group,
         onPrepareStart,
         onStart,
         onPrepareMove,
@@ -5676,6 +5684,11 @@
         ticker.once(tickerPhases.read, this._prepareAlign, this._alignId);
         ticker.once(tickerPhases.write, this._applyAlign, this._alignId);
       }
+    }
+    getClientRect() {
+      const { drag, settings } = this;
+      if (!drag) return null;
+      return settings.computeClientRect?.({ draggable: this, drag }) || null;
     }
     updateSettings(options4 = {}) {
       this.settings = this._parseSettings(options4, this.settings);
