@@ -1,6 +1,6 @@
-import { Point, Rect } from '../types.js';
+import type { Point, Rect } from '../types.js';
 
-import { Pool } from '../pool.js';
+import { ClassicObjectPool } from '../utils/classic-object-pool.js';
 
 import { ticker, tickerPhases } from '../singletons/ticker.js';
 
@@ -466,8 +466,8 @@ export class AutoScroll {
     [AUTO_SCROLL_AXIS.x]: Map<AutoScrollItem, AutoScrollRequest>;
     [AUTO_SCROLL_AXIS.y]: Map<AutoScrollItem, AutoScrollRequest>;
   };
-  protected _requestPool: Pool<AutoScrollRequest>;
-  protected _actionPool: Pool<AutoScrollAction>;
+  protected _requestPool: ClassicObjectPool<AutoScrollRequest>;
+  protected _actionPool: ClassicObjectPool<AutoScrollAction>;
 
   constructor(options: AutoScrollOptions = {}) {
     const { overlapCheckInterval = 150 } = options;
@@ -487,13 +487,22 @@ export class AutoScroll {
       [AUTO_SCROLL_AXIS.y]: new Map(),
     };
     this._itemData = new Map();
-    this._requestPool = new Pool<AutoScrollRequest>(
-      () => new AutoScrollRequest(),
-      (request) => request.reset(),
+    this._requestPool = new ClassicObjectPool<AutoScrollRequest>(
+      (request) => request || new AutoScrollRequest(),
+      {
+        initialBatchCount: 1,
+        minBatchCount: 1,
+        onRelease: (request) => request.reset(),
+      },
     );
-    this._actionPool = new Pool<AutoScrollAction>(
-      () => new AutoScrollAction(),
-      (action) => action.reset(),
+    this._actionPool = new ClassicObjectPool<AutoScrollAction>(
+      (action) => action || new AutoScrollAction(),
+      {
+        batchSize: 10,
+        initialBatchCount: 1,
+        minBatchCount: 1,
+        onRelease: (action) => action.reset(),
+      },
     );
 
     this._frameRead = this._frameRead.bind(this);
@@ -552,7 +561,7 @@ export class AutoScroll {
         request.reset();
       }
     } else {
-      request = this._requestPool.pick();
+      request = this._requestPool.get();
       reqMap.set(item, request);
     }
 
@@ -570,7 +579,7 @@ export class AutoScroll {
     if (!request) return;
 
     if (request.action) request.action.removeRequest(request);
-    this._requestPool.put(request);
+    this._requestPool.release(request);
     reqMap.delete(item);
   }
 
@@ -983,7 +992,7 @@ export class AutoScroll {
       break;
     }
 
-    if (!action) action = this._actionPool.pick();
+    if (!action) action = this._actionPool.get();
     action.element = request.element;
     action.addRequest(request);
 
@@ -1017,7 +1026,7 @@ export class AutoScroll {
     let i = 0;
     for (i = 0; i < this._actions.length; i++) {
       this._actions[i].scroll();
-      this._actionPool.put(this._actions[i]);
+      this._actionPool.release(this._actions[i]);
     }
 
     // Reset actions.
@@ -1088,17 +1097,10 @@ export class AutoScroll {
 
   destroy() {
     if (this._isDestroyed) return;
-
-    const items = this.items.slice(0);
-    let i = 0;
-    for (; i < items.length; i++) {
-      this.removeItem(items[i]);
-    }
-
+    this.items.forEach((item) => this.removeItem(item));
+    this._requestPool.destroy();
+    this._actionPool.destroy();
     this._actions.length = 0;
-    this._requestPool.reset();
-    this._actionPool.reset();
-
     this._isDestroyed = true;
   }
 }

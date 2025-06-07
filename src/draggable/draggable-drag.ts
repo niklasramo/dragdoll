@@ -1,10 +1,10 @@
-import { Sensor } from '../sensors/sensor.js';
+import type { Sensor } from '../sensors/sensor.js';
 
-import { DraggableDragItem } from './draggable-drag-item.js';
+import type { Point } from '../types.js';
+
+import type { DraggableDragItem } from './draggable-drag-item.js';
 
 import { ObjectCache } from '../utils/object-cache.js';
-
-import { Point } from '../types.js';
 
 export class DraggableDrag<S extends Sensor[], E extends S[number]['_events_type']> {
   readonly sensor: S[number];

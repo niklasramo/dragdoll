@@ -28,15 +28,15 @@ body {
 .droppable {
   width: 100px;
   height: 100px;
-  background-color: #f0f0f0;
+  background-color: var(--bg-color);
   border-radius: 7px;
   border: 1.5px solid var(--theme-color);
 
-  &[data-over-count] {
-    background-color: #ff0000;
+  &.draggable-over {
+    background-color: var(--theme-color);
   }
 
-  &[data-dropped-count] {
-    background-color: #ff0000;
+  &.draggable-dropped {
+    background-color: var(--theme-color);
   }
 }

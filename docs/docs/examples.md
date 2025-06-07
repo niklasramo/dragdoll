@@ -13,18 +13,24 @@ import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
 
 let zIndex = 0;
 
+const scroller = document.querySelector('.scroller')!;
 const draggableElements = [...document.querySelectorAll('.draggable')] as HTMLElement[];
 
 draggableElements.forEach((element) => {
   const pointerSensor = new PointerSensor(element);
   const keyboardSensor = new KeyboardMotionSensor(element);
+  let intervalId: number = -1;
   const draggable = new Draggable([pointerSensor, keyboardSensor], {
     elements: () => [element],
     onStart: () => {
       element.classList.add('dragging');
       element.style.zIndex = `${++zIndex}`;
+      intervalId = window.setInterval(() => {
+        scroller.scrollTop = scroller.scrollTop > 200 ? 0 : scroller.scrollTop + 10;
+      }, 100);
     },
     onEnd: () => {
+      window.clearInterval(intervalId);
       element.classList.remove('dragging');
     },
   });
@@ -49,37 +55,41 @@ draggableElements.forEach((element) => {
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
-    <div class="card draggable" tabindex="0">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-        <path
-          d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"
-        />
-      </svg>
-    </div>
-    <div class="card draggable" tabindex="0">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-        <path
-          d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"
-        />
-      </svg>
-    </div>
-    <div class="card draggable" tabindex="0">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-        <path
-          d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"
-        />
-      </svg>
-    </div>
-    <div class="card draggable" tabindex="0">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-        <path
-          d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"
-        />
-      </svg>
+    <div class="scroller">
+      <div class="scroller-content">
+        <div class="card draggable" tabindex="0">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+            <path
+              d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"
+            />
+          </svg>
+        </div>
+        <div class="card draggable" tabindex="0">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+            <path
+              d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"
+            />
+          </svg>
+        </div>
+        <div class="card draggable" tabindex="0">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+            <path
+              d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"
+            />
+          </svg>
+        </div>
+        <div class="card draggable" tabindex="0">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+            <path
+              d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"
+            />
+          </svg>
+        </div>
+      </div>
     </div>
     <script type="module" src="index.ts"></script>
   </body>
@@ -90,6 +100,18 @@ draggableElements.forEach((element) => {
 body {
   width: 100%;
   height: 100%;
+  position: relative;
+}
+
+.scroller {
+  position: absolute;
+  inset: 0;
+  overflow: scroll;
+}
+
+.scroller-content {
+  width: 100%;
+  height: 200%;
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
@@ -127,7 +149,8 @@ html {
   background: var(--bg-color);
   color: var(--color);
   background-size: 40px 40px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
 }
 
@@ -319,7 +342,8 @@ html {
   background: var(--bg-color);
   color: var(--color);
   background-size: 40px 40px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
 }
 
@@ -535,7 +559,8 @@ html {
   background: var(--bg-color);
   color: var(--color);
   background-size: 40px 40px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
 }
 
@@ -736,7 +761,8 @@ html {
   background: var(--bg-color);
   color: var(--color);
   background-size: 40px 40px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
 }
 
@@ -897,7 +923,8 @@ html {
   background: var(--bg-color);
   color: var(--color);
   background-size: 40px 40px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
 }
 
@@ -1078,7 +1105,8 @@ html {
   background: var(--bg-color);
   color: var(--color);
   background-size: 40px 40px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
 }
 
@@ -1266,7 +1294,8 @@ html {
   background: var(--bg-color);
   color: var(--color);
   background-size: 40px 40px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
 }
 
@@ -1477,7 +1506,8 @@ html {
   background: var(--bg-color);
   color: var(--color);
   background-size: 40px 40px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
 }
 
@@ -1683,7 +1713,8 @@ html {
   background: var(--bg-color);
   color: var(--color);
   background-size: 40px 40px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
 }
 
@@ -1886,7 +1917,8 @@ html {
   background: var(--bg-color);
   color: var(--color);
   background-size: 40px 40px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
 }
 
@@ -1973,93 +2005,91 @@ import {
   DndContextEventType,
 } from 'dragdoll';
 
+// Initialize context and get elements
 const dndContext = new DndContext();
 const draggableElements = [...document.querySelectorAll('.draggable')] as HTMLElement[];
 const droppableElements = [...document.querySelectorAll('.droppable')] as HTMLElement[];
 
-//
-// Setup droppables.
-//
-
+// Create droppables
 droppableElements.forEach((element) => {
   const droppable = new Droppable(element);
+  droppable.data.overIds = new Set<number>();
+  droppable.data.droppedIds = new Set<number>();
   dndContext.addDroppable(droppable);
 });
 
-//
-// Setup draggables.
-//
-
+// Create draggables
 draggableElements.forEach((element) => {
-  const pointerSensor = new PointerSensor(element);
-  const keyboardSensor = new KeyboardMotionSensor(element);
-  const draggable = new Draggable([pointerSensor, keyboardSensor], {
-    elements: () => {
-      return [element];
-    },
-    startPredicate: () => {
-      return !element.classList.contains('dragging');
-    },
-    onStart: (drag) => {
-      drag.items.forEach((item) => {
-        item.element.classList.add('dragging');
-      });
-    },
-    onEnd: (drag) => {
-      drag.items.forEach((item) => {
-        item.element.classList.remove('dragging');
-      });
-    },
+  const draggable = new Draggable([new PointerSensor(element), new KeyboardMotionSensor(element)], {
+    elements: () => [element],
+    startPredicate: () => !element.classList.contains('dragging'),
+    onStart: (drag) => drag.items[0].element.classList.add('dragging'),
+    onEnd: (drag) => drag.items[0].element.classList.remove('dragging'),
   });
   dndContext.addDraggable(draggable);
 });
 
-//
-// Setup dnd logic assuming that there can be multiple draggables being dragged
-// at the same time.
-//
+// DnD logic
+{
+  const onStart = (data: { draggable: Draggable; targets: Droppable[] }) => {
+    const { draggable, targets } = data;
+    targets.forEach((target) => {
+      target.data.droppedIds.delete(draggable.id);
+      if (target.data.droppedIds.size === 0) {
+        target.element.classList.remove('draggable-dropped');
+      }
+    });
+  };
 
-dndContext.on(DndContextEventType.Start, (data) => {
-  data.targets.forEach((target) => {
-    target.element.removeAttribute('data-dropped-count');
-  });
-});
+  const onEnterAndOver = (data: { draggable: Draggable; collisions: Droppable[] }) => {
+    const { draggable, collisions } = data;
+    const clonedCollisions = [...collisions];
 
-dndContext.on(DndContextEventType.Enter, (data) => {
-  data.addedCollisions.forEach((target) => {
-    const overCount = parseInt(target.element.getAttribute('data-over-count') || '0', 10);
-    target.element.setAttribute('data-over-count', `${overCount + 1}`);
-  });
-});
+    // Add the draggable to the first collision.
+    const target = clonedCollisions.shift()!;
+    target.data.overIds.add(draggable.id);
+    target.element.classList.add('draggable-over');
 
-dndContext.on(DndContextEventType.Leave, (data) => {
-  data.removedCollisions.forEach((target) => {
-    const overCount = parseInt(target.element.getAttribute('data-over-count') || '0', 10);
-    if (overCount > 1) {
-      target.element.setAttribute('data-over-count', `${overCount - 1}`);
-    } else {
-      target.element.removeAttribute('data-over-count');
+    // Remove the draggable from the other collisions.
+    clonedCollisions.forEach((collision) => {
+      collision.data.overIds.delete(draggable.id);
+      if (collision.data.overIds.size === 0) {
+        collision.element.classList.remove('draggable-over');
+      }
+    });
+  };
+
+  const onLeave = (data: { draggable: Draggable; removedCollisions: Droppable[] }) => {
+    const { draggable, removedCollisions } = data;
+    removedCollisions.forEach((target) => {
+      target.data.overIds.delete(draggable.id);
+      if (target.data.overIds.size === 0) {
+        target.element.classList.remove('draggable-over');
+      }
+    });
+  };
+
+  const onDrop = (data: { draggable: Draggable; collisions: Droppable[] }) => {
+    const { draggable, collisions } = data;
+    const target = collisions[0];
+
+    // Update dropped ids
+    target.data.droppedIds.add(draggable.id);
+    target.element.classList.add('draggable-dropped');
+
+    // Update over ids
+    target.data.overIds.delete(draggable.id);
+    if (target.data.overIds.size === 0) {
+      target.element.classList.remove('draggable-over');
     }
-  });
-});
+  };
 
-dndContext.on(DndContextEventType.Drop, (data) => {
-  data.collisions.forEach((target) => {
-    const droppedCount = parseInt(target.element.getAttribute('data-dropped-count') || '0', 10);
-    target.element.setAttribute('data-dropped-count', `${droppedCount + 1}`);
-  });
-});
-
-dndContext.on(DndContextEventType.End, (data) => {
-  data.targets.forEach((target) => {
-    const overCount = parseInt(target.element.getAttribute('data-over-count') || '0', 10);
-    if (overCount > 1) {
-      target.element.setAttribute('data-over-count', `${overCount - 1}`);
-    } else {
-      target.element.removeAttribute('data-over-count');
-    }
-  });
-});
+  dndContext.on(DndContextEventType.Start, onStart);
+  dndContext.on(DndContextEventType.Enter, onEnterAndOver);
+  dndContext.on(DndContextEventType.Over, onEnterAndOver);
+  dndContext.on(DndContextEventType.Leave, onLeave);
+  dndContext.on(DndContextEventType.Drop, onDrop);
+}
 ```
 
 ```html [index.html]
@@ -2156,16 +2186,16 @@ body {
 .droppable {
   width: 100px;
   height: 100px;
-  background-color: #f0f0f0;
+  background-color: var(--bg-color);
   border-radius: 7px;
   border: 1.5px solid var(--theme-color);
 
-  &[data-over-count] {
-    background-color: #ff0000;
+  &.draggable-over {
+    background-color: var(--theme-color);
   }
 
-  &[data-dropped-count] {
-    background-color: #ff0000;
+  &.draggable-dropped {
+    background-color: var(--theme-color);
   }
 }
 ```
@@ -2192,7 +2222,8 @@ html {
   background: var(--bg-color);
   color: var(--color);
   background-size: 40px 40px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
 }
 

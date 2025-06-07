@@ -1,8 +1,10 @@
-import { HAS_PASSIVE_EVENTS } from '../constants.js';
+import type { Writeable, CSSProperties, Point, Rect } from '../types.js';
+
+import type { Sensor, SensorEvents } from '../sensors/sensor.js';
+
+import { SensorEventType } from '../sensors/sensor.js';
 
 import { Emitter, EventListenerId } from 'eventti';
-
-import { Sensor, SensorEvents, SensorEventType } from '../sensors/sensor.js';
 
 import { DraggableDrag } from './draggable-drag.js';
 
@@ -20,9 +22,9 @@ import { areMatricesEqual } from '../utils/are-matrices-equal.js';
 
 import { isMatrixWarped } from '../utils/is-matrix-warped.js';
 
-import { Writeable, CSSProperties, Point, Rect } from '../types.js';
+let _id = 0;
 
-const SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
+const SCROLL_LISTENER_OPTIONS = { capture: true, passive: true };
 
 const POSITION_CHANGE = { x: 0, y: 0 };
 
@@ -239,6 +241,7 @@ export class Draggable<
   E extends S[number]['_events_type'] = S[number]['_events_type'],
   P extends DraggablePluginMap = {},
 > {
+  readonly id: number;
   readonly sensors: S;
   readonly settings: DraggableSettings<S, E>;
   readonly plugins: P;
@@ -262,6 +265,7 @@ export class Draggable<
   protected _alignId: symbol;
 
   constructor(sensors: S, options: Partial<DraggableSettings<S, E>> = {}) {
+    this.id = _id++;
     this.sensors = sensors;
     this.settings = this._parseSettings(options);
     this.plugins = {} as P;

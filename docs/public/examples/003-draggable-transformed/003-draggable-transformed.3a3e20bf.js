@@ -14,19 +14,15 @@ var $e4e7a534e772252d$export$242b5ede4c93f7ba = {
     UPDATE: "update",
     IGNORE: "ignore",
     THROW: "throw"
-}, $e4e7a534e772252d$export$4293555f241ae35a = class {
+}, $e4e7a534e772252d$var$r, $e4e7a534e772252d$export$4293555f241ae35a = class {
     constructor(t = {}){
         this.dedupe = t.dedupe || $e4e7a534e772252d$export$242b5ede4c93f7ba.ADD, this.getId = t.getId || (()=>Symbol()), this._events = new Map;
     }
     _getListeners(t) {
         let n = this._events.get(t);
-        if (n) {
-            let e = n.m;
-            if (e.size) return n.l = n.l || [
-                ...e.values()
-            ];
-        }
-        return null;
+        return n ? n.l || (n.l = [
+            ...n.m.values()
+        ]) : null;
     }
     on(t, n, e) {
         let i = this._events, s = i.get(t);
@@ -34,8 +30,8 @@ var $e4e7a534e772252d$export$242b5ede4c93f7ba = {
             m: new Map,
             l: null
         }, i.set(t, s));
-        let d = s.m;
-        if (e = e === void 0 ? this.getId(n) : e, d.has(e)) switch(this.dedupe){
+        let o = s.m;
+        if (e = e === $e4e7a534e772252d$var$r ? this.getId(n) : e, o.has(e)) switch(this.dedupe){
             case $e4e7a534e772252d$export$242b5ede4c93f7ba.THROW:
                 throw new Error("Eventti: duplicate listener id!");
             case $e4e7a534e772252d$export$242b5ede4c93f7ba.IGNORE:
@@ -44,27 +40,27 @@ var $e4e7a534e772252d$export$242b5ede4c93f7ba = {
                 s.l = null;
                 break;
             default:
-                d.delete(e), s.l = null;
+                o.delete(e), s.l = null;
         }
-        return d.set(e, n), s.l?.push(n), e;
+        return o.set(e, n), s.l?.push(n), e;
     }
     once(t, n, e) {
-        let i = !1;
-        return e = e === void 0 ? this.getId(n) : e, this.on(t, (...s)=>{
-            i || (i = !0, this.off(t, e), n(...s));
+        let i = 0;
+        return e = e === $e4e7a534e772252d$var$r ? this.getId(n) : e, this.on(t, (...s)=>{
+            i || (i = 1, this.off(t, e), n(...s));
         }, e);
     }
     off(t, n) {
-        if (t === void 0) {
+        if (t === $e4e7a534e772252d$var$r) {
             this._events.clear();
             return;
         }
-        if (n === void 0) {
+        if (n === $e4e7a534e772252d$var$r) {
             this._events.delete(t);
             return;
         }
         let e = this._events.get(t);
-        e && e.m.delete(n) && (e.l = null, e.m.size || this._events.delete(t));
+        e?.m.delete(n) && (e.l = null, e.m.size || this._events.delete(t));
     }
     emit(t, ...n) {
         let e = this._getListeners(t);
@@ -75,7 +71,7 @@ var $e4e7a534e772252d$export$242b5ede4c93f7ba = {
         }
     }
     listenerCount(t) {
-        if (t === void 0) {
+        if (t === $e4e7a534e772252d$var$r) {
             let n = 0;
             return this._events.forEach((e)=>{
                 n += e.m.size;
@@ -412,38 +408,19 @@ function $c295f9e09f57d107$export$a845ff6c553b3014(e) {
 }
 
 
-const $b85aa28c289cb8ee$export$e44ffb50cc242ec5 = typeof window !== 'undefined' && typeof window.document !== 'undefined';
-const $b85aa28c289cb8ee$export$ffcf6b6ce241bd05 = (()=>{
-    let isPassiveEventsSupported = false;
-    try {
-        const passiveOpts = Object.defineProperty({}, 'passive', {
-            get: function() {
-                isPassiveEventsSupported = true;
-            }
-        });
-        // @ts-ignore
-        window.addEventListener('testPassive', null, passiveOpts);
-        // @ts-ignore
-        window.removeEventListener('testPassive', null, passiveOpts);
-    } catch (e) {}
-    return isPassiveEventsSupported;
-})();
-const $b85aa28c289cb8ee$export$4af9b1d833a619de = $b85aa28c289cb8ee$export$e44ffb50cc242ec5 && 'ontouchstart' in window;
-const $b85aa28c289cb8ee$export$7728c852ca75bb6d = $b85aa28c289cb8ee$export$e44ffb50cc242ec5 && !!window.PointerEvent;
-const $b85aa28c289cb8ee$export$af54264dae9065e6 = !!($b85aa28c289cb8ee$export$e44ffb50cc242ec5 && navigator.vendor && navigator.vendor.indexOf('Apple') > -1 && navigator.userAgent && navigator.userAgent.indexOf('CriOS') == -1 && navigator.userAgent.indexOf('FxiOS') == -1);
-
-
 function $28cac6dbd0c9b92c$export$4d6c83612522bb80(options = {}) {
     const { capture: capture = true, passive: passive = true } = options;
-    if (0, $b85aa28c289cb8ee$export$ffcf6b6ce241bd05) return {
+    return {
         capture: capture,
         passive: passive
     };
-    else return {
-        capture: capture
-    };
 }
 
+
+const $b85aa28c289cb8ee$export$e44ffb50cc242ec5 = typeof window !== 'undefined' && typeof window.document !== 'undefined';
+const $b85aa28c289cb8ee$export$4af9b1d833a619de = $b85aa28c289cb8ee$export$e44ffb50cc242ec5 && 'ontouchstart' in window;
+const $b85aa28c289cb8ee$export$7728c852ca75bb6d = $b85aa28c289cb8ee$export$e44ffb50cc242ec5 && !!window.PointerEvent;
+const $b85aa28c289cb8ee$export$af54264dae9065e6 = !!($b85aa28c289cb8ee$export$e44ffb50cc242ec5 && navigator.vendor && navigator.vendor.indexOf('Apple') > -1 && navigator.userAgent && navigator.userAgent.indexOf('CriOS') == -1 && navigator.userAgent.indexOf('FxiOS') == -1);
 
 
 function $d7b9fe5a227ed738$export$6475a94861c59472(sourceEvents) {
@@ -1109,7 +1086,6 @@ class $7fff4587bd07df96$export$436f6efcc297171 extends (0, $07403df99f68f50f$exp
         if (this._cancelOnVisibilityChange) document.removeEventListener('visibilitychange', this._internalCancel);
     }
 }
-
 
 
 
@@ -1968,10 +1944,11 @@ function $afa85d7904abb0f0$export$da3f9f1be978dbbc(m1, m2) {
 
 
 
-const $0d0c72b4b6dc9dbb$var$SCROLL_LISTENER_OPTIONS = (0, $b85aa28c289cb8ee$export$ffcf6b6ce241bd05) ? {
+let $0d0c72b4b6dc9dbb$var$_id = 0;
+const $0d0c72b4b6dc9dbb$var$SCROLL_LISTENER_OPTIONS = {
     capture: true,
     passive: true
-} : true;
+};
 const $0d0c72b4b6dc9dbb$var$POSITION_CHANGE = {
     x: 0,
     y: 0
@@ -2074,6 +2051,7 @@ const $0d0c72b4b6dc9dbb$export$7ce0cd3869d5dcd9 = {
 };
 class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
     constructor(sensors, options = {}){
+        this.id = $0d0c72b4b6dc9dbb$var$_id++;
         this.sensors = sensors;
         this.settings = this._parseSettings(options);
         this.plugins = {};
@@ -2791,23 +2769,53 @@ function $e4a9d189cff00937$export$b43dd221600cdb2e(getContainerRect, trackSensor
 
 
 
+// TODO: Should we allow prefilling the pool with objects instead of just
+// preallocating the array slots?
 class $bfd9fff49b9cfdf1$export$14963ee5c8637e11 {
-    constructor(createObject, onPut){
-        this._data = [];
-        this._createObject = createObject;
-        this._onPut = onPut;
+    constructor(createItem, { batchSize: batchSize = 100, minBatchCount: minBatchCount = 0, maxBatchCount: maxBatchCount = Number.MAX_SAFE_INTEGER, initialBatchCount: initialBatchCount = 0, shrinkThreshold: shrinkThreshold = 2, getItem: getItem = (item, ..._args)=>item, onRelease: onRelease } = {}){
+        this._batchSize = Math.floor(Math.max(batchSize, 1));
+        this._minSize = Math.floor(Math.max(minBatchCount, 0)) * this._batchSize;
+        this._maxSize = Math.floor(Math.min(Math.max(maxBatchCount * this._batchSize, this._batchSize), Number.MAX_SAFE_INTEGER));
+        this._shrinkThreshold = Math.floor(Math.max(shrinkThreshold, 1) * this._batchSize);
+        this._data = new Array(Math.floor(Math.max(Math.max(initialBatchCount, minBatchCount) * this._batchSize, 0)));
+        this._index = 0;
+        this._createItem = createItem;
+        this._getItem = getItem;
+        this._onRelease = onRelease;
     }
-    pick() {
-        return this._data.length ? this._data.pop() : this._createObject();
+    get(...args) {
+        // Return existing object from the pool, if available.
+        if (this._index > 0) return this._getItem(this._data[--this._index], ...args);
+        // Check if we need to grow the array because we're out of objects. Grow by
+        // batchSize (capped at maxSize).
+        if (this._index === 0) {
+            const currentCapacity = this._data.length;
+            const growBy = Math.min(this._batchSize, this._maxSize - currentCapacity);
+            if (growBy > 0) this._data.length = currentCapacity + growBy;
+        }
+        // Create a new object when pool is empty.
+        return this._createItem(...args);
     }
-    put(object) {
-        if (this._data.indexOf(object) === -1) {
-            this._onPut && this._onPut(object);
-            this._data.push(object);
+    release(object) {
+        // Only add to pool if below max size.
+        if (this._index < this._maxSize) {
+            if (this._onRelease) this._onRelease(object);
+            // Store at current index, then increment.
+            this._data[this._index++] = object;
+            // Check if we should shrink after adding object.
+            if (this._index >= this._shrinkThreshold) {
+                // Only shrink if it wouldn't bring us below the minimum capacity
+                const newCapacity = this._data.length - this._batchSize;
+                if (newCapacity >= this._minSize) {
+                    this._data.length = newCapacity;
+                    this._index -= this._batchSize;
+                }
+            }
         }
     }
-    reset() {
+    destroy() {
         this._data.length = 0;
+        this._index = 0;
     }
 }
 
@@ -3188,8 +3196,16 @@ class $45f763d3a9362ecf$export$3fb39aee5567f02e {
             [$45f763d3a9362ecf$export$5bbd74ab6c855dff.y]: new Map()
         };
         this._itemData = new Map();
-        this._requestPool = new (0, $bfd9fff49b9cfdf1$export$14963ee5c8637e11)(()=>new $45f763d3a9362ecf$var$AutoScrollRequest(), (request)=>request.reset());
-        this._actionPool = new (0, $bfd9fff49b9cfdf1$export$14963ee5c8637e11)(()=>new $45f763d3a9362ecf$var$AutoScrollAction(), (action)=>action.reset());
+        this._requestPool = new (0, $bfd9fff49b9cfdf1$export$14963ee5c8637e11)(()=>new $45f763d3a9362ecf$var$AutoScrollRequest(), {
+            initialBatchCount: 1,
+            minBatchCount: 1,
+            onRelease: (request)=>request.reset()
+        });
+        this._actionPool = new (0, $bfd9fff49b9cfdf1$export$14963ee5c8637e11)(()=>new $45f763d3a9362ecf$var$AutoScrollAction(), {
+            initialBatchCount: 1,
+            minBatchCount: 1,
+            onRelease: (action)=>action.reset()
+        });
         this._frameRead = this._frameRead.bind(this);
         this._frameWrite = this._frameWrite.bind(this);
     }
@@ -3230,7 +3246,7 @@ class $45f763d3a9362ecf$export$3fb39aee5567f02e {
         if (request) {
             if (request.element !== element || request.direction !== direction) request.reset();
         } else {
-            request = this._requestPool.pick();
+            request = this._requestPool.get();
             reqMap.set(item, request);
         }
         request.item = item;
@@ -3245,7 +3261,7 @@ class $45f763d3a9362ecf$export$3fb39aee5567f02e {
         const request = reqMap.get(item);
         if (!request) return;
         if (request.action) request.action.removeRequest(request);
-        this._requestPool.put(request);
+        this._requestPool.release(request);
         reqMap.delete(item);
     }
     _checkItemOverlap(item, checkX, checkY) {
@@ -3500,7 +3516,7 @@ class $45f763d3a9362ecf$export$3fb39aee5567f02e {
             }
             break;
         }
-        if (!action) action = this._actionPool.pick();
+        if (!action) action = this._actionPool.get();
         action.element = request.element;
         action.addRequest(request);
         request.tick(this._tickDeltaTime);
@@ -3526,7 +3542,7 @@ class $45f763d3a9362ecf$export$3fb39aee5567f02e {
         let i = 0;
         for(i = 0; i < this._actions.length; i++){
             this._actions[i].scroll();
-            this._actionPool.put(this._actions[i]);
+            this._actionPool.release(this._actions[i]);
         }
         // Reset actions.
         this._actions.length = 0;
@@ -3582,8 +3598,8 @@ class $45f763d3a9362ecf$export$3fb39aee5567f02e {
         let i = 0;
         for(; i < items.length; i++)this.removeItem(items[i]);
         this._actions.length = 0;
-        this._requestPool.reset();
-        this._actionPool.reset();
+        this._requestPool.destroy();
+        this._actionPool.destroy();
         this._isDestroyed = true;
     }
 }
@@ -3752,13 +3768,21 @@ const $8cf3b9f73d8dfc46$export$38b6bae3524fed9e = {
     Destroy: 'destroy'
 };
 const $8cf3b9f73d8dfc46$export$f7d1599333345bbc = {
-    accept: ()=>true
+    accept: ()=>true,
+    parent: null,
+    data: {}
 };
 class $8cf3b9f73d8dfc46$export$423ec2075359570a {
     constructor(element, options = {}){
-        const { accept: accept = $8cf3b9f73d8dfc46$export$f7d1599333345bbc.accept } = options;
+        const { accept: accept = $8cf3b9f73d8dfc46$export$f7d1599333345bbc.accept, parent: parent = $8cf3b9f73d8dfc46$export$f7d1599333345bbc.parent, data: data = $8cf3b9f73d8dfc46$export$f7d1599333345bbc.data } = options;
+        this.id = Symbol();
         this.element = element;
+        this.parent = parent;
+        this.children = new Set();
         this.accept = accept;
+        this.data = {
+            ...data
+        };
         this.isDestroyed = false;
         this._clientRect = {
             x: 0,
@@ -3767,7 +3791,16 @@ class $8cf3b9f73d8dfc46$export$423ec2075359570a {
             height: 0
         };
         this._emitter = new (0, $e4e7a534e772252d$export$4293555f241ae35a)();
+        this.setParent(parent);
         this.updateClientRect();
+    }
+    _isDescendantOf(droppable) {
+        let current = droppable;
+        while(current){
+            if (current === this) return true;
+            current = current.parent;
+        }
+        return false;
     }
     on(type, listener, listenerId) {
         return this._emitter.on(type, listener, listenerId);
@@ -3775,11 +3808,19 @@ class $8cf3b9f73d8dfc46$export$423ec2075359570a {
     off(type, listenerId) {
         this._emitter.off(type, listenerId);
     }
+    setParent(parent) {
+        if (this.parent === parent) return;
+        if (parent === this) throw new Error('Droppable cannot be its own parent.');
+        if (parent && parent._isDescendantOf(this)) throw new Error('Cannot set a descendant as parent.');
+        if (this.parent) this.parent.children.delete(this);
+        if (parent) parent.children.add(this);
+        this.parent = parent;
+    }
     getClientRect() {
         return this._clientRect;
     }
-    updateClientRect() {
-        const bcr = this.element.getBoundingClientRect();
+    updateClientRect(rect) {
+        const bcr = rect || this.element.getBoundingClientRect();
         const { _clientRect: _clientRect } = this;
         _clientRect.x = bcr.x;
         _clientRect.y = bcr.y;
@@ -3791,10 +3832,103 @@ class $8cf3b9f73d8dfc46$export$423ec2075359570a {
         this.isDestroyed = true;
         this._emitter.emit($8cf3b9f73d8dfc46$export$38b6bae3524fed9e.Destroy);
         this._emitter.off();
+        // Reset parent.
+        this.setParent(null);
+        // Reset the parent of all children, which are still attached to this
+        // droppable.
+        this.children.forEach((child)=>{
+            if (child.parent === this) child.setParent(null);
+        });
+        // Clear children.
+        this.children.clear();
     }
 }
 
 
+
+class $1f3d34e5f09d6c18$export$33ac827f35cc27f9 {
+    constructor(createItem, updateItem){
+        this.createItem = createItem;
+        this.updateItem = updateItem;
+        this.items = [];
+        this.index = 0;
+    }
+    get(...args) {
+        if (this.index >= this.items.length) return this.items[this.index++] = this.createItem(...args);
+        return this.updateItem(this.items[this.index++], ...args);
+    }
+    resetPointer() {
+        this.index = 0;
+    }
+    resetItems(maxLength = 0) {
+        const newItemCount = Math.max(0, Math.min(maxLength, this.items.length));
+        this.index = Math.min(this.index, newItemCount);
+        this.items.length = newItemCount;
+    }
+}
+
+
+
+function $d934bd484b07bf81$export$683394309ff76659(dndContext, { getCollisionScore: getCollisionScore = (draggable, droppable)=>{
+    const draggableRect = draggable.getClientRect();
+    if (!draggableRect) return null;
+    const score = (0, $ec0caa97c3c0620a$export$25b3e1e24e1ba229)(draggableRect, droppable.getClientRect());
+    return score > 0 ? score : null;
+}, sortCollisions: sortCollisions = (_draggable, collisions)=>{
+    return collisions.sort((a, b)=>{
+        const diff = b.score - a.score;
+        if (diff !== 0) return diff;
+        return a.width * a.height - b.width * b.height;
+    });
+} } = {}) {
+    const droppableIdMap = dndContext['_droppables'];
+    const collisionDataPool = new (0, $1f3d34e5f09d6c18$export$33ac827f35cc27f9)((droppable, score)=>({
+            id: droppable.id,
+            ...droppable.getClientRect(),
+            score: score
+        }), (item, droppable, score)=>{
+        Object.assign(item, droppable.getClientRect());
+        item.id = droppable.id;
+        item.score = score;
+        return item;
+    });
+    const getRootDroppable = (d)=>d.parent === null;
+    const getDroppableFromCollisionData = (c)=>droppableIdMap.get(c.id);
+    // We only ever need to have as many items in the collision data pool as there
+    // are droppables.
+    dndContext.on('removeDroppable', ()=>{
+        collisionDataPool.resetItems(droppableIdMap.size);
+    });
+    // Reset items when dnd context is destroyed.
+    dndContext.on('destroy', ()=>{
+        collisionDataPool.resetItems();
+    });
+    return (draggable, targets)=>{
+        // Start with root-level droppables (no parent).
+        // TODO: We should store these in the dnd context for faster access.
+        let currentBranch = Array.from(targets).filter(getRootDroppable);
+        let bestMatches = [];
+        // Keep going until we have no more branches to check.
+        while(currentBranch.length > 0){
+            const branchMatches = [];
+            for (const droppable of currentBranch){
+                const score = getCollisionScore(draggable, droppable);
+                if (score !== null) branchMatches.push(collisionDataPool.get(droppable, score));
+            }
+            // If there are no matches, we can stop.
+            if (!branchMatches.length) break;
+            // Sort the collisions.
+            sortCollisions(draggable, branchMatches);
+            // Set the best matches.
+            bestMatches = branchMatches;
+            // Move to the next branch.
+            currentBranch = Array.from(droppableIdMap.get(branchMatches[0].id).children);
+        }
+        // Reset collision data pool pointer.
+        collisionDataPool.resetPointer();
+        return new Set(bestMatches.map(getDroppableFromCollisionData));
+    };
+}
 
 
 const $fa11c4bc76a2544e$export$360ab8c194eb7385 = {
@@ -3806,71 +3940,64 @@ const $fa11c4bc76a2544e$export$360ab8c194eb7385 = {
     Drop: 'drop',
     End: 'end',
     Cancel: 'cancel',
+    AddDraggable: 'addDraggable',
+    RemoveDraggable: 'removeDraggable',
+    AddDroppable: 'addDroppable',
+    RemoveDroppable: 'removeDroppable',
     Destroy: 'destroy'
 };
 const $fa11c4bc76a2544e$export$44eb89083e83f10a = {
-    collisionDetection: (draggable, droppables)=>{
-        const draggableClientRect = draggable.getClientRect();
-        // If we can't get the draggable's client rect, we can't detect collisions.
-        if (!draggableClientRect) return new Set();
-        // Find all droppables that are colliding with the draggable.
-        const collisions = [];
-        for (const droppable of droppables){
-            const droppableClientRect = droppable.getClientRect();
-            const intersectionScore = (0, $ec0caa97c3c0620a$export$25b3e1e24e1ba229)(draggableClientRect, droppableClientRect);
-            if (intersectionScore > 0) collisions.push({
-                droppable: droppable,
-                intersectionScore: intersectionScore
-            });
-        }
-        // Sort collisions by intersection score from highest to lowest. In case of
-        // a tie, the original order should be kept.
-        collisions.sort((a, b)=>b.intersectionScore - a.intersectionScore);
-        // Return the droppables that are colliding with the draggable in the
-        // order of their intersection score.
-        return new Set(collisions.map((c)=>c.droppable));
-    }
+    collisionDetection: undefined
 };
 class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     constructor(options = {}){
         const { collisionDetection: collisionDetection = $fa11c4bc76a2544e$export$44eb89083e83f10a.collisionDetection } = options;
         this._listenerId = Symbol();
         this._draggables = new Set();
-        this._droppables = new Set();
-        this._targets = new Map();
-        this._collisions = new Map();
-        this._collisionDetection = collisionDetection;
+        this._droppables = new Map();
+        this._dragData = new Map();
+        this._isCheckingCollisions = false;
         this._emitter = new (0, $e4e7a534e772252d$export$4293555f241ae35a)();
+        this._collisionDetection = collisionDetection || (0, $d934bd484b07bf81$export$683394309ff76659)(this);
     }
     _isTarget(draggable, droppable) {
-        return typeof droppable.accept === 'function' ? droppable.accept(draggable) : droppable.accept.includes(draggable.settings.group);
+        let isAcceptable = typeof droppable.accept === 'function' ? droppable.accept(draggable) : droppable.accept.includes(draggable.settings.group);
+        // Make sure that the none of the draggables element match the droppable's
+        // element.
+        if (isAcceptable && draggable.drag?.items.some((item)=>item.element === droppable.element)) isAcceptable = false;
+        return isAcceptable;
     }
     _getTargets(draggable) {
-        const cachedTargets = this._targets.get(draggable);
-        if (cachedTargets) return cachedTargets;
+        const dragData = this._dragData.get(draggable);
+        if (dragData?.targets) return dragData.targets;
         const targets = new Set();
-        for (const droppable of this._droppables)if (this._isTarget(draggable, droppable)) targets.add(droppable);
-        this._targets.set(draggable, targets);
+        for (const [_id, droppable] of this._droppables)if (this._isTarget(draggable, droppable)) targets.add(droppable);
+        if (dragData) dragData.targets = targets;
         return targets;
     }
     _onDragStart(draggable) {
         // Make sure the draggable is registered.
         if (!this._draggables.has(draggable)) return;
         // Make sure the draggable is not being dragged, yet.
-        if (this._targets.has(draggable)) return;
+        if (this._dragData.get(draggable)) return;
         // Find all droppables that are colliding with the draggable.
         const targets = this._getTargets(draggable);
         const collisions = this._collisionDetection(draggable, targets);
-        // Set the initial collision state.
-        this._collisions.set(draggable, collisions);
+        // Create the drag data.
+        const dragData = {
+            targets: targets,
+            collisions: collisions,
+            data: {}
+        };
+        this._dragData.set(draggable, dragData);
         // Emit start event.
-        this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Start, {
+        if (this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Start)) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Start, {
             draggable: draggable,
             targets: Array.from(targets)
         });
         // If there are any collisions, update the collision state and emit enter
         // events.
-        if (collisions.size) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Enter, {
+        if (collisions.size && this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Enter)) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Enter, {
             draggable: draggable,
             targets: Array.from(targets),
             collisions: Array.from(collisions),
@@ -3879,48 +4006,53 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     }
     _onDragMove(draggable) {
         // Make sure the draggable is being dragged.
-        if (!this._targets.has(draggable)) return;
-        const targets = this._getTargets(draggable);
+        const dragData = this._dragData.get(draggable);
+        if (!dragData) return;
         // Emit move event.
-        this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Move, {
-            draggable: draggable,
-            targets: Array.from(targets)
-        });
+        if (this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Move)) {
+            const targets = this._getTargets(draggable);
+            this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Move, {
+                draggable: draggable,
+                targets: Array.from(targets)
+            });
+        }
         // Run collision detection.
         this.detectCollisions(draggable);
     }
     _onDragEnd(draggable) {
         // Make sure the draggable is being dragged.
-        if (!this._targets.has(draggable)) return;
+        const dragData = this._dragData.get(draggable);
+        if (!dragData) return;
         const targets = this._getTargets(draggable);
-        const currentCollisions = this._collisions.get(draggable);
+        const currentCollisions = dragData.collisions;
         // Emit drop events for all current collisions.
-        if (currentCollisions && currentCollisions.size > 0) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Drop, {
+        if (currentCollisions && currentCollisions.size > 0 && this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Drop)) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Drop, {
             draggable: draggable,
             targets: Array.from(targets),
             collisions: Array.from(currentCollisions)
         });
         // Emit end event.
-        this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.End, {
+        if (this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.End)) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.End, {
             draggable: draggable,
             targets: Array.from(targets)
         });
-        // Remove the draggable from the targets and collisions maps.
-        this._targets.delete(draggable);
-        this._collisions.delete(draggable);
+        // Remove the drag data.
+        this._dragData.delete(draggable);
     }
     _onDragCancel(draggable) {
         // Make sure the draggable is being dragged.
-        if (!this._targets.has(draggable)) return;
-        const targets = this._getTargets(draggable);
+        const dragData = this._dragData.get(draggable);
+        if (!dragData) return;
         // Emit cancel event.
-        this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Cancel, {
-            draggable: draggable,
-            targets: Array.from(targets)
-        });
-        // Remove the draggable from the targets and collisions maps.
-        this._targets.delete(draggable);
-        this._collisions.delete(draggable);
+        if (this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Cancel)) {
+            const targets = this._getTargets(draggable);
+            this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Cancel, {
+                draggable: draggable,
+                targets: Array.from(targets)
+            });
+        }
+        // Remove the drag data.
+        this._dragData.delete(draggable);
     }
     _onDragDestroy(draggable) {
         this.removeDraggable(draggable);
@@ -3931,44 +4063,56 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     off(type, listenerId) {
         this._emitter.off(type, listenerId);
     }
+    getData(draggable) {
+        const dragData = this._dragData.get(draggable);
+        if (!dragData) return null;
+        return dragData.data;
+    }
     clearTargets(draggable) {
-        if (!this._targets.has(draggable)) return;
-        this._targets.set(draggable, null);
+        const dragData = this._dragData.get(draggable);
+        if (dragData) dragData.targets = null;
     }
     detectCollisions(draggable) {
-        if (!this._draggables.has(draggable)) return;
+        const dragData = this._dragData.get(draggable);
+        if (!dragData) return;
+        if (this._isCheckingCollisions) throw new Error('Cannot detect collisions while already checking collisions.');
+        this._isCheckingCollisions = true;
         const targets = this._getTargets(draggable);
-        const currentCollisions = this._collisions.get(draggable);
+        const currentCollisions = dragData.collisions;
         const nextCollisions = this._collisionDetection(draggable, targets);
-        // Find droppables that stopped colliding.
-        const removedCollisions = currentCollisions ? currentCollisions.difference(nextCollisions) : new Set();
-        // Find droppables that started colliding.
-        const addedCollisions = currentCollisions ? nextCollisions.difference(currentCollisions) : nextCollisions;
-        // Find droppables that kept colliding.
-        const persistedCollisions = currentCollisions ? nextCollisions.intersection(currentCollisions) : new Set();
         // Update collision state.
-        this._collisions.set(draggable, nextCollisions);
+        dragData.collisions = nextCollisions;
         // Emit leave events.
-        if (removedCollisions.size > 0) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Leave, {
-            draggable: draggable,
-            targets: Array.from(targets),
-            collisions: Array.from(nextCollisions),
-            removedCollisions: Array.from(removedCollisions)
-        });
+        if (this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Leave)) {
+            const removedCollisions = currentCollisions ? currentCollisions.difference(nextCollisions) : new Set();
+            if (removedCollisions.size > 0) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Leave, {
+                draggable: draggable,
+                targets: Array.from(targets),
+                collisions: Array.from(nextCollisions),
+                removedCollisions: Array.from(removedCollisions)
+            });
+        }
         // Emit enter events.
-        if (addedCollisions.size > 0) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Enter, {
-            draggable: draggable,
-            targets: Array.from(targets),
-            collisions: Array.from(nextCollisions),
-            addedCollisions: Array.from(addedCollisions)
-        });
+        if (this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Enter)) {
+            const addedCollisions = currentCollisions ? nextCollisions.difference(currentCollisions) : nextCollisions;
+            if (addedCollisions.size > 0) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Enter, {
+                draggable: draggable,
+                targets: Array.from(targets),
+                collisions: Array.from(nextCollisions),
+                addedCollisions: Array.from(addedCollisions)
+            });
+        }
         // Emit over events.
-        if (persistedCollisions.size > 0) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Over, {
-            draggable: draggable,
-            targets: Array.from(targets),
-            collisions: Array.from(nextCollisions),
-            persistedCollisions: Array.from(persistedCollisions)
-        });
+        if (this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Over)) {
+            const persistedCollisions = currentCollisions ? nextCollisions.intersection(currentCollisions) : new Set();
+            if (persistedCollisions.size > 0) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Over, {
+                draggable: draggable,
+                targets: Array.from(targets),
+                collisions: Array.from(nextCollisions),
+                persistedCollisions: Array.from(persistedCollisions)
+            });
+        }
+        this._isCheckingCollisions = false;
     }
     addDraggable(draggable) {
         if (this._draggables.has(draggable)) return;
@@ -3986,6 +4130,12 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
         draggable.on((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).Destroy, ()=>{
             this._onDragDestroy(draggable);
         }, this._listenerId);
+        // Emit add draggable event. Note that we intentionally call this before
+        // we call the onDragStart method, so that the add event is called before
+        // the start event.
+        this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.AddDraggable, {
+            draggable: draggable
+        });
         // If the draggable is already being dragged, start the drag process
         // manually.
         if (draggable.drag && !draggable.drag.isEnded) this._onDragStart(draggable);
@@ -3999,54 +4149,62 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
         draggable.off((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).End, this._listenerId);
         draggable.off((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).Destroy, this._listenerId);
         // If this draggable is being dragged, emit leave and cancel events.
-        if (this._targets.has(draggable)) {
-            const collisions = this._collisions.get(draggable);
-            if (collisions?.size) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Leave, {
+        const dragData = this._dragData.get(draggable);
+        if (dragData) {
+            if (dragData.collisions.size && this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Leave)) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Leave, {
                 draggable: draggable,
                 targets: Array.from(this._getTargets(draggable)),
                 collisions: [],
-                removedCollisions: Array.from(collisions)
+                removedCollisions: Array.from(dragData.collisions)
             });
-            this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Cancel, {
+            if (this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Cancel)) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Cancel, {
                 draggable: draggable,
                 targets: Array.from(this._getTargets(draggable))
             });
         }
-        // Remove the draggable from the targets, collisions, and draggables maps.
-        this._targets.delete(draggable);
-        this._collisions.delete(draggable);
+        // Remove drag data.
+        this._dragData.delete(draggable);
+        // Remove draggable.
         this._draggables.delete(draggable);
+        // Emit remove draggable event.
+        this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.RemoveDraggable, {
+            draggable: draggable
+        });
     }
     addDroppable(droppable) {
-        if (this._droppables.has(droppable)) return;
-        // Add the droppable to the set of droppables.
-        this._droppables.add(droppable);
+        if (this._droppables.has(droppable.id)) return;
+        // Add the droppable to the droppable map.
+        this._droppables.set(droppable.id, droppable);
         // Bind the destroy event listener.
         droppable.on((0, $8cf3b9f73d8dfc46$export$38b6bae3524fed9e).Destroy, ()=>{
             this.removeDroppable(droppable);
         }, this._listenerId);
         // Add the droppable to the targets of all currently dragged draggables,
         // where the droppable is a valid target.
-        this._targets.forEach((targets, draggable)=>{
+        this._dragData.forEach(({ targets: targets }, draggable)=>{
             if (targets && this._isTarget(draggable, droppable)) targets.add(droppable);
+        });
+        // Emit add droppable event.
+        this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.AddDroppable, {
+            droppable: droppable
         });
     // NB: We intentionally do not run collision detection here. It might not
     // be wanted/necessary behavior for some applications, so users can call
     // `detectCollisions` manually after adding the droppables if they want to.
     }
     removeDroppable(droppable) {
-        if (!this._droppables.has(droppable)) return;
+        if (!this._droppables.has(droppable.id)) return;
         // Remove the droppable from the set of droppables.
-        this._droppables.delete(droppable);
+        this._droppables.delete(droppable.id);
         // Unbind the destroy event listener.
         droppable.off((0, $8cf3b9f73d8dfc46$export$38b6bae3524fed9e).Destroy, this._listenerId);
         // Remove the droppable from the targets map.
-        this._targets.forEach((targets)=>{
+        this._dragData.forEach(({ targets: targets })=>{
             targets?.delete(droppable);
         });
         // Remove the droppable from the collisions map and emit leave events for
         // all draggables that are colliding with it.
-        this._collisions.forEach((collisions, draggable)=>{
+        if (this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Leave)) this._dragData.forEach(({ collisions: collisions }, draggable)=>{
             if (collisions.has(droppable)) {
                 collisions.delete(droppable);
                 this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Leave, {
@@ -4058,6 +4216,10 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
                     ]
                 });
             }
+        });
+        // Emit remove droppable event.
+        this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.RemoveDroppable, {
+            droppable: droppable
         });
     }
     destroy() {
@@ -4073,40 +4235,42 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
-const $36439aed3cd46e36$var$element = document.querySelector('.draggable');
-const $36439aed3cd46e36$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($36439aed3cd46e36$var$element);
-const $36439aed3cd46e36$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($36439aed3cd46e36$var$element);
-const $36439aed3cd46e36$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $36439aed3cd46e36$var$pointerSensor,
-    $36439aed3cd46e36$var$keyboardSensor
+
+const $72821dbb08df4f25$var$element = document.querySelector('.draggable');
+const $72821dbb08df4f25$var$dragContainer = document.querySelector('.drag-container');
+const $72821dbb08df4f25$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($72821dbb08df4f25$var$element);
+const $72821dbb08df4f25$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($72821dbb08df4f25$var$element, {
+    computeSpeed: ()=>100
+});
+const $72821dbb08df4f25$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $72821dbb08df4f25$var$pointerSensor,
+    $72821dbb08df4f25$var$keyboardSensor
 ], {
+    container: $72821dbb08df4f25$var$dragContainer,
     elements: ()=>[
-            $36439aed3cd46e36$var$element
+            $72821dbb08df4f25$var$element
         ],
-    positionModifiers: [
-        (change, { drag: drag, item: item, phase: phase })=>{
-            // Align the dragged element so that the pointer
-            // is in the center of the element.
-            if (// Only apply the alignment on the start phase.
-            phase === 'start' && // Only apply the alignment for the pointer sensor.
-            drag.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638) && // Only apply the alignment for the primary drag element.
-            drag.items[0].element === item.element) {
-                const { clientRect: clientRect } = item;
-                const { x: x, y: y } = drag.startEvent;
-                const targetX = clientRect.x + clientRect.width / 2;
-                const targetY = clientRect.y + clientRect.height / 2;
-                change.x = x - targetX;
-                change.y = y - targetY;
-            }
-            return change;
-        }
-    ],
+    frozenStyles: ()=>[
+            'left',
+            'top'
+        ],
     onStart: ()=>{
-        $36439aed3cd46e36$var$element.classList.add('dragging');
+        $72821dbb08df4f25$var$element.classList.add('dragging');
     },
     onEnd: ()=>{
-        $36439aed3cd46e36$var$element.classList.remove('dragging');
+        $72821dbb08df4f25$var$element.classList.remove('dragging');
     }
-});
+}).use((0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
+    targets: [
+        {
+            element: window,
+            axis: 'y',
+            padding: {
+                top: Infinity,
+                bottom: Infinity
+            }
+        }
+    ]
+}));
 
 

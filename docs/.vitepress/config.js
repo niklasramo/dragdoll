@@ -136,5 +136,19 @@ function sidebarGuide() {
         },
       ],
     },
+
+    {
+      text: 'Drag and Drop',
+      collapsible: false,
+      items: [
+        { text: 'DndContext', link: '/docs/dnd-context' },
+        { text: 'Droppable', link: '/docs/droppable' },
+        {
+          text: 'Helpers',
+          link: '/docs/dnd-context-helpers',
+          collapsible: false,
+        },
+      ],
+    },
   ];
 }

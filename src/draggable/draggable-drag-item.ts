@@ -1,8 +1,12 @@
+import type { Draggable } from './draggable.js';
+
+import type { ObjectCache } from '../utils/object-cache.js';
+
+import type { Sensor } from '../sensors/sensor.js';
+
+import type { CSSProperties, Point, Rect } from '../types.js';
+
 import { getOffsetContainer } from 'mezr';
-
-import { Sensor } from '../sensors/sensor.js';
-
-import { CSSProperties, Point, Rect } from '../types.js';
 
 import { getStyle } from '../utils/get-style.js';
 
@@ -18,11 +22,7 @@ import { isMatrixWarped } from '../utils/is-matrix-warped.js';
 
 import { parseTransformOrigin } from '../utils/parse-transform-origin.js';
 
-import { getElementTransformString } from 'utils/get-element-transform-string.js';
-
-import type { Draggable } from './draggable.js';
-
-import type { ObjectCache } from '../utils/object-cache.js';
+import { getElementTransformString } from '../utils/get-element-transform-string.js';
 
 const MEASURE_ELEMENT = createMeasureElement();
 

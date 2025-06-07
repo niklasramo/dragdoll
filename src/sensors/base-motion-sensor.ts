@@ -1,8 +1,12 @@
-import { Sensor, SensorEvents, SensorEventType } from './sensor.js';
+import type { Sensor, SensorEvents } from './sensor.js';
 
-import { BaseSensor, BaseSensorDragData } from './base-sensor.js';
+import type { BaseSensorDragData } from './base-sensor.js';
 
-import { Point, Writeable } from '../types.js';
+import type { Point, Writeable } from '../types.js';
+
+import { BaseSensor } from './base-sensor.js';
+
+import { SensorEventType } from './sensor.js';
 
 import { ticker, tickerPhases } from '../singletons/ticker.js';
 

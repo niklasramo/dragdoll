@@ -7,7 +7,7 @@ Contains a draggable element's movement within a rectangle.
 ## Example
 
 ```ts
-import { Draggable, PointerSensor, KeyboardSensor, createContainmentModifier } from 'draggable';
+import { Draggable, PointerSensor, KeyboardSensor, createContainmentModifier } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);

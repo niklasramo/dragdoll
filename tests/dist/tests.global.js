@@ -1321,21 +1321,29 @@
   __name(Assertion, "Assertion");
   Object.defineProperty(Assertion, "includeStack", {
     get: function() {
-      console.warn("Assertion.includeStack is deprecated, use chai.config.includeStack instead.");
+      console.warn(
+        "Assertion.includeStack is deprecated, use chai.config.includeStack instead."
+      );
       return config.includeStack;
     },
     set: function(value) {
-      console.warn("Assertion.includeStack is deprecated, use chai.config.includeStack instead.");
+      console.warn(
+        "Assertion.includeStack is deprecated, use chai.config.includeStack instead."
+      );
       config.includeStack = value;
     }
   });
   Object.defineProperty(Assertion, "showDiff", {
     get: function() {
-      console.warn("Assertion.showDiff is deprecated, use chai.config.showDiff instead.");
+      console.warn(
+        "Assertion.showDiff is deprecated, use chai.config.showDiff instead."
+      );
       return config.showDiff;
     },
     set: function(value) {
-      console.warn("Assertion.showDiff is deprecated, use chai.config.showDiff instead.");
+      console.warn(
+        "Assertion.showDiff is deprecated, use chai.config.showDiff instead."
+      );
       config.showDiff = value;
     }
   });
@@ -1384,18 +1392,14 @@
       );
     }
   };
-  Object.defineProperty(
-    Assertion.prototype,
-    "_obj",
-    {
-      get: function() {
-        return flag(this, "object");
-      },
-      set: function(val) {
-        flag(this, "object", val);
-      }
+  Object.defineProperty(Assertion.prototype, "_obj", {
+    get: function() {
+      return flag(this, "object");
+    },
+    set: function(val) {
+      flag(this, "object", val);
     }
-  );
+  });
   function isProxyEnabled() {
     return config.useProxy && typeof Proxy !== "undefined" && typeof Reflect !== "undefined";
   }
@@ -1403,24 +1407,20 @@
   function addProperty(ctx, name, getter) {
     getter = getter === void 0 ? function() {
     } : getter;
-    Object.defineProperty(
-      ctx,
-      name,
-      {
-        get: /* @__PURE__ */ __name(function propertyGetter() {
-          if (!isProxyEnabled() && !flag(this, "lockSsfi")) {
-            flag(this, "ssfi", propertyGetter);
-          }
-          var result = getter.call(this);
-          if (result !== void 0)
-            return result;
-          var newAssertion = new Assertion();
-          transferFlags(this, newAssertion);
-          return newAssertion;
-        }, "propertyGetter"),
-        configurable: true
-      }
-    );
+    Object.defineProperty(ctx, name, {
+      get: /* @__PURE__ */ __name(function propertyGetter() {
+        if (!isProxyEnabled() && !flag(this, "lockSsfi")) {
+          flag(this, "ssfi", propertyGetter);
+        }
+        var result = getter.call(this);
+        if (result !== void 0)
+          return result;
+        var newAssertion = new Assertion();
+        transferFlags(this, newAssertion);
+        return newAssertion;
+      }, "propertyGetter"),
+      configurable: true
+    });
   }
   __name(addProperty, "addProperty");
   var fnLengthDesc = Object.getOwnPropertyDescriptor(function() {
@@ -1431,9 +1431,13 @@
     Object.defineProperty(fn, "length", {
       get: function() {
         if (isChainable) {
-          throw Error("Invalid Chai property: " + assertionName + '.length. Due to a compatibility issue, "length" cannot directly follow "' + assertionName + '". Use "' + assertionName + '.lengthOf" instead.');
+          throw Error(
+            "Invalid Chai property: " + assertionName + '.length. Due to a compatibility issue, "length" cannot directly follow "' + assertionName + '". Use "' + assertionName + '.lengthOf" instead.'
+          );
         }
-        throw Error("Invalid Chai property: " + assertionName + '.length. See docs for proper usage of "' + assertionName + '".');
+        throw Error(
+          "Invalid Chai property: " + assertionName + '.length. See docs for proper usage of "' + assertionName + '".'
+        );
       }
     });
     return fn;
@@ -1463,17 +1467,19 @@
       get: /* @__PURE__ */ __name(function proxyGetter(target, property) {
         if (typeof property === "string" && config.proxyExcludedKeys.indexOf(property) === -1 && !Reflect.has(target, property)) {
           if (nonChainableMethodName) {
-            throw Error("Invalid Chai property: " + nonChainableMethodName + "." + property + '. See docs for proper usage of "' + nonChainableMethodName + '".');
+            throw Error(
+              "Invalid Chai property: " + nonChainableMethodName + "." + property + '. See docs for proper usage of "' + nonChainableMethodName + '".'
+            );
           }
           var suggestion = null;
           var suggestionDistance = 4;
           getProperties(target).forEach(function(prop) {
-            if (!Object.prototype.hasOwnProperty(prop) && builtins.indexOf(prop) === -1) {
-              var dist = stringDistanceCapped(
-                property,
-                prop,
-                suggestionDistance
-              );
+            if (
+              // we actually mean to check `Object.prototype` here
+              // eslint-disable-next-line no-prototype-builtins
+              !Object.prototype.hasOwnProperty(prop) && builtins.indexOf(prop) === -1
+            ) {
+              var dist = stringDistanceCapped(property, prop, suggestionDistance);
               if (dist < suggestionDistance) {
                 suggestion = prop;
                 suggestionDistance = dist;
@@ -1481,7 +1487,9 @@
             }
           });
           if (suggestion !== null) {
-            throw Error("Invalid Chai property: " + property + '. Did you mean "' + suggestion + '"?');
+            throw Error(
+              "Invalid Chai property: " + property + '. Did you mean "' + suggestion + '"?'
+            );
           } else {
             throw Error("Invalid Chai property: " + property);
           }
@@ -1499,16 +1507,16 @@
       return cap;
     }
     var memo = [];
-    for (var i = 0; i <= strA.length; i++) {
+    for (let i = 0; i <= strA.length; i++) {
       memo[i] = Array(strB.length + 1).fill(0);
       memo[i][0] = i;
     }
-    for (var j = 0; j < strB.length; j++) {
+    for (let j = 0; j < strB.length; j++) {
       memo[0][j] = j;
     }
-    for (var i = 1; i <= strA.length; i++) {
+    for (let i = 1; i <= strA.length; i++) {
       var ch = strA.charCodeAt(i - 1);
-      for (var j = 1; j <= strB.length; j++) {
+      for (let j = 1; j <= strB.length; j++) {
         if (Math.abs(i - j) >= cap) {
           memo[i][j] = cap;
           continue;
@@ -1544,28 +1552,24 @@
     }, "_super");
     if (_get && "function" === typeof _get.get)
       _super = _get.get;
-    Object.defineProperty(
-      ctx,
-      name,
-      {
-        get: /* @__PURE__ */ __name(function overwritingPropertyGetter() {
-          if (!isProxyEnabled() && !flag(this, "lockSsfi")) {
-            flag(this, "ssfi", overwritingPropertyGetter);
-          }
-          var origLockSsfi = flag(this, "lockSsfi");
-          flag(this, "lockSsfi", true);
-          var result = getter(_super).call(this);
-          flag(this, "lockSsfi", origLockSsfi);
-          if (result !== void 0) {
-            return result;
-          }
-          var newAssertion = new Assertion();
-          transferFlags(this, newAssertion);
-          return newAssertion;
-        }, "overwritingPropertyGetter"),
-        configurable: true
-      }
-    );
+    Object.defineProperty(ctx, name, {
+      get: /* @__PURE__ */ __name(function overwritingPropertyGetter() {
+        if (!isProxyEnabled() && !flag(this, "lockSsfi")) {
+          flag(this, "ssfi", overwritingPropertyGetter);
+        }
+        var origLockSsfi = flag(this, "lockSsfi");
+        flag(this, "lockSsfi", true);
+        var result = getter(_super).call(this);
+        flag(this, "lockSsfi", origLockSsfi);
+        if (result !== void 0) {
+          return result;
+        }
+        var newAssertion = new Assertion();
+        transferFlags(this, newAssertion);
+        return newAssertion;
+      }, "overwritingPropertyGetter"),
+      configurable: true
+    });
   }
   __name(overwriteProperty, "overwriteProperty");
   function overwriteMethod(ctx, name, method) {
@@ -1617,46 +1621,42 @@
       ctx.__methods = {};
     }
     ctx.__methods[name] = chainableBehavior;
-    Object.defineProperty(
-      ctx,
-      name,
-      {
-        get: /* @__PURE__ */ __name(function chainableMethodGetter() {
-          chainableBehavior.chainingBehavior.call(this);
-          var chainableMethodWrapper = /* @__PURE__ */ __name(function() {
-            if (!flag(this, "lockSsfi")) {
-              flag(this, "ssfi", chainableMethodWrapper);
-            }
-            var result = chainableBehavior.method.apply(this, arguments);
-            if (result !== void 0) {
-              return result;
-            }
-            var newAssertion = new Assertion();
-            transferFlags(this, newAssertion);
-            return newAssertion;
-          }, "chainableMethodWrapper");
-          addLengthGuard(chainableMethodWrapper, name, true);
-          if (canSetPrototype) {
-            var prototype = Object.create(this);
-            prototype.call = call;
-            prototype.apply = apply;
-            Object.setPrototypeOf(chainableMethodWrapper, prototype);
-          } else {
-            var asserterNames = Object.getOwnPropertyNames(ctx);
-            asserterNames.forEach(function(asserterName) {
-              if (excludeNames.indexOf(asserterName) !== -1) {
-                return;
-              }
-              var pd = Object.getOwnPropertyDescriptor(ctx, asserterName);
-              Object.defineProperty(chainableMethodWrapper, asserterName, pd);
-            });
+    Object.defineProperty(ctx, name, {
+      get: /* @__PURE__ */ __name(function chainableMethodGetter() {
+        chainableBehavior.chainingBehavior.call(this);
+        var chainableMethodWrapper = /* @__PURE__ */ __name(function() {
+          if (!flag(this, "lockSsfi")) {
+            flag(this, "ssfi", chainableMethodWrapper);
           }
-          transferFlags(this, chainableMethodWrapper);
-          return proxify(chainableMethodWrapper);
-        }, "chainableMethodGetter"),
-        configurable: true
-      }
-    );
+          var result = chainableBehavior.method.apply(this, arguments);
+          if (result !== void 0) {
+            return result;
+          }
+          var newAssertion = new Assertion();
+          transferFlags(this, newAssertion);
+          return newAssertion;
+        }, "chainableMethodWrapper");
+        addLengthGuard(chainableMethodWrapper, name, true);
+        if (canSetPrototype) {
+          var prototype = Object.create(this);
+          prototype.call = call;
+          prototype.apply = apply;
+          Object.setPrototypeOf(chainableMethodWrapper, prototype);
+        } else {
+          var asserterNames = Object.getOwnPropertyNames(ctx);
+          asserterNames.forEach(function(asserterName) {
+            if (excludeNames.indexOf(asserterName) !== -1) {
+              return;
+            }
+            var pd = Object.getOwnPropertyDescriptor(ctx, asserterName);
+            Object.defineProperty(chainableMethodWrapper, asserterName, pd);
+          });
+        }
+        transferFlags(this, chainableMethodWrapper);
+        return proxify(chainableMethodWrapper);
+      }, "chainableMethodGetter"),
+      configurable: true
+    });
   }
   __name(addChainableMethod, "addChainableMethod");
   function overwriteChainableMethod(ctx, name, method, chainingBehavior) {
@@ -1699,11 +1699,7 @@
     return Object.keys(obj).concat(getOwnEnumerablePropertySymbols(obj));
   }
   __name(getOwnEnumerableProperties, "getOwnEnumerableProperties");
-  function _isNaN(value) {
-    return value !== value;
-  }
-  __name(_isNaN, "_isNaN");
-  var isNaN2 = Number.isNaN || _isNaN;
+  var isNaN2 = Number.isNaN;
   function isObjectType(obj) {
     var objectType = type(obj);
     var objectTypes = ["Array", "Object", "Function"];
@@ -1792,10 +1788,15 @@
     flag2(this, "any", false);
   });
   var functionTypes = {
-    "function": ["function", "asyncfunction", "generatorfunction", "asyncgeneratorfunction"],
-    "asyncfunction": ["asyncfunction", "asyncgeneratorfunction"],
-    "generatorfunction": ["generatorfunction", "asyncgeneratorfunction"],
-    "asyncgeneratorfunction": ["asyncgeneratorfunction"]
+    function: [
+      "function",
+      "asyncfunction",
+      "generatorfunction",
+      "asyncgeneratorfunction"
+    ],
+    asyncfunction: ["asyncfunction", "asyncgeneratorfunction"],
+    generatorfunction: ["generatorfunction", "asyncgeneratorfunction"],
+    asyncgeneratorfunction: ["asyncgeneratorfunction"]
   };
   function an(type3, msg) {
     if (msg)
@@ -1946,13 +1947,14 @@
     const msg = message ? `${message}: ` : "";
     const negate = flag2(this, "negate");
     const assertionMessage = negate ? `${msg}expected ${inspect2(val)} not to be a callable function` : `${msg}expected ${inspect2(val)} to be a callable function`;
-    const isCallable = ["Function", "AsyncFunction", "GeneratorFunction", "AsyncGeneratorFunction"].includes(type(val));
+    const isCallable = [
+      "Function",
+      "AsyncFunction",
+      "GeneratorFunction",
+      "AsyncGeneratorFunction"
+    ].includes(type(val));
     if (isCallable && negate || !isCallable && !negate) {
-      throw new AssertionError(
-        assertionMessage,
-        void 0,
-        ssfi
-      );
+      throw new AssertionError(assertionMessage, void 0, ssfi);
     }
   });
   Assertion.addProperty("false", function() {
@@ -2091,13 +2093,25 @@
     if (doLength && objType !== "map" && objType !== "set") {
       new Assertion(obj, flagMsg, ssfi, true).to.have.property("length");
     }
-    if (!doLength && (objType === "date" && nType !== "date")) {
-      throw new AssertionError(msgPrefix + "the argument to above must be a date", void 0, ssfi);
+    if (!doLength && objType === "date" && nType !== "date") {
+      throw new AssertionError(
+        msgPrefix + "the argument to above must be a date",
+        void 0,
+        ssfi
+      );
     } else if (!isNumeric(n) && (doLength || isNumeric(obj))) {
-      throw new AssertionError(msgPrefix + "the argument to above must be a number", void 0, ssfi);
-    } else if (!doLength && (objType !== "date" && !isNumeric(obj))) {
+      throw new AssertionError(
+        msgPrefix + "the argument to above must be a number",
+        void 0,
+        ssfi
+      );
+    } else if (!doLength && objType !== "date" && !isNumeric(obj)) {
       var printObj = objType === "string" ? "'" + obj + "'" : obj;
-      throw new AssertionError(msgPrefix + "expected " + printObj + " to be a number or a date", void 0, ssfi);
+      throw new AssertionError(
+        msgPrefix + "expected " + printObj + " to be a number or a date",
+        void 0,
+        ssfi
+      );
     }
     if (doLength) {
       var descriptor = "length", itemsCount;
@@ -2134,11 +2148,11 @@
     if (doLength && objType !== "map" && objType !== "set") {
       new Assertion(obj, flagMsg, ssfi, true).to.have.property("length");
     }
-    if (!doLength && (objType === "date" && nType !== "date")) {
+    if (!doLength && objType === "date" && nType !== "date") {
       errorMessage = msgPrefix + "the argument to least must be a date";
     } else if (!isNumeric(n) && (doLength || isNumeric(obj))) {
       errorMessage = msgPrefix + "the argument to least must be a number";
-    } else if (!doLength && (objType !== "date" && !isNumeric(obj))) {
+    } else if (!doLength && objType !== "date" && !isNumeric(obj)) {
       var printObj = objType === "string" ? "'" + obj + "'" : obj;
       errorMessage = msgPrefix + "expected " + printObj + " to be a number or a date";
     } else {
@@ -2182,11 +2196,11 @@
     if (doLength && objType !== "map" && objType !== "set") {
       new Assertion(obj, flagMsg, ssfi, true).to.have.property("length");
     }
-    if (!doLength && (objType === "date" && nType !== "date")) {
+    if (!doLength && objType === "date" && nType !== "date") {
       errorMessage = msgPrefix + "the argument to below must be a date";
     } else if (!isNumeric(n) && (doLength || isNumeric(obj))) {
       errorMessage = msgPrefix + "the argument to below must be a number";
-    } else if (!doLength && (objType !== "date" && !isNumeric(obj))) {
+    } else if (!doLength && objType !== "date" && !isNumeric(obj)) {
       var printObj = objType === "string" ? "'" + obj + "'" : obj;
       errorMessage = msgPrefix + "expected " + printObj + " to be a number or a date";
     } else {
@@ -2230,11 +2244,11 @@
     if (doLength && objType !== "map" && objType !== "set") {
       new Assertion(obj, flagMsg, ssfi, true).to.have.property("length");
     }
-    if (!doLength && (objType === "date" && nType !== "date")) {
+    if (!doLength && objType === "date" && nType !== "date") {
       errorMessage = msgPrefix + "the argument to most must be a date";
     } else if (!isNumeric(n) && (doLength || isNumeric(obj))) {
       errorMessage = msgPrefix + "the argument to most must be a number";
-    } else if (!doLength && (objType !== "date" && !isNumeric(obj))) {
+    } else if (!doLength && objType !== "date" && !isNumeric(obj)) {
       var printObj = objType === "string" ? "'" + obj + "'" : obj;
       errorMessage = msgPrefix + "expected " + printObj + " to be a number or a date";
     } else {
@@ -2278,11 +2292,11 @@
     if (doLength && objType !== "map" && objType !== "set") {
       new Assertion(obj, flagMsg, ssfi, true).to.have.property("length");
     }
-    if (!doLength && (objType === "date" && (startType !== "date" || finishType !== "date"))) {
+    if (!doLength && objType === "date" && (startType !== "date" || finishType !== "date")) {
       errorMessage = msgPrefix + "the arguments to within must be dates";
     } else if ((!isNumeric(start) || !isNumeric(finish)) && (doLength || isNumeric(obj))) {
       errorMessage = msgPrefix + "the arguments to within must be numbers";
-    } else if (!doLength && (objType !== "date" && !isNumeric(obj))) {
+    } else if (!doLength && objType !== "date" && !isNumeric(obj)) {
       var printObj = objType === "string" ? "'" + obj + "'" : obj;
       errorMessage = msgPrefix + "expected " + printObj + " to be a number or a date";
     } else {
@@ -2416,7 +2430,7 @@
   }
   __name(assertProperty, "assertProperty");
   Assertion.addMethod("property", assertProperty);
-  function assertOwnProperty(name, value, msg) {
+  function assertOwnProperty(_name, _value, _msg) {
     flag2(this, "own", true);
     assertProperty.apply(this, arguments);
   }
@@ -2642,7 +2656,10 @@
     }
     if (errorLike && caughtErr) {
       if (errorLike instanceof Error) {
-        var isCompatibleInstance = check_error_exports.compatibleInstance(caughtErr, errorLike);
+        var isCompatibleInstance = check_error_exports.compatibleInstance(
+          caughtErr,
+          errorLike
+        );
         if (isCompatibleInstance === negate) {
           if (everyArgIsDefined && negate) {
             errorLikeFail = true;
@@ -2657,7 +2674,10 @@
           }
         }
       }
-      var isCompatibleConstructor = check_error_exports.compatibleConstructor(caughtErr, errorLike);
+      var isCompatibleConstructor = check_error_exports.compatibleConstructor(
+        caughtErr,
+        errorLike
+      );
       if (isCompatibleConstructor === negate) {
         if (everyArgIsDefined && negate) {
           errorLikeFail = true;
@@ -2677,7 +2697,10 @@
       if (isRegExp2(errMsgMatcher)) {
         placeholder = "matching";
       }
-      var isCompatibleMessage = check_error_exports.compatibleMessage(caughtErr, errMsgMatcher);
+      var isCompatibleMessage = check_error_exports.compatibleMessage(
+        caughtErr,
+        errMsgMatcher
+      );
       if (isCompatibleMessage === negate) {
         if (everyArgIsDefined && negate) {
           errMsgMatcherFail = true;
@@ -2746,15 +2769,24 @@
     new Assertion(obj, flagMsg, ssfi, true).is.numeric;
     let message = "A `delta` value is required for `closeTo`";
     if (delta == void 0)
-      throw new AssertionError(flagMsg ? `${flagMsg}: ${message}` : message, void 0, ssfi);
+      throw new AssertionError(
+        flagMsg ? `${flagMsg}: ${message}` : message,
+        void 0,
+        ssfi
+      );
     new Assertion(delta, flagMsg, ssfi, true).is.numeric;
     message = "A `expected` value is required for `closeTo`";
     if (expected == void 0)
-      throw new AssertionError(flagMsg ? `${flagMsg}: ${message}` : message, void 0, ssfi);
+      throw new AssertionError(
+        flagMsg ? `${flagMsg}: ${message}` : message,
+        void 0,
+        ssfi
+      );
     new Assertion(expected, flagMsg, ssfi, true).is.numeric;
     const abs = /* @__PURE__ */ __name((x) => x < 0n ? -x : x, "abs");
+    const strip = /* @__PURE__ */ __name((number) => parseFloat(parseFloat(number).toPrecision(12)), "strip");
     this.assert(
-      abs(obj - expected) <= delta,
+      strip(abs(obj - expected)) <= delta,
       "expected #{this} to be close to " + expected + " +/- " + delta,
       "expected #{this} not to be close to " + expected + " +/- " + delta
     );
@@ -3010,12 +3042,67 @@
       "expected #{this} to not be frozen"
     );
   });
-  Assertion.addProperty("finite", function(msg) {
+  Assertion.addProperty("finite", function(_msg) {
     var obj = flag2(this, "object");
     this.assert(
       typeof obj === "number" && isFinite(obj),
       "expected #{this} to be a finite number",
       "expected #{this} to not be a finite number"
+    );
+  });
+  function compareSubset(expected, actual) {
+    if (expected === actual) {
+      return true;
+    }
+    if (typeof actual !== typeof expected) {
+      return false;
+    }
+    if (typeof expected !== "object" || expected === null) {
+      return expected === actual;
+    }
+    if (!actual) {
+      return false;
+    }
+    if (Array.isArray(expected)) {
+      if (!Array.isArray(actual)) {
+        return false;
+      }
+      return expected.every(function(exp) {
+        return actual.some(function(act) {
+          return compareSubset(exp, act);
+        });
+      });
+    }
+    if (expected instanceof Date) {
+      if (actual instanceof Date) {
+        return expected.getTime() === actual.getTime();
+      } else {
+        return false;
+      }
+    }
+    return Object.keys(expected).every(function(key) {
+      var expectedValue = expected[key];
+      var actualValue = actual[key];
+      if (typeof expectedValue === "object" && expectedValue !== null && actualValue !== null) {
+        return compareSubset(expectedValue, actualValue);
+      }
+      if (typeof expectedValue === "function") {
+        return expectedValue(actualValue);
+      }
+      return actualValue === expectedValue;
+    });
+  }
+  __name(compareSubset, "compareSubset");
+  Assertion.addMethod("containSubset", function(expected) {
+    const actual = flag(this, "object");
+    const showDiff = config.showDiff;
+    this.assert(
+      compareSubset(expected, actual),
+      "expected #{act} to contain subset #{exp}",
+      "expected #{act} to not contain subset #{exp}",
+      expected,
+      actual,
+      showDiff
     );
   });
   function expect(val, message) {
@@ -3028,11 +3115,15 @@
       actual = void 0;
     }
     message = message || "expect.fail()";
-    throw new AssertionError(message, {
-      actual,
-      expected,
-      operator
-    }, expect.fail);
+    throw new AssertionError(
+      message,
+      {
+        actual,
+        expected,
+        operator
+      },
+      expect.fail
+    );
   };
   var should_exports = {};
   __export(should_exports, {
@@ -3068,11 +3159,15 @@
         actual = void 0;
       }
       message = message || "should.fail()";
-      throw new AssertionError(message, {
-        actual,
-        expected,
-        operator
-      }, should2.fail);
+      throw new AssertionError(
+        message,
+        {
+          actual,
+          expected,
+          operator
+        },
+        should2.fail
+      );
     };
     should2.equal = function(actual, expected, message) {
       new Assertion(actual, message).to.equal(expected);
@@ -3102,11 +3197,7 @@
   var Should = loadShould;
   function assert(express, errmsg) {
     var test2 = new Assertion(null, null, assert, true);
-    test2.assert(
-      express,
-      errmsg,
-      "[ negation message unavailable ]"
-    );
+    test2.assert(express, errmsg, "[ negation message unavailable ]");
   }
   __name(assert, "assert");
   assert.fail = function(actual, expected, message, operator) {
@@ -3115,11 +3206,15 @@
       actual = void 0;
     }
     message = message || "assert.fail()";
-    throw new AssertionError(message, {
-      actual,
-      expected,
-      operator
-    }, assert.fail);
+    throw new AssertionError(
+      message,
+      {
+        actual,
+        expected,
+        operator
+      },
+      assert.fail
+    );
   };
   assert.isOk = function(val, msg) {
     new Assertion(val, msg, assert.isOk, true).is.ok;
@@ -3264,7 +3359,9 @@
     new Assertion(val, msg, assert.instanceOf, true).to.be.instanceOf(type3);
   };
   assert.notInstanceOf = function(val, type3, msg) {
-    new Assertion(val, msg, assert.notInstanceOf, true).to.not.be.instanceOf(type3);
+    new Assertion(val, msg, assert.notInstanceOf, true).to.not.be.instanceOf(
+      type3
+    );
   };
   assert.include = function(exp, inc, msg) {
     new Assertion(exp, msg, assert.include, true).include(inc);
@@ -3282,13 +3379,22 @@
     new Assertion(exp, msg, assert.nestedInclude, true).nested.include(inc);
   };
   assert.notNestedInclude = function(exp, inc, msg) {
-    new Assertion(exp, msg, assert.notNestedInclude, true).not.nested.include(inc);
+    new Assertion(exp, msg, assert.notNestedInclude, true).not.nested.include(
+      inc
+    );
   };
   assert.deepNestedInclude = function(exp, inc, msg) {
-    new Assertion(exp, msg, assert.deepNestedInclude, true).deep.nested.include(inc);
+    new Assertion(exp, msg, assert.deepNestedInclude, true).deep.nested.include(
+      inc
+    );
   };
   assert.notDeepNestedInclude = function(exp, inc, msg) {
-    new Assertion(exp, msg, assert.notDeepNestedInclude, true).not.deep.nested.include(inc);
+    new Assertion(
+      exp,
+      msg,
+      assert.notDeepNestedInclude,
+      true
+    ).not.deep.nested.include(inc);
   };
   assert.ownInclude = function(exp, inc, msg) {
     new Assertion(exp, msg, assert.ownInclude, true).own.include(inc);
@@ -3300,7 +3406,9 @@
     new Assertion(exp, msg, assert.deepOwnInclude, true).deep.own.include(inc);
   };
   assert.notDeepOwnInclude = function(exp, inc, msg) {
-    new Assertion(exp, msg, assert.notDeepOwnInclude, true).not.deep.own.include(inc);
+    new Assertion(exp, msg, assert.notDeepOwnInclude, true).not.deep.own.include(
+      inc
+    );
   };
   assert.match = function(exp, re, msg) {
     new Assertion(exp, msg, assert.match, true).to.match(re);
@@ -3318,49 +3426,107 @@
     new Assertion(obj, msg, assert.propertyVal, true).to.have.property(prop, val);
   };
   assert.notPropertyVal = function(obj, prop, val, msg) {
-    new Assertion(obj, msg, assert.notPropertyVal, true).to.not.have.property(prop, val);
+    new Assertion(obj, msg, assert.notPropertyVal, true).to.not.have.property(
+      prop,
+      val
+    );
   };
   assert.deepPropertyVal = function(obj, prop, val, msg) {
-    new Assertion(obj, msg, assert.deepPropertyVal, true).to.have.deep.property(prop, val);
+    new Assertion(obj, msg, assert.deepPropertyVal, true).to.have.deep.property(
+      prop,
+      val
+    );
   };
   assert.notDeepPropertyVal = function(obj, prop, val, msg) {
-    new Assertion(obj, msg, assert.notDeepPropertyVal, true).to.not.have.deep.property(prop, val);
+    new Assertion(
+      obj,
+      msg,
+      assert.notDeepPropertyVal,
+      true
+    ).to.not.have.deep.property(prop, val);
   };
   assert.ownProperty = function(obj, prop, msg) {
     new Assertion(obj, msg, assert.ownProperty, true).to.have.own.property(prop);
   };
   assert.notOwnProperty = function(obj, prop, msg) {
-    new Assertion(obj, msg, assert.notOwnProperty, true).to.not.have.own.property(prop);
+    new Assertion(obj, msg, assert.notOwnProperty, true).to.not.have.own.property(
+      prop
+    );
   };
   assert.ownPropertyVal = function(obj, prop, value, msg) {
-    new Assertion(obj, msg, assert.ownPropertyVal, true).to.have.own.property(prop, value);
+    new Assertion(obj, msg, assert.ownPropertyVal, true).to.have.own.property(
+      prop,
+      value
+    );
   };
   assert.notOwnPropertyVal = function(obj, prop, value, msg) {
-    new Assertion(obj, msg, assert.notOwnPropertyVal, true).to.not.have.own.property(prop, value);
+    new Assertion(
+      obj,
+      msg,
+      assert.notOwnPropertyVal,
+      true
+    ).to.not.have.own.property(prop, value);
   };
   assert.deepOwnPropertyVal = function(obj, prop, value, msg) {
-    new Assertion(obj, msg, assert.deepOwnPropertyVal, true).to.have.deep.own.property(prop, value);
+    new Assertion(
+      obj,
+      msg,
+      assert.deepOwnPropertyVal,
+      true
+    ).to.have.deep.own.property(prop, value);
   };
   assert.notDeepOwnPropertyVal = function(obj, prop, value, msg) {
-    new Assertion(obj, msg, assert.notDeepOwnPropertyVal, true).to.not.have.deep.own.property(prop, value);
+    new Assertion(
+      obj,
+      msg,
+      assert.notDeepOwnPropertyVal,
+      true
+    ).to.not.have.deep.own.property(prop, value);
   };
   assert.nestedProperty = function(obj, prop, msg) {
-    new Assertion(obj, msg, assert.nestedProperty, true).to.have.nested.property(prop);
+    new Assertion(obj, msg, assert.nestedProperty, true).to.have.nested.property(
+      prop
+    );
   };
   assert.notNestedProperty = function(obj, prop, msg) {
-    new Assertion(obj, msg, assert.notNestedProperty, true).to.not.have.nested.property(prop);
+    new Assertion(
+      obj,
+      msg,
+      assert.notNestedProperty,
+      true
+    ).to.not.have.nested.property(prop);
   };
   assert.nestedPropertyVal = function(obj, prop, val, msg) {
-    new Assertion(obj, msg, assert.nestedPropertyVal, true).to.have.nested.property(prop, val);
+    new Assertion(
+      obj,
+      msg,
+      assert.nestedPropertyVal,
+      true
+    ).to.have.nested.property(prop, val);
   };
   assert.notNestedPropertyVal = function(obj, prop, val, msg) {
-    new Assertion(obj, msg, assert.notNestedPropertyVal, true).to.not.have.nested.property(prop, val);
+    new Assertion(
+      obj,
+      msg,
+      assert.notNestedPropertyVal,
+      true
+    ).to.not.have.nested.property(prop, val);
   };
   assert.deepNestedPropertyVal = function(obj, prop, val, msg) {
-    new Assertion(obj, msg, assert.deepNestedPropertyVal, true).to.have.deep.nested.property(prop, val);
+    new Assertion(
+      obj,
+      msg,
+      assert.deepNestedPropertyVal,
+      true
+    ).to.have.deep.nested.property(prop, val);
   };
   assert.notDeepNestedPropertyVal = function(obj, prop, val, msg) {
-    new Assertion(obj, msg, assert.notDeepNestedPropertyVal, true).to.not.have.deep.nested.property(prop, val);
+    new Assertion(
+      obj,
+      msg,
+      assert.notDeepNestedPropertyVal,
+      true
+    ).to.not.have.deep.nested.property(prop, val);
   };
   assert.lengthOf = function(exp, len, msg) {
     new Assertion(exp, msg, assert.lengthOf, true).to.have.lengthOf(len);
@@ -3372,35 +3538,63 @@
     new Assertion(obj, msg, assert.hasAllKeys, true).to.have.all.keys(keys);
   };
   assert.containsAllKeys = function(obj, keys, msg) {
-    new Assertion(obj, msg, assert.containsAllKeys, true).to.contain.all.keys(keys);
+    new Assertion(obj, msg, assert.containsAllKeys, true).to.contain.all.keys(
+      keys
+    );
   };
   assert.doesNotHaveAnyKeys = function(obj, keys, msg) {
-    new Assertion(obj, msg, assert.doesNotHaveAnyKeys, true).to.not.have.any.keys(keys);
+    new Assertion(obj, msg, assert.doesNotHaveAnyKeys, true).to.not.have.any.keys(
+      keys
+    );
   };
   assert.doesNotHaveAllKeys = function(obj, keys, msg) {
-    new Assertion(obj, msg, assert.doesNotHaveAllKeys, true).to.not.have.all.keys(keys);
+    new Assertion(obj, msg, assert.doesNotHaveAllKeys, true).to.not.have.all.keys(
+      keys
+    );
   };
   assert.hasAnyDeepKeys = function(obj, keys, msg) {
-    new Assertion(obj, msg, assert.hasAnyDeepKeys, true).to.have.any.deep.keys(keys);
+    new Assertion(obj, msg, assert.hasAnyDeepKeys, true).to.have.any.deep.keys(
+      keys
+    );
   };
   assert.hasAllDeepKeys = function(obj, keys, msg) {
-    new Assertion(obj, msg, assert.hasAllDeepKeys, true).to.have.all.deep.keys(keys);
+    new Assertion(obj, msg, assert.hasAllDeepKeys, true).to.have.all.deep.keys(
+      keys
+    );
   };
   assert.containsAllDeepKeys = function(obj, keys, msg) {
-    new Assertion(obj, msg, assert.containsAllDeepKeys, true).to.contain.all.deep.keys(keys);
+    new Assertion(
+      obj,
+      msg,
+      assert.containsAllDeepKeys,
+      true
+    ).to.contain.all.deep.keys(keys);
   };
   assert.doesNotHaveAnyDeepKeys = function(obj, keys, msg) {
-    new Assertion(obj, msg, assert.doesNotHaveAnyDeepKeys, true).to.not.have.any.deep.keys(keys);
+    new Assertion(
+      obj,
+      msg,
+      assert.doesNotHaveAnyDeepKeys,
+      true
+    ).to.not.have.any.deep.keys(keys);
   };
   assert.doesNotHaveAllDeepKeys = function(obj, keys, msg) {
-    new Assertion(obj, msg, assert.doesNotHaveAllDeepKeys, true).to.not.have.all.deep.keys(keys);
+    new Assertion(
+      obj,
+      msg,
+      assert.doesNotHaveAllDeepKeys,
+      true
+    ).to.not.have.all.deep.keys(keys);
   };
   assert.throws = function(fn, errorLike, errMsgMatcher, msg) {
     if ("string" === typeof errorLike || errorLike instanceof RegExp) {
       errMsgMatcher = errorLike;
       errorLike = null;
     }
-    var assertErr = new Assertion(fn, msg, assert.throws, true).to.throw(errorLike, errMsgMatcher);
+    var assertErr = new Assertion(fn, msg, assert.throws, true).to.throw(
+      errorLike,
+      errMsgMatcher
+    );
     return flag(assertErr, "object");
   };
   assert.doesNotThrow = function(fn, errorLike, errMsgMatcher, message) {
@@ -3408,7 +3602,10 @@
       errMsgMatcher = errorLike;
       errorLike = null;
     }
-    new Assertion(fn, message, assert.doesNotThrow, true).to.not.throw(errorLike, errMsgMatcher);
+    new Assertion(fn, message, assert.doesNotThrow, true).to.not.throw(
+      errorLike,
+      errMsgMatcher
+    );
   };
   assert.operator = function(val, operator, val2, msg) {
     var ok;
@@ -3456,55 +3653,130 @@
     new Assertion(act, msg, assert.closeTo, true).to.be.closeTo(exp, delta);
   };
   assert.approximately = function(act, exp, delta, msg) {
-    new Assertion(act, msg, assert.approximately, true).to.be.approximately(exp, delta);
+    new Assertion(act, msg, assert.approximately, true).to.be.approximately(
+      exp,
+      delta
+    );
   };
   assert.sameMembers = function(set1, set2, msg) {
     new Assertion(set1, msg, assert.sameMembers, true).to.have.same.members(set2);
   };
   assert.notSameMembers = function(set1, set2, msg) {
-    new Assertion(set1, msg, assert.notSameMembers, true).to.not.have.same.members(set2);
+    new Assertion(
+      set1,
+      msg,
+      assert.notSameMembers,
+      true
+    ).to.not.have.same.members(set2);
   };
   assert.sameDeepMembers = function(set1, set2, msg) {
-    new Assertion(set1, msg, assert.sameDeepMembers, true).to.have.same.deep.members(set2);
+    new Assertion(
+      set1,
+      msg,
+      assert.sameDeepMembers,
+      true
+    ).to.have.same.deep.members(set2);
   };
   assert.notSameDeepMembers = function(set1, set2, msg) {
-    new Assertion(set1, msg, assert.notSameDeepMembers, true).to.not.have.same.deep.members(set2);
+    new Assertion(
+      set1,
+      msg,
+      assert.notSameDeepMembers,
+      true
+    ).to.not.have.same.deep.members(set2);
   };
   assert.sameOrderedMembers = function(set1, set2, msg) {
-    new Assertion(set1, msg, assert.sameOrderedMembers, true).to.have.same.ordered.members(set2);
+    new Assertion(
+      set1,
+      msg,
+      assert.sameOrderedMembers,
+      true
+    ).to.have.same.ordered.members(set2);
   };
   assert.notSameOrderedMembers = function(set1, set2, msg) {
-    new Assertion(set1, msg, assert.notSameOrderedMembers, true).to.not.have.same.ordered.members(set2);
+    new Assertion(
+      set1,
+      msg,
+      assert.notSameOrderedMembers,
+      true
+    ).to.not.have.same.ordered.members(set2);
   };
   assert.sameDeepOrderedMembers = function(set1, set2, msg) {
-    new Assertion(set1, msg, assert.sameDeepOrderedMembers, true).to.have.same.deep.ordered.members(set2);
+    new Assertion(
+      set1,
+      msg,
+      assert.sameDeepOrderedMembers,
+      true
+    ).to.have.same.deep.ordered.members(set2);
   };
   assert.notSameDeepOrderedMembers = function(set1, set2, msg) {
-    new Assertion(set1, msg, assert.notSameDeepOrderedMembers, true).to.not.have.same.deep.ordered.members(set2);
+    new Assertion(
+      set1,
+      msg,
+      assert.notSameDeepOrderedMembers,
+      true
+    ).to.not.have.same.deep.ordered.members(set2);
   };
   assert.includeMembers = function(superset, subset, msg) {
-    new Assertion(superset, msg, assert.includeMembers, true).to.include.members(subset);
+    new Assertion(superset, msg, assert.includeMembers, true).to.include.members(
+      subset
+    );
   };
   assert.notIncludeMembers = function(superset, subset, msg) {
-    new Assertion(superset, msg, assert.notIncludeMembers, true).to.not.include.members(subset);
+    new Assertion(
+      superset,
+      msg,
+      assert.notIncludeMembers,
+      true
+    ).to.not.include.members(subset);
   };
   assert.includeDeepMembers = function(superset, subset, msg) {
-    new Assertion(superset, msg, assert.includeDeepMembers, true).to.include.deep.members(subset);
+    new Assertion(
+      superset,
+      msg,
+      assert.includeDeepMembers,
+      true
+    ).to.include.deep.members(subset);
   };
   assert.notIncludeDeepMembers = function(superset, subset, msg) {
-    new Assertion(superset, msg, assert.notIncludeDeepMembers, true).to.not.include.deep.members(subset);
+    new Assertion(
+      superset,
+      msg,
+      assert.notIncludeDeepMembers,
+      true
+    ).to.not.include.deep.members(subset);
   };
   assert.includeOrderedMembers = function(superset, subset, msg) {
-    new Assertion(superset, msg, assert.includeOrderedMembers, true).to.include.ordered.members(subset);
+    new Assertion(
+      superset,
+      msg,
+      assert.includeOrderedMembers,
+      true
+    ).to.include.ordered.members(subset);
   };
   assert.notIncludeOrderedMembers = function(superset, subset, msg) {
-    new Assertion(superset, msg, assert.notIncludeOrderedMembers, true).to.not.include.ordered.members(subset);
+    new Assertion(
+      superset,
+      msg,
+      assert.notIncludeOrderedMembers,
+      true
+    ).to.not.include.ordered.members(subset);
   };
   assert.includeDeepOrderedMembers = function(superset, subset, msg) {
-    new Assertion(superset, msg, assert.includeDeepOrderedMembers, true).to.include.deep.ordered.members(subset);
+    new Assertion(
+      superset,
+      msg,
+      assert.includeDeepOrderedMembers,
+      true
+    ).to.include.deep.ordered.members(subset);
   };
   assert.notIncludeDeepOrderedMembers = function(superset, subset, msg) {
-    new Assertion(superset, msg, assert.notIncludeDeepOrderedMembers, true).to.not.include.deep.ordered.members(subset);
+    new Assertion(
+      superset,
+      msg,
+      assert.notIncludeDeepOrderedMembers,
+      true
+    ).to.not.include.deep.ordered.members(subset);
   };
   assert.oneOf = function(inList, list, msg) {
     new Assertion(inList, msg, assert.oneOf, true).to.be.oneOf(list);
@@ -3512,11 +3784,7 @@
   assert.isIterable = function(obj, msg) {
     if (obj == void 0 || !obj[Symbol.iterator]) {
       msg = msg ? `${msg} expected ${inspect2(obj)} to be an iterable` : `expected ${inspect2(obj)} to be an iterable`;
-      throw new AssertionError(
-        msg,
-        void 0,
-        assert.isIterable
-      );
+      throw new AssertionError(msg, void 0, assert.isIterable);
     }
   };
   assert.changes = function(fn, obj, prop, msg) {
@@ -3542,7 +3810,10 @@
       msg = prop;
       prop = null;
     }
-    return new Assertion(fn, msg, assert.doesNotChange, true).to.not.change(obj, prop);
+    return new Assertion(fn, msg, assert.doesNotChange, true).to.not.change(
+      obj,
+      prop
+    );
   };
   assert.changesButNotBy = function(fn, obj, prop, delta, msg) {
     if (arguments.length === 4 && typeof obj === "function") {
@@ -3578,7 +3849,10 @@
       msg = prop;
       prop = null;
     }
-    return new Assertion(fn, msg, assert.doesNotIncrease, true).to.not.increase(obj, prop);
+    return new Assertion(fn, msg, assert.doesNotIncrease, true).to.not.increase(
+      obj,
+      prop
+    );
   };
   assert.increasesButNotBy = function(fn, obj, prop, delta, msg) {
     if (arguments.length === 4 && typeof obj === "function") {
@@ -3614,7 +3888,10 @@
       msg = prop;
       prop = null;
     }
-    return new Assertion(fn, msg, assert.doesNotDecrease, true).to.not.decrease(obj, prop);
+    return new Assertion(fn, msg, assert.doesNotDecrease, true).to.not.decrease(
+      obj,
+      prop
+    );
   };
   assert.doesNotDecreaseBy = function(fn, obj, prop, delta, msg) {
     if (arguments.length === 4 && typeof obj === "function") {
@@ -3667,13 +3944,36 @@
   assert.isNotEmpty = function(val, msg) {
     new Assertion(val, msg, assert.isNotEmpty, true).to.not.be.empty;
   };
-  (/* @__PURE__ */ __name(function alias(name, as) {
+  assert.containsSubset = function(val, exp, msg) {
+    new Assertion(val, msg).to.containSubset(exp);
+  };
+  assert.doesNotContainSubset = function(val, exp, msg) {
+    new Assertion(val, msg).to.not.containSubset(exp);
+  };
+  var aliases = [
+    ["isOk", "ok"],
+    ["isNotOk", "notOk"],
+    ["throws", "throw"],
+    ["throws", "Throw"],
+    ["isExtensible", "extensible"],
+    ["isNotExtensible", "notExtensible"],
+    ["isSealed", "sealed"],
+    ["isNotSealed", "notSealed"],
+    ["isFrozen", "frozen"],
+    ["isNotFrozen", "notFrozen"],
+    ["isEmpty", "empty"],
+    ["isNotEmpty", "notEmpty"],
+    ["isCallable", "isFunction"],
+    ["isNotCallable", "isNotFunction"],
+    ["containsSubset", "containSubset"]
+  ];
+  for (const [name, as] of aliases) {
     assert[as] = assert[name];
-    return alias;
-  }, "alias"))("isOk", "ok")("isNotOk", "notOk")("throws", "throw")("throws", "Throw")("isExtensible", "extensible")("isNotExtensible", "notExtensible")("isSealed", "sealed")("isNotSealed", "notSealed")("isFrozen", "frozen")("isNotFrozen", "notFrozen")("isEmpty", "empty")("isNotEmpty", "notEmpty")("isCallable", "isFunction")("isNotCallable", "isNotFunction");
+  }
   var used = [];
   function use(fn) {
     const exports = {
+      use,
       AssertionError,
       util: utils_exports,
       config,
@@ -3700,54 +4000,51 @@
   };
 
   // node_modules/eventti/dist/index.js
-  var r = { ADD: "add", UPDATE: "update", IGNORE: "ignore", THROW: "throw" };
-  var o = class {
+  var E = { ADD: "add", UPDATE: "update", IGNORE: "ignore", THROW: "throw" };
+  var r;
+  var v = class {
     constructor(t = {}) {
-      this.dedupe = t.dedupe || r.ADD, this.getId = t.getId || (() => Symbol()), this._events = /* @__PURE__ */ new Map();
+      this.dedupe = t.dedupe || E.ADD, this.getId = t.getId || (() => Symbol()), this._events = /* @__PURE__ */ new Map();
     }
     _getListeners(t) {
       let n = this._events.get(t);
-      if (n) {
-        let e = n.m;
-        if (e.size) return n.l = n.l || [...e.values()];
-      }
-      return null;
+      return n ? n.l || (n.l = [...n.m.values()]) : null;
     }
     on(t, n, e) {
       let i = this._events, s = i.get(t);
       s || (s = { m: /* @__PURE__ */ new Map(), l: null }, i.set(t, s));
-      let d = s.m;
-      if (e = e === void 0 ? this.getId(n) : e, d.has(e)) switch (this.dedupe) {
-        case r.THROW:
+      let o2 = s.m;
+      if (e = e === r ? this.getId(n) : e, o2.has(e)) switch (this.dedupe) {
+        case E.THROW:
           throw new Error("Eventti: duplicate listener id!");
-        case r.IGNORE:
+        case E.IGNORE:
           return e;
-        case r.UPDATE: {
+        case E.UPDATE: {
           s.l = null;
           break;
         }
         default:
-          d.delete(e), s.l = null;
+          o2.delete(e), s.l = null;
       }
-      return d.set(e, n), s.l?.push(n), e;
+      return o2.set(e, n), s.l?.push(n), e;
     }
     once(t, n, e) {
-      let i = false;
-      return e = e === void 0 ? this.getId(n) : e, this.on(t, (...s) => {
-        i || (i = true, this.off(t, e), n(...s));
+      let i = 0;
+      return e = e === r ? this.getId(n) : e, this.on(t, (...s) => {
+        i || (i = 1, this.off(t, e), n(...s));
       }, e);
     }
     off(t, n) {
-      if (t === void 0) {
+      if (t === r) {
         this._events.clear();
         return;
       }
-      if (n === void 0) {
+      if (n === r) {
         this._events.delete(t);
         return;
       }
       let e = this._events.get(t);
-      e && e.m.delete(n) && (e.l = null, e.m.size || this._events.delete(t));
+      e?.m.delete(n) && (e.l = null, e.m.size || this._events.delete(t));
     }
     emit(t, ...n) {
       let e = this._getListeners(t);
@@ -3758,7 +4055,7 @@
       }
     }
     listenerCount(t) {
-      if (t === void 0) {
+      if (t === r) {
         let n = 0;
         return this._events.forEach((e) => {
           n += e.m.size;
@@ -3773,7 +4070,7 @@
     constructor() {
       this.drag = null;
       this.isDestroyed = false;
-      this._emitter = new o();
+      this._emitter = new v();
     }
     _createDragData(data) {
       return {
@@ -3837,10 +4134,10 @@
   };
 
   // node_modules/tikki/dist/index.js
-  var o2 = class {
+  var o = class {
     constructor(e = {}) {
       let { phases: t = [], dedupe: r2, getId: s } = e;
-      this._phases = t, this._emitter = new o({ getId: s, dedupe: r2 }), this._queue = [], this.tick = this.tick.bind(this), this._getListeners = this._emitter._getListeners.bind(this._emitter);
+      this._phases = t, this._emitter = new v({ getId: s, dedupe: r2 }), this._queue = [], this.tick = this.tick.bind(this), this._getListeners = this._emitter._getListeners.bind(this._emitter);
     }
     get phases() {
       return this._phases;
@@ -3904,7 +4201,7 @@
       };
     }
   }
-  var l = class extends o2 {
+  var l = class extends o {
     constructor(e = {}) {
       let { paused: t = false, onDemand: r2 = false, requestFrame: s = u(), ...a } = e;
       super(a), this._paused = t, this._onDemand = r2, this._requestFrame = s, this._cancelFrame = null, this._empty = true, !t && !r2 && this._request();
@@ -3996,35 +4293,17 @@
     return -1;
   }
 
-  // src/constants.ts
-  var IS_BROWSER = typeof window !== "undefined" && typeof window.document !== "undefined";
-  var HAS_PASSIVE_EVENTS = (() => {
-    let isPassiveEventsSupported = false;
-    try {
-      const passiveOpts = Object.defineProperty({}, "passive", {
-        get: function() {
-          isPassiveEventsSupported = true;
-        }
-      });
-      window.addEventListener("testPassive", null, passiveOpts);
-      window.removeEventListener("testPassive", null, passiveOpts);
-    } catch (e) {
-    }
-    return isPassiveEventsSupported;
-  })();
-  var HAS_TOUCH_EVENTS = IS_BROWSER && "ontouchstart" in window;
-  var HAS_POINTER_EVENTS = IS_BROWSER && !!window.PointerEvent;
-  var IS_SAFARI = !!(IS_BROWSER && navigator.vendor && navigator.vendor.indexOf("Apple") > -1 && navigator.userAgent && navigator.userAgent.indexOf("CriOS") == -1 && navigator.userAgent.indexOf("FxiOS") == -1);
-
   // src/utils/parse-listener-options.ts
   function parseListenerOptions(options4 = {}) {
     const { capture = true, passive = true } = options4;
-    if (HAS_PASSIVE_EVENTS) {
-      return { capture, passive };
-    } else {
-      return { capture };
-    }
+    return { capture, passive };
   }
+
+  // src/constants.ts
+  var IS_BROWSER = typeof window !== "undefined" && typeof window.document !== "undefined";
+  var HAS_TOUCH_EVENTS = IS_BROWSER && "ontouchstart" in window;
+  var HAS_POINTER_EVENTS = IS_BROWSER && !!window.PointerEvent;
+  var IS_SAFARI = !!(IS_BROWSER && navigator.vendor && navigator.vendor.indexOf("Apple") > -1 && navigator.userAgent && navigator.userAgent.indexOf("CriOS") == -1 && navigator.userAgent.indexOf("FxiOS") == -1);
 
   // src/utils/parse-source-events.ts
   function parseSourceEvents(sourceEvents) {
@@ -4069,7 +4348,7 @@
       this._startPredicate = startPredicate;
       this._listenerOptions = parseListenerOptions(listenerOptions);
       this._sourceEvents = parseSourceEvents(sourceEvents);
-      this._emitter = new o();
+      this._emitter = new v();
       this._onStart = this._onStart.bind(this);
       this._onMove = this._onMove.bind(this);
       this._onCancel = this._onCancel.bind(this);
@@ -4595,8 +4874,8 @@
     if (i && "none" !== i) return true;
     const { perspective: r2 } = t;
     if (r2 && "none" !== r2) return true;
-    const { contentVisibility: o3 } = t;
-    if (o3 && "auto" === o3) return true;
+    const { contentVisibility: o2 } = t;
+    if (o2 && "auto" === o2) return true;
     const { contain: f } = t;
     if (f && ("strict" === f || "content" === f || f.indexOf("paint") > -1 || f.indexOf("layout") > -1)) return true;
     const { willChange: c } = t;
@@ -4616,13 +4895,13 @@
   // node_modules/mezr/dist/esm/getContainingBlock.js
   function getContainingBlock(e, t = {}) {
     if (isDocumentElement(e)) return e.ownerDocument.defaultView;
-    const n = t.position || getStyle(e).position, { skipDisplayNone: i, container: o3 } = t;
+    const n = t.position || getStyle(e).position, { skipDisplayNone: i, container: o2 } = t;
     switch (n) {
       case "static":
       case "relative":
       case "sticky":
       case "-webkit-sticky": {
-        let t2 = o3 || e.parentElement;
+        let t2 = o2 || e.parentElement;
         for (; t2; ) {
           const e2 = isBlockElement(t2);
           if (e2) return t2;
@@ -4634,7 +4913,7 @@
       case "absolute":
       case "fixed": {
         const t2 = "fixed" === n;
-        let l2 = o3 || e.parentElement;
+        let l2 = o2 || e.parentElement;
         for (; l2; ) {
           const e2 = t2 ? isContainingBlockForFixedElement(l2) : isContainingBlockForAbsoluteElement(l2);
           if (true === e2) return l2;
@@ -4654,15 +4933,15 @@
   }
 
   // node_modules/mezr/dist/esm/utils/getDistanceBetweenPoints.js
-  function getDistanceBetweenPoints(t, e, n, o3) {
-    return Math.sqrt(Math.pow(n - t, 2) + Math.pow(o3 - e, 2));
+  function getDistanceBetweenPoints(t, e, n, o2) {
+    return Math.sqrt(Math.pow(n - t, 2) + Math.pow(o2 - e, 2));
   }
 
   // node_modules/mezr/dist/esm/utils/getDistanceBetweenRects.js
   function getDistanceBetweenRects(t, e) {
     if (isIntersecting(t, e)) return null;
-    const n = t.left + t.width, i = t.top + t.height, o3 = e.left + e.width, s = e.top + e.height;
-    return n <= e.left ? i <= e.top ? getDistanceBetweenPoints(n, i, e.left, e.top) : t.top >= s ? getDistanceBetweenPoints(n, t.top, e.left, s) : e.left - n : t.left >= o3 ? i <= e.top ? getDistanceBetweenPoints(t.left, i, o3, e.top) : t.top >= s ? getDistanceBetweenPoints(t.left, t.top, o3, s) : t.left - o3 : i <= e.top ? e.top - i : t.top - s;
+    const n = t.left + t.width, i = t.top + t.height, o2 = e.left + e.width, s = e.top + e.height;
+    return n <= e.left ? i <= e.top ? getDistanceBetweenPoints(n, i, e.left, e.top) : t.top >= s ? getDistanceBetweenPoints(n, t.top, e.left, s) : e.left - n : t.left >= o2 ? i <= e.top ? getDistanceBetweenPoints(t.left, i, o2, e.top) : t.top >= s ? getDistanceBetweenPoints(t.left, t.top, o2, s) : t.left - o2 : i <= e.top ? e.top - i : t.top - s;
   }
 
   // node_modules/mezr/dist/esm/utils/isWindow.js
@@ -4718,8 +4997,8 @@
   function getElementWidth(t, e = BOX_EDGE.border) {
     let { width: r2 } = t.getBoundingClientRect();
     if (e === BOX_EDGE.border) return r2;
-    const o3 = getStyle(t);
-    return e === BOX_EDGE.margin ? (r2 += Math.max(0, parseFloat(o3.marginLeft) || 0), r2 += Math.max(0, parseFloat(o3.marginRight) || 0), r2) : (r2 -= parseFloat(o3.borderLeftWidth) || 0, r2 -= parseFloat(o3.borderRightWidth) || 0, e === BOX_EDGE.scrollbar ? r2 : (!isDocumentElement(t) && SCROLLABLE_OVERFLOWS.has(o3.overflowY) && (r2 -= getPreciseScrollbarSize(t, "y", Math.round(r2) - t.clientWidth)), e === BOX_EDGE.padding || (r2 -= parseFloat(o3.paddingLeft) || 0, r2 -= parseFloat(o3.paddingRight) || 0), r2));
+    const o2 = getStyle(t);
+    return e === BOX_EDGE.margin ? (r2 += Math.max(0, parseFloat(o2.marginLeft) || 0), r2 += Math.max(0, parseFloat(o2.marginRight) || 0), r2) : (r2 -= parseFloat(o2.borderLeftWidth) || 0, r2 -= parseFloat(o2.borderRightWidth) || 0, e === BOX_EDGE.scrollbar ? r2 : (!isDocumentElement(t) && SCROLLABLE_OVERFLOWS.has(o2.overflowY) && (r2 -= getPreciseScrollbarSize(t, "y", Math.round(r2) - t.clientWidth)), e === BOX_EDGE.padding || (r2 -= parseFloat(o2.paddingLeft) || 0, r2 -= parseFloat(o2.paddingRight) || 0), r2));
   }
 
   // node_modules/mezr/dist/esm/getWidth.js
@@ -4743,8 +5022,8 @@
   function getElementHeight(t, e = BOX_EDGE.border) {
     let { height: r2 } = t.getBoundingClientRect();
     if (e === BOX_EDGE.border) return r2;
-    const o3 = getStyle(t);
-    return e === BOX_EDGE.margin ? (r2 += Math.max(0, parseFloat(o3.marginTop) || 0), r2 += Math.max(0, parseFloat(o3.marginBottom) || 0), r2) : (r2 -= parseFloat(o3.borderTopWidth) || 0, r2 -= parseFloat(o3.borderBottomWidth) || 0, e === BOX_EDGE.scrollbar ? r2 : (!isDocumentElement(t) && SCROLLABLE_OVERFLOWS.has(o3.overflowX) && (r2 -= getPreciseScrollbarSize(t, "x", Math.round(r2) - t.clientHeight)), e === BOX_EDGE.padding || (r2 -= parseFloat(o3.paddingTop) || 0, r2 -= parseFloat(o3.paddingBottom) || 0), r2));
+    const o2 = getStyle(t);
+    return e === BOX_EDGE.margin ? (r2 += Math.max(0, parseFloat(o2.marginTop) || 0), r2 += Math.max(0, parseFloat(o2.marginBottom) || 0), r2) : (r2 -= parseFloat(o2.borderTopWidth) || 0, r2 -= parseFloat(o2.borderBottomWidth) || 0, e === BOX_EDGE.scrollbar ? r2 : (!isDocumentElement(t) && SCROLLABLE_OVERFLOWS.has(o2.overflowX) && (r2 -= getPreciseScrollbarSize(t, "x", Math.round(r2) - t.clientHeight)), e === BOX_EDGE.padding || (r2 -= parseFloat(o2.paddingTop) || 0, r2 -= parseFloat(o2.paddingBottom) || 0), r2));
   }
 
   // node_modules/mezr/dist/esm/getHeight.js
@@ -4758,26 +5037,26 @@
   }
 
   // node_modules/mezr/dist/esm/utils/getOffsetFromDocument.js
-  function getOffsetFromDocument(t, o3 = BOX_EDGE.border) {
+  function getOffsetFromDocument(t, o2 = BOX_EDGE.border) {
     const e = { left: 0, top: 0 };
     if (isDocument(t)) return e;
     if (isWindow(t)) return e.left += t.scrollX || 0, e.top += t.scrollY || 0, e;
     const r2 = t.ownerDocument.defaultView;
     r2 && (e.left += r2.scrollX || 0, e.top += r2.scrollY || 0);
     const n = t.getBoundingClientRect();
-    if (e.left += n.left, e.top += n.top, o3 === BOX_EDGE.border) return e;
+    if (e.left += n.left, e.top += n.top, o2 === BOX_EDGE.border) return e;
     const l2 = getStyle(t);
-    return o3 === BOX_EDGE.margin ? (e.left -= Math.max(0, parseFloat(l2.marginLeft) || 0), e.top -= Math.max(0, parseFloat(l2.marginTop) || 0), e) : (e.left += parseFloat(l2.borderLeftWidth) || 0, e.top += parseFloat(l2.borderTopWidth) || 0, o3 === BOX_EDGE.scrollbar || o3 === BOX_EDGE.padding || (e.left += parseFloat(l2.paddingLeft) || 0, e.top += parseFloat(l2.paddingTop) || 0), e);
+    return o2 === BOX_EDGE.margin ? (e.left -= Math.max(0, parseFloat(l2.marginLeft) || 0), e.top -= Math.max(0, parseFloat(l2.marginTop) || 0), e) : (e.left += parseFloat(l2.borderLeftWidth) || 0, e.top += parseFloat(l2.borderTopWidth) || 0, o2 === BOX_EDGE.scrollbar || o2 === BOX_EDGE.padding || (e.left += parseFloat(l2.paddingLeft) || 0, e.top += parseFloat(l2.paddingTop) || 0), e);
   }
 
   // node_modules/mezr/dist/esm/getOffset.js
   function getOffset(t, e) {
-    const o3 = isRectObject(t) ? { left: t.left, top: t.top } : Array.isArray(t) ? getOffsetFromDocument(...t) : getOffsetFromDocument(t);
+    const o2 = isRectObject(t) ? { left: t.left, top: t.top } : Array.isArray(t) ? getOffsetFromDocument(...t) : getOffsetFromDocument(t);
     if (e && !isDocument(e)) {
       const t2 = isRectObject(e) ? e : Array.isArray(e) ? getOffsetFromDocument(e[0], e[1]) : getOffsetFromDocument(e);
-      o3.left -= t2.left, o3.top -= t2.top;
+      o2.left -= t2.left, o2.top -= t2.top;
     }
-    return o3;
+    return o2;
   }
 
   // node_modules/mezr/dist/esm/getRect.js
@@ -4801,8 +5080,8 @@
 
   // node_modules/mezr/dist/esm/getOffsetContainer.js
   function getOffsetContainer(n, t = {}) {
-    const i = getStyle(n), { display: o3 } = i;
-    if ("none" === o3 || "contents" === o3) return null;
+    const i = getStyle(n), { display: o2 } = i;
+    if ("none" === o2 || "contents" === o2) return null;
     const e = t.position || getStyle(n).position, { skipDisplayNone: s, container: r2 } = t;
     switch (e) {
       case "relative":
@@ -5213,7 +5492,8 @@
   }
 
   // src/draggable/draggable.ts
-  var SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
+  var _id = 0;
+  var SCROLL_LISTENER_OPTIONS = { capture: true, passive: true };
   var POSITION_CHANGE = { x: 0, y: 0 };
   var ELEMENT_MATRIX = new DOMMatrix();
   var TEMP_MATRIX = new DOMMatrix();
@@ -5301,13 +5581,14 @@
   };
   var Draggable = class {
     constructor(sensors, options4 = {}) {
+      this.id = _id++;
       this.sensors = sensors;
       this.settings = this._parseSettings(options4);
       this.plugins = {};
       this.drag = null;
       this.isDestroyed = false;
       this._sensorData = /* @__PURE__ */ new Map();
-      this._emitter = new o();
+      this._emitter = new v();
       this._startPhase = 0 /* None */;
       this._startId = Symbol();
       this._moveId = Symbol();
@@ -5735,22 +6016,60 @@
 
   // src/pool.ts
   var Pool = class {
-    constructor(createObject, onPut) {
-      this._data = [];
-      this._createObject = createObject;
-      this._onPut = onPut;
+    constructor(createItem, {
+      batchSize = 100,
+      minBatchCount = 0,
+      maxBatchCount = Number.MAX_SAFE_INTEGER,
+      initialBatchCount = 0,
+      shrinkThreshold = 2,
+      getItem = (item, ..._args) => item,
+      onRelease
+    } = {}) {
+      this._batchSize = Math.floor(Math.max(batchSize, 1));
+      this._minSize = Math.floor(Math.max(minBatchCount, 0)) * this._batchSize;
+      this._maxSize = Math.floor(
+        Math.min(Math.max(maxBatchCount * this._batchSize, this._batchSize), Number.MAX_SAFE_INTEGER)
+      );
+      this._shrinkThreshold = Math.floor(Math.max(shrinkThreshold, 1) * this._batchSize);
+      this._data = new Array(
+        Math.floor(Math.max(Math.max(initialBatchCount, minBatchCount) * this._batchSize, 0))
+      );
+      this._index = 0;
+      this._createItem = createItem;
+      this._getItem = getItem;
+      this._onRelease = onRelease;
     }
-    pick() {
-      return this._data.length ? this._data.pop() : this._createObject();
+    get(...args) {
+      if (this._index > 0) {
+        return this._getItem(this._data[--this._index], ...args);
+      }
+      if (this._index === 0) {
+        const currentCapacity = this._data.length;
+        const growBy = Math.min(this._batchSize, this._maxSize - currentCapacity);
+        if (growBy > 0) {
+          this._data.length = currentCapacity + growBy;
+        }
+      }
+      return this._createItem(...args);
     }
-    put(object) {
-      if (this._data.indexOf(object) === -1) {
-        this._onPut && this._onPut(object);
-        this._data.push(object);
+    release(object) {
+      if (this._index < this._maxSize) {
+        if (this._onRelease) {
+          this._onRelease(object);
+        }
+        this._data[this._index++] = object;
+        if (this._index >= this._shrinkThreshold) {
+          const newCapacity = this._data.length - this._batchSize;
+          if (newCapacity >= this._minSize) {
+            this._data.length = newCapacity;
+            this._index -= this._batchSize;
+          }
+        }
       }
     }
-    reset() {
+    destroy() {
       this._data.length = 0;
+      this._index = 0;
     }
   };
 
@@ -6085,14 +6404,16 @@
         [AUTO_SCROLL_AXIS.y]: /* @__PURE__ */ new Map()
       };
       this._itemData = /* @__PURE__ */ new Map();
-      this._requestPool = new Pool(
-        () => new AutoScrollRequest(),
-        (request) => request.reset()
-      );
-      this._actionPool = new Pool(
-        () => new AutoScrollAction(),
-        (action) => action.reset()
-      );
+      this._requestPool = new Pool(() => new AutoScrollRequest(), {
+        initialBatchCount: 1,
+        minBatchCount: 1,
+        onRelease: (request) => request.reset()
+      });
+      this._actionPool = new Pool(() => new AutoScrollAction(), {
+        initialBatchCount: 1,
+        minBatchCount: 1,
+        onRelease: (action) => action.reset()
+      });
       this._frameRead = this._frameRead.bind(this);
       this._frameWrite = this._frameWrite.bind(this);
     }
@@ -6135,7 +6456,7 @@
           request.reset();
         }
       } else {
-        request = this._requestPool.pick();
+        request = this._requestPool.get();
         reqMap.set(item, request);
       }
       request.item = item;
@@ -6150,7 +6471,7 @@
       const request = reqMap.get(item);
       if (!request) return;
       if (request.action) request.action.removeRequest(request);
-      this._requestPool.put(request);
+      this._requestPool.release(request);
       reqMap.delete(item);
     }
     _checkItemOverlap(item, checkX, checkY) {
@@ -6436,7 +6757,7 @@
         }
         break;
       }
-      if (!action) action = this._actionPool.pick();
+      if (!action) action = this._actionPool.get();
       action.element = request.element;
       action.addRequest(request);
       request.tick(this._tickDeltaTime);
@@ -6460,7 +6781,7 @@
       let i = 0;
       for (i = 0; i < this._actions.length; i++) {
         this._actions[i].scroll();
-        this._actionPool.put(this._actions[i]);
+        this._actionPool.release(this._actions[i]);
       }
       this._actions.length = 0;
     }
@@ -6519,8 +6840,8 @@
         this.removeItem(items[i]);
       }
       this._actions.length = 0;
-      this._requestPool.reset();
-      this._actionPool.reset();
+      this._requestPool.destroy();
+      this._actionPool.destroy();
       this._isDestroyed = true;
     }
   };

@@ -1,6 +1,10 @@
-import { Sensor, SensorEventType } from '../../sensors/sensor.js';
+import type { Sensor } from '../../sensors/sensor.js';
 
-import { Draggable, DraggableEventType } from '../draggable.js';
+import type { Draggable } from '../draggable.js';
+
+import { SensorEventType } from '../../sensors/sensor.js';
+
+import { DraggableEventType } from '../draggable.js';
 
 import { PointerSensor, PointerSensorEvents } from '../../sensors/pointer-sensor.js';
 

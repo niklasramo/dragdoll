@@ -7,7 +7,7 @@ Makes a draggable element snap to the given grid cell dimensions. Assumes that t
 ## Example
 
 ```ts
-import { Draggable, PointerSensor, KeyboardSensor, createSnapModifier } from 'draggable';
+import { Draggable, PointerSensor, KeyboardSensor, createSnapModifier } from 'dragdoll';
 
 const CELL_WIDTH = 40;
 const CELL_HEIGHT = 40;

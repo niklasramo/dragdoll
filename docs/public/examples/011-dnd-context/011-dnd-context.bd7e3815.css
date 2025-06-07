@@ -24,13 +24,13 @@ body {
 }
 
 .droppable {
+  background-color: var(--bg-color);
   border: 1.5px solid var(--theme-color);
-  background-color: #f0f0f0;
   border-radius: 7px;
   width: 100px;
   height: 100px;
 
-  &[data-over-count], &[data-dropped-count] {
-    background-color: red;
+  &.draggable-over, &.draggable-dropped {
+    background-color: var(--theme-color);
   }
 }
