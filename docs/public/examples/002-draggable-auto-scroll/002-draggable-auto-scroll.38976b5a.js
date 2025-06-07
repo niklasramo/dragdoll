@@ -2769,17 +2769,14 @@ function $e4a9d189cff00937$export$b43dd221600cdb2e(getContainerRect, trackSensor
 
 
 
-// TODO: Should we allow prefilling the pool with objects instead of just
-// preallocating the array slots?
-class $bfd9fff49b9cfdf1$export$14963ee5c8637e11 {
-    constructor(createItem, { batchSize: batchSize = 100, minBatchCount: minBatchCount = 0, maxBatchCount: maxBatchCount = Number.MAX_SAFE_INTEGER, initialBatchCount: initialBatchCount = 0, shrinkThreshold: shrinkThreshold = 2, getItem: getItem = (item, ..._args)=>item, onRelease: onRelease } = {}){
+class $e5f3b5673dfe6018$export$10de443c437e240b {
+    constructor(getItem, { batchSize: batchSize = 100, minBatchCount: minBatchCount = 0, maxBatchCount: maxBatchCount = Number.MAX_SAFE_INTEGER, initialBatchCount: initialBatchCount = 0, shrinkThreshold: shrinkThreshold = 2, onRelease: onRelease } = {}){
         this._batchSize = Math.floor(Math.max(batchSize, 1));
         this._minSize = Math.floor(Math.max(minBatchCount, 0)) * this._batchSize;
         this._maxSize = Math.floor(Math.min(Math.max(maxBatchCount * this._batchSize, this._batchSize), Number.MAX_SAFE_INTEGER));
         this._shrinkThreshold = Math.floor(Math.max(shrinkThreshold, 1) * this._batchSize);
         this._data = new Array(Math.floor(Math.max(Math.max(initialBatchCount, minBatchCount) * this._batchSize, 0)));
         this._index = 0;
-        this._createItem = createItem;
         this._getItem = getItem;
         this._onRelease = onRelease;
     }
@@ -2794,7 +2791,7 @@ class $bfd9fff49b9cfdf1$export$14963ee5c8637e11 {
             if (growBy > 0) this._data.length = currentCapacity + growBy;
         }
         // Create a new object when pool is empty.
-        return this._createItem(...args);
+        return this._getItem(undefined, ...args);
     }
     release(object) {
         // Only add to pool if below max size.
@@ -3196,12 +3193,13 @@ class $45f763d3a9362ecf$export$3fb39aee5567f02e {
             [$45f763d3a9362ecf$export$5bbd74ab6c855dff.y]: new Map()
         };
         this._itemData = new Map();
-        this._requestPool = new (0, $bfd9fff49b9cfdf1$export$14963ee5c8637e11)(()=>new $45f763d3a9362ecf$var$AutoScrollRequest(), {
+        this._requestPool = new (0, $e5f3b5673dfe6018$export$10de443c437e240b)((request)=>request || new $45f763d3a9362ecf$var$AutoScrollRequest(), {
             initialBatchCount: 1,
             minBatchCount: 1,
             onRelease: (request)=>request.reset()
         });
-        this._actionPool = new (0, $bfd9fff49b9cfdf1$export$14963ee5c8637e11)(()=>new $45f763d3a9362ecf$var$AutoScrollAction(), {
+        this._actionPool = new (0, $e5f3b5673dfe6018$export$10de443c437e240b)((action)=>action || new $45f763d3a9362ecf$var$AutoScrollAction(), {
+            batchSize: 10,
             initialBatchCount: 1,
             minBatchCount: 1,
             onRelease: (action)=>action.reset()
@@ -3594,12 +3592,10 @@ class $45f763d3a9362ecf$export$3fb39aee5567f02e {
     }
     destroy() {
         if (this._isDestroyed) return;
-        const items = this.items.slice(0);
-        let i = 0;
-        for(; i < items.length; i++)this.removeItem(items[i]);
-        this._actions.length = 0;
+        this.items.forEach((item)=>this.removeItem(item));
         this._requestPool.destroy();
         this._actionPool.destroy();
+        this._actions.length = 0;
         this._isDestroyed = true;
     }
 }
@@ -3846,24 +3842,23 @@ class $8cf3b9f73d8dfc46$export$423ec2075359570a {
 
 
 
-class $1f3d34e5f09d6c18$export$33ac827f35cc27f9 {
-    constructor(createItem, updateItem){
-        this.createItem = createItem;
-        this.updateItem = updateItem;
-        this.items = [];
-        this.index = 0;
+class $58dee706ab5c60e6$export$8d6d40335cc0e943 {
+    constructor(getItem){
+        this._items = [];
+        this._index = 0;
+        this._getItem = getItem;
     }
     get(...args) {
-        if (this.index >= this.items.length) return this.items[this.index++] = this.createItem(...args);
-        return this.updateItem(this.items[this.index++], ...args);
+        if (this._index >= this._items.length) return this._items[this._index++] = this._getItem(undefined, ...args);
+        return this._getItem(this._items[this._index++], ...args);
     }
     resetPointer() {
-        this.index = 0;
+        this._index = 0;
     }
     resetItems(maxLength = 0) {
-        const newItemCount = Math.max(0, Math.min(maxLength, this.items.length));
-        this.index = Math.min(this.index, newItemCount);
-        this.items.length = newItemCount;
+        const newItemCount = Math.max(0, Math.min(maxLength, this._items.length));
+        this._index = Math.min(this._index, newItemCount);
+        this._items.length = newItemCount;
     }
 }
 
@@ -3881,23 +3876,24 @@ function $d934bd484b07bf81$export$683394309ff76659(dndContext, { getCollisionSco
         return a.width * a.height - b.width * b.height;
     });
 } } = {}) {
-    const droppableIdMap = dndContext['_droppables'];
-    const collisionDataPool = new (0, $1f3d34e5f09d6c18$export$33ac827f35cc27f9)((droppable, score)=>({
+    const collisionDataPool = new (0, $58dee706ab5c60e6$export$8d6d40335cc0e943)((item, droppable, score)=>{
+        if (item) {
+            Object.assign(item, droppable.getClientRect());
+            item.id = droppable.id;
+            item.score = score;
+            return item;
+        } else return {
             id: droppable.id,
             ...droppable.getClientRect(),
             score: score
-        }), (item, droppable, score)=>{
-        Object.assign(item, droppable.getClientRect());
-        item.id = droppable.id;
-        item.score = score;
-        return item;
+        };
     });
     const getRootDroppable = (d)=>d.parent === null;
-    const getDroppableFromCollisionData = (c)=>droppableIdMap.get(c.id);
+    const getDroppableFromCollisionData = (c)=>dndContext.droppables.get(c.id);
     // We only ever need to have as many items in the collision data pool as there
     // are droppables.
     dndContext.on('removeDroppable', ()=>{
-        collisionDataPool.resetItems(droppableIdMap.size);
+        collisionDataPool.resetItems(dndContext.droppables.size);
     });
     // Reset items when dnd context is destroyed.
     dndContext.on('destroy', ()=>{
@@ -3922,7 +3918,7 @@ function $d934bd484b07bf81$export$683394309ff76659(dndContext, { getCollisionSco
             // Set the best matches.
             bestMatches = branchMatches;
             // Move to the next branch.
-            currentBranch = Array.from(droppableIdMap.get(branchMatches[0].id).children);
+            currentBranch = Array.from(dndContext.droppables.get(branchMatches[0].id).children);
         }
         // Reset collision data pool pointer.
         collisionDataPool.resetPointer();
@@ -3931,6 +3927,12 @@ function $d934bd484b07bf81$export$683394309ff76659(dndContext, { getCollisionSco
 }
 
 
+
+// TODO: Optimize the DOM reading by doing it in the read phase of the ticker.
+const $fa11c4bc76a2544e$var$SCROLL_LISTENER_OPTIONS = {
+    capture: true,
+    passive: true
+};
 const $fa11c4bc76a2544e$export$360ab8c194eb7385 = {
     Start: 'start',
     Move: 'move',
@@ -3952,9 +3954,10 @@ const $fa11c4bc76a2544e$export$44eb89083e83f10a = {
 class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     constructor(options = {}){
         const { collisionDetection: collisionDetection = $fa11c4bc76a2544e$export$44eb89083e83f10a.collisionDetection } = options;
+        this.draggables = new Set();
+        this.droppables = new Map();
         this._listenerId = Symbol();
-        this._draggables = new Set();
-        this._droppables = new Map();
+        this._scrollTickerId = Symbol();
         this._dragData = new Map();
         this._isCheckingCollisions = false;
         this._emitter = new (0, $e4e7a534e772252d$export$4293555f241ae35a)();
@@ -3971,13 +3974,21 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
         const dragData = this._dragData.get(draggable);
         if (dragData?.targets) return dragData.targets;
         const targets = new Set();
-        for (const [_id, droppable] of this._droppables)if (this._isTarget(draggable, droppable)) targets.add(droppable);
+        for (const [_id, droppable] of this.droppables)if (this._isTarget(draggable, droppable)) targets.add(droppable);
         if (dragData) dragData.targets = targets;
         return targets;
     }
+    _onDragPrepareStart(draggable) {
+        // Make sure the draggable is registered.
+        if (!this.draggables.has(draggable)) return;
+        // Make sure the draggable is not being dragged, yet.
+        if (this._dragData.get(draggable)) return;
+        // Recompute the droppable client rects.
+        this.updateDroppableClientRects();
+    }
     _onDragStart(draggable) {
         // Make sure the draggable is registered.
-        if (!this._draggables.has(draggable)) return;
+        if (!this.draggables.has(draggable)) return;
         // Make sure the draggable is not being dragged, yet.
         if (this._dragData.get(draggable)) return;
         // Find all droppables that are colliding with the draggable.
@@ -3990,6 +4001,8 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
             data: {}
         };
         this._dragData.set(draggable, dragData);
+        // Add scroll listener.
+        window.addEventListener('scroll', this._onScroll, $fa11c4bc76a2544e$var$SCROLL_LISTENER_OPTIONS);
         // Emit start event.
         if (this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Start)) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Start, {
             draggable: draggable,
@@ -4023,6 +4036,10 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
         // Make sure the draggable is being dragged.
         const dragData = this._dragData.get(draggable);
         if (!dragData) return;
+        // Remove scroll ticker.
+        (0, $e434efa1a293c3f2$export$e94d57566be028aa).off((0, $e434efa1a293c3f2$export$ef9171fc2626).read, this._scrollTickerId);
+        // Remove scroll listener.
+        window.removeEventListener('scroll', this._onScroll, $fa11c4bc76a2544e$var$SCROLL_LISTENER_OPTIONS);
         const targets = this._getTargets(draggable);
         const currentCollisions = dragData.collisions;
         // Emit drop events for all current collisions.
@@ -4043,6 +4060,10 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
         // Make sure the draggable is being dragged.
         const dragData = this._dragData.get(draggable);
         if (!dragData) return;
+        // Remove scroll ticker.
+        (0, $e434efa1a293c3f2$export$e94d57566be028aa).off((0, $e434efa1a293c3f2$export$ef9171fc2626).read, this._scrollTickerId);
+        // Remove scroll listener.
+        window.removeEventListener('scroll', this._onScroll, $fa11c4bc76a2544e$var$SCROLL_LISTENER_OPTIONS);
         // Emit cancel event.
         if (this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Cancel)) {
             const targets = this._getTargets(draggable);
@@ -4056,6 +4077,14 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     }
     _onDragDestroy(draggable) {
         this.removeDraggable(draggable);
+    }
+    _onScroll() {
+        (0, $e434efa1a293c3f2$export$e94d57566be028aa).once((0, $e434efa1a293c3f2$export$ef9171fc2626).read, ()=>{
+            this.updateDroppableClientRects();
+            this._dragData.forEach((_, draggable)=>{
+                this.detectCollisions(draggable);
+            });
+        }, this._scrollTickerId);
     }
     on(type, listener, listenerId) {
         return this._emitter.on(type, listener, listenerId);
@@ -4071,6 +4100,11 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     clearTargets(draggable) {
         const dragData = this._dragData.get(draggable);
         if (dragData) dragData.targets = null;
+    }
+    updateDroppableClientRects() {
+        this.droppables.forEach((droppable)=>{
+            droppable.updateClientRect();
+        });
     }
     detectCollisions(draggable) {
         const dragData = this._dragData.get(draggable);
@@ -4115,8 +4149,11 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
         this._isCheckingCollisions = false;
     }
     addDraggable(draggable) {
-        if (this._draggables.has(draggable)) return;
-        this._draggables.add(draggable);
+        if (this.draggables.has(draggable)) return;
+        this.draggables.add(draggable);
+        draggable.on((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).PrepareStart, ()=>{
+            this._onDragPrepareStart(draggable);
+        }, this._listenerId);
         draggable.on((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).Start, ()=>{
             this._onDragStart(draggable);
         }, this._listenerId);
@@ -4142,8 +4179,9 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     }
     removeDraggable(draggable) {
         // Make sure the draggable is registered.
-        if (!this._draggables.has(draggable)) return;
+        if (!this.draggables.has(draggable)) return;
         // Unbind the event listeners.
+        draggable.off((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).PrepareStart, this._listenerId);
         draggable.off((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).Start, this._listenerId);
         draggable.off((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).Move, this._listenerId);
         draggable.off((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).End, this._listenerId);
@@ -4165,16 +4203,16 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
         // Remove drag data.
         this._dragData.delete(draggable);
         // Remove draggable.
-        this._draggables.delete(draggable);
+        this.draggables.delete(draggable);
         // Emit remove draggable event.
         this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.RemoveDraggable, {
             draggable: draggable
         });
     }
     addDroppable(droppable) {
-        if (this._droppables.has(droppable.id)) return;
+        if (this.droppables.has(droppable.id)) return;
         // Add the droppable to the droppable map.
-        this._droppables.set(droppable.id, droppable);
+        this.droppables.set(droppable.id, droppable);
         // Bind the destroy event listener.
         droppable.on((0, $8cf3b9f73d8dfc46$export$38b6bae3524fed9e).Destroy, ()=>{
             this.removeDroppable(droppable);
@@ -4193,9 +4231,9 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     // `detectCollisions` manually after adding the droppables if they want to.
     }
     removeDroppable(droppable) {
-        if (!this._droppables.has(droppable.id)) return;
+        if (!this.droppables.has(droppable.id)) return;
         // Remove the droppable from the set of droppables.
-        this._droppables.delete(droppable.id);
+        this.droppables.delete(droppable.id);
         // Unbind the destroy event listener.
         droppable.off((0, $8cf3b9f73d8dfc46$export$38b6bae3524fed9e).Destroy, this._listenerId);
         // Remove the droppable from the targets map.
@@ -4223,6 +4261,7 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
         });
     }
     destroy() {
+        (0, $e434efa1a293c3f2$export$e94d57566be028aa).off((0, $e434efa1a293c3f2$export$ef9171fc2626).read, this._scrollTickerId);
         this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Destroy);
         this._emitter.off();
     }
@@ -4236,34 +4275,41 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
-let $1721b684b57c24ff$var$zIndex = 0;
-const $1721b684b57c24ff$var$scroller = document.querySelector('.scroller');
-const $1721b684b57c24ff$var$draggableElements = [
-    ...document.querySelectorAll('.draggable')
-];
-$1721b684b57c24ff$var$draggableElements.forEach((element)=>{
-    const pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element);
-    const keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)(element);
-    let intervalId = -1;
-    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-        pointerSensor,
-        keyboardSensor
-    ], {
-        elements: ()=>[
-                element
-            ],
-        onStart: ()=>{
-            element.classList.add('dragging');
-            element.style.zIndex = `${++$1721b684b57c24ff$var$zIndex}`;
-            intervalId = window.setInterval(()=>{
-                $1721b684b57c24ff$var$scroller.scrollTop = $1721b684b57c24ff$var$scroller.scrollTop > 200 ? 0 : $1721b684b57c24ff$var$scroller.scrollTop + 10;
-            }, 100);
-        },
-        onEnd: ()=>{
-            window.clearInterval(intervalId);
-            element.classList.remove('dragging');
-        }
-    });
+const $6abf5f75f0c818c7$var$element = document.querySelector('.draggable');
+const $6abf5f75f0c818c7$var$dragContainer = document.querySelector('.drag-container');
+const $6abf5f75f0c818c7$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($6abf5f75f0c818c7$var$element);
+const $6abf5f75f0c818c7$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($6abf5f75f0c818c7$var$element, {
+    computeSpeed: ()=>100
 });
+const $6abf5f75f0c818c7$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $6abf5f75f0c818c7$var$pointerSensor,
+    $6abf5f75f0c818c7$var$keyboardSensor
+], {
+    container: $6abf5f75f0c818c7$var$dragContainer,
+    elements: ()=>[
+            $6abf5f75f0c818c7$var$element
+        ],
+    frozenStyles: ()=>[
+            'left',
+            'top'
+        ],
+    onStart: ()=>{
+        $6abf5f75f0c818c7$var$element.classList.add('dragging');
+    },
+    onEnd: ()=>{
+        $6abf5f75f0c818c7$var$element.classList.remove('dragging');
+    }
+}).use((0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
+    targets: [
+        {
+            element: window,
+            axis: 'y',
+            padding: {
+                top: Infinity,
+                bottom: Infinity
+            }
+        }
+    ]
+}));
 
 

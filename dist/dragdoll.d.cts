@@ -511,23 +511,21 @@ declare function createSnapModifier<S extends Sensor[], E extends S[number]['_ev
 
 declare function createContainmentModifier<S extends Sensor[], E extends S[number]['_events_type']>(getContainerRect: (data: DraggableModifierData<S, E>) => Rect, trackSensorDrift?: boolean | ((data: DraggableModifierData<S, E>) => boolean)): DraggableModifier<S, E>;
 
-declare class Pool<Item, ItemArgs extends any[] = []> {
+declare class ClassicObjectPool<Item extends NonNullable<any>, ItemArgs extends any[] = []> {
     protected _batchSize: number;
     protected _maxSize: number;
     protected _minSize: number;
     protected _shrinkThreshold: number;
     protected _data: Item[];
     protected _index: number;
-    protected _createItem: (...args: ItemArgs) => Item;
-    protected _getItem: (item: Item, ...args: ItemArgs) => Item;
+    protected _getItem: (item?: Item, ...args: ItemArgs) => Item;
     protected _onRelease: ((item: Item) => void) | undefined;
-    constructor(createItem: (...args: ItemArgs) => Item, { batchSize, minBatchCount, maxBatchCount, initialBatchCount, shrinkThreshold, getItem, onRelease, }?: {
+    constructor(getItem: (item?: Item, ...args: ItemArgs) => Item, { batchSize, minBatchCount, maxBatchCount, initialBatchCount, shrinkThreshold, onRelease, }?: {
         batchSize?: number;
         minBatchCount?: number;
         maxBatchCount?: number;
         initialBatchCount?: number;
         shrinkThreshold?: number;
-        getItem?: (item: Item, ...args: ItemArgs) => Item;
         onRelease?: (object: Item) => void;
     });
     get(...args: ItemArgs): Item;
@@ -667,8 +665,8 @@ declare class AutoScroll {
         [AUTO_SCROLL_AXIS.x]: Map<AutoScrollItem, AutoScrollRequest>;
         [AUTO_SCROLL_AXIS.y]: Map<AutoScrollItem, AutoScrollRequest>;
     };
-    protected _requestPool: Pool<AutoScrollRequest>;
-    protected _actionPool: Pool<AutoScrollAction>;
+    protected _requestPool: ClassicObjectPool<AutoScrollRequest>;
+    protected _actionPool: ClassicObjectPool<AutoScrollAction>;
     constructor(options?: AutoScrollOptions);
     protected _frameRead(time: number): void;
     protected _frameWrite(): void;
@@ -851,9 +849,10 @@ interface DndContextOptions {
 type DndContextCollisionDetection = (draggable: Draggable<any>, targetDroppables: Set<Droppable>) => Set<Droppable>;
 declare const defaultDndContextOptions: DndContextOptions;
 declare class DndContext {
+    readonly draggables: ReadonlySet<Draggable<any>>;
+    readonly droppables: ReadonlyMap<Symbol, Droppable>;
     protected _listenerId: Symbol;
-    protected _draggables: Set<Draggable<any>>;
-    protected _droppables: Map<Symbol, Droppable>;
+    protected _scrollTickerId: Symbol;
     protected _dragData: Map<Draggable<any>, {
         targets: Set<Droppable> | null;
         collisions: Set<Droppable>;
@@ -867,19 +866,22 @@ declare class DndContext {
         [K in keyof DndContextEventCallbacks]: DndContextEventCallbacks[K];
     }>;
     constructor(options?: DndContextOptions);
-    _isTarget(draggable: Draggable<any>, droppable: Droppable): boolean;
-    _getTargets(draggable: Draggable<any>): Set<Droppable>;
-    _onDragStart(draggable: Draggable<any>): void;
-    _onDragMove(draggable: Draggable<any>): void;
-    _onDragEnd(draggable: Draggable<any>): void;
-    _onDragCancel(draggable: Draggable<any>): void;
-    _onDragDestroy(draggable: Draggable<any>): void;
+    protected _isTarget(draggable: Draggable<any>, droppable: Droppable): boolean;
+    protected _getTargets(draggable: Draggable<any>): Set<Droppable>;
+    protected _onDragPrepareStart(draggable: Draggable<any>): void;
+    protected _onDragStart(draggable: Draggable<any>): void;
+    protected _onDragMove(draggable: Draggable<any>): void;
+    protected _onDragEnd(draggable: Draggable<any>): void;
+    protected _onDragCancel(draggable: Draggable<any>): void;
+    protected _onDragDestroy(draggable: Draggable<any>): void;
+    protected _onScroll(): void;
     on<T extends keyof DndContextEventCallbacks>(type: T, listener: DndContextEventCallbacks[T], listenerId?: EventListenerId): EventListenerId;
     off<T extends keyof DndContextEventCallbacks>(type: T, listenerId: EventListenerId): void;
     getData(draggable: Draggable<any>): {
         [key: string]: any;
     } | null;
     clearTargets(draggable: Draggable<any>): void;
+    updateDroppableClientRects(): void;
     detectCollisions(draggable: Draggable<any>): void;
     addDraggable(draggable: Draggable<any>): void;
     removeDraggable(draggable: Draggable<any>): void;

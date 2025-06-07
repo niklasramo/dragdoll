@@ -5560,15 +5560,14 @@ function createFullRect(sourceRect, result = { width: 0, height: 0, x: 0, y: 0, 
 var TEMP_RECT_1 = createFullRect();
 var TEMP_RECT_2 = createFullRect();
 
-// src/pool.ts
-var Pool = class {
-  constructor(createItem, {
+// src/utils/classic-object-pool.ts
+var ClassicObjectPool = class {
+  constructor(getItem, {
     batchSize = 100,
     minBatchCount = 0,
     maxBatchCount = Number.MAX_SAFE_INTEGER,
     initialBatchCount = 0,
     shrinkThreshold = 2,
-    getItem = (item, ..._args) => item,
     onRelease
   } = {}) {
     this._batchSize = Math.floor(Math.max(batchSize, 1));
@@ -5581,7 +5580,6 @@ var Pool = class {
       Math.floor(Math.max(Math.max(initialBatchCount, minBatchCount) * this._batchSize, 0))
     );
     this._index = 0;
-    this._createItem = createItem;
     this._getItem = getItem;
     this._onRelease = onRelease;
   }
@@ -5596,7 +5594,7 @@ var Pool = class {
         this._data.length = currentCapacity + growBy;
       }
     }
-    return this._createItem(...args);
+    return this._getItem(void 0, ...args);
   }
   release(object) {
     if (this._index < this._maxSize) {
@@ -5952,16 +5950,23 @@ var AutoScroll = class {
       [AUTO_SCROLL_AXIS.y]: /* @__PURE__ */ new Map()
     };
     this._itemData = /* @__PURE__ */ new Map();
-    this._requestPool = new Pool(() => new AutoScrollRequest(), {
-      initialBatchCount: 1,
-      minBatchCount: 1,
-      onRelease: (request) => request.reset()
-    });
-    this._actionPool = new Pool(() => new AutoScrollAction(), {
-      initialBatchCount: 1,
-      minBatchCount: 1,
-      onRelease: (action) => action.reset()
-    });
+    this._requestPool = new ClassicObjectPool(
+      (request) => request || new AutoScrollRequest(),
+      {
+        initialBatchCount: 1,
+        minBatchCount: 1,
+        onRelease: (request) => request.reset()
+      }
+    );
+    this._actionPool = new ClassicObjectPool(
+      (action) => action || new AutoScrollAction(),
+      {
+        batchSize: 10,
+        initialBatchCount: 1,
+        minBatchCount: 1,
+        onRelease: (action) => action.reset()
+      }
+    );
     this._frameRead = this._frameRead.bind(this);
     this._frameWrite = this._frameWrite.bind(this);
   }
@@ -6382,14 +6387,10 @@ var AutoScroll = class {
   }
   destroy() {
     if (this._isDestroyed) return;
-    const items = this.items.slice(0);
-    let i = 0;
-    for (; i < items.length; i++) {
-      this.removeItem(items[i]);
-    }
-    this._actions.length = 0;
+    this.items.forEach((item) => this.removeItem(item));
     this._requestPool.destroy();
     this._actionPool.destroy();
+    this._actions.length = 0;
     this._isDestroyed = true;
   }
 };
