@@ -44,18 +44,34 @@ dndContext.on('drop', ({ draggable, collisions }) => {
 
 ```ts
 class DndContext {
-  constructor(options?: {
-    collisionDetection?: (draggable: Draggable<any>, droppables: Set<Droppable>) => Set<Droppable>;
-  }) {}
+  constructor(options?: DndContextOptions) {}
 }
 ```
 
 ### Parameters
 
-1. **options**
+1. **options** _(optional)_
    - An optional options object with the following properties:
-     - **`collisionDetection`**
-       - A custom collision detection function used to determine which droppables are colliding with a draggable element.
+     - **`collisionDetector`** _(optional)_
+       - A custom `CollisionDetector` instance for determining which droppables are colliding with a draggable element. If not provided, a default `CollisionDetector` will be created.
+
+## Properties
+
+### draggables
+
+```ts
+readonly draggables: ReadonlySet<Draggable<any>>;
+```
+
+A read-only set containing all registered draggable instances.
+
+### droppables
+
+```ts
+readonly droppables: ReadonlyMap<Symbol, Droppable>;
+```
+
+A read-only map containing all registered droppable instances, keyed by their unique symbol IDs.
 
 ## Methods
 
@@ -129,6 +145,8 @@ dndContext.addDroppable(droppable);
 
 Registers a droppable with the context. This adds it to the internal registry, binds its destroy event, and updates any active draggables with the new droppable as a potential target.
 
+Note: Collision detection is not automatically run when adding droppables. Call `detectCollisions` manually if needed.
+
 ### removeDroppable
 
 ```ts
@@ -140,6 +158,18 @@ dndContext.removeDroppable(droppable);
 ```
 
 Deregisters a droppable from the context. This removes it from the internal registry, unbinds its destroy event, and updates affected draggables by removing the droppable from their targets.
+
+### updateDroppableClientRects
+
+```ts
+// Type
+type updateDroppableClientRects = () => void;
+
+// Usage
+dndContext.updateDroppableClientRects();
+```
+
+Updates the cached client rectangles for all registered droppables. This is automatically called on scroll events and when drag starts, but can be manually triggered if needed.
 
 ### detectCollisions
 
@@ -187,7 +217,7 @@ type destroy = () => void;
 dndContext.destroy();
 ```
 
-Destroys the DndContext by emitting the `destroy` event, unbinding all event listeners, and clearing all internal data structures.
+Destroys the DndContext by emitting the `destroy` event, unbinding all event listeners, clearing all internal data structures, and destroying the collision detector.
 
 ## Events
 
@@ -215,10 +245,11 @@ type enter = (data: {
   targets: Droppable[];
   collisions: Droppable[];
   addedCollisions: Droppable[];
+  collisionData: Map<Droppable, CollisionData>;
 }) => void;
 ```
 
-Emitted when a draggable first collides with one or more droppables. The `addedCollisions` array contains only the droppables that newly entered collision state.
+Emitted when a draggable first collides with one or more droppables. The `addedCollisions` array contains only the droppables that newly entered collision state. The `collisionData` map provides detailed collision information for each colliding droppable.
 
 ### leave
 
@@ -228,6 +259,7 @@ type leave = (data: {
   targets: Droppable[];
   collisions: Droppable[];
   removedCollisions: Droppable[];
+  collisionData: Map<Droppable, CollisionData>;
 }) => void;
 ```
 
@@ -241,6 +273,7 @@ type over = (data: {
   targets: Droppable[];
   collisions: Droppable[];
   persistedCollisions: Droppable[];
+  collisionData: Map<Droppable, CollisionData>;
 }) => void;
 ```
 
@@ -253,6 +286,7 @@ type drop = (data: {
   draggable: Draggable<any>;
   targets: Droppable[];
   collisions: Droppable[];
+  collisionData: Map<Droppable, CollisionData>;
 }) => void;
 ```
 

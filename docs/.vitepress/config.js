@@ -143,11 +143,7 @@ function sidebarGuide() {
       items: [
         { text: 'DndContext', link: '/docs/dnd-context' },
         { text: 'Droppable', link: '/docs/droppable' },
-        {
-          text: 'Helpers',
-          link: '/docs/dnd-context-helpers',
-          collapsible: false,
-        },
+        { text: 'CollisionDetector', link: '/docs/collision-detector' },
       ],
     },
   ];

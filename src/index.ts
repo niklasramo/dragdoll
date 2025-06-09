@@ -22,7 +22,7 @@ export * from './draggable/plugins/auto-scroll-plugin.js';
 
 export * from './dnd-context/dnd-context.js';
 
-export * from './dnd-context/helpers/collision-detection.js';
+export * from './dnd-context/collision-detector.js';
 
 export * from './droppable/droppable.js';
 

@@ -3864,71 +3864,96 @@ class $58dee706ab5c60e6$export$8d6d40335cc0e943 {
 
 
 
-function $d934bd484b07bf81$export$683394309ff76659(dndContext, { getCollisionScore: getCollisionScore = (draggable, droppable)=>{
-    const draggableRect = draggable.getClientRect();
-    if (!draggableRect) return null;
-    const score = (0, $ec0caa97c3c0620a$export$25b3e1e24e1ba229)(draggableRect, droppable.getClientRect());
-    return score > 0 ? score : null;
-}, sortCollisions: sortCollisions = (_draggable, collisions)=>{
-    return collisions.sort((a, b)=>{
-        const diff = b.score - a.score;
-        if (diff !== 0) return diff;
-        return a.width * a.height - b.width * b.height;
-    });
-} } = {}) {
-    const collisionDataPool = new (0, $58dee706ab5c60e6$export$8d6d40335cc0e943)((item, droppable, score)=>{
-        if (item) {
-            Object.assign(item, droppable.getClientRect());
-            item.id = droppable.id;
-            item.score = score;
-            return item;
-        } else return {
+class $24bdaa72c91e807d$export$b931ab7b292a336c {
+    constructor(dndContext, { getCollisionData: getCollisionData = (draggable, droppable)=>{
+        const draggableRect = draggable.getClientRect();
+        const droppableRect = droppable.getClientRect();
+        if (!draggableRect) return null;
+        const score = (0, $ec0caa97c3c0620a$export$25b3e1e24e1ba229)(draggableRect, droppableRect);
+        if (score <= 0) return null;
+        return {
             id: droppable.id,
-            ...droppable.getClientRect(),
+            x: droppableRect.x,
+            y: droppableRect.y,
+            width: droppableRect.width,
+            height: droppableRect.height,
             score: score
         };
-    });
-    const getRootDroppable = (d)=>d.parent === null;
-    const getDroppableFromCollisionData = (c)=>dndContext.droppables.get(c.id);
-    // We only ever need to have as many items in the collision data pool as there
-    // are droppables.
-    dndContext.on('removeDroppable', ()=>{
-        collisionDataPool.resetItems(dndContext.droppables.size);
-    });
-    // Reset items when dnd context is destroyed.
-    dndContext.on('destroy', ()=>{
-        collisionDataPool.resetItems();
-    });
-    return (draggable, targets)=>{
+    }, sortCollisions: sortCollisions = (_draggable, collisions)=>{
+        return collisions.sort((a, b)=>{
+            const diff = b.score - a.score;
+            if (diff !== 0) return diff;
+            return a.width * a.height - b.width * b.height;
+        });
+    } } = {}){
+        this.listenerId = Symbol();
+        this.dndContext = dndContext;
+        this.collisionDataPool = new (0, $58dee706ab5c60e6$export$8d6d40335cc0e943)((item, data)=>{
+            if (item) {
+                Object.assign(item, data);
+                return item;
+            } else return {
+                ...data
+            };
+        });
+        this.getCollisionData = getCollisionData;
+        this.sortCollisions = sortCollisions;
+        // We only ever need to have as many items in the collision data pool as there
+        // are droppables.
+        this.dndContext.on('removeDroppable', ()=>{
+            this.collisionDataPool.resetItems(this.dndContext.droppables.size);
+        }, this.listenerId);
+        // Reset items when dnd context is destroyed.
+        this.dndContext.on('destroy', ()=>{
+            this.collisionDataPool.resetItems();
+        }, this.listenerId);
+    }
+    static getRootDroppable(d) {
+        return d.parent === null;
+    }
+    getDroppableFromCollisionData(c) {
+        return this.dndContext.droppables.get(c.id);
+    }
+    detectCollisions(draggable, targets) {
         // Start with root-level droppables (no parent).
         // TODO: We should store these in the dnd context for faster access.
-        let currentBranch = Array.from(targets).filter(getRootDroppable);
+        let currentBranch = Array.from(targets).filter($24bdaa72c91e807d$export$b931ab7b292a336c.getRootDroppable);
         let bestMatches = [];
         // Keep going until we have no more branches to check.
         while(currentBranch.length > 0){
             const branchMatches = [];
             for (const droppable of currentBranch){
-                const score = getCollisionScore(draggable, droppable);
-                if (score !== null) branchMatches.push(collisionDataPool.get(droppable, score));
+                const collisionData = this.getCollisionData(draggable, droppable);
+                if (collisionData !== null) branchMatches.push(this.collisionDataPool.get(collisionData));
             }
             // If there are no matches, we can stop.
             if (!branchMatches.length) break;
             // Sort the collisions.
-            sortCollisions(draggable, branchMatches);
+            this.sortCollisions(draggable, branchMatches);
             // Set the best matches.
             bestMatches = branchMatches;
             // Move to the next branch.
-            currentBranch = Array.from(dndContext.droppables.get(branchMatches[0].id).children);
+            currentBranch = Array.from(this.dndContext.droppables.get(branchMatches[0].id).children);
         }
         // Reset collision data pool pointer.
-        collisionDataPool.resetPointer();
-        return new Set(bestMatches.map(getDroppableFromCollisionData));
-    };
+        this.collisionDataPool.resetPointer();
+        // Create a map of droppable to collision data
+        const result = new Map();
+        for (const collisionData of bestMatches){
+            const droppable = this.getDroppableFromCollisionData(collisionData);
+            result.set(droppable, collisionData);
+        }
+        return result;
+    }
+    destroy() {
+        this.collisionDataPool.resetItems();
+        this.dndContext.off('removeDroppable', this.listenerId);
+        this.dndContext.off('destroy', this.listenerId);
+    }
 }
 
 
 
-// TODO: Optimize the DOM reading by doing it in the read phase of the ticker.
 const $fa11c4bc76a2544e$var$SCROLL_LISTENER_OPTIONS = {
     capture: true,
     passive: true
@@ -3949,11 +3974,11 @@ const $fa11c4bc76a2544e$export$360ab8c194eb7385 = {
     Destroy: 'destroy'
 };
 const $fa11c4bc76a2544e$export$44eb89083e83f10a = {
-    collisionDetection: undefined
+    collisionDetector: undefined
 };
 class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     constructor(options = {}){
-        const { collisionDetection: collisionDetection = $fa11c4bc76a2544e$export$44eb89083e83f10a.collisionDetection } = options;
+        const { collisionDetector: collisionDetector = $fa11c4bc76a2544e$export$44eb89083e83f10a.collisionDetector } = options;
         this.draggables = new Set();
         this.droppables = new Map();
         this._listenerId = Symbol();
@@ -3961,7 +3986,7 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
         this._dragData = new Map();
         this._isCheckingCollisions = false;
         this._emitter = new (0, $e4e7a534e772252d$export$4293555f241ae35a)();
-        this._collisionDetection = collisionDetection || (0, $d934bd484b07bf81$export$683394309ff76659)(this);
+        this._collisionDetector = collisionDetector || new (0, $24bdaa72c91e807d$export$b931ab7b292a336c)(this);
     }
     _isTarget(draggable, droppable) {
         let isAcceptable = typeof droppable.accept === 'function' ? droppable.accept(draggable) : droppable.accept.includes(draggable.settings.group);
@@ -3993,7 +4018,7 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
         if (this._dragData.get(draggable)) return;
         // Find all droppables that are colliding with the draggable.
         const targets = this._getTargets(draggable);
-        const collisions = this._collisionDetection(draggable, targets);
+        const collisions = this._collisionDetector.detectCollisions(draggable, targets);
         // Create the drag data.
         const dragData = {
             targets: targets,
@@ -4013,8 +4038,9 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
         if (collisions.size && this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Enter)) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Enter, {
             draggable: draggable,
             targets: Array.from(targets),
-            collisions: Array.from(collisions),
-            addedCollisions: Array.from(collisions)
+            collisions: Array.from(collisions.keys()),
+            addedCollisions: Array.from(collisions.keys()),
+            collisionData: collisions
         });
     }
     _onDragMove(draggable) {
@@ -4046,7 +4072,8 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
         if (currentCollisions && currentCollisions.size > 0 && this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Drop)) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Drop, {
             draggable: draggable,
             targets: Array.from(targets),
-            collisions: Array.from(currentCollisions)
+            collisions: Array.from(currentCollisions.keys()),
+            collisionData: currentCollisions
         });
         // Emit end event.
         if (this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.End)) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.End, {
@@ -4113,37 +4140,48 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
         this._isCheckingCollisions = true;
         const targets = this._getTargets(draggable);
         const currentCollisions = dragData.collisions;
-        const nextCollisions = this._collisionDetection(draggable, targets);
+        const currentCollidingDroppables = new Set(currentCollisions.keys());
+        // NB: Running collision detection will mutate the collision data of the
+        // current collisions (since we use object pool objects directly for memory
+        // efficiency), so if we need to compare the current and next collisions we
+        // need to cache the current collisions before running the detection. But,
+        // for now, we just care about the previous colliding droppables so this is
+        // fine.
+        const nextCollisions = this._collisionDetector.detectCollisions(draggable, targets);
+        const nextCollidingDroppables = new Set(nextCollisions.keys());
         // Update collision state.
         dragData.collisions = nextCollisions;
         // Emit leave events.
         if (this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Leave)) {
-            const removedCollisions = currentCollisions ? currentCollisions.difference(nextCollisions) : new Set();
+            const removedCollisions = currentCollidingDroppables.difference(nextCollidingDroppables);
             if (removedCollisions.size > 0) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Leave, {
                 draggable: draggable,
                 targets: Array.from(targets),
-                collisions: Array.from(nextCollisions),
-                removedCollisions: Array.from(removedCollisions)
+                collisions: Array.from(nextCollidingDroppables),
+                removedCollisions: Array.from(removedCollisions),
+                collisionData: nextCollisions
             });
         }
         // Emit enter events.
         if (this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Enter)) {
-            const addedCollisions = currentCollisions ? nextCollisions.difference(currentCollisions) : nextCollisions;
+            const addedCollisions = nextCollidingDroppables.difference(currentCollidingDroppables);
             if (addedCollisions.size > 0) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Enter, {
                 draggable: draggable,
                 targets: Array.from(targets),
-                collisions: Array.from(nextCollisions),
-                addedCollisions: Array.from(addedCollisions)
+                collisions: Array.from(nextCollidingDroppables),
+                addedCollisions: Array.from(addedCollisions),
+                collisionData: nextCollisions
             });
         }
         // Emit over events.
         if (this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Over)) {
-            const persistedCollisions = currentCollisions ? nextCollisions.intersection(currentCollisions) : new Set();
+            const persistedCollisions = nextCollidingDroppables.intersection(currentCollidingDroppables);
             if (persistedCollisions.size > 0) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Over, {
                 draggable: draggable,
                 targets: Array.from(targets),
-                collisions: Array.from(nextCollisions),
-                persistedCollisions: Array.from(persistedCollisions)
+                collisions: Array.from(nextCollidingDroppables),
+                persistedCollisions: Array.from(persistedCollisions),
+                collisionData: nextCollisions
             });
         }
         this._isCheckingCollisions = false;
@@ -4193,7 +4231,8 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
                 draggable: draggable,
                 targets: Array.from(this._getTargets(draggable)),
                 collisions: [],
-                removedCollisions: Array.from(dragData.collisions)
+                removedCollisions: Array.from(dragData.collisions.keys()),
+                collisionData: new Map()
             });
             if (this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.Cancel)) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Cancel, {
                 draggable: draggable,
@@ -4248,10 +4287,11 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
                 this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Leave, {
                     draggable: draggable,
                     targets: Array.from(this._getTargets(draggable)),
-                    collisions: Array.from(collisions),
+                    collisions: Array.from(collisions.keys()),
                     removedCollisions: [
                         droppable
-                    ]
+                    ],
+                    collisionData: collisions
                 });
             }
         });
@@ -4262,6 +4302,7 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     }
     destroy() {
         (0, $e434efa1a293c3f2$export$e94d57566be028aa).off((0, $e434efa1a293c3f2$export$ef9171fc2626).read, this._scrollTickerId);
+        this._collisionDetector.destroy();
         this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.Destroy);
         this._emitter.off();
     }
@@ -4275,81 +4316,32 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
-// Initialize context and get elements
-const $f3affae21016fe5a$var$dndContext = new (0, $fa11c4bc76a2544e$export$2d5c5ceac203fc1e)();
-const $f3affae21016fe5a$var$draggableElements = [
-    ...document.querySelectorAll('.draggable')
-];
-const $f3affae21016fe5a$var$droppableElements = [
-    ...document.querySelectorAll('.droppable')
-];
-// Create droppables
-$f3affae21016fe5a$var$droppableElements.forEach((element)=>{
-    const droppable = new (0, $8cf3b9f73d8dfc46$export$423ec2075359570a)(element);
-    droppable.data.overIds = new Set();
-    droppable.data.droppedIds = new Set();
-    $f3affae21016fe5a$var$dndContext.addDroppable(droppable);
+const $f770251f4470ce8a$var$element = document.querySelector('.draggable');
+const $f770251f4470ce8a$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($f770251f4470ce8a$var$element);
+const $f770251f4470ce8a$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($f770251f4470ce8a$var$element);
+const $f770251f4470ce8a$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $f770251f4470ce8a$var$pointerSensor,
+    $f770251f4470ce8a$var$keyboardSensor
+], {
+    elements: ()=>[
+            $f770251f4470ce8a$var$element
+        ],
+    positionModifiers: [
+        (0, $e4a9d189cff00937$export$b43dd221600cdb2e)(()=>{
+            return {
+                x: 0,
+                y: 0,
+                width: window.innerWidth,
+                height: window.innerHeight
+            };
+        })
+    ],
+    onStart: ()=>{
+        $f770251f4470ce8a$var$element.classList.add('dragging');
+    },
+    onEnd: ()=>{
+        $f770251f4470ce8a$var$element.classList.remove('dragging');
+    }
 });
-// Create draggables
-$f3affae21016fe5a$var$draggableElements.forEach((element)=>{
-    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-        new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element),
-        new (0, $7fff4587bd07df96$export$436f6efcc297171)(element)
-    ], {
-        elements: ()=>[
-                element
-            ],
-        startPredicate: ()=>!element.classList.contains('dragging'),
-        onStart: (drag)=>drag.items[0].element.classList.add('dragging'),
-        onEnd: (drag)=>drag.items[0].element.classList.remove('dragging')
-    });
-    $f3affae21016fe5a$var$dndContext.addDraggable(draggable);
-});
-// DnD logic
-{
-    const onStart = (data)=>{
-        const { draggable: draggable, targets: targets } = data;
-        targets.forEach((target)=>{
-            target.data.droppedIds.delete(draggable.id);
-            if (target.data.droppedIds.size === 0) target.element.classList.remove('draggable-dropped');
-        });
-    };
-    const onEnterAndOver = (data)=>{
-        const { draggable: draggable, collisions: collisions } = data;
-        const clonedCollisions = [
-            ...collisions
-        ];
-        // Add the draggable to the first collision.
-        const target = clonedCollisions.shift();
-        target.data.overIds.add(draggable.id);
-        target.element.classList.add('draggable-over');
-        // Remove the draggable from the other collisions.
-        clonedCollisions.forEach((collision)=>{
-            collision.data.overIds.delete(draggable.id);
-            if (collision.data.overIds.size === 0) collision.element.classList.remove('draggable-over');
-        });
-    };
-    const onLeave = (data)=>{
-        const { draggable: draggable, removedCollisions: removedCollisions } = data;
-        removedCollisions.forEach((target)=>{
-            target.data.overIds.delete(draggable.id);
-            if (target.data.overIds.size === 0) target.element.classList.remove('draggable-over');
-        });
-    };
-    const onDrop = (data)=>{
-        const { draggable: draggable, collisions: collisions } = data;
-        const target = collisions[0];
-        // Update dropped ids
-        target.data.droppedIds.add(draggable.id);
-        target.element.classList.add('draggable-dropped');
-        // Update over ids
-        target.data.overIds.delete(draggable.id);
-        if (target.data.overIds.size === 0) target.element.classList.remove('draggable-over');
-    };
-    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Start, onStart);
-    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Enter, onEnterAndOver);
-    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Over, onEnterAndOver);
-    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Leave, onLeave);
-    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Drop, onDrop);
-}
+
 
