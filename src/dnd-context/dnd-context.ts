@@ -296,7 +296,7 @@ export class DndContext {
     this.removeDraggable(draggable);
   }
 
-  protected _onScroll() {
+  protected _onScroll = () => {
     ticker.once(
       tickerPhases.read,
       () => {
@@ -307,7 +307,7 @@ export class DndContext {
       },
       this._scrollTickerId,
     );
-  }
+  };
 
   on<T extends keyof DndContextEventCallbacks>(
     type: T,

@@ -2550,7 +2550,7 @@ function $0dfdc060a41a8f62$export$42a28ce04aa194cc(options = {}) {
     let startTimeStamp = 0;
     let targetElement = null;
     let timer = undefined;
-    const { touchTimeout: touchTimeout = 250, fallback: fallback = ()=>true } = options;
+    const { touchDelay: touchDelay = 250, fallback: fallback = ()=>true } = options;
     const onContextMenu = (e)=>e.preventDefault();
     const onTouchMove = (e)=>{
         if (!startTimeStamp) return;
@@ -2559,7 +2559,7 @@ function $0dfdc060a41a8f62$export$42a28ce04aa194cc(options = {}) {
             return;
         }
         if (dragAllowed === undefined) {
-            if (e.cancelable && e.timeStamp - startTimeStamp > touchTimeout) {
+            if (e.cancelable && e.timeStamp - startTimeStamp > touchDelay) {
                 dragAllowed = true;
                 e.preventDefault();
             } else dragAllowed = false;
@@ -2613,7 +2613,7 @@ function $0dfdc060a41a8f62$export$42a28ce04aa194cc(options = {}) {
                 draggable.sensors.forEach((sensor)=>{
                     if (sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) sensor.on((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).End, dragEndListener);
                 });
-                // If we have touchTimeout defined, let's set a timer that force starts
+                // If we have touchDelay defined, let's set a timer that force starts
                 // the drag process after the timeout.
                 // TODO: This will start drag sometimes when it's not actually possible
                 // to prevent the native scrolling on touch devices. We'd need a way
@@ -2622,11 +2622,11 @@ function $0dfdc060a41a8f62$export$42a28ce04aa194cc(options = {}) {
                 // get one touchmove event to check if we can prevent native scrolling
                 // but that is kind of too late already.. let's see if we can detect
                 // that earlier somehow.
-                if (touchTimeout > 0) timer = window.setTimeout(()=>{
+                if (touchDelay > 0) timer = window.setTimeout(()=>{
                     draggable.resolveStartPredicate(sensor);
                     dragAllowed = true;
                     timer = undefined;
-                }, touchTimeout);
+                }, touchDelay);
             }
             return dragAllowed;
         }
@@ -3773,7 +3773,7 @@ class $8cf3b9f73d8dfc46$export$423ec2075359570a {
         const { accept: accept = $8cf3b9f73d8dfc46$export$f7d1599333345bbc.accept, parent: parent = $8cf3b9f73d8dfc46$export$f7d1599333345bbc.parent, data: data = $8cf3b9f73d8dfc46$export$f7d1599333345bbc.data } = options;
         this.id = Symbol();
         this.element = element;
-        this.parent = parent;
+        this.parent = null;
         this.children = new Set();
         this.accept = accept;
         this.data = {
@@ -3978,6 +3978,14 @@ const $fa11c4bc76a2544e$export$44eb89083e83f10a = {
 };
 class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     constructor(options = {}){
+        this._onScroll = ()=>{
+            (0, $e434efa1a293c3f2$export$e94d57566be028aa).once((0, $e434efa1a293c3f2$export$ef9171fc2626).read, ()=>{
+                this.updateDroppableClientRects();
+                this._dragData.forEach((_, draggable)=>{
+                    this.detectCollisions(draggable);
+                });
+            }, this._scrollTickerId);
+        };
         const { collisionDetector: collisionDetector = $fa11c4bc76a2544e$export$44eb89083e83f10a.collisionDetector } = options;
         this.draggables = new Set();
         this.droppables = new Map();
@@ -4104,14 +4112,6 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     }
     _onDragDestroy(draggable) {
         this.removeDraggable(draggable);
-    }
-    _onScroll() {
-        (0, $e434efa1a293c3f2$export$e94d57566be028aa).once((0, $e434efa1a293c3f2$export$ef9171fc2626).read, ()=>{
-            this.updateDroppableClientRects();
-            this._dragData.forEach((_, draggable)=>{
-                this.detectCollisions(draggable);
-            });
-        }, this._scrollTickerId);
     }
     on(type, listener, listenerId) {
         return this._emitter.on(type, listener, listenerId);
@@ -4316,39 +4316,31 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
-const $36439aed3cd46e36$var$element = document.querySelector('.draggable');
-const $36439aed3cd46e36$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($36439aed3cd46e36$var$element);
-const $36439aed3cd46e36$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($36439aed3cd46e36$var$element);
-const $36439aed3cd46e36$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $36439aed3cd46e36$var$pointerSensor,
-    $36439aed3cd46e36$var$keyboardSensor
+const $9ce708fa4d5ed47d$var$GRID_WIDTH = 40;
+const $9ce708fa4d5ed47d$var$GRID_HEIGHT = 40;
+const $9ce708fa4d5ed47d$var$element = document.querySelector('.draggable');
+const $9ce708fa4d5ed47d$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($9ce708fa4d5ed47d$var$element);
+const $9ce708fa4d5ed47d$var$keyboardSensor = new (0, $2a9b1c646b3552c1$export$44d67f2a438aeba9)($9ce708fa4d5ed47d$var$element, {
+    moveDistance: {
+        x: $9ce708fa4d5ed47d$var$GRID_WIDTH,
+        y: $9ce708fa4d5ed47d$var$GRID_HEIGHT
+    }
+});
+const $9ce708fa4d5ed47d$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $9ce708fa4d5ed47d$var$pointerSensor,
+    $9ce708fa4d5ed47d$var$keyboardSensor
 ], {
     elements: ()=>[
-            $36439aed3cd46e36$var$element
+            $9ce708fa4d5ed47d$var$element
         ],
     positionModifiers: [
-        (change, { drag: drag, item: item, phase: phase })=>{
-            // Align the dragged element so that the pointer
-            // is in the center of the element.
-            if (// Only apply the alignment on the start phase.
-            phase === 'start' && // Only apply the alignment for the pointer sensor.
-            drag.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638) && // Only apply the alignment for the primary drag element.
-            drag.items[0].element === item.element) {
-                const { clientRect: clientRect } = item;
-                const { x: x, y: y } = drag.startEvent;
-                const targetX = clientRect.x + clientRect.width / 2;
-                const targetY = clientRect.y + clientRect.height / 2;
-                change.x = x - targetX;
-                change.y = y - targetY;
-            }
-            return change;
-        }
+        (0, $0b5391881dc2b3a6$export$7f11ea1f0ba255b5)($9ce708fa4d5ed47d$var$GRID_WIDTH, $9ce708fa4d5ed47d$var$GRID_HEIGHT)
     ],
     onStart: ()=>{
-        $36439aed3cd46e36$var$element.classList.add('dragging');
+        $9ce708fa4d5ed47d$var$element.classList.add('dragging');
     },
     onEnd: ()=>{
-        $36439aed3cd46e36$var$element.classList.remove('dragging');
+        $9ce708fa4d5ed47d$var$element.classList.remove('dragging');
     }
 });
 

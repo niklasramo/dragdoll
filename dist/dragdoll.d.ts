@@ -503,7 +503,7 @@ declare class Draggable<S extends Sensor[] = Sensor[], E extends S[number]['_eve
 }
 
 declare function createTouchDelayPredicate<S extends (Sensor | PointerSensor)[] = (Sensor | PointerSensor)[], D extends Draggable<S> = Draggable<S>>(options?: {
-    touchTimeout?: number;
+    touchDelay?: number;
     fallback?: D['settings']['startPredicate'];
 }): D["settings"]["startPredicate"];
 
@@ -902,7 +902,7 @@ declare class DndContext {
     protected _onDragEnd(draggable: Draggable<any>): void;
     protected _onDragCancel(draggable: Draggable<any>): void;
     protected _onDragDestroy(draggable: Draggable<any>): void;
-    protected _onScroll(): void;
+    protected _onScroll: () => void;
     on<T extends keyof DndContextEventCallbacks>(type: T, listener: DndContextEventCallbacks[T], listenerId?: EventListenerId): EventListenerId;
     off<T extends keyof DndContextEventCallbacks>(type: T, listenerId: EventListenerId): void;
     getData(draggable: Draggable<any>): {

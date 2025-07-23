@@ -52,7 +52,7 @@ export class Droppable {
 
     this.id = Symbol();
     this.element = element;
-    this.parent = parent;
+    this.parent = null;
     this.children = new Set();
     this.accept = accept;
     this.data = { ...data };

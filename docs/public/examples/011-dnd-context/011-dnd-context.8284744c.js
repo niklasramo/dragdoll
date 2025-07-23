@@ -2550,7 +2550,7 @@ function $0dfdc060a41a8f62$export$42a28ce04aa194cc(options = {}) {
     let startTimeStamp = 0;
     let targetElement = null;
     let timer = undefined;
-    const { touchTimeout: touchTimeout = 250, fallback: fallback = ()=>true } = options;
+    const { touchDelay: touchDelay = 250, fallback: fallback = ()=>true } = options;
     const onContextMenu = (e)=>e.preventDefault();
     const onTouchMove = (e)=>{
         if (!startTimeStamp) return;
@@ -2559,7 +2559,7 @@ function $0dfdc060a41a8f62$export$42a28ce04aa194cc(options = {}) {
             return;
         }
         if (dragAllowed === undefined) {
-            if (e.cancelable && e.timeStamp - startTimeStamp > touchTimeout) {
+            if (e.cancelable && e.timeStamp - startTimeStamp > touchDelay) {
                 dragAllowed = true;
                 e.preventDefault();
             } else dragAllowed = false;
@@ -2613,7 +2613,7 @@ function $0dfdc060a41a8f62$export$42a28ce04aa194cc(options = {}) {
                 draggable.sensors.forEach((sensor)=>{
                     if (sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) sensor.on((0, $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5).End, dragEndListener);
                 });
-                // If we have touchTimeout defined, let's set a timer that force starts
+                // If we have touchDelay defined, let's set a timer that force starts
                 // the drag process after the timeout.
                 // TODO: This will start drag sometimes when it's not actually possible
                 // to prevent the native scrolling on touch devices. We'd need a way
@@ -2622,11 +2622,11 @@ function $0dfdc060a41a8f62$export$42a28ce04aa194cc(options = {}) {
                 // get one touchmove event to check if we can prevent native scrolling
                 // but that is kind of too late already.. let's see if we can detect
                 // that earlier somehow.
-                if (touchTimeout > 0) timer = window.setTimeout(()=>{
+                if (touchDelay > 0) timer = window.setTimeout(()=>{
                     draggable.resolveStartPredicate(sensor);
                     dragAllowed = true;
                     timer = undefined;
-                }, touchTimeout);
+                }, touchDelay);
             }
             return dragAllowed;
         }
@@ -3773,7 +3773,7 @@ class $8cf3b9f73d8dfc46$export$423ec2075359570a {
         const { accept: accept = $8cf3b9f73d8dfc46$export$f7d1599333345bbc.accept, parent: parent = $8cf3b9f73d8dfc46$export$f7d1599333345bbc.parent, data: data = $8cf3b9f73d8dfc46$export$f7d1599333345bbc.data } = options;
         this.id = Symbol();
         this.element = element;
-        this.parent = parent;
+        this.parent = null;
         this.children = new Set();
         this.accept = accept;
         this.data = {
@@ -3978,6 +3978,14 @@ const $fa11c4bc76a2544e$export$44eb89083e83f10a = {
 };
 class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     constructor(options = {}){
+        this._onScroll = ()=>{
+            (0, $e434efa1a293c3f2$export$e94d57566be028aa).once((0, $e434efa1a293c3f2$export$ef9171fc2626).read, ()=>{
+                this.updateDroppableClientRects();
+                this._dragData.forEach((_, draggable)=>{
+                    this.detectCollisions(draggable);
+                });
+            }, this._scrollTickerId);
+        };
         const { collisionDetector: collisionDetector = $fa11c4bc76a2544e$export$44eb89083e83f10a.collisionDetector } = options;
         this.draggables = new Set();
         this.droppables = new Map();
@@ -4104,14 +4112,6 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     }
     _onDragDestroy(draggable) {
         this.removeDraggable(draggable);
-    }
-    _onScroll() {
-        (0, $e434efa1a293c3f2$export$e94d57566be028aa).once((0, $e434efa1a293c3f2$export$ef9171fc2626).read, ()=>{
-            this.updateDroppableClientRects();
-            this._dragData.forEach((_, draggable)=>{
-                this.detectCollisions(draggable);
-            });
-        }, this._scrollTickerId);
     }
     on(type, listener, listenerId) {
         return this._emitter.on(type, listener, listenerId);
@@ -4316,25 +4316,81 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
-const $dffb89cf206e4bcc$var$element = document.querySelector('.draggable');
-const $dffb89cf206e4bcc$var$handle = $dffb89cf206e4bcc$var$element.querySelector('.handle');
-const $dffb89cf206e4bcc$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($dffb89cf206e4bcc$var$handle);
-const $dffb89cf206e4bcc$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($dffb89cf206e4bcc$var$element);
-const $dffb89cf206e4bcc$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $dffb89cf206e4bcc$var$pointerSensor,
-    $dffb89cf206e4bcc$var$keyboardSensor
-], {
-    elements: ()=>[
-            $dffb89cf206e4bcc$var$element
-        ],
-    onStart: ()=>{
-        $dffb89cf206e4bcc$var$element.classList.add('dragging');
-        if ($dffb89cf206e4bcc$var$draggable.drag.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) $dffb89cf206e4bcc$var$element.classList.add('pointer-dragging');
-        else $dffb89cf206e4bcc$var$element.classList.add('keyboard-dragging');
-    },
-    onEnd: ()=>{
-        $dffb89cf206e4bcc$var$element.classList.remove('dragging', 'pointer-dragging', 'keyboard-dragging');
-    }
+// Initialize context and get elements
+const $f3affae21016fe5a$var$dndContext = new (0, $fa11c4bc76a2544e$export$2d5c5ceac203fc1e)();
+const $f3affae21016fe5a$var$draggableElements = [
+    ...document.querySelectorAll('.draggable')
+];
+const $f3affae21016fe5a$var$droppableElements = [
+    ...document.querySelectorAll('.droppable')
+];
+// Create droppables
+$f3affae21016fe5a$var$droppableElements.forEach((element)=>{
+    const droppable = new (0, $8cf3b9f73d8dfc46$export$423ec2075359570a)(element);
+    droppable.data.overIds = new Set();
+    droppable.data.droppedIds = new Set();
+    $f3affae21016fe5a$var$dndContext.addDroppable(droppable);
 });
-
+// Create draggables
+$f3affae21016fe5a$var$draggableElements.forEach((element)=>{
+    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+        new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element),
+        new (0, $7fff4587bd07df96$export$436f6efcc297171)(element)
+    ], {
+        elements: ()=>[
+                element
+            ],
+        startPredicate: ()=>!element.classList.contains('dragging'),
+        onStart: (drag)=>drag.items[0].element.classList.add('dragging'),
+        onEnd: (drag)=>drag.items[0].element.classList.remove('dragging')
+    });
+    $f3affae21016fe5a$var$dndContext.addDraggable(draggable);
+});
+// DnD logic
+{
+    const onStart = (data)=>{
+        const { draggable: draggable, targets: targets } = data;
+        targets.forEach((target)=>{
+            target.data.droppedIds.delete(draggable.id);
+            if (target.data.droppedIds.size === 0) target.element.classList.remove('draggable-dropped');
+        });
+    };
+    const onEnterAndOver = (data)=>{
+        const { draggable: draggable, collisions: collisions } = data;
+        const clonedCollisions = [
+            ...collisions
+        ];
+        // Add the draggable to the first collision.
+        const target = clonedCollisions.shift();
+        target.data.overIds.add(draggable.id);
+        target.element.classList.add('draggable-over');
+        // Remove the draggable from the other collisions.
+        clonedCollisions.forEach((collision)=>{
+            collision.data.overIds.delete(draggable.id);
+            if (collision.data.overIds.size === 0) collision.element.classList.remove('draggable-over');
+        });
+    };
+    const onLeave = (data)=>{
+        const { draggable: draggable, removedCollisions: removedCollisions } = data;
+        removedCollisions.forEach((target)=>{
+            target.data.overIds.delete(draggable.id);
+            if (target.data.overIds.size === 0) target.element.classList.remove('draggable-over');
+        });
+    };
+    const onDrop = (data)=>{
+        const { draggable: draggable, collisions: collisions } = data;
+        const target = collisions[0];
+        // Update dropped ids
+        target.data.droppedIds.add(draggable.id);
+        target.element.classList.add('draggable-dropped');
+        // Update over ids
+        target.data.overIds.delete(draggable.id);
+        if (target.data.overIds.size === 0) target.element.classList.remove('draggable-over');
+    };
+    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Start, onStart);
+    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Enter, onEnterAndOver);
+    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Over, onEnterAndOver);
+    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Leave, onLeave);
+    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Drop, onDrop);
+}
 

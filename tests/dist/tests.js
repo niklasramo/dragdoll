@@ -6403,6 +6403,544 @@ import { Emitter as Emitter5 } from "eventti";
 
 // src/droppable/droppable.ts
 import { Emitter as Emitter4 } from "eventti";
+var DroppableEventType = {
+  Destroy: "destroy"
+};
+var defaultDroppableOptions = {
+  accept: () => true,
+  parent: null,
+  data: {}
+};
+var Droppable = class {
+  constructor(element, options4 = {}) {
+    const {
+      accept = defaultDroppableOptions.accept,
+      parent = defaultDroppableOptions.parent,
+      data = defaultDroppableOptions.data
+    } = options4;
+    this.id = Symbol();
+    this.element = element;
+    this.parent = null;
+    this.children = /* @__PURE__ */ new Set();
+    this.accept = accept;
+    this.data = { ...data };
+    this.isDestroyed = false;
+    this._clientRect = { x: 0, y: 0, width: 0, height: 0 };
+    this._emitter = new Emitter4();
+    this.setParent(parent);
+    this.updateClientRect();
+  }
+  _isDescendantOf(droppable) {
+    let current = droppable;
+    while (current) {
+      if (current === this) return true;
+      current = current.parent;
+    }
+    return false;
+  }
+  on(type3, listener, listenerId) {
+    return this._emitter.on(type3, listener, listenerId);
+  }
+  off(type3, listenerId) {
+    this._emitter.off(type3, listenerId);
+  }
+  setParent(parent) {
+    if (this.parent === parent) return;
+    if (parent === this) {
+      throw new Error("Droppable cannot be its own parent.");
+    }
+    if (parent && parent._isDescendantOf(this)) {
+      throw new Error("Cannot set a descendant as parent.");
+    }
+    if (this.parent) {
+      this.parent.children.delete(this);
+    }
+    if (parent) {
+      parent.children.add(this);
+    }
+    this.parent = parent;
+  }
+  getClientRect() {
+    return this._clientRect;
+  }
+  updateClientRect(rect) {
+    const bcr = rect || this.element.getBoundingClientRect();
+    const { _clientRect } = this;
+    _clientRect.x = bcr.x;
+    _clientRect.y = bcr.y;
+    _clientRect.width = bcr.width;
+    _clientRect.height = bcr.height;
+  }
+  destroy() {
+    if (this.isDestroyed) return;
+    this.isDestroyed = true;
+    this._emitter.emit(DroppableEventType.Destroy);
+    this._emitter.off();
+    this.setParent(null);
+    this.children.forEach((child) => {
+      if (child.parent === this) {
+        child.setParent(null);
+      }
+    });
+    this.children.clear();
+  }
+};
+
+// src/utils/fast-object-pool.ts
+var FastObjectPool = class {
+  constructor(getItem) {
+    this._items = [];
+    this._index = 0;
+    this._getItem = getItem;
+  }
+  get(...args) {
+    if (this._index >= this._items.length) {
+      return this._items[this._index++] = this._getItem(void 0, ...args);
+    }
+    return this._getItem(this._items[this._index++], ...args);
+  }
+  resetPointer() {
+    this._index = 0;
+  }
+  resetItems(maxLength = 0) {
+    const newItemCount = Math.max(0, Math.min(maxLength, this._items.length));
+    this._index = Math.min(this._index, newItemCount);
+    this._items.length = newItemCount;
+  }
+};
+
+// src/dnd-context/collision-detector.ts
+var CollisionDetector = class _CollisionDetector {
+  constructor(dndContext, {
+    getCollisionData = (draggable, droppable) => {
+      const draggableRect = draggable.getClientRect();
+      const droppableRect = droppable.getClientRect();
+      if (!draggableRect) return null;
+      const score = getIntersectionScore(draggableRect, droppableRect);
+      if (score <= 0) return null;
+      return {
+        id: droppable.id,
+        x: droppableRect.x,
+        y: droppableRect.y,
+        width: droppableRect.width,
+        height: droppableRect.height,
+        score
+      };
+    },
+    sortCollisions = (_draggable, collisions) => {
+      return collisions.sort((a, b) => {
+        const diff = b.score - a.score;
+        if (diff !== 0) return diff;
+        return a.width * a.height - b.width * b.height;
+      });
+    }
+  } = {}) {
+    this.listenerId = Symbol();
+    this.dndContext = dndContext;
+    this.collisionDataPool = new FastObjectPool((item, data) => {
+      if (item) {
+        Object.assign(item, data);
+        return item;
+      } else {
+        return { ...data };
+      }
+    });
+    this.getCollisionData = getCollisionData;
+    this.sortCollisions = sortCollisions;
+    this.dndContext.on(
+      "removeDroppable",
+      () => {
+        this.collisionDataPool.resetItems(this.dndContext.droppables.size);
+      },
+      this.listenerId
+    );
+    this.dndContext.on(
+      "destroy",
+      () => {
+        this.collisionDataPool.resetItems();
+      },
+      this.listenerId
+    );
+  }
+  static getRootDroppable(d) {
+    return d.parent === null;
+  }
+  getDroppableFromCollisionData(c) {
+    return this.dndContext.droppables.get(c.id);
+  }
+  detectCollisions(draggable, targets) {
+    let currentBranch = Array.from(targets).filter(_CollisionDetector.getRootDroppable);
+    let bestMatches = [];
+    while (currentBranch.length > 0) {
+      const branchMatches = [];
+      for (const droppable of currentBranch) {
+        const collisionData = this.getCollisionData(draggable, droppable);
+        if (collisionData !== null) {
+          branchMatches.push(this.collisionDataPool.get(collisionData));
+        }
+      }
+      if (!branchMatches.length) break;
+      this.sortCollisions(draggable, branchMatches);
+      bestMatches = branchMatches;
+      currentBranch = Array.from(this.dndContext.droppables.get(branchMatches[0].id).children);
+    }
+    this.collisionDataPool.resetPointer();
+    const result = /* @__PURE__ */ new Map();
+    for (const collisionData of bestMatches) {
+      const droppable = this.getDroppableFromCollisionData(collisionData);
+      result.set(droppable, collisionData);
+    }
+    return result;
+  }
+  destroy() {
+    this.collisionDataPool.resetItems();
+    this.dndContext.off("removeDroppable", this.listenerId);
+    this.dndContext.off("destroy", this.listenerId);
+  }
+};
+
+// src/dnd-context/dnd-context.ts
+var SCROLL_LISTENER_OPTIONS2 = { capture: true, passive: true };
+var DndContextEventType = {
+  Start: "start",
+  Move: "move",
+  Enter: "enter",
+  Leave: "leave",
+  Over: "over",
+  Drop: "drop",
+  End: "end",
+  Cancel: "cancel",
+  AddDraggable: "addDraggable",
+  RemoveDraggable: "removeDraggable",
+  AddDroppable: "addDroppable",
+  RemoveDroppable: "removeDroppable",
+  Destroy: "destroy"
+};
+var defaultDndContextOptions = {
+  collisionDetector: void 0
+};
+var DndContext = class {
+  constructor(options4 = {}) {
+    this._onScroll = () => {
+      ticker.once(
+        tickerPhases.read,
+        () => {
+          this.updateDroppableClientRects();
+          this._dragData.forEach((_, draggable) => {
+            this.detectCollisions(draggable);
+          });
+        },
+        this._scrollTickerId
+      );
+    };
+    const { collisionDetector = defaultDndContextOptions.collisionDetector } = options4;
+    this.draggables = /* @__PURE__ */ new Set();
+    this.droppables = /* @__PURE__ */ new Map();
+    this._listenerId = Symbol();
+    this._scrollTickerId = Symbol();
+    this._dragData = /* @__PURE__ */ new Map();
+    this._isCheckingCollisions = false;
+    this._emitter = new Emitter5();
+    this._collisionDetector = collisionDetector || new CollisionDetector(this);
+  }
+  _isTarget(draggable, droppable) {
+    let isAcceptable = typeof droppable.accept === "function" ? droppable.accept(draggable) : droppable.accept.includes(draggable.settings.group);
+    if (isAcceptable && draggable.drag?.items.some((item) => item.element === droppable.element)) {
+      isAcceptable = false;
+    }
+    return isAcceptable;
+  }
+  _getTargets(draggable) {
+    const dragData = this._dragData.get(draggable);
+    if (dragData?.targets) return dragData.targets;
+    const targets = /* @__PURE__ */ new Set();
+    for (const [_id2, droppable] of this.droppables) {
+      if (this._isTarget(draggable, droppable)) {
+        targets.add(droppable);
+      }
+    }
+    if (dragData) {
+      dragData.targets = targets;
+    }
+    return targets;
+  }
+  _onDragPrepareStart(draggable) {
+    if (!this.draggables.has(draggable)) return;
+    if (this._dragData.get(draggable)) return;
+    this.updateDroppableClientRects();
+  }
+  _onDragStart(draggable) {
+    if (!this.draggables.has(draggable)) return;
+    if (this._dragData.get(draggable)) return;
+    const targets = this._getTargets(draggable);
+    const collisions = this._collisionDetector.detectCollisions(draggable, targets);
+    const dragData = { targets, collisions, data: {} };
+    this._dragData.set(draggable, dragData);
+    window.addEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS2);
+    if (this._emitter.listenerCount(DndContextEventType.Start)) {
+      this._emitter.emit(DndContextEventType.Start, {
+        draggable,
+        targets: Array.from(targets)
+      });
+    }
+    if (collisions.size && this._emitter.listenerCount(DndContextEventType.Enter)) {
+      this._emitter.emit(DndContextEventType.Enter, {
+        draggable,
+        targets: Array.from(targets),
+        collisions: Array.from(collisions.keys()),
+        addedCollisions: Array.from(collisions.keys()),
+        collisionData: collisions
+      });
+    }
+  }
+  _onDragMove(draggable) {
+    const dragData = this._dragData.get(draggable);
+    if (!dragData) return;
+    if (this._emitter.listenerCount(DndContextEventType.Move)) {
+      const targets = this._getTargets(draggable);
+      this._emitter.emit(DndContextEventType.Move, {
+        draggable,
+        targets: Array.from(targets)
+      });
+    }
+    this.detectCollisions(draggable);
+  }
+  _onDragEnd(draggable) {
+    const dragData = this._dragData.get(draggable);
+    if (!dragData) return;
+    ticker.off(tickerPhases.read, this._scrollTickerId);
+    window.removeEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS2);
+    const targets = this._getTargets(draggable);
+    const currentCollisions = dragData.collisions;
+    if (currentCollisions && currentCollisions.size > 0 && this._emitter.listenerCount(DndContextEventType.Drop)) {
+      this._emitter.emit(DndContextEventType.Drop, {
+        draggable,
+        targets: Array.from(targets),
+        collisions: Array.from(currentCollisions.keys()),
+        collisionData: currentCollisions
+      });
+    }
+    if (this._emitter.listenerCount(DndContextEventType.End)) {
+      this._emitter.emit(DndContextEventType.End, {
+        draggable,
+        targets: Array.from(targets)
+      });
+    }
+    this._dragData.delete(draggable);
+  }
+  _onDragCancel(draggable) {
+    const dragData = this._dragData.get(draggable);
+    if (!dragData) return;
+    ticker.off(tickerPhases.read, this._scrollTickerId);
+    window.removeEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS2);
+    if (this._emitter.listenerCount(DndContextEventType.Cancel)) {
+      const targets = this._getTargets(draggable);
+      this._emitter.emit(DndContextEventType.Cancel, {
+        draggable,
+        targets: Array.from(targets)
+      });
+    }
+    this._dragData.delete(draggable);
+  }
+  _onDragDestroy(draggable) {
+    this.removeDraggable(draggable);
+  }
+  on(type3, listener, listenerId) {
+    return this._emitter.on(type3, listener, listenerId);
+  }
+  off(type3, listenerId) {
+    this._emitter.off(type3, listenerId);
+  }
+  getData(draggable) {
+    const dragData = this._dragData.get(draggable);
+    if (!dragData) return null;
+    return dragData.data;
+  }
+  clearTargets(draggable) {
+    const dragData = this._dragData.get(draggable);
+    if (dragData) dragData.targets = null;
+  }
+  updateDroppableClientRects() {
+    this.droppables.forEach((droppable) => {
+      droppable.updateClientRect();
+    });
+  }
+  detectCollisions(draggable) {
+    const dragData = this._dragData.get(draggable);
+    if (!dragData) return;
+    if (this._isCheckingCollisions) {
+      throw new Error("Cannot detect collisions while already checking collisions.");
+    }
+    this._isCheckingCollisions = true;
+    const targets = this._getTargets(draggable);
+    const currentCollisions = dragData.collisions;
+    const currentCollidingDroppables = new Set(currentCollisions.keys());
+    const nextCollisions = this._collisionDetector.detectCollisions(draggable, targets);
+    const nextCollidingDroppables = new Set(nextCollisions.keys());
+    dragData.collisions = nextCollisions;
+    if (this._emitter.listenerCount(DndContextEventType.Leave)) {
+      const removedCollisions = currentCollidingDroppables.difference(nextCollidingDroppables);
+      if (removedCollisions.size > 0) {
+        this._emitter.emit(DndContextEventType.Leave, {
+          draggable,
+          targets: Array.from(targets),
+          collisions: Array.from(nextCollidingDroppables),
+          removedCollisions: Array.from(removedCollisions),
+          collisionData: nextCollisions
+        });
+      }
+    }
+    if (this._emitter.listenerCount(DndContextEventType.Enter)) {
+      const addedCollisions = nextCollidingDroppables.difference(currentCollidingDroppables);
+      if (addedCollisions.size > 0) {
+        this._emitter.emit(DndContextEventType.Enter, {
+          draggable,
+          targets: Array.from(targets),
+          collisions: Array.from(nextCollidingDroppables),
+          addedCollisions: Array.from(addedCollisions),
+          collisionData: nextCollisions
+        });
+      }
+    }
+    if (this._emitter.listenerCount(DndContextEventType.Over)) {
+      const persistedCollisions = nextCollidingDroppables.intersection(
+        currentCollidingDroppables
+      );
+      if (persistedCollisions.size > 0) {
+        this._emitter.emit(DndContextEventType.Over, {
+          draggable,
+          targets: Array.from(targets),
+          collisions: Array.from(nextCollidingDroppables),
+          persistedCollisions: Array.from(persistedCollisions),
+          collisionData: nextCollisions
+        });
+      }
+    }
+    this._isCheckingCollisions = false;
+  }
+  addDraggable(draggable) {
+    if (this.draggables.has(draggable)) return;
+    this.draggables.add(draggable);
+    draggable.on(
+      DraggableEventType.PrepareStart,
+      () => {
+        this._onDragPrepareStart(draggable);
+      },
+      this._listenerId
+    );
+    draggable.on(
+      DraggableEventType.Start,
+      () => {
+        this._onDragStart(draggable);
+      },
+      this._listenerId
+    );
+    draggable.on(
+      DraggableEventType.Move,
+      () => {
+        this._onDragMove(draggable);
+      },
+      this._listenerId
+    );
+    draggable.on(
+      DraggableEventType.End,
+      (e) => {
+        if (e?.type === SensorEventType.End) {
+          this._onDragEnd(draggable);
+        } else if (e?.type === SensorEventType.Cancel) {
+          this._onDragCancel(draggable);
+        }
+      },
+      this._listenerId
+    );
+    draggable.on(
+      DraggableEventType.Destroy,
+      () => {
+        this._onDragDestroy(draggable);
+      },
+      this._listenerId
+    );
+    this._emitter.emit(DndContextEventType.AddDraggable, { draggable });
+    if (draggable.drag && !draggable.drag.isEnded) {
+      this._onDragStart(draggable);
+    }
+  }
+  removeDraggable(draggable) {
+    if (!this.draggables.has(draggable)) return;
+    draggable.off(DraggableEventType.PrepareStart, this._listenerId);
+    draggable.off(DraggableEventType.Start, this._listenerId);
+    draggable.off(DraggableEventType.Move, this._listenerId);
+    draggable.off(DraggableEventType.End, this._listenerId);
+    draggable.off(DraggableEventType.Destroy, this._listenerId);
+    const dragData = this._dragData.get(draggable);
+    if (dragData) {
+      if (dragData.collisions.size && this._emitter.listenerCount(DndContextEventType.Leave)) {
+        this._emitter.emit(DndContextEventType.Leave, {
+          draggable,
+          targets: Array.from(this._getTargets(draggable)),
+          collisions: [],
+          removedCollisions: Array.from(dragData.collisions.keys()),
+          collisionData: /* @__PURE__ */ new Map()
+        });
+      }
+      if (this._emitter.listenerCount(DndContextEventType.Cancel)) {
+        this._emitter.emit(DndContextEventType.Cancel, {
+          draggable,
+          targets: Array.from(this._getTargets(draggable))
+        });
+      }
+    }
+    this._dragData.delete(draggable);
+    this.draggables.delete(draggable);
+    this._emitter.emit(DndContextEventType.RemoveDraggable, { draggable });
+  }
+  addDroppable(droppable) {
+    if (this.droppables.has(droppable.id)) return;
+    this.droppables.set(droppable.id, droppable);
+    droppable.on(
+      DroppableEventType.Destroy,
+      () => {
+        this.removeDroppable(droppable);
+      },
+      this._listenerId
+    );
+    this._dragData.forEach(({ targets }, draggable) => {
+      if (targets && this._isTarget(draggable, droppable)) {
+        targets.add(droppable);
+      }
+    });
+    this._emitter.emit(DndContextEventType.AddDroppable, { droppable });
+  }
+  removeDroppable(droppable) {
+    if (!this.droppables.has(droppable.id)) return;
+    this.droppables.delete(droppable.id);
+    droppable.off(DroppableEventType.Destroy, this._listenerId);
+    this._dragData.forEach(({ targets }) => {
+      targets?.delete(droppable);
+    });
+    if (this._emitter.listenerCount(DndContextEventType.Leave)) {
+      this._dragData.forEach(({ collisions }, draggable) => {
+        if (collisions.has(droppable)) {
+          collisions.delete(droppable);
+          this._emitter.emit(DndContextEventType.Leave, {
+            draggable,
+            targets: Array.from(this._getTargets(draggable)),
+            collisions: Array.from(collisions.keys()),
+            removedCollisions: [droppable],
+            collisionData: collisions
+          });
+        }
+      });
+    }
+    this._emitter.emit(DndContextEventType.RemoveDroppable, { droppable });
+  }
+  destroy() {
+    ticker.off(tickerPhases.read, this._scrollTickerId);
+    this._collisionDetector.destroy();
+    this._emitter.emit(DndContextEventType.Destroy);
+    this._emitter.off();
+  }
+};
 
 // tests/src/base-sensor/methods/_cancel.ts
 function methodProtectedCancel() {
@@ -6665,11 +7203,11 @@ function methodDestroy() {
        `, () => {
       const s = new BaseSensor();
       const startArgs = { type: "start", x: 1, y: 2 };
-      let events4 = [];
+      let events5 = [];
       s["_start"](startArgs);
-      s.on("start", (data) => void events4.push(data.type));
-      s.on("move", (data) => void events4.push(data.type));
-      s.on("end", (data) => void events4.push(data.type));
+      s.on("start", (data) => void events5.push(data.type));
+      s.on("move", (data) => void events5.push(data.type));
+      s.on("end", (data) => void events5.push(data.type));
       s.on("cancel", (data) => {
         assert.deepEqual(s.drag, { x: startArgs.x, y: startArgs.y });
         assert.equal(s.isDestroyed, true);
@@ -6678,7 +7216,7 @@ function methodDestroy() {
           x: startArgs.x,
           y: startArgs.y
         });
-        events4.push(data.type);
+        events5.push(data.type);
       });
       s.on("destroy", (data) => {
         assert.equal(s.drag, null);
@@ -6686,13 +7224,13 @@ function methodDestroy() {
         assert.deepEqual(data, {
           type: "destroy"
         });
-        events4.push(data.type);
+        events5.push(data.type);
       });
       assert.equal(s["_emitter"].listenerCount(), 5);
       s.destroy();
       assert.equal(s.drag, null);
       assert.equal(s.isDestroyed, true);
-      assert.deepEqual(events4, ["cancel", "destroy"]);
+      assert.deepEqual(events5, ["cancel", "destroy"]);
       assert.equal(s["_emitter"].listenerCount(), 0);
     });
     it(`should (if drag is not active):
@@ -6701,39 +7239,39 @@ function methodDestroy() {
           3. remove all listeners from the internal emitter
        `, () => {
       const s = new BaseSensor();
-      let events4 = [];
-      s.on("start", (data) => void events4.push(data.type));
-      s.on("move", (data) => void events4.push(data.type));
-      s.on("end", (data) => void events4.push(data.type));
-      s.on("cancel", (data) => void events4.push(data.type));
+      let events5 = [];
+      s.on("start", (data) => void events5.push(data.type));
+      s.on("move", (data) => void events5.push(data.type));
+      s.on("end", (data) => void events5.push(data.type));
+      s.on("cancel", (data) => void events5.push(data.type));
       s.on("destroy", (data) => {
         assert.equal(s.drag, null);
         assert.equal(s.isDestroyed, true);
         assert.deepEqual(data, {
           type: "destroy"
         });
-        events4.push(data.type);
+        events5.push(data.type);
       });
       assert.equal(s["_emitter"].listenerCount(), 5);
       s.destroy();
       assert.equal(s.drag, null);
       assert.equal(s.isDestroyed, true);
-      assert.deepEqual(events4, ["destroy"]);
+      assert.deepEqual(events5, ["destroy"]);
       assert.equal(s["_emitter"].listenerCount(), 0);
     });
     it("should not do anything if the sensor is already destroyed", () => {
       const s = new BaseSensor();
       s.destroy();
-      let events4 = [];
-      s.on("start", (data) => void events4.push(data.type));
-      s.on("move", (data) => void events4.push(data.type));
-      s.on("end", (data) => void events4.push(data.type));
-      s.on("cancel", (data) => void events4.push(data.type));
-      s.on("destroy", (data) => void events4.push(data.type));
+      let events5 = [];
+      s.on("start", (data) => void events5.push(data.type));
+      s.on("move", (data) => void events5.push(data.type));
+      s.on("end", (data) => void events5.push(data.type));
+      s.on("cancel", (data) => void events5.push(data.type));
+      s.on("destroy", (data) => void events5.push(data.type));
       s.destroy();
       assert.equal(s.drag, null);
       assert.equal(s.isDestroyed, true);
-      assert.deepEqual(events4, []);
+      assert.deepEqual(events5, []);
     });
   });
 }
@@ -6926,7 +7464,7 @@ function waitNextFrame() {
 function events() {
   describe("events", () => {
     it("should be called at the right time with the right arguments", async () => {
-      let events4 = [];
+      let events5 = [];
       let currentKeyboardEvent = null;
       const el = createTestElement();
       const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
@@ -6937,53 +7475,53 @@ function events() {
         assert.equal(args.length, 1);
         assert.equal(args[0].type, "start");
         assert.equal(args[0].srcEvent, currentKeyboardEvent);
-        events4.push("preparestart");
+        events5.push("preparestart");
       });
       draggable.on("start", (...args) => {
         assert.equal(args.length, 1);
         assert.equal(args[0].type, "start");
         assert.equal(args[0].srcEvent, currentKeyboardEvent);
-        events4.push("start");
+        events5.push("start");
       });
       draggable.on("preparemove", (...args) => {
         assert.equal(args.length, 1);
         assert.equal(args[0].type, "move");
         assert.equal(args[0].srcEvent, currentKeyboardEvent);
-        events4.push("preparemove");
+        events5.push("preparemove");
       });
       draggable.on("move", (...args) => {
         assert.equal(args.length, 1);
         assert.equal(args[0].type, "move");
         assert.equal(args[0].srcEvent, currentKeyboardEvent);
-        events4.push("move");
+        events5.push("move");
       });
       draggable.on("end", (...args) => {
         assert.equal(args.length, 1);
         assert.equal(args[0]?.type, "end");
         assert.equal(args[0]?.srcEvent, currentKeyboardEvent);
-        events4.push("end");
+        events5.push("end");
       });
       draggable.on("destroy", (...args) => {
         assert.equal(args.length, 0);
-        events4.push("destroy");
+        events5.push("destroy");
       });
       focusElement(el);
       currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
       document.dispatchEvent(currentKeyboardEvent);
       await waitNextFrame();
-      assert.deepEqual(events4, ["preparestart", "start"]);
-      events4.length = 0;
+      assert.deepEqual(events5, ["preparestart", "start"]);
+      events5.length = 0;
       currentKeyboardEvent = new KeyboardEvent("keydown", { key: "ArrowRight" });
       document.dispatchEvent(currentKeyboardEvent);
       await waitNextFrame();
-      assert.deepEqual(events4, ["preparemove", "move"]);
-      events4.length = 0;
+      assert.deepEqual(events5, ["preparemove", "move"]);
+      events5.length = 0;
       currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
       document.dispatchEvent(currentKeyboardEvent);
-      assert.deepEqual(events4, ["end"]);
-      events4.length = 0;
+      assert.deepEqual(events5, ["end"]);
+      events5.length = 0;
       draggable.destroy();
-      assert.deepEqual(events4, ["destroy"]);
+      assert.deepEqual(events5, ["destroy"]);
       keyboardSensor.destroy();
       el.remove();
     });
@@ -7476,7 +8014,7 @@ function optionApplyPosition() {
 function optionCallbacks() {
   describe("callbacks", () => {
     it("should be called at the right time with the right arguments", async () => {
-      let events4 = [];
+      let events5 = [];
       let currentKeyboardEvent = null;
       const el = createTestElement();
       const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
@@ -7489,7 +8027,7 @@ function optionCallbacks() {
           assert.equal(args[0].startEvent.srcEvent, currentKeyboardEvent);
           assert.equal(args[0].prevMoveEvent.srcEvent, currentKeyboardEvent);
           assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
-          events4.push("onPrepareStart");
+          events5.push("onPrepareStart");
         },
         onStart(...args) {
           assert.equal(args.length, 2);
@@ -7498,70 +8036,70 @@ function optionCallbacks() {
           assert.equal(args[0].startEvent.srcEvent, currentKeyboardEvent);
           assert.equal(args[0].prevMoveEvent.srcEvent, currentKeyboardEvent);
           assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
-          events4.push("onStart");
+          events5.push("onStart");
         },
         onPrepareMove(...args) {
           assert.equal(args.length, 2);
           assert.equal(args[0], draggable.drag);
           assert.equal(args[1], draggable);
           assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
-          events4.push("onPrepareMove");
+          events5.push("onPrepareMove");
         },
         onMove(...args) {
           assert.equal(args.length, 2);
           assert.equal(args[0], draggable.drag);
           assert.equal(args[1], draggable);
           assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
-          events4.push("onMove");
+          events5.push("onMove");
         },
         onEnd(...args) {
           assert.equal(args.length, 2);
           assert.equal(args[0], draggable.drag);
           assert.equal(args[1], draggable);
           assert.equal(args[0].endEvent?.srcEvent, currentKeyboardEvent);
-          events4.push("onEnd");
+          events5.push("onEnd");
         },
         onDestroy(...args) {
           assert.equal(args.length, 1);
           assert.equal(args[0], draggable);
-          events4.push("onDestroy");
+          events5.push("onDestroy");
         }
       });
       draggable.on("preparestart", () => {
-        events4.push("preparestart");
+        events5.push("preparestart");
       });
       draggable.on("start", () => {
-        events4.push("start");
+        events5.push("start");
       });
       draggable.on("preparemove", () => {
-        events4.push("preparemove");
+        events5.push("preparemove");
       });
       draggable.on("move", () => {
-        events4.push("move");
+        events5.push("move");
       });
       draggable.on("end", () => {
-        events4.push("end");
+        events5.push("end");
       });
       draggable.on("destroy", () => {
-        events4.push("destroy");
+        events5.push("destroy");
       });
       focusElement(el);
       currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
       document.dispatchEvent(currentKeyboardEvent);
       await waitNextFrame();
-      assert.deepEqual(events4, ["preparestart", "onPrepareStart", "start", "onStart"]);
-      events4.length = 0;
+      assert.deepEqual(events5, ["preparestart", "onPrepareStart", "start", "onStart"]);
+      events5.length = 0;
       currentKeyboardEvent = new KeyboardEvent("keydown", { key: "ArrowRight" });
       document.dispatchEvent(currentKeyboardEvent);
       await waitNextFrame();
-      assert.deepEqual(events4, ["preparemove", "onPrepareMove", "move", "onMove"]);
-      events4.length = 0;
+      assert.deepEqual(events5, ["preparemove", "onPrepareMove", "move", "onMove"]);
+      events5.length = 0;
       currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
       document.dispatchEvent(currentKeyboardEvent);
-      assert.deepEqual(events4, ["end", "onEnd"]);
-      events4.length = 0;
+      assert.deepEqual(events5, ["end", "onEnd"]);
+      events5.length = 0;
       draggable.destroy();
-      assert.deepEqual(events4, ["destroy", "onDestroy"]);
+      assert.deepEqual(events5, ["destroy", "onDestroy"]);
       keyboardSensor.destroy();
       el.remove();
     });
@@ -9840,39 +10378,39 @@ function methodCancel3() {
     it(`should emit "cancel" event with correct arguments after updating instance properties`, () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
-      let events4 = [];
-      s.on("start", (data) => void events4.push(data.type));
-      s.on("move", (data) => void events4.push(data.type));
-      s.on("end", (data) => void events4.push(data.type));
-      s.on("destroy", (data) => void events4.push(data.type));
+      let events5 = [];
+      s.on("start", (data) => void events5.push(data.type));
+      s.on("move", (data) => void events5.push(data.type));
+      s.on("end", (data) => void events5.push(data.type));
+      s.on("destroy", (data) => void events5.push(data.type));
       s.on("cancel", (data) => {
         assert.deepEqual(data, {
           type: "cancel",
           x: s.drag.x,
           y: s.drag.y
         });
-        events4.push(data.type);
+        events5.push(data.type);
       });
       focusElement(el);
       document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
       assert.notEqual(s.drag, null);
       s.cancel();
       assert.equal(s.drag, null);
-      assert.deepEqual(events4, ["start", "cancel"]);
+      assert.deepEqual(events5, ["start", "cancel"]);
       s.destroy();
       el.remove();
     });
     it(`should not do anything if drag is not active`, () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
-      let events4 = [];
-      s.on("start", (data) => void events4.push(data.type));
-      s.on("move", (data) => void events4.push(data.type));
-      s.on("end", (data) => void events4.push(data.type));
-      s.on("destroy", (data) => void events4.push(data.type));
-      s.on("cancel", (data) => void events4.push(data.type));
+      let events5 = [];
+      s.on("start", (data) => void events5.push(data.type));
+      s.on("move", (data) => void events5.push(data.type));
+      s.on("end", (data) => void events5.push(data.type));
+      s.on("destroy", (data) => void events5.push(data.type));
+      s.on("cancel", (data) => void events5.push(data.type));
       s.cancel();
-      assert.deepEqual(events4, []);
+      assert.deepEqual(events5, []);
       s.destroy();
       el.remove();
     });
@@ -9885,21 +10423,21 @@ function methodDestroy4() {
     it("should allow destroying only once", () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
-      let events4 = [];
+      let events5 = [];
       s.destroy();
-      s.on("destroy", (data) => void events4.push(data.type));
+      s.on("destroy", (data) => void events5.push(data.type));
       s.destroy();
-      assert.deepEqual(events4, []);
+      assert.deepEqual(events5, []);
       el.remove();
     });
     describe("if drag active", () => {
       it(`should set isDestroyed property to true, emit "cancel" event with the current x/y coordinates, reset drag data, emit "destroy" event and remove all listeners`, () => {
         const el = createTestElement();
         const s = new KeyboardSensor(el);
-        let events4 = [];
-        s.on("start", (data) => void events4.push(data.type));
-        s.on("move", (data) => void events4.push(data.type));
-        s.on("end", (data) => void events4.push(data.type));
+        let events5 = [];
+        s.on("start", (data) => void events5.push(data.type));
+        s.on("move", (data) => void events5.push(data.type));
+        s.on("end", (data) => void events5.push(data.type));
         s.on("cancel", (data) => {
           assert.notEqual(s.drag, null);
           assert.equal(s.isDestroyed, true);
@@ -9908,13 +10446,13 @@ function methodDestroy4() {
             x: s.drag.x,
             y: s.drag.y
           });
-          events4.push(data.type);
+          events5.push(data.type);
         });
         s.on("destroy", (data) => {
           assert.equal(s.drag, null);
           assert.equal(s.isDestroyed, true);
           assert.deepEqual(data, { type: "destroy" });
-          events4.push(data.type);
+          events5.push(data.type);
         });
         assert.equal(s["_emitter"].listenerCount(), 5);
         focusElement(el);
@@ -9923,7 +10461,7 @@ function methodDestroy4() {
         el.remove();
         assert.equal(s.drag, null);
         assert.equal(s.isDestroyed, true);
-        assert.deepEqual(events4, ["start", "cancel", "destroy"]);
+        assert.deepEqual(events5, ["start", "cancel", "destroy"]);
         assert.equal(s["_emitter"].listenerCount(), 0);
       });
     });
@@ -9931,23 +10469,23 @@ function methodDestroy4() {
       it(`should set isDestroyed property to true, emit "destroy" event and remove all listeners`, () => {
         const el = createTestElement();
         const s = new KeyboardSensor(el);
-        let events4 = [];
-        s.on("start", (data) => void events4.push(data.type));
-        s.on("move", (data) => void events4.push(data.type));
-        s.on("end", (data) => void events4.push(data.type));
-        s.on("cancel", (data) => void events4.push(data.type));
+        let events5 = [];
+        s.on("start", (data) => void events5.push(data.type));
+        s.on("move", (data) => void events5.push(data.type));
+        s.on("end", (data) => void events5.push(data.type));
+        s.on("cancel", (data) => void events5.push(data.type));
         s.on("destroy", (data) => {
           assert.equal(s.drag, null);
           assert.equal(s.isDestroyed, true);
           assert.deepEqual(data, { type: "destroy" });
-          events4.push(data.type);
+          events5.push(data.type);
         });
         assert.equal(s["_emitter"].listenerCount(), 5);
         s.destroy();
         el.remove();
         assert.equal(s.drag, null);
         assert.equal(s.isDestroyed, true);
-        assert.deepEqual(events4, ["destroy"]);
+        assert.deepEqual(events5, ["destroy"]);
         assert.equal(s["_emitter"].listenerCount(), 0);
       });
     });
@@ -10274,6 +10812,1118 @@ describe("KeyboardSensor", () => {
   properties3();
   methods4();
   events3();
+});
+
+// tests/src/dnd-context/events.ts
+function events4() {
+  describe("events", () => {
+    it("should emit start and end events during drag lifecycle", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({ left: "0px", top: "0px" });
+      const dropElement = createTestElement({ left: "200px", top: "0px" });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("start", (data) => {
+        assert.equal(data.draggable, draggable);
+        assert.isArray(data.targets);
+        assert.equal(data.targets.length, 1);
+        assert.equal(data.targets[0], droppable);
+        events5.push("start");
+      });
+      dndContext.on("end", (data) => {
+        assert.equal(data.draggable, draggable);
+        assert.isArray(data.targets);
+        assert.equal(data.targets.length, 1);
+        assert.equal(data.targets[0], droppable);
+        events5.push("end");
+      });
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.deepEqual(events5, ["start"]);
+      events5.length = 0;
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.deepEqual(events5, ["end"]);
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should emit move events during drag movement", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({ left: "0px", top: "0px" });
+      const dropElement = createTestElement({ left: "200px", top: "0px" });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("move", (data) => {
+        assert.equal(data.draggable, draggable);
+        assert.isArray(data.targets);
+        events5.push("move");
+      });
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0], "move");
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should emit enter and leave events when draggable enters/leaves droppable", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "100px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 101 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", (data) => {
+        events5.push({
+          type: "enter",
+          collisions: data.collisions.length,
+          addedCollisions: data.addedCollisions.length
+        });
+      });
+      dndContext.on("leave", (data) => {
+        events5.push({
+          type: "leave",
+          collisions: data.collisions.length,
+          removedCollisions: data.removedCollisions.length
+        });
+      });
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0].type, "enter");
+      assert.equal(events5[0].collisions, 1);
+      assert.equal(events5[0].addedCollisions, 1);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      assert.equal(events5.length, 2);
+      assert.equal(events5[1].type, "leave");
+      assert.equal(events5[1].collisions, 0);
+      assert.equal(events5[1].removedCollisions, 1);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should emit drop events when draggable is dropped on droppable", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("drop", (data) => {
+        assert.equal(data.draggable, draggable);
+        assert.equal(data.collisions.length, 1);
+        assert.equal(data.collisions[0], droppable);
+        assert.isTrue(data.collisionData.has(droppable));
+        events5.push("drop");
+      });
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0], "drop");
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should emit addDraggable and removeDraggable events", () => {
+      const events5 = [];
+      const dragElement = createTestElement();
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const dndContext = new DndContext();
+      dndContext.on("addDraggable", (data) => {
+        events5.push({ type: "addDraggable", draggable: data.draggable });
+      });
+      dndContext.on("removeDraggable", (data) => {
+        events5.push({ type: "removeDraggable", draggable: data.draggable });
+      });
+      dndContext.addDraggable(draggable);
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0].type, "addDraggable");
+      assert.equal(events5[0].draggable, draggable);
+      dndContext.removeDraggable(draggable);
+      assert.equal(events5.length, 2);
+      assert.equal(events5[1].type, "removeDraggable");
+      assert.equal(events5[1].draggable, draggable);
+      dndContext.destroy();
+      draggable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+    });
+    it("should emit addDroppable and removeDroppable events", () => {
+      const events5 = [];
+      const dropElement = createTestElement();
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("addDroppable", (data) => {
+        events5.push({ type: "addDroppable", droppable: data.droppable });
+      });
+      dndContext.on("removeDroppable", (data) => {
+        events5.push({ type: "removeDroppable", droppable: data.droppable });
+      });
+      dndContext.addDroppable(droppable);
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0].type, "addDroppable");
+      assert.equal(events5[0].droppable, droppable);
+      dndContext.removeDroppable(droppable);
+      assert.equal(events5.length, 2);
+      assert.equal(events5[1].type, "removeDroppable");
+      assert.equal(events5[1].droppable, droppable);
+      dndContext.destroy();
+      droppable.destroy();
+      dropElement.remove();
+    });
+    it("should emit cancel events when drag is cancelled", async () => {
+      const events5 = [];
+      const dragElement = createTestElement();
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const dndContext = new DndContext();
+      dndContext.on("cancel", (data) => {
+        assert.equal(data.draggable, draggable);
+        events5.push("cancel");
+      });
+      dndContext.addDraggable(draggable);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0], "cancel");
+      dndContext.destroy();
+      draggable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+    });
+    it("should emit destroy event when context is destroyed", () => {
+      const events5 = [];
+      const dndContext = new DndContext();
+      dndContext.on("destroy", () => {
+        events5.push("destroy");
+      });
+      dndContext.destroy();
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0], "destroy");
+    });
+  });
+}
+
+// tests/src/dnd-context/collision-detection.ts
+function collisionDetection() {
+  describe("collision detection", () => {
+    it("should detect collisions when draggable overlaps droppable", async () => {
+      const collisionEvents = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "25px",
+        top: "25px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", (data) => {
+        collisionEvents.push({
+          type: "enter",
+          collisions: data.collisions,
+          collisionData: data.collisionData
+        });
+      });
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.equal(collisionEvents.length, 1);
+      assert.equal(collisionEvents[0].type, "enter");
+      assert.equal(collisionEvents[0].collisions.length, 1);
+      assert.equal(collisionEvents[0].collisions[0], droppable);
+      assert.isTrue(collisionEvents[0].collisionData.has(droppable));
+      const collisionData = collisionEvents[0].collisionData.get(droppable);
+      assert.isDefined(collisionData);
+      assert.equal(collisionData.id, droppable.id);
+      assert.isNumber(collisionData.score);
+      assert.isTrue(collisionData.score > 0);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should not detect collisions when draggable does not overlap droppable", async () => {
+      const collisionEvents = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "100px",
+        top: "100px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", (data) => {
+        collisionEvents.push({
+          type: "enter",
+          collisions: data.collisions
+        });
+      });
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.equal(collisionEvents.length, 0);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should update collisions when draggable moves", async () => {
+      const collisionEvents = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "60px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 70 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", (data) => {
+        collisionEvents.push({ type: "enter", collisions: data.collisions.length });
+      });
+      dndContext.on("leave", (data) => {
+        collisionEvents.push({ type: "leave", collisions: data.collisions.length });
+      });
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      assert.equal(collisionEvents.length, 2);
+      assert.equal(collisionEvents[0].type, "enter");
+      assert.equal(collisionEvents[0].collisions, 1);
+      assert.equal(collisionEvents[1].type, "leave");
+      assert.equal(collisionEvents[1].collisions, 0);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should handle multiple droppables correctly", async () => {
+      const collisionEvents = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement1 = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement2 = createTestElement({
+        left: "60px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 60 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable1 = new Droppable(dropElement1, {
+        accept: ["test"]
+      });
+      const droppable2 = new Droppable(dropElement2, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", (data) => {
+        collisionEvents.push({
+          type: "enter",
+          collisions: data.collisions.map((d) => d.id),
+          addedCollisions: data.addedCollisions.map((d) => d.id)
+        });
+      });
+      dndContext.on("leave", (data) => {
+        collisionEvents.push({
+          type: "leave",
+          collisions: data.collisions.map((d) => d.id),
+          removedCollisions: data.removedCollisions.map((d) => d.id)
+        });
+      });
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable1);
+      dndContext.addDroppable(droppable2);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.equal(collisionEvents.length, 1);
+      assert.equal(collisionEvents[0].type, "enter");
+      assert.equal(collisionEvents[0].collisions.length, 1);
+      assert.include(collisionEvents[0].collisions, droppable1.id);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      assert.isTrue(collisionEvents.length >= 2);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable1.destroy();
+      droppable2.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement1.remove();
+      dropElement2.remove();
+    });
+    it("should respect droppable accept criteria", async () => {
+      const collisionEvents = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["other-group"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", () => {
+        collisionEvents.push({ type: "enter" });
+      });
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.equal(collisionEvents.length, 0);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should work with custom collision detector", async () => {
+      const customCollisionEvents = [];
+      let customDetectorCalled = false;
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      class CustomCollisionDetector extends CollisionDetector {
+        detectCollisions(draggable2, targets) {
+          customDetectorCalled = true;
+          return super.detectCollisions(draggable2, targets);
+        }
+      }
+      dndContext._collisionDetector = new CustomCollisionDetector(dndContext);
+      dndContext.on("enter", () => {
+        customCollisionEvents.push({ type: "enter" });
+      });
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.isTrue(customDetectorCalled);
+      assert.equal(customCollisionEvents.length, 1);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should update droppable client rects on scroll", async () => {
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable);
+      const initialRect = droppable.getClientRect();
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      window.dispatchEvent(new Event("scroll"));
+      await waitNextFrame();
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      const updatedRect = droppable.getClientRect();
+      assert.isObject(updatedRect);
+      assert.equal(updatedRect.x, initialRect.x);
+      assert.equal(updatedRect.y, initialRect.y);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should handle collision data correctly", async () => {
+      let collisionData = null;
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", (data) => {
+        collisionData = data.collisionData.get(droppable);
+      });
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      assert.isObject(collisionData);
+      assert.equal(collisionData.id, droppable.id);
+      assert.isNumber(collisionData.x);
+      assert.isNumber(collisionData.y);
+      assert.isNumber(collisionData.width);
+      assert.isNumber(collisionData.height);
+      assert.isNumber(collisionData.score);
+      assert.isTrue(collisionData.score > 0);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+  });
+}
+
+// tests/src/dnd-context/droppables.ts
+function droppables() {
+  describe("droppables", () => {
+    it("should accept draggables based on group string array", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "60px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 70 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "valid-group"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["valid-group", "another-group"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", (data) => {
+        events5.push({ type: "enter", targets: data.targets.length });
+      });
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      await waitNextFrame();
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0].type, "enter");
+      assert.equal(events5[0].targets, 1);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should reject draggables not in accept group array", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "25px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "invalid-group"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["valid-group", "another-group"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", () => {
+        events5.push({ type: "enter" });
+      });
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.equal(events5.length, 0);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should accept draggables based on function predicate", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "60px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 70 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test-group"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: (draggable2) => {
+          return draggable2.settings.group === "test-group";
+        }
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", (data) => {
+        events5.push({ type: "enter", targets: data.targets.length });
+      });
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      await waitNextFrame();
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0].type, "enter");
+      assert.equal(events5[0].targets, 1);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should reject draggables when function predicate returns false", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "25px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test-group"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: (draggable2) => {
+          return draggable2.settings.group === "different-group";
+        }
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", () => {
+        events5.push({ type: "enter" });
+      });
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.equal(events5.length, 0);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should not accept draggable when its element matches droppable element", async () => {
+      const events5 = [];
+      const element = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(element, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [element],
+        group: "test"
+      });
+      const droppable = new Droppable(element, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", () => {
+        events5.push({ type: "enter" });
+      });
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable);
+      focusElement(element);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.equal(events5.length, 0);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      element.remove();
+    });
+    it("should handle droppable parent-child relationships", () => {
+      const parentElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "100px",
+        height: "100px"
+      });
+      const childElement = createTestElement({
+        left: "10px",
+        top: "10px",
+        width: "50px",
+        height: "50px"
+      });
+      const parentDroppable = new Droppable(parentElement, {
+        accept: ["test"]
+      });
+      const childDroppable = new Droppable(childElement, {
+        accept: ["test"],
+        parent: parentDroppable
+      });
+      const dndContext = new DndContext();
+      dndContext.addDroppable(parentDroppable);
+      dndContext.addDroppable(childDroppable);
+      assert.equal(childDroppable.parent, parentDroppable);
+      assert.isTrue(parentDroppable.children.has(childDroppable));
+      dndContext.destroy();
+      parentDroppable.destroy();
+      childDroppable.destroy();
+      parentElement.remove();
+      childElement.remove();
+    });
+    it("should handle droppable data correctly", () => {
+      const element = createTestElement();
+      const droppable = new Droppable(element, {
+        accept: ["test"],
+        data: { custom: "value", id: 123 }
+      });
+      const dndContext = new DndContext();
+      dndContext.addDroppable(droppable);
+      assert.deepEqual(droppable.data, { custom: "value", id: 123 });
+      droppable.data.newProp = "added";
+      assert.equal(droppable.data.newProp, "added");
+      dndContext.destroy();
+      droppable.destroy();
+      element.remove();
+    });
+    it("should update client rect correctly", () => {
+      const element = createTestElement({
+        left: "50px",
+        top: "75px",
+        width: "100px",
+        height: "150px"
+      });
+      const droppable = new Droppable(element, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.addDroppable(droppable);
+      const rect = droppable.getClientRect();
+      assert.equal(rect.x, 50);
+      assert.equal(rect.y, 75);
+      assert.equal(rect.width, 100);
+      assert.equal(rect.height, 150);
+      element.style.left = "100px";
+      element.style.top = "200px";
+      droppable.updateClientRect();
+      const updatedRect = droppable.getClientRect();
+      assert.equal(updatedRect.x, 100);
+      assert.equal(updatedRect.y, 200);
+      assert.equal(updatedRect.width, 100);
+      assert.equal(updatedRect.height, 150);
+      dndContext.destroy();
+      droppable.destroy();
+      element.remove();
+    });
+    it("should handle droppable removal during drag", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "60px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 70 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", (data) => {
+        events5.push({ type: "enter", collisions: data.collisions.length });
+      });
+      dndContext.on("leave", (data) => {
+        events5.push({
+          type: "leave",
+          collisions: data.collisions.length,
+          removedCollisions: data.removedCollisions.length
+        });
+      });
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      await waitNextFrame();
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0].type, "enter");
+      assert.equal(events5[0].collisions, 1);
+      dndContext.removeDroppable(droppable);
+      assert.equal(events5.length, 2);
+      assert.equal(events5[1].type, "leave");
+      assert.equal(events5[1].collisions, 0);
+      assert.equal(events5[1].removedCollisions, 1);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should handle droppable destruction properly", () => {
+      const destroyEvents = [];
+      const element = createTestElement();
+      const droppable = new Droppable(element, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("removeDroppable", (data) => {
+        destroyEvents.push({ type: "removeDroppable", droppable: data.droppable });
+      });
+      dndContext.addDroppable(droppable);
+      droppable.destroy();
+      assert.equal(destroyEvents.length, 1);
+      assert.equal(destroyEvents[0].type, "removeDroppable");
+      assert.equal(destroyEvents[0].droppable, droppable);
+      assert.isFalse(dndContext.droppables.has(droppable.id));
+      dndContext.destroy();
+      element.remove();
+    });
+    it("should handle over events for persistent collisions", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "60px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", () => {
+        events5.push({ type: "enter" });
+      });
+      dndContext.on("over", (data) => {
+        events5.push({
+          type: "over",
+          persistedCollisions: data.persistedCollisions.length
+        });
+      });
+      dndContext.addDraggable(draggable);
+      dndContext.addDroppable(droppable);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      for (let i = 0; i < 7; i++) {
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+        await waitNextFrame();
+      }
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      await waitNextFrame();
+      assert.isTrue(events5.length >= 2);
+      assert.equal(events5[0].type, "enter");
+      for (let i = 1; i < events5.length; i++) {
+        assert.equal(events5[i].type, "over");
+        assert.equal(events5[i].persistedCollisions, 1);
+      }
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+  });
+}
+
+// tests/src/dnd-context/index.ts
+describe("DndContext", () => {
+  events4();
+  collisionDetection();
+  droppables();
 });
 /*! Bundled license information:
 

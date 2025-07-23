@@ -126,6 +126,52 @@ Also note that the `phase` argument is provided to the function to help you dete
 - `end`: Called when the drag ends.
 - `end-align`: Called after the `end` phase if the element was moved back to the original container from the drag container AND the element's position needs to be realigned to match the current client position.
 
+### computeClientRect
+
+```ts
+type computeClientRect = (data: {
+  draggable: Draggable;
+  drag: DraggableDrag;
+}) => Readonly<Rect> | null;
+```
+
+A function that should return the current bounding client rectangle of the draggable during drag operations. This rectangle is used for collision detection, auto-scrolling, and other features that need to know the draggable's current bounds.
+
+The returned rectangle should have the following properties:
+
+- `x`: The x-coordinate of the rectangle's left edge
+- `y`: The y-coordinate of the rectangle's top edge
+- `width`: The width of the rectangle
+- `height`: The height of the rectangle
+
+**When to customize:** You might want to customize this function when:
+
+- You're dragging multiple elements and want to use a specific element's bounds
+- You want to use a custom bounding area (e.g., smaller or larger than the actual element)
+- You're implementing custom collision detection logic
+- You need to account for transforms or scaling that affect the visual bounds
+
+**Example:**
+
+```ts
+const draggable = new Draggable([pointerSensor], {
+  elements: () => [element1, element2, element3],
+  // Use the bounds of the second element instead of the first
+  computeClientRect: ({ drag }) => {
+    const secondItem = drag.items[1];
+    return secondItem?.clientRect || null;
+  },
+});
+
+// The draggable's client rect can be accessed anytime during drag
+draggable.on('move', () => {
+  const rect = draggable.getClientRect();
+  console.log('Current draggable bounds:', rect);
+});
+```
+
+**Default behavior:** By default, this returns the [`clientRect`](/docs/draggable-drag-item#clientrect) of the first drag item, or `null` if no items exist.
+
 ### positionModifiers
 
 ```ts
@@ -325,6 +371,27 @@ draggable.align(true);
 ```
 
 Recomputes the positions of all dragged elements if they have drifted due to e.g. scrolling. This should be called if a dragged element's position goes out of sync inadvertently. Draggable is smart enough to call this automatically when scrolling occurs during dragging, but if you need to realign the elements manually you can call this method.
+
+### getClientRect
+
+```ts
+// Type
+type getClientRect = () => Readonly<Rect> | null;
+
+// Usage
+const rect = draggable.getClientRect();
+if (rect) {
+  console.log(`Draggable is at ${rect.x}, ${rect.y} with size ${rect.width}x${rect.height}`);
+}
+```
+
+Returns the current bounding client rectangle of the draggable during drag operations, or `null` if no drag is active. This method uses the [`computeClientRect`](#computeclientrect) setting to determine the rectangle.
+
+This method is commonly used by:
+
+- Collision detection systems
+- Auto-scroll plugins
+- Custom drag logic that needs to know the draggable's current bounds
 
 ### updateSettings
 

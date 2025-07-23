@@ -1,18 +1,6 @@
 body {
   width: 100%;
   height: 100%;
-  position: relative;
-}
-
-.scroller {
-  position: absolute;
-  inset: 0;
-  overflow: scroll;
-}
-
-.scroller-content {
-  width: 100%;
-  height: 200%;
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
