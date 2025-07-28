@@ -1666,7 +1666,8 @@ function $c87c13e795b928df$export$5e2c7a53f84076f2(m) {
 }
 
 
-const $1271bf80faee7ee7$var$MATRIX = new DOMMatrix();
+
+const $1271bf80faee7ee7$var$MATRIX = (0, $b85aa28c289cb8ee$export$e44ffb50cc242ec5) ? new DOMMatrix() : null;
 function $1271bf80faee7ee7$export$10e4b24b91657790(el, result = new DOMMatrix()) {
     let currentElement = el;
     // Reset the result matrix to identity.
@@ -1725,7 +1726,8 @@ function $ba8ad8073c33464d$export$8317bebcfd6ca26c(m) {
 
 
 
-const $93e17dd02dc97955$var$MEASURE_ELEMENT = (0, $3625b5560175528a$export$8de5e08b53f62319)();
+
+const $93e17dd02dc97955$var$MEASURE_ELEMENT = (0, $b85aa28c289cb8ee$export$e44ffb50cc242ec5) ? (0, $3625b5560175528a$export$8de5e08b53f62319)() : null;
 class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
     constructor(element, draggable){
         // Make sure the element is in DOM.
@@ -1944,6 +1946,7 @@ function $afa85d7904abb0f0$export$da3f9f1be978dbbc(m1, m2) {
 
 
 
+
 let $0d0c72b4b6dc9dbb$var$_id = 0;
 const $0d0c72b4b6dc9dbb$var$SCROLL_LISTENER_OPTIONS = {
     capture: true,
@@ -1953,8 +1956,8 @@ const $0d0c72b4b6dc9dbb$var$POSITION_CHANGE = {
     x: 0,
     y: 0
 };
-const $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX = new DOMMatrix();
-const $0d0c72b4b6dc9dbb$var$TEMP_MATRIX = new DOMMatrix();
+const $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX = (0, $b85aa28c289cb8ee$export$e44ffb50cc242ec5) ? new DOMMatrix() : null;
+const $0d0c72b4b6dc9dbb$var$TEMP_MATRIX = (0, $b85aa28c289cb8ee$export$e44ffb50cc242ec5) ? new DOMMatrix() : null;
 var $0d0c72b4b6dc9dbb$var$DragStartPhase = /*#__PURE__*/ function(DragStartPhase) {
     DragStartPhase[DragStartPhase["None"] = 0] = "None";
     DragStartPhase[DragStartPhase["Init"] = 1] = "Init";
@@ -4316,81 +4319,41 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
-// Initialize context and get elements
-const $f3affae21016fe5a$var$dndContext = new (0, $fa11c4bc76a2544e$export$2d5c5ceac203fc1e)();
-const $f3affae21016fe5a$var$draggableElements = [
-    ...document.querySelectorAll('.draggable')
-];
-const $f3affae21016fe5a$var$droppableElements = [
-    ...document.querySelectorAll('.droppable')
-];
-// Create droppables
-$f3affae21016fe5a$var$droppableElements.forEach((element)=>{
-    const droppable = new (0, $8cf3b9f73d8dfc46$export$423ec2075359570a)(element);
-    droppable.data.overIds = new Set();
-    droppable.data.droppedIds = new Set();
-    $f3affae21016fe5a$var$dndContext.addDroppable(droppable);
+const $6abf5f75f0c818c7$var$element = document.querySelector('.draggable');
+const $6abf5f75f0c818c7$var$dragContainer = document.querySelector('.drag-container');
+const $6abf5f75f0c818c7$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($6abf5f75f0c818c7$var$element);
+const $6abf5f75f0c818c7$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($6abf5f75f0c818c7$var$element, {
+    computeSpeed: ()=>100
 });
-// Create draggables
-$f3affae21016fe5a$var$draggableElements.forEach((element)=>{
-    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-        new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element),
-        new (0, $7fff4587bd07df96$export$436f6efcc297171)(element)
-    ], {
-        elements: ()=>[
-                element
-            ],
-        startPredicate: ()=>!element.classList.contains('dragging'),
-        onStart: (drag)=>drag.items[0].element.classList.add('dragging'),
-        onEnd: (drag)=>drag.items[0].element.classList.remove('dragging')
-    });
-    $f3affae21016fe5a$var$dndContext.addDraggable(draggable);
-});
-// DnD logic
-{
-    const onStart = (data)=>{
-        const { draggable: draggable, targets: targets } = data;
-        targets.forEach((target)=>{
-            target.data.droppedIds.delete(draggable.id);
-            if (target.data.droppedIds.size === 0) target.element.classList.remove('draggable-dropped');
-        });
-    };
-    const onEnterAndOver = (data)=>{
-        const { draggable: draggable, collisions: collisions } = data;
-        const clonedCollisions = [
-            ...collisions
-        ];
-        // Add the draggable to the first collision.
-        const target = clonedCollisions.shift();
-        target.data.overIds.add(draggable.id);
-        target.element.classList.add('draggable-over');
-        // Remove the draggable from the other collisions.
-        clonedCollisions.forEach((collision)=>{
-            collision.data.overIds.delete(draggable.id);
-            if (collision.data.overIds.size === 0) collision.element.classList.remove('draggable-over');
-        });
-    };
-    const onLeave = (data)=>{
-        const { draggable: draggable, removedCollisions: removedCollisions } = data;
-        removedCollisions.forEach((target)=>{
-            target.data.overIds.delete(draggable.id);
-            if (target.data.overIds.size === 0) target.element.classList.remove('draggable-over');
-        });
-    };
-    const onDrop = (data)=>{
-        const { draggable: draggable, collisions: collisions } = data;
-        const target = collisions[0];
-        // Update dropped ids
-        target.data.droppedIds.add(draggable.id);
-        target.element.classList.add('draggable-dropped');
-        // Update over ids
-        target.data.overIds.delete(draggable.id);
-        if (target.data.overIds.size === 0) target.element.classList.remove('draggable-over');
-    };
-    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Start, onStart);
-    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Enter, onEnterAndOver);
-    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Over, onEnterAndOver);
-    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Leave, onLeave);
-    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Drop, onDrop);
-}
+const $6abf5f75f0c818c7$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $6abf5f75f0c818c7$var$pointerSensor,
+    $6abf5f75f0c818c7$var$keyboardSensor
+], {
+    container: $6abf5f75f0c818c7$var$dragContainer,
+    elements: ()=>[
+            $6abf5f75f0c818c7$var$element
+        ],
+    frozenStyles: ()=>[
+            'left',
+            'top'
+        ],
+    onStart: ()=>{
+        $6abf5f75f0c818c7$var$element.classList.add('dragging');
+    },
+    onEnd: ()=>{
+        $6abf5f75f0c818c7$var$element.classList.remove('dragging');
+    }
+}).use((0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
+    targets: [
+        {
+            element: window,
+            axis: 'y',
+            padding: {
+                top: Infinity,
+                bottom: Infinity
+            }
+        }
+    ]
+}));
+
 

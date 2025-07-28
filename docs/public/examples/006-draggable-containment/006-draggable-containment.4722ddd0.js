@@ -1666,7 +1666,8 @@ function $c87c13e795b928df$export$5e2c7a53f84076f2(m) {
 }
 
 
-const $1271bf80faee7ee7$var$MATRIX = new DOMMatrix();
+
+const $1271bf80faee7ee7$var$MATRIX = (0, $b85aa28c289cb8ee$export$e44ffb50cc242ec5) ? new DOMMatrix() : null;
 function $1271bf80faee7ee7$export$10e4b24b91657790(el, result = new DOMMatrix()) {
     let currentElement = el;
     // Reset the result matrix to identity.
@@ -1725,7 +1726,8 @@ function $ba8ad8073c33464d$export$8317bebcfd6ca26c(m) {
 
 
 
-const $93e17dd02dc97955$var$MEASURE_ELEMENT = (0, $3625b5560175528a$export$8de5e08b53f62319)();
+
+const $93e17dd02dc97955$var$MEASURE_ELEMENT = (0, $b85aa28c289cb8ee$export$e44ffb50cc242ec5) ? (0, $3625b5560175528a$export$8de5e08b53f62319)() : null;
 class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
     constructor(element, draggable){
         // Make sure the element is in DOM.
@@ -1944,6 +1946,7 @@ function $afa85d7904abb0f0$export$da3f9f1be978dbbc(m1, m2) {
 
 
 
+
 let $0d0c72b4b6dc9dbb$var$_id = 0;
 const $0d0c72b4b6dc9dbb$var$SCROLL_LISTENER_OPTIONS = {
     capture: true,
@@ -1953,8 +1956,8 @@ const $0d0c72b4b6dc9dbb$var$POSITION_CHANGE = {
     x: 0,
     y: 0
 };
-const $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX = new DOMMatrix();
-const $0d0c72b4b6dc9dbb$var$TEMP_MATRIX = new DOMMatrix();
+const $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX = (0, $b85aa28c289cb8ee$export$e44ffb50cc242ec5) ? new DOMMatrix() : null;
+const $0d0c72b4b6dc9dbb$var$TEMP_MATRIX = (0, $b85aa28c289cb8ee$export$e44ffb50cc242ec5) ? new DOMMatrix() : null;
 var $0d0c72b4b6dc9dbb$var$DragStartPhase = /*#__PURE__*/ function(DragStartPhase) {
     DragStartPhase[DragStartPhase["None"] = 0] = "None";
     DragStartPhase[DragStartPhase["Init"] = 1] = "Init";
@@ -4316,31 +4319,31 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
-const $9ce708fa4d5ed47d$var$GRID_WIDTH = 40;
-const $9ce708fa4d5ed47d$var$GRID_HEIGHT = 40;
-const $9ce708fa4d5ed47d$var$element = document.querySelector('.draggable');
-const $9ce708fa4d5ed47d$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($9ce708fa4d5ed47d$var$element);
-const $9ce708fa4d5ed47d$var$keyboardSensor = new (0, $2a9b1c646b3552c1$export$44d67f2a438aeba9)($9ce708fa4d5ed47d$var$element, {
-    moveDistance: {
-        x: $9ce708fa4d5ed47d$var$GRID_WIDTH,
-        y: $9ce708fa4d5ed47d$var$GRID_HEIGHT
-    }
-});
-const $9ce708fa4d5ed47d$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $9ce708fa4d5ed47d$var$pointerSensor,
-    $9ce708fa4d5ed47d$var$keyboardSensor
+const $f770251f4470ce8a$var$element = document.querySelector('.draggable');
+const $f770251f4470ce8a$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($f770251f4470ce8a$var$element);
+const $f770251f4470ce8a$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($f770251f4470ce8a$var$element);
+const $f770251f4470ce8a$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $f770251f4470ce8a$var$pointerSensor,
+    $f770251f4470ce8a$var$keyboardSensor
 ], {
     elements: ()=>[
-            $9ce708fa4d5ed47d$var$element
+            $f770251f4470ce8a$var$element
         ],
     positionModifiers: [
-        (0, $0b5391881dc2b3a6$export$7f11ea1f0ba255b5)($9ce708fa4d5ed47d$var$GRID_WIDTH, $9ce708fa4d5ed47d$var$GRID_HEIGHT)
+        (0, $e4a9d189cff00937$export$b43dd221600cdb2e)(()=>{
+            return {
+                x: 0,
+                y: 0,
+                width: window.innerWidth,
+                height: window.innerHeight
+            };
+        })
     ],
     onStart: ()=>{
-        $9ce708fa4d5ed47d$var$element.classList.add('dragging');
+        $f770251f4470ce8a$var$element.classList.add('dragging');
     },
     onEnd: ()=>{
-        $9ce708fa4d5ed47d$var$element.classList.remove('dragging');
+        $f770251f4470ce8a$var$element.classList.remove('dragging');
     }
 });
 

@@ -22,15 +22,17 @@ import { areMatricesEqual } from '../utils/are-matrices-equal.js';
 
 import { isMatrixWarped } from '../utils/is-matrix-warped.js';
 
+import { IS_BROWSER } from '../constants.js';
+
 let _id = 0;
 
 const SCROLL_LISTENER_OPTIONS = { capture: true, passive: true };
 
 const POSITION_CHANGE = { x: 0, y: 0 };
 
-const ELEMENT_MATRIX = new DOMMatrix();
+const ELEMENT_MATRIX = IS_BROWSER ? new DOMMatrix() : null;
 
-const TEMP_MATRIX = new DOMMatrix();
+const TEMP_MATRIX = IS_BROWSER ? new DOMMatrix() : null;
 
 enum DragStartPhase {
   None = 0,
@@ -169,14 +171,14 @@ export const DraggableDefaultSettings: DraggableSettings<any, any> = {
     const tY = position.y + alignmentOffset.y + containerOffset.y;
 
     // Reset the matrix to identity.
-    resetMatrix(ELEMENT_MATRIX);
+    resetMatrix(ELEMENT_MATRIX!);
 
     // First of all negate the element's transform origin.
     if (needsOriginOffset) {
       if (oZ === 0) {
-        ELEMENT_MATRIX.translateSelf(-oX, -oY);
+        ELEMENT_MATRIX!.translateSelf(-oX, -oY);
       } else {
-        ELEMENT_MATRIX.translateSelf(-oX, -oY, -oZ);
+        ELEMENT_MATRIX!.translateSelf(-oX, -oY, -oZ);
       }
     }
 
@@ -187,34 +189,34 @@ export const DraggableDefaultSettings: DraggableSettings<any, any> = {
     // appended to the drag container (if defined).
     if (isEndPhase) {
       if (!inverseContainerMatrix.isIdentity) {
-        ELEMENT_MATRIX.multiplySelf(inverseContainerMatrix);
+        ELEMENT_MATRIX!.multiplySelf(inverseContainerMatrix);
       }
     } else {
       if (!inverseDragContainerMatrix.isIdentity) {
-        ELEMENT_MATRIX.multiplySelf(inverseDragContainerMatrix);
+        ELEMENT_MATRIX!.multiplySelf(inverseDragContainerMatrix);
       }
     }
 
     // Apply the translation (in world space coordinates).
-    resetMatrix(TEMP_MATRIX).translateSelf(tX, tY);
-    ELEMENT_MATRIX.multiplySelf(TEMP_MATRIX);
+    resetMatrix(TEMP_MATRIX!).translateSelf(tX, tY);
+    ELEMENT_MATRIX!.multiplySelf(TEMP_MATRIX!);
 
     // Apply the element's original container's world matrix so we can apply
     // the element's original transform as if it was in the original
     // container's local space coordinates.
     if (!containerMatrix.isIdentity) {
-      ELEMENT_MATRIX.multiplySelf(containerMatrix);
+      ELEMENT_MATRIX!.multiplySelf(containerMatrix);
     }
 
     // Undo the transform origin negation.
     if (needsOriginOffset) {
-      resetMatrix(TEMP_MATRIX).translateSelf(oX, oY, oZ);
-      ELEMENT_MATRIX.multiplySelf(TEMP_MATRIX);
+      resetMatrix(TEMP_MATRIX!).translateSelf(oX, oY, oZ);
+      ELEMENT_MATRIX!.multiplySelf(TEMP_MATRIX!);
     }
 
     // Apply the element's original transform.
     if (!elementTransformMatrix.isIdentity) {
-      ELEMENT_MATRIX.multiplySelf(elementTransformMatrix);
+      ELEMENT_MATRIX!.multiplySelf(elementTransformMatrix);
     }
 
     // Apply the element's offset matrix. The offset matrix is in practice the
@@ -223,11 +225,11 @@ export const DraggableDefaultSettings: DraggableSettings<any, any> = {
     // before the element's transform matrix, so we need to premultiply the
     // final matrix with the offset matrix.
     if (!elementOffsetMatrix.isIdentity) {
-      ELEMENT_MATRIX.preMultiplySelf(elementOffsetMatrix);
+      ELEMENT_MATRIX!.preMultiplySelf(elementOffsetMatrix);
     }
 
     // Apply the matrix to the element.
-    item.element.style.transform = `${ELEMENT_MATRIX}`;
+    item.element.style.transform = `${ELEMENT_MATRIX!}`;
   },
   computeClientRect: ({ drag }) => {
     return drag.items[0].clientRect || null;

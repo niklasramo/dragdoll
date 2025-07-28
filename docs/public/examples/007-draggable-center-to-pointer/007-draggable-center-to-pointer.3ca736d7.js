@@ -1666,7 +1666,8 @@ function $c87c13e795b928df$export$5e2c7a53f84076f2(m) {
 }
 
 
-const $1271bf80faee7ee7$var$MATRIX = new DOMMatrix();
+
+const $1271bf80faee7ee7$var$MATRIX = (0, $b85aa28c289cb8ee$export$e44ffb50cc242ec5) ? new DOMMatrix() : null;
 function $1271bf80faee7ee7$export$10e4b24b91657790(el, result = new DOMMatrix()) {
     let currentElement = el;
     // Reset the result matrix to identity.
@@ -1725,7 +1726,8 @@ function $ba8ad8073c33464d$export$8317bebcfd6ca26c(m) {
 
 
 
-const $93e17dd02dc97955$var$MEASURE_ELEMENT = (0, $3625b5560175528a$export$8de5e08b53f62319)();
+
+const $93e17dd02dc97955$var$MEASURE_ELEMENT = (0, $b85aa28c289cb8ee$export$e44ffb50cc242ec5) ? (0, $3625b5560175528a$export$8de5e08b53f62319)() : null;
 class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
     constructor(element, draggable){
         // Make sure the element is in DOM.
@@ -1944,6 +1946,7 @@ function $afa85d7904abb0f0$export$da3f9f1be978dbbc(m1, m2) {
 
 
 
+
 let $0d0c72b4b6dc9dbb$var$_id = 0;
 const $0d0c72b4b6dc9dbb$var$SCROLL_LISTENER_OPTIONS = {
     capture: true,
@@ -1953,8 +1956,8 @@ const $0d0c72b4b6dc9dbb$var$POSITION_CHANGE = {
     x: 0,
     y: 0
 };
-const $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX = new DOMMatrix();
-const $0d0c72b4b6dc9dbb$var$TEMP_MATRIX = new DOMMatrix();
+const $0d0c72b4b6dc9dbb$var$ELEMENT_MATRIX = (0, $b85aa28c289cb8ee$export$e44ffb50cc242ec5) ? new DOMMatrix() : null;
+const $0d0c72b4b6dc9dbb$var$TEMP_MATRIX = (0, $b85aa28c289cb8ee$export$e44ffb50cc242ec5) ? new DOMMatrix() : null;
 var $0d0c72b4b6dc9dbb$var$DragStartPhase = /*#__PURE__*/ function(DragStartPhase) {
     DragStartPhase[DragStartPhase["None"] = 0] = "None";
     DragStartPhase[DragStartPhase["Init"] = 1] = "Init";
@@ -4316,28 +4319,40 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
-let $1721b684b57c24ff$var$zIndex = 0;
-const $1721b684b57c24ff$var$draggableElements = [
-    ...document.querySelectorAll('.draggable')
-];
-$1721b684b57c24ff$var$draggableElements.forEach((element)=>{
-    const pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element);
-    const keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)(element);
-    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-        pointerSensor,
-        keyboardSensor
-    ], {
-        elements: ()=>[
-                element
-            ],
-        onStart: ()=>{
-            element.classList.add('dragging');
-            element.style.zIndex = `${++$1721b684b57c24ff$var$zIndex}`;
-        },
-        onEnd: ()=>{
-            element.classList.remove('dragging');
+const $36439aed3cd46e36$var$element = document.querySelector('.draggable');
+const $36439aed3cd46e36$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($36439aed3cd46e36$var$element);
+const $36439aed3cd46e36$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($36439aed3cd46e36$var$element);
+const $36439aed3cd46e36$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $36439aed3cd46e36$var$pointerSensor,
+    $36439aed3cd46e36$var$keyboardSensor
+], {
+    elements: ()=>[
+            $36439aed3cd46e36$var$element
+        ],
+    positionModifiers: [
+        (change, { drag: drag, item: item, phase: phase })=>{
+            // Align the dragged element so that the pointer
+            // is in the center of the element.
+            if (// Only apply the alignment on the start phase.
+            phase === 'start' && // Only apply the alignment for the pointer sensor.
+            drag.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638) && // Only apply the alignment for the primary drag element.
+            drag.items[0].element === item.element) {
+                const { clientRect: clientRect } = item;
+                const { x: x, y: y } = drag.startEvent;
+                const targetX = clientRect.x + clientRect.width / 2;
+                const targetY = clientRect.y + clientRect.height / 2;
+                change.x = x - targetX;
+                change.y = y - targetY;
+            }
+            return change;
         }
-    });
+    ],
+    onStart: ()=>{
+        $36439aed3cd46e36$var$element.classList.add('dragging');
+    },
+    onEnd: ()=>{
+        $36439aed3cd46e36$var$element.classList.remove('dragging');
+    }
 });
 
 

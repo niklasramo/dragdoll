@@ -4790,7 +4790,7 @@ function resetMatrix(m) {
 }
 
 // src/utils/get-world-transform-matrix.ts
-var MATRIX = new DOMMatrix();
+var MATRIX = IS_BROWSER ? new DOMMatrix() : null;
 function getWorldTransformMatrix(el, result = new DOMMatrix()) {
   let currentElement = el;
   resetMatrix(result);
@@ -4857,7 +4857,7 @@ function isMatrixWarped(m) {
 }
 
 // src/draggable/draggable-drag-item.ts
-var MEASURE_ELEMENT = createMeasureElement();
+var MEASURE_ELEMENT = IS_BROWSER ? createMeasureElement() : null;
 var DraggableDragItem = class {
   constructor(element, draggable) {
     if (!element.isConnected) {
@@ -5041,8 +5041,8 @@ function areMatricesEqual(m1, m2) {
 var _id = 0;
 var SCROLL_LISTENER_OPTIONS = { capture: true, passive: true };
 var POSITION_CHANGE = { x: 0, y: 0 };
-var ELEMENT_MATRIX = new DOMMatrix();
-var TEMP_MATRIX = new DOMMatrix();
+var ELEMENT_MATRIX = IS_BROWSER ? new DOMMatrix() : null;
+var TEMP_MATRIX = IS_BROWSER ? new DOMMatrix() : null;
 var DraggableModifierPhase = {
   Start: "start",
   Move: "move",

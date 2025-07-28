@@ -24,7 +24,9 @@ import { parseTransformOrigin } from '../utils/parse-transform-origin.js';
 
 import { getElementTransformString } from '../utils/get-element-transform-string.js';
 
-const MEASURE_ELEMENT = createMeasureElement();
+import { IS_BROWSER } from '../constants.js';
+
+const MEASURE_ELEMENT = IS_BROWSER ? createMeasureElement() : null;
 
 export class DraggableDragItem<
   S extends Sensor[] = Sensor[],
@@ -214,10 +216,10 @@ export class DraggableDragItem<
             // unfortunately, there seems to be no way to do that accurately
             // with subpixel precision.
             if (isMatrixWarped(matrices[0])) {
-              MEASURE_ELEMENT.style.setProperty('transform', matrices[1].toString(), 'important');
-              offsetContainer.append(MEASURE_ELEMENT);
-              getClientOffset(MEASURE_ELEMENT, offset);
-              MEASURE_ELEMENT.remove();
+              MEASURE_ELEMENT!.style.setProperty('transform', matrices[1].toString(), 'important');
+              offsetContainer.append(MEASURE_ELEMENT!);
+              getClientOffset(MEASURE_ELEMENT!, offset);
+              MEASURE_ELEMENT!.remove();
             }
             // If the matrix only contains a 2d translation we can compute the
             // client offset normally and subtract the translation values from
