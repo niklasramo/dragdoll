@@ -26,11 +26,9 @@ class Draggable {
 ### Parameters
 
 1. **sensors**
-
    - An array of [sensors](/docs/sensor) that the Draggable will use as inputs for moving the provided elements around. The sensors are required and can't be changed after instantiation.
 
 2. **options**
-
    - An optional [`DraggableSettings`](#settings) object, which you can also change later via [`updateSettings`](#updatesettings) method. You only need to provide the options you want to change, the rest will be left as default.
 
 ## Settings

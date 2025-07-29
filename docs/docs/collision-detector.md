@@ -57,7 +57,6 @@ class CollisionDetector<T extends CollisionData = CollisionData> {
 ### Parameters
 
 1. **dndContext**
-
    - The `DndContext` instance this collision detector belongs to.
 
 2. **options** _(optional)_

@@ -57,11 +57,9 @@ type DraggableModifier = (
 ## Parameters
 
 1. **change**
-
    - The current change data object with `x` and `y` properties representing the change in x and y coordinates.
 
 2. **data**
-
    - An object containing the following properties:
      - **draggable**: The [`Draggable`](/docs/draggable) instance.
      - **drag**: The [`DraggableDrag`](/docs/draggable-drag) instance.

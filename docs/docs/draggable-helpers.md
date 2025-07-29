@@ -58,13 +58,11 @@ type createTouchDelayPredicate = (
 ### Parameters
 
 1. **touchDelay**
-
    - The amount of time in milliseconds to wait before trying to start dragging after the user has touched the pointer sensor element (applies for touch events only). The point of this delay is to allow users to scroll normally if they don't intend to drag and start dragging only after long press, which is a common pattern in mobile applications.
    - Default: `250`.
    - Optional.
 
 2. **fallback**
-
    - Fallback start predicate function that will be called for other sensors' events (e.g. keyboard sensor) if there are any.
    - Default: `() => true`.
    - Optional.

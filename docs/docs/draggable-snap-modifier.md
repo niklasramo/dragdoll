@@ -36,12 +36,10 @@ type createSnapModifier = (
 ## Parameters
 
 1. **cellWidth**
-
    - The width of a grid cell.
    - Required.
 
 2. **cellHeight**
-
    - The height of a grid cell.
    - Required.
 
