@@ -1,12 +1,16 @@
 # Tips and Tricks
 
+## Server-Side Rendering (SSR)
+
+DragDoll is designed to work only in a browser environment, but it can be _imported_ in a non-browser environment without throwing an error. Just make sure that you don't try to actually use it in a non-browser environment and you're good to go.
+
 ## Handling Natively Draggable Elements
 
 Some elements, such as images and links, are natively draggable in the browser. This behavior might interfere with the custom dragging functionality you want to implement with DragDoll. To prevent this, you can use the [`draggable`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/draggable) attribute and set `draggable="false"` on the elements where you want to disable native dragging.
 
 ## Dragging on Touch Devices
 
-When using [`Draggable`](/docs/draggable) with [`PointerSensor`](/docs/pointer-sensor), dragging starts immediately when the pointer sensor element is pressed—whether it's by mouse, pen, or touch. This is the default behavior, and it works well with a mouse.
+When using [`Draggable`](/docs/draggable) with [`PointerSensor`](/docs/pointer-sensor), dragging starts immediately when the pointer sensor element is pressed — whether it's by mouse, pen, or touch. This is the default behavior, and it works well with a mouse.
 
 However, on touch devices, the page’s native scroll behavior _will_ interfere with dragging, and you’ll need to manage this yourself. DragDoll does not handle this automatically because the strategy you choose may vary depending on your needs.
 
