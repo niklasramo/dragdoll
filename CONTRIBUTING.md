@@ -4,17 +4,7 @@ Thanks for the interest in contributing to DragDoll! Here you will find some ins
 
 ## Creating an issue
 
-### Questions
-
-First of all you should check out the existing [questions](https://github.com/niklasramo/dragdoll/issues?q=label%3Aquestion%20) and see if your question has been asked/answered already. If not, you can [create a new issue](https://github.com/niklasramo/dragdoll/issues/new) and explain the problem you're facing.
-
-### Improvements
-
-Improvement ideas are always welcome! Please check first the existing [ideas](https://github.com/niklasramo/dragdoll/issues?utf8=%E2%9C%93&q=label%3Aidea), [features](https://github.com/niklasramo/dragdoll/issues?q=label%3Afeature) and [enhancements](https://github.com/niklasramo/dragdoll/issues?q=label%3Aenhancement) so that you won't be creating a duplicate issue.
-
-### Bugs
-
-Please [create an issue](https://github.com/niklasramo/dragdoll/issues/new) and explain the bug in detail. If possible create a [reduced test case](https://css-tricks.com/reduced-test-cases/) and share a link to it.
+Please [create an issue](https://github.com/niklasramo/dragdoll/issues/new) and explain the it in detail. If possible create a [reduced test case](https://css-tricks.com/reduced-test-cases/) and share a link to it.
 
 ## Creating a pull request
 
@@ -42,7 +32,7 @@ Please [create an issue](https://github.com/niklasramo/dragdoll/issues/new) and 
    - Remember scope. Don't refactor things that are not related to the pull request.
    - After you're done update unit tests and docs (`README.md`) if necessary.
 5. **Build and test changes.**
-   - Run `npm run build` to build the lib with the changes and `npm run test` to make sure the changes didn't cause regressions.
+   - Run `npm run build` to build the lib with the changes and then run `npm run test` (or `npm run test-local`) to make sure the changes didn't cause regressions.
 6. **Create the pull request.**
    - Do your best to explain what the pull request fixes.
    - Mention which issue(s) will be closed by the pull request, e.g. `Closes #123`.

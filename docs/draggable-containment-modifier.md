@@ -48,8 +48,7 @@ type createContainmentModifier = (
 
 2. **trackSensorDrift**
    - A boolean or a callback that returns a boolean, which determines if the modifier should track and offset the drift between the sensor position and dragged element's position when the element collides to a container edge. You probably want to have this be `true` for any pointer-like sensors where the user can visually see the grab point and `false` for others, e.g. [`KeyboardSensor`](/keyboard-sensor).
-   - By default this is a function which will return `true` if the current sensor is an instance of the [`PointerSensor`](/pointer-sensor) and `false` otherwise.
-   - Optional.
+   - Default: A function which will return `true` if the current sensor is an instance of the [`PointerSensor`](/pointer-sensor) and `false` otherwise.
 
 ## Returns
 

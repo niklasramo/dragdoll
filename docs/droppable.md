@@ -30,21 +30,21 @@ new Droppable(element: HTMLElement | SVGSVGElement, options?: DroppableOptions);
 
 ### Parameters
 
-1. **element**  
-   The target DOM element that represents the drop zone.
+1. **element**
+   - The target DOM element that represents the drop zone.
 
-2. **options** (optional)  
-   An object with the following properties:
-   - **accept**:  
-     Either an array of drop target identifiers (strings, numbers, symbols) or a
-     function that takes a draggable instance and returns a boolean.  
-     _Default_: a function that returns `true` (accepts all).
-   - **parent**:  
-     A parent `Droppable` instance which creates a hierarchical grouping.  
-     _Default_: `null`.
-   - **data**:  
-     An object containing custom data for the droppable.  
-     _Default_: an empty object.
+2. **options**
+   - An optional options object with the following properties:
+     - **`accept`**
+       - Either an array of drop target identifiers (strings, numbers, symbols) or a
+         function that takes a draggable instance and returns a boolean.
+       - Default: a function that returns `true` (accepts all).
+     - **`parent`**
+       - A parent `Droppable` instance which creates a hierarchical grouping.
+       - Default: `null`.
+     - **`data`**
+       - An object containing custom data for the droppable.
+       - Default: an empty object.
 
 ## Properties
 

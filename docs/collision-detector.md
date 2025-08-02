@@ -59,12 +59,12 @@ class CollisionDetector<T extends CollisionData = CollisionData> {
 1. **dndContext**
    - The `DndContext` instance this collision detector belongs to.
 
-2. **options** _(optional)_
+2. **options**
    - An optional configuration object with the following properties:
-     - **`getCollisionData`** _(optional)_
+     - **`getCollisionData`**
        - A function that calculates collision data for a draggable-droppable pair. Returns `null` if no collision.
        - Default: Uses intersection score based on overlapping area.
-     - **`sortCollisions`** _(optional)_
+     - **`sortCollisions`**
        - A function that sorts collision results to determine priority.
        - Default: Sorts by score (descending), then by area (ascending).
 

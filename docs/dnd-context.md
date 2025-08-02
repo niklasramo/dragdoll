@@ -50,9 +50,9 @@ class DndContext {
 
 ### Parameters
 
-1. **options** _(optional)_
-   - An optional options object with the following properties:
-     - **`collisionDetector`** _(optional)_
+1. **options**
+   - An optional configuration object with the following properties:
+     - **`collisionDetector`**
        - A custom `CollisionDetector` instance for determining which droppables are colliding with a draggable element. If not provided, a default `CollisionDetector` will be created.
 
 ## Properties
