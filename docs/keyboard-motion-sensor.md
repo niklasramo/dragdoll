@@ -1,4 +1,4 @@
-[BaseMotionSensor](/docs/base-motion-sensor) →
+[BaseMotionSensor](/base-motion-sensor) →
 
 # KeyboardMotionSensor
 

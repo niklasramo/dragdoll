@@ -1,8 +1,8 @@
-[BaseSensor](/docs/base-sensor) →
+[BaseSensor](/base-sensor) →
 
 # BaseMotionSensor
 
-BaseMotionSensor is an extendable base class tailor-made for scenarios where you want to smoothly move an object, e.g. a car or a character in a 2D game, based on custom inputs. It extends [`BaseSensor`](/docs/base-sensor) and provides functionality for controlling the drag movement on every frame via protected [`_speed`](#speed) and [`_direction`](#direction) properties.
+BaseMotionSensor is an extendable base class tailor-made for scenarios where you want to smoothly move an object, e.g. a car or a character in a 2D game, based on custom inputs. It extends [`BaseSensor`](/base-sensor) and provides functionality for controlling the drag movement on every frame via protected [`_speed`](#speed) and [`_direction`](#direction) properties.
 
 ## Example
 

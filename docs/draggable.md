@@ -26,7 +26,7 @@ class Draggable {
 ### Parameters
 
 1. **sensors**
-   - An array of [sensors](/docs/sensor) that the Draggable will use as inputs for moving the provided elements around. The sensors are required and can't be changed after instantiation.
+   - An array of [sensors](/sensor) that the Draggable will use as inputs for moving the provided elements around. The sensors are required and can't be changed after instantiation.
 
 2. **options**
    - An optional [`DraggableSettings`](#settings) object, which you can also change later via [`updateSettings`](#updatesettings) method. You only need to provide the options you want to change, the rest will be left as default.
@@ -111,7 +111,7 @@ type applyPosition = (data: {
 }) => void;
 ```
 
-A function that should apply the current [`position`](/docs/draggable-drag-item#position) to a dragged [`element`](/docs/draggable-drag-item#element).
+A function that should apply the current [`position`](/draggable-drag-item#position) to a dragged [`element`](/draggable-drag-item#element).
 
 Default is a (very involved) function that applies the position, container offset, alignment offset and matrix transform offsets the element's transform property, while respecting the element's original transform and transform origin.
 
@@ -168,7 +168,7 @@ draggable.on('move', () => {
 });
 ```
 
-**Default behavior:** By default, this returns the [`clientRect`](/docs/draggable-drag-item#clientrect) of the first drag item, or `null` if no items exist.
+**Default behavior:** By default, this returns the [`clientRect`](/draggable-drag-item#clientrect) of the first drag item, or `null` if no items exist.
 
 ### positionModifiers
 
@@ -186,7 +186,7 @@ type DraggableModifier = (
 type positionModifiers = DraggableModifier[];
 ```
 
-An array of position modifier functions that should return the position change of a dragged element. Checkout the [Draggable Modifiers](/docs/draggable-modifiers) page for detailed information.
+An array of position modifier functions that should return the position change of a dragged element. Checkout the [Draggable Modifiers](/draggable-modifiers) page for detailed information.
 
 ### onPrepareStart
 
@@ -429,7 +429,7 @@ Registers a plugin to the Draggable instance. Returns the Draggable instance so 
 
 The plugin system is designed to be used so that you register the plugins right away when you instantiate the Draggable. This way you'll get the correct typings to the variable holding the instance. Also, there's no mechanism to unregister a plugin because there really should be no need for that.
 
-Check out the [plugin guide](/docs/draggable-plugins) to learn how to build custom plugins.
+Check out the [plugin guide](/draggable-plugins) to learn how to build custom plugins.
 
 ### destroy
 

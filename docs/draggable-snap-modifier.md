@@ -1,4 +1,4 @@
-[Draggable Modifiers](/docs/draggable-modifiers) →
+[Draggable Modifiers](/draggable-modifiers) →
 
 # Snap Modifier
 
@@ -45,4 +45,4 @@ type createSnapModifier = (
 
 ## Returns
 
-A modifier function that can be provided to the [`positionModifiers`](/docs/draggable#positionmodifiers) option of the [`Draggable`](/docs/draggable) constructor.
+A modifier function that can be provided to the [`positionModifiers`](/draggable#positionmodifiers) option of the [`Draggable`](/draggable) constructor.

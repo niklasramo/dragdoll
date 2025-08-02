@@ -1,8 +1,8 @@
-[Draggable](/docs/draggable) →
+[Draggable](/draggable) →
 
 # DraggableDrag
 
-DraggableDrag class instance holds all the information about the current drag process. It's available via the Draggable instance's [`drag`](/docs/draggable#drag) property.
+DraggableDrag class instance holds all the information about the current drag process. It's available via the Draggable instance's [`drag`](/draggable#drag) property.
 
 ## Properties
 
@@ -46,7 +46,7 @@ The current sensor move event. When drag starts this will be the start event. dr
 type endEvent = SensorEndEvent | SensorCancelEvent | SensorDestroyEvent | null;
 ```
 
-The sensor event that ended the drag. This will stay `null` (even when drag ends) if [`draggable.stop()`](/docs/draggable#stop) is called manually, because there is no specific event to link the ending to. Read-only.
+The sensor event that ended the drag. This will stay `null` (even when drag ends) if [`draggable.stop()`](/draggable#stop) is called manually, because there is no specific event to link the ending to. Read-only.
 
 ### items
 
@@ -54,7 +54,7 @@ The sensor event that ended the drag. This will stay `null` (even when drag ends
 type items = DraggableDragItem[];
 ```
 
-An array of [`DraggableDragItem`](/docs/draggable-drag-item) instances, which correspond to the drag elements as provided via the [`elements`](/docs/draggable#elements) option. Read-only.
+An array of [`DraggableDragItem`](/draggable-drag-item) instances, which correspond to the drag elements as provided via the [`elements`](/draggable#elements) option. Read-only.
 
 ### isEnded
 

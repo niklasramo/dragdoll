@@ -81,7 +81,7 @@ Destroy the sensor. Disposes all allocated memory and removes all bound event li
 
 ### \_events_type
 
-To make TypeScript happy, you need to declare `_events_type` field in your sensor class as a [type-only field decalaration](https://www.typescriptlang.org/docs/handbook/2/classes.html#type-only-field-declarations). This allows, for example, the [`Draggable`](/docs/draggable) class to infer the correct event types for your sensor.
+To make TypeScript happy, you need to declare `_events_type` field in your sensor class as a [type-only field decalaration](https://www.typescriptlang.org/handbook/2/classes.html#type-only-field-declarations). This allows, for example, the [`Draggable`](/draggable) class to infer the correct event types for your sensor.
 
 The field is not actually outputted to the JavaScript code, so it doesn't affect the runtime behavior of your sensor. However, when used within a TypeScript project, it will _look_ like a normal field when your sensor instance is accessed, so keep in mind that it's only a type declaration.
 

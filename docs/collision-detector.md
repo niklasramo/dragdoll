@@ -1,4 +1,4 @@
-[DndContext](/docs/dnd-context) →
+[DndContext](/dnd-context) →
 
 # CollisionDetector
 

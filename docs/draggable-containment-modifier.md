@@ -1,4 +1,4 @@
-[Draggable Modifiers](/docs/draggable-modifiers) →
+[Draggable Modifiers](/draggable-modifiers) →
 
 # Containment Modifier
 
@@ -47,10 +47,10 @@ type createContainmentModifier = (
    - Required.
 
 2. **trackSensorDrift**
-   - A boolean or a callback that returns a boolean, which determines if the modifier should track and offset the drift between the sensor position and dragged element's position when the element collides to a container edge. You probably want to have this be `true` for any pointer-like sensors where the user can visually see the grab point and `false` for others, e.g. [`KeyboardSensor`](/docs/keyboard-sensor).
-   - By default this is a function which will return `true` if the current sensor is an instance of the [`PointerSensor`](/docs/pointer-sensor) and `false` otherwise.
+   - A boolean or a callback that returns a boolean, which determines if the modifier should track and offset the drift between the sensor position and dragged element's position when the element collides to a container edge. You probably want to have this be `true` for any pointer-like sensors where the user can visually see the grab point and `false` for others, e.g. [`KeyboardSensor`](/keyboard-sensor).
+   - By default this is a function which will return `true` if the current sensor is an instance of the [`PointerSensor`](/pointer-sensor) and `false` otherwise.
    - Optional.
 
 ## Returns
 
-A modifier function that can be provided to the [`positionModifiers`](/docs/draggable#positionmodifiers) option of the [`Draggable`](/docs/draggable) constructor.
+A modifier function that can be provided to the [`positionModifiers`](/draggable#positionmodifiers) option of the [`Draggable`](/draggable) constructor.

@@ -45,7 +45,7 @@ type listenerOptions = {
 };
 ```
 
-This object will be propagated to the source event listeners' [`options`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener). You can use it to define whether the source event listeners should be passive and/or use capture.
+This object will be propagated to the source event listeners' [`options`](https://developer.mozilla.org/en-US/Web/API/EventTarget/addEventListener). You can use it to define whether the source event listeners should be passive and/or use capture.
 
 Defaults to `{ capture: true, passive: true }`.
 
@@ -57,9 +57,9 @@ type sourceEvents = 'pointer' | 'touch' | 'mouse' | 'auto';
 
 Define which type of events will be listened and used as source events:
 
-- `"pointer"` -> [`PointerEvents`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent)
-- `"touch"` -> [`TouchEvents`](https://developer.mozilla.org/en-US/docs/Web/API/TouchEvent)
-- `"mouse"` -> [`MouseEvents`](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent)
+- `"pointer"` -> [`PointerEvents`](https://developer.mozilla.org/en-US/Web/API/PointerEvent)
+- `"touch"` -> [`TouchEvents`](https://developer.mozilla.org/en-US/Web/API/TouchEvent)
+- `"mouse"` -> [`MouseEvents`](https://developer.mozilla.org/en-US/Web/API/MouseEvent)
 - `"auto"` -> Detect the best choice automatically (pointer > touch > mouse) based on what browser supports.
 
 Defaults to `"auto"`.

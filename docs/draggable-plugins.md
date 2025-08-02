@@ -1,10 +1,10 @@
-[Draggable](/docs/draggable) →
+[Draggable](/draggable) →
 
 # Draggable Plugins
 
-Draggable has a very simple plugin system, which allows you to extend the default functionality. Plugins are added to a Draggable instance via [`use`](/docs/draggable#use) method, one by one, preferably at the same time when instantiating the Draggable.
+Draggable has a very simple plugin system, which allows you to extend the default functionality. Plugins are added to a Draggable instance via [`use`](/draggable#use) method, one by one, preferably at the same time when instantiating the Draggable.
 
-Note that you can't remove a plugin from a Draggable instance and can't add a plugin with the same name twice. If your plugin depends on a specific version of a specific plugin you need to do the checking manually yourself during plugin instantiation and e.g. throw and error if conditions are not met. All the plugins are added to [`draggable.plugins`](/docs/draggable#plugins) property, which you can use to do such checking.
+Note that you can't remove a plugin from a Draggable instance and can't add a plugin with the same name twice. If your plugin depends on a specific version of a specific plugin you need to do the checking manually yourself during plugin instantiation and e.g. throw and error if conditions are not met. All the plugins are added to [`draggable.plugins`](/draggable#plugins) property, which you can use to do such checking.
 
 Let's build an example plugin, which logs draggable events based on options we provide it:
 

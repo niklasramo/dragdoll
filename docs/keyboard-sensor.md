@@ -1,4 +1,4 @@
-[BaseSensor](/docs/base-sensor) →
+[BaseSensor](/base-sensor) →
 
 # KeyboardSensor
 

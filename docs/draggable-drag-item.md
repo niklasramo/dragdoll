@@ -1,8 +1,8 @@
-[DraggableDrag](/docs/draggable-drag) →
+[DraggableDrag](/draggable-drag) →
 
 # DraggableDragItem
 
-DraggableDragItem class instance holds all the information about a drag item. All the drag items are available via the [`items`](/docs/draggable-drag#items) property of the DraggableDrag instance.
+DraggableDragItem class instance holds all the information about a drag item. All the drag items are available via the [`items`](/draggable-drag#items) property of the DraggableDrag instance.
 
 ## Properties
 
@@ -102,7 +102,7 @@ Cached bounding client rect of the dragged element. The `width` and `height` of 
 type position = { x: number; y: number };
 ```
 
-The dragged element's relative viewport position. This is always `{x: 0, y: 0}` on drag start and, by default, only updated when the sensor moves. [Modifiers](/docs/draggable-modifiers) might affect this value during start, move and end phases.
+The dragged element's relative viewport position. This is always `{x: 0, y: 0}` on drag start and, by default, only updated when the sensor moves. [Modifiers](/draggable-modifiers) might affect this value during start, move and end phases.
 
 In practice this value will tell you how many (untransformed) pixels the element has moved in the viewport's scope and to which directions. E.g. `{x: -100, y: 50}` would mean that the element has moved 100 pixels to the left and 50 pixels down from the original position.
 
@@ -122,7 +122,7 @@ The offset between [`elementOffsetContainer`](#elementoffsetcontainer) and [`dra
 type alignmentOffset = { x: number; y: number };
 ```
 
-Keeps track of any _unintended_ drift between the dragged element's position and the sensor's position. For example, this is used to correct the element's position when the element's parent is scrolled or when [`align`](/docs/draggable#align) method is used. Read-only.
+Keeps track of any _unintended_ drift between the dragged element's position and the sensor's position. For example, this is used to correct the element's position when the element's parent is scrolled or when [`align`](/draggable#align) method is used. Read-only.
 
 ## Methods
 
