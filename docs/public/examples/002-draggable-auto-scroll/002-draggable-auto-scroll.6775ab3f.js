@@ -3901,14 +3901,10 @@ class $24bdaa72c91e807d$export$b931ab7b292a336c {
         });
         this.getCollisionData = getCollisionData;
         this.sortCollisions = sortCollisions;
-        // We only ever need to have as many items in the collision data pool as there
-        // are droppables.
+        // We only ever need to have as many items in the collision data pool as
+        // there are droppables.
         this.dndContext.on('removeDroppable', ()=>{
             this.collisionDataPool.resetItems(this.dndContext.droppables.size);
-        }, this.listenerId);
-        // Reset items when dnd context is destroyed.
-        this.dndContext.on('destroy', ()=>{
-            this.collisionDataPool.resetItems();
         }, this.listenerId);
     }
     static getRootDroppable(d) {
@@ -3951,7 +3947,6 @@ class $24bdaa72c91e807d$export$b931ab7b292a336c {
     destroy() {
         this.collisionDataPool.resetItems();
         this.dndContext.off('removeDroppable', this.listenerId);
-        this.dndContext.off('destroy', this.listenerId);
     }
 }
 
@@ -4317,32 +4312,41 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
-const $f770251f4470ce8a$var$element = document.querySelector('.draggable');
-const $f770251f4470ce8a$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($f770251f4470ce8a$var$element);
-const $f770251f4470ce8a$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($f770251f4470ce8a$var$element);
-const $f770251f4470ce8a$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $f770251f4470ce8a$var$pointerSensor,
-    $f770251f4470ce8a$var$keyboardSensor
+const $6abf5f75f0c818c7$var$element = document.querySelector('.draggable');
+const $6abf5f75f0c818c7$var$dragContainer = document.querySelector('.drag-container');
+const $6abf5f75f0c818c7$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($6abf5f75f0c818c7$var$element);
+const $6abf5f75f0c818c7$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($6abf5f75f0c818c7$var$element, {
+    computeSpeed: ()=>100
+});
+const $6abf5f75f0c818c7$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $6abf5f75f0c818c7$var$pointerSensor,
+    $6abf5f75f0c818c7$var$keyboardSensor
 ], {
+    container: $6abf5f75f0c818c7$var$dragContainer,
     elements: ()=>[
-            $f770251f4470ce8a$var$element
+            $6abf5f75f0c818c7$var$element
         ],
-    positionModifiers: [
-        (0, $e4a9d189cff00937$export$b43dd221600cdb2e)(()=>{
-            return {
-                x: 0,
-                y: 0,
-                width: window.innerWidth,
-                height: window.innerHeight
-            };
-        })
-    ],
+    frozenStyles: ()=>[
+            'left',
+            'top'
+        ],
     onStart: ()=>{
-        $f770251f4470ce8a$var$element.classList.add('dragging');
+        $6abf5f75f0c818c7$var$element.classList.add('dragging');
     },
     onEnd: ()=>{
-        $f770251f4470ce8a$var$element.classList.remove('dragging');
+        $6abf5f75f0c818c7$var$element.classList.remove('dragging');
     }
-});
+}).use((0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
+    targets: [
+        {
+            element: window,
+            axis: 'y',
+            padding: {
+                top: Infinity,
+                bottom: Infinity
+            }
+        }
+    ]
+}));
 
 

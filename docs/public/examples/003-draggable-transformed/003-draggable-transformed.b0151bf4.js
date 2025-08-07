@@ -3901,14 +3901,10 @@ class $24bdaa72c91e807d$export$b931ab7b292a336c {
         });
         this.getCollisionData = getCollisionData;
         this.sortCollisions = sortCollisions;
-        // We only ever need to have as many items in the collision data pool as there
-        // are droppables.
+        // We only ever need to have as many items in the collision data pool as
+        // there are droppables.
         this.dndContext.on('removeDroppable', ()=>{
             this.collisionDataPool.resetItems(this.dndContext.droppables.size);
-        }, this.listenerId);
-        // Reset items when dnd context is destroyed.
-        this.dndContext.on('destroy', ()=>{
-            this.collisionDataPool.resetItems();
         }, this.listenerId);
     }
     static getRootDroppable(d) {
@@ -3951,7 +3947,6 @@ class $24bdaa72c91e807d$export$b931ab7b292a336c {
     destroy() {
         this.collisionDataPool.resetItems();
         this.dndContext.off('removeDroppable', this.listenerId);
-        this.dndContext.off('destroy', this.listenerId);
     }
 }
 
@@ -4317,38 +4312,41 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
-let $63994e3588ee9d7d$var$zIndex = 0;
-const $63994e3588ee9d7d$var$draggableElements = [
-    ...document.querySelectorAll('.draggable')
-];
-$63994e3588ee9d7d$var$draggableElements.forEach((element)=>{
-    const pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element);
-    const keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)(element);
-    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-        pointerSensor,
-        keyboardSensor
-    ], {
-        elements: ()=>[
-                element
-            ],
-        positionModifiers: [
-            (change, { item: item })=>{
-                const { element: element } = item;
-                const allowX = element.classList.contains('axis-x');
-                const allowY = element.classList.contains('axis-y');
-                if (allowX && !allowY) change.y = 0;
-                else if (allowY && !allowX) change.x = 0;
-                return change;
-            }
-        ],
-        onStart: ()=>{
-            element.classList.add('dragging');
-            element.style.zIndex = `${++$63994e3588ee9d7d$var$zIndex}`;
-        },
-        onEnd: ()=>{
-            element.classList.remove('dragging');
-        }
-    });
+const $72821dbb08df4f25$var$element = document.querySelector('.draggable');
+const $72821dbb08df4f25$var$dragContainer = document.querySelector('.drag-container');
+const $72821dbb08df4f25$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($72821dbb08df4f25$var$element);
+const $72821dbb08df4f25$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($72821dbb08df4f25$var$element, {
+    computeSpeed: ()=>100
 });
+const $72821dbb08df4f25$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $72821dbb08df4f25$var$pointerSensor,
+    $72821dbb08df4f25$var$keyboardSensor
+], {
+    container: $72821dbb08df4f25$var$dragContainer,
+    elements: ()=>[
+            $72821dbb08df4f25$var$element
+        ],
+    frozenStyles: ()=>[
+            'left',
+            'top'
+        ],
+    onStart: ()=>{
+        $72821dbb08df4f25$var$element.classList.add('dragging');
+    },
+    onEnd: ()=>{
+        $72821dbb08df4f25$var$element.classList.remove('dragging');
+    }
+}).use((0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
+    targets: [
+        {
+            element: window,
+            axis: 'y',
+            padding: {
+                top: Infinity,
+                bottom: Infinity
+            }
+        }
+    ]
+}));
 
 

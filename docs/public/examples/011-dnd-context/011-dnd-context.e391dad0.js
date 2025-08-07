@@ -3901,14 +3901,10 @@ class $24bdaa72c91e807d$export$b931ab7b292a336c {
         });
         this.getCollisionData = getCollisionData;
         this.sortCollisions = sortCollisions;
-        // We only ever need to have as many items in the collision data pool as there
-        // are droppables.
+        // We only ever need to have as many items in the collision data pool as
+        // there are droppables.
         this.dndContext.on('removeDroppable', ()=>{
             this.collisionDataPool.resetItems(this.dndContext.droppables.size);
-        }, this.listenerId);
-        // Reset items when dnd context is destroyed.
-        this.dndContext.on('destroy', ()=>{
-            this.collisionDataPool.resetItems();
         }, this.listenerId);
     }
     static getRootDroppable(d) {
@@ -3951,7 +3947,6 @@ class $24bdaa72c91e807d$export$b931ab7b292a336c {
     destroy() {
         this.collisionDataPool.resetItems();
         this.dndContext.off('removeDroppable', this.listenerId);
-        this.dndContext.off('destroy', this.listenerId);
     }
 }
 
@@ -4317,41 +4312,81 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
-const $72821dbb08df4f25$var$element = document.querySelector('.draggable');
-const $72821dbb08df4f25$var$dragContainer = document.querySelector('.drag-container');
-const $72821dbb08df4f25$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($72821dbb08df4f25$var$element);
-const $72821dbb08df4f25$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($72821dbb08df4f25$var$element, {
-    computeSpeed: ()=>100
+// Initialize context and get elements
+const $f3affae21016fe5a$var$dndContext = new (0, $fa11c4bc76a2544e$export$2d5c5ceac203fc1e)();
+const $f3affae21016fe5a$var$draggableElements = [
+    ...document.querySelectorAll('.draggable')
+];
+const $f3affae21016fe5a$var$droppableElements = [
+    ...document.querySelectorAll('.droppable')
+];
+// Create droppables
+$f3affae21016fe5a$var$droppableElements.forEach((element)=>{
+    const droppable = new (0, $8cf3b9f73d8dfc46$export$423ec2075359570a)(element);
+    droppable.data.overIds = new Set();
+    droppable.data.droppedIds = new Set();
+    $f3affae21016fe5a$var$dndContext.addDroppable(droppable);
 });
-const $72821dbb08df4f25$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $72821dbb08df4f25$var$pointerSensor,
-    $72821dbb08df4f25$var$keyboardSensor
-], {
-    container: $72821dbb08df4f25$var$dragContainer,
-    elements: ()=>[
-            $72821dbb08df4f25$var$element
-        ],
-    frozenStyles: ()=>[
-            'left',
-            'top'
-        ],
-    onStart: ()=>{
-        $72821dbb08df4f25$var$element.classList.add('dragging');
-    },
-    onEnd: ()=>{
-        $72821dbb08df4f25$var$element.classList.remove('dragging');
-    }
-}).use((0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
-    targets: [
-        {
-            element: window,
-            axis: 'y',
-            padding: {
-                top: Infinity,
-                bottom: Infinity
-            }
-        }
-    ]
-}));
-
+// Create draggables
+$f3affae21016fe5a$var$draggableElements.forEach((element)=>{
+    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+        new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element),
+        new (0, $7fff4587bd07df96$export$436f6efcc297171)(element)
+    ], {
+        elements: ()=>[
+                element
+            ],
+        startPredicate: ()=>!element.classList.contains('dragging'),
+        onStart: (drag)=>drag.items[0].element.classList.add('dragging'),
+        onEnd: (drag)=>drag.items[0].element.classList.remove('dragging')
+    });
+    $f3affae21016fe5a$var$dndContext.addDraggable(draggable);
+});
+// DnD logic
+{
+    const onStart = (data)=>{
+        const { draggable: draggable, targets: targets } = data;
+        targets.forEach((target)=>{
+            target.data.droppedIds.delete(draggable.id);
+            if (target.data.droppedIds.size === 0) target.element.classList.remove('draggable-dropped');
+        });
+    };
+    const onEnterAndOver = (data)=>{
+        const { draggable: draggable, collisions: collisions } = data;
+        const clonedCollisions = [
+            ...collisions
+        ];
+        // Add the draggable to the first collision.
+        const target = clonedCollisions.shift();
+        target.data.overIds.add(draggable.id);
+        target.element.classList.add('draggable-over');
+        // Remove the draggable from the other collisions.
+        clonedCollisions.forEach((collision)=>{
+            collision.data.overIds.delete(draggable.id);
+            if (collision.data.overIds.size === 0) collision.element.classList.remove('draggable-over');
+        });
+    };
+    const onLeave = (data)=>{
+        const { draggable: draggable, removedCollisions: removedCollisions } = data;
+        removedCollisions.forEach((target)=>{
+            target.data.overIds.delete(draggable.id);
+            if (target.data.overIds.size === 0) target.element.classList.remove('draggable-over');
+        });
+    };
+    const onDrop = (data)=>{
+        const { draggable: draggable, collisions: collisions } = data;
+        const target = collisions[0];
+        // Update dropped ids
+        target.data.droppedIds.add(draggable.id);
+        target.element.classList.add('draggable-dropped');
+        // Update over ids
+        target.data.overIds.delete(draggable.id);
+        if (target.data.overIds.size === 0) target.element.classList.remove('draggable-over');
+    };
+    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Start, onStart);
+    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Enter, onEnterAndOver);
+    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Over, onEnterAndOver);
+    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Leave, onLeave);
+    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Drop, onDrop);
+}
 

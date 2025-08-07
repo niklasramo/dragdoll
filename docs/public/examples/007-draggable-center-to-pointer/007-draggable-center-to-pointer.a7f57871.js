@@ -3901,14 +3901,10 @@ class $24bdaa72c91e807d$export$b931ab7b292a336c {
         });
         this.getCollisionData = getCollisionData;
         this.sortCollisions = sortCollisions;
-        // We only ever need to have as many items in the collision data pool as there
-        // are droppables.
+        // We only ever need to have as many items in the collision data pool as
+        // there are droppables.
         this.dndContext.on('removeDroppable', ()=>{
             this.collisionDataPool.resetItems(this.dndContext.droppables.size);
-        }, this.listenerId);
-        // Reset items when dnd context is destroyed.
-        this.dndContext.on('destroy', ()=>{
-            this.collisionDataPool.resetItems();
         }, this.listenerId);
     }
     static getRootDroppable(d) {
@@ -3951,7 +3947,6 @@ class $24bdaa72c91e807d$export$b931ab7b292a336c {
     destroy() {
         this.collisionDataPool.resetItems();
         this.dndContext.off('removeDroppable', this.listenerId);
-        this.dndContext.off('destroy', this.listenerId);
     }
 }
 

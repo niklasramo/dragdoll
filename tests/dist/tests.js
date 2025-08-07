@@ -6602,13 +6602,6 @@ var CollisionDetector = class _CollisionDetector {
       },
       this.listenerId
     );
-    this.dndContext.on(
-      "destroy",
-      () => {
-        this.collisionDataPool.resetItems();
-      },
-      this.listenerId
-    );
   }
   static getRootDroppable(d) {
     return d.parent === null;
@@ -6643,7 +6636,6 @@ var CollisionDetector = class _CollisionDetector {
   destroy() {
     this.collisionDataPool.resetItems();
     this.dndContext.off("removeDroppable", this.listenerId);
-    this.dndContext.off("destroy", this.listenerId);
   }
 };
 

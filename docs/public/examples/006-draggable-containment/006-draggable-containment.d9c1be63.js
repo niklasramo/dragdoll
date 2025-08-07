@@ -3901,14 +3901,10 @@ class $24bdaa72c91e807d$export$b931ab7b292a336c {
         });
         this.getCollisionData = getCollisionData;
         this.sortCollisions = sortCollisions;
-        // We only ever need to have as many items in the collision data pool as there
-        // are droppables.
+        // We only ever need to have as many items in the collision data pool as
+        // there are droppables.
         this.dndContext.on('removeDroppable', ()=>{
             this.collisionDataPool.resetItems(this.dndContext.droppables.size);
-        }, this.listenerId);
-        // Reset items when dnd context is destroyed.
-        this.dndContext.on('destroy', ()=>{
-            this.collisionDataPool.resetItems();
         }, this.listenerId);
     }
     static getRootDroppable(d) {
@@ -3951,7 +3947,6 @@ class $24bdaa72c91e807d$export$b931ab7b292a336c {
     destroy() {
         this.collisionDataPool.resetItems();
         this.dndContext.off('removeDroppable', this.listenerId);
-        this.dndContext.off('destroy', this.listenerId);
     }
 }
 
@@ -4317,28 +4312,32 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
-let $1721b684b57c24ff$var$zIndex = 0;
-const $1721b684b57c24ff$var$draggableElements = [
-    ...document.querySelectorAll('.draggable')
-];
-$1721b684b57c24ff$var$draggableElements.forEach((element)=>{
-    const pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element);
-    const keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)(element);
-    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-        pointerSensor,
-        keyboardSensor
-    ], {
-        elements: ()=>[
-                element
-            ],
-        onStart: ()=>{
-            element.classList.add('dragging');
-            element.style.zIndex = `${++$1721b684b57c24ff$var$zIndex}`;
-        },
-        onEnd: ()=>{
-            element.classList.remove('dragging');
-        }
-    });
+const $f770251f4470ce8a$var$element = document.querySelector('.draggable');
+const $f770251f4470ce8a$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($f770251f4470ce8a$var$element);
+const $f770251f4470ce8a$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($f770251f4470ce8a$var$element);
+const $f770251f4470ce8a$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $f770251f4470ce8a$var$pointerSensor,
+    $f770251f4470ce8a$var$keyboardSensor
+], {
+    elements: ()=>[
+            $f770251f4470ce8a$var$element
+        ],
+    positionModifiers: [
+        (0, $e4a9d189cff00937$export$b43dd221600cdb2e)(()=>{
+            return {
+                x: 0,
+                y: 0,
+                width: window.innerWidth,
+                height: window.innerHeight
+            };
+        })
+    ],
+    onStart: ()=>{
+        $f770251f4470ce8a$var$element.classList.add('dragging');
+    },
+    onEnd: ()=>{
+        $f770251f4470ce8a$var$element.classList.remove('dragging');
+    }
 });
 
 
