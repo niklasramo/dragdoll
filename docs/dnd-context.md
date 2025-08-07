@@ -1,15 +1,14 @@
 # DndContext
 
-The `DndContext` class orchestrates interactions between draggables and droppables.
-It registers draggable and droppable instances, handles collision detection,
-and dispatches events during the drag and drop lifecycle.
+The `DndContext` class tracks collisions between draggables and droppables and dispatches events during the drag and drop lifecycle.
 
 ## Example
 
 ```ts
-import { DndContext, Draggable, Droppable } from 'dragdoll';
+import { DndContext, Draggable, Droppable, CollisionDetector } from 'dragdoll';
 import { PointerSensor } from 'dragdoll';
 
+// Create a DndContext instance.
 const dndContext = new DndContext();
 
 // Create a draggable
@@ -21,22 +20,39 @@ const draggable = new Draggable([pointerSensor], {
 });
 
 // Create a droppable
-const dropZone = document.querySelector('.drop-zone') as HTMLElement;
-const droppable = new Droppable(dropZone, {
+const dropZoneElement = document.querySelector('.drop-zone') as HTMLElement;
+const droppable = new Droppable(dropZoneElement, {
   accept: ['groupA'],
 });
 
-// Register elements with the context
+// Add draggables and droppables to the context.
 dndContext.addDraggable(draggable);
 dndContext.addDroppable(droppable);
 
-// Listen to drag events
+// Listen to events.
 dndContext.on('start', ({ draggable, targets }) => {
-  console.log('Drag started', draggable, targets);
+  console.log('Drag Started', draggable, targets);
 });
-
-dndContext.on('drop', ({ draggable, collisions }) => {
-  console.log('Dropped on', collisions);
+dndContext.on('move', ({ draggable, targets }) => {
+  console.log('Drag Moved', draggable, targets);
+});
+dndContext.on('enter', ({ draggable, targets, collisions, addedCollisions, collisionData }) => {
+  console.log('Draggable Entered', draggable, targets, collisions, addedCollisions, collisionData);
+});
+dndContext.on('leave', ({ draggable, targets, collisions, removedCollisions, collisionData }) => {
+  console.log('Draggable Left', draggable, targets, collisions, removedCollisions, collisionData);
+});
+dndContext.on('over', ({ draggable, targets, collisions, persistedCollisions, collisionData }) => {
+  console.log('Draggable Over', draggable, targets, collisions, persistedCollisions, collisionData);
+});
+dndContext.on('drop', ({ draggable, targets, collisions, collisionData }) => {
+  console.log('Draggable Dropped', draggable, targets, collisions, collisionData);
+});
+dndContext.on('end', ({ draggable, targets }) => {
+  console.log('Drag Ended', draggable, targets);
+});
+dndContext.on('cancel', ({ draggable, targets }) => {
+  console.log('Drag Cancelled', draggable, targets);
 });
 ```
 
@@ -53,7 +69,11 @@ class DndContext {
 1. **options**
    - An optional configuration object with the following properties:
      - **`collisionDetector`**
-       - A custom `CollisionDetector` instance for determining which droppables are colliding with a draggable element. If not provided, a default `CollisionDetector` will be created.
+       - Either a collision detector options object or a factory function that creates a custom `CollisionDetector` instance.
+       - If an options object is provided, it will be used to configure the default `CollisionDetector`.
+       - If a factory function is provided, it receives the `DndContext` instance as an argument and should return a `CollisionDetector`.
+       - If not provided, a default `CollisionDetector` will be created.
+       - See the [CollisionDetector](/collision-detector) documentation for more details.
 
 ## Properties
 
@@ -227,7 +247,12 @@ Destroys the DndContext by emitting the `destroy` event, unbinding all event lis
 type start = (data: { draggable: Draggable<any>; targets: Droppable[] }) => void;
 ```
 
-Emitted when a draggable starts dragging. The callback receives the draggable instance and an array of potential droppable targets.
+Emitted when a draggable starts dragging.
+
+**Event Data:**
+
+- `draggable` - The draggable instance that started dragging.
+- `targets` - Array of all droppable instances that accept this draggable (based on the droppable's `accept` criteria and the draggable's `group`).
 
 ### move
 
@@ -236,6 +261,11 @@ type move = (data: { draggable: Draggable<any>; targets: Droppable[] }) => void;
 ```
 
 Emitted when a draggable moves during dragging.
+
+**Event Data:**
+
+- `draggable` - The draggable instance that is moving.
+- `targets` - Array of all droppable instances that accept this draggable (based on the droppable's `accept` criteria and the draggable's `group`).
 
 ### enter
 
@@ -249,7 +279,15 @@ type enter = (data: {
 }) => void;
 ```
 
-Emitted when a draggable first collides with one or more droppables. The `addedCollisions` array contains only the droppables that newly entered collision state. The `collisionData` map provides detailed collision information for each colliding droppable.
+Emitted when a draggable first collides with one or more droppables.
+
+**Event Data:**
+
+- `draggable` - The draggable instance that entered collision with droppables.
+- `targets` - Array of all droppable instances that accept this draggable (based on the droppable's `accept` criteria and the draggable's `group`).
+- `collisions` - Array of all droppable instances currently colliding with the draggable (includes `addedCollisions`).
+- `addedCollisions` - Array of droppable instances that newly entered collision state in this detection cycle.
+- `collisionData` - Map containing detailed [collision information](/collision-detector#collisiondata-interface) for each colliding droppable.
 
 ### leave
 
@@ -263,7 +301,15 @@ type leave = (data: {
 }) => void;
 ```
 
-Emitted when a draggable stops colliding with one or more droppables. The `removedCollisions` array contains only the droppables that newly exited collision state.
+Emitted when a draggable stops colliding with one or more droppables.
+
+**Event Data:**
+
+- `draggable` - The draggable instance that left collision with droppables.
+- `targets` - Array of all droppable instances that accept this draggable (based on the droppable's `accept` criteria and the draggable's `group`).
+- `collisions` - Array of all droppable instances currently colliding with the draggable (excludes `removedCollisions`).
+- `removedCollisions` - Array of droppable instances that newly exited collision state in this detection cycle.
+- `collisionData` - Map containing detailed [collision information](/collision-detector#collisiondata-interface) for each colliding droppable.
 
 ### over
 
@@ -277,7 +323,15 @@ type over = (data: {
 }) => void;
 ```
 
-Emitted for persisting collisions—when a draggable continues colliding with droppables. The `persistedCollisions` array contains only the droppables that remain in collision from the previous collision detection.
+Emitted for persisting collisions. In other words, this will not be emitted on the initial collision, only the consecutive ones.
+
+**Event Data:**
+
+- `draggable` - The draggable instance that is over droppables.
+- `targets` - Array of all droppable instances that accept this draggable (based on the droppable's `accept` criteria and the draggable's `group`).
+- `collisions` - Array of all droppable instances currently colliding with the draggable (includes `persistedCollisions`).
+- `persistedCollisions` - Array of droppable instances that remain in collision from the previous collision detection check (excludes newly entered collisions).
+- `collisionData` - Map containing detailed [collision information](/collision-detector#collisiondata-interface) for each colliding droppable.
 
 ### drop
 
@@ -292,6 +346,13 @@ type drop = (data: {
 
 Emitted when a draggable is dropped while colliding with one or more droppables.
 
+**Event Data:**
+
+- `draggable` - The draggable instance that was dropped.
+- `targets` - Array of all droppable instances that accept this draggable (based on the droppable's `accept` criteria and the draggable's `group`).
+- `collisions` - Array of droppable instances that were colliding with the draggable at the time of drop.
+- `collisionData` - Map containing detailed [collision information](/collision-detector#collisiondata-interface) for each colliding droppable.
+
 ### end
 
 ```ts
@@ -299,6 +360,11 @@ type end = (data: { draggable: Draggable<any>; targets: Droppable[] }) => void;
 ```
 
 Emitted when the drag ends, regardless of whether a drop occurred.
+
+**Event Data:**
+
+- `draggable` - The draggable instance that ended dragging.
+- `targets` - Array of all droppable instances that accept this draggable (based on the droppable's `accept` criteria and the draggable's `group`).
 
 ### cancel
 
@@ -308,6 +374,11 @@ type cancel = (data: { draggable: Draggable<any>; targets: Droppable[] }) => voi
 
 Emitted when a drag is cancelled (e.g., by pressing Escape).
 
+**Event Data:**
+
+- `draggable` - The draggable instance that was cancelled.
+- `targets` - Array of all droppable instances that accept this draggable (based on the droppable's `accept` criteria and the draggable's `group`).
+
 ### addDraggable
 
 ```ts
@@ -315,6 +386,10 @@ type addDraggable = (data: { draggable: Draggable<any> }) => void;
 ```
 
 Emitted when a draggable is registered with the context.
+
+**Event Data:**
+
+- `draggable` - The draggable instance that was added to the context.
 
 ### removeDraggable
 
@@ -324,6 +399,10 @@ type removeDraggable = (data: { draggable: Draggable<any> }) => void;
 
 Emitted when a draggable is deregistered from the context.
 
+**Event Data:**
+
+- `draggable` - The draggable instance that was removed from the context.
+
 ### addDroppable
 
 ```ts
@@ -332,6 +411,10 @@ type addDroppable = (data: { droppable: Droppable }) => void;
 
 Emitted when a droppable is registered with the context.
 
+**Event Data:**
+
+- `droppable` - The droppable instance that was added to the context.
+
 ### removeDroppable
 
 ```ts
@@ -339,6 +422,10 @@ type removeDroppable = (data: { droppable: Droppable }) => void;
 ```
 
 Emitted when a droppable is deregistered from the context.
+
+**Event Data:**
+
+- `droppable` - The droppable instance that was removed from the context.
 
 ### destroy
 

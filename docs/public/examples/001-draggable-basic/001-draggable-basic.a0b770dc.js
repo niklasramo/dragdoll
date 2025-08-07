@@ -3976,9 +3976,6 @@ const $fa11c4bc76a2544e$export$360ab8c194eb7385 = {
     RemoveDroppable: 'removeDroppable',
     Destroy: 'destroy'
 };
-const $fa11c4bc76a2544e$export$44eb89083e83f10a = {
-    collisionDetector: undefined
-};
 class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     constructor(options = {}){
         this._onScroll = ()=>{
@@ -3989,7 +3986,7 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
                 });
             }, this._scrollTickerId);
         };
-        const { collisionDetector: collisionDetector = $fa11c4bc76a2544e$export$44eb89083e83f10a.collisionDetector } = options;
+        const { collisionDetector: collisionDetector } = options;
         this.draggables = new Set();
         this.droppables = new Map();
         this._listenerId = Symbol();
@@ -3997,7 +3994,8 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
         this._dragData = new Map();
         this._isCheckingCollisions = false;
         this._emitter = new (0, $e4e7a534e772252d$export$4293555f241ae35a)();
-        this._collisionDetector = collisionDetector || new (0, $24bdaa72c91e807d$export$b931ab7b292a336c)(this);
+        if (typeof collisionDetector === 'function') this._collisionDetector = collisionDetector(this);
+        else this._collisionDetector = new (0, $24bdaa72c91e807d$export$b931ab7b292a336c)(this, collisionDetector);
     }
     _isTarget(draggable, droppable) {
         let isAcceptable = typeof droppable.accept === 'function' ? droppable.accept(draggable) : droppable.accept.includes(draggable.settings.group);
@@ -4319,25 +4317,28 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
-const $dffb89cf206e4bcc$var$element = document.querySelector('.draggable');
-const $dffb89cf206e4bcc$var$handle = $dffb89cf206e4bcc$var$element.querySelector('.handle');
-const $dffb89cf206e4bcc$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($dffb89cf206e4bcc$var$handle);
-const $dffb89cf206e4bcc$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($dffb89cf206e4bcc$var$element);
-const $dffb89cf206e4bcc$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $dffb89cf206e4bcc$var$pointerSensor,
-    $dffb89cf206e4bcc$var$keyboardSensor
-], {
-    elements: ()=>[
-            $dffb89cf206e4bcc$var$element
-        ],
-    onStart: ()=>{
-        $dffb89cf206e4bcc$var$element.classList.add('dragging');
-        if ($dffb89cf206e4bcc$var$draggable.drag.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) $dffb89cf206e4bcc$var$element.classList.add('pointer-dragging');
-        else $dffb89cf206e4bcc$var$element.classList.add('keyboard-dragging');
-    },
-    onEnd: ()=>{
-        $dffb89cf206e4bcc$var$element.classList.remove('dragging', 'pointer-dragging', 'keyboard-dragging');
-    }
+let $1721b684b57c24ff$var$zIndex = 0;
+const $1721b684b57c24ff$var$draggableElements = [
+    ...document.querySelectorAll('.draggable')
+];
+$1721b684b57c24ff$var$draggableElements.forEach((element)=>{
+    const pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element);
+    const keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)(element);
+    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+        pointerSensor,
+        keyboardSensor
+    ], {
+        elements: ()=>[
+                element
+            ],
+        onStart: ()=>{
+            element.classList.add('dragging');
+            element.style.zIndex = `${++$1721b684b57c24ff$var$zIndex}`;
+        },
+        onEnd: ()=>{
+            element.classList.remove('dragging');
+        }
+    });
 });
 
 

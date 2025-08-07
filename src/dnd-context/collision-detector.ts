@@ -23,20 +23,26 @@ export interface CollisionData {
   score: number;
 }
 
+export interface CollisionDetectorOptions<T extends CollisionData = CollisionData> {
+  getCollisionData?: (draggable: Draggable<any>, droppable: Droppable) => T | null;
+  sortCollisions?: (draggable: Draggable<any>, collisions: T[]) => T[];
+}
+
 export class CollisionDetector<T extends CollisionData = CollisionData> {
   private listenerId: Symbol;
-  private dndContext: DndContext;
+  private dndContext: DndContext<T>;
   private collisionDataPool: FastObjectPool<T, [T]>;
   protected getCollisionData: (draggable: Draggable<any>, droppable: Droppable) => T | null;
   protected sortCollisions: (draggable: Draggable<any>, collisions: T[]) => T[];
 
   constructor(
-    dndContext: DndContext,
+    dndContext: DndContext<T>,
     {
       getCollisionData = (draggable: Draggable<any>, droppable: Droppable): T | null => {
         const draggableRect = draggable.getClientRect();
         const droppableRect = droppable.getClientRect();
         if (!draggableRect) return null;
+
         const score = getIntersectionScore(draggableRect, droppableRect);
         if (score <= 0) return null;
 
@@ -53,13 +59,11 @@ export class CollisionDetector<T extends CollisionData = CollisionData> {
         return collisions.sort((a, b) => {
           const diff = b.score - a.score;
           if (diff !== 0) return diff;
+
           return a.width * a.height - b.width * b.height;
         });
       },
-    }: {
-      getCollisionData?: (draggable: Draggable<any>, droppable: Droppable) => T | null;
-      sortCollisions?: (draggable: Draggable<any>, collisions: T[]) => T[];
-    } = {},
+    }: CollisionDetectorOptions<T> = {},
   ) {
     this.listenerId = Symbol();
     this.dndContext = dndContext;
@@ -74,21 +78,12 @@ export class CollisionDetector<T extends CollisionData = CollisionData> {
     this.getCollisionData = getCollisionData;
     this.sortCollisions = sortCollisions;
 
-    // We only ever need to have as many items in the collision data pool as there
-    // are droppables.
+    // We only ever need to have as many items in the collision data pool as
+    // there are droppables.
     this.dndContext.on(
       'removeDroppable',
       () => {
         this.collisionDataPool.resetItems(this.dndContext.droppables.size);
-      },
-      this.listenerId,
-    );
-
-    // Reset items when dnd context is destroyed.
-    this.dndContext.on(
-      'destroy',
-      () => {
-        this.collisionDataPool.resetItems();
       },
       this.listenerId,
     );
@@ -148,6 +143,5 @@ export class CollisionDetector<T extends CollisionData = CollisionData> {
   destroy() {
     this.collisionDataPool.resetItems();
     this.dndContext.off('removeDroppable', this.listenerId);
-    this.dndContext.off('destroy', this.listenerId);
   }
 }

@@ -3976,9 +3976,6 @@ const $fa11c4bc76a2544e$export$360ab8c194eb7385 = {
     RemoveDroppable: 'removeDroppable',
     Destroy: 'destroy'
 };
-const $fa11c4bc76a2544e$export$44eb89083e83f10a = {
-    collisionDetector: undefined
-};
 class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     constructor(options = {}){
         this._onScroll = ()=>{
@@ -3989,7 +3986,7 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
                 });
             }, this._scrollTickerId);
         };
-        const { collisionDetector: collisionDetector = $fa11c4bc76a2544e$export$44eb89083e83f10a.collisionDetector } = options;
+        const { collisionDetector: collisionDetector } = options;
         this.draggables = new Set();
         this.droppables = new Map();
         this._listenerId = Symbol();
@@ -3997,7 +3994,8 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
         this._dragData = new Map();
         this._isCheckingCollisions = false;
         this._emitter = new (0, $e4e7a534e772252d$export$4293555f241ae35a)();
-        this._collisionDetector = collisionDetector || new (0, $24bdaa72c91e807d$export$b931ab7b292a336c)(this);
+        if (typeof collisionDetector === 'function') this._collisionDetector = collisionDetector(this);
+        else this._collisionDetector = new (0, $24bdaa72c91e807d$export$b931ab7b292a336c)(this, collisionDetector);
     }
     _isTarget(draggable, droppable) {
         let isAcceptable = typeof droppable.accept === 'function' ? droppable.accept(draggable) : droppable.accept.includes(draggable.settings.group);
@@ -4319,81 +4317,32 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
-// Initialize context and get elements
-const $f3affae21016fe5a$var$dndContext = new (0, $fa11c4bc76a2544e$export$2d5c5ceac203fc1e)();
-const $f3affae21016fe5a$var$draggableElements = [
-    ...document.querySelectorAll('.draggable')
-];
-const $f3affae21016fe5a$var$droppableElements = [
-    ...document.querySelectorAll('.droppable')
-];
-// Create droppables
-$f3affae21016fe5a$var$droppableElements.forEach((element)=>{
-    const droppable = new (0, $8cf3b9f73d8dfc46$export$423ec2075359570a)(element);
-    droppable.data.overIds = new Set();
-    droppable.data.droppedIds = new Set();
-    $f3affae21016fe5a$var$dndContext.addDroppable(droppable);
+const $f770251f4470ce8a$var$element = document.querySelector('.draggable');
+const $f770251f4470ce8a$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($f770251f4470ce8a$var$element);
+const $f770251f4470ce8a$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($f770251f4470ce8a$var$element);
+const $f770251f4470ce8a$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $f770251f4470ce8a$var$pointerSensor,
+    $f770251f4470ce8a$var$keyboardSensor
+], {
+    elements: ()=>[
+            $f770251f4470ce8a$var$element
+        ],
+    positionModifiers: [
+        (0, $e4a9d189cff00937$export$b43dd221600cdb2e)(()=>{
+            return {
+                x: 0,
+                y: 0,
+                width: window.innerWidth,
+                height: window.innerHeight
+            };
+        })
+    ],
+    onStart: ()=>{
+        $f770251f4470ce8a$var$element.classList.add('dragging');
+    },
+    onEnd: ()=>{
+        $f770251f4470ce8a$var$element.classList.remove('dragging');
+    }
 });
-// Create draggables
-$f3affae21016fe5a$var$draggableElements.forEach((element)=>{
-    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-        new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element),
-        new (0, $7fff4587bd07df96$export$436f6efcc297171)(element)
-    ], {
-        elements: ()=>[
-                element
-            ],
-        startPredicate: ()=>!element.classList.contains('dragging'),
-        onStart: (drag)=>drag.items[0].element.classList.add('dragging'),
-        onEnd: (drag)=>drag.items[0].element.classList.remove('dragging')
-    });
-    $f3affae21016fe5a$var$dndContext.addDraggable(draggable);
-});
-// DnD logic
-{
-    const onStart = (data)=>{
-        const { draggable: draggable, targets: targets } = data;
-        targets.forEach((target)=>{
-            target.data.droppedIds.delete(draggable.id);
-            if (target.data.droppedIds.size === 0) target.element.classList.remove('draggable-dropped');
-        });
-    };
-    const onEnterAndOver = (data)=>{
-        const { draggable: draggable, collisions: collisions } = data;
-        const clonedCollisions = [
-            ...collisions
-        ];
-        // Add the draggable to the first collision.
-        const target = clonedCollisions.shift();
-        target.data.overIds.add(draggable.id);
-        target.element.classList.add('draggable-over');
-        // Remove the draggable from the other collisions.
-        clonedCollisions.forEach((collision)=>{
-            collision.data.overIds.delete(draggable.id);
-            if (collision.data.overIds.size === 0) collision.element.classList.remove('draggable-over');
-        });
-    };
-    const onLeave = (data)=>{
-        const { draggable: draggable, removedCollisions: removedCollisions } = data;
-        removedCollisions.forEach((target)=>{
-            target.data.overIds.delete(draggable.id);
-            if (target.data.overIds.size === 0) target.element.classList.remove('draggable-over');
-        });
-    };
-    const onDrop = (data)=>{
-        const { draggable: draggable, collisions: collisions } = data;
-        const target = collisions[0];
-        // Update dropped ids
-        target.data.droppedIds.add(draggable.id);
-        target.element.classList.add('draggable-dropped');
-        // Update over ids
-        target.data.overIds.delete(draggable.id);
-        if (target.data.overIds.size === 0) target.element.classList.remove('draggable-over');
-    };
-    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Start, onStart);
-    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Enter, onEnterAndOver);
-    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Over, onEnterAndOver);
-    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Leave, onLeave);
-    $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Drop, onDrop);
-}
+
 

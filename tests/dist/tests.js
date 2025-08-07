@@ -6664,9 +6664,6 @@ var DndContextEventType = {
   RemoveDroppable: "removeDroppable",
   Destroy: "destroy"
 };
-var defaultDndContextOptions = {
-  collisionDetector: void 0
-};
 var DndContext = class {
   constructor(options4 = {}) {
     this._onScroll = () => {
@@ -6681,7 +6678,7 @@ var DndContext = class {
         this._scrollTickerId
       );
     };
-    const { collisionDetector = defaultDndContextOptions.collisionDetector } = options4;
+    const { collisionDetector } = options4;
     this.draggables = /* @__PURE__ */ new Set();
     this.droppables = /* @__PURE__ */ new Map();
     this._listenerId = Symbol();
@@ -6689,7 +6686,11 @@ var DndContext = class {
     this._dragData = /* @__PURE__ */ new Map();
     this._isCheckingCollisions = false;
     this._emitter = new Emitter5();
-    this._collisionDetector = collisionDetector || new CollisionDetector(this);
+    if (typeof collisionDetector === "function") {
+      this._collisionDetector = collisionDetector(this);
+    } else {
+      this._collisionDetector = new CollisionDetector(this, collisionDetector);
+    }
   }
   _isTarget(draggable, droppable) {
     let isAcceptable = typeof droppable.accept === "function" ? droppable.accept(draggable) : droppable.accept.includes(draggable.settings.group);

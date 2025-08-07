@@ -6,7 +6,11 @@ import { Droppable, DroppableEventType } from '../droppable/droppable.js';
 
 import { SensorEventType } from '../sensors/sensor.js';
 
-import { CollisionDetector, CollisionData } from './collision-detector.js';
+import {
+  CollisionDetector,
+  CollisionData,
+  CollisionDetectorOptions,
+} from './collision-detector.js';
 
 import { ticker, tickerPhases } from '../singletons/ticker.js';
 
@@ -30,7 +34,7 @@ export const DndContextEventType = {
 
 export type DndContextEventType = (typeof DndContextEventType)[keyof typeof DndContextEventType];
 
-export interface DndContextEventCallbacks {
+export interface DndContextEventCallbacks<T extends CollisionData = CollisionData> {
   [DndContextEventType.Start]: (data: { draggable: Draggable<any>; targets: Droppable[] }) => void;
   [DndContextEventType.Move]: (data: { draggable: Draggable<any>; targets: Droppable[] }) => void;
   [DndContextEventType.Enter]: (data: {
@@ -38,27 +42,27 @@ export interface DndContextEventCallbacks {
     targets: Droppable[];
     collisions: Droppable[];
     addedCollisions: Droppable[];
-    collisionData: Map<Droppable, CollisionData>;
+    collisionData: Map<Droppable, T>;
   }) => void;
   [DndContextEventType.Leave]: (data: {
     draggable: Draggable<any>;
     targets: Droppable[];
     collisions: Droppable[];
     removedCollisions: Droppable[];
-    collisionData: Map<Droppable, CollisionData>;
+    collisionData: Map<Droppable, T>;
   }) => void;
   [DndContextEventType.Over]: (data: {
     draggable: Draggable<any>;
     targets: Droppable[];
     collisions: Droppable[];
     persistedCollisions: Droppable[];
-    collisionData: Map<Droppable, CollisionData>;
+    collisionData: Map<Droppable, T>;
   }) => void;
   [DndContextEventType.Drop]: (data: {
     draggable: Draggable<any>;
     targets: Droppable[];
     collisions: Droppable[];
-    collisionData: Map<Droppable, CollisionData>;
+    collisionData: Map<Droppable, T>;
   }) => void;
   [DndContextEventType.End]: (data: { draggable: Draggable<any>; targets: Droppable[] }) => void;
   [DndContextEventType.Cancel]: (data: { draggable: Draggable<any>; targets: Droppable[] }) => void;
@@ -69,20 +73,18 @@ export interface DndContextEventCallbacks {
   [DndContextEventType.Destroy]: () => void;
 }
 
-export interface DndContextOptions {
-  collisionDetector?: CollisionDetector;
+export interface DndContextOptions<T extends CollisionData = CollisionData> {
+  collisionDetector?:
+    | CollisionDetectorOptions<T>
+    | ((dndContext: DndContext<T>) => CollisionDetector<T>);
 }
 
-export type DndContextCollisionDetection = (
+export type DndContextCollisionDetection<T extends CollisionData = CollisionData> = (
   draggable: Draggable<any>,
   targetDroppables: Set<Droppable>,
-) => Map<Droppable, CollisionData>;
+) => Map<Droppable, T>;
 
-export const defaultDndContextOptions: DndContextOptions = {
-  collisionDetector: undefined,
-};
-
-export class DndContext {
+export class DndContext<T extends CollisionData = CollisionData> {
   // Keep track of all added draggables and droppables.
   readonly draggables: ReadonlySet<Draggable<any>>;
   readonly droppables: ReadonlyMap<Symbol, Droppable>;
@@ -98,24 +100,24 @@ export class DndContext {
     Draggable<any>,
     {
       targets: Set<Droppable> | null;
-      collisions: Map<Droppable, CollisionData>;
+      collisions: Map<Droppable, T>;
       data: { [key: string]: any };
     }
   >;
 
   // The current collision detection function.
-  protected _collisionDetector: CollisionDetector;
+  protected _collisionDetector: CollisionDetector<T>;
 
   // Flag to detect if we are checking collisions.
   protected _isCheckingCollisions: boolean;
 
   // The internal event emitter.
   protected _emitter: Emitter<{
-    [K in keyof DndContextEventCallbacks]: DndContextEventCallbacks[K];
+    [K in keyof DndContextEventCallbacks<T>]: DndContextEventCallbacks<T>[K];
   }>;
 
-  constructor(options: DndContextOptions = {}) {
-    const { collisionDetector = defaultDndContextOptions.collisionDetector } = options;
+  constructor(options: DndContextOptions<T> = {}) {
+    const { collisionDetector } = options;
 
     this.draggables = new Set();
     this.droppables = new Map();
@@ -124,7 +126,12 @@ export class DndContext {
     this._dragData = new Map();
     this._isCheckingCollisions = false;
     this._emitter = new Emitter();
-    this._collisionDetector = collisionDetector || new CollisionDetector(this);
+
+    if (typeof collisionDetector === 'function') {
+      this._collisionDetector = collisionDetector(this);
+    } else {
+      this._collisionDetector = new CollisionDetector<T>(this, collisionDetector);
+    }
   }
 
   protected _isTarget(draggable: Draggable<any>, droppable: Droppable) {
@@ -309,15 +316,15 @@ export class DndContext {
     );
   };
 
-  on<T extends keyof DndContextEventCallbacks>(
-    type: T,
-    listener: DndContextEventCallbacks[T],
+  on<K extends keyof DndContextEventCallbacks<T>>(
+    type: K,
+    listener: DndContextEventCallbacks<T>[K],
     listenerId?: EventListenerId,
   ): EventListenerId {
     return this._emitter.on(type, listener, listenerId);
   }
 
-  off<T extends keyof DndContextEventCallbacks>(type: T, listenerId: EventListenerId): void {
+  off<K extends keyof DndContextEventCallbacks<T>>(type: K, listenerId: EventListenerId): void {
     this._emitter.off(type, listenerId);
   }
 

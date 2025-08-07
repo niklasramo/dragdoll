@@ -3976,9 +3976,6 @@ const $fa11c4bc76a2544e$export$360ab8c194eb7385 = {
     RemoveDroppable: 'removeDroppable',
     Destroy: 'destroy'
 };
-const $fa11c4bc76a2544e$export$44eb89083e83f10a = {
-    collisionDetector: undefined
-};
 class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     constructor(options = {}){
         this._onScroll = ()=>{
@@ -3989,7 +3986,7 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
                 });
             }, this._scrollTickerId);
         };
-        const { collisionDetector: collisionDetector = $fa11c4bc76a2544e$export$44eb89083e83f10a.collisionDetector } = options;
+        const { collisionDetector: collisionDetector } = options;
         this.draggables = new Set();
         this.droppables = new Map();
         this._listenerId = Symbol();
@@ -3997,7 +3994,8 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
         this._dragData = new Map();
         this._isCheckingCollisions = false;
         this._emitter = new (0, $e4e7a534e772252d$export$4293555f241ae35a)();
-        this._collisionDetector = collisionDetector || new (0, $24bdaa72c91e807d$export$b931ab7b292a336c)(this);
+        if (typeof collisionDetector === 'function') this._collisionDetector = collisionDetector(this);
+        else this._collisionDetector = new (0, $24bdaa72c91e807d$export$b931ab7b292a336c)(this, collisionDetector);
     }
     _isTarget(draggable, droppable) {
         let isAcceptable = typeof droppable.accept === 'function' ? droppable.accept(draggable) : droppable.accept.includes(draggable.settings.group);
@@ -4319,41 +4317,40 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
-const $72821dbb08df4f25$var$element = document.querySelector('.draggable');
-const $72821dbb08df4f25$var$dragContainer = document.querySelector('.drag-container');
-const $72821dbb08df4f25$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($72821dbb08df4f25$var$element);
-const $72821dbb08df4f25$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($72821dbb08df4f25$var$element, {
-    computeSpeed: ()=>100
-});
-const $72821dbb08df4f25$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $72821dbb08df4f25$var$pointerSensor,
-    $72821dbb08df4f25$var$keyboardSensor
+const $36439aed3cd46e36$var$element = document.querySelector('.draggable');
+const $36439aed3cd46e36$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($36439aed3cd46e36$var$element);
+const $36439aed3cd46e36$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($36439aed3cd46e36$var$element);
+const $36439aed3cd46e36$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $36439aed3cd46e36$var$pointerSensor,
+    $36439aed3cd46e36$var$keyboardSensor
 ], {
-    container: $72821dbb08df4f25$var$dragContainer,
     elements: ()=>[
-            $72821dbb08df4f25$var$element
+            $36439aed3cd46e36$var$element
         ],
-    frozenStyles: ()=>[
-            'left',
-            'top'
-        ],
+    positionModifiers: [
+        (change, { drag: drag, item: item, phase: phase })=>{
+            // Align the dragged element so that the pointer
+            // is in the center of the element.
+            if (// Only apply the alignment on the start phase.
+            phase === 'start' && // Only apply the alignment for the pointer sensor.
+            drag.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638) && // Only apply the alignment for the primary drag element.
+            drag.items[0].element === item.element) {
+                const { clientRect: clientRect } = item;
+                const { x: x, y: y } = drag.startEvent;
+                const targetX = clientRect.x + clientRect.width / 2;
+                const targetY = clientRect.y + clientRect.height / 2;
+                change.x = x - targetX;
+                change.y = y - targetY;
+            }
+            return change;
+        }
+    ],
     onStart: ()=>{
-        $72821dbb08df4f25$var$element.classList.add('dragging');
+        $36439aed3cd46e36$var$element.classList.add('dragging');
     },
     onEnd: ()=>{
-        $72821dbb08df4f25$var$element.classList.remove('dragging');
+        $36439aed3cd46e36$var$element.classList.remove('dragging');
     }
-}).use((0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
-    targets: [
-        {
-            element: window,
-            axis: 'y',
-            padding: {
-                top: Infinity,
-                bottom: Infinity
-            }
-        }
-    ]
-}));
+});
 
 

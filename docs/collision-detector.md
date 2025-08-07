@@ -2,42 +2,38 @@
 
 # CollisionDetector
 
-The `CollisionDetector` class is responsible for determining which droppables are colliding with a draggable during drag operations. It supports hierarchical droppable structures and uses an object pool for performance optimization.
+The `CollisionDetector` class is responsible for determining which droppables are colliding with a draggable during drag operations.
 
 ## Example
 
 ```ts
 import { CollisionDetector, DndContext } from 'dragdoll';
 
-// Create a custom collision detector
-const collisionDetector = new CollisionDetector(dndContext, {
-  getCollisionData: (draggable, droppable) => {
-    // Custom collision logic
-    const draggableRect = draggable.getClientRect();
-    const droppableRect = droppable.getClientRect();
-    if (!draggableRect) return null;
-
-    // Custom scoring logic
-    const score = calculateCustomScore(draggableRect, droppableRect);
-    if (score <= 0) return null;
-
-    return {
-      id: droppable.id,
-      x: droppableRect.x,
-      y: droppableRect.y,
-      width: droppableRect.width,
-      height: droppableRect.height,
-      score,
-    };
-  },
-  sortCollisions: (draggable, collisions) => {
-    // Custom sorting logic
-    return collisions.sort((a, b) => b.score - a.score);
+// Passing the collision detector options directly to the `DndContext`
+// constructor.
+const dndContextBasic = new DndContext({
+  collisionDetector: {
+    getCollisionData: (draggable, droppable) => {
+      // Custom collision logic...
+    },
+    sortCollisions: (draggable, collisions) => {
+      // Custom sorting logic...
+    },
   },
 });
 
-// Use it with DndContext
-const dndContext = new DndContext({ collisionDetector });
+// Using a creator function.
+const dndContextAdvanced = new DndContext({
+  collisionDetector: (dndContext) =>
+    new CollisionDetector(dndContext, {
+      getCollisionData: (draggable, droppable) => {
+        // Custom collision logic...
+      },
+      sortCollisions: (draggable, collisions) => {
+        // Custom sorting logic...
+      },
+    }),
+});
 ```
 
 ## Constructor
@@ -62,24 +58,11 @@ class CollisionDetector<T extends CollisionData = CollisionData> {
 2. **options**
    - An optional configuration object with the following properties:
      - **`getCollisionData`**
-       - A function that calculates collision data for a draggable-droppable pair. Returns `null` if no collision.
+       - A function that calculates collision data for a draggable-droppable pair. Return `null` if no collision, otherwise return a collision data object, which conforms to the [`CollisionData`](#collisiondata-interface) interface.
        - Default: Uses intersection score based on overlapping area.
      - **`sortCollisions`**
-       - A function that sorts collision results to determine priority.
+       - A function that sorts collision results to determine relevance/priority.
        - Default: Sorts by score (descending), then by area (ascending).
-
-## CollisionData Interface
-
-```ts
-interface CollisionData {
-  id: Symbol; // The droppable's unique ID
-  x: number; // X coordinate of the droppable
-  y: number; // Y coordinate of the droppable
-  width: number; // Width of the droppable
-  height: number; // Height of the droppable
-  score: number; // Collision score (higher = better match)
-}
-```
 
 ## Methods
 
@@ -93,11 +76,11 @@ Detects collisions between a draggable and a set of droppable targets. Returns a
 
 The algorithm:
 
-1. Starts with root-level droppables (those without parents)
-2. Finds collisions at the current level
-3. If collisions exist, sorts them and moves to the children of the best match
-4. Continues until no more collisions are found
-5. Returns the deepest matching droppables
+1. Starts with root-level droppables (those without parents).
+2. Finds collisions at the current level.
+3. If collisions exist, sorts them and moves to the children of the best match.
+4. Continues until no more collisions are found.
+5. Returns the deepest matching droppables.
 
 ### destroy
 
@@ -105,66 +88,51 @@ The algorithm:
 destroy(): void
 ```
 
-Cleans up resources, resets the object pool, and removes event listeners.
+Cleans up resources, resets the object pool, and removes event listeners. Note that you don't need to call this method manually after it's connected to the `DndContext` instance as it will be called automatically when the `DndContext` instance is destroyed.
 
-## Performance Optimizations
-
-1. **Object Pooling**: The CollisionDetector uses a `FastObjectPool` to reuse collision data objects, reducing garbage collection pressure.
-
-2. **Hierarchical Detection**: Instead of checking all droppables, it traverses the hierarchy level by level, stopping when no collisions are found.
-
-3. **Cached Client Rects**: Droppables cache their bounding rectangles, which are updated only when necessary (on scroll or explicit update).
-
-## Custom Collision Detection
-
-You can extend the `CollisionDetector` class or provide custom functions to implement different collision strategies:
+## CollisionData Interface
 
 ```ts
-// Example: Center-point collision detection
-const centerPointDetector = new CollisionDetector(dndContext, {
-  getCollisionData: (draggable, droppable) => {
-    const draggableRect = draggable.getClientRect();
-    const droppableRect = droppable.getClientRect();
-    if (!draggableRect) return null;
-
-    // Check if draggable center is inside droppable
-    const centerX = draggableRect.x + draggableRect.width / 2;
-    const centerY = draggableRect.y + draggableRect.height / 2;
-
-    const isInside =
-      centerX >= droppableRect.x &&
-      centerX <= droppableRect.x + droppableRect.width &&
-      centerY >= droppableRect.y &&
-      centerY <= droppableRect.y + droppableRect.height;
-
-    if (!isInside) return null;
-
-    return {
-      id: droppable.id,
-      x: droppableRect.x,
-      y: droppableRect.y,
-      width: droppableRect.width,
-      height: droppableRect.height,
-      score: 1, // Binary score for center-point detection
-    };
-  },
-});
+interface CollisionData {
+  id: Symbol; // The droppable's unique ID (droppable.id)
+  x: number; // X coordinate of the droppable (droppable.getClientRect().x)
+  y: number; // Y coordinate of the droppable (droppable.getClientRect().y)
+  width: number; // Width of the droppable (droppable.getClientRect().width)
+  height: number; // Height of the droppable (droppable.getClientRect().height)
+  score: number; // Collision score (higher = better match)
+}
 ```
 
-## TypeScript Support
-
-The `CollisionDetector` supports generic collision data types, allowing you to extend the base `CollisionData` interface:
+You can also import the interface from the `dragdoll` package:
 
 ```ts
+import { CollisionData } from 'dragdoll';
+```
+
+## Custom collision data
+
+In some more advanced use cases, you might want to extend the `CollisionData` interface to include more data. For example, if you want to use a different scoring algorithm.
+
+```ts
+import { CollisionDetector, DndContext, CollisionData } from 'dragdoll';
+
 interface CustomCollisionData extends CollisionData {
-  distance: number;
-  angle: number;
+  foo: string;
+  bar: number;
 }
 
-const customDetector = new CollisionDetector<CustomCollisionData>(dndContext, {
-  getCollisionData: (draggable, droppable) => {
-    // Return CustomCollisionData with additional fields
-    // ...
+const dndContext = new DndContext<CustomCollisionData>({
+  collisionDetector: {
+    getCollisionData: (draggable, droppable) => {
+      // Custom collision logic that should return `null` (for no collision)
+      // or a collision data object that conforms to the CustomCollisionData
+      // interface.
+    },
+    sortCollisions: (draggable, collisions) => {
+      // Custom sorting logic that should return the sorted collisions.
+    },
   },
 });
 ```
+
+This way all the events that are emitted by the `DndContext` will have the `CustomCollisionData` type as expected.
