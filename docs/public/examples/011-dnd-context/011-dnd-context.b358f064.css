@@ -29,8 +29,16 @@ body {
   border-radius: 7px;
   width: 100px;
   height: 100px;
+  transition: border-color .2s ease-out, box-shadow .2s ease-out;
+  box-shadow: 0 0 0 2px #0000, 0 0 0 3.5px #0000;
 
-  &.draggable-over, &.draggable-dropped {
-    background-color: var(--theme-color);
+  &.draggable-dropped {
+    border-color: var(--card-bgColor--drag);
+    box-shadow: 0 0 0 2px #0000, 0 0 0 3.5px #0000;
+  }
+
+  &.draggable-over {
+    border-color: var(--card-bgColor--focus);
+    box-shadow: 0 0 0 2px var(--bg-color), 0 0 0 3.5px var(--card-bgColor--focus);
   }
 }

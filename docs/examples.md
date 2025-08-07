@@ -1967,7 +1967,7 @@ body {
 
 ## DndContext - Basic
 
-A basic example of using DndContext with Draggable and Droppable elements.
+A basic example of using DndContext with Draggable and Droppable elements. Here we highlight the dropzone element that overlaps most with the dragged element.
 
 <div class="example"><iframe src="/dragdoll/examples/011-dnd-context/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/011-dnd-context/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
@@ -1982,6 +1982,8 @@ import {
   Droppable,
   DndContextEventType,
 } from 'dragdoll';
+
+let zIndex = 0;
 
 // Initialize context and get elements
 const dndContext = new DndContext();
@@ -2001,8 +2003,13 @@ draggableElements.forEach((element) => {
   const draggable = new Draggable([new PointerSensor(element), new KeyboardMotionSensor(element)], {
     elements: () => [element],
     startPredicate: () => !element.classList.contains('dragging'),
-    onStart: (drag) => drag.items[0].element.classList.add('dragging'),
-    onEnd: (drag) => drag.items[0].element.classList.remove('dragging'),
+    onStart: () => {
+      element.classList.add('dragging');
+      element.style.zIndex = `${++zIndex}`;
+    },
+    onEnd: () => {
+      element.classList.remove('dragging');
+    },
   });
   dndContext.addDraggable(draggable);
 });
@@ -2078,7 +2085,7 @@ draggableElements.forEach((element) => {
     <title>DndContext - Basic</title>
     <meta
       name="description"
-      content="A basic example of using DndContext with Draggable and Droppable elements."
+      content="A basic example of using DndContext with Draggable and Droppable elements. Here we highlight the dropzone element that overlaps most with the dragged element."
     />
     <meta
       name="viewport"
@@ -2167,13 +2174,25 @@ body {
   background-color: var(--bg-color);
   border-radius: 7px;
   border: 1.5px solid var(--theme-color);
-
-  &.draggable-over {
-    background-color: var(--theme-color);
-  }
+  transition:
+    border-color 0.2s ease-out,
+    box-shadow 0.2s ease-out;
+  box-shadow:
+    0 0 0 2px transparent,
+    0 0 0 3.5px transparent;
 
   &.draggable-dropped {
-    background-color: var(--theme-color);
+    border-color: var(--card-bgColor--drag);
+    box-shadow:
+      0 0 0 2px transparent,
+      0 0 0 3.5px transparent;
+  }
+
+  &.draggable-over {
+    border-color: var(--card-bgColor--focus);
+    box-shadow:
+      0 0 0 2px var(--bg-color),
+      0 0 0 3.5px var(--card-bgColor--focus);
   }
 }
 ```

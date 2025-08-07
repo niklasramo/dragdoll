@@ -4312,6 +4312,7 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
+let $f3affae21016fe5a$var$zIndex = 0;
 // Initialize context and get elements
 const $f3affae21016fe5a$var$dndContext = new (0, $fa11c4bc76a2544e$export$2d5c5ceac203fc1e)();
 const $f3affae21016fe5a$var$draggableElements = [
@@ -4337,8 +4338,13 @@ $f3affae21016fe5a$var$draggableElements.forEach((element)=>{
                 element
             ],
         startPredicate: ()=>!element.classList.contains('dragging'),
-        onStart: (drag)=>drag.items[0].element.classList.add('dragging'),
-        onEnd: (drag)=>drag.items[0].element.classList.remove('dragging')
+        onStart: ()=>{
+            element.classList.add('dragging');
+            element.style.zIndex = `${++$f3affae21016fe5a$var$zIndex}`;
+        },
+        onEnd: ()=>{
+            element.classList.remove('dragging');
+        }
     });
     $f3affae21016fe5a$var$dndContext.addDraggable(draggable);
 });

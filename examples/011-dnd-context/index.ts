@@ -7,6 +7,8 @@ import {
   DndContextEventType,
 } from '../../src';
 
+let zIndex = 0;
+
 // Initialize context and get elements
 const dndContext = new DndContext();
 const draggableElements = [...document.querySelectorAll('.draggable')] as HTMLElement[];
@@ -25,8 +27,13 @@ draggableElements.forEach((element) => {
   const draggable = new Draggable([new PointerSensor(element), new KeyboardMotionSensor(element)], {
     elements: () => [element],
     startPredicate: () => !element.classList.contains('dragging'),
-    onStart: (drag) => drag.items[0].element.classList.add('dragging'),
-    onEnd: (drag) => drag.items[0].element.classList.remove('dragging'),
+    onStart: () => {
+      element.classList.add('dragging');
+      element.style.zIndex = `${++zIndex}`;
+    },
+    onEnd: () => {
+      element.classList.remove('dragging');
+    },
   });
   dndContext.addDraggable(draggable);
 });
