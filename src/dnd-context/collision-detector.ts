@@ -1,147 +1,175 @@
 import type { Draggable } from '../draggable/draggable.js';
 import type { Droppable } from '../droppable/droppable.js';
-import type { DndContext } from './dnd-context.js';
+import type { DndContext, DndContextEventType, DndContextEventCallbacks } from './dnd-context.js';
 import { FastObjectPool } from '../utils/fast-object-pool.js';
+import { getIntersectionRect } from '../utils/get-intersection-rect.js';
 import { getIntersectionScore } from '../utils/get-intersection-score.js';
-
-// TODO: Ideally we want to take into account the droppable's and draggable's
-// overflow ancestors when calculating collisions. If for example the droppable
-// is inside a scrollable element and the draggable is e.g a sibling of that
-// element, we want to clip the the bounding client rect of every droppable
-// within that scrollable element to the scrollable element's bounds. Otherwise
-// the draggable might be considered colliding with droppables that are clipped
-// from view from the draggable's perspective. To do this, we'd need to compute
-// and store the closest scrollable ancestor for every dragged draggable and
-// their target droppables.
+import { createRect } from '../utils/create-rect.js';
+import { Rect } from '../types.js';
 
 export interface CollisionData {
-  id: Symbol;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  score: number;
+  droppableId: Symbol;
+  droppableRect: Rect;
+  draggableRect: Rect;
+  intersectionRect: Rect;
+  intersectionScore: number;
 }
+
+const TEMP_COLLISION_DATA: CollisionData = {
+  droppableId: Symbol(),
+  droppableRect: createRect(),
+  draggableRect: createRect(),
+  intersectionRect: createRect(),
+  intersectionScore: 0,
+} as const;
+
+const COLLISIONS: CollisionData[] = [];
 
 export interface CollisionDetectorOptions<T extends CollisionData = CollisionData> {
   getCollisionData?: (draggable: Draggable<any>, droppable: Droppable) => T | null;
   sortCollisions?: (draggable: Draggable<any>, collisions: T[]) => T[];
+  mergeCollisionData?: (target: T, source: T) => T;
+  createCollisionData?: (source: T) => T;
 }
 
+export const CollisionDetectorDefaultOptions = {
+  getCollisionData: <T extends CollisionData = CollisionData>(
+    draggable: Draggable<any>,
+    droppable: Droppable,
+    result: T = TEMP_COLLISION_DATA as T,
+  ): T | null => {
+    const draggableRect = draggable.getClientRect();
+    const droppableRect = droppable.getClientRect();
+    if (!draggableRect) return null;
+
+    const intersectionRect = getIntersectionRect(
+      draggableRect,
+      droppableRect,
+      result.intersectionRect,
+    );
+    if (intersectionRect === null) return null;
+
+    const intersectionScore = getIntersectionScore(draggableRect, droppableRect, intersectionRect);
+    if (intersectionScore <= 0) return null;
+
+    result.droppableId = droppable.id;
+    createRect(droppableRect, result.droppableRect);
+    createRect(draggableRect, result.draggableRect);
+    result.intersectionScore = intersectionScore;
+    return result;
+  },
+  mergeCollisionData: <T extends CollisionData = CollisionData>(target: T, source: T): T => {
+    target.droppableId = source.droppableId;
+    target.intersectionScore = source.intersectionScore;
+    createRect(source.droppableRect, target.droppableRect);
+    createRect(source.draggableRect, target.draggableRect);
+    createRect(source.intersectionRect, target.intersectionRect);
+    return target;
+  },
+  createCollisionData: <T extends CollisionData = CollisionData>(source: T): T => {
+    return {
+      droppableId: source.droppableId,
+      droppableRect: createRect(source.droppableRect),
+      draggableRect: createRect(source.draggableRect),
+      intersectionRect: createRect(source.intersectionRect),
+      intersectionScore: source.intersectionScore,
+    } as T;
+  },
+  sortCollisions: <T extends CollisionData = CollisionData>(
+    _draggable: Draggable<any>,
+    collisions: T[],
+  ): T[] => {
+    return collisions.sort((a, b) => {
+      const diff = b.intersectionScore - a.intersectionScore;
+      if (diff !== 0) return diff;
+
+      return (
+        a.droppableRect.width * a.droppableRect.height -
+        b.droppableRect.width * b.droppableRect.height
+      );
+    });
+  },
+} as const;
+
 export class CollisionDetector<T extends CollisionData = CollisionData> {
-  private listenerId: Symbol;
-  private dndContext: DndContext<T>;
-  private collisionDataPool: FastObjectPool<T, [T]>;
-  protected getCollisionData: (draggable: Draggable<any>, droppable: Droppable) => T | null;
-  protected sortCollisions: (draggable: Draggable<any>, collisions: T[]) => T[];
+  protected _listenerId: Symbol;
+  protected _dndContext: DndContext<T>;
+  protected _collisionDataPool: FastObjectPool<T, [T]>;
+  getCollisionData: (draggable: Draggable<any>, droppable: Droppable) => T | null;
+  createCollisionData: (source: T) => T;
+  mergeCollisionData: (target: T, source: T) => T;
+  sortCollisions: (draggable: Draggable<any>, collisions: T[]) => T[];
 
   constructor(
     dndContext: DndContext<T>,
     {
-      getCollisionData = (draggable: Draggable<any>, droppable: Droppable): T | null => {
-        const draggableRect = draggable.getClientRect();
-        const droppableRect = droppable.getClientRect();
-        if (!draggableRect) return null;
-
-        const score = getIntersectionScore(draggableRect, droppableRect);
-        if (score <= 0) return null;
-
-        return {
-          id: droppable.id,
-          x: droppableRect.x,
-          y: droppableRect.y,
-          width: droppableRect.width,
-          height: droppableRect.height,
-          score,
-        } as T;
-      },
-      sortCollisions = (_draggable, collisions: T[]) => {
-        return collisions.sort((a, b) => {
-          const diff = b.score - a.score;
-          if (diff !== 0) return diff;
-
-          return a.width * a.height - b.width * b.height;
-        });
-      },
+      getCollisionData = CollisionDetectorDefaultOptions.getCollisionData,
+      sortCollisions = CollisionDetectorDefaultOptions.sortCollisions,
+      mergeCollisionData = CollisionDetectorDefaultOptions.mergeCollisionData,
+      createCollisionData = CollisionDetectorDefaultOptions.createCollisionData,
     }: CollisionDetectorOptions<T> = {},
   ) {
-    this.listenerId = Symbol();
-    this.dndContext = dndContext;
-    this.collisionDataPool = new FastObjectPool<T, [T]>((item, data) => {
-      if (item) {
-        Object.assign(item, data);
-        return item;
-      } else {
-        return { ...data };
-      }
+    this._listenerId = Symbol();
+    this._dndContext = dndContext;
+    this._collisionDataPool = new FastObjectPool<T, [T]>((item, data) => {
+      return item ? this.mergeCollisionData(item, data) : this.createCollisionData(data);
     });
     this.getCollisionData = getCollisionData;
+    this.mergeCollisionData = mergeCollisionData;
+    this.createCollisionData = createCollisionData;
     this.sortCollisions = sortCollisions;
+
+    // Bind needed event handlers.
+    this._onRemoveDroppable = this._onRemoveDroppable.bind(this);
 
     // We only ever need to have as many items in the collision data pool as
     // there are droppables.
-    this.dndContext.on(
-      'removeDroppable',
-      () => {
-        this.collisionDataPool.resetItems(this.dndContext.droppables.size);
-      },
-      this.listenerId,
-    );
+    this._dndContext.on('removeDroppable', this._onRemoveDroppable, this._listenerId);
   }
 
-  private static getRootDroppable(d: Droppable) {
-    return d.parent === null;
+  protected _onRemoveDroppable(
+    _e: Parameters<DndContextEventCallbacks<T>[typeof DndContextEventType.RemoveDroppable]>[0],
+  ) {
+    this._collisionDataPool.resetItems(this._dndContext.droppables.size);
   }
 
-  private getDroppableFromCollisionData(c: T) {
-    return this.dndContext.droppables.get(c.id)!;
-  }
+  detectCollisions(
+    draggable: Draggable<any>,
+    targets: Set<Droppable>,
+    collisionMap: Map<Droppable, T>,
+  ) {
+    // Reset the collision map.
+    collisionMap.clear();
 
-  detectCollisions(draggable: Draggable<any>, targets: Set<Droppable>): Map<Droppable, T> {
-    // Start with root-level droppables (no parent).
-    // TODO: We should store these in the dnd context for faster access.
-    let currentBranch = Array.from(targets).filter(CollisionDetector.getRootDroppable);
-    let bestMatches: T[] = [];
-
-    // Keep going until we have no more branches to check.
-    while (currentBranch.length > 0) {
-      const branchMatches: T[] = [];
-
-      for (const droppable of currentBranch) {
-        const collisionData = this.getCollisionData(draggable, droppable);
-        if (collisionData !== null) {
-          branchMatches.push(this.collisionDataPool.get(collisionData));
-        }
+    // Detect collisions between the draggable and all targets.
+    for (const droppable of targets) {
+      const collisionData = this.getCollisionData(draggable, droppable);
+      if (collisionData !== null) {
+        COLLISIONS.push(this._collisionDataPool.get(collisionData));
       }
+    }
 
-      // If there are no matches, we can stop.
-      if (!branchMatches.length) break;
-
-      // Sort the collisions.
-      this.sortCollisions(draggable, branchMatches);
-
-      // Set the best matches.
-      bestMatches = branchMatches;
-
-      // Move to the next branch.
-      currentBranch = Array.from(this.dndContext.droppables.get(branchMatches[0].id)!.children);
+    // Sort the collisions.
+    if (COLLISIONS.length > 1) {
+      this.sortCollisions(draggable, COLLISIONS as T[]);
     }
 
     // Reset collision data pool pointer.
-    this.collisionDataPool.resetPointer();
+    this._collisionDataPool.resetPointer();
 
-    // Create a map of droppable to collision data
-    const result = new Map<Droppable, T>();
-    for (const collisionData of bestMatches) {
-      const droppable = this.getDroppableFromCollisionData(collisionData);
-      result.set(droppable, collisionData);
+    // Create a map of droppable to collision data.
+    const droppables = this._dndContext.droppables;
+    for (const collisionData of COLLISIONS as T[]) {
+      const droppable = droppables.get(collisionData.droppableId)!;
+      collisionMap.set(droppable, collisionData);
     }
 
-    return result;
+    // Reset the collisions array.
+    COLLISIONS.length = 0;
   }
 
   destroy() {
-    this.collisionDataPool.resetItems();
-    this.dndContext.off('removeDroppable', this.listenerId);
+    this._collisionDataPool.resetItems();
+    this._dndContext.off('removeDroppable', this._listenerId);
   }
 }

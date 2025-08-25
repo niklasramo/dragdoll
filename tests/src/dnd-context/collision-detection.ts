@@ -7,7 +7,8 @@ import {
   Draggable,
   Droppable,
   KeyboardSensor,
-  CollisionDetector,
+  CollisionData,
+  CollisionDetectorDefaultOptions,
 } from '../../../src/index.js';
 
 export function collisionDetection() {
@@ -46,7 +47,6 @@ export function collisionDetection() {
         collisionEvents.push({
           type: 'enter',
           collisions: data.collisions,
-          collisionData: data.collisionData,
         });
       });
 
@@ -62,15 +62,14 @@ export function collisionDetection() {
       // Should detect collision on start
       assert.equal(collisionEvents.length, 1);
       assert.equal(collisionEvents[0].type, 'enter');
-      assert.equal(collisionEvents[0].collisions.length, 1);
-      assert.equal(collisionEvents[0].collisions[0], droppable);
-      assert.isTrue(collisionEvents[0].collisionData.has(droppable));
+      assert.equal(collisionEvents[0].collisions.size, 1);
+      assert.isTrue(collisionEvents[0].collisions.has(droppable));
 
-      const collisionData = collisionEvents[0].collisionData.get(droppable);
+      const collisionData = collisionEvents[0].collisions.get(droppable);
       assert.isDefined(collisionData);
-      assert.equal(collisionData.id, droppable.id);
-      assert.isNumber(collisionData.score);
-      assert.isTrue(collisionData.score > 0);
+      assert.equal(collisionData.droppableId, droppable.id);
+      assert.isNumber(collisionData.intersectionScore);
+      assert.isTrue(collisionData.intersectionScore > 0);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -175,11 +174,11 @@ export function collisionDetection() {
       const dndContext = new DndContext();
 
       dndContext.on('enter', (data) => {
-        collisionEvents.push({ type: 'enter', collisions: data.collisions.length });
+        collisionEvents.push({ type: 'enter', collisions: data.collisions.size });
       });
 
       dndContext.on('leave', (data) => {
-        collisionEvents.push({ type: 'leave', collisions: data.collisions.length });
+        collisionEvents.push({ type: 'leave', collisions: data.collisions.size });
       });
 
       dndContext.addDraggable(draggable);
@@ -263,16 +262,16 @@ export function collisionDetection() {
       dndContext.on('enter', (data) => {
         collisionEvents.push({
           type: 'enter',
-          collisions: data.collisions.map((d) => d.id),
-          addedCollisions: data.addedCollisions.map((d) => d.id),
+          collisions: Array.from(data.collisions.keys()).map((d) => d.id),
+          addedCollisions: Array.from(data.addedCollisions).map((d) => d.id),
         });
       });
 
       dndContext.on('leave', (data) => {
         collisionEvents.push({
           type: 'leave',
-          collisions: data.collisions.map((d) => d.id),
-          removedCollisions: data.removedCollisions.map((d) => d.id),
+          collisions: Array.from(data.collisions.keys()).map((d) => d.id),
+          removedCollisions: Array.from(data.removedCollisions).map((d) => d.id),
         });
       });
 
@@ -372,8 +371,12 @@ export function collisionDetection() {
       dropElement.remove();
     });
 
-    it('should work with custom collision detector', async () => {
-      const customCollisionEvents: any[] = [];
+    it('should work with extended collision data', async () => {
+      interface CustomCollisionData extends CollisionData {
+        customProp: string;
+      }
+
+      const customCollisionEvents: { type: string; customProp?: string }[] = [];
       let customDetectorCalled = false;
 
       const dragElement = createTestElement({
@@ -400,21 +403,56 @@ export function collisionDetection() {
         accept: ['test'],
       });
 
-      const dndContext = new DndContext();
+      const TEMP_COLLISION_DATA: CustomCollisionData = {
+        droppableId: Symbol(),
+        droppableRect: { width: 0, height: 0, x: 0, y: 0 },
+        draggableRect: { width: 0, height: 0, x: 0, y: 0 },
+        intersectionRect: { width: 0, height: 0, x: 0, y: 0 },
+        intersectionScore: 0,
+        customProp: '',
+      };
 
-      // Create custom collision detector after context is created
-      class CustomCollisionDetector extends CollisionDetector {
-        detectCollisions(draggable: any, targets: any) {
-          customDetectorCalled = true;
-          return super.detectCollisions(draggable, targets);
-        }
-      }
+      const dndContext = new DndContext<CustomCollisionData>({
+        collisionDetector: {
+          getCollisionData: (draggable, droppable) => {
+            customDetectorCalled = true;
 
-      // Replace the default collision detector
-      (dndContext as any)._collisionDetector = new CustomCollisionDetector(dndContext);
+            // Use the default collision detection logic to get base data.
+            // Note that we pass the temporary collision data object to the
+            // default method so the results will be written to it.
+            const data = CollisionDetectorDefaultOptions.getCollisionData(
+              draggable,
+              droppable,
+              TEMP_COLLISION_DATA,
+            );
 
-      dndContext.on('enter', () => {
-        customCollisionEvents.push({ type: 'enter' });
+            // If data is null, it means there is no collision.
+            if (!data) return null;
+
+            // Sync the custom property to the temporary collision data object.
+            data.customProp = 'test-value';
+
+            return data;
+          },
+          mergeCollisionData: (target, source) => {
+            CollisionDetectorDefaultOptions.mergeCollisionData(target, source);
+            target.customProp = source.customProp;
+            return target;
+          },
+          createCollisionData: (source) => {
+            const data = CollisionDetectorDefaultOptions.createCollisionData(source);
+            data.customProp = source.customProp;
+            return data;
+          },
+        },
+      });
+
+      dndContext.on('enter', (data) => {
+        const collision = data.collisions.values().next().value;
+        customCollisionEvents.push({
+          type: 'enter',
+          customProp: collision?.customProp,
+        });
       });
 
       dndContext.addDraggable(draggable);
@@ -429,6 +467,7 @@ export function collisionDetection() {
       // Custom collision detector should have been called
       assert.isTrue(customDetectorCalled);
       assert.equal(customCollisionEvents.length, 1);
+      assert.equal(customCollisionEvents[0].customProp, 'test-value');
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -539,7 +578,7 @@ export function collisionDetection() {
       const dndContext = new DndContext();
 
       dndContext.on('enter', (data) => {
-        collisionData = data.collisionData.get(droppable);
+        collisionData = data.collisions.get(droppable);
       });
 
       dndContext.addDraggable(draggable);
@@ -556,13 +595,13 @@ export function collisionDetection() {
 
       // Check collision data properties
       assert.isObject(collisionData);
-      assert.equal(collisionData.id, droppable.id);
-      assert.isNumber(collisionData.x);
-      assert.isNumber(collisionData.y);
-      assert.isNumber(collisionData.width);
-      assert.isNumber(collisionData.height);
-      assert.isNumber(collisionData.score);
-      assert.isTrue(collisionData.score > 0);
+      assert.equal(collisionData.droppableId, droppable.id);
+      assert.isNumber(collisionData.droppableRect.x);
+      assert.isNumber(collisionData.droppableRect.y);
+      assert.isNumber(collisionData.droppableRect.width);
+      assert.isNumber(collisionData.droppableRect.height);
+      assert.isNumber(collisionData.intersectionScore);
+      assert.isTrue(collisionData.intersectionScore > 0);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));

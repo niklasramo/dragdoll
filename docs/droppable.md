@@ -1,6 +1,6 @@
 # Droppable
 
-The `Droppable` class defines drop targets where draggable elements can be dropped. Each droppable must be associated with a DOM element. It also handles (virtual) parent–child relationships between droppables and maintains bounding client rectangle information.
+The `Droppable` class defines drop targets where draggable elements can be dropped. Each droppable must be associated with a DOM element and maintains bounding client rectangle information for collision detection.
 
 ## Example
 
@@ -39,9 +39,6 @@ new Droppable(element: HTMLElement | SVGSVGElement, options?: DroppableOptions);
        - Either an array of drop target identifiers (strings, numbers, symbols) or a
          function that takes a draggable instance and returns a boolean.
        - Default: a function that returns `true` (accepts all).
-     - **`parent`**
-       - A parent `Droppable` instance which creates a hierarchical grouping.
-       - Default: `null`.
      - **`data`**
        - An object containing custom data for the droppable.
        - Default: an empty object.
@@ -55,22 +52,6 @@ type element = HTMLElement | SVGSVGElement;
 ```
 
 The associated DOM element representing, which's bounding client rectangle is used for collision detection. Read-only.
-
-### parent
-
-```ts
-type parent = Droppable | null;
-```
-
-The droppable's parent droppable (if set). Read-only.
-
-### children
-
-```ts
-type children = ReadonlySet<Droppable>;
-```
-
-A set of child droppable instances. Read-only.
 
 ### accept
 
@@ -136,23 +117,6 @@ droppable.off('destroy', id);
 
 Removes a listener (based on listener id) from an event. The first argument is the event type and the second argument is the listener id.
 
-### setParent
-
-```ts
-// Type
-type setParent = (parent: Droppable | null) => void;
-
-// Usage
-const parentDroppable = new Droppable(parentElement);
-droppable.setParent(parentDroppable);
-
-// Remove parent relationship
-droppable.setParent(null);
-```
-
-Sets the parent of the current droppable. Throws an error if you try to set the
-droppable as its own parent or create an invalid cyclic relationship.
-
 ### getClientRect
 
 ```ts
@@ -201,5 +165,4 @@ droppable.destroy();
 Destroys the droppable instance:
 
 - Emits the destroy event (if any listeners are registered).
-- Clears the parent/child relationships.
 - Marks the droppable as destroyed to prevent further operations.

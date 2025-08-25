@@ -24,6 +24,8 @@ export * from './dnd-context/dnd-context.js';
 
 export * from './dnd-context/collision-detector.js';
 
+export * from './dnd-context/visible-rect-collision-detector.js';
+
 export * from './droppable/droppable.js';
 
 export * from './auto-scroll/auto-scroll.js';

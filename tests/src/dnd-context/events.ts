@@ -25,17 +25,17 @@ export function events() {
 
       dndContext.on('start', (data) => {
         assert.equal(data.draggable, draggable);
-        assert.isArray(data.targets);
-        assert.equal(data.targets.length, 1);
-        assert.equal(data.targets[0], droppable);
+        assert.instanceOf(data.targets, Set);
+        assert.equal(data.targets.size, 1);
+        assert.isTrue(data.targets.has(droppable));
         events.push('start');
       });
 
       dndContext.on('end', (data) => {
         assert.equal(data.draggable, draggable);
-        assert.isArray(data.targets);
-        assert.equal(data.targets.length, 1);
-        assert.equal(data.targets[0], droppable);
+        assert.instanceOf(data.targets, Set);
+        assert.equal(data.targets.size, 1);
+        assert.isTrue(data.targets.has(droppable));
         events.push('end');
       });
 
@@ -84,7 +84,7 @@ export function events() {
 
       dndContext.on('move', (data) => {
         assert.equal(data.draggable, draggable);
-        assert.isArray(data.targets);
+        assert.instanceOf(data.targets, Set);
         events.push('move');
       });
 
@@ -156,16 +156,16 @@ export function events() {
       dndContext.on('enter', (data) => {
         events.push({
           type: 'enter',
-          collisions: data.collisions.length,
-          addedCollisions: data.addedCollisions.length,
+          collisions: data.collisions.size,
+          addedCollisions: data.addedCollisions.size,
         });
       });
 
       dndContext.on('leave', (data) => {
         events.push({
           type: 'leave',
-          collisions: data.collisions.length,
-          removedCollisions: data.removedCollisions.length,
+          collisions: data.collisions.size,
+          removedCollisions: data.removedCollisions.size,
         });
       });
 
@@ -244,9 +244,8 @@ export function events() {
 
       dndContext.on('drop', (data) => {
         assert.equal(data.draggable, draggable);
-        assert.equal(data.collisions.length, 1);
-        assert.equal(data.collisions[0], droppable);
-        assert.isTrue(data.collisionData.has(droppable));
+        assert.equal(data.collisions.size, 1);
+        assert.isTrue(data.collisions.has(droppable));
         events.push('drop');
       });
 

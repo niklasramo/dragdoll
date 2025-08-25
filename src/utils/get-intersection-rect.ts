@@ -3,7 +3,7 @@ import { Rect } from '../types.js';
 /**
  * Calculate intersection between two rectangles.
  */
-export function getIntersection(
+export function getIntersectionRect(
   a: Rect,
   b: Rect,
   result: Rect = { width: 0, height: 0, x: 0, y: 0 },

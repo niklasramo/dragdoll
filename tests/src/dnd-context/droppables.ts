@@ -36,7 +36,7 @@ export function droppables() {
       const dndContext = new DndContext();
 
       dndContext.on('enter', (data) => {
-        events.push({ type: 'enter', targets: data.targets.length });
+        events.push({ type: 'enter', targets: data.targets.size });
       });
 
       dndContext.addDraggable(draggable);
@@ -160,7 +160,7 @@ export function droppables() {
       const dndContext = new DndContext();
 
       dndContext.on('enter', (data) => {
-        events.push({ type: 'enter', targets: data.targets.length });
+        events.push({ type: 'enter', targets: data.targets.size });
       });
 
       dndContext.addDraggable(draggable);
@@ -304,48 +304,6 @@ export function droppables() {
       element.remove();
     });
 
-    it('should handle droppable parent-child relationships', () => {
-      const parentElement = createTestElement({
-        left: '0px',
-        top: '0px',
-        width: '100px',
-        height: '100px',
-      });
-
-      const childElement = createTestElement({
-        left: '10px',
-        top: '10px',
-        width: '50px',
-        height: '50px',
-      });
-
-      const parentDroppable = new Droppable(parentElement, {
-        accept: ['test'],
-      });
-
-      const childDroppable = new Droppable(childElement, {
-        accept: ['test'],
-        parent: parentDroppable,
-      });
-
-      const dndContext = new DndContext();
-
-      // Add droppables to context
-      dndContext.addDroppable(parentDroppable);
-      dndContext.addDroppable(childDroppable);
-
-      // Check parent-child relationship
-      assert.equal(childDroppable.parent, parentDroppable);
-      assert.isTrue(parentDroppable.children.has(childDroppable));
-
-      // Cleanup
-      dndContext.destroy();
-      parentDroppable.destroy();
-      childDroppable.destroy();
-      parentElement.remove();
-      childElement.remove();
-    });
-
     it('should handle droppable data correctly', () => {
       const element = createTestElement();
 
@@ -440,14 +398,14 @@ export function droppables() {
       const dndContext = new DndContext();
 
       dndContext.on('enter', (data) => {
-        events.push({ type: 'enter', collisions: data.collisions.length });
+        events.push({ type: 'enter', collisions: data.collisions.size });
       });
 
       dndContext.on('leave', (data) => {
         events.push({
           type: 'leave',
-          collisions: data.collisions.length,
-          removedCollisions: data.removedCollisions.length,
+          collisions: data.collisions.size,
+          removedCollisions: data.removedCollisions.size,
         });
       });
 
@@ -559,7 +517,7 @@ export function droppables() {
       dndContext.on('over', (data) => {
         events.push({
           type: 'over',
-          persistedCollisions: data.persistedCollisions.length,
+          persistedCollisions: data.persistedCollisions.size,
         });
       });
 

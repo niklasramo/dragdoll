@@ -2016,7 +2016,7 @@ draggableElements.forEach((element) => {
 
 // DnD logic
 {
-  const onStart = (data: { draggable: Draggable; targets: Droppable[] }) => {
+  const onStart = (data: { draggable: Draggable; targets: ReadonlySet<Droppable> }) => {
     const { draggable, targets } = data;
     targets.forEach((target) => {
       target.data.droppedIds.delete(draggable.id);
@@ -2026,25 +2026,29 @@ draggableElements.forEach((element) => {
     });
   };
 
-  const onEnterAndOver = (data: { draggable: Draggable; collisions: Droppable[] }) => {
+  const onEnterAndOver = (data: {
+    draggable: Draggable;
+    collisions: ReadonlyMap<Droppable, any>;
+  }) => {
     const { draggable, collisions } = data;
-    const clonedCollisions = [...collisions];
+    const collisionArray = Array.from(collisions.keys());
 
     // Add the draggable to the first collision.
-    const target = clonedCollisions.shift()!;
+    const target = collisionArray[0]!;
     target.data.overIds.add(draggable.id);
     target.element.classList.add('draggable-over');
 
     // Remove the draggable from the other collisions.
-    clonedCollisions.forEach((collision) => {
+    for (let i = 1; i < collisionArray.length; i++) {
+      const collision = collisionArray[i];
       collision.data.overIds.delete(draggable.id);
       if (collision.data.overIds.size === 0) {
         collision.element.classList.remove('draggable-over');
       }
-    });
+    }
   };
 
-  const onLeave = (data: { draggable: Draggable; removedCollisions: Droppable[] }) => {
+  const onLeave = (data: { draggable: Draggable; removedCollisions: ReadonlySet<Droppable> }) => {
     const { draggable, removedCollisions } = data;
     removedCollisions.forEach((target) => {
       target.data.overIds.delete(draggable.id);
@@ -2054,9 +2058,9 @@ draggableElements.forEach((element) => {
     });
   };
 
-  const onDrop = (data: { draggable: Draggable; collisions: Droppable[] }) => {
+  const onDrop = (data: { draggable: Draggable; collisions: ReadonlyMap<Droppable, any> }) => {
     const { draggable, collisions } = data;
-    const target = collisions[0];
+    const target = Array.from(collisions.keys())[0];
 
     // Update dropped ids
     target.data.droppedIds.add(draggable.id);
@@ -2194,6 +2198,342 @@ body {
       0 0 0 2px var(--bg-color),
       0 0 0 3.5px var(--card-bgColor--focus);
   }
+}
+```
+
+```css [base.css]
+:root {
+  --bg-color: #111;
+  --color: rgba(255, 255, 245, 0.86);
+  --theme-color: #ff5555;
+  --card-color: rgba(0, 0, 0, 0.7);
+  --card-bgColor: var(--theme-color);
+  --card-color--focus: var(--card-color);
+  --card-bgColor--focus: #db55ff;
+  --card-color--drag: var(--card-color);
+  --card-bgColor--drag: #55ff9c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  background: var(--bg-color);
+  color: var(--color);
+  background-size: 40px 40px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+.card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  background-color: var(--card-bgColor);
+  color: var(--card-color);
+  border-radius: 7px;
+  border: 1.5px solid var(--bg-color);
+  font-size: 30px;
+
+  & svg {
+    width: 1em;
+    height: 1em;
+    fill: var(--card-color);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover,
+    &:focus-visible {
+      background-color: var(--card-bgColor--focus);
+      color: var(--card-color--focus);
+
+      & svg {
+        fill: var(--card-color--focus);
+      }
+    }
+
+    &:focus-visible {
+      outline-offset: 4px;
+      outline: 1px solid var(--card-bgColor--focus);
+    }
+  }
+
+  &.draggable {
+    cursor: grab;
+    touch-action: none;
+  }
+
+  &.dragging {
+    cursor: grabbing;
+    background-color: var(--card-bgColor--drag);
+    color: var(--card-color--drag);
+
+    & svg {
+      fill: var(--card-color--drag);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:focus-visible {
+        outline: 1px solid var(--card-bgColor--drag);
+      }
+    }
+  }
+}
+```
+
+:::
+
+## DndContext - Visible Rects
+
+Test VisibleRectCollisionDetector by clipping droppables to a scroll container's visible area.
+
+<div class="example"><iframe src="/dragdoll/examples/012-dnd-context-visible-rects/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/012-dnd-context-visible-rects/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+
+::: code-group
+
+```ts [index.ts]
+import {
+  Draggable,
+  PointerSensor,
+  KeyboardMotionSensor,
+  DndContext,
+  Droppable,
+  DndContextEventType,
+  VisibleRectCollisionDetector,
+} from 'dragdoll';
+
+let zIndex = 0;
+
+// Initialize context with the visible-rect collision detector
+const dndContext = new DndContext({
+  collisionDetector: (ctx) => new VisibleRectCollisionDetector(ctx),
+});
+
+// Elements
+const draggableElement = document.querySelector('.draggable') as HTMLElement;
+const droppableElements = [...document.querySelectorAll('.droppable')] as HTMLElement[];
+
+// Create droppables inside the scroll container
+droppableElements.forEach((element) => {
+  const droppable = new Droppable(element);
+  droppable.data.overIds = new Set<number>();
+  droppable.data.droppedIds = new Set<number>();
+  dndContext.addDroppable(droppable);
+});
+
+// Create a single draggable outside the scroll container
+{
+  const element = draggableElement;
+  const draggable = new Draggable([new PointerSensor(element), new KeyboardMotionSensor(element)], {
+    elements: () => [element],
+    startPredicate: () => !element.classList.contains('dragging'),
+    onStart: () => {
+      element.classList.add('dragging');
+      element.style.zIndex = `${++zIndex}`;
+    },
+    onEnd: () => {
+      element.classList.remove('dragging');
+    },
+  });
+  dndContext.addDraggable(draggable);
+}
+
+// DnD logic (same pattern as example 011)
+{
+  const onStart = (data: { draggable: Draggable; targets: ReadonlySet<Droppable> }) => {
+    const { draggable, targets } = data;
+    targets.forEach((target) => {
+      target.data.droppedIds.delete(draggable.id);
+      if (target.data.droppedIds.size === 0) {
+        target.element.classList.remove('draggable-dropped');
+      }
+    });
+  };
+
+  const onEnterAndOver = (data: {
+    draggable: Draggable;
+    collisions: ReadonlyMap<Droppable, any>;
+  }) => {
+    const { draggable, collisions } = data;
+    const collisionArray = Array.from(collisions.keys());
+    const target = collisionArray[0];
+    if (target) {
+      target.data.overIds.add(draggable.id);
+      target.element.classList.add('draggable-over');
+    }
+    for (let i = 1; i < collisionArray.length; i++) {
+      const c = collisionArray[i];
+      c.data.overIds.delete(draggable.id);
+      if (c.data.overIds.size === 0) {
+        c.element.classList.remove('draggable-over');
+      }
+    }
+  };
+
+  const onLeave = (data: { draggable: Draggable; removedCollisions: ReadonlySet<Droppable> }) => {
+    const { draggable, removedCollisions } = data;
+    removedCollisions.forEach((target) => {
+      target.data.overIds.delete(draggable.id);
+      if (target.data.overIds.size === 0) {
+        target.element.classList.remove('draggable-over');
+      }
+    });
+  };
+
+  const onDrop = (data: { draggable: Draggable; collisions: ReadonlyMap<Droppable, any> }) => {
+    const { draggable, collisions } = data;
+    const target = Array.from(collisions.keys())[0];
+    if (!target) return;
+    target.data.droppedIds.add(draggable.id);
+    target.element.classList.add('draggable-dropped');
+    target.data.overIds.delete(draggable.id);
+    if (target.data.overIds.size === 0) {
+      target.element.classList.remove('draggable-over');
+    }
+  };
+
+  dndContext.on(DndContextEventType.Start, onStart);
+  dndContext.on(DndContextEventType.Enter, onEnterAndOver);
+  dndContext.on(DndContextEventType.Over, onEnterAndOver);
+  dndContext.on(DndContextEventType.Leave, onLeave);
+  dndContext.on(DndContextEventType.Drop, onDrop);
+}
+```
+
+```html [index.html]
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>DndContext - Visible Rects</title>
+    <meta
+      name="description"
+      content="Test VisibleRectCollisionDetector by clipping droppables to a scroll container's visible area."
+    />
+    <meta
+      name="viewport"
+      content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <div class="draggables">
+        <div class="card draggable" tabindex="0" aria-label="Drag me">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <path
+              d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"
+            />
+          </svg>
+        </div>
+      </div>
+      <div class="scroll-container" aria-label="Scrollable droppable list">
+        <div class="list">
+          <div class="droppable">Item 1</div>
+          <div class="droppable">Item 2</div>
+          <div class="droppable">Item 3</div>
+          <div class="droppable">Item 4</div>
+          <div class="droppable">Item 5</div>
+          <div class="droppable">Item 6</div>
+          <div class="droppable">Item 7</div>
+          <div class="droppable">Item 8</div>
+          <div class="droppable">Item 9</div>
+          <div class="droppable">Item 10</div>
+          <div class="droppable">Item 11</div>
+          <div class="droppable">Item 12</div>
+          <div class="droppable">Item 13</div>
+          <div class="droppable">Item 14</div>
+          <div class="droppable">Item 15</div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="index.ts"></script>
+  </body>
+</html>
+```
+
+```css [index.css]
+body {
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.layout {
+  width: 100%;
+  max-width: 960px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 16px;
+}
+
+.draggables {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card.draggable {
+  position: relative;
+}
+
+.scroll-container {
+  height: 320px;
+  border: 1.5px solid var(--theme-color);
+  border-radius: 8px;
+  overflow: auto;
+  background-color: var(--bg-color);
+  padding: 10px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.droppable {
+  width: 100%;
+  height: 64px;
+  background-color: var(--bg-color);
+  border-radius: 7px;
+  border: 1.5px solid var(--theme-color);
+  transition:
+    border-color 0.2s ease-out,
+    box-shadow 0.2s ease-out,
+    background-color 0.2s ease-out;
+  box-shadow:
+    0 0 0 2px transparent,
+    0 0 0 3.5px transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.droppable.draggable-over {
+  border-color: var(--card-bgColor--focus);
+  box-shadow:
+    0 0 0 2px var(--bg-color),
+    0 0 0 3.5px var(--card-bgColor--focus);
+}
+
+.droppable.draggable-dropped {
+  border-color: var(--card-bgColor--drag);
 }
 ```
 
