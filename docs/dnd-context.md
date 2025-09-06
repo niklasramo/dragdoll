@@ -36,27 +36,36 @@ dndContext.on('start', ({ draggable, targets }) => {
 dndContext.on('move', ({ draggable, targets }) => {
   console.log('Drag Moved', draggable, targets);
 });
-dndContext.on('enter', ({ draggable, targets, collisions, addedCollisions }) => {
-  console.log('Draggable Entered', draggable, targets, collisions, addedCollisions);
-  // Access collision data directly from the collisions Map
-  collisions.forEach((collisionData, droppable) => {
-    console.log('Collision data for', droppable.id, collisionData);
-  });
+dndContext.on('enter', ({ draggable, targets, collisions, contacts, addedContacts }) => {
+  console.log('Enter', { draggable, targets, collisions, contacts, addedContacts });
 });
-dndContext.on('leave', ({ draggable, targets, collisions, removedCollisions }) => {
-  console.log('Draggable Left', draggable, targets, collisions, removedCollisions);
+dndContext.on('leave', ({ draggable, targets, collisions, contacts, removedContacts }) => {
+  console.log('Leave', { draggable, targets, collisions, contacts, removedContacts });
 });
-dndContext.on('over', ({ draggable, targets, collisions, persistedCollisions }) => {
-  console.log('Draggable Over', draggable, targets, collisions, persistedCollisions);
-});
-dndContext.on('drop', ({ draggable, targets, collisions }) => {
-  console.log('Draggable Dropped', draggable, targets, collisions);
-});
-dndContext.on('end', ({ draggable, targets }) => {
-  console.log('Drag Ended', draggable, targets);
-});
-dndContext.on('cancel', ({ draggable, targets }) => {
-  console.log('Drag Cancelled', draggable, targets);
+dndContext.on(
+  'collide',
+  ({
+    draggable,
+    targets,
+    collisions,
+    contacts,
+    addedContacts,
+    removedContacts,
+    persistedContacts,
+  }) => {
+    console.log('Collide', {
+      draggable,
+      targets,
+      collisions,
+      contacts,
+      addedContacts,
+      removedContacts,
+      persistedContacts,
+    });
+  },
+);
+dndContext.on('end', ({ isCancelled, draggable, targets, collisions, contacts }) => {
+  console.log('End', { isCancelled, draggable, targets, collisions, contacts });
 });
 ```
 
@@ -96,6 +105,25 @@ readonly droppables: ReadonlyMap<Symbol, Droppable>;
 ```
 
 A read-only map containing all registered droppable instances, keyed by their unique symbol IDs.
+
+### drags
+
+```ts
+readonly drags: ReadonlyMap<
+  Draggable<any>,
+  Readonly<{ isEnded: boolean; data: { [key: string]: any } }>
+>;
+```
+
+A read-only map of all currently dragged draggables and their public dnd context state. The key is the draggable instance and the value is the _readonly_ drag data object. The drag data object is read-only so you can't mutate it, but you can mutate the nested `data` object and store per-drag state while keeping the reference stable.
+
+```ts
+// Get all draggables that are currently being dragged.
+const draggedDraggables = dndContext.drags.keys();
+
+// Get the drag data object for a specific draggable.
+const dragData = dndContext.drags.get(draggable);
+```
 
 ## Methods
 
@@ -143,7 +171,7 @@ dndContext.addDraggable(draggable);
 
 Registers a draggable instance with the context. This adds the draggable to the internal registry, binds to its events, and emits the `addDraggable` event.
 
-If the draggable is already being dragged, it initiates appropriate processing.
+If the draggable is being dragged when it is added to the context, dnd context will try to start the drag process for the draggable automatically so that it can start emitting dnd context's events.
 
 ### removeDraggable
 
@@ -169,7 +197,7 @@ dndContext.addDroppable(droppable);
 
 Registers a droppable with the context. This adds it to the internal registry, binds its destroy event, and updates any active draggables with the new droppable as a potential target.
 
-Note: Collision detection is not automatically run when adding droppables. Call `detectCollisions` manually if needed.
+If any active draggable now matches the newly added droppable, a collision check is _queued_ automatically.
 
 ### removeDroppable
 
@@ -182,6 +210,8 @@ dndContext.removeDroppable(droppable);
 ```
 
 Deregisters a droppable from the context. This removes it from the internal registry, unbinds its destroy event, and updates affected draggables by removing the droppable from their targets.
+
+If any active draggable had an ongoing collision with the removed droppable, a collision check is queued automatically, which may emit `leave` events on the next tick.
 
 ### updateDroppableClientRects
 
@@ -199,37 +229,34 @@ Updates the cached client rectangles for all registered droppables. This is auto
 
 ```ts
 // Type
-type detectCollisions = (draggable: Draggable<any>) => void;
+type detectCollisions = (draggable?: Draggable<any>) => void;
 
-// Usage
+// Usage: specific draggable
 dndContext.detectCollisions(draggable);
+
+// Usage: all active drags
+dndContext.detectCollisions();
 ```
 
-Manually triggers collision detection for a draggable. This compares current and new collisions and emits the appropriate events (`enter`, `leave`, `over`).
+Queues collision detection for either a specific draggable, or for all currently active draggables when called without an argument. This compares current and new collisions and emits the appropriate events (`enter`, `leave`, `collide`).
 
-### getData
-
-```ts
-// Type
-type getData = (draggable: Draggable<any>) => { [key: string]: any } | null;
-
-// Usage
-const dragData = dndContext.getData(draggable);
-```
-
-Returns any stored drag data for the specified draggable. Returns `null` if no drag data exists.
+// Removed: getDragData
+// Use the `drags` map instead: dndContext.drags.get(draggable)
 
 ### clearTargets
 
 ```ts
 // Type
-type clearTargets = (draggable: Draggable<any>) => void;
+type clearTargets = (draggable?: Draggable<any>) => void;
 
-// Usage
+// Usage: specific draggable
 dndContext.clearTargets(draggable);
+
+// Usage: all active draggables
+dndContext.clearTargets();
 ```
 
-Clears cached target information for the specified draggable, forcing re-evaluation on the next move. You will need to call this manually only if the draggable's group changes or any droppable's accept criteria changes during drag. The draggable's target droppables are only computed once on drag start and are not _automatically_ re-evaluated on subsequent moves.
+Clears cached target information for the specified draggable (or all active draggables when called without an argument), forcing re-evaluation on the next detection. Call this if the draggable's group changes or if any droppable's `accept` criteria changes during a drag. Targets are computed on drag start and cached for performance.
 
 ### destroy
 
@@ -245,14 +272,14 @@ Destroys the DndContext by emitting the `destroy` event, unbinding all event lis
 
 ## Events
 
-To keep memory allocations to a minimum most of the event data objects are reused/pooled between events. So treat all the event data objects as read-only and assume that they are mutated between events.
+To keep memory allocations to a minimum most of the event data objects are reused/pooled between events. Treat all event data objects as read-only and assume that they are mutated between events.
 
 In practice this means that you should not store the event data objects in your own variables for later use, but rather use them directly in your event or store the specific primitive values that you need. You can also clone the event data objects if you need to store them for later use.
 
 ### start
 
 ```ts
-type start = (data: { draggable: Draggable<any>; targets: ReadonlySet<Droppable> }) => void;
+type start = (data: { draggable: Draggable<any>; targets: ReadonlyMap<Symbol, Droppable> }) => void;
 ```
 
 Emitted when a draggable starts dragging.
@@ -260,12 +287,12 @@ Emitted when a draggable starts dragging.
 **Event Data:**
 
 - `draggable` - The draggable instance that started dragging.
-- `targets` - Set (read-only) of all droppable instances that accept this draggable (based on the droppable's `accept` criteria and the draggable's `group`).
+- `targets` - Map (read-only) of all droppable instances that accept this draggable (based on the droppable's `accept` criteria and the draggable's `group`). Keyed by `droppable.id`.
 
 ### move
 
 ```ts
-type move = (data: { draggable: Draggable<any>; targets: ReadonlySet<Droppable> }) => void;
+type move = (data: { draggable: Draggable<any>; targets: ReadonlyMap<Symbol, Droppable> }) => void;
 ```
 
 Emitted when a draggable moves during dragging.
@@ -273,16 +300,17 @@ Emitted when a draggable moves during dragging.
 **Event Data:**
 
 - `draggable` - The draggable instance that is moving.
-- `targets` - Set (read-only) of all droppable instances that accept this draggable (based on the droppable's `accept` criteria and the draggable's `group`).
+- `targets` - Map (read-only) of all droppable instances that accept this draggable (based on the droppable's `accept` criteria and the draggable's `group`). Keyed by `droppable.id`.
 
 ### enter
 
 ```ts
 type enter = (data: {
   draggable: Draggable<any>;
-  targets: ReadonlySet<Droppable>;
-  collisions: ReadonlyMap<Droppable, CollisionData>;
-  addedCollisions: ReadonlySet<Droppable>;
+  targets: ReadonlyMap<Symbol, Droppable>;
+  collisions: ReadonlyArray<CollisionData>;
+  contacts: ReadonlySet<Droppable>;
+  addedContacts: ReadonlySet<Droppable>;
 }) => void;
 ```
 
@@ -291,18 +319,20 @@ Emitted when a draggable first collides with one or more droppables.
 **Event Data:**
 
 - `draggable` - The draggable instance that entered collision with droppables.
-- `targets` - Set (read-only) of all droppable instances that accept this draggable (based on the droppable's `accept` criteria and the draggable's `group`).
-- `collisions` - Map (read-only) of all droppable instances currently colliding with the draggable (includes `addedCollisions`) with their detailed [collision information](/collision-detector#collisiondata-interface).
-- `addedCollisions` - Set (read-only) of droppable instances that newly entered collision state in this detection cycle.
+- `targets` - Map (read-only) of all droppable instances that accept this draggable.
+- `collisions` - Array (read-only) of collision data for all current collisions (includes the newly added ones). Each collision contains `droppableId`.
+- `contacts` - Set (read-only) of droppable instances currently in collision.
+- `addedContacts` - Set (read-only) of droppable instances that newly entered collision in this cycle.
 
 ### leave
 
 ```ts
 type leave = (data: {
   draggable: Draggable<any>;
-  targets: ReadonlySet<Droppable>;
-  collisions: ReadonlyMap<Droppable, CollisionData>;
-  removedCollisions: ReadonlySet<Droppable>;
+  targets: ReadonlyMap<Symbol, Droppable>;
+  collisions: ReadonlyArray<CollisionData>;
+  contacts: ReadonlySet<Droppable>;
+  removedContacts: ReadonlySet<Droppable>;
 }) => void;
 ```
 
@@ -311,73 +341,58 @@ Emitted when a draggable stops colliding with one or more droppables.
 **Event Data:**
 
 - `draggable` - The draggable instance that left collision with droppables.
-- `targets` - Set (read-only) of all droppable instances that accept this draggable (based on the droppable's `accept` criteria and the draggable's `group`).
-- `collisions` - Map (read-only) of all droppable instances currently colliding with the draggable (excludes `removedCollisions`) with their detailed [collision information](/collision-detector#collisiondata-interface).
-- `removedCollisions` - Set (read-only) of droppable instances that newly exited collision state in this detection cycle.
+- `targets` - Map (read-only) of all droppable instances that accept this draggable.
+- `collisions` - Array (read-only) of collision data for current collisions (excludes removed ones). Each collision contains `droppableId`.
+- `contacts` - Set (read-only) of droppable instances currently in collision.
+- `removedContacts` - Set (read-only) of droppables that exited collision in this cycle.
 
-### over
+### collide
 
 ```ts
-type over = (data: {
+type collide = (data: {
   draggable: Draggable<any>;
-  targets: ReadonlySet<Droppable>;
-  collisions: ReadonlyMap<Droppable, CollisionData>;
-  persistedCollisions: ReadonlySet<Droppable>;
+  targets: ReadonlyMap<Symbol, Droppable>;
+  collisions: ReadonlyArray<CollisionData>;
+  contacts: ReadonlySet<Droppable>;
+  addedContacts: ReadonlySet<Droppable>;
+  removedContacts: ReadonlySet<Droppable>;
+  persistedContacts: ReadonlySet<Droppable>;
 }) => void;
 ```
 
-Emitted for persisting collisions. In other words, this will not be emitted on the initial collision, only the consecutive ones.
+Emitted each collision cycle if there are any current collisions or removed collisions. Use this event to process all contact changes transactionally in one hook.
 
 **Event Data:**
 
-- `draggable` - The draggable instance that is over droppables.
-- `targets` - Set (read-only) of all droppable instances that accept this draggable (based on the droppable's `accept` criteria and the draggable's `group`).
-- `collisions` - Map (read-only) of all droppable instances currently colliding with the draggable (includes `persistedCollisions`) with their detailed [collision information](/collision-detector#collisiondata-interface).
-- `persistedCollisions` - Set (read-only) of droppable instances that remain in collision from the previous collision detection check (excludes newly entered collisions).
-
-### drop
-
-```ts
-type drop = (data: {
-  draggable: Draggable<any>;
-  targets: ReadonlySet<Droppable>;
-  collisions: ReadonlyMap<Droppable, CollisionData>;
-}) => void;
-```
-
-Emitted when a draggable is dropped while colliding with one or more droppables.
-
-**Event Data:**
-
-- `draggable` - The draggable instance that was dropped.
-- `targets` - Set (read-only) of all droppable instances that accept this draggable (based on the droppable's `accept` criteria and the draggable's `group`).
-- `collisions` - Map (read-only) of droppable instances that were colliding with the draggable at the time of drop with their detailed [collision information](/collision-detector#collisiondata-interface).
+- `draggable` - The draggable instance for this cycle.
+- `targets` - Map (read-only) of all droppable instances that accept this draggable.
+- `collisions` - Array (read-only) of collision data for current collisions.
+- `contacts` - Set (read-only) of droppable instances currently in collision.
+- `addedContacts` - Set (read-only) of droppables newly entered this cycle.
+- `removedContacts` - Set (read-only) of droppables left this cycle.
+- `persistedContacts` - Set (read-only) of droppables that remained in collision from the previous cycle.
 
 ### end
 
 ```ts
-type end = (data: { draggable: Draggable<any>; targets: ReadonlySet<Droppable> }) => void;
+type end = (data: {
+  isCancelled: boolean;
+  draggable: Draggable<any>;
+  targets: ReadonlyMap<Symbol, Droppable>;
+  collisions: ReadonlyArray<CollisionData>;
+  contacts: ReadonlySet<Droppable>;
+}) => void;
 ```
 
-Emitted when the drag ends, regardless of whether a drop occurred.
+Emitted when the drag ends, regardless of whether there are active collisions. If `isCancelled` is `true`, the drag ended due to cancellation. When ending during an ongoing collision emission, the `end` event is still emitted synchronously; cleanup is deferred to a microtask to keep event data intact for the current cycle.
 
 **Event Data:**
 
+- `isCancelled` - Whether the drag ended due to cancellation.
 - `draggable` - The draggable instance that ended dragging.
-- `targets` - Set (read-only) of all droppable instances that accept this draggable (based on the droppable's `accept` criteria and the draggable's `group`).
-
-### cancel
-
-```ts
-type cancel = (data: { draggable: Draggable<any>; targets: ReadonlySet<Droppable> }) => void;
-```
-
-Emitted when a drag is cancelled (e.g., by pressing Escape).
-
-**Event Data:**
-
-- `draggable` - The draggable instance that was cancelled.
-- `targets` - Set (read-only) of all droppable instances that accept this draggable (based on the droppable's `accept` criteria and the draggable's `group`).
+- `targets` - Map (read-only) of all droppable instances that accept this draggable.
+- `collisions` - Array (read-only) of collision data captured at the time of end.
+- `contacts` - Set (read-only) of droppable instances currently in collision at the time of end.
 
 ### addDraggable
 

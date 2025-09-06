@@ -1,6 +1,6 @@
 # Droppable
 
-The `Droppable` class defines drop targets where draggable elements can be dropped. Each droppable must be associated with a DOM element and maintains bounding client rectangle information for collision detection.
+The `Droppable` class defines drop targets where draggable elements can be dropped. Each droppable must be associated with a DOM element and maintains a cached client rectangle for collision detection.
 
 ## Example
 
@@ -51,7 +51,7 @@ new Droppable(element: HTMLElement | SVGSVGElement, options?: DroppableOptions);
 type element = HTMLElement | SVGSVGElement;
 ```
 
-The associated DOM element representing, which's bounding client rectangle is used for collision detection. Read-only.
+The associated DOM element whose bounding client rectangle is used for collision detection. Read-only.
 
 ### accept
 
@@ -121,15 +121,14 @@ Removes a listener (based on listener id) from an event. The first argument is t
 
 ```ts
 // Type
-type getClientRect = () => Readonly<DOMRect>;
+type getClientRect = () => Readonly<Rect>;
 
 // Usage
 const rect = droppable.getClientRect();
 console.log(rect.width, rect.height, rect.left, rect.top);
 ```
 
-Returns the current bounding client rectangle of the droppable as a read-only object.
-Useful for collision calculations with draggable elements.
+Returns the cached bounding client rectangle of the droppable as a read-only object. This rect is updated when `updateClientRect()` is called (e.g., by `DndContext` at drag start or on scroll).
 
 ### updateClientRect
 
@@ -149,8 +148,7 @@ droppable.updateClientRect({
 });
 ```
 
-Updates the cached client rectangle by reading the current bounding
-client rectangle of the element.
+Updates the cached client rectangle by reading the current bounding client rectangle of the element, or by using a provided `Rect`.
 
 ### destroy
 
@@ -164,5 +162,5 @@ droppable.destroy();
 
 Destroys the droppable instance:
 
-- Emits the destroy event (if any listeners are registered).
+- Emits the `destroy` event (if any listeners are registered).
 - Marks the droppable as destroyed to prevent further operations.

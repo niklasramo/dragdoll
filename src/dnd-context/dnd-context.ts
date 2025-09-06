@@ -1,3 +1,5 @@
+import type { Writeable } from '../types.js';
+
 import { Emitter, EventListenerId } from 'eventti';
 
 import { Draggable, DraggableEventType } from '../draggable/draggable.js';
@@ -14,22 +16,42 @@ import {
 
 import { ticker, tickerPhases } from '../singletons/ticker.js';
 
+enum CollisionDetectionPhase {
+  Idle = 0,
+  Computing = 1,
+  Computed = 2,
+  Emitting = 3,
+}
+
 const SCROLL_LISTENER_OPTIONS = { capture: true, passive: true };
-const EMPTY_MAP: ReadonlyMap<any, any> = new Map();
+
+interface DndContextInternalDragData<T extends CollisionData = CollisionData> {
+  isEnded: boolean;
+  data: { [key: string]: any };
+  _targets: Map<Symbol, Droppable> | null;
+  _cd: {
+    phase: CollisionDetectionPhase;
+    tickerId: Symbol;
+    targets: Map<Symbol, Droppable>;
+    collisions: T[];
+    contacts: Set<Droppable>;
+    prevContacts: Set<Droppable>;
+    addedContacts: Set<Droppable>;
+    persistedContacts: Set<Droppable>;
+  };
+}
 
 export const DndContextEventType = {
   Start: 'start',
   Move: 'move',
   Enter: 'enter',
   Leave: 'leave',
-  Over: 'over',
-  Drop: 'drop',
+  Collide: 'collide',
   End: 'end',
-  Cancel: 'cancel',
   AddDraggable: 'addDraggable',
   RemoveDraggable: 'removeDraggable',
-  AddDroppable: 'addDroppable',
-  RemoveDroppable: 'removeDroppable',
+  AddDroppables: 'addDroppables',
+  RemoveDroppables: 'removeDroppables',
   Destroy: 'destroy',
 } as const;
 
@@ -38,49 +60,55 @@ export type DndContextEventType = (typeof DndContextEventType)[keyof typeof DndC
 export interface DndContextEventCallbacks<T extends CollisionData = CollisionData> {
   [DndContextEventType.Start]: (data: {
     draggable: Draggable<any>;
-    targets: ReadonlySet<Droppable>;
+    targets: ReadonlyMap<Symbol, Droppable>;
   }) => void;
   [DndContextEventType.Move]: (data: {
     draggable: Draggable<any>;
-    targets: ReadonlySet<Droppable>;
+    targets: ReadonlyMap<Symbol, Droppable>;
   }) => void;
   [DndContextEventType.Enter]: (data: {
     draggable: Draggable<any>;
-    targets: ReadonlySet<Droppable>;
-    collisions: ReadonlyMap<Droppable, T>;
-    addedCollisions: ReadonlySet<Droppable>;
+    targets: ReadonlyMap<Symbol, Droppable>;
+    collisions: ReadonlyArray<T>;
+    contacts: ReadonlySet<Droppable>;
+    addedContacts: ReadonlySet<Droppable>;
   }) => void;
   [DndContextEventType.Leave]: (data: {
     draggable: Draggable<any>;
-    targets: ReadonlySet<Droppable>;
-    collisions: ReadonlyMap<Droppable, T>;
-    removedCollisions: ReadonlySet<Droppable>;
+    targets: ReadonlyMap<Symbol, Droppable>;
+    collisions: ReadonlyArray<T>;
+    contacts: ReadonlySet<Droppable>;
+    removedContacts: ReadonlySet<Droppable>;
   }) => void;
-  [DndContextEventType.Over]: (data: {
+  [DndContextEventType.Collide]: (data: {
     draggable: Draggable<any>;
-    targets: ReadonlySet<Droppable>;
-    collisions: ReadonlyMap<Droppable, T>;
-    persistedCollisions: ReadonlySet<Droppable>;
-  }) => void;
-  [DndContextEventType.Drop]: (data: {
-    draggable: Draggable<any>;
-    targets: ReadonlySet<Droppable>;
-    collisions: ReadonlyMap<Droppable, T>;
+    targets: ReadonlyMap<Symbol, Droppable>;
+    collisions: ReadonlyArray<T>;
+    contacts: ReadonlySet<Droppable>;
+    addedContacts: ReadonlySet<Droppable>;
+    removedContacts: ReadonlySet<Droppable>;
+    persistedContacts: ReadonlySet<Droppable>;
   }) => void;
   [DndContextEventType.End]: (data: {
+    isCancelled: boolean;
     draggable: Draggable<any>;
-    targets: ReadonlySet<Droppable>;
-  }) => void;
-  [DndContextEventType.Cancel]: (data: {
-    draggable: Draggable<any>;
-    targets: ReadonlySet<Droppable>;
+    targets: ReadonlyMap<Symbol, Droppable>;
+    collisions: ReadonlyArray<T>;
+    contacts: ReadonlySet<Droppable>;
   }) => void;
   [DndContextEventType.AddDraggable]: (data: { draggable: Draggable<any> }) => void;
   [DndContextEventType.RemoveDraggable]: (data: { draggable: Draggable<any> }) => void;
-  [DndContextEventType.AddDroppable]: (data: { droppable: Droppable }) => void;
-  [DndContextEventType.RemoveDroppable]: (data: { droppable: Droppable }) => void;
+  [DndContextEventType.AddDroppables]: (data: { droppables: ReadonlySet<Droppable> }) => void;
+  [DndContextEventType.RemoveDroppables]: (data: { droppables: ReadonlySet<Droppable> }) => void;
   [DndContextEventType.Destroy]: () => void;
 }
+
+// Public drag data exposed to consumers.
+// Top-level is read-only; nested `data` object contents are mutable.
+export type DndContextDragData = Readonly<{
+  isEnded: boolean;
+  data: { [key: string]: any };
+}>;
 
 export interface DndContextOptions<T extends CollisionData = CollisionData> {
   collisionDetector?:
@@ -88,43 +116,20 @@ export interface DndContextOptions<T extends CollisionData = CollisionData> {
     | ((dndContext: DndContext<T>) => CollisionDetector<T>);
 }
 
-export type DndContextCollisionDetection<T extends CollisionData = CollisionData> = (
-  draggable: Draggable<any>,
-  targetDroppables: Set<Droppable>,
-) => Map<Droppable, T>;
-
 export class DndContext<T extends CollisionData = CollisionData> {
   // Keep track of all added draggables and droppables.
   readonly draggables: ReadonlySet<Draggable<any>>;
   readonly droppables: ReadonlyMap<Symbol, Droppable>;
+  readonly isDestroyed: boolean;
 
-  // Used for all event listeners.
+  // Keep track of all active draggables and their drag data.
+  protected _drags: Map<Draggable<any>, DndContextInternalDragData<T>>;
+
+  // Used for all all event listeners and scroll ticker listener.
   protected _listenerId: Symbol;
-
-  // Ticker ids.
-  protected _scrollTickerId: Symbol;
-
-  // Used to store the drag data for each active (dragged) draggable.
-  protected _dragData: Map<
-    Draggable<any>,
-    {
-      targets: Set<Droppable> | null;
-      collisions: Map<Droppable, T>;
-      prevCollisions: Map<Droppable, T>;
-      data: { [key: string]: any };
-    }
-  >;
 
   // The current collision detection function.
   protected _collisionDetector: CollisionDetector<T>;
-
-  // Flag to detect if we are checking collisions.
-  protected _isCheckingCollisions: boolean;
-
-  // Reusable collision detection arrays and sets for memory efficiency.
-  protected _removedCollisions: Set<Droppable>;
-  protected _addedCollisions: Set<Droppable>;
-  protected _persistedCollisions: Set<Droppable>;
 
   // The internal event emitter.
   protected _emitter: Emitter<{
@@ -136,16 +141,13 @@ export class DndContext<T extends CollisionData = CollisionData> {
 
     this.draggables = new Set();
     this.droppables = new Map();
+    this._drags = new Map();
+    this.isDestroyed = false;
     this._listenerId = Symbol();
-    this._scrollTickerId = Symbol();
-    this._dragData = new Map();
-    this._isCheckingCollisions = false;
     this._emitter = new Emitter();
 
-    // Initialize reusable collision detection arrays and sets.
-    this._removedCollisions = new Set();
-    this._addedCollisions = new Set();
-    this._persistedCollisions = new Set();
+    // Bind methods.
+    this._onScroll = this._onScroll.bind(this);
 
     if (typeof collisionDetector === 'function') {
       this._collisionDetector = collisionDetector(this);
@@ -154,20 +156,22 @@ export class DndContext<T extends CollisionData = CollisionData> {
     }
   }
 
-  protected _getTargets(draggable: Draggable<any>) {
-    const dragData = this._dragData.get(draggable);
-    if (dragData?.targets) return dragData.targets;
+  get drags() {
+    return this._drags as ReadonlyMap<Draggable<any>, DndContextDragData>;
+  }
 
-    const targets = new Set<Droppable>();
+  protected _getTargets(draggable: Draggable<any>) {
+    const drag = this._drags.get(draggable);
+    if (drag?._targets) return drag._targets;
+
+    const targets = new Map<Symbol, Droppable>();
     for (const droppable of this.droppables.values()) {
       if (this.isMatch(draggable, droppable)) {
-        targets.add(droppable);
+        targets.set(droppable.id, droppable);
       }
     }
 
-    if (dragData) {
-      dragData.targets = targets;
-    }
+    if (drag) drag._targets = targets;
 
     return targets;
   }
@@ -177,69 +181,78 @@ export class DndContext<T extends CollisionData = CollisionData> {
     if (!this.draggables.has(draggable)) return;
 
     // Make sure the draggable is not being dragged, yet.
-    if (this._dragData.get(draggable)) return;
+    if (this._drags.get(draggable)) return;
 
-    // Recompute the droppable client rects.
-    this.updateDroppableClientRects();
+    // Set the initial drag data for the draggable.
+    this._drags.set(draggable, {
+      isEnded: false,
+      data: {},
+      _targets: null,
+      _cd: {
+        phase: CollisionDetectionPhase.Idle,
+        tickerId: Symbol(),
+        targets: new Map(),
+        collisions: [],
+        contacts: new Set(),
+        prevContacts: new Set(),
+        addedContacts: new Set(),
+        persistedContacts: new Set(),
+      },
+    });
+
+    // Recompute the droppable client rects if this is the first dragged
+    // draggable. We only want to do this once per "drag process" and that
+    // starts when a draggable starts dragging while there are no other dragged
+    // draggables, and stops when a draggable ends dragging while there are no
+    // other dragged draggables.
+    if (this._drags.size === 1) {
+      this.updateDroppableClientRects();
+    }
+
+    // Run collision detection for the draggable. Note that we just compute the
+    // collisions here, but don't _yet_ emit the collisions events, we do that
+    // part after emitting the start event.
+    this._computeCollisions(draggable);
+
+    // Add scroll listener if this is the first dragged draggable.
+    if (this._drags.size === 1) {
+      window.addEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
+    }
   }
 
   protected _onDragStart(draggable: Draggable<any>) {
-    // Make sure the draggable is registered.
-    if (!this.draggables.has(draggable)) return;
+    // Make sure the draggable is being dragged.
+    const drag = this._drags.get(draggable);
+    if (!drag || drag.isEnded) return;
 
-    // Make sure the draggable is not being dragged, yet.
-    if (this._dragData.get(draggable)) return;
-
-    // Find all droppables that are colliding with the draggable.
-    const targets = this._getTargets(draggable);
-    const collisions = new Map<Droppable, T>();
-    const prevCollisions = new Map<Droppable, T>();
-    this._collisionDetector.detectCollisions(draggable, targets, collisions);
-
-    // Create the drag data.
-    const dragData = { targets, collisions, prevCollisions, data: {} };
-    this._dragData.set(draggable, dragData);
-
-    // Add scroll listener.
-    window.addEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
-
-    // Emit start event.
+    // Emit "start" event.
     if (this._emitter.listenerCount(DndContextEventType.Start)) {
+      const targets = this._getTargets(draggable);
       this._emitter.emit(DndContextEventType.Start, {
         draggable,
         targets,
       });
     }
 
-    // If there are any collisions, update the collision state and emit enter
-    // events.
-    if (collisions.size && this._emitter.listenerCount(DndContextEventType.Enter)) {
-      // Create added collisions set.
-      const addedCollisions = this._addedCollisions;
-      addedCollisions.clear();
-      for (const droppable of collisions.keys()) {
-        addedCollisions.add(droppable);
-      }
+    // Lastly, emit collisions events.
+    this._emitCollisions(draggable);
+  }
 
-      // Emit enter event.
-      this._emitter.emit(DndContextEventType.Enter, {
-        draggable,
-        targets,
-        collisions,
-        addedCollisions,
-      });
+  protected _onDragPrepareMove(draggable: Draggable<any>) {
+    // Make sure the draggable is being dragged.
+    const drag = this._drags.get(draggable);
+    if (!drag || drag.isEnded) return;
 
-      // Clear reusable set.
-      addedCollisions.clear();
-    }
+    // Run collision detection.
+    this._computeCollisions(draggable);
   }
 
   protected _onDragMove(draggable: Draggable<any>) {
     // Make sure the draggable is being dragged.
-    const dragData = this._dragData.get(draggable);
-    if (!dragData) return;
+    const drag = this._drags.get(draggable);
+    if (!drag || drag.isEnded) return;
 
-    // Emit move event.
+    // Emit "move" event.
     if (this._emitter.listenerCount(DndContextEventType.Move)) {
       const targets = this._getTargets(draggable);
       this._emitter.emit(DndContextEventType.Move, {
@@ -248,66 +261,16 @@ export class DndContext<T extends CollisionData = CollisionData> {
       });
     }
 
-    // Run collision detection.
-    this.detectCollisions(draggable);
+    // Lastly, emit collisions events.
+    this._emitCollisions(draggable);
   }
 
   protected _onDragEnd(draggable: Draggable<any>) {
-    // Make sure the draggable is being dragged.
-    const dragData = this._dragData.get(draggable);
-    if (!dragData) return;
-
-    // Remove scroll ticker.
-    ticker.off(tickerPhases.read, this._scrollTickerId);
-
-    // Remove scroll listener.
-    window.removeEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
-
-    const targets = this._getTargets(draggable);
-    const collisions = dragData.collisions;
-
-    // Emit drop events for all current collisions.
-    if (collisions.size > 0 && this._emitter.listenerCount(DndContextEventType.Drop)) {
-      this._emitter.emit(DndContextEventType.Drop, {
-        draggable,
-        targets,
-        collisions,
-      });
-    }
-
-    // Emit end event.
-    if (this._emitter.listenerCount(DndContextEventType.End)) {
-      this._emitter.emit(DndContextEventType.End, {
-        draggable,
-        targets,
-      });
-    }
-
-    // Remove the drag data.
-    this._dragData.delete(draggable);
+    this._stopDrag(draggable);
   }
 
   protected _onDragCancel(draggable: Draggable<any>) {
-    // Make sure the draggable is being dragged.
-    const dragData = this._dragData.get(draggable);
-    if (!dragData) return;
-
-    // Remove scroll ticker.
-    ticker.off(tickerPhases.read, this._scrollTickerId);
-
-    // Remove scroll listener.
-    window.removeEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
-
-    // Emit cancel event.
-    if (this._emitter.listenerCount(DndContextEventType.Cancel)) {
-      this._emitter.emit(DndContextEventType.Cancel, {
-        draggable,
-        targets: this._getTargets(draggable),
-      });
-    }
-
-    // Remove the drag data.
-    this._dragData.delete(draggable);
+    this._stopDrag(draggable, true);
   }
 
   protected _onDragDestroy(draggable: Draggable<any>) {
@@ -315,17 +278,238 @@ export class DndContext<T extends CollisionData = CollisionData> {
   }
 
   protected _onScroll = () => {
+    if (this._drags.size === 0) return;
+
+    // Queue droppable client rects update.
     ticker.once(
       tickerPhases.read,
       () => {
         this.updateDroppableClientRects();
-        this._dragData.forEach((_, draggable) => {
-          this.detectCollisions(draggable);
-        });
       },
-      this._scrollTickerId,
+      this._listenerId,
     );
+
+    // Queue collision detection for all active draggables.
+    this.detectCollisions();
   };
+
+  // Returns true if the final cleanup was queued to a microtask.
+  protected _stopDrag(draggable: Draggable<any>, isCancelled = false): boolean {
+    // Make sure the draggable is being dragged.
+    const drag = this._drags.get(draggable);
+    if (!drag || drag.isEnded) return false;
+
+    // Mark the drag as ended.
+    drag.isEnded = true;
+
+    // Check if the collisions are being emitted currently. This can happen if
+    // the user causes drag to end synchronously in any way during the collision
+    // emit phase.
+    const isEmittingCollisions = drag._cd.phase === CollisionDetectionPhase.Emitting;
+
+    // If the collisions are not being emitted currently, do a final collision
+    // detection pass before emitting the drop event to ensure we have the most
+    // up to date collisions data.
+    if (!isEmittingCollisions) {
+      this._computeCollisions(draggable, true);
+      this._emitCollisions(draggable, true);
+    }
+
+    // Get the targets, collisions and colliding targets from the last collision
+    // detection pass.
+    const { targets, collisions, contacts } = drag._cd;
+
+    // Emit "end" event.
+    if (this._emitter.listenerCount(DndContextEventType.End)) {
+      this._emitter.emit(DndContextEventType.End, {
+        isCancelled,
+        draggable,
+        targets,
+        collisions,
+        contacts,
+      });
+    }
+
+    // Wait for the collisions to be emitted before finalizing the drag end.
+    // Also let's return true to indicate that the drag end was not finished
+    // synchronously.
+    if (isEmittingCollisions) {
+      window.queueMicrotask(() => {
+        this._finalizeStopDrag(draggable);
+      });
+      return true;
+    }
+
+    this._finalizeStopDrag(draggable);
+    return false;
+  }
+
+  protected _finalizeStopDrag(draggable: Draggable<any>) {
+    const drag = this._drags.get(draggable);
+    if (!drag || !drag.isEnded) return;
+
+    // Remove the drag data.
+    this._drags.delete(draggable);
+
+    // Free up the collision data pool from the collision detector.
+    this._collisionDetector.removeCollisionDataPool(draggable);
+
+    // Clear the queued detect collisions callbacks.
+    ticker.off(tickerPhases.read, drag._cd.tickerId);
+    ticker.off(tickerPhases.write, drag._cd.tickerId);
+
+    // Remove scroll ticker and listener if this was the last dragged draggable.
+    if (!this._drags.size) {
+      ticker.off(tickerPhases.read, this._listenerId);
+      window.removeEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
+    }
+  }
+
+  protected _computeCollisions(draggable: Draggable<any>, force = false) {
+    const drag = this._drags.get(draggable);
+    if (!drag || (!force && drag.isEnded)) return;
+
+    const cd = drag._cd;
+
+    // Throw an error if collisions are being computed or emitted.
+    switch (cd.phase) {
+      case CollisionDetectionPhase.Computing:
+        throw new Error('Collisions are being computed.');
+      case CollisionDetectionPhase.Emitting:
+        throw new Error('Collisions are being emitted.');
+      default:
+        break;
+    }
+
+    // Mark collision detection as computing.
+    cd.phase = CollisionDetectionPhase.Computing;
+
+    // Get the targets of the draggable and set them as the collision targets.
+    const targets = (cd.targets = this._getTargets(draggable));
+
+    // NB: Running collision detection will mutate the collision data of the
+    // current collisions of the draggable (since we use object pool objects
+    // directly for memory efficiency), so if we need to compare the current and
+    // next collisions we need to cache the current collisions before running
+    // the detection. But, we don't need to do that now, we just care about the
+    // previous colliding droppables so this is fine.
+    this._collisionDetector.detectCollisions(draggable, targets, cd.collisions);
+
+    // Mark collision detection as computed.
+    cd.phase = CollisionDetectionPhase.Computed;
+  }
+
+  protected _emitCollisions(draggable: Draggable<any>, force = false) {
+    const drag = this._drags.get(draggable);
+    if (!drag || (!force && drag.isEnded)) return;
+
+    const cd = drag._cd;
+
+    // Make sure we have computed the collisions.
+    switch (cd.phase) {
+      case CollisionDetectionPhase.Computing:
+        throw new Error('Collisions are being computed.');
+      case CollisionDetectionPhase.Emitting:
+        throw new Error('Collisions are being emitted.');
+      case CollisionDetectionPhase.Idle:
+        // Silently ignore if collisions have not been computed yet. This is
+        // a potential scenario, a valid one, but we should not throw an error
+        // here.
+        return;
+      default:
+        break;
+    }
+
+    // Mark collision detection as emitting.
+    cd.phase = CollisionDetectionPhase.Emitting;
+
+    const emitter = this._emitter;
+    const collisions = cd.collisions;
+    const targets = cd.targets;
+    const addedContacts = cd.addedContacts;
+    const persistedContacts = cd.persistedContacts;
+
+    // Swap pointers to the colliding droppables sets.
+    const prevContacts = cd.contacts;
+    const contacts = cd.prevContacts;
+    cd.prevContacts = prevContacts;
+    cd.contacts = contacts;
+
+    // Make removedContacts piggyback on prevContacts.
+    const removedContacts = prevContacts;
+
+    // Clear reusable sets.
+    addedContacts.clear();
+    persistedContacts.clear();
+    contacts.clear();
+
+    // Populate the colliding droppables set based on collisions and find out
+    // added, persisted and removed collisions (leftover from the previous
+    // collision phase).
+    for (const collision of collisions) {
+      const droppable = targets.get(collision.droppableId);
+      // NB: We should always have a droppable here since we compute the
+      // collisions with the targets of the draggable, but it's still good to
+      // be defensive here.
+      if (!droppable) continue;
+      contacts.add(droppable);
+      if (prevContacts.has(droppable)) {
+        persistedContacts.add(droppable);
+        // Let's remove the droppable from the previous colliding droppables set,
+        // this way the removed collisions will be the ones that are left in the
+        // previous colliding droppables set.
+        prevContacts.delete(droppable);
+      } else {
+        addedContacts.add(droppable);
+      }
+    }
+
+    // Emit "leave" events.
+    if (prevContacts.size && emitter.listenerCount(DndContextEventType.Leave)) {
+      emitter.emit(DndContextEventType.Leave, {
+        draggable,
+        targets,
+        collisions,
+        contacts,
+        removedContacts,
+      });
+    }
+
+    // Emit "enter" events.
+    if (addedContacts.size && emitter.listenerCount(DndContextEventType.Enter)) {
+      emitter.emit(DndContextEventType.Enter, {
+        draggable,
+        targets,
+        collisions,
+        contacts,
+        addedContacts,
+      });
+    }
+
+    // Emit "collide" events if we have any contacts or removed contacts.
+    if (
+      emitter.listenerCount(DndContextEventType.Collide) &&
+      (contacts.size || removedContacts.size)
+    ) {
+      emitter.emit(DndContextEventType.Collide, {
+        draggable,
+        targets,
+        collisions,
+        contacts,
+        addedContacts,
+        removedContacts,
+        persistedContacts,
+      });
+    }
+
+    // Clear reusable sets.
+    addedContacts.clear();
+    persistedContacts.clear();
+    prevContacts.clear();
+
+    // Mark collision detection as idle.
+    cd.phase = CollisionDetectionPhase.Idle;
+  }
 
   on<K extends keyof DndContextEventCallbacks<T>>(
     type: K,
@@ -337,6 +521,12 @@ export class DndContext<T extends CollisionData = CollisionData> {
 
   off<K extends keyof DndContextEventCallbacks<T>>(type: K, listenerId: EventListenerId): void {
     this._emitter.off(type, listenerId);
+  }
+
+  updateDroppableClientRects() {
+    for (const droppable of this.droppables.values()) {
+      droppable.updateClientRect();
+    }
   }
 
   isMatch(draggable: Draggable<any>, droppable: Droppable) {
@@ -359,130 +549,36 @@ export class DndContext<T extends CollisionData = CollisionData> {
     return isMatch;
   }
 
-  getData(draggable: Draggable<any>) {
-    const dragData = this._dragData.get(draggable);
-    if (!dragData) return null;
-    return dragData.data;
-  }
-
-  clearTargets(draggable: Draggable<any>) {
-    const dragData = this._dragData.get(draggable);
-    if (dragData) dragData.targets = null;
-  }
-
-  updateDroppableClientRects() {
-    this.droppables.forEach((droppable) => {
-      droppable.updateClientRect();
-    });
-  }
-
-  detectCollisions(draggable: Draggable<any>) {
-    const dragData = this._dragData.get(draggable);
-    if (!dragData) return;
-
-    if (this._isCheckingCollisions) {
-      throw new Error('Cannot detect collisions while already checking collisions.');
-    }
-
-    // Set the checking collisions flag.
-    this._isCheckingCollisions = true;
-
-    // Assign reusable sets.
-    const removedCollisions = this._removedCollisions;
-    const addedCollisions = this._addedCollisions;
-    const persistedCollisions = this._persistedCollisions;
-
-    // Clear reusable sets.
-    removedCollisions.clear();
-    addedCollisions.clear();
-    persistedCollisions.clear();
-
-    const emitter = this._emitter;
-    const targets = this._getTargets(draggable);
-
-    // Swap collision maps.
-    const prevCollisions = dragData.collisions;
-    const collisions = dragData.prevCollisions;
-    dragData.prevCollisions = prevCollisions;
-    dragData.collisions = collisions;
-
-    // NB: Running collision detection will mutate the collision data of the
-    // current collisions (since we use object pool objects directly for memory
-    // efficiency), so if we need to compare the current and next collisions we
-    // need to cache the current collisions before running the detection. But,
-    // for now, we just care about the previous colliding droppables so this is
-    // fine.
-    this._collisionDetector.detectCollisions(draggable, targets, collisions);
-
-    // Check if there are any listeners for the events we need to emit.
-    const hasLeaveListeners = emitter.listenerCount(DndContextEventType.Leave);
-    const hasOverListeners = emitter.listenerCount(DndContextEventType.Over);
-    const hasEnterListeners = emitter.listenerCount(DndContextEventType.Enter);
-
-    // Find out persisted and removed collisions (if needed).
-    if (hasLeaveListeners || hasOverListeners) {
-      for (const droppable of prevCollisions.keys()) {
-        if (collisions.has(droppable)) {
-          persistedCollisions.add(droppable);
-        } else {
-          removedCollisions.add(droppable);
-        }
+  clearTargets(draggable?: Draggable<any>) {
+    if (draggable) {
+      const drag = this._drags.get(draggable);
+      if (drag) drag._targets = null;
+    } else {
+      for (const drag of this._drags.values()) {
+        drag._targets = null;
       }
     }
+  }
 
-    // Find out added collisions (if needed).
-    if (hasEnterListeners) {
-      for (const droppable of collisions.keys()) {
-        if (!prevCollisions.has(droppable)) {
-          addedCollisions.add(droppable);
-        }
+  detectCollisions(draggable?: Draggable<any>) {
+    if (this.isDestroyed) return;
+
+    if (draggable) {
+      const drag = this._drags.get(draggable);
+      if (!drag || drag.isEnded) return;
+      ticker.once(tickerPhases.read, () => this._computeCollisions(draggable), drag._cd.tickerId);
+      ticker.once(tickerPhases.write, () => this._emitCollisions(draggable), drag._cd.tickerId);
+    } else {
+      for (const [d, drag] of this._drags) {
+        if (drag.isEnded) continue;
+        ticker.once(tickerPhases.read, () => this._computeCollisions(d), drag._cd.tickerId);
+        ticker.once(tickerPhases.write, () => this._emitCollisions(d), drag._cd.tickerId);
       }
     }
-
-    // Emit leave events.
-    if (hasLeaveListeners && removedCollisions.size > 0) {
-      emitter.emit(DndContextEventType.Leave, {
-        draggable,
-        targets,
-        collisions,
-        removedCollisions,
-      });
-    }
-
-    // Emit enter events.
-    if (hasEnterListeners && addedCollisions.size > 0) {
-      emitter.emit(DndContextEventType.Enter, {
-        draggable,
-        targets,
-        collisions,
-        addedCollisions,
-      });
-    }
-
-    // Emit over events.
-    if (hasOverListeners && persistedCollisions.size > 0) {
-      emitter.emit(DndContextEventType.Over, {
-        draggable,
-        targets,
-        collisions,
-        persistedCollisions,
-      });
-    }
-
-    // Clear reusable sets.
-    removedCollisions.clear();
-    addedCollisions.clear();
-    persistedCollisions.clear();
-
-    // Clear prevCollisions to prevent access to stale pooled data.
-    prevCollisions.clear();
-
-    // Reset the checking collisions flag.
-    this._isCheckingCollisions = false;
   }
 
   addDraggable(draggable: Draggable<any>) {
-    if (this.draggables.has(draggable)) return;
+    if (this.isDestroyed || this.draggables.has(draggable)) return;
 
     (this.draggables as Set<Draggable<any>>).add(draggable);
 
@@ -498,6 +594,14 @@ export class DndContext<T extends CollisionData = CollisionData> {
       DraggableEventType.Start,
       () => {
         this._onDragStart(draggable);
+      },
+      this._listenerId,
+    );
+
+    draggable.on(
+      DraggableEventType.PrepareMove,
+      () => {
+        this._onDragPrepareMove(draggable);
       },
       this._listenerId,
     );
@@ -530,152 +634,161 @@ export class DndContext<T extends CollisionData = CollisionData> {
       this._listenerId,
     );
 
-    // Emit add draggable event. Note that we intentionally call this before
-    // we call the onDragStart method, so that the add event is called before
-    // the start event.
-    this._emitter.emit(DndContextEventType.AddDraggable, { draggable });
+    // Emit "addDraggable" event.
+    if (this._emitter.listenerCount(DndContextEventType.AddDraggable)) {
+      this._emitter.emit(DndContextEventType.AddDraggable, { draggable });
+    }
 
     // If the draggable is already being dragged, start the drag process
-    // manually.
-    if (draggable.drag && !draggable.drag.isEnded) {
-      this._onDragStart(draggable);
+    // manually. Note that we are reading internal state of the draggable here
+    // (`_startPhase`) to avoid double starting the drag process. We need to
+    // be careful here and make sure to update this logic if we change the
+    // draggable's internal state logic.
+    if (!this.isDestroyed && draggable.drag && !draggable.drag.isEnded) {
+      const startPhase = draggable['_startPhase'];
+      if (startPhase >= 2) this._onDragPrepareStart(draggable);
+      if (startPhase >= 4) this._onDragStart(draggable);
     }
   }
 
   removeDraggable(draggable: Draggable<any>) {
     // Make sure the draggable is registered.
-    if (!this.draggables.has(draggable)) return;
-
-    // Unbind the event listeners.
-    draggable.off(DraggableEventType.PrepareStart, this._listenerId);
-    draggable.off(DraggableEventType.Start, this._listenerId);
-    draggable.off(DraggableEventType.Move, this._listenerId);
-    draggable.off(DraggableEventType.End, this._listenerId);
-    draggable.off(DraggableEventType.Destroy, this._listenerId);
-
-    // If this draggable is being dragged, emit leave and cancel events.
-    const dragData = this._dragData.get(draggable);
-    if (dragData) {
-      // Emit leave event if there are any collisions.
-      if (dragData.collisions.size && this._emitter.listenerCount(DndContextEventType.Leave)) {
-        // Create removed collisions set.
-        const removedCollisions = this._removedCollisions;
-        removedCollisions.clear();
-        for (const droppable of dragData.collisions.keys()) {
-          removedCollisions.add(droppable);
-        }
-
-        // Emit leave event.
-        this._emitter.emit(DndContextEventType.Leave, {
-          draggable,
-          targets: this._getTargets(draggable),
-          collisions: EMPTY_MAP as ReadonlyMap<Droppable, T>,
-          removedCollisions,
-        });
-
-        // Clear reusable set.
-        removedCollisions.clear();
-      }
-
-      // Emit cancel event.
-      if (this._emitter.listenerCount(DndContextEventType.Cancel)) {
-        this._emitter.emit(DndContextEventType.Cancel, {
-          draggable,
-          targets: this._getTargets(draggable),
-        });
-      }
-    }
-
-    // Remove drag data.
-    this._dragData.delete(draggable);
+    if (this.isDestroyed || !this.draggables.has(draggable)) return;
 
     // Remove draggable.
     (this.draggables as Set<Draggable<any>>).delete(draggable);
 
-    // Emit remove draggable event.
-    this._emitter.emit(DndContextEventType.RemoveDraggable, { draggable });
+    // Unbind the event listeners.
+    draggable.off(DraggableEventType.PrepareStart, this._listenerId);
+    draggable.off(DraggableEventType.Start, this._listenerId);
+    draggable.off(DraggableEventType.PrepareMove, this._listenerId);
+    draggable.off(DraggableEventType.Move, this._listenerId);
+    draggable.off(DraggableEventType.End, this._listenerId);
+    draggable.off(DraggableEventType.Destroy, this._listenerId);
+
+    // Cancel the drag.
+    this._stopDrag(draggable, true);
+
+    // Emit "removeDraggable" event.
+    if (this._emitter.listenerCount(DndContextEventType.RemoveDraggable)) {
+      this._emitter.emit(DndContextEventType.RemoveDraggable, { draggable });
+    }
   }
 
-  addDroppable(droppable: Droppable) {
-    if (this.droppables.has(droppable.id)) return;
+  addDroppables(droppables: Droppable[] | Set<Droppable>) {
+    if (this.isDestroyed) return;
 
-    // Add the droppable to the droppable map.
-    (this.droppables as Map<Symbol, Droppable>).set(droppable.id, droppable);
+    const addedDroppables = new Set<Droppable>();
 
-    // Bind the destroy event listener.
-    droppable.on(
-      DroppableEventType.Destroy,
-      () => {
-        this.removeDroppable(droppable);
-      },
-      this._listenerId,
-    );
+    for (const droppable of droppables) {
+      // Make sure the droppable is not registered.
+      if (this.droppables.has(droppable.id)) continue;
 
-    // Add the droppable to the targets of all currently dragged draggables,
-    // where the droppable is a valid target.
-    this._dragData.forEach(({ targets }, draggable) => {
-      if (targets && this.isMatch(draggable, droppable)) {
-        targets.add(droppable);
-      }
-    });
+      // Add the droppable to the validated set of droppables.
+      addedDroppables.add(droppable);
 
-    // Emit add droppable event.
-    this._emitter.emit(DndContextEventType.AddDroppable, { droppable });
+      // Add the droppable to the droppable map.
+      (this.droppables as Map<Symbol, Droppable>).set(droppable.id, droppable);
 
-    // NB: We intentionally do not run collision detection here. It might not
-    // be wanted/necessary behavior for some applications, so users can call
-    // `detectCollisions` manually after adding the droppables if they want to.
-  }
+      // Bind the destroy event listener.
+      droppable.on(
+        DroppableEventType.Destroy,
+        () => {
+          this.removeDroppables([droppable]);
+        },
+        this._listenerId,
+      );
 
-  removeDroppable(droppable: Droppable) {
-    if (!this.droppables.has(droppable.id)) return;
-
-    // Remove the droppable from the set of droppables.
-    (this.droppables as Map<Symbol, Droppable>).delete(droppable.id);
-
-    // Unbind the destroy event listener.
-    droppable.off(DroppableEventType.Destroy, this._listenerId);
-
-    // Remove the droppable from the targets map.
-    this._dragData.forEach(({ targets }) => {
-      targets?.delete(droppable);
-    });
-
-    // Remove the droppable from the collisions map and emit leave events for
-    // all draggables that are colliding with it.
-    if (this._emitter.listenerCount(DndContextEventType.Leave)) {
-      this._dragData.forEach(({ collisions }, draggable) => {
-        if (collisions.has(droppable)) {
-          // Create removed collisions set.
-          const removedCollisions = this._removedCollisions;
-          removedCollisions.clear();
-          removedCollisions.add(droppable);
-
-          // Remove the droppable from the collisions map.
-          collisions.delete(droppable);
-
-          // Emit leave event.
-          this._emitter.emit(DndContextEventType.Leave, {
-            draggable,
-            targets: this._getTargets(draggable),
-            collisions,
-            removedCollisions,
-          });
-
-          // Clear reusable set.
-          removedCollisions.clear();
+      // Add the droppable to the targets of all currently dragged draggables,
+      // where the droppable is a valid target.
+      this._drags.forEach(({ _targets }, draggable) => {
+        if (_targets && this.isMatch(draggable, droppable)) {
+          _targets.set(droppable.id, droppable);
+          this.detectCollisions(draggable);
         }
       });
     }
 
-    // Emit remove droppable event.
-    this._emitter.emit(DndContextEventType.RemoveDroppable, { droppable });
+    // Emit "addDroppables" event.
+    if (addedDroppables.size && this._emitter.listenerCount(DndContextEventType.AddDroppables)) {
+      this._emitter.emit(DndContextEventType.AddDroppables, { droppables: addedDroppables });
+    }
+  }
+
+  removeDroppables(droppables: Droppable[] | Set<Droppable>) {
+    if (this.isDestroyed) return;
+
+    const removedDroppables = new Set<Droppable>();
+
+    for (const droppable of droppables) {
+      // Make sure the droppable is registered.
+      if (!this.droppables.has(droppable.id)) continue;
+
+      // Remove the droppable from the droppables map.
+      (this.droppables as Map<Symbol, Droppable>).delete(droppable.id);
+
+      // Add the droppable to the validated set of droppables.
+      removedDroppables.add(droppable);
+
+      // Unbind the destroy event listener.
+      droppable.off(DroppableEventType.Destroy, this._listenerId);
+
+      // Remove the droppable from the targets set of all dragged draggables and
+      // queue collision detection for them.
+      this._drags.forEach(({ _targets }, draggable) => {
+        if (_targets && _targets.has(droppable.id)) {
+          _targets.delete(droppable.id);
+          this.detectCollisions(draggable);
+        }
+      });
+    }
+
+    // Emit "removeDroppables" event.
+    if (
+      removedDroppables.size &&
+      this._emitter.listenerCount(DndContextEventType.RemoveDroppables)
+    ) {
+      this._emitter.emit(DndContextEventType.RemoveDroppables, { droppables: removedDroppables });
+    }
   }
 
   destroy() {
-    ticker.off(tickerPhases.read, this._scrollTickerId);
-    this._collisionDetector.destroy();
+    // Make sure the context is not destroyed yet.
+    if (this.isDestroyed) return;
+    (this as Writeable<typeof this>).isDestroyed = true;
+
+    // Unbind all draggable event listeners.
+    this.draggables.forEach((draggable) => {
+      draggable.off(DraggableEventType.PrepareStart, this._listenerId);
+      draggable.off(DraggableEventType.Start, this._listenerId);
+      draggable.off(DraggableEventType.PrepareMove, this._listenerId);
+      draggable.off(DraggableEventType.Move, this._listenerId);
+      draggable.off(DraggableEventType.End, this._listenerId);
+      draggable.off(DraggableEventType.Destroy, this._listenerId);
+    });
+
+    // Unbind all droppable event listeners.
+    this.droppables.forEach((droppable) => {
+      droppable.off(DroppableEventType.Destroy, this._listenerId);
+    });
+
+    // Cancel all active drags.
+    const activeDraggables = this._drags.keys();
+    for (const draggable of activeDraggables) {
+      this._stopDrag(draggable, true);
+    }
+
+    // Emit "destroy" event.
     this._emitter.emit(DndContextEventType.Destroy);
+
+    // Unbind all emitter listeners.
     this._emitter.off();
+
+    // Destroy the collision detector.
+    this._collisionDetector.destroy();
+
+    // Clear the draggables and droppables.
+    (this.draggables as Set<Draggable<any>>).clear();
+    (this.droppables as Map<Symbol, Droppable>).clear();
   }
 }

@@ -51,7 +51,7 @@ export function collisionDetection() {
       });
 
       dndContext.addDraggable(draggable);
-      dndContext.addDroppable(droppable);
+      dndContext.addDroppables([droppable]);
 
       // Start dragging (elements should be overlapping)
       focusElement(dragElement);
@@ -62,10 +62,10 @@ export function collisionDetection() {
       // Should detect collision on start
       assert.equal(collisionEvents.length, 1);
       assert.equal(collisionEvents[0].type, 'enter');
-      assert.equal(collisionEvents[0].collisions.size, 1);
-      assert.isTrue(collisionEvents[0].collisions.has(droppable));
+      assert.equal(collisionEvents[0].collisions.length, 1);
+      assert.equal(collisionEvents[0].collisions[0].droppableId, droppable.id);
 
-      const collisionData = collisionEvents[0].collisions.get(droppable);
+      const collisionData = collisionEvents[0].collisions[0];
       assert.isDefined(collisionData);
       assert.equal(collisionData.droppableId, droppable.id);
       assert.isNumber(collisionData.intersectionScore);
@@ -121,7 +121,7 @@ export function collisionDetection() {
       });
 
       dndContext.addDraggable(draggable);
-      dndContext.addDroppable(droppable);
+      dndContext.addDroppables([droppable]);
 
       // Start dragging (elements should not be overlapping)
       focusElement(dragElement);
@@ -174,15 +174,15 @@ export function collisionDetection() {
       const dndContext = new DndContext();
 
       dndContext.on('enter', (data) => {
-        collisionEvents.push({ type: 'enter', collisions: data.collisions.size });
+        collisionEvents.push({ type: 'enter', collisions: data.collisions.length });
       });
 
       dndContext.on('leave', (data) => {
-        collisionEvents.push({ type: 'leave', collisions: data.collisions.size });
+        collisionEvents.push({ type: 'leave', collisions: data.collisions.length });
       });
 
       dndContext.addDraggable(draggable);
-      dndContext.addDroppable(droppable);
+      dndContext.addDroppables([droppable]);
 
       // Start dragging (no collision initially)
       focusElement(dragElement);
@@ -220,7 +220,10 @@ export function collisionDetection() {
     });
 
     it('should handle multiple droppables correctly', async () => {
-      const collisionEvents: any[] = [];
+      const collisionEvents: {
+        type: string;
+        collisions: CollisionData[];
+      }[] = [];
 
       const dragElement = createTestElement({
         left: '0px',
@@ -262,22 +265,19 @@ export function collisionDetection() {
       dndContext.on('enter', (data) => {
         collisionEvents.push({
           type: 'enter',
-          collisions: Array.from(data.collisions.keys()).map((d) => d.id),
-          addedCollisions: Array.from(data.addedCollisions).map((d) => d.id),
+          collisions: [...data.collisions],
         });
       });
 
       dndContext.on('leave', (data) => {
         collisionEvents.push({
           type: 'leave',
-          collisions: Array.from(data.collisions.keys()).map((d) => d.id),
-          removedCollisions: Array.from(data.removedCollisions).map((d) => d.id),
+          collisions: [...data.collisions],
         });
       });
 
       dndContext.addDraggable(draggable);
-      dndContext.addDroppable(droppable1);
-      dndContext.addDroppable(droppable2);
+      dndContext.addDroppables([droppable1, droppable2]);
 
       // Start dragging (should collide with droppable1)
       focusElement(dragElement);
@@ -289,7 +289,9 @@ export function collisionDetection() {
       assert.equal(collisionEvents.length, 1);
       assert.equal(collisionEvents[0].type, 'enter');
       assert.equal(collisionEvents[0].collisions.length, 1);
-      assert.include(collisionEvents[0].collisions, droppable1.id);
+      assert.isTrue(
+        collisionEvents[0].collisions.some((c: any) => c.droppableId === droppable1.id),
+      );
 
       // Move right to transition from droppable1 to droppable2
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
@@ -348,7 +350,7 @@ export function collisionDetection() {
       });
 
       dndContext.addDraggable(draggable);
-      dndContext.addDroppable(droppable);
+      dndContext.addDroppables([droppable]);
 
       // Start dragging (elements overlap but droppable doesn't accept this group)
       focusElement(dragElement);
@@ -403,52 +405,37 @@ export function collisionDetection() {
         accept: ['test'],
       });
 
-      const TEMP_COLLISION_DATA: CustomCollisionData = {
-        droppableId: Symbol(),
-        droppableRect: { width: 0, height: 0, x: 0, y: 0 },
-        draggableRect: { width: 0, height: 0, x: 0, y: 0 },
-        intersectionRect: { width: 0, height: 0, x: 0, y: 0 },
-        intersectionScore: 0,
-        customProp: '',
-      };
-
       const dndContext = new DndContext<CustomCollisionData>({
         collisionDetector: {
-          getCollisionData: (draggable, droppable) => {
+          checkCollision: (draggable, droppable, collisionData) => {
             customDetectorCalled = true;
 
-            // Use the default collision detection logic to get base data.
-            // Note that we pass the temporary collision data object to the
-            // default method so the results will be written to it.
-            const data = CollisionDetectorDefaultOptions.getCollisionData(
+            // Use the default collision detection logic.
+            const result = CollisionDetectorDefaultOptions.checkCollision(
               draggable,
               droppable,
-              TEMP_COLLISION_DATA,
+              collisionData,
             );
 
-            // If data is null, it means there is no collision.
-            if (!data) return null;
+            // If result is null, it means there is no collision.
+            if (!result) return null;
 
-            // Sync the custom property to the temporary collision data object.
-            data.customProp = 'test-value';
+            // Set the custom property.
+            result.customProp = 'test-value';
 
-            return data;
+            return result;
           },
-          mergeCollisionData: (target, source) => {
-            CollisionDetectorDefaultOptions.mergeCollisionData(target, source);
-            target.customProp = source.customProp;
-            return target;
-          },
-          createCollisionData: (source) => {
-            const data = CollisionDetectorDefaultOptions.createCollisionData(source);
-            data.customProp = source.customProp;
+          createCollisionData: () => {
+            const data =
+              CollisionDetectorDefaultOptions.createCollisionData() as CustomCollisionData;
+            data.customProp = '';
             return data;
           },
         },
       });
 
       dndContext.on('enter', (data) => {
-        const collision = data.collisions.values().next().value;
+        const collision = data.collisions[0];
         customCollisionEvents.push({
           type: 'enter',
           customProp: collision?.customProp,
@@ -456,7 +443,7 @@ export function collisionDetection() {
       });
 
       dndContext.addDraggable(draggable);
-      dndContext.addDroppable(droppable);
+      dndContext.addDroppables([droppable]);
 
       // Start dragging
       focusElement(dragElement);
@@ -509,7 +496,7 @@ export function collisionDetection() {
       const dndContext = new DndContext();
 
       dndContext.addDraggable(draggable);
-      dndContext.addDroppable(droppable);
+      dndContext.addDroppables([droppable]);
 
       // Get initial client rect
       const initialRect = droppable.getClientRect();
@@ -578,11 +565,11 @@ export function collisionDetection() {
       const dndContext = new DndContext();
 
       dndContext.on('enter', (data) => {
-        collisionData = data.collisions.get(droppable);
+        collisionData = data.collisions.find((c) => c.droppableId === droppable.id) || null;
       });
 
       dndContext.addDraggable(draggable);
-      dndContext.addDroppable(droppable);
+      dndContext.addDroppables([droppable]);
 
       // Start dragging
       focusElement(dragElement);

@@ -5,14 +5,15 @@ import {
   DndContext,
   Droppable,
   DndContextEventType,
-  VisibleRectCollisionDetector,
+  AdvancedCollisionDetector,
+  ACDCollisionData,
 } from '../../src';
 
 let zIndex = 0;
 
 // Initialize context with the visible-rect collision detector
-const dndContext = new DndContext({
-  collisionDetector: (ctx) => new VisibleRectCollisionDetector(ctx),
+const dndContext = new DndContext<ACDCollisionData>({
+  collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx),
 });
 
 // Elements
@@ -24,7 +25,7 @@ droppableElements.forEach((element) => {
   const droppable = new Droppable(element);
   droppable.data.overIds = new Set<number>();
   droppable.data.droppedIds = new Set<number>();
-  dndContext.addDroppable(droppable);
+  dndContext.addDroppables([droppable]);
 });
 
 // Create a single draggable outside the scroll container
@@ -46,7 +47,7 @@ droppableElements.forEach((element) => {
 
 // DnD logic (same pattern as example 011)
 {
-  const onStart = (data: { draggable: Draggable; targets: ReadonlySet<Droppable> }) => {
+  const onStart = (data: { draggable: Draggable; targets: ReadonlyMap<Symbol, Droppable> }) => {
     const { draggable, targets } = data;
     targets.forEach((target) => {
       target.data.droppedIds.delete(draggable.id);
@@ -58,27 +59,29 @@ droppableElements.forEach((element) => {
 
   const onEnterAndOver = (data: {
     draggable: Draggable;
-    collisions: ReadonlyMap<Droppable, any>;
+    collisions: ReadonlyArray<ACDCollisionData>;
   }) => {
     const { draggable, collisions } = data;
-    const collisionArray = Array.from(collisions.keys());
-    const target = collisionArray[0];
+    const targetId = collisions.length > 0 ? collisions[0].droppableId : null;
+    const target = targetId ? dndContext.droppables.get(targetId) : null;
     if (target) {
       target.data.overIds.add(draggable.id);
       target.element.classList.add('draggable-over');
     }
-    for (let i = 1; i < collisionArray.length; i++) {
-      const c = collisionArray[i];
-      c.data.overIds.delete(draggable.id);
-      if (c.data.overIds.size === 0) {
-        c.element.classList.remove('draggable-over');
+    // Remove active state from other droppables that are no longer colliding
+    for (const droppable of dndContext.droppables.values()) {
+      if (droppable !== target && !collisions.some((c) => c.droppableId === droppable.id)) {
+        droppable.data.overIds.delete(draggable.id);
+        if (droppable.data.overIds.size === 0) {
+          droppable.element.classList.remove('draggable-over');
+        }
       }
     }
   };
 
-  const onLeave = (data: { draggable: Draggable; removedCollisions: ReadonlySet<Droppable> }) => {
-    const { draggable, removedCollisions } = data;
-    removedCollisions.forEach((target) => {
+  const onLeave = (data: { draggable: Draggable; removedContacts: ReadonlySet<Droppable> }) => {
+    const { draggable, removedContacts } = data;
+    removedContacts.forEach((target) => {
       target.data.overIds.delete(draggable.id);
       if (target.data.overIds.size === 0) {
         target.element.classList.remove('draggable-over');
@@ -86,9 +89,10 @@ droppableElements.forEach((element) => {
     });
   };
 
-  const onDrop = (data: { draggable: Draggable; collisions: ReadonlyMap<Droppable, any> }) => {
+  const onEnd = (data: { draggable: Draggable; collisions: ReadonlyArray<ACDCollisionData> }) => {
     const { draggable, collisions } = data;
-    const target = Array.from(collisions.keys())[0];
+    const target =
+      collisions.length > 0 ? dndContext.droppables.get(collisions[0].droppableId) : null;
     if (!target) return;
     target.data.droppedIds.add(draggable.id);
     target.element.classList.add('draggable-dropped');
@@ -100,7 +104,7 @@ droppableElements.forEach((element) => {
 
   dndContext.on(DndContextEventType.Start, onStart);
   dndContext.on(DndContextEventType.Enter, onEnterAndOver);
-  dndContext.on(DndContextEventType.Over, onEnterAndOver);
+  dndContext.on(DndContextEventType.Collide, onEnterAndOver);
   dndContext.on(DndContextEventType.Leave, onLeave);
-  dndContext.on(DndContextEventType.Drop, onDrop);
+  dndContext.on(DndContextEventType.End, onEnd);
 }

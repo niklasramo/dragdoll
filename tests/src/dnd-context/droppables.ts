@@ -2,10 +2,12 @@ import { assert } from 'chai';
 import { createTestElement } from '../utils/create-test-element.js';
 import { focusElement } from '../utils/focus-element.js';
 import { waitNextFrame } from '../utils/wait-next-frame.js';
+import { startDrag, endDrag, move } from '../utils/keyboard-helpers.js';
 import { DndContext, Draggable, Droppable, KeyboardSensor } from '../../../src/index.js';
 
 export function droppables() {
   describe('droppables', () => {
+    // helpers imported from ../utils/keyboard-helpers
     it('should accept draggables based on group string array', async () => {
       const events: any[] = [];
 
@@ -40,18 +42,13 @@ export function droppables() {
       });
 
       dndContext.addDraggable(draggable);
-      dndContext.addDroppable(droppable);
+      dndContext.addDroppables([droppable]);
 
       // Start dragging
-      focusElement(dragElement);
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-
-      await waitNextFrame();
+      await startDrag(dragElement);
 
       // Move right to overlap with droppable
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-
-      await waitNextFrame();
+      await move('Right');
       await waitNextFrame(); // Extra frame for collision detection
 
       // Should accept the draggable
@@ -60,7 +57,7 @@ export function droppables() {
       assert.equal(events[0].targets, 1);
 
       // End dragging
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+      await endDrag();
 
       // Cleanup
       dndContext.destroy();
@@ -105,13 +102,10 @@ export function droppables() {
       });
 
       dndContext.addDraggable(draggable);
-      dndContext.addDroppable(droppable);
+      dndContext.addDroppables([droppable]);
 
       // Start dragging
-      focusElement(dragElement);
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-
-      await waitNextFrame();
+      await startDrag(dragElement);
 
       // Should not accept the draggable
       assert.equal(events.length, 0);
@@ -164,7 +158,7 @@ export function droppables() {
       });
 
       dndContext.addDraggable(draggable);
-      dndContext.addDroppable(droppable);
+      dndContext.addDroppables([droppable]);
 
       // Start dragging
       focusElement(dragElement);
@@ -173,9 +167,7 @@ export function droppables() {
       await waitNextFrame();
 
       // Move right to overlap with droppable
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-
-      await waitNextFrame();
+      await move('Right');
       await waitNextFrame(); // Extra frame for collision detection
 
       // Should accept the draggable based on function
@@ -184,7 +176,7 @@ export function droppables() {
       assert.equal(events[0].targets, 1);
 
       // End dragging
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+      await endDrag();
 
       // Cleanup
       dndContext.destroy();
@@ -231,13 +223,10 @@ export function droppables() {
       });
 
       dndContext.addDraggable(draggable);
-      dndContext.addDroppable(droppable);
+      dndContext.addDroppables([droppable]);
 
       // Start dragging
-      focusElement(dragElement);
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-
-      await waitNextFrame();
+      await startDrag(dragElement);
 
       // Should not accept the draggable
       assert.equal(events.length, 0);
@@ -282,19 +271,16 @@ export function droppables() {
       });
 
       dndContext.addDraggable(draggable);
-      dndContext.addDroppable(droppable);
+      dndContext.addDroppables([droppable]);
 
       // Start dragging
-      focusElement(element);
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-
-      await waitNextFrame();
+      await startDrag(element);
 
       // Should not accept itself as target
       assert.equal(events.length, 0);
 
       // End dragging
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+      await endDrag();
 
       // Cleanup
       dndContext.destroy();
@@ -313,7 +299,7 @@ export function droppables() {
       });
 
       const dndContext = new DndContext();
-      dndContext.addDroppable(droppable);
+      dndContext.addDroppables([droppable]);
 
       // Check initial data
       assert.deepEqual(droppable.data, { custom: 'value', id: 123 });
@@ -341,7 +327,7 @@ export function droppables() {
       });
 
       const dndContext = new DndContext();
-      dndContext.addDroppable(droppable);
+      dndContext.addDroppables([droppable]);
 
       const rect = droppable.getClientRect();
       assert.equal(rect.x, 50);
@@ -398,25 +384,22 @@ export function droppables() {
       const dndContext = new DndContext();
 
       dndContext.on('enter', (data) => {
-        events.push({ type: 'enter', collisions: data.collisions.size });
+        events.push({ type: 'enter', collisions: data.collisions.length });
       });
 
       dndContext.on('leave', (data) => {
         events.push({
           type: 'leave',
-          collisions: data.collisions.size,
-          removedCollisions: data.removedCollisions.size,
+          collisions: data.collisions.length,
+          removedContacts: data.removedContacts.size,
         });
       });
 
       dndContext.addDraggable(draggable);
-      dndContext.addDroppable(droppable);
+      dndContext.addDroppables([droppable]);
 
       // Start dragging
-      focusElement(dragElement);
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-
-      await waitNextFrame();
+      await startDrag(dragElement);
 
       // Move right to overlap with droppable (should enter droppable)
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
@@ -428,14 +411,15 @@ export function droppables() {
       assert.equal(events[0].type, 'enter');
       assert.equal(events[0].collisions, 1);
 
-      // Remove droppable during drag
-      dndContext.removeDroppable(droppable);
+      // Remove droppable during drag (auto-queued leave)
+      dndContext.removeDroppables([droppable]);
+      await waitNextFrame();
 
-      // Should emit leave event
+      // Should emit leave event automatically
       assert.equal(events.length, 2);
       assert.equal(events[1].type, 'leave');
       assert.equal(events[1].collisions, 0);
-      assert.equal(events[1].removedCollisions, 1);
+      assert.equal(events[1].removedContacts, 1);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -459,11 +443,12 @@ export function droppables() {
 
       const dndContext = new DndContext();
 
-      dndContext.on('removeDroppable', (data) => {
-        destroyEvents.push({ type: 'removeDroppable', droppable: data.droppable });
+      dndContext.on('removeDroppables', (data) => {
+        const removed = Array.from(data.droppables);
+        destroyEvents.push({ type: 'removeDroppable', droppable: removed[0] });
       });
 
-      dndContext.addDroppable(droppable);
+      dndContext.addDroppables([droppable]);
 
       // Destroy droppable
       droppable.destroy();
@@ -481,7 +466,7 @@ export function droppables() {
       element.remove();
     });
 
-    it('should handle over events for persistent collisions', async () => {
+    it('should handle collide events each cycle with persistedContacts', async () => {
       const events: any[] = [];
 
       const dragElement = createTestElement({
@@ -514,46 +499,40 @@ export function droppables() {
         events.push({ type: 'enter' });
       });
 
-      dndContext.on('over', (data) => {
+      dndContext.on('collide', (data) => {
         events.push({
-          type: 'over',
-          persistedCollisions: data.persistedCollisions.size,
+          type: 'collide',
+          persistedContacts: data.persistedContacts.size,
         });
       });
 
       dndContext.addDraggable(draggable);
-      dndContext.addDroppable(droppable);
+      dndContext.addDroppables([droppable]);
 
       // Start dragging
       focusElement(dragElement);
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-
       await waitNextFrame();
 
       // Move right to enter droppable
-      for (let i = 0; i < 7; i++) {
-        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-        await waitNextFrame();
-      }
+      await move('Right', 7);
 
-      // Move within the same droppable (should trigger over)
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-
-      await waitNextFrame();
+      // Move within the same droppable (should trigger collide again)
+      await move('Right');
       await waitNextFrame(); // Extra frame for collision detection
 
-      // Should have enter event followed by multiple over events for persistent collisions
+      // Should have enter event followed by collide events
       assert.isTrue(events.length >= 2);
       assert.equal(events[0].type, 'enter');
 
-      // All subsequent events should be 'over' events with 1 persisted collision
-      for (let i = 1; i < events.length; i++) {
-        assert.equal(events[i].type, 'over');
-        assert.equal(events[i].persistedCollisions, 1);
-      }
+      // Collide is emitted also immediately after enter; that first collide may
+      // have 0 persistedContacts. Ensure at least one collide has 1 persisted contact.
+      const collideEvents = events.slice(1).filter((e) => e.type === 'collide');
+      assert.isAtLeast(collideEvents.length, 1);
+      assert.isTrue(collideEvents.some((e) => e.persistedContacts >= 1));
 
       // End dragging
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+      await endDrag();
 
       // Cleanup
       dndContext.destroy();

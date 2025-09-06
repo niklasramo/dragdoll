@@ -4501,8 +4501,8 @@
      */
     _bindWindowListeners() {
       if (this._areWindowListenersBound) return;
-      const { move, end, cancel } = SOURCE_EVENTS[this._sourceEvents];
-      window.addEventListener(move, this._onMove, this._listenerOptions);
+      const { move: move2, end, cancel } = SOURCE_EVENTS[this._sourceEvents];
+      window.addEventListener(move2, this._onMove, this._listenerOptions);
       window.addEventListener(end, this._onEnd, this._listenerOptions);
       if (cancel) {
         window.addEventListener(cancel, this._onCancel, this._listenerOptions);
@@ -4514,8 +4514,8 @@
      */
     _unbindWindowListeners() {
       if (this._areWindowListenersBound) {
-        const { move, end, cancel } = SOURCE_EVENTS[this._sourceEvents];
-        window.removeEventListener(move, this._onMove, this._listenerOptions);
+        const { move: move2, end, cancel } = SOURCE_EVENTS[this._sourceEvents];
+        window.removeEventListener(move2, this._onMove, this._listenerOptions);
         window.removeEventListener(end, this._onEnd, this._listenerOptions);
         if (cancel) {
           window.removeEventListener(cancel, this._onCancel, this._listenerOptions);
@@ -6972,49 +6972,26 @@
   }
 
   // src/dnd-context/collision-detector.ts
-  var TEMP_COLLISION_DATA = {
-    droppableId: Symbol(),
-    droppableRect: createRect(),
-    draggableRect: createRect(),
-    intersectionRect: createRect(),
-    intersectionScore: 0
-  };
-  var COLLISIONS = [];
+  var MAX_CACHED_COLLISIONS = 20;
+  var EMPTY_SYMBOL = Symbol();
   var CollisionDetectorDefaultOptions = {
-    getCollisionData: (draggable, droppable, result = TEMP_COLLISION_DATA) => {
+    checkCollision: (draggable, droppable, collisionData) => {
       const draggableRect = draggable.getClientRect();
       const droppableRect = droppable.getClientRect();
       if (!draggableRect) return null;
       const intersectionRect = getIntersectionRect(
         draggableRect,
         droppableRect,
-        result.intersectionRect
+        collisionData.intersectionRect
       );
       if (intersectionRect === null) return null;
       const intersectionScore = getIntersectionScore(draggableRect, droppableRect, intersectionRect);
       if (intersectionScore <= 0) return null;
-      result.droppableId = droppable.id;
-      createRect(droppableRect, result.droppableRect);
-      createRect(draggableRect, result.draggableRect);
-      result.intersectionScore = intersectionScore;
-      return result;
-    },
-    mergeCollisionData: (target, source) => {
-      target.droppableId = source.droppableId;
-      target.intersectionScore = source.intersectionScore;
-      createRect(source.droppableRect, target.droppableRect);
-      createRect(source.draggableRect, target.draggableRect);
-      createRect(source.intersectionRect, target.intersectionRect);
-      return target;
-    },
-    createCollisionData: (source) => {
-      return {
-        droppableId: source.droppableId,
-        droppableRect: createRect(source.droppableRect),
-        draggableRect: createRect(source.draggableRect),
-        intersectionRect: createRect(source.intersectionRect),
-        intersectionScore: source.intersectionScore
-      };
+      collisionData.droppableId = droppable.id;
+      createRect(droppableRect, collisionData.droppableRect);
+      createRect(draggableRect, collisionData.draggableRect);
+      collisionData.intersectionScore = intersectionScore;
+      return collisionData;
     },
     sortCollisions: (_draggable, collisions) => {
       return collisions.sort((a, b) => {
@@ -7022,157 +6999,180 @@
         if (diff !== 0) return diff;
         return a.droppableRect.width * a.droppableRect.height - b.droppableRect.width * b.droppableRect.height;
       });
+    },
+    createCollisionData: () => {
+      return {
+        droppableId: EMPTY_SYMBOL,
+        droppableRect: createRect(),
+        draggableRect: createRect(),
+        intersectionRect: createRect(),
+        intersectionScore: 0
+      };
     }
   };
   var CollisionDetector = class {
     constructor(dndContext, {
-      getCollisionData = CollisionDetectorDefaultOptions.getCollisionData,
-      sortCollisions = CollisionDetectorDefaultOptions.sortCollisions,
-      mergeCollisionData = CollisionDetectorDefaultOptions.mergeCollisionData,
-      createCollisionData = CollisionDetectorDefaultOptions.createCollisionData
+      checkCollision = CollisionDetectorDefaultOptions.checkCollision,
+      createCollisionData = CollisionDetectorDefaultOptions.createCollisionData,
+      sortCollisions = CollisionDetectorDefaultOptions.sortCollisions
     } = {}) {
       this._listenerId = Symbol();
       this._dndContext = dndContext;
-      this._collisionDataPool = new FastObjectPool((item, data) => {
-        return item ? this.mergeCollisionData(item, data) : this.createCollisionData(data);
-      });
-      this.getCollisionData = getCollisionData;
-      this.mergeCollisionData = mergeCollisionData;
-      this.createCollisionData = createCollisionData;
+      this._collisionDataPoolCache = [];
+      this._collisionDataPoolMap = /* @__PURE__ */ new Map();
+      this.checkCollision = checkCollision;
       this.sortCollisions = sortCollisions;
-      this._onRemoveDroppable = this._onRemoveDroppable.bind(this);
-      this._dndContext.on("removeDroppable", this._onRemoveDroppable, this._listenerId);
+      this.createCollisionData = createCollisionData;
     }
-    _onRemoveDroppable(_e) {
-      this._collisionDataPool.resetItems(this._dndContext.droppables.size);
+    getCollisionDataPool(draggable) {
+      let pool = this._collisionDataPoolMap.get(draggable);
+      if (!pool) {
+        pool = this._collisionDataPoolCache.pop() || new FastObjectPool((item) => {
+          return item || this.createCollisionData();
+        });
+        this._collisionDataPoolMap.set(draggable, pool);
+      }
+      return pool;
     }
-    detectCollisions(draggable, targets, collisionMap) {
-      collisionMap.clear();
-      for (const droppable of targets) {
-        const collisionData = this.getCollisionData(draggable, droppable);
-        if (collisionData !== null) {
-          COLLISIONS.push(this._collisionDataPool.get(collisionData));
+    removeCollisionDataPool(draggable) {
+      const pool = this._collisionDataPoolMap.get(draggable);
+      if (pool) {
+        pool.resetItems(MAX_CACHED_COLLISIONS);
+        pool.resetPointer();
+        this._collisionDataPoolCache.push(pool);
+        this._collisionDataPoolMap.delete(draggable);
+      }
+    }
+    detectCollisions(draggable, targets, collisions) {
+      collisions.length = 0;
+      if (!targets.size) {
+        return;
+      }
+      const collisionDataPool = this.getCollisionDataPool(draggable);
+      let collisionData = null;
+      const droppables2 = targets.values();
+      for (const droppable of droppables2) {
+        collisionData = collisionData || collisionDataPool.get();
+        if (this.checkCollision(draggable, droppable, collisionData)) {
+          collisions.push(collisionData);
+          collisionData = null;
         }
       }
-      if (COLLISIONS.length > 1) {
-        this.sortCollisions(draggable, COLLISIONS);
+      if (collisions.length > 1) {
+        this.sortCollisions(draggable, collisions);
       }
-      this._collisionDataPool.resetPointer();
-      const droppables2 = this._dndContext.droppables;
-      for (const collisionData of COLLISIONS) {
-        const droppable = droppables2.get(collisionData.droppableId);
-        collisionMap.set(droppable, collisionData);
-      }
-      COLLISIONS.length = 0;
+      collisionDataPool.resetPointer();
     }
     destroy() {
-      this._collisionDataPool.resetItems();
-      this._dndContext.off("removeDroppable", this._listenerId);
+      this._collisionDataPoolMap.forEach((pool) => {
+        pool.resetItems();
+      });
     }
   };
 
   // src/dnd-context/dnd-context.ts
   var SCROLL_LISTENER_OPTIONS2 = { capture: true, passive: true };
-  var EMPTY_MAP = /* @__PURE__ */ new Map();
   var DndContextEventType = {
     Start: "start",
     Move: "move",
     Enter: "enter",
     Leave: "leave",
-    Over: "over",
-    Drop: "drop",
+    Collide: "collide",
     End: "end",
-    Cancel: "cancel",
     AddDraggable: "addDraggable",
     RemoveDraggable: "removeDraggable",
-    AddDroppable: "addDroppable",
-    RemoveDroppable: "removeDroppable",
+    AddDroppables: "addDroppables",
+    RemoveDroppables: "removeDroppables",
     Destroy: "destroy"
   };
   var DndContext = class {
     constructor(options4 = {}) {
       this._onScroll = () => {
+        if (this._drags.size === 0) return;
         ticker.once(
           tickerPhases.read,
           () => {
             this.updateDroppableClientRects();
-            this._dragData.forEach((_, draggable) => {
-              this.detectCollisions(draggable);
-            });
           },
-          this._scrollTickerId
+          this._listenerId
         );
+        this.detectCollisions();
       };
       const { collisionDetector } = options4;
       this.draggables = /* @__PURE__ */ new Set();
       this.droppables = /* @__PURE__ */ new Map();
+      this._drags = /* @__PURE__ */ new Map();
+      this.isDestroyed = false;
       this._listenerId = Symbol();
-      this._scrollTickerId = Symbol();
-      this._dragData = /* @__PURE__ */ new Map();
-      this._isCheckingCollisions = false;
       this._emitter = new v();
-      this._removedCollisions = /* @__PURE__ */ new Set();
-      this._addedCollisions = /* @__PURE__ */ new Set();
-      this._persistedCollisions = /* @__PURE__ */ new Set();
+      this._onScroll = this._onScroll.bind(this);
       if (typeof collisionDetector === "function") {
         this._collisionDetector = collisionDetector(this);
       } else {
         this._collisionDetector = new CollisionDetector(this, collisionDetector);
       }
     }
+    get drags() {
+      return this._drags;
+    }
     _getTargets(draggable) {
-      const dragData = this._dragData.get(draggable);
-      if (dragData?.targets) return dragData.targets;
-      const targets = /* @__PURE__ */ new Set();
+      const drag = this._drags.get(draggable);
+      if (drag?._targets) return drag._targets;
+      const targets = /* @__PURE__ */ new Map();
       for (const droppable of this.droppables.values()) {
         if (this.isMatch(draggable, droppable)) {
-          targets.add(droppable);
+          targets.set(droppable.id, droppable);
         }
       }
-      if (dragData) {
-        dragData.targets = targets;
-      }
+      if (drag) drag._targets = targets;
       return targets;
     }
     _onDragPrepareStart(draggable) {
       if (!this.draggables.has(draggable)) return;
-      if (this._dragData.get(draggable)) return;
-      this.updateDroppableClientRects();
+      if (this._drags.get(draggable)) return;
+      this._drags.set(draggable, {
+        isEnded: false,
+        data: {},
+        _targets: null,
+        _cd: {
+          phase: 0 /* Idle */,
+          tickerId: Symbol(),
+          targets: /* @__PURE__ */ new Map(),
+          collisions: [],
+          contacts: /* @__PURE__ */ new Set(),
+          prevContacts: /* @__PURE__ */ new Set(),
+          addedContacts: /* @__PURE__ */ new Set(),
+          persistedContacts: /* @__PURE__ */ new Set()
+        }
+      });
+      if (this._drags.size === 1) {
+        this.updateDroppableClientRects();
+      }
+      this._computeCollisions(draggable);
+      if (this._drags.size === 1) {
+        window.addEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS2);
+      }
     }
     _onDragStart(draggable) {
-      if (!this.draggables.has(draggable)) return;
-      if (this._dragData.get(draggable)) return;
-      const targets = this._getTargets(draggable);
-      const collisions = /* @__PURE__ */ new Map();
-      const prevCollisions = /* @__PURE__ */ new Map();
-      this._collisionDetector.detectCollisions(draggable, targets, collisions);
-      const dragData = { targets, collisions, prevCollisions, data: {} };
-      this._dragData.set(draggable, dragData);
-      window.addEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS2);
+      const drag = this._drags.get(draggable);
+      if (!drag || drag.isEnded) return;
       if (this._emitter.listenerCount(DndContextEventType.Start)) {
+        const targets = this._getTargets(draggable);
         this._emitter.emit(DndContextEventType.Start, {
           draggable,
           targets
         });
       }
-      if (collisions.size && this._emitter.listenerCount(DndContextEventType.Enter)) {
-        const addedCollisions = this._addedCollisions;
-        addedCollisions.clear();
-        for (const droppable of collisions.keys()) {
-          addedCollisions.add(droppable);
-        }
-        this._emitter.emit(DndContextEventType.Enter, {
-          draggable,
-          targets,
-          collisions,
-          addedCollisions
-        });
-        addedCollisions.clear();
-      }
+      this._emitCollisions(draggable);
+    }
+    _onDragPrepareMove(draggable) {
+      const drag = this._drags.get(draggable);
+      if (!drag || drag.isEnded) return;
+      this._computeCollisions(draggable);
     }
     _onDragMove(draggable) {
-      const dragData = this._dragData.get(draggable);
-      if (!dragData) return;
+      const drag = this._drags.get(draggable);
+      if (!drag || drag.isEnded) return;
       if (this._emitter.listenerCount(DndContextEventType.Move)) {
         const targets = this._getTargets(draggable);
         this._emitter.emit(DndContextEventType.Move, {
@@ -7180,51 +7180,158 @@
           targets
         });
       }
-      this.detectCollisions(draggable);
+      this._emitCollisions(draggable);
     }
     _onDragEnd(draggable) {
-      const dragData = this._dragData.get(draggable);
-      if (!dragData) return;
-      ticker.off(tickerPhases.read, this._scrollTickerId);
-      window.removeEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS2);
-      const targets = this._getTargets(draggable);
-      const collisions = dragData.collisions;
-      if (collisions.size > 0 && this._emitter.listenerCount(DndContextEventType.Drop)) {
-        this._emitter.emit(DndContextEventType.Drop, {
-          draggable,
-          targets,
-          collisions
-        });
-      }
-      if (this._emitter.listenerCount(DndContextEventType.End)) {
-        this._emitter.emit(DndContextEventType.End, {
-          draggable,
-          targets
-        });
-      }
-      this._dragData.delete(draggable);
+      this._stopDrag(draggable);
     }
     _onDragCancel(draggable) {
-      const dragData = this._dragData.get(draggable);
-      if (!dragData) return;
-      ticker.off(tickerPhases.read, this._scrollTickerId);
-      window.removeEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS2);
-      if (this._emitter.listenerCount(DndContextEventType.Cancel)) {
-        this._emitter.emit(DndContextEventType.Cancel, {
-          draggable,
-          targets: this._getTargets(draggable)
-        });
-      }
-      this._dragData.delete(draggable);
+      this._stopDrag(draggable, true);
     }
     _onDragDestroy(draggable) {
       this.removeDraggable(draggable);
+    }
+    // Returns true if the final cleanup was queued to a microtask.
+    _stopDrag(draggable, isCancelled = false) {
+      const drag = this._drags.get(draggable);
+      if (!drag || drag.isEnded) return false;
+      drag.isEnded = true;
+      const isEmittingCollisions = drag._cd.phase === 3 /* Emitting */;
+      if (!isEmittingCollisions) {
+        this._computeCollisions(draggable, true);
+        this._emitCollisions(draggable, true);
+      }
+      const { targets, collisions, contacts } = drag._cd;
+      if (this._emitter.listenerCount(DndContextEventType.End)) {
+        this._emitter.emit(DndContextEventType.End, {
+          isCancelled,
+          draggable,
+          targets,
+          collisions,
+          contacts
+        });
+      }
+      if (isEmittingCollisions) {
+        window.queueMicrotask(() => {
+          this._finalizeStopDrag(draggable);
+        });
+        return true;
+      }
+      this._finalizeStopDrag(draggable);
+      return false;
+    }
+    _finalizeStopDrag(draggable) {
+      const drag = this._drags.get(draggable);
+      if (!drag || !drag.isEnded) return;
+      this._drags.delete(draggable);
+      this._collisionDetector.removeCollisionDataPool(draggable);
+      ticker.off(tickerPhases.read, drag._cd.tickerId);
+      ticker.off(tickerPhases.write, drag._cd.tickerId);
+      if (!this._drags.size) {
+        ticker.off(tickerPhases.read, this._listenerId);
+        window.removeEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS2);
+      }
+    }
+    _computeCollisions(draggable, force = false) {
+      const drag = this._drags.get(draggable);
+      if (!drag || !force && drag.isEnded) return;
+      const cd = drag._cd;
+      switch (cd.phase) {
+        case 1 /* Computing */:
+          throw new Error("Collisions are being computed.");
+        case 3 /* Emitting */:
+          throw new Error("Collisions are being emitted.");
+        default:
+          break;
+      }
+      cd.phase = 1 /* Computing */;
+      const targets = cd.targets = this._getTargets(draggable);
+      this._collisionDetector.detectCollisions(draggable, targets, cd.collisions);
+      cd.phase = 2 /* Computed */;
+    }
+    _emitCollisions(draggable, force = false) {
+      const drag = this._drags.get(draggable);
+      if (!drag || !force && drag.isEnded) return;
+      const cd = drag._cd;
+      switch (cd.phase) {
+        case 1 /* Computing */:
+          throw new Error("Collisions are being computed.");
+        case 3 /* Emitting */:
+          throw new Error("Collisions are being emitted.");
+        case 0 /* Idle */:
+          return;
+        default:
+          break;
+      }
+      cd.phase = 3 /* Emitting */;
+      const emitter = this._emitter;
+      const collisions = cd.collisions;
+      const targets = cd.targets;
+      const addedContacts = cd.addedContacts;
+      const persistedContacts = cd.persistedContacts;
+      const prevContacts = cd.contacts;
+      const contacts = cd.prevContacts;
+      cd.prevContacts = prevContacts;
+      cd.contacts = contacts;
+      const removedContacts = prevContacts;
+      addedContacts.clear();
+      persistedContacts.clear();
+      contacts.clear();
+      for (const collision of collisions) {
+        const droppable = targets.get(collision.droppableId);
+        if (!droppable) continue;
+        contacts.add(droppable);
+        if (prevContacts.has(droppable)) {
+          persistedContacts.add(droppable);
+          prevContacts.delete(droppable);
+        } else {
+          addedContacts.add(droppable);
+        }
+      }
+      if (prevContacts.size && emitter.listenerCount(DndContextEventType.Leave)) {
+        emitter.emit(DndContextEventType.Leave, {
+          draggable,
+          targets,
+          collisions,
+          contacts,
+          removedContacts
+        });
+      }
+      if (addedContacts.size && emitter.listenerCount(DndContextEventType.Enter)) {
+        emitter.emit(DndContextEventType.Enter, {
+          draggable,
+          targets,
+          collisions,
+          contacts,
+          addedContacts
+        });
+      }
+      if (emitter.listenerCount(DndContextEventType.Collide) && (contacts.size || removedContacts.size)) {
+        emitter.emit(DndContextEventType.Collide, {
+          draggable,
+          targets,
+          collisions,
+          contacts,
+          addedContacts,
+          removedContacts,
+          persistedContacts
+        });
+      }
+      addedContacts.clear();
+      persistedContacts.clear();
+      prevContacts.clear();
+      cd.phase = 0 /* Idle */;
     }
     on(type3, listener, listenerId) {
       return this._emitter.on(type3, listener, listenerId);
     }
     off(type3, listenerId) {
       this._emitter.off(type3, listenerId);
+    }
+    updateDroppableClientRects() {
+      for (const droppable of this.droppables.values()) {
+        droppable.updateClientRect();
+      }
     }
     isMatch(draggable, droppable) {
       let isMatch = typeof droppable.accept === "function" ? droppable.accept(draggable) : droppable.accept.includes(draggable.settings.group);
@@ -7238,91 +7345,33 @@
       }
       return isMatch;
     }
-    getData(draggable) {
-      const dragData = this._dragData.get(draggable);
-      if (!dragData) return null;
-      return dragData.data;
-    }
     clearTargets(draggable) {
-      const dragData = this._dragData.get(draggable);
-      if (dragData) dragData.targets = null;
-    }
-    updateDroppableClientRects() {
-      this.droppables.forEach((droppable) => {
-        droppable.updateClientRect();
-      });
+      if (draggable) {
+        const drag = this._drags.get(draggable);
+        if (drag) drag._targets = null;
+      } else {
+        for (const drag of this._drags.values()) {
+          drag._targets = null;
+        }
+      }
     }
     detectCollisions(draggable) {
-      const dragData = this._dragData.get(draggable);
-      if (!dragData) return;
-      if (this._isCheckingCollisions) {
-        throw new Error("Cannot detect collisions while already checking collisions.");
-      }
-      this._isCheckingCollisions = true;
-      const removedCollisions = this._removedCollisions;
-      const addedCollisions = this._addedCollisions;
-      const persistedCollisions = this._persistedCollisions;
-      removedCollisions.clear();
-      addedCollisions.clear();
-      persistedCollisions.clear();
-      const emitter = this._emitter;
-      const targets = this._getTargets(draggable);
-      const prevCollisions = dragData.collisions;
-      const collisions = dragData.prevCollisions;
-      dragData.prevCollisions = prevCollisions;
-      dragData.collisions = collisions;
-      this._collisionDetector.detectCollisions(draggable, targets, collisions);
-      const hasLeaveListeners = emitter.listenerCount(DndContextEventType.Leave);
-      const hasOverListeners = emitter.listenerCount(DndContextEventType.Over);
-      const hasEnterListeners = emitter.listenerCount(DndContextEventType.Enter);
-      if (hasLeaveListeners || hasOverListeners) {
-        for (const droppable of prevCollisions.keys()) {
-          if (collisions.has(droppable)) {
-            persistedCollisions.add(droppable);
-          } else {
-            removedCollisions.add(droppable);
-          }
+      if (this.isDestroyed) return;
+      if (draggable) {
+        const drag = this._drags.get(draggable);
+        if (!drag || drag.isEnded) return;
+        ticker.once(tickerPhases.read, () => this._computeCollisions(draggable), drag._cd.tickerId);
+        ticker.once(tickerPhases.write, () => this._emitCollisions(draggable), drag._cd.tickerId);
+      } else {
+        for (const [d, drag] of this._drags) {
+          if (drag.isEnded) continue;
+          ticker.once(tickerPhases.read, () => this._computeCollisions(d), drag._cd.tickerId);
+          ticker.once(tickerPhases.write, () => this._emitCollisions(d), drag._cd.tickerId);
         }
       }
-      if (hasEnterListeners) {
-        for (const droppable of collisions.keys()) {
-          if (!prevCollisions.has(droppable)) {
-            addedCollisions.add(droppable);
-          }
-        }
-      }
-      if (hasLeaveListeners && removedCollisions.size > 0) {
-        emitter.emit(DndContextEventType.Leave, {
-          draggable,
-          targets,
-          collisions,
-          removedCollisions
-        });
-      }
-      if (hasEnterListeners && addedCollisions.size > 0) {
-        emitter.emit(DndContextEventType.Enter, {
-          draggable,
-          targets,
-          collisions,
-          addedCollisions
-        });
-      }
-      if (hasOverListeners && persistedCollisions.size > 0) {
-        emitter.emit(DndContextEventType.Over, {
-          draggable,
-          targets,
-          collisions,
-          persistedCollisions
-        });
-      }
-      removedCollisions.clear();
-      addedCollisions.clear();
-      persistedCollisions.clear();
-      prevCollisions.clear();
-      this._isCheckingCollisions = false;
     }
     addDraggable(draggable) {
-      if (this.draggables.has(draggable)) return;
+      if (this.isDestroyed || this.draggables.has(draggable)) return;
       this.draggables.add(draggable);
       draggable.on(
         DraggableEventType.PrepareStart,
@@ -7335,6 +7384,13 @@
         DraggableEventType.Start,
         () => {
           this._onDragStart(draggable);
+        },
+        this._listenerId
+      );
+      draggable.on(
+        DraggableEventType.PrepareMove,
+        () => {
+          this._onDragPrepareMove(draggable);
         },
         this._listenerId
       );
@@ -7363,103 +7419,97 @@
         },
         this._listenerId
       );
-      this._emitter.emit(DndContextEventType.AddDraggable, { draggable });
-      if (draggable.drag && !draggable.drag.isEnded) {
-        this._onDragStart(draggable);
+      if (this._emitter.listenerCount(DndContextEventType.AddDraggable)) {
+        this._emitter.emit(DndContextEventType.AddDraggable, { draggable });
+      }
+      if (!this.isDestroyed && draggable.drag && !draggable.drag.isEnded) {
+        const startPhase = draggable["_startPhase"];
+        if (startPhase >= 2) this._onDragPrepareStart(draggable);
+        if (startPhase >= 4) this._onDragStart(draggable);
       }
     }
     removeDraggable(draggable) {
-      if (!this.draggables.has(draggable)) return;
+      if (this.isDestroyed || !this.draggables.has(draggable)) return;
+      this.draggables.delete(draggable);
       draggable.off(DraggableEventType.PrepareStart, this._listenerId);
       draggable.off(DraggableEventType.Start, this._listenerId);
+      draggable.off(DraggableEventType.PrepareMove, this._listenerId);
       draggable.off(DraggableEventType.Move, this._listenerId);
       draggable.off(DraggableEventType.End, this._listenerId);
       draggable.off(DraggableEventType.Destroy, this._listenerId);
-      const dragData = this._dragData.get(draggable);
-      if (dragData) {
-        if (dragData.collisions.size && this._emitter.listenerCount(DndContextEventType.Leave)) {
-          const removedCollisions = this._removedCollisions;
-          removedCollisions.clear();
-          for (const droppable of dragData.collisions.keys()) {
-            removedCollisions.add(droppable);
-          }
-          this._emitter.emit(DndContextEventType.Leave, {
-            draggable,
-            targets: this._getTargets(draggable),
-            collisions: EMPTY_MAP,
-            removedCollisions
-          });
-          removedCollisions.clear();
-        }
-        if (this._emitter.listenerCount(DndContextEventType.Cancel)) {
-          this._emitter.emit(DndContextEventType.Cancel, {
-            draggable,
-            targets: this._getTargets(draggable)
-          });
-        }
+      this._stopDrag(draggable, true);
+      if (this._emitter.listenerCount(DndContextEventType.RemoveDraggable)) {
+        this._emitter.emit(DndContextEventType.RemoveDraggable, { draggable });
       }
-      this._dragData.delete(draggable);
-      this.draggables.delete(draggable);
-      this._emitter.emit(DndContextEventType.RemoveDraggable, { draggable });
     }
-    addDroppable(droppable) {
-      if (this.droppables.has(droppable.id)) return;
-      this.droppables.set(droppable.id, droppable);
-      droppable.on(
-        DroppableEventType.Destroy,
-        () => {
-          this.removeDroppable(droppable);
-        },
-        this._listenerId
-      );
-      this._dragData.forEach(({ targets }, draggable) => {
-        if (targets && this.isMatch(draggable, droppable)) {
-          targets.add(droppable);
-        }
-      });
-      this._emitter.emit(DndContextEventType.AddDroppable, { droppable });
-    }
-    removeDroppable(droppable) {
-      if (!this.droppables.has(droppable.id)) return;
-      this.droppables.delete(droppable.id);
-      droppable.off(DroppableEventType.Destroy, this._listenerId);
-      this._dragData.forEach(({ targets }) => {
-        targets?.delete(droppable);
-      });
-      if (this._emitter.listenerCount(DndContextEventType.Leave)) {
-        this._dragData.forEach(({ collisions }, draggable) => {
-          if (collisions.has(droppable)) {
-            const removedCollisions = this._removedCollisions;
-            removedCollisions.clear();
-            removedCollisions.add(droppable);
-            collisions.delete(droppable);
-            this._emitter.emit(DndContextEventType.Leave, {
-              draggable,
-              targets: this._getTargets(draggable),
-              collisions,
-              removedCollisions
-            });
-            removedCollisions.clear();
+    addDroppables(droppables2) {
+      if (this.isDestroyed) return;
+      const addedDroppables = /* @__PURE__ */ new Set();
+      for (const droppable of droppables2) {
+        if (this.droppables.has(droppable.id)) continue;
+        addedDroppables.add(droppable);
+        this.droppables.set(droppable.id, droppable);
+        droppable.on(
+          DroppableEventType.Destroy,
+          () => {
+            this.removeDroppables([droppable]);
+          },
+          this._listenerId
+        );
+        this._drags.forEach(({ _targets }, draggable) => {
+          if (_targets && this.isMatch(draggable, droppable)) {
+            _targets.set(droppable.id, droppable);
+            this.detectCollisions(draggable);
           }
         });
       }
-      this._emitter.emit(DndContextEventType.RemoveDroppable, { droppable });
+      if (addedDroppables.size && this._emitter.listenerCount(DndContextEventType.AddDroppables)) {
+        this._emitter.emit(DndContextEventType.AddDroppables, { droppables: addedDroppables });
+      }
+    }
+    removeDroppables(droppables2) {
+      if (this.isDestroyed) return;
+      const removedDroppables = /* @__PURE__ */ new Set();
+      for (const droppable of droppables2) {
+        if (!this.droppables.has(droppable.id)) continue;
+        this.droppables.delete(droppable.id);
+        removedDroppables.add(droppable);
+        droppable.off(DroppableEventType.Destroy, this._listenerId);
+        this._drags.forEach(({ _targets }, draggable) => {
+          if (_targets && _targets.has(droppable.id)) {
+            _targets.delete(droppable.id);
+            this.detectCollisions(draggable);
+          }
+        });
+      }
+      if (removedDroppables.size && this._emitter.listenerCount(DndContextEventType.RemoveDroppables)) {
+        this._emitter.emit(DndContextEventType.RemoveDroppables, { droppables: removedDroppables });
+      }
     }
     destroy() {
-      ticker.off(tickerPhases.read, this._scrollTickerId);
-      this._collisionDetector.destroy();
+      if (this.isDestroyed) return;
+      this.isDestroyed = true;
+      this.draggables.forEach((draggable) => {
+        draggable.off(DraggableEventType.PrepareStart, this._listenerId);
+        draggable.off(DraggableEventType.Start, this._listenerId);
+        draggable.off(DraggableEventType.PrepareMove, this._listenerId);
+        draggable.off(DraggableEventType.Move, this._listenerId);
+        draggable.off(DraggableEventType.End, this._listenerId);
+        draggable.off(DraggableEventType.Destroy, this._listenerId);
+      });
+      this.droppables.forEach((droppable) => {
+        droppable.off(DroppableEventType.Destroy, this._listenerId);
+      });
+      const activeDraggables = this._drags.keys();
+      for (const draggable of activeDraggables) {
+        this._stopDrag(draggable, true);
+      }
       this._emitter.emit(DndContextEventType.Destroy);
       this._emitter.off();
+      this._collisionDetector.destroy();
+      this.draggables.clear();
+      this.droppables.clear();
     }
-  };
-
-  // src/dnd-context/visible-rect-collision-detector.ts
-  var TEMP_COLLISION_DATA2 = {
-    droppableId: Symbol(),
-    droppableRect: createRect(),
-    draggableRect: createRect(),
-    intersectionRect: createRect(),
-    intersectionScore: 0
   };
 
   // tests/src/base-sensor/methods/_cancel.ts
@@ -11334,6 +11384,24 @@
     events3();
   });
 
+  // tests/src/utils/keyboard-helpers.ts
+  var press = (key) => document.dispatchEvent(new KeyboardEvent("keydown", { key }));
+  var startDrag = async (el) => {
+    focusElement(el);
+    press("Enter");
+    await waitNextFrame();
+  };
+  var endDrag = async () => {
+    press("Enter");
+    await waitNextFrame();
+  };
+  var move = async (direction, times = 1) => {
+    for (let i = 0; i < times; i++) {
+      press(`Arrow${direction}`);
+      await waitNextFrame();
+    }
+  };
+
   // tests/src/dnd-context/events.ts
   function events4() {
     describe("events", () => {
@@ -11352,26 +11420,24 @@
         const dndContext = new DndContext();
         dndContext.on("start", (data) => {
           assert.equal(data.draggable, draggable);
-          assert.instanceOf(data.targets, Set);
+          assert.instanceOf(data.targets, Map);
           assert.equal(data.targets.size, 1);
-          assert.isTrue(data.targets.has(droppable));
+          assert.isTrue(data.targets.has(droppable.id));
           events5.push("start");
         });
         dndContext.on("end", (data) => {
           assert.equal(data.draggable, draggable);
-          assert.instanceOf(data.targets, Set);
+          assert.instanceOf(data.targets, Map);
           assert.equal(data.targets.size, 1);
-          assert.isTrue(data.targets.has(droppable));
+          assert.isTrue(data.targets.has(droppable.id));
           events5.push("end");
         });
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable);
-        focusElement(dragElement);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
+        dndContext.addDroppables([droppable]);
+        await startDrag(dragElement);
         assert.deepEqual(events5, ["start"]);
         events5.length = 0;
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        await endDrag();
         assert.deepEqual(events5, ["end"]);
         dndContext.destroy();
         draggable.destroy();
@@ -11395,19 +11461,16 @@
         const dndContext = new DndContext();
         dndContext.on("move", (data) => {
           assert.equal(data.draggable, draggable);
-          assert.instanceOf(data.targets, Set);
+          assert.instanceOf(data.targets, Map);
           events5.push("move");
         });
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable);
-        focusElement(dragElement);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        await waitNextFrame();
+        dndContext.addDroppables([droppable]);
+        await startDrag(dragElement);
+        await move("Right");
         assert.equal(events5.length, 1);
         assert.equal(events5[0], "move");
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        await endDrag();
         dndContext.destroy();
         draggable.destroy();
         droppable.destroy();
@@ -11441,35 +11504,31 @@
         dndContext.on("enter", (data) => {
           events5.push({
             type: "enter",
-            collisions: data.collisions.size,
-            addedCollisions: data.addedCollisions.size
+            collisions: data.collisions.length,
+            addedContacts: data.addedContacts.size
           });
         });
         dndContext.on("leave", (data) => {
           events5.push({
             type: "leave",
-            collisions: data.collisions.size,
-            removedCollisions: data.removedCollisions.size
+            collisions: data.collisions.length,
+            removedContacts: data.removedContacts.size
           });
         });
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable);
-        focusElement(dragElement);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        await waitNextFrame();
+        dndContext.addDroppables([droppable]);
+        await startDrag(dragElement);
+        await move("Right");
         assert.equal(events5.length, 1);
         assert.equal(events5[0].type, "enter");
         assert.equal(events5[0].collisions, 1);
-        assert.equal(events5[0].addedCollisions, 1);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        await waitNextFrame();
+        assert.equal(events5[0].addedContacts, 1);
+        await move("Right");
         assert.equal(events5.length, 2);
         assert.equal(events5[1].type, "leave");
         assert.equal(events5[1].collisions, 0);
-        assert.equal(events5[1].removedCollisions, 1);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        assert.equal(events5[1].removedContacts, 1);
+        await endDrag();
         dndContext.destroy();
         draggable.destroy();
         droppable.destroy();
@@ -11477,7 +11536,7 @@
         dragElement.remove();
         dropElement.remove();
       });
-      it("should emit drop events when draggable is dropped on droppable", async () => {
+      it("should include collisions in end event when draggable ends over droppable", async () => {
         const events5 = [];
         const dragElement = createTestElement({
           left: "0px",
@@ -11500,20 +11559,18 @@
           accept: ["test"]
         });
         const dndContext = new DndContext();
-        dndContext.on("drop", (data) => {
+        dndContext.on("end", (data) => {
           assert.equal(data.draggable, draggable);
-          assert.equal(data.collisions.size, 1);
-          assert.isTrue(data.collisions.has(droppable));
-          events5.push("drop");
+          assert.equal(data.collisions.length, 1);
+          assert.isTrue(data.collisions.some((c) => c.droppableId === droppable.id));
+          events5.push("end");
         });
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable);
-        focusElement(dragElement);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        dndContext.addDroppables([droppable]);
+        await startDrag(dragElement);
+        await endDrag();
         assert.equal(events5.length, 1);
-        assert.equal(events5[0], "drop");
+        assert.equal(events5[0], "end");
         dndContext.destroy();
         draggable.destroy();
         droppable.destroy();
@@ -11556,17 +11613,21 @@
           accept: ["test"]
         });
         const dndContext = new DndContext();
-        dndContext.on("addDroppable", (data) => {
-          events5.push({ type: "addDroppable", droppable: data.droppable });
+        dndContext.on("addDroppables", (data) => {
+          data.droppables.forEach((droppable2) => {
+            events5.push({ type: "addDroppable", droppable: droppable2 });
+          });
         });
-        dndContext.on("removeDroppable", (data) => {
-          events5.push({ type: "removeDroppable", droppable: data.droppable });
+        dndContext.on("removeDroppables", (data) => {
+          data.droppables.forEach((droppable2) => {
+            events5.push({ type: "removeDroppable", droppable: droppable2 });
+          });
         });
-        dndContext.addDroppable(droppable);
+        dndContext.addDroppables([droppable]);
         assert.equal(events5.length, 1);
         assert.equal(events5[0].type, "addDroppable");
         assert.equal(events5[0].droppable, droppable);
-        dndContext.removeDroppable(droppable);
+        dndContext.removeDroppables([droppable]);
         assert.equal(events5.length, 2);
         assert.equal(events5[1].type, "removeDroppable");
         assert.equal(events5[1].droppable, droppable);
@@ -11574,7 +11635,7 @@
         droppable.destroy();
         dropElement.remove();
       });
-      it("should emit cancel events when drag is cancelled", async () => {
+      it("should emit end with isCancelled=true when drag is cancelled", async () => {
         const events5 = [];
         const dragElement = createTestElement();
         const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
@@ -11583,17 +11644,16 @@
           group: "test"
         });
         const dndContext = new DndContext();
-        dndContext.on("cancel", (data) => {
+        dndContext.on("end", (data) => {
           assert.equal(data.draggable, draggable);
-          events5.push("cancel");
+          assert.isTrue(data.isCancelled);
+          events5.push("end");
         });
         dndContext.addDraggable(draggable);
-        focusElement(dragElement);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
+        await startDrag(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
         assert.equal(events5.length, 1);
-        assert.equal(events5[0], "cancel");
+        assert.equal(events5[0], "end");
         dndContext.destroy();
         draggable.destroy();
         keyboardSensor.destroy();
@@ -11608,6 +11668,172 @@
         dndContext.destroy();
         assert.equal(events5.length, 1);
         assert.equal(events5[0], "destroy");
+      });
+    });
+    describe("event flow and ordering", () => {
+      it("should emit leave \u2192 enter \u2192 collide in order when transitioning between droppables", async () => {
+        const order = [];
+        const dragEl = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+        const dropA = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+        const dropB = createTestElement({ left: "50px", top: "0px", width: "40px", height: "40px" });
+        const sensor = new KeyboardSensor(dragEl, { moveDistance: 60 });
+        const draggable = new Draggable([sensor], { elements: () => [dragEl], group: "g" });
+        const droppableA = new Droppable(dropA, { accept: ["g"] });
+        const droppableB = new Droppable(dropB, { accept: ["g"] });
+        const ctx = new DndContext();
+        ctx.on("leave", () => order.push("leave"));
+        ctx.on("enter", () => order.push("enter"));
+        ctx.on("collide", () => order.push("collide"));
+        ctx.addDraggable(draggable);
+        ctx.addDroppables([droppableA, droppableB]);
+        await startDrag(dragEl);
+        order.length = 0;
+        await move("Right");
+        assert.isTrue(order.includes("enter"));
+        if (order.includes("leave")) {
+          assert.isBelow(order.indexOf("leave"), order.indexOf("enter"));
+        }
+        ctx.destroy();
+        draggable.destroy();
+        droppableA.destroy();
+        droppableB.destroy();
+        sensor.destroy();
+        dragEl.remove();
+        dropA.remove();
+        dropB.remove();
+      });
+      it("should emit end with collisions when ending after first enter", async () => {
+        const events5 = [];
+        const dragEl = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+        const dropEl = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+        const sensor = new KeyboardSensor(dragEl, { moveDistance: 10 });
+        const draggable = new Draggable([sensor], { elements: () => [dragEl], group: "g" });
+        const droppable = new Droppable(dropEl, { accept: ["g"] });
+        const ctx = new DndContext();
+        let gotEnter = false;
+        ctx.on("enter", ({ collisions }) => {
+          events5.push("enter");
+          gotEnter = true;
+          assert.isAtLeast(collisions.length, 1);
+        });
+        ctx.on("end", ({ isCancelled, collisions }) => {
+          events5.push("end");
+          assert.isFalse(isCancelled);
+          assert.isAtLeast(collisions.length, 1);
+        });
+        ctx.addDraggable(draggable);
+        ctx.addDroppables([droppable]);
+        await startDrag(dragEl);
+        await waitNextFrame();
+        assert.isTrue(gotEnter);
+        await endDrag();
+        assert.deepEqual(events5, ["enter", "end"]);
+        ctx.destroy();
+        draggable.destroy();
+        droppable.destroy();
+        sensor.destroy();
+        dragEl.remove();
+        dropEl.remove();
+      });
+      it("should honor clearTargets when accept changes mid-drag", async () => {
+        const events5 = [];
+        const dragEl = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+        const dropEl = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+        let accepts = false;
+        const sensor = new KeyboardSensor(dragEl, { moveDistance: 10 });
+        const draggable = new Draggable([sensor], { elements: () => [dragEl], group: "g" });
+        const droppable = new Droppable(dropEl, { accept: () => accepts });
+        const ctx = new DndContext();
+        ctx.on("enter", () => events5.push("enter"));
+        ctx.addDraggable(draggable);
+        ctx.addDroppables([droppable]);
+        await startDrag(dragEl);
+        assert.equal(events5.length, 0);
+        accepts = true;
+        ctx.clearTargets(draggable);
+        ctx.detectCollisions(draggable);
+        await waitNextFrame();
+        assert.deepEqual(events5, ["enter"]);
+        ctx.destroy();
+        draggable.destroy();
+        droppable.destroy();
+        sensor.destroy();
+        dragEl.remove();
+        dropEl.remove();
+      });
+      it("should tolerate removing a droppable during enter emission", async () => {
+        const events5 = [];
+        const dragEl = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+        const dropEl = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+        const sensor = new KeyboardSensor(dragEl, { moveDistance: 10 });
+        const draggable = new Draggable([sensor], { elements: () => [dragEl], group: "g" });
+        const droppable = new Droppable(dropEl, { accept: ["g"] });
+        const ctx = new DndContext();
+        let shouldRemove = false;
+        ctx.on("enter", () => {
+          events5.push("enter");
+          shouldRemove = true;
+        });
+        ctx.on("end", () => {
+          events5.push("end");
+        });
+        ctx.addDraggable(draggable);
+        ctx.addDroppables([droppable]);
+        await startDrag(dragEl);
+        if (shouldRemove) ctx.removeDroppables([droppable]);
+        await waitNextFrame();
+        await endDrag();
+        assert.deepEqual(events5, ["enter", "end"]);
+        assert.isFalse(ctx.droppables.has(droppable.id));
+        ctx.destroy();
+        draggable.destroy();
+        droppable.destroy();
+        sensor.destroy();
+        dragEl.remove();
+        dropEl.remove();
+      });
+      it("should expose mutable drag data via getDragData during lifecycle", async () => {
+        const seen = [];
+        const dragEl = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+        const dropEl = createTestElement({ left: "60px", top: "0px", width: "40px", height: "40px" });
+        const sensor = new KeyboardSensor(dragEl, { moveDistance: 10 });
+        const draggable = new Draggable([sensor], { elements: () => [dragEl], group: "g" });
+        const droppable = new Droppable(dropEl, { accept: ["g"] });
+        const ctx = new DndContext();
+        ctx.on("start", () => {
+          const data = ctx.drags.get(draggable);
+          data.data.counter = 1;
+          seen.push({ phase: "start", value: data.data.counter });
+        });
+        ctx.on("move", () => {
+          const data = ctx.drags.get(draggable);
+          data.data.counter += 1;
+          seen.push({ phase: "move", value: data.data.counter });
+        });
+        ctx.on("end", () => {
+          const data = ctx.drags.get(draggable);
+          assert.isNotNull(data);
+          seen.push({ phase: "end", value: data.data.counter });
+        });
+        ctx.addDraggable(draggable);
+        ctx.addDroppables([droppable]);
+        await startDrag(dragEl);
+        await move("Right");
+        await endDrag();
+        assert.deepEqual(
+          seen.map((s) => s.phase),
+          ["start", "move", "end"]
+        );
+        assert.deepEqual(
+          seen.map((s) => s.value),
+          [1, 2, 2]
+        );
+        ctx.destroy();
+        draggable.destroy();
+        droppable.destroy();
+        sensor.destroy();
+        dragEl.remove();
+        dropEl.remove();
       });
     });
   }
@@ -11645,15 +11871,15 @@
           });
         });
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable);
+        dndContext.addDroppables([droppable]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
         await waitNextFrame();
         assert.equal(collisionEvents.length, 1);
         assert.equal(collisionEvents[0].type, "enter");
-        assert.equal(collisionEvents[0].collisions.size, 1);
-        assert.isTrue(collisionEvents[0].collisions.has(droppable));
-        const collisionData = collisionEvents[0].collisions.get(droppable);
+        assert.equal(collisionEvents[0].collisions.length, 1);
+        assert.equal(collisionEvents[0].collisions[0].droppableId, droppable.id);
+        const collisionData = collisionEvents[0].collisions[0];
         assert.isDefined(collisionData);
         assert.equal(collisionData.droppableId, droppable.id);
         assert.isNumber(collisionData.intersectionScore);
@@ -11696,7 +11922,7 @@
           });
         });
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable);
+        dndContext.addDroppables([droppable]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
         await waitNextFrame();
@@ -11733,13 +11959,13 @@
         });
         const dndContext = new DndContext();
         dndContext.on("enter", (data) => {
-          collisionEvents.push({ type: "enter", collisions: data.collisions.size });
+          collisionEvents.push({ type: "enter", collisions: data.collisions.length });
         });
         dndContext.on("leave", (data) => {
-          collisionEvents.push({ type: "leave", collisions: data.collisions.size });
+          collisionEvents.push({ type: "leave", collisions: data.collisions.length });
         });
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable);
+        dndContext.addDroppables([droppable]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
         await waitNextFrame();
@@ -11795,27 +12021,26 @@
         dndContext.on("enter", (data) => {
           collisionEvents.push({
             type: "enter",
-            collisions: Array.from(data.collisions.keys()).map((d) => d.id),
-            addedCollisions: Array.from(data.addedCollisions).map((d) => d.id)
+            collisions: [...data.collisions]
           });
         });
         dndContext.on("leave", (data) => {
           collisionEvents.push({
             type: "leave",
-            collisions: Array.from(data.collisions.keys()).map((d) => d.id),
-            removedCollisions: Array.from(data.removedCollisions).map((d) => d.id)
+            collisions: [...data.collisions]
           });
         });
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable1);
-        dndContext.addDroppable(droppable2);
+        dndContext.addDroppables([droppable1, droppable2]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
         await waitNextFrame();
         assert.equal(collisionEvents.length, 1);
         assert.equal(collisionEvents[0].type, "enter");
         assert.equal(collisionEvents[0].collisions.length, 1);
-        assert.include(collisionEvents[0].collisions, droppable1.id);
+        assert.isTrue(
+          collisionEvents[0].collisions.some((c) => c.droppableId === droppable1.id)
+        );
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
         await waitNextFrame();
         assert.isTrue(collisionEvents.length >= 2);
@@ -11856,7 +12081,7 @@
           collisionEvents.push({ type: "enter" });
         });
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable);
+        dndContext.addDroppables([droppable]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
         await waitNextFrame();
@@ -11892,48 +12117,35 @@
         const droppable = new Droppable(dropElement, {
           accept: ["test"]
         });
-        const TEMP_COLLISION_DATA3 = {
-          droppableId: Symbol(),
-          droppableRect: { width: 0, height: 0, x: 0, y: 0 },
-          draggableRect: { width: 0, height: 0, x: 0, y: 0 },
-          intersectionRect: { width: 0, height: 0, x: 0, y: 0 },
-          intersectionScore: 0,
-          customProp: ""
-        };
         const dndContext = new DndContext({
           collisionDetector: {
-            getCollisionData: (draggable2, droppable2) => {
+            checkCollision: (draggable2, droppable2, collisionData) => {
               customDetectorCalled = true;
-              const data = CollisionDetectorDefaultOptions.getCollisionData(
+              const result = CollisionDetectorDefaultOptions.checkCollision(
                 draggable2,
                 droppable2,
-                TEMP_COLLISION_DATA3
+                collisionData
               );
-              if (!data) return null;
-              data.customProp = "test-value";
-              return data;
+              if (!result) return null;
+              result.customProp = "test-value";
+              return result;
             },
-            mergeCollisionData: (target, source) => {
-              CollisionDetectorDefaultOptions.mergeCollisionData(target, source);
-              target.customProp = source.customProp;
-              return target;
-            },
-            createCollisionData: (source) => {
-              const data = CollisionDetectorDefaultOptions.createCollisionData(source);
-              data.customProp = source.customProp;
+            createCollisionData: () => {
+              const data = CollisionDetectorDefaultOptions.createCollisionData();
+              data.customProp = "";
               return data;
             }
           }
         });
         dndContext.on("enter", (data) => {
-          const collision = data.collisions.values().next().value;
+          const collision = data.collisions[0];
           customCollisionEvents.push({
             type: "enter",
             customProp: collision?.customProp
           });
         });
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable);
+        dndContext.addDroppables([droppable]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
         await waitNextFrame();
@@ -11971,7 +12183,7 @@
         });
         const dndContext = new DndContext();
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable);
+        dndContext.addDroppables([droppable]);
         const initialRect = droppable.getClientRect();
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
@@ -12016,10 +12228,10 @@
         });
         const dndContext = new DndContext();
         dndContext.on("enter", (data) => {
-          collisionData = data.collisions.get(droppable);
+          collisionData = data.collisions.find((c) => c.droppableId === droppable.id) || null;
         });
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable);
+        dndContext.addDroppables([droppable]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
         await waitNextFrame();
@@ -12074,17 +12286,14 @@
           events5.push({ type: "enter", targets: data.targets.size });
         });
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable);
-        focusElement(dragElement);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        await waitNextFrame();
+        dndContext.addDroppables([droppable]);
+        await startDrag(dragElement);
+        await move("Right");
         await waitNextFrame();
         assert.equal(events5.length, 1);
         assert.equal(events5[0].type, "enter");
         assert.equal(events5[0].targets, 1);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        await endDrag();
         dndContext.destroy();
         draggable.destroy();
         droppable.destroy();
@@ -12119,10 +12328,8 @@
           events5.push({ type: "enter" });
         });
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable);
-        focusElement(dragElement);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
+        dndContext.addDroppables([droppable]);
+        await startDrag(dragElement);
         assert.equal(events5.length, 0);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
         dndContext.destroy();
@@ -12161,17 +12368,16 @@
           events5.push({ type: "enter", targets: data.targets.size });
         });
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable);
+        dndContext.addDroppables([droppable]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
         await waitNextFrame();
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        await waitNextFrame();
+        await move("Right");
         await waitNextFrame();
         assert.equal(events5.length, 1);
         assert.equal(events5[0].type, "enter");
         assert.equal(events5[0].targets, 1);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        await endDrag();
         dndContext.destroy();
         draggable.destroy();
         droppable.destroy();
@@ -12208,10 +12414,8 @@
           events5.push({ type: "enter" });
         });
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable);
-        focusElement(dragElement);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
+        dndContext.addDroppables([droppable]);
+        await startDrag(dragElement);
         assert.equal(events5.length, 0);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
         dndContext.destroy();
@@ -12242,12 +12446,10 @@
           events5.push({ type: "enter" });
         });
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable);
-        focusElement(element);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
+        dndContext.addDroppables([droppable]);
+        await startDrag(element);
         assert.equal(events5.length, 0);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        await endDrag();
         dndContext.destroy();
         draggable.destroy();
         droppable.destroy();
@@ -12261,7 +12463,7 @@
           data: { custom: "value", id: 123 }
         });
         const dndContext = new DndContext();
-        dndContext.addDroppable(droppable);
+        dndContext.addDroppables([droppable]);
         assert.deepEqual(droppable.data, { custom: "value", id: 123 });
         droppable.data.newProp = "added";
         assert.equal(droppable.data.newProp, "added");
@@ -12280,7 +12482,7 @@
           accept: ["test"]
         });
         const dndContext = new DndContext();
-        dndContext.addDroppable(droppable);
+        dndContext.addDroppables([droppable]);
         const rect = droppable.getClientRect();
         assert.equal(rect.x, 50);
         assert.equal(rect.y, 75);
@@ -12322,31 +12524,30 @@
         });
         const dndContext = new DndContext();
         dndContext.on("enter", (data) => {
-          events5.push({ type: "enter", collisions: data.collisions.size });
+          events5.push({ type: "enter", collisions: data.collisions.length });
         });
         dndContext.on("leave", (data) => {
           events5.push({
             type: "leave",
-            collisions: data.collisions.size,
-            removedCollisions: data.removedCollisions.size
+            collisions: data.collisions.length,
+            removedContacts: data.removedContacts.size
           });
         });
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable);
-        focusElement(dragElement);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
+        dndContext.addDroppables([droppable]);
+        await startDrag(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
         await waitNextFrame();
         await waitNextFrame();
         assert.equal(events5.length, 1);
         assert.equal(events5[0].type, "enter");
         assert.equal(events5[0].collisions, 1);
-        dndContext.removeDroppable(droppable);
+        dndContext.removeDroppables([droppable]);
+        await waitNextFrame();
         assert.equal(events5.length, 2);
         assert.equal(events5[1].type, "leave");
         assert.equal(events5[1].collisions, 0);
-        assert.equal(events5[1].removedCollisions, 1);
+        assert.equal(events5[1].removedContacts, 1);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
         dndContext.destroy();
         draggable.destroy();
@@ -12362,10 +12563,11 @@
           accept: ["test"]
         });
         const dndContext = new DndContext();
-        dndContext.on("removeDroppable", (data) => {
-          destroyEvents.push({ type: "removeDroppable", droppable: data.droppable });
+        dndContext.on("removeDroppables", (data) => {
+          const removed = Array.from(data.droppables);
+          destroyEvents.push({ type: "removeDroppable", droppable: removed[0] });
         });
-        dndContext.addDroppable(droppable);
+        dndContext.addDroppables([droppable]);
         droppable.destroy();
         assert.equal(destroyEvents.length, 1);
         assert.equal(destroyEvents[0].type, "removeDroppable");
@@ -12374,7 +12576,7 @@
         dndContext.destroy();
         element.remove();
       });
-      it("should handle over events for persistent collisions", async () => {
+      it("should handle collide events each cycle with persistedContacts", async () => {
         const events5 = [];
         const dragElement = createTestElement({
           left: "0px",
@@ -12400,31 +12602,26 @@
         dndContext.on("enter", () => {
           events5.push({ type: "enter" });
         });
-        dndContext.on("over", (data) => {
+        dndContext.on("collide", (data) => {
           events5.push({
-            type: "over",
-            persistedCollisions: data.persistedCollisions.size
+            type: "collide",
+            persistedContacts: data.persistedContacts.size
           });
         });
         dndContext.addDraggable(draggable);
-        dndContext.addDroppable(droppable);
+        dndContext.addDroppables([droppable]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
         await waitNextFrame();
-        for (let i = 0; i < 7; i++) {
-          document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-          await waitNextFrame();
-        }
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-        await waitNextFrame();
+        await move("Right", 7);
+        await move("Right");
         await waitNextFrame();
         assert.isTrue(events5.length >= 2);
         assert.equal(events5[0].type, "enter");
-        for (let i = 1; i < events5.length; i++) {
-          assert.equal(events5[i].type, "over");
-          assert.equal(events5[i].persistedCollisions, 1);
-        }
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        const collideEvents = events5.slice(1).filter((e) => e.type === "collide");
+        assert.isAtLeast(collideEvents.length, 1);
+        assert.isTrue(collideEvents.some((e) => e.persistedContacts >= 1));
+        await endDrag();
         dndContext.destroy();
         draggable.destroy();
         droppable.destroy();
@@ -12435,11 +12632,181 @@
     });
   }
 
+  // tests/src/dnd-context/methods.ts
+  function methods5() {
+    describe("methods", () => {
+      it("on/off should add and remove listeners by id", async () => {
+        const calls = [];
+        const dragElement = createTestElement();
+        const dropElement = createTestElement({
+          left: "0px",
+          top: "0px",
+          width: "40px",
+          height: "40px"
+        });
+        const sensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+        const draggable = new Draggable([sensor], { elements: () => [dragElement], group: "g" });
+        const droppable = new Droppable(dropElement, { accept: ["g"] });
+        const ctx = new DndContext();
+        ctx.addDraggable(draggable);
+        ctx.addDroppables([droppable]);
+        const id1 = ctx.on("start", () => calls.push("a"));
+        ctx.on("start", () => calls.push("b"));
+        ctx.off("start", id1);
+        await startDrag(dragElement);
+        assert.deepEqual(calls, ["b"]);
+        ctx.destroy();
+        draggable.destroy();
+        droppable.destroy();
+        sensor.destroy();
+        dragElement.remove();
+        dropElement.remove();
+      });
+      it("detectCollisions(draggable) should queue collisions for a single drag", async () => {
+        const events5 = [];
+        const dragElement = createTestElement({
+          left: "0px",
+          top: "0px",
+          width: "40px",
+          height: "40px"
+        });
+        const dropElement = createTestElement({
+          left: "0px",
+          top: "0px",
+          width: "40px",
+          height: "40px"
+        });
+        const sensor = new KeyboardSensor(dragElement, { moveDistance: 1 });
+        const draggable = new Draggable([sensor], { elements: () => [dragElement], group: "g" });
+        const droppable = new Droppable(dropElement, { accept: ["g"] });
+        const ctx = new DndContext();
+        ctx.on("collide", () => events5.push("collide"));
+        ctx.addDraggable(draggable);
+        ctx.addDroppables([droppable]);
+        focusElement(dragElement);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        await waitNextFrame();
+        events5.length = 0;
+        ctx.detectCollisions(draggable);
+        await waitNextFrame();
+        assert.isTrue(events5.includes("collide"));
+        ctx.destroy();
+        draggable.destroy();
+        droppable.destroy();
+        sensor.destroy();
+        dragElement.remove();
+        dropElement.remove();
+      });
+      it("detectCollisions() without args should queue for all active drags", async () => {
+        const events5 = [];
+        const dragEl1 = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+        const dragEl2 = createTestElement({
+          left: "0px",
+          top: "50px",
+          width: "40px",
+          height: "40px"
+        });
+        const dropEl1 = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+        const dropEl2 = createTestElement({
+          left: "0px",
+          top: "50px",
+          width: "40px",
+          height: "40px"
+        });
+        const s1 = new KeyboardSensor(dragEl1, { moveDistance: 1 });
+        const s2 = new KeyboardSensor(dragEl2, { moveDistance: 1 });
+        const dr1 = new Draggable([s1], { elements: () => [dragEl1], group: "g" });
+        const dr2 = new Draggable([s2], { elements: () => [dragEl2], group: "g" });
+        const dp1 = new Droppable(dropEl1, { accept: ["g"] });
+        const dp2 = new Droppable(dropEl2, { accept: ["g"] });
+        const ctx = new DndContext();
+        ctx.on("collide", ({ draggable }) => events5.push({ d: draggable }));
+        ctx.addDraggable(dr1);
+        ctx.addDraggable(dr2);
+        ctx.addDroppables([dp1, dp2]);
+        focusElement(dragEl1);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        focusElement(dragEl2);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        await waitNextFrame();
+        events5.length = 0;
+        ctx.detectCollisions();
+        await waitNextFrame();
+        assert.isAtLeast(events5.length, 1);
+        ctx.destroy();
+        dr1.destroy();
+        dr2.destroy();
+        dp1.destroy();
+        dp2.destroy();
+        s1.destroy();
+        s2.destroy();
+        dragEl1.remove();
+        dragEl2.remove();
+        dropEl1.remove();
+        dropEl2.remove();
+      });
+      it("updateDroppableClientRects should refresh cached rects", async () => {
+        const el = createTestElement({ left: "0px", top: "0px", width: "50px", height: "50px" });
+        const droppable = new Droppable(el, { accept: ["x"] });
+        const ctx = new DndContext();
+        ctx.addDroppables([droppable]);
+        const before = droppable.getClientRect();
+        el.style.left = "100px";
+        el.style.top = "150px";
+        await waitNextFrame();
+        const expected = el.getBoundingClientRect();
+        ctx.updateDroppableClientRects();
+        const after = droppable.getClientRect();
+        assert.equal(after.x, expected.x);
+        assert.equal(after.y, expected.y);
+        assert.equal(after.width, before.width);
+        assert.equal(after.height, before.height);
+        ctx.destroy();
+        droppable.destroy();
+        el.remove();
+      });
+      it("isMatch should return false when dragged element equals droppable.element", async () => {
+        const el = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+        const sensor = new KeyboardSensor(el, { moveDistance: 10 });
+        const draggable = new Draggable([sensor], { elements: () => [el], group: "g" });
+        const droppable = new Droppable(el, { accept: ["g"] });
+        const ctx = new DndContext();
+        focusElement(el);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        await waitNextFrame();
+        assert.isFalse(ctx.isMatch(draggable, droppable));
+        ctx.destroy();
+        draggable.destroy();
+        droppable.destroy();
+        sensor.destroy();
+        el.remove();
+      });
+      it("isMatch should respect droppable.accept function", async () => {
+        const dragEl = createTestElement();
+        const dropEl = createTestElement();
+        const sensor = new KeyboardSensor(dragEl, { moveDistance: 10 });
+        const draggable = new Draggable([sensor], { elements: () => [dragEl], group: "g" });
+        const droppable = new Droppable(dropEl, { accept: () => false });
+        const ctx = new DndContext();
+        assert.isFalse(ctx.isMatch(draggable, droppable));
+        droppable.accept = () => true;
+        assert.isTrue(ctx.isMatch(draggable, droppable));
+        ctx.destroy();
+        draggable.destroy();
+        droppable.destroy();
+        sensor.destroy();
+        dragEl.remove();
+        dropEl.remove();
+      });
+    });
+  }
+
   // tests/src/dnd-context/index.ts
   describe("DndContext", () => {
     events4();
     collisionDetection();
     droppables();
+    methods5();
   });
 })();
 /*! Bundled license information:

@@ -1995,7 +1995,7 @@ droppableElements.forEach((element) => {
   const droppable = new Droppable(element);
   droppable.data.overIds = new Set<number>();
   droppable.data.droppedIds = new Set<number>();
-  dndContext.addDroppable(droppable);
+  dndContext.addDroppables([droppable]);
 });
 
 // Create draggables
@@ -2015,70 +2015,70 @@ draggableElements.forEach((element) => {
 });
 
 // DnD logic
-{
-  const onStart = (data: { draggable: Draggable; targets: ReadonlySet<Droppable> }) => {
-    const { draggable, targets } = data;
-    targets.forEach((target) => {
-      target.data.droppedIds.delete(draggable.id);
-      if (target.data.droppedIds.size === 0) {
-        target.element.classList.remove('draggable-dropped');
-      }
-    });
-  };
 
-  const onEnterAndOver = (data: {
-    draggable: Draggable;
-    collisions: ReadonlyMap<Droppable, any>;
-  }) => {
-    const { draggable, collisions } = data;
-    const collisionArray = Array.from(collisions.keys());
-
-    // Add the draggable to the first collision.
-    const target = collisionArray[0]!;
-    target.data.overIds.add(draggable.id);
-    target.element.classList.add('draggable-over');
-
-    // Remove the draggable from the other collisions.
-    for (let i = 1; i < collisionArray.length; i++) {
-      const collision = collisionArray[i];
-      collision.data.overIds.delete(draggable.id);
-      if (collision.data.overIds.size === 0) {
-        collision.element.classList.remove('draggable-over');
-      }
+// On drag start loop through all target droppables and remove the draggable id
+// from the dropped ids set. If the dropped ids set is empty, remove the
+// "draggable-dropped" class from the droppable element.
+dndContext.on(DndContextEventType.Start, (data) => {
+  const { draggable, targets } = data;
+  targets.forEach((droppable) => {
+    droppable.data.droppedIds.delete(draggable.id);
+    if (droppable.data.droppedIds.size === 0) {
+      droppable.element.classList.remove('draggable-dropped');
     }
-  };
+  });
+});
 
-  const onLeave = (data: { draggable: Draggable; removedCollisions: ReadonlySet<Droppable> }) => {
-    const { draggable, removedCollisions } = data;
-    removedCollisions.forEach((target) => {
-      target.data.overIds.delete(draggable.id);
-      if (target.data.overIds.size === 0) {
-        target.element.classList.remove('draggable-over');
-      }
-    });
-  };
+// On each collision change, keep track of the overIds set for each droppable
+// and update the "draggable-over" class based on the over ids set.
+dndContext.on(DndContextEventType.Collide, (data) => {
+  const { draggable, contacts, removedContacts } = data;
 
-  const onDrop = (data: { draggable: Draggable; collisions: ReadonlyMap<Droppable, any> }) => {
-    const { draggable, collisions } = data;
-    const target = Array.from(collisions.keys())[0];
-
-    // Update dropped ids
-    target.data.droppedIds.add(draggable.id);
-    target.element.classList.add('draggable-dropped');
-
-    // Update over ids
+  // Remove the draggable id from the droppables that stopped colliding and
+  // remove the "draggable-over" class from the droppable element if there are
+  // no more draggable ids in the over ids set.
+  removedContacts.forEach((target) => {
     target.data.overIds.delete(draggable.id);
     if (target.data.overIds.size === 0) {
       target.element.classList.remove('draggable-over');
     }
-  };
+  });
 
-  dndContext.on(DndContextEventType.Start, onStart);
-  dndContext.on(DndContextEventType.Enter, onEnterAndOver);
-  dndContext.on(DndContextEventType.Over, onEnterAndOver);
-  dndContext.on(DndContextEventType.Leave, onLeave);
-  dndContext.on(DndContextEventType.Drop, onDrop);
-}
+  // Add the draggable to the first colliding droppable (best match), and remove
+  // the draggable from the other colliding droppables. Update the
+  // "draggable-over" class based on the over ids set.
+  let i = 0;
+  for (const droppable of contacts) {
+    if (i === 0) {
+      droppable.data.overIds.add(draggable.id);
+      droppable.element.classList.add('draggable-over');
+    } else {
+      droppable.data.overIds.delete(draggable.id);
+      if (droppable.data.overIds.size === 0) {
+        droppable.element.classList.remove('draggable-over');
+      }
+    }
+    ++i;
+  }
+});
+
+dndContext.on(DndContextEventType.End, (data) => {
+  const { draggable, contacts } = data;
+
+  // For the first colliding droppable (best match), add the draggable id to the
+  // dropped ids set, add the "draggable-dropped" class to the droppable
+  // element, and remove the draggable id from the over ids set. If the over ids
+  // set is empty, remove the "draggable-over" class from the droppable element.
+  for (const droppable of contacts) {
+    droppable.data.droppedIds.add(draggable.id);
+    droppable.element.classList.add('draggable-dropped');
+    droppable.data.overIds.delete(draggable.id);
+    if (droppable.data.overIds.size === 0) {
+      droppable.element.classList.remove('draggable-over');
+    }
+    return;
+  }
+});
 ```
 
 ```html [index.html]
@@ -2309,14 +2309,15 @@ import {
   DndContext,
   Droppable,
   DndContextEventType,
-  VisibleRectCollisionDetector,
+  AdvancedCollisionDetector,
+  ACDCollisionData,
 } from 'dragdoll';
 
 let zIndex = 0;
 
 // Initialize context with the visible-rect collision detector
-const dndContext = new DndContext({
-  collisionDetector: (ctx) => new VisibleRectCollisionDetector(ctx),
+const dndContext = new DndContext<ACDCollisionData>({
+  collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx),
 });
 
 // Elements
@@ -2328,7 +2329,7 @@ droppableElements.forEach((element) => {
   const droppable = new Droppable(element);
   droppable.data.overIds = new Set<number>();
   droppable.data.droppedIds = new Set<number>();
-  dndContext.addDroppable(droppable);
+  dndContext.addDroppables([droppable]);
 });
 
 // Create a single draggable outside the scroll container
@@ -2350,7 +2351,7 @@ droppableElements.forEach((element) => {
 
 // DnD logic (same pattern as example 011)
 {
-  const onStart = (data: { draggable: Draggable; targets: ReadonlySet<Droppable> }) => {
+  const onStart = (data: { draggable: Draggable; targets: ReadonlyMap<Symbol, Droppable> }) => {
     const { draggable, targets } = data;
     targets.forEach((target) => {
       target.data.droppedIds.delete(draggable.id);
@@ -2362,27 +2363,29 @@ droppableElements.forEach((element) => {
 
   const onEnterAndOver = (data: {
     draggable: Draggable;
-    collisions: ReadonlyMap<Droppable, any>;
+    collisions: ReadonlyArray<ACDCollisionData>;
   }) => {
     const { draggable, collisions } = data;
-    const collisionArray = Array.from(collisions.keys());
-    const target = collisionArray[0];
+    const targetId = collisions.length > 0 ? collisions[0].droppableId : null;
+    const target = targetId ? dndContext.droppables.get(targetId) : null;
     if (target) {
       target.data.overIds.add(draggable.id);
       target.element.classList.add('draggable-over');
     }
-    for (let i = 1; i < collisionArray.length; i++) {
-      const c = collisionArray[i];
-      c.data.overIds.delete(draggable.id);
-      if (c.data.overIds.size === 0) {
-        c.element.classList.remove('draggable-over');
+    // Remove active state from other droppables that are no longer colliding
+    for (const droppable of dndContext.droppables.values()) {
+      if (droppable !== target && !collisions.some((c) => c.droppableId === droppable.id)) {
+        droppable.data.overIds.delete(draggable.id);
+        if (droppable.data.overIds.size === 0) {
+          droppable.element.classList.remove('draggable-over');
+        }
       }
     }
   };
 
-  const onLeave = (data: { draggable: Draggable; removedCollisions: ReadonlySet<Droppable> }) => {
-    const { draggable, removedCollisions } = data;
-    removedCollisions.forEach((target) => {
+  const onLeave = (data: { draggable: Draggable; removedContacts: ReadonlySet<Droppable> }) => {
+    const { draggable, removedContacts } = data;
+    removedContacts.forEach((target) => {
       target.data.overIds.delete(draggable.id);
       if (target.data.overIds.size === 0) {
         target.element.classList.remove('draggable-over');
@@ -2390,9 +2393,10 @@ droppableElements.forEach((element) => {
     });
   };
 
-  const onDrop = (data: { draggable: Draggable; collisions: ReadonlyMap<Droppable, any> }) => {
+  const onEnd = (data: { draggable: Draggable; collisions: ReadonlyArray<ACDCollisionData> }) => {
     const { draggable, collisions } = data;
-    const target = Array.from(collisions.keys())[0];
+    const target =
+      collisions.length > 0 ? dndContext.droppables.get(collisions[0].droppableId) : null;
     if (!target) return;
     target.data.droppedIds.add(draggable.id);
     target.element.classList.add('draggable-dropped');
@@ -2404,9 +2408,9 @@ droppableElements.forEach((element) => {
 
   dndContext.on(DndContextEventType.Start, onStart);
   dndContext.on(DndContextEventType.Enter, onEnterAndOver);
-  dndContext.on(DndContextEventType.Over, onEnterAndOver);
+  dndContext.on(DndContextEventType.Collide, onEnterAndOver);
   dndContext.on(DndContextEventType.Leave, onLeave);
-  dndContext.on(DndContextEventType.Drop, onDrop);
+  dndContext.on(DndContextEventType.End, onEnd);
 }
 ```
 
