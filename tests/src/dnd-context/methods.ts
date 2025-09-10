@@ -23,7 +23,7 @@ export function methods() {
       const droppable = new Droppable(dropElement, { accept: ['g'] });
       const ctx = new DndContext();
 
-      ctx.addDraggable(draggable);
+      ctx.addDraggables([draggable]);
       ctx.addDroppables([droppable]);
 
       const id1 = ctx.on('start', () => calls.push('a'));
@@ -67,7 +67,7 @@ export function methods() {
 
       ctx.on('collide', () => events.push('collide'));
 
-      ctx.addDraggable(draggable);
+      ctx.addDraggables([draggable]);
       ctx.addDroppables([droppable]);
 
       // Start drag without moving; explicitly trigger detection for this draggable
@@ -117,8 +117,7 @@ export function methods() {
 
       ctx.on('collide', ({ draggable }) => events.push({ d: draggable }));
 
-      ctx.addDraggable(dr1);
-      ctx.addDraggable(dr2);
+      ctx.addDraggables([dr1, dr2]);
       ctx.addDroppables([dp1, dp2]);
 
       // Start both drags

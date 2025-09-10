@@ -5626,9 +5626,10 @@
   };
   var Draggable = class {
     constructor(sensors, options4 = {}) {
-      this.id = Symbol();
+      const { id = Symbol(), ...restOptions } = options4;
+      this.id = id;
       this.sensors = sensors;
-      this.settings = this._parseSettings(options4);
+      this.settings = this._parseSettings(restOptions);
       this.plugins = {};
       this.drag = null;
       this.isDestroyed = false;
@@ -6896,17 +6897,13 @@
   var DroppableEventType = {
     Destroy: "destroy"
   };
-  var defaultDroppableOptions = {
-    accept: () => true,
-    data: {}
-  };
   var Droppable = class {
     constructor(element, options4 = {}) {
-      const { accept = defaultDroppableOptions.accept, data = defaultDroppableOptions.data } = options4;
-      this.id = Symbol();
+      const { id = Symbol(), accept = () => true, data = {} } = options4;
+      this.id = id;
       this.element = element;
       this.accept = accept;
-      this.data = { ...data };
+      this.data = data;
       this.isDestroyed = false;
       this._clientRect = { x: 0, y: 0, width: 0, height: 0 };
       this._emitter = new v();
@@ -7079,8 +7076,8 @@
     Leave: "leave",
     Collide: "collide",
     End: "end",
-    AddDraggable: "addDraggable",
-    RemoveDraggable: "removeDraggable",
+    AddDraggables: "addDraggables",
+    RemoveDraggables: "removeDraggables",
     AddDroppables: "addDroppables",
     RemoveDroppables: "removeDroppables",
     Destroy: "destroy"
@@ -7099,10 +7096,10 @@
         this.detectCollisions();
       };
       const { collisionDetector } = options4;
-      this.draggables = /* @__PURE__ */ new Set();
+      this.draggables = /* @__PURE__ */ new Map();
       this.droppables = /* @__PURE__ */ new Map();
-      this._drags = /* @__PURE__ */ new Map();
       this.isDestroyed = false;
+      this._drags = /* @__PURE__ */ new Map();
       this._listenerId = Symbol();
       this._emitter = new v();
       this._onScroll = this._onScroll.bind(this);
@@ -7128,7 +7125,7 @@
       return targets;
     }
     _onDragPrepareStart(draggable) {
-      if (!this.draggables.has(draggable)) return;
+      if (!this.draggables.has(draggable.id)) return;
       if (this._drags.get(draggable)) return;
       this._drags.set(draggable, {
         isEnded: false,
@@ -7188,11 +7185,11 @@
     _onDragCancel(draggable) {
       this._stopDrag(draggable, true);
     }
-    _onDragDestroy(draggable) {
-      this.removeDraggable(draggable);
+    _onDraggableDestroy(draggable) {
+      this.removeDraggables([draggable]);
     }
     // Returns true if the final cleanup was queued to a microtask.
-    _stopDrag(draggable, isCancelled = false) {
+    _stopDrag(draggable, canceled = false) {
       const drag = this._drags.get(draggable);
       if (!drag || drag.isEnded) return false;
       drag.isEnded = true;
@@ -7204,7 +7201,7 @@
       const { targets, collisions, contacts } = drag._cd;
       if (this._emitter.listenerCount(DndContextEventType.End)) {
         this._emitter.emit(DndContextEventType.End, {
-          isCancelled,
+          canceled,
           draggable,
           targets,
           collisions,
@@ -7245,8 +7242,8 @@
           break;
       }
       cd.phase = 1 /* Computing */;
-      const targets = cd.targets = this._getTargets(draggable);
-      this._collisionDetector.detectCollisions(draggable, targets, cd.collisions);
+      cd.targets = this._getTargets(draggable);
+      this._collisionDetector.detectCollisions(draggable, cd.targets, cd.collisions);
       cd.phase = 2 /* Computed */;
     }
     _emitCollisions(draggable, force = false) {
@@ -7370,76 +7367,89 @@
         }
       }
     }
-    addDraggable(draggable) {
-      if (this.isDestroyed || this.draggables.has(draggable)) return;
-      this.draggables.add(draggable);
-      draggable.on(
-        DraggableEventType.PrepareStart,
-        () => {
-          this._onDragPrepareStart(draggable);
-        },
-        this._listenerId
-      );
-      draggable.on(
-        DraggableEventType.Start,
-        () => {
-          this._onDragStart(draggable);
-        },
-        this._listenerId
-      );
-      draggable.on(
-        DraggableEventType.PrepareMove,
-        () => {
-          this._onDragPrepareMove(draggable);
-        },
-        this._listenerId
-      );
-      draggable.on(
-        DraggableEventType.Move,
-        () => {
-          this._onDragMove(draggable);
-        },
-        this._listenerId
-      );
-      draggable.on(
-        DraggableEventType.End,
-        (e) => {
-          if (e?.type === SensorEventType.End) {
-            this._onDragEnd(draggable);
-          } else if (e?.type === SensorEventType.Cancel) {
-            this._onDragCancel(draggable);
-          }
-        },
-        this._listenerId
-      );
-      draggable.on(
-        DraggableEventType.Destroy,
-        () => {
-          this._onDragDestroy(draggable);
-        },
-        this._listenerId
-      );
-      if (this._emitter.listenerCount(DndContextEventType.AddDraggable)) {
-        this._emitter.emit(DndContextEventType.AddDraggable, { draggable });
+    addDraggables(draggables) {
+      if (this.isDestroyed) return;
+      const addedDraggables = /* @__PURE__ */ new Set();
+      for (const draggable of draggables) {
+        if (this.draggables.has(draggable.id)) continue;
+        addedDraggables.add(draggable);
+        this.draggables.set(draggable.id, draggable);
+        draggable.on(
+          DraggableEventType.PrepareStart,
+          () => {
+            this._onDragPrepareStart(draggable);
+          },
+          this._listenerId
+        );
+        draggable.on(
+          DraggableEventType.Start,
+          () => {
+            this._onDragStart(draggable);
+          },
+          this._listenerId
+        );
+        draggable.on(
+          DraggableEventType.PrepareMove,
+          () => {
+            this._onDragPrepareMove(draggable);
+          },
+          this._listenerId
+        );
+        draggable.on(
+          DraggableEventType.Move,
+          () => {
+            this._onDragMove(draggable);
+          },
+          this._listenerId
+        );
+        draggable.on(
+          DraggableEventType.End,
+          (e) => {
+            if (e?.type === SensorEventType.End) {
+              this._onDragEnd(draggable);
+            } else if (e?.type === SensorEventType.Cancel) {
+              this._onDragCancel(draggable);
+            }
+          },
+          this._listenerId
+        );
+        draggable.on(
+          DraggableEventType.Destroy,
+          () => {
+            this._onDraggableDestroy(draggable);
+          },
+          this._listenerId
+        );
       }
-      if (!this.isDestroyed && draggable.drag && !draggable.drag.isEnded) {
-        const startPhase = draggable["_startPhase"];
-        if (startPhase >= 2) this._onDragPrepareStart(draggable);
-        if (startPhase >= 4) this._onDragStart(draggable);
+      if (!addedDraggables.size) return;
+      if (this._emitter.listenerCount(DndContextEventType.AddDraggables)) {
+        this._emitter.emit(DndContextEventType.AddDraggables, { draggables: addedDraggables });
+      }
+      for (const draggable of addedDraggables) {
+        if (!this.isDestroyed && draggable.drag && !draggable.drag.isEnded) {
+          const startPhase = draggable["_startPhase"];
+          if (startPhase >= 2) this._onDragPrepareStart(draggable);
+          if (startPhase >= 4) this._onDragStart(draggable);
+        }
       }
     }
-    removeDraggable(draggable) {
-      if (this.isDestroyed || !this.draggables.has(draggable)) return;
-      this.draggables.delete(draggable);
-      draggable.off(DraggableEventType.PrepareStart, this._listenerId);
-      draggable.off(DraggableEventType.Start, this._listenerId);
-      draggable.off(DraggableEventType.PrepareMove, this._listenerId);
-      draggable.off(DraggableEventType.Move, this._listenerId);
-      draggable.off(DraggableEventType.End, this._listenerId);
-      draggable.off(DraggableEventType.Destroy, this._listenerId);
-      this._stopDrag(draggable, true);
-      if (this._emitter.listenerCount(DndContextEventType.RemoveDraggable)) {
-        this._emitter.emit(DndContextEventType.RemoveDraggable, { draggable });
+    removeDraggables(draggables) {
+      if (this.isDestroyed) return;
+      const removedDraggables = /* @__PURE__ */ new Set();
+      for (const draggable of draggables) {
+        if (!this.draggables.has(draggable.id)) continue;
+        removedDraggables.add(draggable);
+        this.draggables.delete(draggable.id);
+        draggable.off(DraggableEventType.PrepareStart, this._listenerId);
+        draggable.off(DraggableEventType.Start, this._listenerId);
+        draggable.off(DraggableEventType.PrepareMove, this._listenerId);
+        draggable.off(DraggableEventType.Move, this._listenerId);
+        draggable.off(DraggableEventType.End, this._listenerId);
+        draggable.off(DraggableEventType.Destroy, this._listenerId);
+        this._stopDrag(draggable, true);
+      }
+      if (this._emitter.listenerCount(DndContextEventType.RemoveDraggables)) {
+        this._emitter.emit(DndContextEventType.RemoveDraggables, { draggables: removedDraggables });
       }
     }
     addDroppables(droppables2) {
@@ -11432,7 +11442,7 @@
           assert.isTrue(data.targets.has(droppable.id));
           events5.push("end");
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable]);
         await startDrag(dragElement);
         assert.deepEqual(events5, ["start"]);
@@ -11464,7 +11474,7 @@
           assert.instanceOf(data.targets, Map);
           events5.push("move");
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable]);
         await startDrag(dragElement);
         await move("Right");
@@ -11515,7 +11525,7 @@
             removedContacts: data.removedContacts.size
           });
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable]);
         await startDrag(dragElement);
         await move("Right");
@@ -11565,7 +11575,7 @@
           assert.isTrue(data.collisions.some((c) => c.droppableId === droppable.id));
           events5.push("end");
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable]);
         await startDrag(dragElement);
         await endDrag();
@@ -11578,7 +11588,7 @@
         dragElement.remove();
         dropElement.remove();
       });
-      it("should emit addDraggable and removeDraggable events", () => {
+      it("should emit addDraggables and removeDraggables events", () => {
         const events5 = [];
         const dragElement = createTestElement();
         const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
@@ -11587,20 +11597,20 @@
           group: "test"
         });
         const dndContext = new DndContext();
-        dndContext.on("addDraggable", (data) => {
-          events5.push({ type: "addDraggable", draggable: data.draggable });
+        dndContext.on("addDraggables", (data) => {
+          events5.push({ type: "addDraggables", draggables: data.draggables });
         });
-        dndContext.on("removeDraggable", (data) => {
-          events5.push({ type: "removeDraggable", draggable: data.draggable });
+        dndContext.on("removeDraggables", (data) => {
+          events5.push({ type: "removeDraggables", draggables: data.draggables });
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         assert.equal(events5.length, 1);
-        assert.equal(events5[0].type, "addDraggable");
-        assert.equal(events5[0].draggable, draggable);
-        dndContext.removeDraggable(draggable);
+        assert.equal(events5[0].type, "addDraggables");
+        assert.equal(events5[0].draggables.has(draggable), true);
+        dndContext.removeDraggables([draggable]);
         assert.equal(events5.length, 2);
-        assert.equal(events5[1].type, "removeDraggable");
-        assert.equal(events5[1].draggable, draggable);
+        assert.equal(events5[1].type, "removeDraggables");
+        assert.equal(events5[1].draggables.has(draggable), true);
         dndContext.destroy();
         draggable.destroy();
         keyboardSensor.destroy();
@@ -11635,7 +11645,7 @@
         droppable.destroy();
         dropElement.remove();
       });
-      it("should emit end with isCancelled=true when drag is cancelled", async () => {
+      it("should emit end with canceled=true when drag is cancelled", async () => {
         const events5 = [];
         const dragElement = createTestElement();
         const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
@@ -11646,10 +11656,10 @@
         const dndContext = new DndContext();
         dndContext.on("end", (data) => {
           assert.equal(data.draggable, draggable);
-          assert.isTrue(data.isCancelled);
+          assert.isTrue(data.canceled);
           events5.push("end");
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         await startDrag(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
         assert.equal(events5.length, 1);
@@ -11684,7 +11694,7 @@
         ctx.on("leave", () => order.push("leave"));
         ctx.on("enter", () => order.push("enter"));
         ctx.on("collide", () => order.push("collide"));
-        ctx.addDraggable(draggable);
+        ctx.addDraggables([draggable]);
         ctx.addDroppables([droppableA, droppableB]);
         await startDrag(dragEl);
         order.length = 0;
@@ -11716,12 +11726,12 @@
           gotEnter = true;
           assert.isAtLeast(collisions.length, 1);
         });
-        ctx.on("end", ({ isCancelled, collisions }) => {
+        ctx.on("end", ({ canceled, collisions }) => {
           events5.push("end");
-          assert.isFalse(isCancelled);
+          assert.isFalse(canceled);
           assert.isAtLeast(collisions.length, 1);
         });
-        ctx.addDraggable(draggable);
+        ctx.addDraggables([draggable]);
         ctx.addDroppables([droppable]);
         await startDrag(dragEl);
         await waitNextFrame();
@@ -11745,7 +11755,7 @@
         const droppable = new Droppable(dropEl, { accept: () => accepts });
         const ctx = new DndContext();
         ctx.on("enter", () => events5.push("enter"));
-        ctx.addDraggable(draggable);
+        ctx.addDraggables([draggable]);
         ctx.addDroppables([droppable]);
         await startDrag(dragEl);
         assert.equal(events5.length, 0);
@@ -11777,7 +11787,7 @@
         ctx.on("end", () => {
           events5.push("end");
         });
-        ctx.addDraggable(draggable);
+        ctx.addDraggables([draggable]);
         ctx.addDroppables([droppable]);
         await startDrag(dragEl);
         if (shouldRemove) ctx.removeDroppables([droppable]);
@@ -11815,7 +11825,7 @@
           assert.isNotNull(data);
           seen.push({ phase: "end", value: data.data.counter });
         });
-        ctx.addDraggable(draggable);
+        ctx.addDraggables([draggable]);
         ctx.addDroppables([droppable]);
         await startDrag(dragEl);
         await move("Right");
@@ -11870,7 +11880,7 @@
             collisions: data.collisions
           });
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
@@ -11921,7 +11931,7 @@
             collisions: data.collisions
           });
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
@@ -11964,7 +11974,7 @@
         dndContext.on("leave", (data) => {
           collisionEvents.push({ type: "leave", collisions: data.collisions.length });
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
@@ -12030,7 +12040,7 @@
             collisions: [...data.collisions]
           });
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable1, droppable2]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
@@ -12080,7 +12090,7 @@
         dndContext.on("enter", () => {
           collisionEvents.push({ type: "enter" });
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
@@ -12144,7 +12154,7 @@
             customProp: collision?.customProp
           });
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
@@ -12182,7 +12192,7 @@
           accept: ["test"]
         });
         const dndContext = new DndContext();
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable]);
         const initialRect = droppable.getClientRect();
         focusElement(dragElement);
@@ -12230,7 +12240,7 @@
         dndContext.on("enter", (data) => {
           collisionData = data.collisions.find((c) => c.droppableId === droppable.id) || null;
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
@@ -12285,7 +12295,7 @@
         dndContext.on("enter", (data) => {
           events5.push({ type: "enter", targets: data.targets.size });
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable]);
         await startDrag(dragElement);
         await move("Right");
@@ -12327,7 +12337,7 @@
         dndContext.on("enter", () => {
           events5.push({ type: "enter" });
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable]);
         await startDrag(dragElement);
         assert.equal(events5.length, 0);
@@ -12367,7 +12377,7 @@
         dndContext.on("enter", (data) => {
           events5.push({ type: "enter", targets: data.targets.size });
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
@@ -12413,7 +12423,7 @@
         dndContext.on("enter", () => {
           events5.push({ type: "enter" });
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable]);
         await startDrag(dragElement);
         assert.equal(events5.length, 0);
@@ -12445,7 +12455,7 @@
         dndContext.on("enter", () => {
           events5.push({ type: "enter" });
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable]);
         await startDrag(element);
         assert.equal(events5.length, 0);
@@ -12533,7 +12543,7 @@
             removedContacts: data.removedContacts.size
           });
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable]);
         await startDrag(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
@@ -12608,7 +12618,7 @@
             persistedContacts: data.persistedContacts.size
           });
         });
-        dndContext.addDraggable(draggable);
+        dndContext.addDraggables([draggable]);
         dndContext.addDroppables([droppable]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
@@ -12648,7 +12658,7 @@
         const draggable = new Draggable([sensor], { elements: () => [dragElement], group: "g" });
         const droppable = new Droppable(dropElement, { accept: ["g"] });
         const ctx = new DndContext();
-        ctx.addDraggable(draggable);
+        ctx.addDraggables([draggable]);
         ctx.addDroppables([droppable]);
         const id1 = ctx.on("start", () => calls.push("a"));
         ctx.on("start", () => calls.push("b"));
@@ -12681,7 +12691,7 @@
         const droppable = new Droppable(dropElement, { accept: ["g"] });
         const ctx = new DndContext();
         ctx.on("collide", () => events5.push("collide"));
-        ctx.addDraggable(draggable);
+        ctx.addDraggables([draggable]);
         ctx.addDroppables([droppable]);
         focusElement(dragElement);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
@@ -12721,8 +12731,7 @@
         const dp2 = new Droppable(dropEl2, { accept: ["g"] });
         const ctx = new DndContext();
         ctx.on("collide", ({ draggable }) => events5.push({ d: draggable }));
-        ctx.addDraggable(dr1);
-        ctx.addDraggable(dr2);
+        ctx.addDraggables([dr1, dr2]);
         ctx.addDroppables([dp1, dp2]);
         focusElement(dragEl1);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));

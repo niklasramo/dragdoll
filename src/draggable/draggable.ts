@@ -47,6 +47,8 @@ enum DraggableStartPredicateState {
   Rejected = 2,
 }
 
+export type DraggableId = symbol | string | number;
+
 export const DraggableModifierPhase = {
   Start: 'start',
   Move: 'move',
@@ -241,7 +243,7 @@ export class Draggable<
   E extends S[number]['_events_type'] = S[number]['_events_type'],
   P extends DraggablePluginMap = {},
 > {
-  readonly id: Symbol;
+  readonly id: DraggableId;
   readonly sensors: S;
   readonly settings: DraggableSettings<S, E>;
   readonly plugins: P;
@@ -264,10 +266,11 @@ export class Draggable<
   protected _moveId: symbol;
   protected _alignId: symbol;
 
-  constructor(sensors: S, options: Partial<DraggableSettings<S, E>> = {}) {
-    this.id = Symbol();
+  constructor(sensors: S, options: Partial<DraggableSettings<S, E>> & { id?: DraggableId } = {}) {
+    const { id = Symbol(), ...restOptions } = options;
+    this.id = id;
     this.sensors = sensors;
-    this.settings = this._parseSettings(options);
+    this.settings = this._parseSettings(restOptions as Partial<DraggableSettings<S, E>>);
     this.plugins = {} as P;
     this.drag = null;
     this.isDestroyed = false;

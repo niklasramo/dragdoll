@@ -6,6 +6,8 @@ import type { Draggable } from '../draggable/draggable.js';
 
 import { Emitter } from 'eventti';
 
+export type DroppableId = symbol | string | number;
+
 export type DroppableAcceptId = string | number | symbol;
 
 export const DroppableEventType = {
@@ -19,17 +21,13 @@ export interface DroppableEventCallbacks {
 }
 
 export interface DroppableOptions {
+  id?: DroppableId;
   accept?: DroppableAcceptId[] | ((draggable: Draggable<any>) => boolean);
   data?: { [key: string]: any };
 }
 
-export const defaultDroppableOptions: Required<DroppableOptions> = {
-  accept: () => true,
-  data: {},
-};
-
 export class Droppable {
-  readonly id: Symbol;
+  readonly id: DroppableId;
   readonly element: HTMLElement | SVGSVGElement;
   accept: DroppableAcceptId[] | ((draggable: Draggable<any>) => boolean);
   data: { [key: string]: any };
@@ -40,13 +38,12 @@ export class Droppable {
   }>;
 
   constructor(element: HTMLElement | SVGSVGElement, options: DroppableOptions = {}) {
-    const { accept = defaultDroppableOptions.accept, data = defaultDroppableOptions.data } =
-      options;
+    const { id = Symbol(), accept = () => true, data = {} } = options;
 
-    this.id = Symbol();
+    this.id = id;
     this.element = element;
     this.accept = accept;
-    this.data = { ...data };
+    this.data = data;
     this.isDestroyed = false;
     this._clientRect = { x: 0, y: 0, width: 0, height: 0 };
     this._emitter = new Emitter();

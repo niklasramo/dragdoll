@@ -41,7 +41,7 @@ export function droppables() {
         events.push({ type: 'enter', targets: data.targets.size });
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
       // Start dragging
@@ -101,7 +101,7 @@ export function droppables() {
         events.push({ type: 'enter' });
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
       // Start dragging
@@ -157,7 +157,7 @@ export function droppables() {
         events.push({ type: 'enter', targets: data.targets.size });
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
       // Start dragging
@@ -222,7 +222,7 @@ export function droppables() {
         events.push({ type: 'enter' });
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
       // Start dragging
@@ -270,7 +270,7 @@ export function droppables() {
         events.push({ type: 'enter' });
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
       // Start dragging
@@ -395,7 +395,7 @@ export function droppables() {
         });
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
       // Start dragging
@@ -506,7 +506,7 @@ export function droppables() {
         });
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
       // Start dragging

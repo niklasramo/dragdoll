@@ -19,7 +19,7 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
 
 ```ts
 class Draggable {
-  constructor(sensors: Sensor[], options?: Partial<DraggableSettings>) {}
+  constructor(sensors: Sensor[], options?: Partial<DraggableSettings> & { id?: DraggableId }) {}
 }
 ```
 
@@ -30,6 +30,7 @@ class Draggable {
 
 2. **options**
    - An optional [`DraggableSettings`](#settings) object, which you can also change later via [`updateSettings`](#updatesettings) method. You only need to provide the options you want to change, the rest will be left as default.
+   - You can also provide an `id` option, which is the unique identifier for the draggable. A string, number, or symbol. Defaults to a unique symbol. Note that you can't change the id after instantiation, but you can read it anytime from the `draggable.id` property.
 
 ## Settings
 
@@ -249,6 +250,14 @@ A callback that is called when the draggable is destroyed via [`destroy`](#destr
 This callback is called immediately _after_ any `destroy` events that are added via [`on`](#on) method.
 
 ## Properties
+
+### id
+
+```ts
+type id = string | number | symbol;
+```
+
+The unique identifier for this draggable. Defaults to a unique symbol. Read-only.
 
 ### sensors
 

@@ -1,5 +1,5 @@
 import type { Draggable } from '../draggable/draggable.js';
-import type { Droppable } from '../droppable/droppable.js';
+import type { Droppable, DroppableId } from '../droppable/droppable.js';
 import type { DndContext } from './dnd-context.js';
 import { FastObjectPool } from '../utils/fast-object-pool.js';
 import { getIntersectionRect } from '../utils/get-intersection-rect.js';
@@ -11,8 +11,12 @@ import { Rect } from '../types.js';
 // to the pool cache.
 const MAX_CACHED_COLLISIONS = 20;
 
+// TODO: Should we use droppable references instead of id? Using the reference
+// is a bit more work, but not much, as we'd need to clean up the old references
+// on each collision detection cycle. However, it would improve DX quite a bit
+// if we could provide the droppable reference instead of id.
 export interface CollisionData {
-  droppableId: Symbol;
+  droppableId: DroppableId;
   droppableRect: Rect;
   draggableRect: Rect;
   intersectionRect: Rect;
@@ -129,7 +133,11 @@ export class CollisionDetector<T extends CollisionData = CollisionData> {
     }
   }
 
-  detectCollisions(draggable: Draggable<any>, targets: Map<Symbol, Droppable>, collisions: T[]) {
+  detectCollisions(
+    draggable: Draggable<any>,
+    targets: Map<DroppableId, Droppable>,
+    collisions: T[],
+  ) {
     // Reset the collisions array and colliding droppables set.
     collisions.length = 0;
 

@@ -40,7 +40,7 @@ export function events() {
         events.push('end');
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
       await startDrag(dragElement);
@@ -84,7 +84,7 @@ export function events() {
         events.push('move');
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
       await startDrag(dragElement);
@@ -157,7 +157,7 @@ export function events() {
         });
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
       // Start dragging (no collision initially)
@@ -229,7 +229,7 @@ export function events() {
         events.push('end');
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
       // Start dragging (should be overlapping)
@@ -250,8 +250,8 @@ export function events() {
       dropElement.remove();
     });
 
-    it('should emit addDraggable and removeDraggable events', () => {
-      const events: Array<{ type: string; draggable: any }> = [];
+    it('should emit addDraggables and removeDraggables events', () => {
+      const events: Array<{ type: string; draggables: ReadonlySet<Draggable<any>> }> = [];
       const dragElement = createTestElement();
 
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
@@ -262,27 +262,27 @@ export function events() {
 
       const dndContext = new DndContext();
 
-      dndContext.on('addDraggable', (data) => {
-        events.push({ type: 'addDraggable', draggable: data.draggable });
+      dndContext.on('addDraggables', (data) => {
+        events.push({ type: 'addDraggables', draggables: data.draggables });
       });
 
-      dndContext.on('removeDraggable', (data) => {
-        events.push({ type: 'removeDraggable', draggable: data.draggable });
+      dndContext.on('removeDraggables', (data) => {
+        events.push({ type: 'removeDraggables', draggables: data.draggables });
       });
 
       // Add draggable
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
 
       assert.equal(events.length, 1);
-      assert.equal(events[0].type, 'addDraggable');
-      assert.equal(events[0].draggable, draggable);
+      assert.equal(events[0].type, 'addDraggables');
+      assert.equal(events[0].draggables.has(draggable), true);
 
       // Remove draggable
-      dndContext.removeDraggable(draggable);
+      dndContext.removeDraggables([draggable]);
 
       assert.equal(events.length, 2);
-      assert.equal(events[1].type, 'removeDraggable');
-      assert.equal(events[1].draggable, draggable);
+      assert.equal(events[1].type, 'removeDraggables');
+      assert.equal(events[1].draggables.has(draggable), true);
 
       // Cleanup
       dndContext.destroy();
@@ -333,7 +333,7 @@ export function events() {
       dropElement.remove();
     });
 
-    it('should emit end with isCancelled=true when drag is cancelled', async () => {
+    it('should emit end with canceled=true when drag is cancelled', async () => {
       const events: string[] = [];
       const dragElement = createTestElement();
 
@@ -347,11 +347,11 @@ export function events() {
 
       dndContext.on('end', (data) => {
         assert.equal(data.draggable, draggable);
-        assert.isTrue(data.isCancelled);
+        assert.isTrue(data.canceled);
         events.push('end');
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
 
       // Start dragging
       await startDrag(dragElement);
@@ -402,7 +402,7 @@ export function events() {
       ctx.on('enter', () => order.push('enter'));
       ctx.on('collide', () => order.push('collide'));
 
-      ctx.addDraggable(draggable);
+      ctx.addDraggables([draggable]);
       ctx.addDroppables([droppableA, droppableB]);
 
       await startDrag(dragEl);
@@ -442,13 +442,13 @@ export function events() {
         assert.isAtLeast(collisions.length, 1);
       });
 
-      ctx.on('end', ({ isCancelled, collisions }) => {
+      ctx.on('end', ({ canceled, collisions }) => {
         events.push('end');
-        assert.isFalse(isCancelled);
+        assert.isFalse(canceled);
         assert.isAtLeast(collisions.length, 1);
       });
 
-      ctx.addDraggable(draggable);
+      ctx.addDraggables([draggable]);
       ctx.addDroppables([droppable]);
 
       await startDrag(dragEl);
@@ -479,7 +479,7 @@ export function events() {
 
       ctx.on('enter', () => events.push('enter'));
 
-      ctx.addDraggable(draggable);
+      ctx.addDraggables([draggable]);
       ctx.addDroppables([droppable]);
 
       await startDrag(dragEl);
@@ -521,7 +521,7 @@ export function events() {
         events.push('end');
       });
 
-      ctx.addDraggable(draggable);
+      ctx.addDraggables([draggable]);
       ctx.addDroppables([droppable]);
 
       await startDrag(dragEl);
@@ -569,7 +569,7 @@ export function events() {
         seen.push({ phase: 'end', value: data!.data.counter });
       });
 
-      ctx.addDraggable(draggable);
+      ctx.addDraggables([draggable]);
       ctx.addDroppables([droppable]);
 
       await startDrag(dragEl);

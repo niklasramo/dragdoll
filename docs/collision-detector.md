@@ -84,7 +84,7 @@ class CollisionDetector<T extends CollisionData = CollisionData> {
 ```ts
 detectCollisions(
   draggable: Draggable<any>,
-  targets: Map<Symbol, Droppable>,
+  targets: Map<DroppableId, Droppable>,
   collisions: T[],
 ): void
 ```

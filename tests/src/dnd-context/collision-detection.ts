@@ -50,7 +50,7 @@ export function collisionDetection() {
         });
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
       // Start dragging (elements should be overlapping)
@@ -120,7 +120,7 @@ export function collisionDetection() {
         });
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
       // Start dragging (elements should not be overlapping)
@@ -181,7 +181,7 @@ export function collisionDetection() {
         collisionEvents.push({ type: 'leave', collisions: data.collisions.length });
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
       // Start dragging (no collision initially)
@@ -276,7 +276,7 @@ export function collisionDetection() {
         });
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable1, droppable2]);
 
       // Start dragging (should collide with droppable1)
@@ -349,7 +349,7 @@ export function collisionDetection() {
         collisionEvents.push({ type: 'enter' });
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
       // Start dragging (elements overlap but droppable doesn't accept this group)
@@ -442,7 +442,7 @@ export function collisionDetection() {
         });
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
       // Start dragging
@@ -495,7 +495,7 @@ export function collisionDetection() {
 
       const dndContext = new DndContext();
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
       // Get initial client rect
@@ -568,7 +568,7 @@ export function collisionDetection() {
         collisionData = data.collisions.find((c) => c.droppableId === droppable.id) || null;
       });
 
-      dndContext.addDraggable(draggable);
+      dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
       // Start dragging

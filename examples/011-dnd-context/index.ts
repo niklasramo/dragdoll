@@ -35,7 +35,7 @@ draggableElements.forEach((element) => {
       element.classList.remove('dragging');
     },
   });
-  dndContext.addDraggable(draggable);
+  dndContext.addDraggables([draggable]);
 });
 
 // DnD logic

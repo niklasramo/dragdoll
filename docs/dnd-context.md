@@ -26,8 +26,8 @@ const droppable = new Droppable(dropZoneElement, {
 });
 
 // Add draggables and droppables to the context.
-dndContext.addDraggable(draggable);
-dndContext.addDroppable(droppable);
+dndContext.addDraggables([draggable]);
+dndContext.addDroppables([droppable]);
 
 // Listen to events.
 dndContext.on('start', ({ draggable, targets }) => {
@@ -64,8 +64,8 @@ dndContext.on(
     });
   },
 );
-dndContext.on('end', ({ isCancelled, draggable, targets, collisions, contacts }) => {
-  console.log('End', { isCancelled, draggable, targets, collisions, contacts });
+dndContext.on('end', ({ canceled, draggable, targets, collisions, contacts }) => {
+  console.log('End', { canceled, draggable, targets, collisions, contacts });
 });
 ```
 
@@ -93,18 +93,18 @@ class DndContext {
 ### draggables
 
 ```ts
-readonly draggables: ReadonlySet<Draggable<any>>;
+readonly draggables: ReadonlyMap<DraggableId, Draggable<any>>;
 ```
 
-A read-only set containing all registered draggable instances.
+A read-only map containing all registered draggable instances, keyed by their unique ID.
 
 ### droppables
 
 ```ts
-readonly droppables: ReadonlyMap<Symbol, Droppable>;
+readonly droppables: ReadonlyMap<DroppableId, Droppable>;
 ```
 
-A read-only map containing all registered droppable instances, keyed by their unique symbol IDs.
+A read-only map containing all registered droppable instances, keyed by their unique ID.
 
 ### drags
 
@@ -159,59 +159,59 @@ dndContext.off('drop', id);
 
 Removes an event listener from the DndContext based on its listener id.
 
-### addDraggable
+### addDraggables
 
 ```ts
 // Type
-type addDraggable = (draggable: Draggable<any>) => void;
+type addDraggables = (draggables: Draggable<any>[] | Set<Draggable<any>>) => void;
 
 // Usage
-dndContext.addDraggable(draggable);
+dndContext.addDraggables([draggable]);
 ```
 
-Registers a draggable instance with the context. This adds the draggable to the internal registry, binds to its events, and emits the `addDraggable` event.
+Registers one or more draggable instances with the context. This adds the draggables to the internal registry, binds to their events, and emits the `addDraggables` event.
 
-If the draggable is being dragged when it is added to the context, dnd context will try to start the drag process for the draggable automatically so that it can start emitting dnd context's events.
+If any of the draggables are already being dragged, dnd context will start the drag process for them manually.
 
-### removeDraggable
+### removeDraggables
 
 ```ts
 // Type
-type removeDraggable = (draggable: Draggable<any>) => void;
+type removeDraggables = (draggables: Draggable<any>[] | Set<Draggable<any>>) => void;
 
 // Usage
-dndContext.removeDraggable(draggable);
+dndContext.removeDraggables([draggable]);
 ```
 
-Deregisters a draggable instance from the context. This removes all bound event listeners, cleans up drag data, and emits the appropriate events.
+Deregisters one or more draggable instances from the context. This removes all bound event listeners, cleans up drag data, and emits the appropriate events.
 
-### addDroppable
+### addDroppables
 
 ```ts
 // Type
-type addDroppable = (droppable: Droppable) => void;
+type addDroppables = (droppables: Droppable[] | Set<Droppable>) => void;
 
 // Usage
-dndContext.addDroppable(droppable);
+dndContext.addDroppables(droppables);
 ```
 
-Registers a droppable with the context. This adds it to the internal registry, binds its destroy event, and updates any active draggables with the new droppable as a potential target.
+Registers one or more droppables with the context. This adds them to the internal registry, binds their destroy event, and updates any active draggables with the new droppables as potential targets.
 
-If any active draggable now matches the newly added droppable, a collision check is _queued_ automatically.
+If any active draggable now matches the newly added droppables, a collision check is _queued_ automatically.
 
-### removeDroppable
+### removeDroppables
 
 ```ts
 // Type
-type removeDroppable = (droppable: Droppable) => void;
+type removeDroppables = (droppables: Droppable[] | Set<Droppable>) => void;
 
 // Usage
-dndContext.removeDroppable(droppable);
+dndContext.removeDroppables(droppables);
 ```
 
-Deregisters a droppable from the context. This removes it from the internal registry, unbinds its destroy event, and updates affected draggables by removing the droppable from their targets.
+Deregisters one or more droppables from the context. This removes them from the internal registry, unbinds their destroy event, and updates affected draggables by removing the droppables from their targets.
 
-If any active draggable had an ongoing collision with the removed droppable, a collision check is queued automatically, which may emit `leave` events on the next tick.
+If any active draggable had an ongoing collision with the removed droppables, a collision check is queued automatically, which may emit `leave` events on the next tick.
 
 ### updateDroppableClientRects
 
@@ -279,7 +279,10 @@ In practice this means that you should not store the event data objects in your 
 ### start
 
 ```ts
-type start = (data: { draggable: Draggable<any>; targets: ReadonlyMap<Symbol, Droppable> }) => void;
+type start = (data: {
+  draggable: Draggable<any>;
+  targets: ReadonlyMap<DroppableId, Droppable>;
+}) => void;
 ```
 
 Emitted when a draggable starts dragging.
@@ -292,7 +295,10 @@ Emitted when a draggable starts dragging.
 ### move
 
 ```ts
-type move = (data: { draggable: Draggable<any>; targets: ReadonlyMap<Symbol, Droppable> }) => void;
+type move = (data: {
+  draggable: Draggable<any>;
+  targets: ReadonlyMap<DroppableId, Droppable>;
+}) => void;
 ```
 
 Emitted when a draggable moves during dragging.
@@ -307,7 +313,7 @@ Emitted when a draggable moves during dragging.
 ```ts
 type enter = (data: {
   draggable: Draggable<any>;
-  targets: ReadonlyMap<Symbol, Droppable>;
+  targets: ReadonlyMap<DroppableId, Droppable>;
   collisions: ReadonlyArray<CollisionData>;
   contacts: ReadonlySet<Droppable>;
   addedContacts: ReadonlySet<Droppable>;
@@ -319,7 +325,7 @@ Emitted when a draggable first collides with one or more droppables.
 **Event Data:**
 
 - `draggable` - The draggable instance that entered collision with droppables.
-- `targets` - Map (read-only) of all droppable instances that accept this draggable.
+- `targets` - Map (read-only) of all droppable instances that accept this draggable. Keyed by `droppable.id`.
 - `collisions` - Array (read-only) of collision data for all current collisions (includes the newly added ones). Each collision contains `droppableId`.
 - `contacts` - Set (read-only) of droppable instances currently in collision.
 - `addedContacts` - Set (read-only) of droppable instances that newly entered collision in this cycle.
@@ -329,7 +335,7 @@ Emitted when a draggable first collides with one or more droppables.
 ```ts
 type leave = (data: {
   draggable: Draggable<any>;
-  targets: ReadonlyMap<Symbol, Droppable>;
+  targets: ReadonlyMap<DroppableId, Droppable>;
   collisions: ReadonlyArray<CollisionData>;
   contacts: ReadonlySet<Droppable>;
   removedContacts: ReadonlySet<Droppable>;
@@ -341,7 +347,7 @@ Emitted when a draggable stops colliding with one or more droppables.
 **Event Data:**
 
 - `draggable` - The draggable instance that left collision with droppables.
-- `targets` - Map (read-only) of all droppable instances that accept this draggable.
+- `targets` - Map (read-only) of all droppable instances that accept this draggable. Keyed by `droppable.id`.
 - `collisions` - Array (read-only) of collision data for current collisions (excludes removed ones). Each collision contains `droppableId`.
 - `contacts` - Set (read-only) of droppable instances currently in collision.
 - `removedContacts` - Set (read-only) of droppables that exited collision in this cycle.
@@ -351,7 +357,7 @@ Emitted when a draggable stops colliding with one or more droppables.
 ```ts
 type collide = (data: {
   draggable: Draggable<any>;
-  targets: ReadonlyMap<Symbol, Droppable>;
+  targets: ReadonlyMap<DroppableId, Droppable>;
   collisions: ReadonlyArray<CollisionData>;
   contacts: ReadonlySet<Droppable>;
   addedContacts: ReadonlySet<Droppable>;
@@ -365,7 +371,7 @@ Emitted each collision cycle if there are any current collisions or removed coll
 **Event Data:**
 
 - `draggable` - The draggable instance for this cycle.
-- `targets` - Map (read-only) of all droppable instances that accept this draggable.
+- `targets` - Map (read-only) of all droppable instances that accept this draggable. Keyed by `droppable.id`.
 - `collisions` - Array (read-only) of collision data for current collisions.
 - `contacts` - Set (read-only) of droppable instances currently in collision.
 - `addedContacts` - Set (read-only) of droppables newly entered this cycle.
@@ -376,71 +382,71 @@ Emitted each collision cycle if there are any current collisions or removed coll
 
 ```ts
 type end = (data: {
-  isCancelled: boolean;
+  canceled: boolean;
   draggable: Draggable<any>;
-  targets: ReadonlyMap<Symbol, Droppable>;
+  targets: ReadonlyMap<DroppableId, Droppable>;
   collisions: ReadonlyArray<CollisionData>;
   contacts: ReadonlySet<Droppable>;
 }) => void;
 ```
 
-Emitted when the drag ends, regardless of whether there are active collisions. If `isCancelled` is `true`, the drag ended due to cancellation. When ending during an ongoing collision emission, the `end` event is still emitted synchronously; cleanup is deferred to a microtask to keep event data intact for the current cycle.
+Emitted when the drag ends, regardless of whether there are active collisions. If `canceled` is `true`, the drag ended due to cancellation. When ending during an ongoing collision emission, the `end` event is still emitted synchronously; cleanup is deferred to a microtask to keep event data intact for the current cycle.
 
 **Event Data:**
 
-- `isCancelled` - Whether the drag ended due to cancellation.
+- `canceled` - Whether the drag ended due to cancellation.
 - `draggable` - The draggable instance that ended dragging.
-- `targets` - Map (read-only) of all droppable instances that accept this draggable.
+- `targets` - Map (read-only) of all droppable instances that accept this draggable. Keyed by `droppable.id`.
 - `collisions` - Array (read-only) of collision data captured at the time of end.
 - `contacts` - Set (read-only) of droppable instances currently in collision at the time of end.
 
-### addDraggable
+### addDraggables
 
 ```ts
-type addDraggable = (data: { draggable: Draggable<any> }) => void;
+type addDraggables = (data: { draggables: ReadonlySet<Draggable<any>> }) => void;
 ```
 
-Emitted when a draggable is registered with the context.
+Emitted when one or more draggables are registered with the context.
 
 **Event Data:**
 
 - `draggable` - The draggable instance that was added to the context.
 
-### removeDraggable
+### removeDraggables
 
 ```ts
-type removeDraggable = (data: { draggable: Draggable<any> }) => void;
+type removeDraggables = (data: { draggables: ReadonlySet<Draggable<any>> }) => void;
 ```
 
-Emitted when a draggable is deregistered from the context.
+Emitted when one or more draggables are deregistered from the context.
 
 **Event Data:**
 
 - `draggable` - The draggable instance that was removed from the context.
 
-### addDroppable
+### addDroppables
 
 ```ts
-type addDroppable = (data: { droppable: Droppable }) => void;
+type addDroppables = (data: { droppables: ReadonlySet<Droppable> }) => void;
 ```
 
-Emitted when a droppable is registered with the context.
+Emitted when one or more droppables are registered with the context.
 
 **Event Data:**
 
-- `droppable` - The droppable instance that was added to the context.
+- `droppables` - Set (read-only) of droppable instances that were added to the context.
 
-### removeDroppable
+### removeDroppables
 
 ```ts
-type removeDroppable = (data: { droppable: Droppable }) => void;
+type removeDroppables = (data: { droppables: ReadonlySet<Droppable> }) => void;
 ```
 
-Emitted when a droppable is deregistered from the context.
+Emitted when one or more droppables are deregistered from the context.
 
 **Event Data:**
 
-- `droppable` - The droppable instance that was removed from the context.
+- `droppables` - Set (read-only) of droppable instances that were removed from the context.
 
 ### destroy
 

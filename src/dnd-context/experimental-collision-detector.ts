@@ -1,3 +1,5 @@
+/* EXPERIMENTAL- NEEDS REFACTORING AND OPTIMIZATION */
+
 import type { DndContext } from './dnd-context.js';
 import type { CollisionData } from './collision-detector.js';
 import type { Draggable } from '../draggable/draggable.js';
@@ -24,7 +26,7 @@ import { getScrollableAncestors } from '../utils/get-scrollable-ancestors.js';
 //    scroll listener and read tick.
 // 4. Add a method to recompute all the cached stuff synchronously for cases
 //    where the scrollable ancestors change.
-// 5. In general it makes would be nice to have the following extra methods to
+// 5. In general it would be nice to have the following extra methods to
 //    the collision detector:
 //    - createCache: called on drag start before initial detectCollisions.
 //    - clearCache: called on drag end/cancel or dnd context destroy.

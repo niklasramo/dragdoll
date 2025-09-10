@@ -35,6 +35,9 @@ new Droppable(element: HTMLElement | SVGSVGElement, options?: DroppableOptions);
 
 2. **options**
    - An optional options object with the following properties:
+     - **`id`**
+       - The unique identifier for this droppable. A string, number, or symbol.
+       - Default: a unique symbol.
      - **`accept`**
        - Either an array of drop target identifiers (strings, numbers, symbols) or a
          function that takes a draggable instance and returns a boolean.
@@ -44,6 +47,14 @@ new Droppable(element: HTMLElement | SVGSVGElement, options?: DroppableOptions);
        - Default: an empty object.
 
 ## Properties
+
+### id
+
+```ts
+type id = string | number | symbol;
+```
+
+The unique identifier for this droppable. Defaults to a unique symbol. Read-only.
 
 ### element
 
