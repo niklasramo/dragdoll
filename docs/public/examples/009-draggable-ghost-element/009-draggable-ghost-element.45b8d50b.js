@@ -3998,11 +3998,23 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     get drags() {
         return this._drags;
     }
+    _isMatch(draggable, droppable) {
+        let isMatch = typeof droppable.accept === 'function' ? droppable.accept(draggable) : droppable.accept.includes(draggable.settings.group);
+        // Make sure that none of the draggable's elements match the droppable's
+        // element.
+        if (isMatch && draggable.drag) {
+            const items = draggable.drag.items;
+            for(let i = 0; i < items.length; i++){
+                if (items[i].element === droppable.element) return false;
+            }
+        }
+        return isMatch;
+    }
     _getTargets(draggable) {
         const drag = this._drags.get(draggable);
         if (drag?._targets) return drag._targets;
         const targets = new Map();
-        for (const droppable of this.droppables.values())if (this.isMatch(draggable, droppable)) targets.set(droppable.id, droppable);
+        for (const droppable of this.droppables.values())if (this._isMatch(draggable, droppable)) targets.set(droppable.id, droppable);
         if (drag) drag._targets = targets;
         return targets;
     }
@@ -4268,18 +4280,6 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     updateDroppableClientRects() {
         for (const droppable of this.droppables.values())droppable.updateClientRect();
     }
-    isMatch(draggable, droppable) {
-        let isMatch = typeof droppable.accept === 'function' ? droppable.accept(draggable) : droppable.accept.includes(draggable.settings.group);
-        // Make sure that none of the draggable's elements match the droppable's
-        // element.
-        if (isMatch && draggable.drag) {
-            const items = draggable.drag.items;
-            for(let i = 0; i < items.length; i++){
-                if (items[i].element === droppable.element) return false;
-            }
-        }
-        return isMatch;
-    }
     clearTargets(draggable) {
         if (draggable) {
             const drag = this._drags.get(draggable);
@@ -4359,9 +4359,11 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
             draggable.off((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).Move, this._listenerId);
             draggable.off((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).End, this._listenerId);
             draggable.off((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).Destroy, this._listenerId);
-            // Cancel the drag.
-            this._stopDrag(draggable, true);
         }
+        // Cancel the drag.
+        // NB: We need to do this after first removing the draggables from the
+        // registry to avoid calling removeDraggables more than once per draggable.
+        for (const draggable of removedDraggables)this._stopDrag(draggable, true);
         // Emit "removeDraggables" event.
         if (this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.RemoveDraggables)) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.RemoveDraggables, {
             draggables: removedDraggables
@@ -4386,7 +4388,7 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
             // Add the droppable to the targets of all currently dragged draggables,
             // where the droppable is a valid target.
             this._drags.forEach(({ _targets: _targets }, draggable)=>{
-                if (_targets && this.isMatch(draggable, droppable)) {
+                if (_targets && this._isMatch(draggable, droppable)) {
                     _targets.set(droppable.id, droppable);
                     this.detectCollisions(draggable);
                 }
@@ -4463,37 +4465,49 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
-const $9d29fe00413f3681$var$draggableElements = [
-    ...document.querySelectorAll('.draggable')
-];
-$9d29fe00413f3681$var$draggableElements.forEach((element)=>{
-    const otherElements = $9d29fe00413f3681$var$draggableElements.filter((el)=>el !== element);
-    const pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element);
-    const keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)(element);
-    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-        pointerSensor,
-        keyboardSensor
-    ], {
-        elements: ()=>{
-            return [
-                element,
-                ...otherElements
-            ];
-        },
-        startPredicate: ()=>{
-            return !element.classList.contains('dragging');
-        },
-        onStart: (drag)=>{
-            drag.items.forEach((item)=>{
-                item.element.classList.add('dragging');
-            });
-        },
-        onEnd: (drag)=>{
-            drag.items.forEach((item)=>{
-                item.element.classList.remove('dragging');
-            });
-        }
-    });
+const $fbef1913897e270e$var$element = document.querySelector('.draggable');
+const $fbef1913897e270e$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($fbef1913897e270e$var$element);
+const $fbef1913897e270e$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($fbef1913897e270e$var$element);
+const $fbef1913897e270e$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $fbef1913897e270e$var$pointerSensor,
+    $fbef1913897e270e$var$keyboardSensor
+], {
+    elements: ()=>{
+        // Clone the element and align the clone with the original element.
+        const elemRect = $fbef1913897e270e$var$element.getBoundingClientRect();
+        const clone = $fbef1913897e270e$var$element.cloneNode(true);
+        clone.style.position = 'fixed';
+        clone.style.width = `${elemRect.width}px`;
+        clone.style.height = `${elemRect.height}px`;
+        clone.style.left = `${elemRect.left}px`;
+        clone.style.top = `${elemRect.top}px`;
+        // Add the ghost and dragging class to the clone. The ghost element will be
+        // in dragging state for the duration of it's existence.
+        clone.classList.add('ghost', 'dragging');
+        // We need to reset the transform to avoid the ghost element being offset
+        // unintentionally. In this specific case, if we don't reset the transform,
+        // the ghost element will be offset by the original element's transform.
+        clone.style.transform = '';
+        // Append the ghost element to the body.
+        document.body.appendChild(clone);
+        return [
+            clone
+        ];
+    },
+    onStart: ()=>{
+        $fbef1913897e270e$var$element.classList.add('dragging');
+    },
+    onEnd: (drag)=>{
+        const dragItem = drag.items[0];
+        // Move the original element to the ghost element's position. We use DOMMatrix
+        // to first combine the original element's transform with the ghost element's
+        // transform and then apply the combined transform to the original element.
+        const matrix = new DOMMatrix().setMatrixValue(`translate(${dragItem.position.x}px, ${dragItem.position.y}px) ${$fbef1913897e270e$var$element.style.transform}`);
+        $fbef1913897e270e$var$element.style.transform = `${matrix}`;
+        // Remove the ghost element.
+        dragItem.element.remove();
+        $fbef1913897e270e$var$element.classList.remove('dragging');
+    }
 });
 
 

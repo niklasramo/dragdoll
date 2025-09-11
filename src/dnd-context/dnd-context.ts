@@ -162,13 +162,33 @@ export class DndContext<T extends CollisionData = CollisionData> {
     return this._drags as ReadonlyMap<Draggable<any>, DndContextDragData>;
   }
 
+  protected _isMatch(draggable: Draggable<any>, droppable: Droppable) {
+    let isMatch =
+      typeof droppable.accept === 'function'
+        ? droppable.accept(draggable)
+        : droppable.accept.includes(draggable.settings.group as any);
+
+    // Make sure that none of the draggable's elements match the droppable's
+    // element.
+    if (isMatch && draggable.drag) {
+      const items = draggable.drag.items;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].element === droppable.element) {
+          return false;
+        }
+      }
+    }
+
+    return isMatch;
+  }
+
   protected _getTargets(draggable: Draggable<any>) {
     const drag = this._drags.get(draggable);
     if (drag?._targets) return drag._targets;
 
     const targets = new Map<DroppableId, Droppable>();
     for (const droppable of this.droppables.values()) {
-      if (this.isMatch(draggable, droppable)) {
+      if (this._isMatch(draggable, droppable)) {
         targets.set(droppable.id, droppable);
       }
     }
@@ -531,26 +551,6 @@ export class DndContext<T extends CollisionData = CollisionData> {
     }
   }
 
-  isMatch(draggable: Draggable<any>, droppable: Droppable) {
-    let isMatch =
-      typeof droppable.accept === 'function'
-        ? droppable.accept(draggable)
-        : droppable.accept.includes(draggable.settings.group as any);
-
-    // Make sure that none of the draggable's elements match the droppable's
-    // element.
-    if (isMatch && draggable.drag) {
-      const items = draggable.drag.items;
-      for (let i = 0; i < items.length; i++) {
-        if (items[i].element === droppable.element) {
-          return false;
-        }
-      }
-    }
-
-    return isMatch;
-  }
-
   clearTargets(draggable?: Draggable<any>) {
     if (draggable) {
       const drag = this._drags.get(draggable);
@@ -687,8 +687,12 @@ export class DndContext<T extends CollisionData = CollisionData> {
       draggable.off(DraggableEventType.Move, this._listenerId);
       draggable.off(DraggableEventType.End, this._listenerId);
       draggable.off(DraggableEventType.Destroy, this._listenerId);
+    }
 
-      // Cancel the drag.
+    // Cancel the drag.
+    // NB: We need to do this after first removing the draggables from the
+    // registry to avoid calling removeDraggables more than once per draggable.
+    for (const draggable of removedDraggables) {
       this._stopDrag(draggable, true);
     }
 
@@ -725,7 +729,7 @@ export class DndContext<T extends CollisionData = CollisionData> {
       // Add the droppable to the targets of all currently dragged draggables,
       // where the droppable is a valid target.
       this._drags.forEach(({ _targets }, draggable) => {
-        if (_targets && this.isMatch(draggable, droppable)) {
+        if (_targets && this._isMatch(draggable, droppable)) {
           _targets.set(droppable.id, droppable);
           this.detectCollisions(draggable);
         }

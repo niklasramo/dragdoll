@@ -6,7 +6,7 @@ import { startDrag } from '../utils/keyboard-helpers.js';
 import { DndContext, Draggable, Droppable, KeyboardSensor } from '../../../src/index.js';
 
 export function methods() {
-  describe('methods', () => {
+  describe('public methods', () => {
     it('on/off should add and remove listeners by id', async () => {
       const calls: string[] = [];
 
@@ -176,8 +176,10 @@ export function methods() {
       droppable.destroy();
       el.remove();
     });
+  });
 
-    it('isMatch should return false when dragged element equals droppable.element', async () => {
+  describe('protected methods', () => {
+    it('_isMatch should return false when dragged element equals droppable.element', async () => {
       const el = createTestElement({ left: '0px', top: '0px', width: '40px', height: '40px' });
       const sensor = new KeyboardSensor(el, { moveDistance: 10 });
       const draggable = new Draggable([sensor], { elements: () => [el], group: 'g' });
@@ -189,7 +191,7 @@ export function methods() {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
       await waitNextFrame();
 
-      assert.isFalse(ctx.isMatch(draggable, droppable));
+      assert.isFalse(ctx['_isMatch'](draggable, droppable));
 
       ctx.destroy();
       draggable.destroy();
@@ -198,7 +200,7 @@ export function methods() {
       el.remove();
     });
 
-    it('isMatch should respect droppable.accept function', async () => {
+    it('_isMatch should respect droppable.accept function', async () => {
       const dragEl = createTestElement();
       const dropEl = createTestElement();
       const sensor = new KeyboardSensor(dragEl, { moveDistance: 10 });
@@ -206,10 +208,10 @@ export function methods() {
       const droppable = new Droppable(dropEl, { accept: () => false });
       const ctx = new DndContext();
 
-      assert.isFalse(ctx.isMatch(draggable, droppable));
+      assert.isFalse(ctx['_isMatch'](draggable, droppable));
 
       droppable.accept = () => true;
-      assert.isTrue(ctx.isMatch(draggable, droppable));
+      assert.isTrue(ctx['_isMatch'](draggable, droppable));
 
       ctx.destroy();
       draggable.destroy();

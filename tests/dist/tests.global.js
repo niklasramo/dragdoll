@@ -7112,12 +7112,24 @@
     get drags() {
       return this._drags;
     }
+    _isMatch(draggable, droppable) {
+      let isMatch = typeof droppable.accept === "function" ? droppable.accept(draggable) : droppable.accept.includes(draggable.settings.group);
+      if (isMatch && draggable.drag) {
+        const items = draggable.drag.items;
+        for (let i = 0; i < items.length; i++) {
+          if (items[i].element === droppable.element) {
+            return false;
+          }
+        }
+      }
+      return isMatch;
+    }
     _getTargets(draggable) {
       const drag = this._drags.get(draggable);
       if (drag?._targets) return drag._targets;
       const targets = /* @__PURE__ */ new Map();
       for (const droppable of this.droppables.values()) {
-        if (this.isMatch(draggable, droppable)) {
+        if (this._isMatch(draggable, droppable)) {
           targets.set(droppable.id, droppable);
         }
       }
@@ -7330,18 +7342,6 @@
         droppable.updateClientRect();
       }
     }
-    isMatch(draggable, droppable) {
-      let isMatch = typeof droppable.accept === "function" ? droppable.accept(draggable) : droppable.accept.includes(draggable.settings.group);
-      if (isMatch && draggable.drag) {
-        const items = draggable.drag.items;
-        for (let i = 0; i < items.length; i++) {
-          if (items[i].element === droppable.element) {
-            return false;
-          }
-        }
-      }
-      return isMatch;
-    }
     clearTargets(draggable) {
       if (draggable) {
         const drag = this._drags.get(draggable);
@@ -7446,6 +7446,8 @@
         draggable.off(DraggableEventType.Move, this._listenerId);
         draggable.off(DraggableEventType.End, this._listenerId);
         draggable.off(DraggableEventType.Destroy, this._listenerId);
+      }
+      for (const draggable of removedDraggables) {
         this._stopDrag(draggable, true);
       }
       if (this._emitter.listenerCount(DndContextEventType.RemoveDraggables)) {
@@ -7467,7 +7469,7 @@
           this._listenerId
         );
         this._drags.forEach(({ _targets }, draggable) => {
-          if (_targets && this.isMatch(draggable, droppable)) {
+          if (_targets && this._isMatch(draggable, droppable)) {
             _targets.set(droppable.id, droppable);
             this.detectCollisions(draggable);
           }
@@ -12644,7 +12646,7 @@
 
   // tests/src/dnd-context/methods.ts
   function methods5() {
-    describe("methods", () => {
+    describe("public methods", () => {
       it("on/off should add and remove listeners by id", async () => {
         const calls = [];
         const dragElement = createTestElement();
@@ -12774,7 +12776,9 @@
         droppable.destroy();
         el.remove();
       });
-      it("isMatch should return false when dragged element equals droppable.element", async () => {
+    });
+    describe("protected methods", () => {
+      it("_isMatch should return false when dragged element equals droppable.element", async () => {
         const el = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
         const sensor = new KeyboardSensor(el, { moveDistance: 10 });
         const draggable = new Draggable([sensor], { elements: () => [el], group: "g" });
@@ -12783,23 +12787,23 @@
         focusElement(el);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
         await waitNextFrame();
-        assert.isFalse(ctx.isMatch(draggable, droppable));
+        assert.isFalse(ctx["_isMatch"](draggable, droppable));
         ctx.destroy();
         draggable.destroy();
         droppable.destroy();
         sensor.destroy();
         el.remove();
       });
-      it("isMatch should respect droppable.accept function", async () => {
+      it("_isMatch should respect droppable.accept function", async () => {
         const dragEl = createTestElement();
         const dropEl = createTestElement();
         const sensor = new KeyboardSensor(dragEl, { moveDistance: 10 });
         const draggable = new Draggable([sensor], { elements: () => [dragEl], group: "g" });
         const droppable = new Droppable(dropEl, { accept: () => false });
         const ctx = new DndContext();
-        assert.isFalse(ctx.isMatch(draggable, droppable));
+        assert.isFalse(ctx["_isMatch"](draggable, droppable));
         droppable.accept = () => true;
-        assert.isTrue(ctx.isMatch(draggable, droppable));
+        assert.isTrue(ctx["_isMatch"](draggable, droppable));
         ctx.destroy();
         draggable.destroy();
         droppable.destroy();

@@ -925,6 +925,7 @@ declare class DndContext<T extends CollisionData = CollisionData> {
     }>;
     constructor(options?: DndContextOptions<T>);
     get drags(): ReadonlyMap<Draggable<any>, DndContextDragData>;
+    protected _isMatch(draggable: Draggable<any>, droppable: Droppable): boolean;
     protected _getTargets(draggable: Draggable<any>): Map<DroppableId, Droppable>;
     protected _onDragPrepareStart(draggable: Draggable<any>): void;
     protected _onDragStart(draggable: Draggable<any>): void;
@@ -941,7 +942,6 @@ declare class DndContext<T extends CollisionData = CollisionData> {
     on<K extends keyof DndContextEventCallbacks<T>>(type: K, listener: DndContextEventCallbacks<T>[K], listenerId?: EventListenerId): EventListenerId;
     off<K extends keyof DndContextEventCallbacks<T>>(type: K, listenerId: EventListenerId): void;
     updateDroppableClientRects(): void;
-    isMatch(draggable: Draggable<any>, droppable: Droppable): boolean;
     clearTargets(draggable?: Draggable<any>): void;
     detectCollisions(draggable?: Draggable<any>): void;
     addDraggables(draggables: Draggable<any>[] | Set<Draggable<any>>): void;

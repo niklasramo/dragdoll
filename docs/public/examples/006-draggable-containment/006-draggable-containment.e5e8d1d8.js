@@ -3998,11 +3998,23 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     get drags() {
         return this._drags;
     }
+    _isMatch(draggable, droppable) {
+        let isMatch = typeof droppable.accept === 'function' ? droppable.accept(draggable) : droppable.accept.includes(draggable.settings.group);
+        // Make sure that none of the draggable's elements match the droppable's
+        // element.
+        if (isMatch && draggable.drag) {
+            const items = draggable.drag.items;
+            for(let i = 0; i < items.length; i++){
+                if (items[i].element === droppable.element) return false;
+            }
+        }
+        return isMatch;
+    }
     _getTargets(draggable) {
         const drag = this._drags.get(draggable);
         if (drag?._targets) return drag._targets;
         const targets = new Map();
-        for (const droppable of this.droppables.values())if (this.isMatch(draggable, droppable)) targets.set(droppable.id, droppable);
+        for (const droppable of this.droppables.values())if (this._isMatch(draggable, droppable)) targets.set(droppable.id, droppable);
         if (drag) drag._targets = targets;
         return targets;
     }
@@ -4268,18 +4280,6 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
     updateDroppableClientRects() {
         for (const droppable of this.droppables.values())droppable.updateClientRect();
     }
-    isMatch(draggable, droppable) {
-        let isMatch = typeof droppable.accept === 'function' ? droppable.accept(draggable) : droppable.accept.includes(draggable.settings.group);
-        // Make sure that none of the draggable's elements match the droppable's
-        // element.
-        if (isMatch && draggable.drag) {
-            const items = draggable.drag.items;
-            for(let i = 0; i < items.length; i++){
-                if (items[i].element === droppable.element) return false;
-            }
-        }
-        return isMatch;
-    }
     clearTargets(draggable) {
         if (draggable) {
             const drag = this._drags.get(draggable);
@@ -4359,9 +4359,11 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
             draggable.off((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).Move, this._listenerId);
             draggable.off((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).End, this._listenerId);
             draggable.off((0, $0d0c72b4b6dc9dbb$export$a85ab346e352a830).Destroy, this._listenerId);
-            // Cancel the drag.
-            this._stopDrag(draggable, true);
         }
+        // Cancel the drag.
+        // NB: We need to do this after first removing the draggables from the
+        // registry to avoid calling removeDraggables more than once per draggable.
+        for (const draggable of removedDraggables)this._stopDrag(draggable, true);
         // Emit "removeDraggables" event.
         if (this._emitter.listenerCount($fa11c4bc76a2544e$export$360ab8c194eb7385.RemoveDraggables)) this._emitter.emit($fa11c4bc76a2544e$export$360ab8c194eb7385.RemoveDraggables, {
             draggables: removedDraggables
@@ -4386,7 +4388,7 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
             // Add the droppable to the targets of all currently dragged draggables,
             // where the droppable is a valid target.
             this._drags.forEach(({ _targets: _targets }, draggable)=>{
-                if (_targets && this.isMatch(draggable, droppable)) {
+                if (_targets && this._isMatch(draggable, droppable)) {
                     _targets.set(droppable.id, droppable);
                     this.detectCollisions(draggable);
                 }
@@ -4463,95 +4465,31 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
-let $f3affae21016fe5a$var$zIndex = 0;
-// Initialize context and get elements
-const $f3affae21016fe5a$var$dndContext = new (0, $fa11c4bc76a2544e$export$2d5c5ceac203fc1e)();
-const $f3affae21016fe5a$var$draggableElements = [
-    ...document.querySelectorAll('.draggable')
-];
-const $f3affae21016fe5a$var$droppableElements = [
-    ...document.querySelectorAll('.droppable')
-];
-// Create droppables
-$f3affae21016fe5a$var$droppableElements.forEach((element)=>{
-    const droppable = new (0, $8cf3b9f73d8dfc46$export$423ec2075359570a)(element);
-    droppable.data.overIds = new Set();
-    droppable.data.droppedIds = new Set();
-    $f3affae21016fe5a$var$dndContext.addDroppables([
-        droppable
-    ]);
-});
-// Create draggables
-$f3affae21016fe5a$var$draggableElements.forEach((element)=>{
-    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-        new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element),
-        new (0, $7fff4587bd07df96$export$436f6efcc297171)(element)
-    ], {
-        elements: ()=>[
-                element
-            ],
-        startPredicate: ()=>!element.classList.contains('dragging'),
-        onStart: ()=>{
-            element.classList.add('dragging');
-            element.style.zIndex = `${++$f3affae21016fe5a$var$zIndex}`;
-        },
-        onEnd: ()=>{
-            element.classList.remove('dragging');
-        }
-    });
-    $f3affae21016fe5a$var$dndContext.addDraggables([
-        draggable
-    ]);
-});
-// DnD logic
-// On drag start loop through all target droppables and remove the draggable id
-// from the dropped ids set. If the dropped ids set is empty, remove the
-// "draggable-dropped" class from the droppable element.
-$f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Start, (data)=>{
-    const { draggable: draggable, targets: targets } = data;
-    targets.forEach((droppable)=>{
-        droppable.data.droppedIds.delete(draggable.id);
-        if (droppable.data.droppedIds.size === 0) droppable.element.classList.remove('draggable-dropped');
-    });
-});
-// On each collision change, keep track of the overIds set for each droppable
-// and update the "draggable-over" class based on the over ids set.
-$f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Collide, (data)=>{
-    const { draggable: draggable, contacts: contacts, removedContacts: removedContacts } = data;
-    // Remove the draggable id from the droppables that stopped colliding and
-    // remove the "draggable-over" class from the droppable element if there are
-    // no more draggable ids in the over ids set.
-    removedContacts.forEach((target)=>{
-        target.data.overIds.delete(draggable.id);
-        if (target.data.overIds.size === 0) target.element.classList.remove('draggable-over');
-    });
-    // Add the draggable to the first colliding droppable (best match), and remove
-    // the draggable from the other colliding droppables. Update the
-    // "draggable-over" class based on the over ids set.
-    let i = 0;
-    for (const droppable of contacts){
-        if (i === 0) {
-            droppable.data.overIds.add(draggable.id);
-            droppable.element.classList.add('draggable-over');
-        } else {
-            droppable.data.overIds.delete(draggable.id);
-            if (droppable.data.overIds.size === 0) droppable.element.classList.remove('draggable-over');
-        }
-        ++i;
-    }
-});
-$f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).End, (data)=>{
-    const { draggable: draggable, contacts: contacts } = data;
-    // For the first colliding droppable (best match), add the draggable id to the
-    // dropped ids set, add the "draggable-dropped" class to the droppable
-    // element, and remove the draggable id from the over ids set. If the over ids
-    // set is empty, remove the "draggable-over" class from the droppable element.
-    for (const droppable of contacts){
-        droppable.data.droppedIds.add(draggable.id);
-        droppable.element.classList.add('draggable-dropped');
-        droppable.data.overIds.delete(draggable.id);
-        if (droppable.data.overIds.size === 0) droppable.element.classList.remove('draggable-over');
-        return;
+const $f770251f4470ce8a$var$element = document.querySelector('.draggable');
+const $f770251f4470ce8a$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($f770251f4470ce8a$var$element);
+const $f770251f4470ce8a$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($f770251f4470ce8a$var$element);
+const $f770251f4470ce8a$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $f770251f4470ce8a$var$pointerSensor,
+    $f770251f4470ce8a$var$keyboardSensor
+], {
+    elements: ()=>[
+            $f770251f4470ce8a$var$element
+        ],
+    positionModifiers: [
+        (0, $e4a9d189cff00937$export$b43dd221600cdb2e)(()=>{
+            return {
+                x: 0,
+                y: 0,
+                width: window.innerWidth,
+                height: window.innerHeight
+            };
+        })
+    ],
+    onStart: ()=>{
+        $f770251f4470ce8a$var$element.classList.add('dragging');
+    },
+    onEnd: ()=>{
+        $f770251f4470ce8a$var$element.classList.remove('dragging');
     }
 });
 
