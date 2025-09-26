@@ -2302,6 +2302,7 @@ Advanced collision detection with a scrollable droppable list. Here we can see h
 ::: code-group
 
 ```ts [index.ts]
+import { getOffset } from 'mezr';
 import {
   DndContext,
   Draggable,
@@ -2312,37 +2313,44 @@ import {
   AdvancedCollisionDetector,
   AdvancedCollisionData,
   autoScrollPlugin,
+  ticker,
+  tickerPhases,
 } from 'dragdoll';
 
-const scrollContainer = document.querySelector('.scroll-list') as HTMLElement;
-const draggableEl = document.querySelector('.draggable') as HTMLElement;
-const droppableEls = [...document.querySelectorAll('.droppable')] as HTMLElement[];
+// Keep track of the best match droppable.
+let bestMatchDroppable: Droppable | null = null;
 
-const dnd = new DndContext<AdvancedCollisionData>({
+// Get elements.
+const scrollContainer = document.querySelector('.scroll-list') as HTMLElement;
+const draggableElement = document.querySelector('.draggable') as HTMLElement;
+const droppableElements = [...document.querySelectorAll('.droppable')] as HTMLElement[];
+
+// Initialize DndContext.
+const dndContext = new DndContext<AdvancedCollisionData>({
   collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx),
 });
 
 // Create droppables.
 const droppables: Droppable[] = [];
-for (const el of droppableEls) {
-  const drop = new Droppable(el);
-  drop.data.overIds = new Set<number>();
-  drop.data.droppedIds = new Set<number>();
-  droppables.push(drop);
+for (const droppableElement of droppableElements) {
+  const droppable = new Droppable(droppableElement);
+  droppable.data.overIds = new Set<number>();
+  droppable.data.droppedIds = new Set<number>();
+  droppables.push(droppable);
 }
 
 // Create draggable.
 const draggable = new Draggable(
-  [new PointerSensor(draggableEl), new KeyboardMotionSensor(draggableEl)],
+  [new PointerSensor(draggableElement), new KeyboardMotionSensor(draggableElement)],
   {
     container: document.body,
-    elements: () => [draggableEl],
-    startPredicate: () => !draggableEl.classList.contains('dragging'),
+    elements: () => [draggableElement],
+    startPredicate: () => !draggableElement.classList.contains('animate'),
     onStart: () => {
-      draggableEl.classList.add('dragging');
+      draggableElement.classList.add('dragging');
     },
     onEnd: () => {
-      draggableEl.classList.remove('dragging');
+      draggableElement.classList.remove('dragging');
     },
   },
 ).use(
@@ -2358,54 +2366,65 @@ const draggable = new Draggable(
 );
 
 // Add droppables and draggable to the context.
-dnd.addDroppables(droppables);
-dnd.addDraggables([draggable]);
+dndContext.addDroppables(droppables);
+dndContext.addDraggables([draggable]);
 
-// On start, clear previous dropped state from all targets.
-dnd.on(DndContextEventType.Start, ({ draggable, targets }) => {
-  targets.forEach((droppable) => {
-    droppable.data.droppedIds.delete(draggable.id);
-    if (droppable.data.droppedIds.size === 0) {
-      droppable.element.classList.remove('draggable-dropped');
-    }
-  });
-});
+dndContext.on(DndContextEventType.Collide, ({ draggable, contacts }) => {
+  // Get the next best match droppable.
+  let nextBestMatch: Droppable | null = null;
+  for (const droppable of contacts) {
+    nextBestMatch = droppable;
+    break;
+  }
 
-// Update over classes.
-dnd.on(DndContextEventType.Collide, ({ draggable, contacts, removedContacts }) => {
-  removedContacts.forEach((target) => {
-    target.data.overIds.delete(draggable.id);
-    if (target.data.overIds.size === 0) {
-      target.element.classList.remove('draggable-over');
-    }
-  });
-
-  let i = 0;
-  for (const t of contacts) {
-    if (i === 0) {
-      t.data.overIds.add(draggable.id);
-      t.element.classList.add('draggable-over');
-    } else {
-      t.data.overIds.delete(draggable.id);
-      if (t.data.overIds.size === 0) {
-        t.element.classList.remove('draggable-over');
-      }
-    }
-    i++;
+  // Update the best match droppable if it's changed.
+  if (nextBestMatch !== null && nextBestMatch !== bestMatchDroppable) {
+    bestMatchDroppable?.element.classList.remove('draggable-over');
+    nextBestMatch.element.classList.add('draggable-over');
+    bestMatchDroppable = nextBestMatch;
   }
 });
 
-// On end, mark dropped.
-dnd.on(DndContextEventType.End, ({ draggable, contacts }) => {
-  for (const t of contacts) {
-    t.data.droppedIds.add(draggable.id);
-    t.element.classList.add('draggable-dropped');
-    t.data.overIds.delete(draggable.id);
-    if (t.data.overIds.size === 0) {
-      t.element.classList.remove('draggable-over');
-    }
-    return;
+dndContext.on(DndContextEventType.End, ({ draggable, contacts, canceled }) => {
+  // Find out the original container and the target container, based on the
+  // best match droppable.
+  // TODO: We want this to work a bit differently. If there are no contacts,
+  // we want to keep the last best match as the target container.
+  const originalContainer = draggableElement.parentElement!;
+  const targetContainer =
+    !canceled && bestMatchDroppable
+      ? (bestMatchDroppable.element as HTMLElement)
+      : originalContainer;
+
+  // Move the draggable to the target container. While doing that, let's add
+  // the offset between the original container and the target container to the
+  // draggable's transform so it's visual positoin does not change.
+  if (originalContainer !== targetContainer) {
+    const offsetData = getOffset(originalContainer, targetContainer);
+    const transformString = `translate(${offsetData.left}px, ${offsetData.top}px) ${draggableElement.style.transform}`;
+    draggableElement.style.transform = transformString;
+    targetContainer.appendChild(draggableElement);
   }
+
+  // Animate the draggable's transform back to "zero" (no transform).
+  const transformMatrix = new DOMMatrix().setMatrixValue(draggableElement.style.transform);
+  if (!transformMatrix.isIdentity) {
+    draggableElement.classList.add('animate');
+    ticker.once(tickerPhases.write, () => {
+      draggableElement.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
+      const onTransitionEnd = (e: TransitionEvent) => {
+        if (e.target === draggableElement) {
+          draggableElement.classList.remove('animate');
+          draggableElement.removeEventListener('transitionend', onTransitionEnd);
+        }
+      };
+      draggableElement.addEventListener('transitionend', onTransitionEnd);
+    });
+  }
+
+  // Reset the best match droppable.
+  bestMatchDroppable?.element.classList.remove('draggable-over');
+  bestMatchDroppable = null;
 });
 ```
 
@@ -2492,7 +2511,7 @@ body {
   min-width: 0;
   aspect-ratio: 1 / 1;
   background-color: var(--bg-color);
-  border-radius: 7px;
+  border-radius: 17px;
   border: 1.5px solid var(--theme-color);
   transition:
     border-color 0.2s ease-out,
@@ -2518,12 +2537,15 @@ body {
 
 .card.draggable {
   position: absolute;
-  top: 8.5px;
-  left: 8.5px;
-  border-radius: 5px;
-  width: 80px;
-  height: 80px;
+  top: 10px;
+  left: 10px;
+  width: 77px;
+  height: 77px;
   z-index: 100;
+
+  &.animate {
+    transition: transform 0.3s cubic-bezier(0.33, 0.975, 0, 1.65);
+  }
 }
 ```
 

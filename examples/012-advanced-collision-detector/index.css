@@ -30,7 +30,7 @@ body {
   min-width: 0;
   aspect-ratio: 1 / 1;
   background-color: var(--bg-color);
-  border-radius: 7px;
+  border-radius: 17px;
   border: 1.5px solid var(--theme-color);
   transition:
     border-color 0.2s ease-out,
@@ -56,10 +56,13 @@ body {
 
 .card.draggable {
   position: absolute;
-  top: 8.5px;
-  left: 8.5px;
-  border-radius: 5px;
-  width: 80px;
-  height: 80px;
+  top: 10px;
+  left: 10px;
+  width: 77px;
+  height: 77px;
   z-index: 100;
+
+  &.animate {
+    transition: transform 0.3s cubic-bezier(0.33, 0.975, 0, 1.65);
+  }
 }
