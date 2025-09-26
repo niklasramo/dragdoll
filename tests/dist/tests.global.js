@@ -6041,6 +6041,11 @@
     }
   };
 
+  // src/utils/is-document.ts
+  function isDocument2(value) {
+    return value instanceof Document;
+  }
+
   // src/utils/create-full-rect.ts
   function createFullRect(sourceRect, result = { width: 0, height: 0, x: 0, y: 0, left: 0, top: 0, right: 0, bottom: 0 }) {
     if (sourceRect) {
@@ -6971,8 +6976,14 @@
   // src/dnd-context/collision-detector.ts
   var MAX_CACHED_COLLISIONS = 20;
   var EMPTY_SYMBOL = Symbol();
-  var CollisionDetectorDefaultOptions = {
-    checkCollision: (draggable, droppable, collisionData) => {
+  var CollisionDetector = class {
+    constructor(dndContext) {
+      this._listenerId = Symbol();
+      this._dndContext = dndContext;
+      this._collisionDataPoolCache = [];
+      this._collisionDataPoolMap = /* @__PURE__ */ new Map();
+    }
+    _checkCollision(draggable, droppable, collisionData) {
       const draggableRect = draggable.getClientRect();
       const droppableRect = droppable.getClientRect();
       if (!draggableRect) return null;
@@ -6989,15 +7000,15 @@
       createRect(draggableRect, collisionData.draggableRect);
       collisionData.intersectionScore = intersectionScore;
       return collisionData;
-    },
-    sortCollisions: (_draggable, collisions) => {
+    }
+    _sortCollisions(_draggable, collisions) {
       return collisions.sort((a, b) => {
         const diff = b.intersectionScore - a.intersectionScore;
         if (diff !== 0) return diff;
         return a.droppableRect.width * a.droppableRect.height - b.droppableRect.width * b.droppableRect.height;
       });
-    },
-    createCollisionData: () => {
+    }
+    _createCollisionData() {
       return {
         droppableId: EMPTY_SYMBOL,
         droppableRect: createRect(),
@@ -7006,26 +7017,11 @@
         intersectionScore: 0
       };
     }
-  };
-  var CollisionDetector = class {
-    constructor(dndContext, {
-      checkCollision = CollisionDetectorDefaultOptions.checkCollision,
-      createCollisionData = CollisionDetectorDefaultOptions.createCollisionData,
-      sortCollisions = CollisionDetectorDefaultOptions.sortCollisions
-    } = {}) {
-      this._listenerId = Symbol();
-      this._dndContext = dndContext;
-      this._collisionDataPoolCache = [];
-      this._collisionDataPoolMap = /* @__PURE__ */ new Map();
-      this.checkCollision = checkCollision;
-      this.sortCollisions = sortCollisions;
-      this.createCollisionData = createCollisionData;
-    }
     getCollisionDataPool(draggable) {
       let pool = this._collisionDataPoolMap.get(draggable);
       if (!pool) {
         pool = this._collisionDataPoolCache.pop() || new FastObjectPool((item) => {
-          return item || this.createCollisionData();
+          return item || this._createCollisionData();
         });
         this._collisionDataPoolMap.set(draggable, pool);
       }
@@ -7050,13 +7046,13 @@
       const droppables2 = targets.values();
       for (const droppable of droppables2) {
         collisionData = collisionData || collisionDataPool.get();
-        if (this.checkCollision(draggable, droppable, collisionData)) {
+        if (this._checkCollision(draggable, droppable, collisionData)) {
           collisions.push(collisionData);
           collisionData = null;
         }
       }
       if (collisions.length > 1) {
-        this.sortCollisions(draggable, collisions);
+        this._sortCollisions(draggable, collisions);
       }
       collisionDataPool.resetPointer();
     }
@@ -7103,11 +7099,7 @@
       this._listenerId = Symbol();
       this._emitter = new v();
       this._onScroll = this._onScroll.bind(this);
-      if (typeof collisionDetector === "function") {
-        this._collisionDetector = collisionDetector(this);
-      } else {
-        this._collisionDetector = new CollisionDetector(this, collisionDetector);
-      }
+      this._collisionDetector = collisionDetector ? collisionDetector(this) : new CollisionDetector(this);
     }
     get drags() {
       return this._drags;
@@ -7521,6 +7513,216 @@
       this._collisionDetector.destroy();
       this.draggables.clear();
       this.droppables.clear();
+    }
+  };
+
+  // src/utils/get-clip-ancestors.ts
+  var VISIBLE_OVERFLOW = "visible";
+  function getClipAncestors(element, includeElement, result = []) {
+    let parent = includeElement ? element : element?.parentNode;
+    result.length = 0;
+    while (parent && !isDocument2(parent)) {
+      if (parent instanceof Element) {
+        const style = getStyle2(parent);
+        if (!(style.overflowY === VISIBLE_OVERFLOW || style.overflowX === VISIBLE_OVERFLOW)) {
+          result.push(parent);
+        }
+        parent = parent.parentNode;
+      } else if (parent instanceof ShadowRoot) {
+        parent = parent.host;
+      } else {
+        parent = parent.parentNode;
+      }
+    }
+    result.push(window);
+    return result;
+  }
+
+  // src/dnd-context/advanced-collision-detector.ts
+  var EMPTY_RECT = { width: 0, height: 0, x: 0, y: 0 };
+  var MAX_RECT = {
+    width: Number.MAX_SAFE_INTEGER,
+    height: Number.MAX_SAFE_INTEGER,
+    x: Number.MAX_SAFE_INTEGER * -0.5,
+    y: Number.MAX_SAFE_INTEGER * -0.5
+  };
+  var DRAGGABLE_CLIP_ANCESTORS = [];
+  var DROPPABLE_CLIP_ANCESTORS = [];
+  var DRAGGABLE_CLIP_CHAIN = [];
+  var DROPPABLE_CLIP_CHAIN = [];
+  function computeDraggableClipAncestors(draggable) {
+    if (!DRAGGABLE_CLIP_ANCESTORS.length) {
+      const dragContainer = draggable.drag?.items?.[0]?.dragContainer;
+      if (dragContainer) {
+        getClipAncestors(dragContainer, true, DRAGGABLE_CLIP_ANCESTORS);
+      } else {
+        DRAGGABLE_CLIP_ANCESTORS.push(window);
+      }
+    }
+  }
+  function computeDroppableClipAncestors(droppable) {
+    if (!DROPPABLE_CLIP_ANCESTORS.length) {
+      getClipAncestors(droppable.element, false, DROPPABLE_CLIP_ANCESTORS);
+    }
+  }
+  function getRecursiveIntersectionRect(elements, result = createRect()) {
+    createRect(elements.length ? getRect2([elements[0], "padding"], window) : MAX_RECT, result);
+    for (let i = 1; i < elements.length; i++) {
+      const el = elements[i];
+      const rect = getRect2([el, "padding"], window);
+      if (!getIntersectionRect(result, rect, result)) {
+        createRect(EMPTY_RECT, result);
+        break;
+      }
+    }
+    return result;
+  }
+  var AdvancedCollisionDetector = class extends CollisionDetector {
+    constructor(dndContext) {
+      super(dndContext);
+      this._dragStates = /* @__PURE__ */ new Map();
+      this._listenersAttached = false;
+      this._clearCache = () => this.clearCache();
+    }
+    _checkCollision(draggable, droppable, collisionData) {
+      const state = this._dragStates.get(draggable);
+      if (!state) return null;
+      const draggableRect = draggable.getClientRect();
+      const droppableRect = droppable.getClientRect();
+      if (!draggableRect || !droppableRect) return null;
+      let clipMaskKey = state.clipMaskKeyMap.get(droppable);
+      if (!clipMaskKey) {
+        DROPPABLE_CLIP_ANCESTORS.length = 0;
+        DRAGGABLE_CLIP_CHAIN.length = 0;
+        DROPPABLE_CLIP_CHAIN.length = 0;
+        computeDroppableClipAncestors(droppable);
+        clipMaskKey = DROPPABLE_CLIP_ANCESTORS[0] || window;
+        state.clipMaskKeyMap.set(droppable, clipMaskKey);
+        if (!state.clipMaskMap.has(clipMaskKey)) {
+          computeDraggableClipAncestors(draggable);
+          let fccc = window;
+          for (const droppableClipAncestor of DROPPABLE_CLIP_ANCESTORS) {
+            if (DRAGGABLE_CLIP_ANCESTORS.includes(droppableClipAncestor)) {
+              fccc = droppableClipAncestor;
+              break;
+            }
+          }
+          for (const draggableClipAncestor of DRAGGABLE_CLIP_ANCESTORS) {
+            if (draggableClipAncestor === fccc) break;
+            if (draggableClipAncestor instanceof Element) {
+              DRAGGABLE_CLIP_CHAIN.push(draggableClipAncestor);
+            }
+          }
+          for (const droppableClipAncestor of DROPPABLE_CLIP_ANCESTORS) {
+            if (droppableClipAncestor === fccc) break;
+            if (droppableClipAncestor instanceof Element) {
+              DROPPABLE_CLIP_CHAIN.push(droppableClipAncestor);
+            }
+          }
+          const draggableClipMask2 = getRecursiveIntersectionRect(DRAGGABLE_CLIP_CHAIN);
+          const droppableClipMask2 = getRecursiveIntersectionRect(DROPPABLE_CLIP_CHAIN);
+          state.clipMaskMap.set(clipMaskKey, [draggableClipMask2, droppableClipMask2]);
+        }
+        DROPPABLE_CLIP_ANCESTORS.length = 0;
+        DRAGGABLE_CLIP_CHAIN.length = 0;
+        DROPPABLE_CLIP_CHAIN.length = 0;
+      }
+      const [draggableClipMask, droppableClipMask] = state.clipMaskMap.get(clipMaskKey) || [];
+      if (!draggableClipMask || !droppableClipMask) return null;
+      if (!getIntersectionRect(draggableRect, draggableClipMask, collisionData.draggableVisibleRect)) {
+        return null;
+      }
+      if (!getIntersectionRect(droppableRect, droppableClipMask, collisionData.droppableVisibleRect)) {
+        return null;
+      }
+      if (!getIntersectionRect(
+        collisionData.draggableVisibleRect,
+        collisionData.droppableVisibleRect,
+        collisionData.intersectionRect
+      )) {
+        return null;
+      }
+      const score = getIntersectionScore(
+        collisionData.draggableVisibleRect,
+        collisionData.droppableVisibleRect,
+        collisionData.intersectionRect
+      );
+      if (score <= 0) return null;
+      collisionData.droppableId = droppable.id;
+      createRect(droppableRect, collisionData.droppableRect);
+      createRect(draggableRect, collisionData.draggableRect);
+      collisionData.intersectionScore = score;
+      return collisionData;
+    }
+    _sortCollisions(_draggable, collisions) {
+      return collisions.sort((a, b) => {
+        const diff = b.intersectionScore - a.intersectionScore;
+        if (diff !== 0) return diff;
+        return a.droppableVisibleRect.width * a.droppableVisibleRect.height - b.droppableVisibleRect.width * b.droppableVisibleRect.height;
+      });
+    }
+    _createCollisionData() {
+      const data = super._createCollisionData();
+      data.droppableVisibleRect = createRect();
+      data.draggableVisibleRect = createRect();
+      return data;
+    }
+    _getDragState(draggable) {
+      let state = this._dragStates.get(draggable);
+      if (state) return state;
+      state = {
+        clipMaskKeyMap: /* @__PURE__ */ new Map(),
+        clipMaskMap: /* @__PURE__ */ new Map(),
+        cacheDirty: true
+      };
+      this._dragStates.set(draggable, state);
+      if (!this._listenersAttached) {
+        window.addEventListener("scroll", this._clearCache, {
+          capture: true,
+          passive: true
+        });
+        window.addEventListener("resize", this._clearCache, { passive: true });
+        this._listenersAttached = true;
+      }
+      return state;
+    }
+    // Create or get pool, making sure our drag state exists first.
+    getCollisionDataPool(draggable) {
+      this._getDragState(draggable);
+      return super.getCollisionDataPool(draggable);
+    }
+    removeCollisionDataPool(draggable) {
+      if (this._dragStates.delete(draggable)) {
+        if (this._dndContext.drags.size <= 0) {
+          if (this._listenersAttached) {
+            window.removeEventListener("scroll", this._clearCache, { capture: true });
+            window.removeEventListener("resize", this._clearCache);
+            this._listenersAttached = false;
+          }
+        }
+      }
+      super.removeCollisionDataPool(draggable);
+    }
+    detectCollisions(draggable, targets, collisions) {
+      DRAGGABLE_CLIP_ANCESTORS.length = 0;
+      const state = this._getDragState(draggable);
+      if (state.cacheDirty) {
+        state.clipMaskKeyMap.clear();
+        state.clipMaskMap.clear();
+        state.cacheDirty = false;
+      }
+      super.detectCollisions(draggable, targets, collisions);
+      DRAGGABLE_CLIP_ANCESTORS.length = 0;
+    }
+    clearCache(draggable) {
+      if (draggable) {
+        const state = this._dragStates.get(draggable);
+        if (state) state.cacheDirty = true;
+      } else {
+        this._dragStates.forEach((state) => {
+          state.cacheDirty = true;
+        });
+      }
     }
   };
 
@@ -12129,25 +12331,22 @@
         const droppable = new Droppable(dropElement, {
           accept: ["test"]
         });
-        const dndContext = new DndContext({
-          collisionDetector: {
-            checkCollision: (draggable2, droppable2, collisionData) => {
-              customDetectorCalled = true;
-              const result = CollisionDetectorDefaultOptions.checkCollision(
-                draggable2,
-                droppable2,
-                collisionData
-              );
-              if (!result) return null;
-              result.customProp = "test-value";
-              return result;
-            },
-            createCollisionData: () => {
-              const data = CollisionDetectorDefaultOptions.createCollisionData();
-              data.customProp = "";
-              return data;
-            }
+        class TestDetector extends CollisionDetector {
+          _createCollisionData() {
+            const base = super._createCollisionData();
+            base.customProp = "";
+            return base;
           }
+          _checkCollision(draggable2, droppable2, data) {
+            customDetectorCalled = true;
+            const result = super._checkCollision(draggable2, droppable2, data);
+            if (!result) return null;
+            result.customProp = "test-value";
+            return result;
+          }
+        }
+        const dndContext = new DndContext({
+          collisionDetector: (ctx) => new TestDetector(ctx)
         });
         dndContext.on("enter", (data) => {
           const collision = data.collisions[0];
@@ -12264,6 +12463,155 @@
         keyboardSensor.destroy();
         dragElement.remove();
         dropElement.remove();
+      });
+    });
+  }
+
+  // tests/src/dnd-context/advanced-collision-detection.ts
+  function advancedCollisionDetection() {
+    describe("advanced collision detection", () => {
+      it("should compute collisions based on visible rects (clipped)", async () => {
+        const collisionEvents = [];
+        const container = createTestElement({
+          left: "0px",
+          top: "0px",
+          width: "100px",
+          height: "100px",
+          overflow: "hidden"
+        });
+        const drag = createTestElement({ left: "80px", top: "80px", width: "50px", height: "50px" });
+        container.appendChild(drag);
+        const drop = createTestElement({ left: "60px", top: "60px", width: "50px", height: "50px" });
+        container.appendChild(drop);
+        const keyboard = new KeyboardSensor(drag, { moveDistance: 10 });
+        const draggable = new Draggable([keyboard], { elements: () => [drag], group: "g" });
+        const droppable = new Droppable(drop, { accept: ["g"] });
+        const dnd = new DndContext({
+          collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx)
+        });
+        dnd.on("enter", (data) => {
+          collisionEvents.push({ type: "enter", collisions: data.collisions });
+        });
+        dnd.addDraggables([draggable]);
+        dnd.addDroppables([droppable]);
+        focusElement(drag);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        await waitNextFrame();
+        assert.equal(collisionEvents.length, 1);
+        assert.equal(collisionEvents[0].collisions.length, 1);
+        const cd = collisionEvents[0].collisions[0];
+        assert.isAbove(cd.intersectionScore, 0);
+        assert.isAtLeast(cd.draggableVisibleRect.width, 1);
+        assert.isAtLeast(cd.droppableVisibleRect.width, 1);
+        dnd.destroy();
+        draggable.destroy();
+        droppable.destroy();
+        keyboard.destroy();
+        container.remove();
+      });
+      it("should update cache on scroll and resize", async () => {
+        const container = createTestElement({
+          left: "0px",
+          top: "0px",
+          width: "100px",
+          height: "100px",
+          overflow: "hidden"
+        });
+        const drag = createTestElement({ left: "0px", top: "0px", width: "50px", height: "50px" });
+        container.appendChild(drag);
+        const drop = createTestElement({ left: "60px", top: "0px", width: "50px", height: "50px" });
+        container.appendChild(drop);
+        const keyboard = new KeyboardSensor(drag, { moveDistance: 10 });
+        const draggable = new Draggable([keyboard], { elements: () => [drag], group: "g" });
+        const droppable = new Droppable(drop, { accept: ["g"] });
+        const dnd = new DndContext({
+          collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx)
+        });
+        dnd.addDraggables([draggable]);
+        dnd.addDroppables([droppable]);
+        focusElement(drag);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        await waitNextFrame();
+        window.dispatchEvent(new Event("scroll"));
+        window.dispatchEvent(new Event("resize"));
+        await new Promise((r2) => setTimeout(r2, 50));
+        dnd.destroy();
+        draggable.destroy();
+        droppable.destroy();
+        keyboard.destroy();
+        container.remove();
+      });
+      it("should sort ties by smaller droppable visible area first", async () => {
+        const container = createTestElement({
+          left: "0px",
+          top: "0px",
+          width: "100px",
+          height: "100px",
+          overflow: "hidden"
+        });
+        const drag = createTestElement({ left: "0px", top: "0px", width: "200px", height: "200px" });
+        container.appendChild(drag);
+        const dropA = createTestElement({ left: "0px", top: "0px", width: "80px", height: "80px" });
+        container.appendChild(dropA);
+        const dropB = createTestElement({ left: "60px", top: "0px", width: "80px", height: "80px" });
+        container.appendChild(dropB);
+        const keyboard = new KeyboardSensor(drag, { moveDistance: 10 });
+        const draggable = new Draggable([keyboard], { elements: () => [drag], group: "g" });
+        const droppableA = new Droppable(dropA, { accept: ["g"] });
+        const droppableB = new Droppable(dropB, { accept: ["g"] });
+        const dnd = new DndContext({
+          collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx)
+        });
+        let firstCollisionId = null;
+        dnd.on("enter", (data) => {
+          firstCollisionId = data.collisions[0]?.droppableId;
+        });
+        dnd.addDraggables([draggable]);
+        dnd.addDroppables([droppableA, droppableB]);
+        focusElement(drag);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        await waitNextFrame();
+        assert.equal(firstCollisionId, droppableB.id);
+        dnd.destroy();
+        draggable.destroy();
+        droppableA.destroy();
+        droppableB.destroy();
+        keyboard.destroy();
+        container.remove();
+      });
+      it("should not collide when droppable is fully clipped", async () => {
+        const collisionEvents = [];
+        const container = createTestElement({
+          left: "0px",
+          top: "0px",
+          width: "100px",
+          height: "100px",
+          overflow: "hidden"
+        });
+        const drag = createTestElement({ left: "0px", top: "0px", width: "80px", height: "80px" });
+        container.appendChild(drag);
+        const drop = createTestElement({ left: "150px", top: "0px", width: "50px", height: "50px" });
+        container.appendChild(drop);
+        const keyboard = new KeyboardSensor(drag, { moveDistance: 10 });
+        const draggable = new Draggable([keyboard], { elements: () => [drag], group: "g" });
+        const droppable = new Droppable(drop, { accept: ["g"] });
+        const dnd = new DndContext({
+          collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx)
+        });
+        dnd.on("enter", (data) => {
+          collisionEvents.push({ collisions: data.collisions });
+        });
+        dnd.addDraggables([draggable]);
+        dnd.addDroppables([droppable]);
+        focusElement(drag);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        await waitNextFrame();
+        assert.equal(collisionEvents.length, 0);
+        dnd.destroy();
+        draggable.destroy();
+        droppable.destroy();
+        keyboard.destroy();
+        container.remove();
       });
     });
   }
@@ -12818,6 +13166,7 @@
   describe("DndContext", () => {
     events4();
     collisionDetection();
+    advancedCollisionDetection();
     droppables();
     methods5();
   });

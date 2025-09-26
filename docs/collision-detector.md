@@ -9,34 +9,40 @@ The `CollisionDetector` class is responsible for determining which droppables ar
 ```ts
 import { CollisionDetector, DndContext } from 'dragdoll';
 
-// Passing the collision detector options directly to the `DndContext`
-// constructor.
-const dndContextBasic = new DndContext({
-  collisionDetector: {
-    checkCollision: (draggable, droppable, collisionData) => {
-      // Custom collision logic...
-      // Return the collisionData object if there's a collision, null otherwise
-      return collisionData;
-    },
-    sortCollisions: (draggable, collisions) => {
-      // Custom sorting logic...
-    },
-  },
-});
+interface CustomCollisionData extends CollisionData {
+  foo: string;
+  bar: number;
+}
 
-// Using a creator function.
-const dndContextAdvanced = new DndContext({
-  collisionDetector: (dndContext) =>
-    new CollisionDetector(dndContext, {
-      checkCollision: (draggable, droppable, collisionData) => {
-        // Custom collision logic...
-        // Return the collisionData object if there's a collision, null otherwise
-        return collisionData;
-      },
-      sortCollisions: (draggable, collisions) => {
-        // Custom sorting logic...
-      },
-    }),
+// Extend CollisionDetector and override the necessary protected hooks.
+class CustomCollisionDetector extends CollisionDetector<CustomCollisionData> {
+  protected override _checkCollision(draggable, droppable, data) {
+    // Custom collision logic...
+    // Return the data object if there's a collision, null otherwise.
+    return super._checkCollision(draggable, droppable, data);
+  }
+
+  protected override _sortCollisions(_draggable, collisions) {
+    // Optional: customize sorting
+    return super._sortCollisions(_draggable, collisions);
+  }
+
+  protected override _createCollisionData() {
+    // Optional: if you extend the CollisionData interface, you need to override
+    // this method and return the extended data object. The values of this
+    // object can be whatever as they will be overwritten by the collision
+    // logic.
+    return {
+      ...super._createCollisionData(),
+      foo: '',
+      bar: 0,
+    };
+  }
+}
+
+// Provide a factory that returns your detector instance.
+const dndContext = new DndContext({
+  collisionDetector: (ctx) => new MyCollisionDetector(ctx),
 });
 ```
 
@@ -44,18 +50,7 @@ const dndContextAdvanced = new DndContext({
 
 ```ts
 class CollisionDetector<T extends CollisionData = CollisionData> {
-  constructor(
-    dndContext: DndContext,
-    options?: {
-      checkCollision?: (
-        draggable: Draggable<any>,
-        droppable: Droppable,
-        collisionData: T,
-      ) => T | null;
-      createCollisionData?: () => T;
-      sortCollisions?: (draggable: Draggable<any>, collisions: T[]) => T[];
-    },
-  ) {}
+  constructor(dndContext: DndContext) {}
 }
 ```
 
@@ -65,17 +60,14 @@ class CollisionDetector<T extends CollisionData = CollisionData> {
 
 - The `DndContext` instance this collision detector belongs to.
 
-2. **options**
-   - An optional configuration object with the following properties:
-     - **`checkCollision`**
-       - A function that checks for collision between a draggable and droppable, using a pre-allocated collision data object. Return the collision data object if there's a collision, `null` otherwise. The collision data object conforms to the [`CollisionData`](#collisiondata-interface) interface.
-       - Default: Uses intersection score based on overlapping area.
-     - **`createCollisionData`**
-       - A function that creates a new collision data object, which will be stored in the object pool. You only need to provide a custom function here if you need to extend the `CollisionData` interface.
-       - Default: Creates a new `CollisionData` object.
-     - **`sortCollisions`**
-       - A function that sorts collision results to determine relevance/priority.
-       - Default: Sorts by score (descending), then by droppable size (ascending).
+## Extensibility hooks (override in subclasses)
+
+- `_checkCollision(draggable, droppable, data): T | null`
+  - Compute collision and return `data` or `null`. Default uses intersection.
+- `_sortCollisions(draggable, collisions): T[]`
+  - Sort by score descending, then droppable size. Return the array to use.
+- `_createCollisionData(): T`
+  - Create a pooled data object. Override to extend `CollisionData`.
 
 ## Methods
 
@@ -129,54 +121,3 @@ You can also import the interface from the `dragdoll` package:
 ```ts
 import { CollisionData } from 'dragdoll';
 ```
-
-## Custom collision data
-
-In some more advanced use cases, you might want to extend the `CollisionData` interface to include more data. For example, if you want to use a different scoring algorithm.
-
-```ts
-import {
-  CollisionDetector,
-  DndContext,
-  CollisionData,
-  CollisionDetectorDefaultOptions,
-} from 'dragdoll';
-
-interface CustomCollisionData extends CollisionData {
-  foo: string;
-  bar: number;
-}
-
-const dndContext = new DndContext<CustomCollisionData>({
-  collisionDetector: {
-    checkCollision: (draggable, droppable, collisionData) => {
-      // Use the default collision detection logic to check for collision
-      const result = CollisionDetectorDefaultOptions.checkCollision(
-        draggable,
-        droppable,
-        collisionData,
-      );
-
-      // If result is null, it means there is no collision.
-      if (!result) return null;
-
-      // Add custom properties to the collision data object.
-      result.foo = 'custom';
-      result.bar = Math.random();
-
-      return result;
-    },
-    sortCollisions: (draggable, collisions) => {
-      return collisions.sort((a, b) => b.bar - a.bar);
-    },
-    createCollisionData: () => {
-      const data = CollisionDetectorDefaultOptions.createCollisionData() as CustomCollisionData;
-      data.foo = '';
-      data.bar = 0;
-      return data;
-    },
-  },
-});
-```
-
-This way all the events that are emitted by the `DndContext` will have the `CustomCollisionData` type as expected.

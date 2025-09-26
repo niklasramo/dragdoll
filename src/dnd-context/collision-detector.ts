@@ -11,6 +11,9 @@ import { Rect } from '../types.js';
 // to the pool cache.
 const MAX_CACHED_COLLISIONS = 20;
 
+// We use a symbol to represent an empty droppable id.
+const EMPTY_SYMBOL = Symbol();
+
 // TODO: Should we use droppable references instead of id? Using the reference
 // is a bit more work, but not much, as we'd need to clean up the old references
 // on each collision detection cycle. However, it would improve DX quite a bit
@@ -23,20 +26,24 @@ export interface CollisionData {
   intersectionScore: number;
 }
 
-export interface CollisionDetectorOptions<T extends CollisionData = CollisionData> {
-  checkCollision?: (draggable: Draggable<any>, droppable: Droppable, collisionData: T) => T | null;
-  sortCollisions?: (draggable: Draggable<any>, collisions: T[]) => T[];
-  createCollisionData?: () => T;
-}
+export class CollisionDetector<T extends CollisionData = CollisionData> {
+  protected _listenerId: Symbol;
+  protected _dndContext: DndContext<T>;
+  protected _collisionDataPoolCache: FastObjectPool<T, []>[];
+  protected _collisionDataPoolMap: Map<Draggable<any>, FastObjectPool<T, []>>;
 
-const EMPTY_SYMBOL = Symbol();
+  constructor(dndContext: DndContext<T>) {
+    this._listenerId = Symbol();
+    this._dndContext = dndContext;
+    this._collisionDataPoolCache = [];
+    this._collisionDataPoolMap = new Map();
+  }
 
-export const CollisionDetectorDefaultOptions = {
-  checkCollision: <T extends CollisionData = CollisionData>(
+  protected _checkCollision(
     draggable: Draggable<any>,
     droppable: Droppable,
     collisionData: T,
-  ): T | null => {
+  ): T | null {
     const draggableRect = draggable.getClientRect();
     const droppableRect = droppable.getClientRect();
     if (!draggableRect) return null;
@@ -56,11 +63,9 @@ export const CollisionDetectorDefaultOptions = {
     createRect(draggableRect, collisionData.draggableRect);
     collisionData.intersectionScore = intersectionScore;
     return collisionData;
-  },
-  sortCollisions: <T extends CollisionData = CollisionData>(
-    _draggable: Draggable<any>,
-    collisions: T[],
-  ): T[] => {
+  }
+
+  protected _sortCollisions(_draggable: Draggable<any>, collisions: T[]): T[] {
     return collisions.sort((a, b) => {
       const diff = b.intersectionScore - a.intersectionScore;
       if (diff !== 0) return diff;
@@ -70,44 +75,16 @@ export const CollisionDetectorDefaultOptions = {
         b.droppableRect.width * b.droppableRect.height
       );
     });
-  },
-  createCollisionData: <T extends CollisionData = CollisionData>(): T => {
+  }
+
+  protected _createCollisionData(): T {
     return {
       droppableId: EMPTY_SYMBOL,
       droppableRect: createRect(),
       draggableRect: createRect(),
       intersectionRect: createRect(),
       intersectionScore: 0,
-    } as CollisionData as T;
-  },
-} as const;
-
-export class CollisionDetector<T extends CollisionData = CollisionData> {
-  protected _listenerId: Symbol;
-  protected _dndContext: DndContext<T>;
-  protected _collisionDataPoolCache: FastObjectPool<T, []>[];
-  protected _collisionDataPoolMap: Map<Draggable<any>, FastObjectPool<T, []>>;
-  checkCollision: (draggable: Draggable<any>, droppable: Droppable, collisionData: T) => T | null;
-  sortCollisions: (draggable: Draggable<any>, collisions: T[]) => T[];
-  createCollisionData: () => T;
-
-  constructor(
-    dndContext: DndContext<T>,
-    {
-      checkCollision = CollisionDetectorDefaultOptions.checkCollision,
-      createCollisionData = CollisionDetectorDefaultOptions.createCollisionData,
-      sortCollisions = CollisionDetectorDefaultOptions.sortCollisions,
-    }: CollisionDetectorOptions<T> = {},
-  ) {
-    this._listenerId = Symbol();
-    this._dndContext = dndContext;
-    this._collisionDataPoolCache = [];
-    this._collisionDataPoolMap = new Map();
-
-    // These can be overriden anytime.
-    this.checkCollision = checkCollision;
-    this.sortCollisions = sortCollisions;
-    this.createCollisionData = createCollisionData;
+    } as T;
   }
 
   getCollisionDataPool(draggable: Draggable<any>): FastObjectPool<T, []> {
@@ -116,7 +93,7 @@ export class CollisionDetector<T extends CollisionData = CollisionData> {
       pool =
         this._collisionDataPoolCache.pop() ||
         new FastObjectPool((item) => {
-          return item || this.createCollisionData();
+          return item || this._createCollisionData();
         });
       this._collisionDataPoolMap.set(draggable, pool);
     }
@@ -154,7 +131,7 @@ export class CollisionDetector<T extends CollisionData = CollisionData> {
     const droppables = targets.values();
     for (const droppable of droppables) {
       collisionData = collisionData || collisionDataPool.get();
-      if (this.checkCollision(draggable, droppable, collisionData)) {
+      if (this._checkCollision(draggable, droppable, collisionData)) {
         collisions.push(collisionData);
         collisionData = null;
       }
@@ -162,7 +139,7 @@ export class CollisionDetector<T extends CollisionData = CollisionData> {
 
     // Sort the collisions.
     if (collisions.length > 1) {
-      this.sortCollisions(draggable, collisions);
+      this._sortCollisions(draggable, collisions);
     }
 
     // Reset collision data pool pointer.

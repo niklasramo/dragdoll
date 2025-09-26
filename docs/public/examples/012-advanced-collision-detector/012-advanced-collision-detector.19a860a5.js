@@ -3854,9 +3854,16 @@ function $8c16eefbe97bde49$export$bd5271f935fe8c1a(sourceRect, result = {
 // The max amount of collisions we keep in collision pool when we return it
 // to the pool cache.
 const $24bdaa72c91e807d$var$MAX_CACHED_COLLISIONS = 20;
+// We use a symbol to represent an empty droppable id.
 const $24bdaa72c91e807d$var$EMPTY_SYMBOL = Symbol();
-const $24bdaa72c91e807d$export$ac79253b7e6fb14 = {
-    checkCollision: (draggable, droppable, collisionData)=>{
+class $24bdaa72c91e807d$export$b931ab7b292a336c {
+    constructor(dndContext){
+        this._listenerId = Symbol();
+        this._dndContext = dndContext;
+        this._collisionDataPoolCache = [];
+        this._collisionDataPoolMap = new Map();
+    }
+    _checkCollision(draggable, droppable, collisionData) {
         const draggableRect = draggable.getClientRect();
         const droppableRect = droppable.getClientRect();
         if (!draggableRect) return null;
@@ -3869,15 +3876,15 @@ const $24bdaa72c91e807d$export$ac79253b7e6fb14 = {
         (0, $8c16eefbe97bde49$export$bd5271f935fe8c1a)(draggableRect, collisionData.draggableRect);
         collisionData.intersectionScore = intersectionScore;
         return collisionData;
-    },
-    sortCollisions: (_draggable, collisions)=>{
+    }
+    _sortCollisions(_draggable, collisions) {
         return collisions.sort((a, b)=>{
             const diff = b.intersectionScore - a.intersectionScore;
             if (diff !== 0) return diff;
             return a.droppableRect.width * a.droppableRect.height - b.droppableRect.width * b.droppableRect.height;
         });
-    },
-    createCollisionData: ()=>{
+    }
+    _createCollisionData() {
         return {
             droppableId: $24bdaa72c91e807d$var$EMPTY_SYMBOL,
             droppableRect: (0, $8c16eefbe97bde49$export$bd5271f935fe8c1a)(),
@@ -3886,23 +3893,11 @@ const $24bdaa72c91e807d$export$ac79253b7e6fb14 = {
             intersectionScore: 0
         };
     }
-};
-class $24bdaa72c91e807d$export$b931ab7b292a336c {
-    constructor(dndContext, { checkCollision: checkCollision = $24bdaa72c91e807d$export$ac79253b7e6fb14.checkCollision, createCollisionData: createCollisionData = $24bdaa72c91e807d$export$ac79253b7e6fb14.createCollisionData, sortCollisions: sortCollisions = $24bdaa72c91e807d$export$ac79253b7e6fb14.sortCollisions } = {}){
-        this._listenerId = Symbol();
-        this._dndContext = dndContext;
-        this._collisionDataPoolCache = [];
-        this._collisionDataPoolMap = new Map();
-        // These can be overriden anytime.
-        this.checkCollision = checkCollision;
-        this.sortCollisions = sortCollisions;
-        this.createCollisionData = createCollisionData;
-    }
     getCollisionDataPool(draggable) {
         let pool = this._collisionDataPoolMap.get(draggable);
         if (!pool) {
             pool = this._collisionDataPoolCache.pop() || new (0, $58dee706ab5c60e6$export$8d6d40335cc0e943)((item)=>{
-                return item || this.createCollisionData();
+                return item || this._createCollisionData();
             });
             this._collisionDataPoolMap.set(draggable, pool);
         }
@@ -3929,13 +3924,13 @@ class $24bdaa72c91e807d$export$b931ab7b292a336c {
         const droppables = targets.values();
         for (const droppable of droppables){
             collisionData = collisionData || collisionDataPool.get();
-            if (this.checkCollision(draggable, droppable, collisionData)) {
+            if (this._checkCollision(draggable, droppable, collisionData)) {
                 collisions.push(collisionData);
                 collisionData = null;
             }
         }
         // Sort the collisions.
-        if (collisions.length > 1) this.sortCollisions(draggable, collisions);
+        if (collisions.length > 1) this._sortCollisions(draggable, collisions);
         // Reset collision data pool pointer.
         collisionDataPool.resetPointer();
     }
@@ -3992,8 +3987,8 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
         this._emitter = new (0, $e4e7a534e772252d$export$4293555f241ae35a)();
         // Bind methods.
         this._onScroll = this._onScroll.bind(this);
-        if (typeof collisionDetector === 'function') this._collisionDetector = collisionDetector(this);
-        else this._collisionDetector = new (0, $24bdaa72c91e807d$export$b931ab7b292a336c)(this, collisionDetector);
+        // Create the collision detector.
+        this._collisionDetector = collisionDetector ? collisionDetector(this) : new (0, $24bdaa72c91e807d$export$b931ab7b292a336c)(this);
     }
     get drags() {
         return this._drags;
@@ -4465,24 +4460,332 @@ class $fa11c4bc76a2544e$export$2d5c5ceac203fc1e {
 
 
 
-const $dffb89cf206e4bcc$var$element = document.querySelector('.draggable');
-const $dffb89cf206e4bcc$var$handle = $dffb89cf206e4bcc$var$element.querySelector('.handle');
-const $dffb89cf206e4bcc$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($dffb89cf206e4bcc$var$handle);
-const $dffb89cf206e4bcc$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($dffb89cf206e4bcc$var$element);
-const $dffb89cf206e4bcc$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $dffb89cf206e4bcc$var$pointerSensor,
-    $dffb89cf206e4bcc$var$keyboardSensor
+
+const $438f007220f0e810$var$VISIBLE_OVERFLOW = 'visible';
+function $438f007220f0e810$export$2b5a67cb9853726e(element, includeElement, result = []) {
+    let parent = includeElement ? element : element?.parentNode;
+    // Reset the result array.
+    result.length = 0;
+    while(parent && !(0, $789757134a6ba490$export$62858bae88b53fd0)(parent)){
+        if (parent instanceof Element) {
+            const style = (0, $b75b79b0209a801e$export$3d2f074408bd1b82)(parent);
+            // TODO: Account for clip value, which is special. We will need to
+            // provide offset values for the clip container in the result array.
+            // At the moment this logic does not account for senario where we have
+            // clip and visible overflow on the same element for different axes. And
+            // also it does not account for overflow-clip-margin property, which is
+            // a bit experimental atm.
+            if (!(style.overflowY === $438f007220f0e810$var$VISIBLE_OVERFLOW || style.overflowX === $438f007220f0e810$var$VISIBLE_OVERFLOW)) result.push(parent);
+            parent = parent.parentNode;
+        } else if (parent instanceof ShadowRoot) parent = parent.host;
+        else parent = parent.parentNode;
+    }
+    // Always push window to the results (as last clip container element).
+    result.push(window);
+    return result;
+}
+
+
+const $31f0e541fc872793$var$EMPTY_RECT = {
+    width: 0,
+    height: 0,
+    x: 0,
+    y: 0
+};
+const $31f0e541fc872793$var$MAX_RECT = {
+    width: Number.MAX_SAFE_INTEGER,
+    height: Number.MAX_SAFE_INTEGER,
+    x: Number.MAX_SAFE_INTEGER * -0.5,
+    y: Number.MAX_SAFE_INTEGER * -0.5
+};
+const $31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS = [];
+const $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS = [];
+const $31f0e541fc872793$var$DRAGGABLE_CLIP_CHAIN = [];
+const $31f0e541fc872793$var$DROPPABLE_CLIP_CHAIN = [];
+function $31f0e541fc872793$var$computeDraggableClipAncestors(draggable) {
+    if (!$31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS.length) {
+        const dragContainer = draggable.drag?.items?.[0]?.dragContainer;
+        if (dragContainer) (0, $438f007220f0e810$export$2b5a67cb9853726e)(dragContainer, true, $31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS);
+        else $31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS.push(window);
+    }
+}
+function $31f0e541fc872793$var$computeDroppableClipAncestors(droppable) {
+    if (!$31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS.length) (0, $438f007220f0e810$export$2b5a67cb9853726e)(droppable.element, false, $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS);
+}
+function $31f0e541fc872793$var$getRecursiveIntersectionRect(elements, result = (0, $8c16eefbe97bde49$export$bd5271f935fe8c1a)()) {
+    // Initialize with first element or empty rect.
+    (0, $8c16eefbe97bde49$export$bd5271f935fe8c1a)(elements.length ? (0, $ef561677d46962d4$export$4b834cebd9e5cebe)([
+        elements[0],
+        'padding'
+    ], window) : $31f0e541fc872793$var$MAX_RECT, result);
+    // Compute intersection with remaining elements.
+    for(let i = 1; i < elements.length; i++){
+        const el = elements[i];
+        const rect = (0, $ef561677d46962d4$export$4b834cebd9e5cebe)([
+            el,
+            'padding'
+        ], window);
+        if (!(0, $a33e267a6bda430c$export$990bfa80a352efc5)(result, rect, result)) {
+            (0, $8c16eefbe97bde49$export$bd5271f935fe8c1a)($31f0e541fc872793$var$EMPTY_RECT, result);
+            break;
+        }
+    }
+    return result;
+}
+class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$export$b931ab7b292a336c) {
+    constructor(dndContext){
+        super(dndContext);
+        this._dragStates = new Map();
+        this._listenersAttached = false;
+        this._clearCache = ()=>this.clearCache();
+    }
+    _checkCollision(draggable, droppable, collisionData) {
+        // Get the drag state.
+        const state = this._dragStates.get(draggable);
+        if (!state) return null;
+        // Get the draggable and droppable rects.
+        const draggableRect = draggable.getClientRect();
+        const droppableRect = droppable.getClientRect();
+        if (!draggableRect || !droppableRect) return null;
+        // Get the clip mask key.
+        let clipMaskKey = state.clipMaskKeyMap.get(droppable);
+        // If we don't have a clip mask key, compute it and also the clip masks if
+        // there is no entry yet for this clip mask key.
+        if (!clipMaskKey) {
+            // Reset temp data before computing (just a safety measure).
+            $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS.length = 0;
+            $31f0e541fc872793$var$DRAGGABLE_CLIP_CHAIN.length = 0;
+            $31f0e541fc872793$var$DROPPABLE_CLIP_CHAIN.length = 0;
+            // Compute the droppable clip ancestors.
+            $31f0e541fc872793$var$computeDroppableClipAncestors(droppable);
+            // Use the first clip container as the clip mask key.
+            clipMaskKey = $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS[0] || window;
+            // Store the clip mask key.
+            state.clipMaskKeyMap.set(droppable, clipMaskKey);
+            // If there is no entry yet for this clip mask key, compute the clip
+            // masks.
+            if (!state.clipMaskMap.has(clipMaskKey)) {
+                $31f0e541fc872793$var$computeDraggableClipAncestors(draggable);
+                // Find first common clip container (FCCC). There's always at least
+                // window.
+                let fccc = window;
+                for (const droppableClipAncestor of $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS)if ($31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS.includes(droppableClipAncestor)) {
+                    fccc = droppableClipAncestor;
+                    break;
+                }
+                // Get draggable's clip container chain.
+                for (const draggableClipAncestor of $31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS){
+                    if (draggableClipAncestor === fccc) break;
+                    if (draggableClipAncestor instanceof Element) $31f0e541fc872793$var$DRAGGABLE_CLIP_CHAIN.push(draggableClipAncestor);
+                }
+                // Get droppable's clip container chain.
+                for (const droppableClipAncestor of $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS){
+                    if (droppableClipAncestor === fccc) break;
+                    if (droppableClipAncestor instanceof Element) $31f0e541fc872793$var$DROPPABLE_CLIP_CHAIN.push(droppableClipAncestor);
+                }
+                // Compute clip masks.
+                const draggableClipMask = $31f0e541fc872793$var$getRecursiveIntersectionRect($31f0e541fc872793$var$DRAGGABLE_CLIP_CHAIN);
+                const droppableClipMask = $31f0e541fc872793$var$getRecursiveIntersectionRect($31f0e541fc872793$var$DROPPABLE_CLIP_CHAIN);
+                // Cache the clip masks.
+                state.clipMaskMap.set(clipMaskKey, [
+                    draggableClipMask,
+                    droppableClipMask
+                ]);
+            }
+            // Reset temp data.
+            $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS.length = 0;
+            $31f0e541fc872793$var$DRAGGABLE_CLIP_CHAIN.length = 0;
+            $31f0e541fc872793$var$DROPPABLE_CLIP_CHAIN.length = 0;
+        }
+        // Get the clip masks.
+        const [draggableClipMask, droppableClipMask] = state.clipMaskMap.get(clipMaskKey) || [];
+        if (!draggableClipMask || !droppableClipMask) return null;
+        // Compute the draggable visible rect.
+        if (!(0, $a33e267a6bda430c$export$990bfa80a352efc5)(draggableRect, draggableClipMask, collisionData.draggableVisibleRect)) return null;
+        // Compute the droppable visible rect.
+        if (!(0, $a33e267a6bda430c$export$990bfa80a352efc5)(droppableRect, droppableClipMask, collisionData.droppableVisibleRect)) return null;
+        // Compute the intersection rect.
+        if (!(0, $a33e267a6bda430c$export$990bfa80a352efc5)(collisionData.draggableVisibleRect, collisionData.droppableVisibleRect, collisionData.intersectionRect)) return null;
+        // Compute the intersection score.
+        const score = (0, $ec0caa97c3c0620a$export$25b3e1e24e1ba229)(collisionData.draggableVisibleRect, collisionData.droppableVisibleRect, collisionData.intersectionRect);
+        if (score <= 0) return null;
+        // Set the collision data.
+        collisionData.droppableId = droppable.id;
+        (0, $8c16eefbe97bde49$export$bd5271f935fe8c1a)(droppableRect, collisionData.droppableRect);
+        (0, $8c16eefbe97bde49$export$bd5271f935fe8c1a)(draggableRect, collisionData.draggableRect);
+        collisionData.intersectionScore = score;
+        // Return the collision data.
+        return collisionData;
+    }
+    _sortCollisions(_draggable, collisions) {
+        return collisions.sort((a, b)=>{
+            const diff = b.intersectionScore - a.intersectionScore;
+            if (diff !== 0) return diff;
+            return a.droppableVisibleRect.width * a.droppableVisibleRect.height - b.droppableVisibleRect.width * b.droppableVisibleRect.height;
+        });
+    }
+    _createCollisionData() {
+        const data = super._createCollisionData();
+        data.droppableVisibleRect = (0, $8c16eefbe97bde49$export$bd5271f935fe8c1a)();
+        data.draggableVisibleRect = (0, $8c16eefbe97bde49$export$bd5271f935fe8c1a)();
+        return data;
+    }
+    _getDragState(draggable) {
+        let state = this._dragStates.get(draggable);
+        if (state) return state;
+        // Create the state.
+        state = {
+            clipMaskKeyMap: new Map(),
+            clipMaskMap: new Map(),
+            cacheDirty: true
+        };
+        // Store the state.
+        this._dragStates.set(draggable, state);
+        // Attach global listeners if needed.
+        if (!this._listenersAttached) {
+            window.addEventListener('scroll', this._clearCache, {
+                capture: true,
+                passive: true
+            });
+            window.addEventListener('resize', this._clearCache, {
+                passive: true
+            });
+            this._listenersAttached = true;
+        }
+        return state;
+    }
+    // Create or get pool, making sure our drag state exists first.
+    getCollisionDataPool(draggable) {
+        this._getDragState(draggable);
+        return super.getCollisionDataPool(draggable);
+    }
+    removeCollisionDataPool(draggable) {
+        if (this._dragStates.delete(draggable)) {
+            if (this._dndContext.drags.size <= 0) {
+                if (this._listenersAttached) {
+                    window.removeEventListener('scroll', this._clearCache, {
+                        capture: true
+                    });
+                    window.removeEventListener('resize', this._clearCache);
+                    this._listenersAttached = false;
+                }
+            }
+        }
+        super.removeCollisionDataPool(draggable);
+    }
+    detectCollisions(draggable, targets, collisions) {
+        // Reset draggable clip ancestors before computing (just a safety measure).
+        $31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS.length = 0;
+        // Clear the clip masks maps if the cache is dirty.
+        const state = this._getDragState(draggable);
+        if (state.cacheDirty) {
+            state.clipMaskKeyMap.clear();
+            state.clipMaskMap.clear();
+            state.cacheDirty = false;
+        }
+        super.detectCollisions(draggable, targets, collisions);
+        // Reset draggable clip ancestors after computing.
+        $31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS.length = 0;
+    }
+    clearCache(draggable) {
+        if (draggable) {
+            const state = this._dragStates.get(draggable);
+            if (state) state.cacheDirty = true;
+        } else this._dragStates.forEach((state)=>{
+            state.cacheDirty = true;
+        });
+    }
+}
+
+
+
+
+
+
+
+
+const $dbc52347541b57ca$var$scrollContainer = document.querySelector('.scroll-list');
+const $dbc52347541b57ca$var$draggableEl = document.querySelector('.draggable');
+const $dbc52347541b57ca$var$droppableEls = [
+    ...document.querySelectorAll('.droppable')
+];
+const $dbc52347541b57ca$var$dnd = new (0, $fa11c4bc76a2544e$export$2d5c5ceac203fc1e)({
+    collisionDetector: (ctx)=>new (0, $31f0e541fc872793$export$33a3c5dbfd7c6c65)(ctx)
+});
+// Create droppables.
+const $dbc52347541b57ca$var$droppables = [];
+for (const el of $dbc52347541b57ca$var$droppableEls){
+    const drop = new (0, $8cf3b9f73d8dfc46$export$423ec2075359570a)(el);
+    drop.data.overIds = new Set();
+    drop.data.droppedIds = new Set();
+    $dbc52347541b57ca$var$droppables.push(drop);
+}
+// Create draggable.
+const $dbc52347541b57ca$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    new (0, $e72ff61c97f755fe$export$b26af955418d6638)($dbc52347541b57ca$var$draggableEl),
+    new (0, $7fff4587bd07df96$export$436f6efcc297171)($dbc52347541b57ca$var$draggableEl)
 ], {
+    container: document.body,
     elements: ()=>[
-            $dffb89cf206e4bcc$var$element
+            $dbc52347541b57ca$var$draggableEl
         ],
+    startPredicate: ()=>!$dbc52347541b57ca$var$draggableEl.classList.contains('dragging'),
     onStart: ()=>{
-        $dffb89cf206e4bcc$var$element.classList.add('dragging');
-        if ($dffb89cf206e4bcc$var$draggable.drag.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) $dffb89cf206e4bcc$var$element.classList.add('pointer-dragging');
-        else $dffb89cf206e4bcc$var$element.classList.add('keyboard-dragging');
+        $dbc52347541b57ca$var$draggableEl.classList.add('dragging');
     },
     onEnd: ()=>{
-        $dffb89cf206e4bcc$var$element.classList.remove('dragging', 'pointer-dragging', 'keyboard-dragging');
+        $dbc52347541b57ca$var$draggableEl.classList.remove('dragging');
+    }
+}).use((0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
+    targets: [
+        {
+            element: $dbc52347541b57ca$var$scrollContainer,
+            axis: 'y',
+            padding: {
+                top: 0,
+                bottom: 0
+            }
+        }
+    ]
+}));
+// Add droppables and draggable to the context.
+$dbc52347541b57ca$var$dnd.addDroppables($dbc52347541b57ca$var$droppables);
+$dbc52347541b57ca$var$dnd.addDraggables([
+    $dbc52347541b57ca$var$draggable
+]);
+// On start, clear previous dropped state from all targets.
+$dbc52347541b57ca$var$dnd.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Start, ({ draggable: draggable, targets: targets })=>{
+    targets.forEach((droppable)=>{
+        droppable.data.droppedIds.delete(draggable.id);
+        if (droppable.data.droppedIds.size === 0) droppable.element.classList.remove('draggable-dropped');
+    });
+});
+// Update over classes.
+$dbc52347541b57ca$var$dnd.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Collide, ({ draggable: draggable, contacts: contacts, removedContacts: removedContacts })=>{
+    removedContacts.forEach((target)=>{
+        target.data.overIds.delete(draggable.id);
+        if (target.data.overIds.size === 0) target.element.classList.remove('draggable-over');
+    });
+    let i = 0;
+    for (const t of contacts){
+        if (i === 0) {
+            t.data.overIds.add(draggable.id);
+            t.element.classList.add('draggable-over');
+        } else {
+            t.data.overIds.delete(draggable.id);
+            if (t.data.overIds.size === 0) t.element.classList.remove('draggable-over');
+        }
+        i++;
+    }
+});
+// On end, mark dropped.
+$dbc52347541b57ca$var$dnd.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).End, ({ draggable: draggable, contacts: contacts })=>{
+    for (const t of contacts){
+        t.data.droppedIds.add(draggable.id);
+        t.element.classList.add('draggable-dropped');
+        t.data.overIds.delete(draggable.id);
+        if (t.data.overIds.size === 0) t.element.classList.remove('draggable-over');
+        return;
     }
 });
 

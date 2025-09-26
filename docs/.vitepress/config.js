@@ -146,6 +146,7 @@ function sidebarGuide() {
         { text: 'DndContext', link: '/dnd-context' },
         { text: 'Droppable', link: '/droppable' },
         { text: 'CollisionDetector', link: '/collision-detector' },
+        { text: 'AdvancedCollisionDetector', link: '/advanced-collision-detector' },
       ],
     },
   ];

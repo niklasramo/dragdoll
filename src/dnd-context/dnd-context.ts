@@ -8,11 +8,7 @@ import { Droppable, DroppableEventType, DroppableId } from '../droppable/droppab
 
 import { SensorEventType } from '../sensors/sensor.js';
 
-import {
-  CollisionDetector,
-  CollisionData,
-  CollisionDetectorOptions,
-} from './collision-detector.js';
+import { CollisionDetector, CollisionData } from './collision-detector.js';
 
 import { ticker, tickerPhases } from '../singletons/ticker.js';
 
@@ -113,9 +109,7 @@ export type DndContextDragData = Readonly<{
 }>;
 
 export interface DndContextOptions<T extends CollisionData = CollisionData> {
-  collisionDetector?:
-    | CollisionDetectorOptions<T>
-    | ((dndContext: DndContext<T>) => CollisionDetector<T>);
+  collisionDetector?: (dndContext: DndContext<T>) => CollisionDetector<T>;
 }
 
 export class DndContext<T extends CollisionData = CollisionData> {
@@ -151,11 +145,10 @@ export class DndContext<T extends CollisionData = CollisionData> {
     // Bind methods.
     this._onScroll = this._onScroll.bind(this);
 
-    if (typeof collisionDetector === 'function') {
-      this._collisionDetector = collisionDetector(this);
-    } else {
-      this._collisionDetector = new CollisionDetector<T>(this, collisionDetector);
-    }
+    // Create the collision detector.
+    this._collisionDetector = collisionDetector
+      ? collisionDetector(this)
+      : new CollisionDetector<T>(this);
   }
 
   get drags() {

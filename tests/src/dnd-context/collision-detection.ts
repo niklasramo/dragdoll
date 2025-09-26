@@ -8,7 +8,7 @@ import {
   Droppable,
   KeyboardSensor,
   CollisionData,
-  CollisionDetectorDefaultOptions,
+  CollisionDetector,
 } from '../../../src/index.js';
 
 export function collisionDetection() {
@@ -405,33 +405,28 @@ export function collisionDetection() {
         accept: ['test'],
       });
 
+      class TestDetector extends CollisionDetector<CustomCollisionData> {
+        protected override _createCollisionData(): CustomCollisionData {
+          const base = super._createCollisionData() as CustomCollisionData;
+          base.customProp = '';
+          return base;
+        }
+
+        protected override _checkCollision(
+          draggable: any,
+          droppable: any,
+          data: CustomCollisionData,
+        ) {
+          customDetectorCalled = true;
+          const result = super._checkCollision(draggable, droppable, data);
+          if (!result) return null;
+          result.customProp = 'test-value';
+          return result;
+        }
+      }
+
       const dndContext = new DndContext<CustomCollisionData>({
-        collisionDetector: {
-          checkCollision: (draggable, droppable, collisionData) => {
-            customDetectorCalled = true;
-
-            // Use the default collision detection logic.
-            const result = CollisionDetectorDefaultOptions.checkCollision(
-              draggable,
-              droppable,
-              collisionData,
-            );
-
-            // If result is null, it means there is no collision.
-            if (!result) return null;
-
-            // Set the custom property.
-            result.customProp = 'test-value';
-
-            return result;
-          },
-          createCollisionData: () => {
-            const data =
-              CollisionDetectorDefaultOptions.createCollisionData() as CustomCollisionData;
-            data.customProp = '';
-            return data;
-          },
-        },
+        collisionDetector: (ctx) => new TestDetector(ctx),
       });
 
       dndContext.on('enter', (data) => {

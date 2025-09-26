@@ -789,25 +789,15 @@ interface CollisionData {
     intersectionRect: Rect;
     intersectionScore: number;
 }
-interface CollisionDetectorOptions<T extends CollisionData = CollisionData> {
-    checkCollision?: (draggable: Draggable<any>, droppable: Droppable, collisionData: T) => T | null;
-    sortCollisions?: (draggable: Draggable<any>, collisions: T[]) => T[];
-    createCollisionData?: () => T;
-}
-declare const CollisionDetectorDefaultOptions: {
-    readonly checkCollision: <T extends CollisionData = CollisionData>(draggable: Draggable<any>, droppable: Droppable, collisionData: T) => T | null;
-    readonly sortCollisions: <T extends CollisionData = CollisionData>(_draggable: Draggable<any>, collisions: T[]) => T[];
-    readonly createCollisionData: <T extends CollisionData = CollisionData>() => T;
-};
 declare class CollisionDetector<T extends CollisionData = CollisionData> {
     protected _listenerId: Symbol;
     protected _dndContext: DndContext<T>;
     protected _collisionDataPoolCache: FastObjectPool<T, []>[];
     protected _collisionDataPoolMap: Map<Draggable<any>, FastObjectPool<T, []>>;
-    checkCollision: (draggable: Draggable<any>, droppable: Droppable, collisionData: T) => T | null;
-    sortCollisions: (draggable: Draggable<any>, collisions: T[]) => T[];
-    createCollisionData: () => T;
-    constructor(dndContext: DndContext<T>, { checkCollision, createCollisionData, sortCollisions, }?: CollisionDetectorOptions<T>);
+    constructor(dndContext: DndContext<T>);
+    protected _checkCollision(draggable: Draggable<any>, droppable: Droppable, collisionData: T): T | null;
+    protected _sortCollisions(_draggable: Draggable<any>, collisions: T[]): T[];
+    protected _createCollisionData(): T;
     getCollisionDataPool(draggable: Draggable<any>): FastObjectPool<T, []>;
     removeCollisionDataPool(draggable: Draggable<any>): void;
     detectCollisions(draggable: Draggable<any>, targets: Map<DroppableId, Droppable>, collisions: T[]): void;
@@ -911,7 +901,7 @@ type DndContextDragData = Readonly<{
     };
 }>;
 interface DndContextOptions<T extends CollisionData = CollisionData> {
-    collisionDetector?: CollisionDetectorOptions<T> | ((dndContext: DndContext<T>) => CollisionDetector<T>);
+    collisionDetector?: (dndContext: DndContext<T>) => CollisionDetector<T>;
 }
 declare class DndContext<T extends CollisionData = CollisionData> {
     readonly draggables: ReadonlyMap<DraggableId, Draggable<any>>;
@@ -951,6 +941,30 @@ declare class DndContext<T extends CollisionData = CollisionData> {
     destroy(): void;
 }
 
+interface DragState {
+    clipMaskKeyMap: Map<Droppable, Element | Window>;
+    clipMaskMap: Map<Element | Window, [Rect, Rect]>;
+    cacheDirty: boolean;
+}
+interface AdvancedCollisionData extends CollisionData {
+    draggableVisibleRect: Rect;
+    droppableVisibleRect: Rect;
+}
+declare class AdvancedCollisionDetector<T extends AdvancedCollisionData = AdvancedCollisionData> extends CollisionDetector<T> {
+    protected _dragStates: Map<Draggable<any>, DragState>;
+    protected _listenersAttached: boolean;
+    protected _clearCache: () => void;
+    constructor(dndContext: DndContext<T>);
+    protected _checkCollision(draggable: Draggable<any>, droppable: Droppable, collisionData: T): T | null;
+    protected _sortCollisions(_draggable: Draggable<any>, collisions: T[]): T[];
+    protected _createCollisionData(): T;
+    protected _getDragState(draggable: Draggable<any>): DragState;
+    getCollisionDataPool(draggable: Draggable<any>): FastObjectPool<T, []>;
+    removeCollisionDataPool(draggable: Draggable<any>): void;
+    detectCollisions(draggable: Draggable<any>, targets: Map<Droppable['id'], Droppable>, collisions: T[]): void;
+    clearCache(draggable?: Draggable<any>): void;
+}
+
 declare const autoScroll: AutoScroll;
 
 declare const tickerPhases: {
@@ -960,4 +974,4 @@ declare const tickerPhases: {
 declare let ticker: AutoTicker<eventti.EventName, tikki.AutoTickerDefaultFrameCallback>;
 declare function setTicker(newTicker: AutoTicker<Phase, FrameCallback>, phases: typeof tickerPhases): void;
 
-export { AUTO_SCROLL_AXIS, AUTO_SCROLL_AXIS_DIRECTION, AUTO_SCROLL_DIRECTION, AutoScroll, type AutoScrollItem, type AutoScrollItemEffectCallback, type AutoScrollItemEventCallback, type AutoScrollItemSpeedCallback, type AutoScrollItemTarget, type AutoScrollOptions, type AutoScrollSettings, BaseMotionSensor, type BaseMotionSensorDragData, type BaseMotionSensorEvents, type BaseMotionSensorTickEvent, BaseSensor, type BaseSensorDragData, type CollisionData, CollisionDetector, CollisionDetectorDefaultOptions, type CollisionDetectorOptions, DndContext, type DndContextDragData, type DndContextEventCallbacks, DndContextEventType, type DndContextOptions, Draggable, DraggableApplyPositionPhase, DraggableAutoScroll, type DraggableAutoScrollOptions, type DraggableAutoScrollSettings, DraggableDefaultSettings, type DraggableEventCallbacks, DraggableEventType, type DraggableId, type DraggableModifier, type DraggableModifierData, DraggableModifierPhase, type DraggablePlugin, type DraggablePluginMap, type DraggableSettings, Droppable, type DroppableAcceptId, type DroppableEventCallbacks, DroppableEventType, type DroppableId, type DroppableOptions, KeyboardMotionSensor, type KeyboardMotionSensorEvents, type KeyboardMotionSensorSettings, KeyboardSensor, type KeyboardSensorCancelEvent, type KeyboardSensorDestroyEvent, type KeyboardSensorEndEvent, type KeyboardSensorEvents, type KeyboardSensorMoveEvent, type KeyboardSensorPredicate, type KeyboardSensorSettings, type KeyboardSensorStartEvent, PointerSensor, type PointerSensorCancelEvent, type PointerSensorDestroyEvent, type PointerSensorDragData, type PointerSensorEndEvent, type PointerSensorEvents, type PointerSensorMoveEvent, type PointerSensorSettings, type PointerSensorStartEvent, Sensor, type SensorCancelEvent, type SensorDestroyEvent, type SensorEndEvent, SensorEventType, type SensorEvents, type SensorMoveEvent, type SensorStartEvent, autoScroll, autoScrollPlugin, autoScrollSmoothSpeed, createContainmentModifier, createSnapModifier, createTouchDelayPredicate, keyboardMotionSensorDefaults, keyboardSensorDefaults, setTicker, ticker, tickerPhases };
+export { AUTO_SCROLL_AXIS, AUTO_SCROLL_AXIS_DIRECTION, AUTO_SCROLL_DIRECTION, type AdvancedCollisionData, AdvancedCollisionDetector, AutoScroll, type AutoScrollItem, type AutoScrollItemEffectCallback, type AutoScrollItemEventCallback, type AutoScrollItemSpeedCallback, type AutoScrollItemTarget, type AutoScrollOptions, type AutoScrollSettings, BaseMotionSensor, type BaseMotionSensorDragData, type BaseMotionSensorEvents, type BaseMotionSensorTickEvent, BaseSensor, type BaseSensorDragData, type CollisionData, CollisionDetector, DndContext, type DndContextDragData, type DndContextEventCallbacks, DndContextEventType, type DndContextOptions, Draggable, DraggableApplyPositionPhase, DraggableAutoScroll, type DraggableAutoScrollOptions, type DraggableAutoScrollSettings, DraggableDefaultSettings, type DraggableEventCallbacks, DraggableEventType, type DraggableId, type DraggableModifier, type DraggableModifierData, DraggableModifierPhase, type DraggablePlugin, type DraggablePluginMap, type DraggableSettings, Droppable, type DroppableAcceptId, type DroppableEventCallbacks, DroppableEventType, type DroppableId, type DroppableOptions, KeyboardMotionSensor, type KeyboardMotionSensorEvents, type KeyboardMotionSensorSettings, KeyboardSensor, type KeyboardSensorCancelEvent, type KeyboardSensorDestroyEvent, type KeyboardSensorEndEvent, type KeyboardSensorEvents, type KeyboardSensorMoveEvent, type KeyboardSensorPredicate, type KeyboardSensorSettings, type KeyboardSensorStartEvent, PointerSensor, type PointerSensorCancelEvent, type PointerSensorDestroyEvent, type PointerSensorDragData, type PointerSensorEndEvent, type PointerSensorEvents, type PointerSensorMoveEvent, type PointerSensorSettings, type PointerSensorStartEvent, Sensor, type SensorCancelEvent, type SensorDestroyEvent, type SensorEndEvent, SensorEventType, type SensorEvents, type SensorMoveEvent, type SensorStartEvent, autoScroll, autoScrollPlugin, autoScrollSmoothSpeed, createContainmentModifier, createSnapModifier, createTouchDelayPredicate, keyboardMotionSensorDefaults, keyboardSensorDefaults, setTicker, ticker, tickerPhases };

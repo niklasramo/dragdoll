@@ -2292,3 +2292,329 @@ body {
 ```
 
 :::
+
+## DndContext - Advanced Collision Detector
+
+Advanced collision detection with a scrollable droppable list. Here we can see how the advanced collision detector respects the visibility of the droppables. Only the visible parts of the droppables are considered for collisions. Note that in this example the collision detection happens only during drag, so if you drop the draggable over a droppable and start scrolling, the 'over' indicator will not be updated.
+
+<div class="example"><iframe src="/dragdoll/examples/012-advanced-collision-detector/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/012-advanced-collision-detector/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+
+::: code-group
+
+```ts [index.ts]
+import {
+  DndContext,
+  Draggable,
+  Droppable,
+  PointerSensor,
+  KeyboardMotionSensor,
+  DndContextEventType,
+  AdvancedCollisionDetector,
+  AdvancedCollisionData,
+  autoScrollPlugin,
+} from 'dragdoll';
+
+const scrollContainer = document.querySelector('.scroll-list') as HTMLElement;
+const draggableEl = document.querySelector('.draggable') as HTMLElement;
+const droppableEls = [...document.querySelectorAll('.droppable')] as HTMLElement[];
+
+const dnd = new DndContext<AdvancedCollisionData>({
+  collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx),
+});
+
+// Create droppables.
+const droppables: Droppable[] = [];
+for (const el of droppableEls) {
+  const drop = new Droppable(el);
+  drop.data.overIds = new Set<number>();
+  drop.data.droppedIds = new Set<number>();
+  droppables.push(drop);
+}
+
+// Create draggable.
+const draggable = new Draggable(
+  [new PointerSensor(draggableEl), new KeyboardMotionSensor(draggableEl)],
+  {
+    container: document.body,
+    elements: () => [draggableEl],
+    startPredicate: () => !draggableEl.classList.contains('dragging'),
+    onStart: () => {
+      draggableEl.classList.add('dragging');
+    },
+    onEnd: () => {
+      draggableEl.classList.remove('dragging');
+    },
+  },
+).use(
+  autoScrollPlugin({
+    targets: [
+      {
+        element: scrollContainer,
+        axis: 'y',
+        padding: { top: 0, bottom: 0 },
+      },
+    ],
+  }),
+);
+
+// Add droppables and draggable to the context.
+dnd.addDroppables(droppables);
+dnd.addDraggables([draggable]);
+
+// On start, clear previous dropped state from all targets.
+dnd.on(DndContextEventType.Start, ({ draggable, targets }) => {
+  targets.forEach((droppable) => {
+    droppable.data.droppedIds.delete(draggable.id);
+    if (droppable.data.droppedIds.size === 0) {
+      droppable.element.classList.remove('draggable-dropped');
+    }
+  });
+});
+
+// Update over classes.
+dnd.on(DndContextEventType.Collide, ({ draggable, contacts, removedContacts }) => {
+  removedContacts.forEach((target) => {
+    target.data.overIds.delete(draggable.id);
+    if (target.data.overIds.size === 0) {
+      target.element.classList.remove('draggable-over');
+    }
+  });
+
+  let i = 0;
+  for (const t of contacts) {
+    if (i === 0) {
+      t.data.overIds.add(draggable.id);
+      t.element.classList.add('draggable-over');
+    } else {
+      t.data.overIds.delete(draggable.id);
+      if (t.data.overIds.size === 0) {
+        t.element.classList.remove('draggable-over');
+      }
+    }
+    i++;
+  }
+});
+
+// On end, mark dropped.
+dnd.on(DndContextEventType.End, ({ draggable, contacts }) => {
+  for (const t of contacts) {
+    t.data.droppedIds.add(draggable.id);
+    t.element.classList.add('draggable-dropped');
+    t.data.overIds.delete(draggable.id);
+    if (t.data.overIds.size === 0) {
+      t.element.classList.remove('draggable-over');
+    }
+    return;
+  }
+});
+```
+
+```html [index.html]
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>DndContext - Advanced Collision Detector</title>
+    <meta
+      name="description"
+      content="Advanced collision detection with a scrollable droppable list. Here we can see how the advanced collision detector respects the visibility of the droppables. Only the visible parts of the droppables are considered for collisions. Note that in this example the collision detection happens only during drag, so if you drop the draggable over a droppable and start scrolling, the 'over' indicator will not be updated."
+    />
+    <meta
+      name="viewport"
+      content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div class="scroll-list">
+      <div class="droppable">
+        <div class="card draggable" tabindex="0">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <path
+              d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"
+            />
+          </svg>
+        </div>
+      </div>
+      <div class="droppable"></div>
+      <div class="droppable"></div>
+      <div class="droppable"></div>
+      <div class="droppable"></div>
+      <div class="droppable"></div>
+      <div class="droppable"></div>
+      <div class="droppable"></div>
+      <div class="droppable"></div>
+      <div class="droppable"></div>
+      <div class="droppable"></div>
+      <div class="droppable"></div>
+      <div class="droppable"></div>
+      <div class="droppable"></div>
+      <div class="droppable"></div>
+      <div class="droppable"></div>
+    </div>
+
+    <script type="module" src="index.ts"></script>
+  </body>
+</html>
+```
+
+```css [index.css]
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.scroll-list {
+  --scroll-list-width: min(260px, calc(100vw - 100px));
+  --scroll-list-height: min(260px, calc(100vh - 100px));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  display: grid;
+  position: absolute;
+  left: calc(50% - calc(var(--scroll-list-width) / 2));
+  top: calc(50% - calc(var(--scroll-list-height) / 2));
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  width: var(--scroll-list-width);
+  height: var(--scroll-list-height);
+  overflow: hidden scroll;
+}
+
+.droppable {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  aspect-ratio: 1 / 1;
+  background-color: var(--bg-color);
+  border-radius: 7px;
+  border: 1.5px solid var(--theme-color);
+  transition:
+    border-color 0.2s ease-out,
+    box-shadow 0.2s ease-out;
+  box-shadow:
+    0 0 0 2px transparent,
+    0 0 0 3.5px transparent;
+}
+
+.droppable.draggable-over {
+  border-color: var(--card-bgColor--focus);
+  box-shadow:
+    0 0 0 2px var(--bg-color),
+    0 0 0 3.5px var(--card-bgColor--focus);
+}
+
+.droppable.draggable-dropped {
+  border-color: var(--card-bgColor--drag);
+  box-shadow:
+    0 0 0 2px transparent,
+    0 0 0 3.5px transparent;
+}
+
+.card.draggable {
+  position: absolute;
+  top: 8.5px;
+  left: 8.5px;
+  border-radius: 5px;
+  width: 80px;
+  height: 80px;
+  z-index: 100;
+}
+```
+
+```css [base.css]
+:root {
+  --bg-color: #111;
+  --color: rgba(255, 255, 245, 0.86);
+  --theme-color: #ff5555;
+  --card-color: rgba(0, 0, 0, 0.7);
+  --card-bgColor: var(--theme-color);
+  --card-color--focus: var(--card-color);
+  --card-bgColor--focus: #db55ff;
+  --card-color--drag: var(--card-color);
+  --card-bgColor--drag: #55ff9c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  background: var(--bg-color);
+  color: var(--color);
+  background-size: 40px 40px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+.card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  background-color: var(--card-bgColor);
+  color: var(--card-color);
+  border-radius: 7px;
+  border: 1.5px solid var(--bg-color);
+  font-size: 30px;
+
+  & svg {
+    width: 1em;
+    height: 1em;
+    fill: var(--card-color);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover,
+    &:focus-visible {
+      background-color: var(--card-bgColor--focus);
+      color: var(--card-color--focus);
+
+      & svg {
+        fill: var(--card-color--focus);
+      }
+    }
+
+    &:focus-visible {
+      outline-offset: 4px;
+      outline: 1px solid var(--card-bgColor--focus);
+    }
+  }
+
+  &.draggable {
+    cursor: grab;
+    touch-action: none;
+  }
+
+  &.dragging {
+    cursor: grabbing;
+    background-color: var(--card-bgColor--drag);
+    color: var(--card-color--drag);
+
+    & svg {
+      fill: var(--card-color--drag);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:focus-visible {
+        outline: 1px solid var(--card-bgColor--drag);
+      }
+    }
+  }
+}
+```
+
+:::

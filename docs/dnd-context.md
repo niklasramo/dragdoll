@@ -82,11 +82,9 @@ class DndContext {
 1. **options**
    - An optional configuration object with the following properties:
      - **`collisionDetector`**
-       - Either a collision detector options object or a factory function that creates a custom `CollisionDetector` instance.
-       - If an options object is provided, it will be used to configure the default `CollisionDetector`.
-       - If a factory function is provided, it receives the `DndContext` instance as an argument and should return a `CollisionDetector`.
+       - A factory function that receives the `DndContext` instance and returns a `CollisionDetector`.
        - If not provided, a default `CollisionDetector` will be created.
-       - See the [CollisionDetector](/collision-detector) documentation for more details.
+       - See the [CollisionDetector](/collision-detector) docs for subclassing examples.
 
 ## Properties
 
