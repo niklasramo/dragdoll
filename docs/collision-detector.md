@@ -2,7 +2,9 @@
 
 # CollisionDetector
 
-The `CollisionDetector` class is responsible for determining which droppables are colliding with a draggable during drag operations.
+The `CollisionDetector` class is the base class for all collision detectors. By its own it does simple collision detection based on the intersection of the draggable and droppable client rects. It does not account for the actual visibility of the draggable and droppable relative to each other (e.g., when a droppable is clipped inside a scrollable container and the draggable is outside it).
+
+For more advanced collision detection, you can extend the `CollisionDetector` class and build your own logic on top of it. We also provide an [`AdvancedCollisionDetector`](/advanced-collision-detector) that extends the base and adds support for clipping and visibility constraints out of the box.
 
 ## Example
 
@@ -42,7 +44,7 @@ class CustomCollisionDetector extends CollisionDetector<CustomCollisionData> {
 
 // Provide a factory that returns your detector instance.
 const dndContext = new DndContext({
-  collisionDetector: (ctx) => new MyCollisionDetector(ctx),
+  collisionDetector: (ctx) => new CustomCollisionDetector(ctx),
 });
 ```
 
@@ -65,7 +67,7 @@ class CollisionDetector<T extends CollisionData = CollisionData> {
 - `_checkCollision(draggable, droppable, data): T | null`
   - Compute collision and return `data` or `null`. Default uses intersection.
 - `_sortCollisions(draggable, collisions): T[]`
-  - Sort by score descending, then droppable size. Return the array to use.
+  - Sort by score descending, then droppable size (ascending) as a tiebreaker.
 - `_createCollisionData(): T`
   - Create a pooled data object. Override to extend `CollisionData`.
 
@@ -98,6 +100,34 @@ destroy(): void
 ```
 
 Cleans up resources, resets the object pool, and removes event listeners. Note that you don't need to call this method manually after it's connected to the `DndContext` instance as it will be called automatically when the `DndContext` instance is destroyed.
+
+## Protected methods
+
+These methods are meant to be overridden by subclasses. You can use them to control the collision detection process.
+
+### \_checkCollision
+
+```ts
+_checkCollision(draggable: Draggable<any>, droppable: Droppable, data: T): T | null
+```
+
+Checks if a collision exists between a draggable and a droppable. Should return the provided `data` object if a collision is found with the updated values and `null` if no collision is found.
+
+### \_sortCollisions
+
+```ts
+_sortCollisions(draggable: Draggable<any>, collisions: T[]): T[]
+```
+
+Sorts the collisions from the most relevant to the least relevant. Should return the sorted array. The default implementation sorts by intersection score descending, then by droppable size descending.
+
+### \_createCollisionData
+
+```ts
+_createCollisionData(): T
+```
+
+Creates a new collision data object. Should return a new `CollisionData` object. The final values for the object will be computed by the `_checkCollision` method.
 
 ## CollisionData Interface
 

@@ -4706,10 +4706,14 @@ class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$ex
 
 
 // Keep track of the best match droppable.
-let $dbc52347541b57ca$var$bestMatchDroppable = null;
+const $dbc52347541b57ca$var$bestMatchMap = new Map();
 // Get elements.
-const $dbc52347541b57ca$var$scrollContainer = document.querySelector('.scroll-list');
-const $dbc52347541b57ca$var$draggableElement = document.querySelector('.draggable');
+const $dbc52347541b57ca$var$scrollContainers = [
+    ...document.querySelectorAll('.scroll-list')
+];
+const $dbc52347541b57ca$var$draggableElements = [
+    ...document.querySelectorAll('.draggable')
+];
 const $dbc52347541b57ca$var$droppableElements = [
     ...document.querySelectorAll('.droppable')
 ];
@@ -4721,91 +4725,124 @@ const $dbc52347541b57ca$var$dndContext = new (0, $fa11c4bc76a2544e$export$2d5c5c
 const $dbc52347541b57ca$var$droppables = [];
 for (const droppableElement of $dbc52347541b57ca$var$droppableElements){
     const droppable = new (0, $8cf3b9f73d8dfc46$export$423ec2075359570a)(droppableElement);
-    droppable.data.overIds = new Set();
-    droppable.data.droppedIds = new Set();
     $dbc52347541b57ca$var$droppables.push(droppable);
 }
-// Create draggable.
-const $dbc52347541b57ca$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    new (0, $e72ff61c97f755fe$export$b26af955418d6638)($dbc52347541b57ca$var$draggableElement),
-    new (0, $7fff4587bd07df96$export$436f6efcc297171)($dbc52347541b57ca$var$draggableElement)
-], {
-    container: document.body,
-    elements: ()=>[
-            $dbc52347541b57ca$var$draggableElement
-        ],
-    startPredicate: ()=>!$dbc52347541b57ca$var$draggableElement.classList.contains('animate'),
-    onStart: ()=>{
-        $dbc52347541b57ca$var$draggableElement.classList.add('dragging');
-    },
-    onEnd: ()=>{
-        $dbc52347541b57ca$var$draggableElement.classList.remove('dragging');
-    }
-}).use((0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
-    targets: [
-        {
-            element: $dbc52347541b57ca$var$scrollContainer,
-            axis: 'y',
-            padding: {
-                top: 0,
-                bottom: 0
-            }
+// Create draggables.
+const $dbc52347541b57ca$var$draggables = [];
+for (const draggableElement of $dbc52347541b57ca$var$draggableElements){
+    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+        new (0, $e72ff61c97f755fe$export$b26af955418d6638)(draggableElement),
+        new (0, $7fff4587bd07df96$export$436f6efcc297171)(draggableElement)
+    ], {
+        // Only move the draggable element.
+        elements: ()=>[
+                draggableElement
+            ],
+        // Use the body as the drag container.
+        container: document.body,
+        // Freeze the width and height of the dragged element since we are using
+        // a custom container and the element has percentage based values for
+        // some of it's properties.
+        frozenStyles: ()=>[
+                'width',
+                'height'
+            ],
+        // Allow the drag to start only if the element is not animating.
+        startPredicate: ()=>!draggableElement.classList.contains('animate'),
+        // Toggle the dragging class on the draggable element when the drag starts
+        // and ends.
+        onStart: ()=>{
+            draggableElement.classList.add('dragging');
+        },
+        onEnd: ()=>{
+            draggableElement.classList.remove('dragging');
         }
-    ]
-}));
-// Add droppables and draggable to the context.
+    }).use(// Allow the draggable to scroll the scroll containers when the dragged
+    // element is close to it's edges.
+    (0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
+        targets: $dbc52347541b57ca$var$scrollContainers.map((scrollContainer)=>({
+                element: scrollContainer,
+                axis: 'y',
+                padding: {
+                    top: 0,
+                    bottom: 0
+                }
+            }))
+    }));
+    $dbc52347541b57ca$var$draggables.push(draggable);
+}
+// Add droppables and draggables to the context.
 $dbc52347541b57ca$var$dndContext.addDroppables($dbc52347541b57ca$var$droppables);
-$dbc52347541b57ca$var$dndContext.addDraggables([
-    $dbc52347541b57ca$var$draggable
-]);
+$dbc52347541b57ca$var$dndContext.addDraggables($dbc52347541b57ca$var$draggables);
+// On draggable collision with droppables.
 $dbc52347541b57ca$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Collide, ({ draggable: draggable, contacts: contacts })=>{
+    // Get the draggable element.
+    const draggableElement = draggable.drag?.items[0].element;
+    if (!draggableElement) return;
+    // Get the draggable id.
+    const draggableId = draggableElement.getAttribute('data-id') || '';
+    if (draggableId === '') return;
     // Get the next best match droppable.
     let nextBestMatch = null;
     for (const droppable of contacts){
+        // Skip if the droppable contains a different draggable.
+        const containedDraggableId = droppable.element.getAttribute('data-draggable-contained') || '';
+        if (containedDraggableId && containedDraggableId !== draggableId) continue;
+        // Skip if a different draggable is over the droppable.
+        const overDraggableId = droppable.element.getAttribute('data-draggable-over') || '';
+        if (overDraggableId && overDraggableId !== draggableId) continue;
+        // We found the next best match.
         nextBestMatch = droppable;
         break;
     }
     // Update the best match droppable if it's changed.
-    if (nextBestMatch !== null && nextBestMatch !== $dbc52347541b57ca$var$bestMatchDroppable) {
-        $dbc52347541b57ca$var$bestMatchDroppable?.element.classList.remove('draggable-over');
-        nextBestMatch.element.classList.add('draggable-over');
-        $dbc52347541b57ca$var$bestMatchDroppable = nextBestMatch;
+    const bestMatch = $dbc52347541b57ca$var$bestMatchMap.get(draggable);
+    if (nextBestMatch !== null && nextBestMatch !== bestMatch) {
+        bestMatch?.element.removeAttribute('data-draggable-over');
+        nextBestMatch.element.setAttribute('data-draggable-over', draggableId);
+        $dbc52347541b57ca$var$bestMatchMap.set(draggable, nextBestMatch);
     }
 });
-$dbc52347541b57ca$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).End, ({ draggable: draggable, contacts: contacts, canceled: canceled })=>{
-    // Find out the original container and the target container, based on the
-    // best match droppable.
-    // TODO: We want this to work a bit differently. If there are no contacts,
-    // we want to keep the last best match as the target container.
-    const originalContainer = $dbc52347541b57ca$var$draggableElement.parentElement;
-    const targetContainer = !canceled && $dbc52347541b57ca$var$bestMatchDroppable ? $dbc52347541b57ca$var$bestMatchDroppable.element : originalContainer;
-    // Move the draggable to the target container. While doing that, let's add
-    // the offset between the original container and the target container to the
-    // draggable's transform so it's visual positoin does not change.
+// On drag end.
+$dbc52347541b57ca$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).End, ({ draggable: draggable, canceled: canceled })=>{
+    const draggableElement = draggable.drag?.items[0].element;
+    if (!draggableElement) return;
+    // Find out the original container and the target container based on the best
+    // match droppable.
+    const bestMatch = $dbc52347541b57ca$var$bestMatchMap.get(draggable);
+    const originalContainer = draggableElement.parentElement;
+    const targetContainer = !canceled && bestMatch ? bestMatch.element : originalContainer;
+    // If draggable moved into a different container.
     if (originalContainer !== targetContainer) {
+        // Move the draggable to the target container. While doing that, let's add
+        // the offset between the original container and the target container to the
+        // draggable's transform so it's visual position does not change.
         const offsetData = (0, $099080697fe67d0e$export$622cea445a1c5b7d)(originalContainer, targetContainer);
-        const transformString = `translate(${offsetData.left}px, ${offsetData.top}px) ${$dbc52347541b57ca$var$draggableElement.style.transform}`;
-        $dbc52347541b57ca$var$draggableElement.style.transform = transformString;
-        targetContainer.appendChild($dbc52347541b57ca$var$draggableElement);
+        const transformString = `translate(${offsetData.left}px, ${offsetData.top}px) ${draggableElement.style.transform}`;
+        draggableElement.style.transform = transformString;
+        targetContainer.appendChild(draggableElement);
+        // Move the data-draggable-contained attribute to the target container.
+        originalContainer.removeAttribute('data-draggable-contained');
+        targetContainer.setAttribute('data-draggable-contained', draggableElement.getAttribute('data-id'));
     }
     // Animate the draggable's transform back to "zero" (no transform).
-    const transformMatrix = new DOMMatrix().setMatrixValue($dbc52347541b57ca$var$draggableElement.style.transform);
+    const transformMatrix = new DOMMatrix().setMatrixValue(draggableElement.style.transform);
     if (!transformMatrix.isIdentity) {
-        $dbc52347541b57ca$var$draggableElement.classList.add('animate');
+        draggableElement.classList.add('animate');
         (0, $e434efa1a293c3f2$export$e94d57566be028aa).once((0, $e434efa1a293c3f2$export$ef9171fc2626).write, ()=>{
-            $dbc52347541b57ca$var$draggableElement.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
+            draggableElement.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
             const onTransitionEnd = (e)=>{
-                if (e.target === $dbc52347541b57ca$var$draggableElement) {
-                    $dbc52347541b57ca$var$draggableElement.classList.remove('animate');
-                    $dbc52347541b57ca$var$draggableElement.removeEventListener('transitionend', onTransitionEnd);
+                if (e.target === draggableElement) {
+                    draggableElement.classList.remove('animate');
+                    draggableElement.removeEventListener('transitionend', onTransitionEnd);
                 }
             };
-            $dbc52347541b57ca$var$draggableElement.addEventListener('transitionend', onTransitionEnd);
+            draggableElement.addEventListener('transitionend', onTransitionEnd);
         });
     }
     // Reset the best match droppable.
-    $dbc52347541b57ca$var$bestMatchDroppable?.element.classList.remove('draggable-over');
-    $dbc52347541b57ca$var$bestMatchDroppable = null;
+    bestMatch?.element.removeAttribute('data-draggable-over');
+    $dbc52347541b57ca$var$bestMatchMap.delete(draggable);
 });
 
 
