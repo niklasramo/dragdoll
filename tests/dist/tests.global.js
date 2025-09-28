@@ -7539,7 +7539,7 @@
   }
 
   // src/dnd-context/advanced-collision-detector.ts
-  var EMPTY_RECT = { width: 0, height: 0, x: 0, y: 0 };
+  var EMPTY_RECT = createRect();
   var MAX_RECT = {
     width: Number.MAX_SAFE_INTEGER,
     height: Number.MAX_SAFE_INTEGER,
@@ -7601,27 +7601,25 @@
         state.clipMaskKeyMap.set(droppable, clipMaskKey);
         if (!state.clipMaskMap.has(clipMaskKey)) {
           computeDraggableClipAncestors(draggable);
-          let fccc = null;
           if (this._visibilityLogic === "relative") {
-            fccc = window;
+            let fccc = window;
             for (const droppableClipAncestor of DROPPABLE_CLIP_ANCESTORS) {
               if (DRAGGABLE_CLIP_ANCESTORS.includes(droppableClipAncestor)) {
                 fccc = droppableClipAncestor;
                 break;
               }
             }
-          }
-          for (const draggableClipAncestor of DRAGGABLE_CLIP_ANCESTORS) {
-            if (fccc && draggableClipAncestor === fccc) break;
-            if (draggableClipAncestor instanceof Element) {
+            for (const draggableClipAncestor of DRAGGABLE_CLIP_ANCESTORS) {
+              if (draggableClipAncestor === fccc) break;
               DRAGGABLE_CLIP_CHAIN.push(draggableClipAncestor);
             }
-          }
-          for (const droppableClipAncestor of DROPPABLE_CLIP_ANCESTORS) {
-            if (fccc && droppableClipAncestor === fccc) break;
-            if (droppableClipAncestor instanceof Element) {
+            for (const droppableClipAncestor of DROPPABLE_CLIP_ANCESTORS) {
+              if (droppableClipAncestor === fccc) break;
               DROPPABLE_CLIP_CHAIN.push(droppableClipAncestor);
             }
+          } else {
+            DRAGGABLE_CLIP_CHAIN.push(...DRAGGABLE_CLIP_ANCESTORS);
+            DROPPABLE_CLIP_CHAIN.push(...DROPPABLE_CLIP_ANCESTORS);
           }
           const draggableClipMask2 = getRecursiveIntersectionRect(DRAGGABLE_CLIP_CHAIN);
           const droppableClipMask2 = getRecursiveIntersectionRect(DROPPABLE_CLIP_CHAIN);

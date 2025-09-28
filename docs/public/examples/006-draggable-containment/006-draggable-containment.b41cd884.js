@@ -4486,12 +4486,7 @@ function $438f007220f0e810$export$2b5a67cb9853726e(element, includeElement, resu
 }
 
 
-const $31f0e541fc872793$var$EMPTY_RECT = {
-    width: 0,
-    height: 0,
-    x: 0,
-    y: 0
-};
+const $31f0e541fc872793$var$EMPTY_RECT = (0, $8c16eefbe97bde49$export$bd5271f935fe8c1a)();
 const $31f0e541fc872793$var$MAX_RECT = {
     width: Number.MAX_SAFE_INTEGER,
     height: Number.MAX_SAFE_INTEGER,
@@ -4567,25 +4562,28 @@ class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$ex
             // masks.
             if (!state.clipMaskMap.has(clipMaskKey)) {
                 $31f0e541fc872793$var$computeDraggableClipAncestors(draggable);
-                // Find first common clip container (FCCC).
-                let fccc = null;
+                // For relative visibility logic, we need to compute the clip chains up
+                // to the FCCC.
                 if (this._visibilityLogic === 'relative') {
-                    // For relative visibility logic, there is always at least window.
-                    fccc = window;
+                    // Find first common clip container (FCCC).
+                    let fccc = window;
                     for (const droppableClipAncestor of $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS)if ($31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS.includes(droppableClipAncestor)) {
                         fccc = droppableClipAncestor;
                         break;
                     }
-                }
-                // Get draggable's clip container chain.
-                for (const draggableClipAncestor of $31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS){
-                    if (fccc && draggableClipAncestor === fccc) break;
-                    if (draggableClipAncestor instanceof Element) $31f0e541fc872793$var$DRAGGABLE_CLIP_CHAIN.push(draggableClipAncestor);
-                }
-                // Get droppable's clip container chain.
-                for (const droppableClipAncestor of $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS){
-                    if (fccc && droppableClipAncestor === fccc) break;
-                    if (droppableClipAncestor instanceof Element) $31f0e541fc872793$var$DROPPABLE_CLIP_CHAIN.push(droppableClipAncestor);
+                    // Get draggable's clip container chain.
+                    for (const draggableClipAncestor of $31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS){
+                        if (draggableClipAncestor === fccc) break;
+                        $31f0e541fc872793$var$DRAGGABLE_CLIP_CHAIN.push(draggableClipAncestor);
+                    }
+                    // Get droppable's clip container chain.
+                    for (const droppableClipAncestor of $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS){
+                        if (droppableClipAncestor === fccc) break;
+                        $31f0e541fc872793$var$DROPPABLE_CLIP_CHAIN.push(droppableClipAncestor);
+                    }
+                } else {
+                    $31f0e541fc872793$var$DRAGGABLE_CLIP_CHAIN.push(...$31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS);
+                    $31f0e541fc872793$var$DROPPABLE_CLIP_CHAIN.push(...$31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS);
                 }
                 // Compute clip masks.
                 const draggableClipMask = $31f0e541fc872793$var$getRecursiveIntersectionRect($31f0e541fc872793$var$DRAGGABLE_CLIP_CHAIN);
@@ -4708,31 +4706,31 @@ class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$ex
 
 
 
-const $9ce708fa4d5ed47d$var$GRID_WIDTH = 40;
-const $9ce708fa4d5ed47d$var$GRID_HEIGHT = 40;
-const $9ce708fa4d5ed47d$var$element = document.querySelector('.draggable');
-const $9ce708fa4d5ed47d$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($9ce708fa4d5ed47d$var$element);
-const $9ce708fa4d5ed47d$var$keyboardSensor = new (0, $2a9b1c646b3552c1$export$44d67f2a438aeba9)($9ce708fa4d5ed47d$var$element, {
-    moveDistance: {
-        x: $9ce708fa4d5ed47d$var$GRID_WIDTH,
-        y: $9ce708fa4d5ed47d$var$GRID_HEIGHT
-    }
-});
-const $9ce708fa4d5ed47d$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $9ce708fa4d5ed47d$var$pointerSensor,
-    $9ce708fa4d5ed47d$var$keyboardSensor
+const $f770251f4470ce8a$var$element = document.querySelector('.draggable');
+const $f770251f4470ce8a$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($f770251f4470ce8a$var$element);
+const $f770251f4470ce8a$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($f770251f4470ce8a$var$element);
+const $f770251f4470ce8a$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $f770251f4470ce8a$var$pointerSensor,
+    $f770251f4470ce8a$var$keyboardSensor
 ], {
     elements: ()=>[
-            $9ce708fa4d5ed47d$var$element
+            $f770251f4470ce8a$var$element
         ],
     positionModifiers: [
-        (0, $0b5391881dc2b3a6$export$7f11ea1f0ba255b5)($9ce708fa4d5ed47d$var$GRID_WIDTH, $9ce708fa4d5ed47d$var$GRID_HEIGHT)
+        (0, $e4a9d189cff00937$export$b43dd221600cdb2e)(()=>{
+            return {
+                x: 0,
+                y: 0,
+                width: window.innerWidth,
+                height: window.innerHeight
+            };
+        })
     ],
     onStart: ()=>{
-        $9ce708fa4d5ed47d$var$element.classList.add('dragging');
+        $f770251f4470ce8a$var$element.classList.add('dragging');
     },
     onEnd: ()=>{
-        $9ce708fa4d5ed47d$var$element.classList.remove('dragging');
+        $f770251f4470ce8a$var$element.classList.remove('dragging');
     }
 });
 

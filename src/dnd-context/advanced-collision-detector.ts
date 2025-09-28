@@ -16,7 +16,7 @@ interface DragState {
   cacheDirty: boolean;
 }
 
-const EMPTY_RECT: Rect = { width: 0, height: 0, x: 0, y: 0 };
+const EMPTY_RECT: Rect = createRect();
 const MAX_RECT: Rect = {
   width: Number.MAX_SAFE_INTEGER,
   height: Number.MAX_SAFE_INTEGER,
@@ -122,33 +122,35 @@ export class AdvancedCollisionDetector<
       if (!state.clipMaskMap.has(clipMaskKey)) {
         computeDraggableClipAncestors(draggable);
 
-        // Find first common clip container (FCCC).
-        let fccc: Element | Window | null = null;
+        // For relative visibility logic, we need to compute the clip chains up
+        // to the FCCC.
         if (this._visibilityLogic === 'relative') {
-          // For relative visibility logic, there is always at least window.
-          fccc = window;
+          // Find first common clip container (FCCC).
+          let fccc: Element | Window = window;
           for (const droppableClipAncestor of DROPPABLE_CLIP_ANCESTORS) {
             if (DRAGGABLE_CLIP_ANCESTORS.includes(droppableClipAncestor)) {
               fccc = droppableClipAncestor;
               break;
             }
           }
-        }
 
-        // Get draggable's clip container chain.
-        for (const draggableClipAncestor of DRAGGABLE_CLIP_ANCESTORS) {
-          if (fccc && draggableClipAncestor === fccc) break;
-          if (draggableClipAncestor instanceof Element) {
+          // Get draggable's clip container chain.
+          for (const draggableClipAncestor of DRAGGABLE_CLIP_ANCESTORS) {
+            if (draggableClipAncestor === fccc) break;
             DRAGGABLE_CLIP_CHAIN.push(draggableClipAncestor);
           }
-        }
 
-        // Get droppable's clip container chain.
-        for (const droppableClipAncestor of DROPPABLE_CLIP_ANCESTORS) {
-          if (fccc && droppableClipAncestor === fccc) break;
-          if (droppableClipAncestor instanceof Element) {
+          // Get droppable's clip container chain.
+          for (const droppableClipAncestor of DROPPABLE_CLIP_ANCESTORS) {
+            if (droppableClipAncestor === fccc) break;
             DROPPABLE_CLIP_CHAIN.push(droppableClipAncestor);
           }
+        }
+        // For absolute visibility logic the clip chains are equal to the clip
+        // ancestors.
+        else {
+          DRAGGABLE_CLIP_CHAIN.push(...DRAGGABLE_CLIP_ANCESTORS);
+          DROPPABLE_CLIP_CHAIN.push(...DROPPABLE_CLIP_ANCESTORS);
         }
 
         // Compute clip masks.
