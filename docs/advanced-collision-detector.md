@@ -9,8 +9,17 @@ The `AdvancedCollisionDetector` extends the base [`CollisionDetector`](/collisio
 ```ts
 import { DndContext, AdvancedCollisionDetector } from 'dragdoll';
 
+// By default, uses relative visibility logic (relative to the first common clip
+// container (FCCC) between the draggable and droppable).
 const dnd = new DndContext({
   collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx),
+});
+```
+
+```ts
+// You can also use absolute visibility (relative to the user/window).
+const dnd = new DndContext({
+  collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx, { visibilityLogic: 'absolute' }),
 });
 ```
 
@@ -20,13 +29,16 @@ const dnd = new DndContext({
 class AdvancedCollisionDetector<
   T extends AdvancedCollisionData = AdvancedCollisionData,
 > extends CollisionDetector<T> {
-  constructor(dndContext: DndContext<T>) {}
+  constructor(dndContext: DndContext<T>, options?: { visibilityLogic: 'relative' | 'absolute' }) {}
 }
 ```
 
 ### Parameters
 
 - `dndContext`: The `DndContext` instance this detector belongs to.
+- `options.visibilityLogic` (optional): Controls how visibility is computed.
+  - `relative` (default): Computes visibility relative to the first common clip container (FCCC) between the draggable and droppable. Clip chains stop at the FCCC (the FCCC is not included as the final clipping mask).
+  - `absolute`: Computes absolute visibility of the draggable and droppable relative to the window (user perspective). Clip chains do not stop at the FCCC, they continue all the way to the window which is always included as the final clipping mask.
 
 ## Methods
 

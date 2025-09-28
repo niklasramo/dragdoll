@@ -952,9 +952,12 @@ interface AdvancedCollisionData extends CollisionData {
 }
 declare class AdvancedCollisionDetector<T extends AdvancedCollisionData = AdvancedCollisionData> extends CollisionDetector<T> {
     protected _dragStates: Map<Draggable<any>, DragState>;
+    protected _visibilityLogic: 'relative' | 'absolute';
     protected _listenersAttached: boolean;
     protected _clearCache: () => void;
-    constructor(dndContext: DndContext<T>);
+    constructor(dndContext: DndContext<T>, options?: {
+        visibilityLogic: 'relative' | 'absolute';
+    });
     protected _checkCollision(draggable: Draggable<any>, droppable: Droppable, collisionData: T): T | null;
     protected _sortCollisions(_draggable: Draggable<any>, collisions: T[]): T[];
     protected _createCollisionData(): T;

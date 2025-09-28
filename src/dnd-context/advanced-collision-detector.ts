@@ -71,12 +71,14 @@ export class AdvancedCollisionDetector<
   T extends AdvancedCollisionData = AdvancedCollisionData,
 > extends CollisionDetector<T> {
   protected _dragStates: Map<Draggable<any>, DragState>;
+  protected _visibilityLogic: 'relative' | 'absolute';
   protected _listenersAttached: boolean;
   protected _clearCache: () => void;
 
-  constructor(dndContext: DndContext<T>) {
+  constructor(dndContext: DndContext<T>, options?: { visibilityLogic: 'relative' | 'absolute' }) {
     super(dndContext);
     this._dragStates = new Map();
+    this._visibilityLogic = options?.visibilityLogic || 'relative';
     this._listenersAttached = false;
     this._clearCache = () => this.clearCache();
   }
@@ -120,19 +122,22 @@ export class AdvancedCollisionDetector<
       if (!state.clipMaskMap.has(clipMaskKey)) {
         computeDraggableClipAncestors(draggable);
 
-        // Find first common clip container (FCCC). There's always at least
-        // window.
-        let fccc: Element | Window = window;
-        for (const droppableClipAncestor of DROPPABLE_CLIP_ANCESTORS) {
-          if (DRAGGABLE_CLIP_ANCESTORS.includes(droppableClipAncestor)) {
-            fccc = droppableClipAncestor;
-            break;
+        // Find first common clip container (FCCC).
+        let fccc: Element | Window | null = null;
+        if (this._visibilityLogic === 'relative') {
+          // For relative visibility logic, there is always at least window.
+          fccc = window;
+          for (const droppableClipAncestor of DROPPABLE_CLIP_ANCESTORS) {
+            if (DRAGGABLE_CLIP_ANCESTORS.includes(droppableClipAncestor)) {
+              fccc = droppableClipAncestor;
+              break;
+            }
           }
         }
 
         // Get draggable's clip container chain.
         for (const draggableClipAncestor of DRAGGABLE_CLIP_ANCESTORS) {
-          if (draggableClipAncestor === fccc) break;
+          if (fccc && draggableClipAncestor === fccc) break;
           if (draggableClipAncestor instanceof Element) {
             DRAGGABLE_CLIP_CHAIN.push(draggableClipAncestor);
           }
@@ -140,7 +145,7 @@ export class AdvancedCollisionDetector<
 
         // Get droppable's clip container chain.
         for (const droppableClipAncestor of DROPPABLE_CLIP_ANCESTORS) {
-          if (droppableClipAncestor === fccc) break;
+          if (fccc && droppableClipAncestor === fccc) break;
           if (droppableClipAncestor instanceof Element) {
             DROPPABLE_CLIP_CHAIN.push(droppableClipAncestor);
           }

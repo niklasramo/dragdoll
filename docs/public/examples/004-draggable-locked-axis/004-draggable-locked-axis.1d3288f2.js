@@ -4533,9 +4533,10 @@ function $31f0e541fc872793$var$getRecursiveIntersectionRect(elements, result = (
     return result;
 }
 class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$export$b931ab7b292a336c) {
-    constructor(dndContext){
+    constructor(dndContext, options){
         super(dndContext);
         this._dragStates = new Map();
+        this._visibilityLogic = options?.visibilityLogic || 'relative';
         this._listenersAttached = false;
         this._clearCache = ()=>this.clearCache();
     }
@@ -4566,21 +4567,24 @@ class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$ex
             // masks.
             if (!state.clipMaskMap.has(clipMaskKey)) {
                 $31f0e541fc872793$var$computeDraggableClipAncestors(draggable);
-                // Find first common clip container (FCCC). There's always at least
-                // window.
-                let fccc = window;
-                for (const droppableClipAncestor of $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS)if ($31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS.includes(droppableClipAncestor)) {
-                    fccc = droppableClipAncestor;
-                    break;
+                // Find first common clip container (FCCC).
+                let fccc = null;
+                if (this._visibilityLogic === 'relative') {
+                    // For relative visibility logic, there is always at least window.
+                    fccc = window;
+                    for (const droppableClipAncestor of $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS)if ($31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS.includes(droppableClipAncestor)) {
+                        fccc = droppableClipAncestor;
+                        break;
+                    }
                 }
                 // Get draggable's clip container chain.
                 for (const draggableClipAncestor of $31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS){
-                    if (draggableClipAncestor === fccc) break;
+                    if (fccc && draggableClipAncestor === fccc) break;
                     if (draggableClipAncestor instanceof Element) $31f0e541fc872793$var$DRAGGABLE_CLIP_CHAIN.push(draggableClipAncestor);
                 }
                 // Get droppable's clip container chain.
                 for (const droppableClipAncestor of $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS){
-                    if (droppableClipAncestor === fccc) break;
+                    if (fccc && droppableClipAncestor === fccc) break;
                     if (droppableClipAncestor instanceof Element) $31f0e541fc872793$var$DROPPABLE_CLIP_CHAIN.push(droppableClipAncestor);
                 }
                 // Compute clip masks.
@@ -4704,32 +4708,38 @@ class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$ex
 
 
 
-const $f770251f4470ce8a$var$element = document.querySelector('.draggable');
-const $f770251f4470ce8a$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($f770251f4470ce8a$var$element);
-const $f770251f4470ce8a$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($f770251f4470ce8a$var$element);
-const $f770251f4470ce8a$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $f770251f4470ce8a$var$pointerSensor,
-    $f770251f4470ce8a$var$keyboardSensor
-], {
-    elements: ()=>[
-            $f770251f4470ce8a$var$element
+let $63994e3588ee9d7d$var$zIndex = 0;
+const $63994e3588ee9d7d$var$draggableElements = [
+    ...document.querySelectorAll('.draggable')
+];
+$63994e3588ee9d7d$var$draggableElements.forEach((element)=>{
+    const pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element);
+    const keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)(element);
+    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+        pointerSensor,
+        keyboardSensor
+    ], {
+        elements: ()=>[
+                element
+            ],
+        positionModifiers: [
+            (change, { item: item })=>{
+                const { element: element } = item;
+                const allowX = element.classList.contains('axis-x');
+                const allowY = element.classList.contains('axis-y');
+                if (allowX && !allowY) change.y = 0;
+                else if (allowY && !allowX) change.x = 0;
+                return change;
+            }
         ],
-    positionModifiers: [
-        (0, $e4a9d189cff00937$export$b43dd221600cdb2e)(()=>{
-            return {
-                x: 0,
-                y: 0,
-                width: window.innerWidth,
-                height: window.innerHeight
-            };
-        })
-    ],
-    onStart: ()=>{
-        $f770251f4470ce8a$var$element.classList.add('dragging');
-    },
-    onEnd: ()=>{
-        $f770251f4470ce8a$var$element.classList.remove('dragging');
-    }
+        onStart: ()=>{
+            element.classList.add('dragging');
+            element.style.zIndex = `${++$63994e3588ee9d7d$var$zIndex}`;
+        },
+        onEnd: ()=>{
+            element.classList.remove('dragging');
+        }
+    });
 });
 
 

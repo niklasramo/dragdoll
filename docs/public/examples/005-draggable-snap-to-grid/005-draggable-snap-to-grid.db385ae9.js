@@ -4533,9 +4533,10 @@ function $31f0e541fc872793$var$getRecursiveIntersectionRect(elements, result = (
     return result;
 }
 class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$export$b931ab7b292a336c) {
-    constructor(dndContext){
+    constructor(dndContext, options){
         super(dndContext);
         this._dragStates = new Map();
+        this._visibilityLogic = options?.visibilityLogic || 'relative';
         this._listenersAttached = false;
         this._clearCache = ()=>this.clearCache();
     }
@@ -4566,21 +4567,24 @@ class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$ex
             // masks.
             if (!state.clipMaskMap.has(clipMaskKey)) {
                 $31f0e541fc872793$var$computeDraggableClipAncestors(draggable);
-                // Find first common clip container (FCCC). There's always at least
-                // window.
-                let fccc = window;
-                for (const droppableClipAncestor of $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS)if ($31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS.includes(droppableClipAncestor)) {
-                    fccc = droppableClipAncestor;
-                    break;
+                // Find first common clip container (FCCC).
+                let fccc = null;
+                if (this._visibilityLogic === 'relative') {
+                    // For relative visibility logic, there is always at least window.
+                    fccc = window;
+                    for (const droppableClipAncestor of $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS)if ($31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS.includes(droppableClipAncestor)) {
+                        fccc = droppableClipAncestor;
+                        break;
+                    }
                 }
                 // Get draggable's clip container chain.
                 for (const draggableClipAncestor of $31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS){
-                    if (draggableClipAncestor === fccc) break;
+                    if (fccc && draggableClipAncestor === fccc) break;
                     if (draggableClipAncestor instanceof Element) $31f0e541fc872793$var$DRAGGABLE_CLIP_CHAIN.push(draggableClipAncestor);
                 }
                 // Get droppable's clip container chain.
                 for (const droppableClipAncestor of $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS){
-                    if (droppableClipAncestor === fccc) break;
+                    if (fccc && droppableClipAncestor === fccc) break;
                     if (droppableClipAncestor instanceof Element) $31f0e541fc872793$var$DROPPABLE_CLIP_CHAIN.push(droppableClipAncestor);
                 }
                 // Compute clip masks.
@@ -4704,48 +4708,31 @@ class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$ex
 
 
 
-const $fbef1913897e270e$var$element = document.querySelector('.draggable');
-const $fbef1913897e270e$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($fbef1913897e270e$var$element);
-const $fbef1913897e270e$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($fbef1913897e270e$var$element);
-const $fbef1913897e270e$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $fbef1913897e270e$var$pointerSensor,
-    $fbef1913897e270e$var$keyboardSensor
+const $9ce708fa4d5ed47d$var$GRID_WIDTH = 40;
+const $9ce708fa4d5ed47d$var$GRID_HEIGHT = 40;
+const $9ce708fa4d5ed47d$var$element = document.querySelector('.draggable');
+const $9ce708fa4d5ed47d$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($9ce708fa4d5ed47d$var$element);
+const $9ce708fa4d5ed47d$var$keyboardSensor = new (0, $2a9b1c646b3552c1$export$44d67f2a438aeba9)($9ce708fa4d5ed47d$var$element, {
+    moveDistance: {
+        x: $9ce708fa4d5ed47d$var$GRID_WIDTH,
+        y: $9ce708fa4d5ed47d$var$GRID_HEIGHT
+    }
+});
+const $9ce708fa4d5ed47d$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $9ce708fa4d5ed47d$var$pointerSensor,
+    $9ce708fa4d5ed47d$var$keyboardSensor
 ], {
-    elements: ()=>{
-        // Clone the element and align the clone with the original element.
-        const elemRect = $fbef1913897e270e$var$element.getBoundingClientRect();
-        const clone = $fbef1913897e270e$var$element.cloneNode(true);
-        clone.style.position = 'fixed';
-        clone.style.width = `${elemRect.width}px`;
-        clone.style.height = `${elemRect.height}px`;
-        clone.style.left = `${elemRect.left}px`;
-        clone.style.top = `${elemRect.top}px`;
-        // Add the ghost and dragging class to the clone. The ghost element will be
-        // in dragging state for the duration of it's existence.
-        clone.classList.add('ghost', 'dragging');
-        // We need to reset the transform to avoid the ghost element being offset
-        // unintentionally. In this specific case, if we don't reset the transform,
-        // the ghost element will be offset by the original element's transform.
-        clone.style.transform = '';
-        // Append the ghost element to the body.
-        document.body.appendChild(clone);
-        return [
-            clone
-        ];
-    },
+    elements: ()=>[
+            $9ce708fa4d5ed47d$var$element
+        ],
+    positionModifiers: [
+        (0, $0b5391881dc2b3a6$export$7f11ea1f0ba255b5)($9ce708fa4d5ed47d$var$GRID_WIDTH, $9ce708fa4d5ed47d$var$GRID_HEIGHT)
+    ],
     onStart: ()=>{
-        $fbef1913897e270e$var$element.classList.add('dragging');
+        $9ce708fa4d5ed47d$var$element.classList.add('dragging');
     },
-    onEnd: (drag)=>{
-        const dragItem = drag.items[0];
-        // Move the original element to the ghost element's position. We use DOMMatrix
-        // to first combine the original element's transform with the ghost element's
-        // transform and then apply the combined transform to the original element.
-        const matrix = new DOMMatrix().setMatrixValue(`translate(${dragItem.position.x}px, ${dragItem.position.y}px) ${$fbef1913897e270e$var$element.style.transform}`);
-        $fbef1913897e270e$var$element.style.transform = `${matrix}`;
-        // Remove the ghost element.
-        dragItem.element.remove();
-        $fbef1913897e270e$var$element.classList.remove('dragging');
+    onEnd: ()=>{
+        $9ce708fa4d5ed47d$var$element.classList.remove('dragging');
     }
 });
 

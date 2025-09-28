@@ -4533,9 +4533,10 @@ function $31f0e541fc872793$var$getRecursiveIntersectionRect(elements, result = (
     return result;
 }
 class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$export$b931ab7b292a336c) {
-    constructor(dndContext){
+    constructor(dndContext, options){
         super(dndContext);
         this._dragStates = new Map();
+        this._visibilityLogic = options?.visibilityLogic || 'relative';
         this._listenersAttached = false;
         this._clearCache = ()=>this.clearCache();
     }
@@ -4566,21 +4567,24 @@ class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$ex
             // masks.
             if (!state.clipMaskMap.has(clipMaskKey)) {
                 $31f0e541fc872793$var$computeDraggableClipAncestors(draggable);
-                // Find first common clip container (FCCC). There's always at least
-                // window.
-                let fccc = window;
-                for (const droppableClipAncestor of $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS)if ($31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS.includes(droppableClipAncestor)) {
-                    fccc = droppableClipAncestor;
-                    break;
+                // Find first common clip container (FCCC).
+                let fccc = null;
+                if (this._visibilityLogic === 'relative') {
+                    // For relative visibility logic, there is always at least window.
+                    fccc = window;
+                    for (const droppableClipAncestor of $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS)if ($31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS.includes(droppableClipAncestor)) {
+                        fccc = droppableClipAncestor;
+                        break;
+                    }
                 }
                 // Get draggable's clip container chain.
                 for (const draggableClipAncestor of $31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS){
-                    if (draggableClipAncestor === fccc) break;
+                    if (fccc && draggableClipAncestor === fccc) break;
                     if (draggableClipAncestor instanceof Element) $31f0e541fc872793$var$DRAGGABLE_CLIP_CHAIN.push(draggableClipAncestor);
                 }
                 // Get droppable's clip container chain.
                 for (const droppableClipAncestor of $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS){
-                    if (droppableClipAncestor === fccc) break;
+                    if (fccc && droppableClipAncestor === fccc) break;
                     if (droppableClipAncestor instanceof Element) $31f0e541fc872793$var$DROPPABLE_CLIP_CHAIN.push(droppableClipAncestor);
                 }
                 // Compute clip masks.
