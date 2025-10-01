@@ -7539,6 +7539,7 @@
   }
 
   // src/dnd-context/advanced-collision-detector.ts
+  var cachedDraggableClipMaskRect;
   var EMPTY_RECT = createRect();
   var MAX_RECT = {
     width: Number.MAX_SAFE_INTEGER,
@@ -7593,6 +7594,7 @@
       if (!draggableRect || !droppableRect) return null;
       let clipMaskKey = state.clipMaskKeyMap.get(droppable);
       if (!clipMaskKey) {
+        const isRelativeLogic = this._visibilityLogic === "relative";
         DROPPABLE_CLIP_ANCESTORS.length = 0;
         DRAGGABLE_CLIP_CHAIN.length = 0;
         DROPPABLE_CLIP_CHAIN.length = 0;
@@ -7601,7 +7603,7 @@
         state.clipMaskKeyMap.set(droppable, clipMaskKey);
         if (!state.clipMaskMap.has(clipMaskKey)) {
           computeDraggableClipAncestors(draggable);
-          if (this._visibilityLogic === "relative") {
+          if (isRelativeLogic) {
             let fccc = window;
             for (const droppableClipAncestor of DROPPABLE_CLIP_ANCESTORS) {
               if (DRAGGABLE_CLIP_ANCESTORS.includes(droppableClipAncestor)) {
@@ -7621,8 +7623,11 @@
             DRAGGABLE_CLIP_CHAIN.push(...DRAGGABLE_CLIP_ANCESTORS);
             DROPPABLE_CLIP_CHAIN.push(...DROPPABLE_CLIP_ANCESTORS);
           }
-          const draggableClipMask2 = getRecursiveIntersectionRect(DRAGGABLE_CLIP_CHAIN);
+          const draggableClipMask2 = isRelativeLogic || !cachedDraggableClipMaskRect ? getRecursiveIntersectionRect(DRAGGABLE_CLIP_CHAIN) : createRect(cachedDraggableClipMaskRect);
           const droppableClipMask2 = getRecursiveIntersectionRect(DROPPABLE_CLIP_CHAIN);
+          if (!isRelativeLogic && !cachedDraggableClipMaskRect) {
+            cachedDraggableClipMaskRect = draggableClipMask2;
+          }
           state.clipMaskMap.set(clipMaskKey, [draggableClipMask2, droppableClipMask2]);
         }
         DROPPABLE_CLIP_ANCESTORS.length = 0;
@@ -7707,6 +7712,7 @@
     }
     detectCollisions(draggable, targets, collisions) {
       DRAGGABLE_CLIP_ANCESTORS.length = 0;
+      cachedDraggableClipMaskRect = null;
       const state = this._getDragState(draggable);
       if (state.cacheDirty) {
         state.clipMaskKeyMap.clear();
@@ -7715,6 +7721,7 @@
       }
       super.detectCollisions(draggable, targets, collisions);
       DRAGGABLE_CLIP_ANCESTORS.length = 0;
+      cachedDraggableClipMaskRect = null;
     }
     clearCache(draggable) {
       if (draggable) {
@@ -8227,7 +8234,7 @@
   // tests/src/utils/focus-element.ts
   function focusElement(element) {
     if (document.activeElement !== element) {
-      element.focus();
+      element.focus({ preventScroll: true });
       element.dispatchEvent(
         new FocusEvent("focus", {
           bubbles: false,
@@ -12472,199 +12479,197 @@
   // tests/src/dnd-context/advanced-collision-detection.ts
   function advancedCollisionDetection() {
     describe("advanced collision detection", () => {
-      it("should compute collisions based on visible rects (clipped)", async () => {
-        const collisionEvents = [];
-        const container = createTestElement({
-          left: "0px",
-          top: "0px",
-          width: "100px",
-          height: "100px",
-          overflow: "hidden"
+      describe("relative visibility logic", () => {
+        it("should not clip if draggable and droppable are within the same clip container", async () => {
+          const collisionEvents = [];
+          const containerElement = createTestElement({
+            left: "0px",
+            top: "0px",
+            width: "100px",
+            height: "100px",
+            overflow: "hidden"
+          });
+          const draggableElement = createTestElement({
+            left: "-100px",
+            top: "-100px",
+            width: "100px",
+            height: "100px"
+          });
+          const droppableElement = createTestElement({
+            left: "-100px",
+            top: "-100px",
+            width: "100px",
+            height: "100px"
+          });
+          containerElement.appendChild(draggableElement);
+          containerElement.appendChild(droppableElement);
+          const keyboard = new KeyboardSensor(draggableElement);
+          const draggable = new Draggable([keyboard], {
+            elements: () => [draggableElement],
+            group: "g"
+          });
+          const droppable = new Droppable(droppableElement, { accept: ["g"] });
+          const dndContext = new DndContext({
+            collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx)
+          });
+          dndContext.addDraggables([draggable]);
+          dndContext.addDroppables([droppable]);
+          dndContext.on("collide", (data) => {
+            collisionEvents.push({ type: "enter", collisions: data.collisions });
+          });
+          focusElement(draggableElement);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          await waitNextFrame();
+          assert.equal(collisionEvents.length, 1);
+          assert.equal(collisionEvents[0].collisions.length, 1);
+          const firstCollision = collisionEvents[0].collisions[0];
+          assert.deepEqual(firstCollision.draggableVisibleRect, {
+            x: -100,
+            y: -100,
+            width: 100,
+            height: 100
+          });
+          assert.deepEqual(firstCollision.droppableVisibleRect, {
+            x: -100,
+            y: -100,
+            width: 100,
+            height: 100
+          });
+          dndContext.destroy();
+          draggable.destroy();
+          droppable.destroy();
+          keyboard.destroy();
+          draggableElement.remove();
+          droppableElement.remove();
+          containerElement.remove();
         });
-        const drag = createTestElement({ left: "80px", top: "80px", width: "50px", height: "50px" });
-        container.appendChild(drag);
-        const drop = createTestElement({ left: "60px", top: "60px", width: "50px", height: "50px" });
-        container.appendChild(drop);
-        const keyboard = new KeyboardSensor(drag, { moveDistance: 10 });
-        const draggable = new Draggable([keyboard], { elements: () => [drag], group: "g" });
-        const droppable = new Droppable(drop, { accept: ["g"] });
-        const dnd = new DndContext({
-          collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx)
+        it("should clip to the clip containers that are not shared by the draggable and droppable", async () => {
+          const collisionEvents = [];
+          const containerElement = createTestElement({
+            left: "-50px",
+            top: "-50px",
+            width: "100px",
+            height: "100px",
+            overflow: "hidden"
+          });
+          const draggableElement = createTestElement({
+            left: "0px",
+            top: "0px",
+            width: "100px",
+            height: "100px"
+          });
+          const droppableElement = createTestElement({
+            left: "50px",
+            top: "50px",
+            width: "100px",
+            height: "100px"
+          });
+          containerElement.appendChild(droppableElement);
+          const keyboard = new KeyboardSensor(draggableElement, { moveDistance: 50 });
+          const draggable = new Draggable([keyboard], {
+            elements: () => [draggableElement],
+            group: "g"
+          });
+          const droppable = new Droppable(droppableElement, { accept: ["g"] });
+          const dndContext = new DndContext({
+            collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx)
+          });
+          dndContext.addDraggables([draggable]);
+          dndContext.addDroppables([droppable]);
+          dndContext.on("collide", (data) => {
+            collisionEvents.push({ type: "enter", collisions: data.collisions });
+          });
+          focusElement(draggableElement);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          await waitNextFrame();
+          assert.equal(collisionEvents.length, 1);
+          assert.equal(collisionEvents[0].collisions.length, 1);
+          const firstCollision = collisionEvents[0].collisions[0];
+          assert.deepEqual(firstCollision.draggableVisibleRect, {
+            x: 0,
+            y: 0,
+            width: 100,
+            height: 100
+          });
+          assert.deepEqual(firstCollision.droppableVisibleRect, {
+            x: 0,
+            y: 0,
+            width: 50,
+            height: 50
+          });
+          dndContext.destroy();
+          draggable.destroy();
+          droppable.destroy();
+          keyboard.destroy();
+          draggableElement.remove();
+          droppableElement.remove();
+          containerElement.remove();
         });
-        dnd.on("enter", (data) => {
-          collisionEvents.push({ type: "enter", collisions: data.collisions });
-        });
-        dnd.addDraggables([draggable]);
-        dnd.addDroppables([droppable]);
-        focusElement(drag);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
-        assert.equal(collisionEvents.length, 1);
-        assert.equal(collisionEvents[0].collisions.length, 1);
-        const cd = collisionEvents[0].collisions[0];
-        assert.isAbove(cd.intersectionScore, 0);
-        assert.isAtLeast(cd.draggableVisibleRect.width, 1);
-        assert.isAtLeast(cd.droppableVisibleRect.width, 1);
-        dnd.destroy();
-        draggable.destroy();
-        droppable.destroy();
-        keyboard.destroy();
-        container.remove();
       });
-      it("should update cache on scroll and resize", async () => {
-        const container = createTestElement({
-          left: "0px",
-          top: "0px",
-          width: "100px",
-          height: "100px",
-          overflow: "hidden"
+      describe("absolute visibility logic", () => {
+        it("should always compute collisions from the perspective of the user regardless of clip containers", async () => {
+          const collisionEvents = [];
+          const containerElement = createTestElement({
+            left: "-50px",
+            top: "-50px",
+            width: "100px",
+            height: "100px",
+            overflow: "hidden"
+          });
+          const draggableElement = createTestElement({
+            left: "0px",
+            top: "0px",
+            width: "100px",
+            height: "100px"
+          });
+          const droppableElement = createTestElement({
+            left: "0px",
+            top: "0px",
+            width: "100px",
+            height: "100px"
+          });
+          containerElement.appendChild(draggableElement);
+          containerElement.appendChild(droppableElement);
+          const keyboard = new KeyboardSensor(draggableElement, { moveDistance: 50 });
+          const draggable = new Draggable([keyboard], {
+            elements: () => [draggableElement],
+            group: "g"
+          });
+          const droppable = new Droppable(droppableElement, { accept: ["g"] });
+          const dndContext = new DndContext({
+            collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx, { visibilityLogic: "absolute" })
+          });
+          dndContext.addDraggables([draggable]);
+          dndContext.addDroppables([droppable]);
+          dndContext.on("collide", (data) => {
+            collisionEvents.push({ type: "enter", collisions: data.collisions });
+          });
+          focusElement(draggableElement);
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+          await waitNextFrame();
+          assert.equal(collisionEvents.length, 1);
+          assert.equal(collisionEvents[0].collisions.length, 1);
+          const firstCollision = collisionEvents[0].collisions[0];
+          assert.deepEqual(firstCollision.draggableVisibleRect, {
+            x: 0,
+            y: 0,
+            width: 50,
+            height: 50
+          });
+          assert.deepEqual(firstCollision.droppableVisibleRect, {
+            x: 0,
+            y: 0,
+            width: 50,
+            height: 50
+          });
+          dndContext.destroy();
+          draggable.destroy();
+          droppable.destroy();
+          keyboard.destroy();
+          draggableElement.remove();
+          droppableElement.remove();
+          containerElement.remove();
         });
-        const drag = createTestElement({ left: "0px", top: "0px", width: "50px", height: "50px" });
-        container.appendChild(drag);
-        const drop = createTestElement({ left: "60px", top: "0px", width: "50px", height: "50px" });
-        container.appendChild(drop);
-        const keyboard = new KeyboardSensor(drag, { moveDistance: 10 });
-        const draggable = new Draggable([keyboard], { elements: () => [drag], group: "g" });
-        const droppable = new Droppable(drop, { accept: ["g"] });
-        const dnd = new DndContext({
-          collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx)
-        });
-        dnd.addDraggables([draggable]);
-        dnd.addDroppables([droppable]);
-        focusElement(drag);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
-        window.dispatchEvent(new Event("scroll"));
-        window.dispatchEvent(new Event("resize"));
-        await new Promise((r2) => setTimeout(r2, 50));
-        dnd.destroy();
-        draggable.destroy();
-        droppable.destroy();
-        keyboard.destroy();
-        container.remove();
-      });
-      it("should sort ties by smaller droppable visible area first", async () => {
-        const container = createTestElement({
-          left: "0px",
-          top: "0px",
-          width: "100px",
-          height: "100px",
-          overflow: "hidden"
-        });
-        const drag = createTestElement({ left: "0px", top: "0px", width: "200px", height: "200px" });
-        container.appendChild(drag);
-        const dropA = createTestElement({ left: "0px", top: "0px", width: "80px", height: "80px" });
-        container.appendChild(dropA);
-        const clipB = createTestElement({
-          left: "60px",
-          top: "0px",
-          width: "40px",
-          height: "100px",
-          overflow: "hidden"
-        });
-        container.appendChild(clipB);
-        const dropB = createTestElement({ left: "0px", top: "0px", width: "80px", height: "80px" });
-        clipB.appendChild(dropB);
-        const keyboard = new KeyboardSensor(drag, { moveDistance: 10 });
-        const draggable = new Draggable([keyboard], { elements: () => [drag], group: "g" });
-        const droppableA = new Droppable(dropA, { accept: ["g"] });
-        const droppableB = new Droppable(dropB, { accept: ["g"] });
-        const dnd = new DndContext({
-          collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx)
-        });
-        let firstCollisionId = null;
-        dnd.on("enter", (data) => {
-          firstCollisionId = data.collisions[0]?.droppableId;
-        });
-        dnd.addDraggables([draggable]);
-        dnd.addDroppables([droppableA, droppableB]);
-        focusElement(drag);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
-        assert.equal(firstCollisionId, droppableB.id);
-        dnd.destroy();
-        draggable.destroy();
-        droppableA.destroy();
-        droppableB.destroy();
-        keyboard.destroy();
-        container.remove();
-        clipB.remove();
-      });
-      it("should not collide when droppable is fully clipped", async () => {
-        const collisionEvents = [];
-        const container = createTestElement({
-          left: "0px",
-          top: "0px",
-          width: "100px",
-          height: "100px",
-          overflow: "hidden"
-        });
-        const drag = createTestElement({ left: "0px", top: "0px", width: "80px", height: "80px" });
-        container.appendChild(drag);
-        const drop = createTestElement({ left: "150px", top: "0px", width: "50px", height: "50px" });
-        container.appendChild(drop);
-        const keyboard = new KeyboardSensor(drag, { moveDistance: 10 });
-        const draggable = new Draggable([keyboard], { elements: () => [drag], group: "g" });
-        const droppable = new Droppable(drop, { accept: ["g"] });
-        const dnd = new DndContext({
-          collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx)
-        });
-        dnd.on("enter", (data) => {
-          collisionEvents.push({ collisions: data.collisions });
-        });
-        dnd.addDraggables([draggable]);
-        dnd.addDroppables([droppable]);
-        focusElement(drag);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
-        assert.equal(collisionEvents.length, 0);
-        dnd.destroy();
-        draggable.destroy();
-        droppable.destroy();
-        keyboard.destroy();
-        container.remove();
-      });
-      it("should support absolute visibility logic (window-relative)", async () => {
-        const collisionEvents = [];
-        const outer = createTestElement({
-          left: "0px",
-          top: "0px",
-          width: "100px",
-          height: "100px",
-          overflow: "hidden"
-        });
-        const inner = createTestElement({
-          left: "0px",
-          top: "0px",
-          width: "200px",
-          height: "200px"
-        });
-        outer.appendChild(inner);
-        const drag = createTestElement({ left: "150px", top: "10px", width: "80px", height: "80px" });
-        inner.appendChild(drag);
-        const drop = createTestElement({ left: "10px", top: "10px", width: "80px", height: "80px" });
-        inner.appendChild(drop);
-        const keyboard = new KeyboardSensor(drag, { moveDistance: 10 });
-        const draggable = new Draggable([keyboard], { elements: () => [drag], group: "g" });
-        const droppable = new Droppable(drop, { accept: ["g"] });
-        const dnd = new DndContext({
-          collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx, { visibilityLogic: "absolute" })
-        });
-        dnd.on("enter", (data) => {
-          collisionEvents.push({ type: "enter", collisions: data.collisions });
-        });
-        dnd.addDraggables([draggable]);
-        dnd.addDroppables([droppable]);
-        focusElement(drag);
-        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-        await waitNextFrame();
-        assert.equal(collisionEvents.length, 0);
-        dnd.destroy();
-        draggable.destroy();
-        droppable.destroy();
-        keyboard.destroy();
-        outer.remove();
-        inner.remove();
       });
     });
   }

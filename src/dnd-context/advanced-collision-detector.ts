@@ -16,6 +16,8 @@ interface DragState {
   cacheDirty: boolean;
 }
 
+let cachedDraggableClipMaskRect: Rect | null;
+
 const EMPTY_RECT: Rect = createRect();
 const MAX_RECT: Rect = {
   width: Number.MAX_SAFE_INTEGER,
@@ -103,6 +105,8 @@ export class AdvancedCollisionDetector<
     // If we don't have a clip mask key, compute it and also the clip masks if
     // there is no entry yet for this clip mask key.
     if (!clipMaskKey) {
+      const isRelativeLogic = this._visibilityLogic === 'relative';
+
       // Reset temp data before computing (just a safety measure).
       DROPPABLE_CLIP_ANCESTORS.length = 0;
       DRAGGABLE_CLIP_CHAIN.length = 0;
@@ -124,7 +128,7 @@ export class AdvancedCollisionDetector<
 
         // For relative visibility logic, we need to compute the clip chains up
         // to the FCCC.
-        if (this._visibilityLogic === 'relative') {
+        if (isRelativeLogic) {
           // Find first common clip container (FCCC).
           let fccc: Element | Window = window;
           for (const droppableClipAncestor of DROPPABLE_CLIP_ANCESTORS) {
@@ -154,8 +158,18 @@ export class AdvancedCollisionDetector<
         }
 
         // Compute clip masks.
-        const draggableClipMask = getRecursiveIntersectionRect(DRAGGABLE_CLIP_CHAIN);
+        const draggableClipMask =
+          isRelativeLogic || !cachedDraggableClipMaskRect
+            ? getRecursiveIntersectionRect(DRAGGABLE_CLIP_CHAIN)
+            : createRect(cachedDraggableClipMaskRect);
         const droppableClipMask = getRecursiveIntersectionRect(DROPPABLE_CLIP_CHAIN);
+
+        // Cache the draggable clip mask rect for absolute visibility logic.
+        // Unlike with relative visibility logic, the draggable clip mask rect
+        // needs to be computed only once, not for each droppable.
+        if (!isRelativeLogic && !cachedDraggableClipMaskRect) {
+          cachedDraggableClipMaskRect = draggableClipMask;
+        }
 
         // Cache the clip masks.
         state.clipMaskMap.set(clipMaskKey, [draggableClipMask, droppableClipMask]);
@@ -287,6 +301,10 @@ export class AdvancedCollisionDetector<
     // Reset draggable clip ancestors before computing (just a safety measure).
     DRAGGABLE_CLIP_ANCESTORS.length = 0;
 
+    // Reset cached draggable clip mask rect before computing (just a safety
+    // measure).
+    cachedDraggableClipMaskRect = null;
+
     // Clear the clip masks maps if the cache is dirty.
     const state = this._getDragState(draggable);
     if (state.cacheDirty) {
@@ -299,6 +317,9 @@ export class AdvancedCollisionDetector<
 
     // Reset draggable clip ancestors after computing.
     DRAGGABLE_CLIP_ANCESTORS.length = 0;
+
+    // Reset draggable clip mask rect.
+    cachedDraggableClipMaskRect = null;
   }
 
   clearCache(draggable?: Draggable<any>) {

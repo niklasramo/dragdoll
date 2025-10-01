@@ -4486,6 +4486,7 @@ function $438f007220f0e810$export$2b5a67cb9853726e(element, includeElement, resu
 }
 
 
+let $31f0e541fc872793$var$cachedDraggableClipMaskRect;
 const $31f0e541fc872793$var$EMPTY_RECT = (0, $8c16eefbe97bde49$export$bd5271f935fe8c1a)();
 const $31f0e541fc872793$var$MAX_RECT = {
     width: Number.MAX_SAFE_INTEGER,
@@ -4548,6 +4549,7 @@ class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$ex
         // If we don't have a clip mask key, compute it and also the clip masks if
         // there is no entry yet for this clip mask key.
         if (!clipMaskKey) {
+            const isRelativeLogic = this._visibilityLogic === 'relative';
             // Reset temp data before computing (just a safety measure).
             $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS.length = 0;
             $31f0e541fc872793$var$DRAGGABLE_CLIP_CHAIN.length = 0;
@@ -4564,7 +4566,7 @@ class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$ex
                 $31f0e541fc872793$var$computeDraggableClipAncestors(draggable);
                 // For relative visibility logic, we need to compute the clip chains up
                 // to the FCCC.
-                if (this._visibilityLogic === 'relative') {
+                if (isRelativeLogic) {
                     // Find first common clip container (FCCC).
                     let fccc = window;
                     for (const droppableClipAncestor of $31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS)if ($31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS.includes(droppableClipAncestor)) {
@@ -4586,8 +4588,12 @@ class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$ex
                     $31f0e541fc872793$var$DROPPABLE_CLIP_CHAIN.push(...$31f0e541fc872793$var$DROPPABLE_CLIP_ANCESTORS);
                 }
                 // Compute clip masks.
-                const draggableClipMask = $31f0e541fc872793$var$getRecursiveIntersectionRect($31f0e541fc872793$var$DRAGGABLE_CLIP_CHAIN);
+                const draggableClipMask = isRelativeLogic || !$31f0e541fc872793$var$cachedDraggableClipMaskRect ? $31f0e541fc872793$var$getRecursiveIntersectionRect($31f0e541fc872793$var$DRAGGABLE_CLIP_CHAIN) : (0, $8c16eefbe97bde49$export$bd5271f935fe8c1a)($31f0e541fc872793$var$cachedDraggableClipMaskRect);
                 const droppableClipMask = $31f0e541fc872793$var$getRecursiveIntersectionRect($31f0e541fc872793$var$DROPPABLE_CLIP_CHAIN);
+                // Cache the draggable clip mask rect for absolute visibility logic.
+                // Unlike with relative visibility logic, the draggable clip mask rect
+                // needs to be computed only once, not for each droppable.
+                if (!isRelativeLogic && !$31f0e541fc872793$var$cachedDraggableClipMaskRect) $31f0e541fc872793$var$cachedDraggableClipMaskRect = draggableClipMask;
                 // Cache the clip masks.
                 state.clipMaskMap.set(clipMaskKey, [
                     draggableClipMask,
@@ -4678,6 +4684,9 @@ class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$ex
     detectCollisions(draggable, targets, collisions) {
         // Reset draggable clip ancestors before computing (just a safety measure).
         $31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS.length = 0;
+        // Reset cached draggable clip mask rect before computing (just a safety
+        // measure).
+        $31f0e541fc872793$var$cachedDraggableClipMaskRect = null;
         // Clear the clip masks maps if the cache is dirty.
         const state = this._getDragState(draggable);
         if (state.cacheDirty) {
@@ -4688,6 +4697,8 @@ class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$ex
         super.detectCollisions(draggable, targets, collisions);
         // Reset draggable clip ancestors after computing.
         $31f0e541fc872793$var$DRAGGABLE_CLIP_ANCESTORS.length = 0;
+        // Reset draggable clip mask rect.
+        $31f0e541fc872793$var$cachedDraggableClipMaskRect = null;
     }
     clearCache(draggable) {
         if (draggable) {
@@ -4706,28 +4717,25 @@ class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$ex
 
 
 
-let $1721b684b57c24ff$var$zIndex = 0;
-const $1721b684b57c24ff$var$draggableElements = [
-    ...document.querySelectorAll('.draggable')
-];
-$1721b684b57c24ff$var$draggableElements.forEach((element)=>{
-    const pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element);
-    const keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)(element);
-    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-        pointerSensor,
-        keyboardSensor
-    ], {
-        elements: ()=>[
-                element
-            ],
-        onStart: ()=>{
-            element.classList.add('dragging');
-            element.style.zIndex = `${++$1721b684b57c24ff$var$zIndex}`;
-        },
-        onEnd: ()=>{
-            element.classList.remove('dragging');
-        }
-    });
+const $dffb89cf206e4bcc$var$element = document.querySelector('.draggable');
+const $dffb89cf206e4bcc$var$handle = $dffb89cf206e4bcc$var$element.querySelector('.handle');
+const $dffb89cf206e4bcc$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($dffb89cf206e4bcc$var$handle);
+const $dffb89cf206e4bcc$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($dffb89cf206e4bcc$var$element);
+const $dffb89cf206e4bcc$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $dffb89cf206e4bcc$var$pointerSensor,
+    $dffb89cf206e4bcc$var$keyboardSensor
+], {
+    elements: ()=>[
+            $dffb89cf206e4bcc$var$element
+        ],
+    onStart: ()=>{
+        $dffb89cf206e4bcc$var$element.classList.add('dragging');
+        if ($dffb89cf206e4bcc$var$draggable.drag.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) $dffb89cf206e4bcc$var$element.classList.add('pointer-dragging');
+        else $dffb89cf206e4bcc$var$element.classList.add('keyboard-dragging');
+    },
+    onEnd: ()=>{
+        $dffb89cf206e4bcc$var$element.classList.remove('dragging', 'pointer-dragging', 'keyboard-dragging');
+    }
 });
 
 
