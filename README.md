@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a id="dragdoll" href="#dragdoll" aria-hidden="true"><img src="https://niklasramo.github.io/dragdoll/dragdoll-logo-transparent.png" alt="DragDoll" width="600" /></a>
+  <a id="dragdoll" href="#dragdoll" aria-hidden="true"><img src="https://niklasramo.github.io/dragdoll/dragdoll-logo.svg" alt="DragDoll" height="100" /></a>
 </h1>
 
 DragDoll is a modular and highly extensible drag system written in TypeScript. It's originally based on [Muuri's](https://github.com/haltu/muuri) internal drag system, but fully redesigned to be used as a general purpose drag system.
@@ -11,6 +11,10 @@ A well-documented and extendable Sensor system that normalizes any input into un
 🤏 &nbsp; **Dynamic Draggables**
 
 A highly customizable and pluggable Draggable system with autoscrolling superpowers, making complex drag-and-drop scenarios effortless.
+
+🎯 &nbsp; **Precise Collisions**
+
+Advanced collision detection system that efficiently determines drop targets and provides rich interaction data for creating intuitive drag and drop experiences.
 
 🪄 &nbsp; **Magical Transforms**
 
