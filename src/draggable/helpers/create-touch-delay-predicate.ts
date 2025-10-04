@@ -1,6 +1,10 @@
-import { Sensor, SensorEventType } from '../../sensors/sensor.js';
+import type { Sensor } from '../../sensors/sensor.js';
 
-import { Draggable, DraggableEventType } from '../draggable.js';
+import type { Draggable } from '../draggable.js';
+
+import { SensorEventType } from '../../sensors/sensor.js';
+
+import { DraggableEventType } from '../draggable.js';
 
 import { PointerSensor, PointerSensorEvents } from '../../sensors/pointer-sensor.js';
 
@@ -25,7 +29,7 @@ export function createTouchDelayPredicate<
   D extends Draggable<S> = Draggable<S>,
 >(
   options: {
-    touchTimeout?: number;
+    touchDelay?: number;
     fallback?: D['settings']['startPredicate'];
   } = {},
 ) {
@@ -37,7 +41,7 @@ export function createTouchDelayPredicate<
 
   let timer: number | undefined = undefined;
 
-  const { touchTimeout = 250, fallback = () => true } = options;
+  const { touchDelay = 250, fallback = () => true } = options;
 
   const onContextMenu = (e: Event) => e.preventDefault();
 
@@ -50,7 +54,7 @@ export function createTouchDelayPredicate<
     }
 
     if (dragAllowed === undefined) {
-      if (e.cancelable && e.timeStamp - startTimeStamp > touchTimeout) {
+      if (e.cancelable && e.timeStamp - startTimeStamp > touchDelay) {
         dragAllowed = true;
         e.preventDefault();
       } else {
@@ -125,7 +129,7 @@ export function createTouchDelayPredicate<
           }
         });
 
-        // If we have touchTimeout defined, let's set a timer that force starts
+        // If we have touchDelay defined, let's set a timer that force starts
         // the drag process after the timeout.
         // TODO: This will start drag sometimes when it's not actually possible
         // to prevent the native scrolling on touch devices. We'd need a way
@@ -134,12 +138,12 @@ export function createTouchDelayPredicate<
         // get one touchmove event to check if we can prevent native scrolling
         // but that is kind of too late already.. let's see if we can detect
         // that earlier somehow.
-        if (touchTimeout > 0) {
+        if (touchDelay > 0) {
           timer = window.setTimeout(() => {
             draggable.resolveStartPredicate(sensor);
             dragAllowed = true;
             timer = undefined;
-          }, touchTimeout);
+          }, touchDelay);
         }
       }
 

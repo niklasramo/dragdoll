@@ -6,21 +6,21 @@ export default {
   title: 'DragDoll',
   description: 'Modular and extensible drag system.',
   appearance: 'force-dark',
-  head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/dragdoll-icon.svg' }]],
+  head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/dragdoll/dragdoll-favicon.svg' }]],
   markdown: {
     lineNumbers: true,
   },
   lastUpdated: true,
   themeConfig: {
-    siteTitle: 'DragDoll',
-    logo: '/dragdoll-icon.svg',
+    logo: '/dragdoll-logo.svg',
+    siteTitle: '',
     nav: nav(),
     sidebar: {
       '/': sidebarGuide(),
     },
     outline: [2, 3],
     editLink: {
-      pattern: 'https://github.com/niklasramo/dragdoll/edit/main/docs/:path',
+      pattern: 'https://github.com/niklasramo/dragdoll/edit/main/:path',
       text: 'Edit this page on GitHub',
     },
     socialLinks: [
@@ -39,6 +39,9 @@ export default {
     },
     search: {
       provider: 'local',
+    },
+    sitemap: {
+      hostname: 'https://niklasramo.github.io/dragdoll/',
     },
     /*
     algolia: {
@@ -83,22 +86,22 @@ function sidebarGuide() {
     {
       collapsible: false,
       items: [
-        { text: 'Introduction', link: '/docs/' },
-        { text: 'Getting Started', link: '/docs/getting-started' },
-        { text: 'Tips and Tricks', link: '/docs/tips-and-tricks' },
-        { text: 'Examples', link: '/docs/examples' },
+        { text: 'Introduction', link: '/' },
+        { text: 'Getting Started', link: '/getting-started' },
+        { text: 'Tips and Tricks', link: '/tips-and-tricks' },
+        { text: 'Examples', link: '/examples' },
       ],
     },
     {
       text: 'Sensors',
       collapsible: false,
       items: [
-        { text: 'Sensor', link: '/docs/sensor' },
-        { text: 'BaseSensor', link: '/docs/base-sensor' },
-        { text: 'BaseMotionSensor', link: '/docs/base-motion-sensor' },
-        { text: 'PointerSensor', link: '/docs/pointer-sensor' },
-        { text: 'KeyboardSensor', link: '/docs/keyboard-sensor' },
-        { text: 'KeyboardMotionSensor', link: '/docs/keyboard-motion-sensor' },
+        { text: 'Sensor', link: '/sensor' },
+        { text: 'BaseSensor', link: '/base-sensor' },
+        { text: 'BaseMotionSensor', link: '/base-motion-sensor' },
+        { text: 'PointerSensor', link: '/pointer-sensor' },
+        { text: 'KeyboardSensor', link: '/keyboard-sensor' },
+        { text: 'KeyboardMotionSensor', link: '/keyboard-motion-sensor' },
       ],
     },
     {
@@ -107,33 +110,43 @@ function sidebarGuide() {
       items: [
         {
           text: 'Draggable',
-          link: '/docs/draggable',
+          link: '/draggable',
           collapsible: false,
           items: [
-            { text: 'DraggableDrag', link: '/docs/draggable-drag' },
-            { text: 'DraggableDragItem', link: '/docs/draggable-drag-item' },
+            { text: 'DraggableDrag', link: '/draggable-drag' },
+            { text: 'DraggableDragItem', link: '/draggable-drag-item' },
           ],
         },
         {
           text: 'Helpers',
-          link: '/docs/draggable-helpers',
+          link: '/draggable-helpers',
           collapsible: false,
         },
         {
           text: 'Modifiers',
-          link: '/docs/draggable-modifiers',
+          link: '/draggable-modifiers',
           collapsible: false,
           items: [
-            { text: 'Containment', link: '/docs/draggable-containment-modifier' },
-            { text: 'Snap', link: '/docs/draggable-snap-modifier' },
+            { text: 'Containment', link: '/draggable-containment-modifier' },
+            { text: 'Snap', link: '/draggable-snap-modifier' },
           ],
         },
         {
           text: 'Plugins',
-          link: '/docs/draggable-plugins',
+          link: '/draggable-plugins',
           collapsible: false,
-          items: [{ text: 'AutoScroll', link: '/docs/draggable-auto-scroll-plugin' }],
+          items: [{ text: 'AutoScroll', link: '/draggable-auto-scroll-plugin' }],
         },
+      ],
+    },
+    {
+      text: 'Drag and Drop',
+      collapsible: false,
+      items: [
+        { text: 'DndContext', link: '/dnd-context' },
+        { text: 'Droppable', link: '/droppable' },
+        { text: 'CollisionDetector', link: '/collision-detector' },
+        { text: 'AdvancedCollisionDetector', link: '/advanced-collision-detector' },
       ],
     },
   ];

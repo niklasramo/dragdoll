@@ -5,3 +5,4 @@ docs/.vitepress/dist
 *.env
 *.DS_Store
 .parcel-cache
+.cursorrules

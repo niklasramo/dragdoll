@@ -1,44 +1,44 @@
 export class ObjectCache<Key extends any, Value extends any> {
-  private cache: Map<Key, Value> = new Map();
-  private validation: Map<Key, undefined> = new Map();
+  protected _cache: Map<Key, Value>;
+  protected _validation: Map<Key, undefined>;
 
   constructor() {
-    this.cache = new Map();
-    this.validation = new Map();
+    this._cache = new Map();
+    this._validation = new Map();
   }
 
   set(key: Key, value: Value) {
-    this.cache.set(key, value);
-    this.validation.set(key, undefined);
+    this._cache.set(key, value);
+    this._validation.set(key, undefined);
   }
 
   get(key: Key): Value | undefined {
-    return this.cache.get(key);
+    return this._cache.get(key);
   }
 
   has(key: Key): boolean {
-    return this.cache.has(key);
+    return this._cache.has(key);
   }
 
   delete(key: Key) {
-    this.cache.delete(key);
-    this.validation.delete(key);
+    this._cache.delete(key);
+    this._validation.delete(key);
   }
 
   isValid(key: Key): boolean {
-    return this.validation.has(key);
+    return this._validation.has(key);
   }
 
   invalidate(key?: Key) {
     if (key === undefined) {
-      this.validation.clear();
+      this._validation.clear();
     } else {
-      this.validation.delete(key);
+      this._validation.delete(key);
     }
   }
 
   clear() {
-    this.cache.clear();
-    this.validation.clear();
+    this._cache.clear();
+    this._validation.clear();
   }
 }

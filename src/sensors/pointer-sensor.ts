@@ -1,16 +1,19 @@
-import { Emitter, Events, EventListenerId } from 'eventti';
+import type { Events, EventListenerId } from 'eventti';
 
-import { ListenerOptions, Writeable, PointerType } from '../types.js';
-
-import {
+import type {
   Sensor,
-  SensorEventType,
   SensorStartEvent,
   SensorMoveEvent,
   SensorCancelEvent,
   SensorEndEvent,
   SensorDestroyEvent,
 } from './sensor.js';
+
+import type { ListenerOptions, Writeable, PointerType } from '../types.js';
+
+import { Emitter } from 'eventti';
+
+import { SensorEventType } from './sensor.js';
 
 import { getPointerEventData } from '../utils/get-pointer-event-data.js';
 

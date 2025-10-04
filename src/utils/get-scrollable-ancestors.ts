@@ -10,6 +10,9 @@ export function getScrollableAncestors(
 ) {
   let parent = element?.parentNode;
 
+  // Reset the result array.
+  result.length = 0;
+
   while (parent && !isDocument(parent)) {
     if (parent instanceof Element) {
       if (isScrollable(parent)) result.push(parent);

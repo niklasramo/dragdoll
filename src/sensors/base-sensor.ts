@@ -1,8 +1,12 @@
-import { Emitter, Events, EventListenerId } from 'eventti';
+import type { Sensor, SensorEvents } from './sensor.js';
 
-import { Sensor, SensorEvents, SensorEventType } from './sensor.js';
+import type { Events, EventListenerId } from 'eventti';
 
-import { Writeable } from '../types.js';
+import type { Writeable } from '../types.js';
+
+import { Emitter } from 'eventti';
+
+import { SensorEventType } from './sensor.js';
 
 export interface BaseSensorDragData {
   readonly x: number;

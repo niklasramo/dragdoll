@@ -1,12 +1,12 @@
-import { PointerSensor } from '../../sensors/pointer-sensor.js';
-
-import { createFullRect } from '../../utils/create-full-rect.js';
-
 import type { Sensor } from '../../sensors/sensor.js';
 
 import type { DraggableModifier, DraggableModifierData } from '../../draggable/draggable.js';
 
 import type { Rect } from '../../types.js';
+
+import { PointerSensor } from '../../sensors/pointer-sensor.js';
+
+import { createFullRect } from '../../utils/create-full-rect.js';
 
 const TEMP_RECT_1 = createFullRect();
 

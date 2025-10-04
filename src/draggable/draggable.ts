@@ -1,8 +1,10 @@
-import { HAS_PASSIVE_EVENTS } from '../constants.js';
+import type { Writeable, CSSProperties, Point, Rect } from '../types.js';
+
+import type { Sensor, SensorEvents } from '../sensors/sensor.js';
+
+import { SensorEventType } from '../sensors/sensor.js';
 
 import { Emitter, EventListenerId } from 'eventti';
-
-import { Sensor, SensorEvents, SensorEventType } from '../sensors/sensor.js';
 
 import { DraggableDrag } from './draggable-drag.js';
 
@@ -20,15 +22,15 @@ import { areMatricesEqual } from '../utils/are-matrices-equal.js';
 
 import { isMatrixWarped } from '../utils/is-matrix-warped.js';
 
-import { Writeable, CSSProperties, Point } from '../types.js';
+import { IS_BROWSER } from '../constants.js';
 
-const SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
+const SCROLL_LISTENER_OPTIONS = { capture: true, passive: true };
 
 const POSITION_CHANGE = { x: 0, y: 0 };
 
-const ELEMENT_MATRIX = new DOMMatrix();
+const ELEMENT_MATRIX = IS_BROWSER ? new DOMMatrix() : null;
 
-const TEMP_MATRIX = new DOMMatrix();
+const TEMP_MATRIX = IS_BROWSER ? new DOMMatrix() : null;
 
 enum DragStartPhase {
   None = 0,
@@ -44,6 +46,8 @@ enum DraggableStartPredicateState {
   Resolved = 1,
   Rejected = 2,
 }
+
+export type DraggableId = symbol | string | number;
 
 export const DraggableModifierPhase = {
   Start: 'start',
@@ -102,6 +106,11 @@ export interface DraggableSettings<S extends Sensor[], E extends S[number]['_eve
     item: DraggableDragItem<S, E>;
     phase: DraggableApplyPositionPhase;
   }) => void;
+  computeClientRect?: (data: {
+    draggable: Draggable<S, E>;
+    drag: DraggableDrag<S, E>;
+  }) => Readonly<Rect> | null;
+  group?: string | number | symbol | null;
   onPrepareStart?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
   onStart?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
   onPrepareMove?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
@@ -162,14 +171,14 @@ export const DraggableDefaultSettings: DraggableSettings<any, any> = {
     const tY = position.y + alignmentOffset.y + containerOffset.y;
 
     // Reset the matrix to identity.
-    resetMatrix(ELEMENT_MATRIX);
+    resetMatrix(ELEMENT_MATRIX!);
 
     // First of all negate the element's transform origin.
     if (needsOriginOffset) {
       if (oZ === 0) {
-        ELEMENT_MATRIX.translateSelf(-oX, -oY);
+        ELEMENT_MATRIX!.translateSelf(-oX, -oY);
       } else {
-        ELEMENT_MATRIX.translateSelf(-oX, -oY, -oZ);
+        ELEMENT_MATRIX!.translateSelf(-oX, -oY, -oZ);
       }
     }
 
@@ -180,34 +189,34 @@ export const DraggableDefaultSettings: DraggableSettings<any, any> = {
     // appended to the drag container (if defined).
     if (isEndPhase) {
       if (!inverseContainerMatrix.isIdentity) {
-        ELEMENT_MATRIX.multiplySelf(inverseContainerMatrix);
+        ELEMENT_MATRIX!.multiplySelf(inverseContainerMatrix);
       }
     } else {
       if (!inverseDragContainerMatrix.isIdentity) {
-        ELEMENT_MATRIX.multiplySelf(inverseDragContainerMatrix);
+        ELEMENT_MATRIX!.multiplySelf(inverseDragContainerMatrix);
       }
     }
 
     // Apply the translation (in world space coordinates).
-    resetMatrix(TEMP_MATRIX).translateSelf(tX, tY);
-    ELEMENT_MATRIX.multiplySelf(TEMP_MATRIX);
+    resetMatrix(TEMP_MATRIX!).translateSelf(tX, tY);
+    ELEMENT_MATRIX!.multiplySelf(TEMP_MATRIX!);
 
     // Apply the element's original container's world matrix so we can apply
     // the element's original transform as if it was in the original
     // container's local space coordinates.
     if (!containerMatrix.isIdentity) {
-      ELEMENT_MATRIX.multiplySelf(containerMatrix);
+      ELEMENT_MATRIX!.multiplySelf(containerMatrix);
     }
 
     // Undo the transform origin negation.
     if (needsOriginOffset) {
-      resetMatrix(TEMP_MATRIX).translateSelf(oX, oY, oZ);
-      ELEMENT_MATRIX.multiplySelf(TEMP_MATRIX);
+      resetMatrix(TEMP_MATRIX!).translateSelf(oX, oY, oZ);
+      ELEMENT_MATRIX!.multiplySelf(TEMP_MATRIX!);
     }
 
     // Apply the element's original transform.
     if (!elementTransformMatrix.isIdentity) {
-      ELEMENT_MATRIX.multiplySelf(elementTransformMatrix);
+      ELEMENT_MATRIX!.multiplySelf(elementTransformMatrix);
     }
 
     // Apply the element's offset matrix. The offset matrix is in practice the
@@ -216,13 +225,17 @@ export const DraggableDefaultSettings: DraggableSettings<any, any> = {
     // before the element's transform matrix, so we need to premultiply the
     // final matrix with the offset matrix.
     if (!elementOffsetMatrix.isIdentity) {
-      ELEMENT_MATRIX.preMultiplySelf(elementOffsetMatrix);
+      ELEMENT_MATRIX!.preMultiplySelf(elementOffsetMatrix);
     }
 
     // Apply the matrix to the element.
-    item.element.style.transform = `${ELEMENT_MATRIX}`;
+    item.element.style.transform = `${ELEMENT_MATRIX!}`;
+  },
+  computeClientRect: ({ drag }) => {
+    return drag.items[0].clientRect || null;
   },
   positionModifiers: [],
+  group: null,
 } as const;
 
 export class Draggable<
@@ -230,6 +243,7 @@ export class Draggable<
   E extends S[number]['_events_type'] = S[number]['_events_type'],
   P extends DraggablePluginMap = {},
 > {
+  readonly id: DraggableId;
   readonly sensors: S;
   readonly settings: DraggableSettings<S, E>;
   readonly plugins: P;
@@ -252,9 +266,11 @@ export class Draggable<
   protected _moveId: symbol;
   protected _alignId: symbol;
 
-  constructor(sensors: S, options: Partial<DraggableSettings<S, E>> = {}) {
+  constructor(sensors: S, options: Partial<DraggableSettings<S, E>> & { id?: DraggableId } = {}) {
+    const { id = Symbol(), ...restOptions } = options;
+    this.id = id;
     this.sensors = sensors;
-    this.settings = this._parseSettings(options);
+    this.settings = this._parseSettings(restOptions as Partial<DraggableSettings<S, E>>);
     this.plugins = {} as P;
     this.drag = null;
     this.isDestroyed = false;
@@ -305,6 +321,8 @@ export class Draggable<
       frozenStyles = defaults.frozenStyles,
       positionModifiers = defaults.positionModifiers,
       applyPosition = defaults.applyPosition,
+      computeClientRect = defaults.computeClientRect,
+      group = defaults.group,
       onPrepareStart = defaults.onPrepareStart,
       onStart = defaults.onStart,
       onPrepareMove = defaults.onPrepareMove,
@@ -320,6 +338,8 @@ export class Draggable<
       frozenStyles,
       positionModifiers,
       applyPosition,
+      computeClientRect,
+      group,
       onPrepareStart,
       onStart,
       onPrepareMove,
@@ -825,6 +845,12 @@ export class Draggable<
       ticker.once(tickerPhases.read, this._prepareAlign, this._alignId);
       ticker.once(tickerPhases.write, this._applyAlign, this._alignId);
     }
+  }
+
+  getClientRect() {
+    const { drag, settings } = this;
+    if (!drag) return null;
+    return settings.computeClientRect?.({ draggable: this, drag }) || null;
   }
 
   updateSettings(options: Partial<this['settings']> = {}) {

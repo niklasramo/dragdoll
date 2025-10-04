@@ -45,7 +45,7 @@ async function buildExampleDirectories() {
 
 async function buildExamplesMarkdown() {
   const examplesDir = path.join(process.cwd(), './examples/');
-  const markdownFilePath = path.join(process.cwd(), './docs/docs/examples.md');
+  const markdownFilePath = path.join(process.cwd(), './docs/examples.md');
 
   // Start the markdown file with a header.
   let markdownContent = '# Examples\n\n';

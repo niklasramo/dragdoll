@@ -114,7 +114,7 @@ function getMessage(errorLike) {
 }
 __name(getMessage, "getMessage");
 function flag(obj, key, value) {
-  var flags = obj.__flags || (obj.__flags = /* @__PURE__ */ Object.create(null));
+  let flags = obj.__flags || (obj.__flags = /* @__PURE__ */ Object.create(null));
   if (arguments.length === 3) {
     flags[key] = value;
   } else {
@@ -123,7 +123,7 @@ function flag(obj, key, value) {
 }
 __name(flag, "flag");
 function test(obj, args) {
-  var negate = flag(obj, "negate"), expr = args[0];
+  let negate = flag(obj, "negate"), expr = args[0];
   return negate ? !expr : expr;
 }
 __name(test, "test");
@@ -175,20 +175,20 @@ var AssertionError = (_a = class extends Error {
   }
 }, __name(_a, "AssertionError"), _a);
 function expectTypes(obj, types) {
-  var flagMsg = flag(obj, "message");
-  var ssfi = flag(obj, "ssfi");
+  let flagMsg = flag(obj, "message");
+  let ssfi = flag(obj, "ssfi");
   flagMsg = flagMsg ? flagMsg + ": " : "";
   obj = flag(obj, "object");
   types = types.map(function(t) {
     return t.toLowerCase();
   });
   types.sort();
-  var str = types.map(function(t, index) {
-    var art = ~["a", "e", "i", "o", "u"].indexOf(t.charAt(0)) ? "an" : "a";
-    var or = types.length > 1 && index === types.length - 1 ? "or " : "";
+  let str = types.map(function(t, index) {
+    let art = ~["a", "e", "i", "o", "u"].indexOf(t.charAt(0)) ? "an" : "a";
+    let or = types.length > 1 && index === types.length - 1 ? "or " : "";
     return or + art + " " + t;
   }).join(", ");
-  var objType = type(obj).toLowerCase();
+  let objType = type(obj).toLowerCase();
   if (!types.some(function(expected) {
     return objType === expected;
   })) {
@@ -667,10 +667,10 @@ try {
 var constructorMap = /* @__PURE__ */ new WeakMap();
 var stringTagMap = {};
 var baseTypesMap = {
-  undefined: (value, options4) => options4.stylize("undefined", "undefined"),
-  null: (value, options4) => options4.stylize("null", "null"),
-  boolean: (value, options4) => options4.stylize(String(value), "boolean"),
-  Boolean: (value, options4) => options4.stylize(String(value), "boolean"),
+  undefined: /* @__PURE__ */ __name((value, options4) => options4.stylize("undefined", "undefined"), "undefined"),
+  null: /* @__PURE__ */ __name((value, options4) => options4.stylize("null", "null"), "null"),
+  boolean: /* @__PURE__ */ __name((value, options4) => options4.stylize(String(value), "boolean"), "boolean"),
+  Boolean: /* @__PURE__ */ __name((value, options4) => options4.stylize(String(value), "boolean"), "Boolean"),
   number: inspectNumber,
   Number: inspectNumber,
   bigint: inspectBigInt,
@@ -689,8 +689,8 @@ var baseTypesMap = {
   RegExp: inspectRegExp,
   Promise: promise_default,
   // WeakSet, WeakMap are totally opaque to us
-  WeakSet: (value, options4) => options4.stylize("WeakSet{\u2026}", "special"),
-  WeakMap: (value, options4) => options4.stylize("WeakMap{\u2026}", "special"),
+  WeakSet: /* @__PURE__ */ __name((value, options4) => options4.stylize("WeakSet{\u2026}", "special"), "WeakSet"),
+  WeakMap: /* @__PURE__ */ __name((value, options4) => options4.stylize("WeakMap{\u2026}", "special"), "WeakMap"),
   Arguments: inspectArguments,
   Int8Array: inspectTypedArray,
   Uint8Array: inspectTypedArray,
@@ -701,9 +701,9 @@ var baseTypesMap = {
   Uint32Array: inspectTypedArray,
   Float32Array: inspectTypedArray,
   Float64Array: inspectTypedArray,
-  Generator: () => "",
-  DataView: () => "",
-  ArrayBuffer: () => "",
+  Generator: /* @__PURE__ */ __name(() => "", "Generator"),
+  DataView: /* @__PURE__ */ __name(() => "", "DataView"),
+  ArrayBuffer: /* @__PURE__ */ __name(() => "", "ArrayBuffer"),
   Error: inspectObject2,
   HTMLCollection: inspectHTMLCollection,
   NodeList: inspectHTMLCollection
@@ -872,7 +872,7 @@ var config = {
   deepEqual: null
 };
 function inspect2(obj, showHidden, depth, colors) {
-  var options4 = {
+  let options4 = {
     colors,
     depth: typeof depth === "undefined" ? 2 : depth,
     showHidden,
@@ -882,14 +882,14 @@ function inspect2(obj, showHidden, depth, colors) {
 }
 __name(inspect2, "inspect");
 function objDisplay(obj) {
-  var str = inspect2(obj), type3 = Object.prototype.toString.call(obj);
+  let str = inspect2(obj), type3 = Object.prototype.toString.call(obj);
   if (config.truncateThreshold && str.length >= config.truncateThreshold) {
     if (type3 === "[object Function]") {
       return !obj.name || obj.name === "" ? "[Function]" : "[Function: " + obj.name + "]";
     } else if (type3 === "[object Array]") {
       return "[ Array(" + obj.length + ") ]";
     } else if (type3 === "[object Object]") {
-      var keys = Object.keys(obj), kstr = keys.length > 2 ? keys.splice(0, 2).join(", ") + ", ..." : keys.join(", ");
+      let keys = Object.keys(obj), kstr = keys.length > 2 ? keys.splice(0, 2).join(", ") + ", ..." : keys.join(", ");
       return "{ Object (" + kstr + ") }";
     } else {
       return str;
@@ -900,9 +900,13 @@ function objDisplay(obj) {
 }
 __name(objDisplay, "objDisplay");
 function getMessage2(obj, args) {
-  var negate = flag(obj, "negate"), val = flag(obj, "object"), expected = args[3], actual = getActual(obj, args), msg = negate ? args[2] : args[1], flagMsg = flag(obj, "message");
-  if (typeof msg === "function")
-    msg = msg();
+  let negate = flag(obj, "negate");
+  let val = flag(obj, "object");
+  let expected = args[3];
+  let actual = getActual(obj, args);
+  let msg = negate ? args[2] : args[1];
+  let flagMsg = flag(obj, "message");
+  if (typeof msg === "function") msg = msg();
   msg = msg || "";
   msg = msg.replace(/#\{this\}/g, function() {
     return objDisplay(val);
@@ -915,12 +919,12 @@ function getMessage2(obj, args) {
 }
 __name(getMessage2, "getMessage");
 function transferFlags(assertion, object, includeAll) {
-  var flags = assertion.__flags || (assertion.__flags = /* @__PURE__ */ Object.create(null));
+  let flags = assertion.__flags || (assertion.__flags = /* @__PURE__ */ Object.create(null));
   if (!object.__flags) {
     object.__flags = /* @__PURE__ */ Object.create(null);
   }
   includeAll = arguments.length === 3 ? includeAll : true;
-  for (var flag3 in flags) {
+  for (let flag3 in flags) {
     if (includeAll || flag3 !== "object" && flag3 !== "ssfi" && flag3 !== "lockSsfi" && flag3 != "message") {
       object.__flags[flag3] = flags[flag3];
     }
@@ -1308,92 +1312,181 @@ function getPathInfo(obj, path) {
   return info;
 }
 __name(getPathInfo, "getPathInfo");
-function Assertion(obj, msg, ssfi, lockSsfi) {
-  flag(this, "ssfi", ssfi || Assertion);
-  flag(this, "lockSsfi", lockSsfi);
-  flag(this, "object", obj);
-  flag(this, "message", msg);
-  flag(this, "eql", config.deepEqual || deep_eql_default);
-  return proxify(this);
-}
-__name(Assertion, "Assertion");
-Object.defineProperty(Assertion, "includeStack", {
-  get: function() {
-    console.warn("Assertion.includeStack is deprecated, use chai.config.includeStack instead.");
+var _a2;
+var Assertion = (_a2 = class {
+  /**
+   * Creates object for chaining.
+   * `Assertion` objects contain metadata in the form of flags. Three flags can
+   * be assigned during instantiation by passing arguments to this constructor:
+   *
+   * - `object`: This flag contains the target of the assertion. For example, in
+   * the assertion `expect(numKittens).to.equal(7);`, the `object` flag will
+   * contain `numKittens` so that the `equal` assertion can reference it when
+   * needed.
+   *
+   * - `message`: This flag contains an optional custom error message to be
+   * prepended to the error message that's generated by the assertion when it
+   * fails.
+   *
+   * - `ssfi`: This flag stands for "start stack function indicator". It
+   * contains a function reference that serves as the starting point for
+   * removing frames from the stack trace of the error that's created by the
+   * assertion when it fails. The goal is to provide a cleaner stack trace to
+   * end users by removing Chai's internal functions. Note that it only works
+   * in environments that support `Error.captureStackTrace`, and only when
+   * `Chai.config.includeStack` hasn't been set to `false`.
+   *
+   * - `lockSsfi`: This flag controls whether or not the given `ssfi` flag
+   * should retain its current value, even as assertions are chained off of
+   * this object. This is usually set to `true` when creating a new assertion
+   * from within another assertion. It's also temporarily set to `true` before
+   * an overwritten assertion gets called by the overwriting assertion.
+   *
+   * - `eql`: This flag contains the deepEqual function to be used by the assertion.
+   *
+   * @param {unknown} obj target of the assertion
+   * @param {string} [msg] (optional) custom error message
+   * @param {Function} [ssfi] (optional) starting point for removing stack frames
+   * @param {boolean} [lockSsfi] (optional) whether or not the ssfi flag is locked
+   */
+  constructor(obj, msg, ssfi, lockSsfi) {
+    /** @type {{}} */
+    __publicField(this, "__flags", {});
+    flag(this, "ssfi", ssfi || _a2);
+    flag(this, "lockSsfi", lockSsfi);
+    flag(this, "object", obj);
+    flag(this, "message", msg);
+    flag(this, "eql", config.deepEqual || deep_eql_default);
+    return proxify(this);
+  }
+  /** @returns {boolean} */
+  static get includeStack() {
+    console.warn(
+      "Assertion.includeStack is deprecated, use chai.config.includeStack instead."
+    );
     return config.includeStack;
-  },
-  set: function(value) {
-    console.warn("Assertion.includeStack is deprecated, use chai.config.includeStack instead.");
+  }
+  /** @param {boolean} value */
+  static set includeStack(value) {
+    console.warn(
+      "Assertion.includeStack is deprecated, use chai.config.includeStack instead."
+    );
     config.includeStack = value;
   }
-});
-Object.defineProperty(Assertion, "showDiff", {
-  get: function() {
-    console.warn("Assertion.showDiff is deprecated, use chai.config.showDiff instead.");
+  /** @returns {boolean} */
+  static get showDiff() {
+    console.warn(
+      "Assertion.showDiff is deprecated, use chai.config.showDiff instead."
+    );
     return config.showDiff;
-  },
-  set: function(value) {
-    console.warn("Assertion.showDiff is deprecated, use chai.config.showDiff instead.");
+  }
+  /** @param {boolean} value */
+  static set showDiff(value) {
+    console.warn(
+      "Assertion.showDiff is deprecated, use chai.config.showDiff instead."
+    );
     config.showDiff = value;
   }
-});
-Assertion.addProperty = function(name, fn) {
-  addProperty(this.prototype, name, fn);
-};
-Assertion.addMethod = function(name, fn) {
-  addMethod(this.prototype, name, fn);
-};
-Assertion.addChainableMethod = function(name, fn, chainingBehavior) {
-  addChainableMethod(this.prototype, name, fn, chainingBehavior);
-};
-Assertion.overwriteProperty = function(name, fn) {
-  overwriteProperty(this.prototype, name, fn);
-};
-Assertion.overwriteMethod = function(name, fn) {
-  overwriteMethod(this.prototype, name, fn);
-};
-Assertion.overwriteChainableMethod = function(name, fn, chainingBehavior) {
-  overwriteChainableMethod(this.prototype, name, fn, chainingBehavior);
-};
-Assertion.prototype.assert = function(expr, msg, negateMsg, expected, _actual, showDiff) {
-  var ok = test(this, arguments);
-  if (false !== showDiff)
-    showDiff = true;
-  if (void 0 === expected && void 0 === _actual)
-    showDiff = false;
-  if (true !== config.showDiff)
-    showDiff = false;
-  if (!ok) {
-    msg = getMessage2(this, arguments);
-    var actual = getActual(this, arguments);
-    var assertionErrorObjectProperties = {
-      actual,
-      expected,
-      showDiff
-    };
-    var operator = getOperator(this, arguments);
-    if (operator) {
-      assertionErrorObjectProperties.operator = operator;
-    }
-    throw new AssertionError(
-      msg,
-      assertionErrorObjectProperties,
-      config.includeStack ? this.assert : flag(this, "ssfi")
-    );
+  /**
+   * @param {string} name
+   * @param {Function} fn
+   */
+  static addProperty(name, fn) {
+    addProperty(this.prototype, name, fn);
   }
-};
-Object.defineProperty(
-  Assertion.prototype,
-  "_obj",
-  {
-    get: function() {
-      return flag(this, "object");
-    },
-    set: function(val) {
-      flag(this, "object", val);
+  /**
+   * @param {string} name
+   * @param {Function} fn
+   */
+  static addMethod(name, fn) {
+    addMethod(this.prototype, name, fn);
+  }
+  /**
+   * @param {string} name
+   * @param {Function} fn
+   * @param {Function} chainingBehavior
+   */
+  static addChainableMethod(name, fn, chainingBehavior) {
+    addChainableMethod(this.prototype, name, fn, chainingBehavior);
+  }
+  /**
+   * @param {string} name
+   * @param {Function} fn
+   */
+  static overwriteProperty(name, fn) {
+    overwriteProperty(this.prototype, name, fn);
+  }
+  /**
+   * @param {string} name
+   * @param {Function} fn
+   */
+  static overwriteMethod(name, fn) {
+    overwriteMethod(this.prototype, name, fn);
+  }
+  /**
+   * @param {string} name
+   * @param {Function} fn
+   * @param {Function} chainingBehavior
+   */
+  static overwriteChainableMethod(name, fn, chainingBehavior) {
+    overwriteChainableMethod(this.prototype, name, fn, chainingBehavior);
+  }
+  /**
+   * ### .assert(expression, message, negateMessage, expected, actual, showDiff)
+   *
+   * Executes an expression and check expectations. Throws AssertionError for reporting if test doesn't pass.
+   *
+   * @name assert
+   * @param {unknown} _expr to be tested
+   * @param {string | Function} msg or function that returns message to display if expression fails
+   * @param {string | Function} _negateMsg or function that returns negatedMessage to display if negated expression fails
+   * @param {unknown} expected value (remember to check for negation)
+   * @param {unknown} _actual (optional) will default to `this.obj`
+   * @param {boolean} showDiff (optional) when set to `true`, assert will display a diff in addition to the message if expression fails
+   * @returns {void}
+   */
+  assert(_expr, msg, _negateMsg, expected, _actual, showDiff) {
+    const ok = test(this, arguments);
+    if (false !== showDiff) showDiff = true;
+    if (void 0 === expected && void 0 === _actual) showDiff = false;
+    if (true !== config.showDiff) showDiff = false;
+    if (!ok) {
+      msg = getMessage2(this, arguments);
+      const actual = getActual(this, arguments);
+      const assertionErrorObjectProperties = {
+        actual,
+        expected,
+        showDiff
+      };
+      const operator = getOperator(this, arguments);
+      if (operator) {
+        assertionErrorObjectProperties.operator = operator;
+      }
+      throw new AssertionError(
+        msg,
+        assertionErrorObjectProperties,
+        // @ts-expect-error Not sure what to do about these types yet
+        config.includeStack ? this.assert : flag(this, "ssfi")
+      );
     }
   }
-);
+  /**
+   * Quick reference to stored `actual` value for plugin developers.
+   *
+   * @returns {unknown}
+   */
+  get _obj() {
+    return flag(this, "object");
+  }
+  /**
+   * Quick reference to stored `actual` value for plugin developers.
+   *
+   * @param {unknown} val
+   */
+  set _obj(val) {
+    flag(this, "object", val);
+  }
+}, __name(_a2, "Assertion"), _a2);
 function isProxyEnabled() {
   return config.useProxy && typeof Proxy !== "undefined" && typeof Reflect !== "undefined";
 }
@@ -1401,51 +1494,49 @@ __name(isProxyEnabled, "isProxyEnabled");
 function addProperty(ctx, name, getter) {
   getter = getter === void 0 ? function() {
   } : getter;
-  Object.defineProperty(
-    ctx,
-    name,
-    {
-      get: /* @__PURE__ */ __name(function propertyGetter() {
-        if (!isProxyEnabled() && !flag(this, "lockSsfi")) {
-          flag(this, "ssfi", propertyGetter);
-        }
-        var result = getter.call(this);
-        if (result !== void 0)
-          return result;
-        var newAssertion = new Assertion();
-        transferFlags(this, newAssertion);
-        return newAssertion;
-      }, "propertyGetter"),
-      configurable: true
-    }
-  );
+  Object.defineProperty(ctx, name, {
+    get: /* @__PURE__ */ __name(function propertyGetter() {
+      if (!isProxyEnabled() && !flag(this, "lockSsfi")) {
+        flag(this, "ssfi", propertyGetter);
+      }
+      let result = getter.call(this);
+      if (result !== void 0) return result;
+      let newAssertion = new Assertion();
+      transferFlags(this, newAssertion);
+      return newAssertion;
+    }, "propertyGetter"),
+    configurable: true
+  });
 }
 __name(addProperty, "addProperty");
 var fnLengthDesc = Object.getOwnPropertyDescriptor(function() {
 }, "length");
 function addLengthGuard(fn, assertionName, isChainable) {
-  if (!fnLengthDesc.configurable)
-    return fn;
+  if (!fnLengthDesc.configurable) return fn;
   Object.defineProperty(fn, "length", {
-    get: function() {
+    get: /* @__PURE__ */ __name(function() {
       if (isChainable) {
-        throw Error("Invalid Chai property: " + assertionName + '.length. Due to a compatibility issue, "length" cannot directly follow "' + assertionName + '". Use "' + assertionName + '.lengthOf" instead.');
+        throw Error(
+          "Invalid Chai property: " + assertionName + '.length. Due to a compatibility issue, "length" cannot directly follow "' + assertionName + '". Use "' + assertionName + '.lengthOf" instead.'
+        );
       }
-      throw Error("Invalid Chai property: " + assertionName + '.length. See docs for proper usage of "' + assertionName + '".');
-    }
+      throw Error(
+        "Invalid Chai property: " + assertionName + '.length. See docs for proper usage of "' + assertionName + '".'
+      );
+    }, "get")
   });
   return fn;
 }
 __name(addLengthGuard, "addLengthGuard");
 function getProperties(object) {
-  var result = Object.getOwnPropertyNames(object);
+  let result = Object.getOwnPropertyNames(object);
   function addProperty2(property) {
     if (result.indexOf(property) === -1) {
       result.push(property);
     }
   }
   __name(addProperty2, "addProperty");
-  var proto = Object.getPrototypeOf(object);
+  let proto = Object.getPrototypeOf(object);
   while (proto !== null) {
     Object.getOwnPropertyNames(proto).forEach(addProperty2);
     proto = Object.getPrototypeOf(proto);
@@ -1455,23 +1546,24 @@ function getProperties(object) {
 __name(getProperties, "getProperties");
 var builtins = ["__flags", "__methods", "_obj", "assert"];
 function proxify(obj, nonChainableMethodName) {
-  if (!isProxyEnabled())
-    return obj;
+  if (!isProxyEnabled()) return obj;
   return new Proxy(obj, {
     get: /* @__PURE__ */ __name(function proxyGetter(target, property) {
       if (typeof property === "string" && config.proxyExcludedKeys.indexOf(property) === -1 && !Reflect.has(target, property)) {
         if (nonChainableMethodName) {
-          throw Error("Invalid Chai property: " + nonChainableMethodName + "." + property + '. See docs for proper usage of "' + nonChainableMethodName + '".');
+          throw Error(
+            "Invalid Chai property: " + nonChainableMethodName + "." + property + '. See docs for proper usage of "' + nonChainableMethodName + '".'
+          );
         }
-        var suggestion = null;
-        var suggestionDistance = 4;
+        let suggestion = null;
+        let suggestionDistance = 4;
         getProperties(target).forEach(function(prop) {
-          if (!Object.prototype.hasOwnProperty(prop) && builtins.indexOf(prop) === -1) {
-            var dist = stringDistanceCapped(
-              property,
-              prop,
-              suggestionDistance
-            );
+          if (
+            // we actually mean to check `Object.prototype` here
+            // eslint-disable-next-line no-prototype-builtins
+            !Object.prototype.hasOwnProperty(prop) && builtins.indexOf(prop) === -1
+          ) {
+            let dist = stringDistanceCapped(property, prop, suggestionDistance);
             if (dist < suggestionDistance) {
               suggestion = prop;
               suggestionDistance = dist;
@@ -1479,7 +1571,9 @@ function proxify(obj, nonChainableMethodName) {
           }
         });
         if (suggestion !== null) {
-          throw Error("Invalid Chai property: " + property + '. Did you mean "' + suggestion + '"?');
+          throw Error(
+            "Invalid Chai property: " + property + '. Did you mean "' + suggestion + '"?'
+          );
         } else {
           throw Error("Invalid Chai property: " + property);
         }
@@ -1496,17 +1590,17 @@ function stringDistanceCapped(strA, strB, cap) {
   if (Math.abs(strA.length - strB.length) >= cap) {
     return cap;
   }
-  var memo = [];
-  for (var i = 0; i <= strA.length; i++) {
+  let memo = [];
+  for (let i = 0; i <= strA.length; i++) {
     memo[i] = Array(strB.length + 1).fill(0);
     memo[i][0] = i;
   }
-  for (var j = 0; j < strB.length; j++) {
+  for (let j = 0; j < strB.length; j++) {
     memo[0][j] = j;
   }
-  for (var i = 1; i <= strA.length; i++) {
-    var ch = strA.charCodeAt(i - 1);
-    for (var j = 1; j <= strB.length; j++) {
+  for (let i = 1; i <= strA.length; i++) {
+    let ch = strA.charCodeAt(i - 1);
+    for (let j = 1; j <= strB.length; j++) {
       if (Math.abs(i - j) >= cap) {
         memo[i][j] = cap;
         continue;
@@ -1522,14 +1616,13 @@ function stringDistanceCapped(strA, strB, cap) {
 }
 __name(stringDistanceCapped, "stringDistanceCapped");
 function addMethod(ctx, name, method) {
-  var methodWrapper = /* @__PURE__ */ __name(function() {
+  let methodWrapper = /* @__PURE__ */ __name(function() {
     if (!flag(this, "lockSsfi")) {
       flag(this, "ssfi", methodWrapper);
     }
-    var result = method.apply(this, arguments);
-    if (result !== void 0)
-      return result;
-    var newAssertion = new Assertion();
+    let result = method.apply(this, arguments);
+    if (result !== void 0) return result;
+    let newAssertion = new Assertion();
     transferFlags(this, newAssertion);
     return newAssertion;
   }, "methodWrapper");
@@ -1538,52 +1631,46 @@ function addMethod(ctx, name, method) {
 }
 __name(addMethod, "addMethod");
 function overwriteProperty(ctx, name, getter) {
-  var _get = Object.getOwnPropertyDescriptor(ctx, name), _super = /* @__PURE__ */ __name(function() {
+  let _get = Object.getOwnPropertyDescriptor(ctx, name), _super = /* @__PURE__ */ __name(function() {
   }, "_super");
-  if (_get && "function" === typeof _get.get)
-    _super = _get.get;
-  Object.defineProperty(
-    ctx,
-    name,
-    {
-      get: /* @__PURE__ */ __name(function overwritingPropertyGetter() {
-        if (!isProxyEnabled() && !flag(this, "lockSsfi")) {
-          flag(this, "ssfi", overwritingPropertyGetter);
-        }
-        var origLockSsfi = flag(this, "lockSsfi");
-        flag(this, "lockSsfi", true);
-        var result = getter(_super).call(this);
-        flag(this, "lockSsfi", origLockSsfi);
-        if (result !== void 0) {
-          return result;
-        }
-        var newAssertion = new Assertion();
-        transferFlags(this, newAssertion);
-        return newAssertion;
-      }, "overwritingPropertyGetter"),
-      configurable: true
-    }
-  );
+  if (_get && "function" === typeof _get.get) _super = _get.get;
+  Object.defineProperty(ctx, name, {
+    get: /* @__PURE__ */ __name(function overwritingPropertyGetter() {
+      if (!isProxyEnabled() && !flag(this, "lockSsfi")) {
+        flag(this, "ssfi", overwritingPropertyGetter);
+      }
+      let origLockSsfi = flag(this, "lockSsfi");
+      flag(this, "lockSsfi", true);
+      let result = getter(_super).call(this);
+      flag(this, "lockSsfi", origLockSsfi);
+      if (result !== void 0) {
+        return result;
+      }
+      let newAssertion = new Assertion();
+      transferFlags(this, newAssertion);
+      return newAssertion;
+    }, "overwritingPropertyGetter"),
+    configurable: true
+  });
 }
 __name(overwriteProperty, "overwriteProperty");
 function overwriteMethod(ctx, name, method) {
-  var _method = ctx[name], _super = /* @__PURE__ */ __name(function() {
+  let _method = ctx[name], _super = /* @__PURE__ */ __name(function() {
     throw new Error(name + " is not a function");
   }, "_super");
-  if (_method && "function" === typeof _method)
-    _super = _method;
-  var overwritingMethodWrapper = /* @__PURE__ */ __name(function() {
+  if (_method && "function" === typeof _method) _super = _method;
+  let overwritingMethodWrapper = /* @__PURE__ */ __name(function() {
     if (!flag(this, "lockSsfi")) {
       flag(this, "ssfi", overwritingMethodWrapper);
     }
-    var origLockSsfi = flag(this, "lockSsfi");
+    let origLockSsfi = flag(this, "lockSsfi");
     flag(this, "lockSsfi", true);
-    var result = method(_super).apply(this, arguments);
+    let result = method(_super).apply(this, arguments);
     flag(this, "lockSsfi", origLockSsfi);
     if (result !== void 0) {
       return result;
     }
-    var newAssertion = new Assertion();
+    let newAssertion = new Assertion();
     transferFlags(this, newAssertion);
     return newAssertion;
   }, "overwritingMethodWrapper");
@@ -1595,9 +1682,8 @@ var canSetPrototype = typeof Object.setPrototypeOf === "function";
 var testFn = /* @__PURE__ */ __name(function() {
 }, "testFn");
 var excludeNames = Object.getOwnPropertyNames(testFn).filter(function(name) {
-  var propDesc = Object.getOwnPropertyDescriptor(testFn, name);
-  if (typeof propDesc !== "object")
-    return true;
+  let propDesc = Object.getOwnPropertyDescriptor(testFn, name);
+  if (typeof propDesc !== "object") return true;
   return !propDesc.configurable;
 });
 var call = Function.prototype.call;
@@ -1607,7 +1693,7 @@ function addChainableMethod(ctx, name, method, chainingBehavior) {
     chainingBehavior = /* @__PURE__ */ __name(function() {
     }, "chainingBehavior");
   }
-  var chainableBehavior = {
+  let chainableBehavior = {
     method,
     chainingBehavior
   };
@@ -1615,67 +1701,63 @@ function addChainableMethod(ctx, name, method, chainingBehavior) {
     ctx.__methods = {};
   }
   ctx.__methods[name] = chainableBehavior;
-  Object.defineProperty(
-    ctx,
-    name,
-    {
-      get: /* @__PURE__ */ __name(function chainableMethodGetter() {
-        chainableBehavior.chainingBehavior.call(this);
-        var chainableMethodWrapper = /* @__PURE__ */ __name(function() {
-          if (!flag(this, "lockSsfi")) {
-            flag(this, "ssfi", chainableMethodWrapper);
-          }
-          var result = chainableBehavior.method.apply(this, arguments);
-          if (result !== void 0) {
-            return result;
-          }
-          var newAssertion = new Assertion();
-          transferFlags(this, newAssertion);
-          return newAssertion;
-        }, "chainableMethodWrapper");
-        addLengthGuard(chainableMethodWrapper, name, true);
-        if (canSetPrototype) {
-          var prototype = Object.create(this);
-          prototype.call = call;
-          prototype.apply = apply;
-          Object.setPrototypeOf(chainableMethodWrapper, prototype);
-        } else {
-          var asserterNames = Object.getOwnPropertyNames(ctx);
-          asserterNames.forEach(function(asserterName) {
-            if (excludeNames.indexOf(asserterName) !== -1) {
-              return;
-            }
-            var pd = Object.getOwnPropertyDescriptor(ctx, asserterName);
-            Object.defineProperty(chainableMethodWrapper, asserterName, pd);
-          });
+  Object.defineProperty(ctx, name, {
+    get: /* @__PURE__ */ __name(function chainableMethodGetter() {
+      chainableBehavior.chainingBehavior.call(this);
+      let chainableMethodWrapper = /* @__PURE__ */ __name(function() {
+        if (!flag(this, "lockSsfi")) {
+          flag(this, "ssfi", chainableMethodWrapper);
         }
-        transferFlags(this, chainableMethodWrapper);
-        return proxify(chainableMethodWrapper);
-      }, "chainableMethodGetter"),
-      configurable: true
-    }
-  );
+        let result = chainableBehavior.method.apply(this, arguments);
+        if (result !== void 0) {
+          return result;
+        }
+        let newAssertion = new Assertion();
+        transferFlags(this, newAssertion);
+        return newAssertion;
+      }, "chainableMethodWrapper");
+      addLengthGuard(chainableMethodWrapper, name, true);
+      if (canSetPrototype) {
+        let prototype = Object.create(this);
+        prototype.call = call;
+        prototype.apply = apply;
+        Object.setPrototypeOf(chainableMethodWrapper, prototype);
+      } else {
+        let asserterNames = Object.getOwnPropertyNames(ctx);
+        asserterNames.forEach(function(asserterName) {
+          if (excludeNames.indexOf(asserterName) !== -1) {
+            return;
+          }
+          let pd = Object.getOwnPropertyDescriptor(ctx, asserterName);
+          Object.defineProperty(chainableMethodWrapper, asserterName, pd);
+        });
+      }
+      transferFlags(this, chainableMethodWrapper);
+      return proxify(chainableMethodWrapper);
+    }, "chainableMethodGetter"),
+    configurable: true
+  });
 }
 __name(addChainableMethod, "addChainableMethod");
 function overwriteChainableMethod(ctx, name, method, chainingBehavior) {
-  var chainableBehavior = ctx.__methods[name];
-  var _chainingBehavior = chainableBehavior.chainingBehavior;
+  let chainableBehavior = ctx.__methods[name];
+  let _chainingBehavior = chainableBehavior.chainingBehavior;
   chainableBehavior.chainingBehavior = /* @__PURE__ */ __name(function overwritingChainableMethodGetter() {
-    var result = chainingBehavior(_chainingBehavior).call(this);
+    let result = chainingBehavior(_chainingBehavior).call(this);
     if (result !== void 0) {
       return result;
     }
-    var newAssertion = new Assertion();
+    let newAssertion = new Assertion();
     transferFlags(this, newAssertion);
     return newAssertion;
   }, "overwritingChainableMethodGetter");
-  var _method = chainableBehavior.method;
+  let _method = chainableBehavior.method;
   chainableBehavior.method = /* @__PURE__ */ __name(function overwritingChainableMethodWrapper() {
-    var result = method(_method).apply(this, arguments);
+    let result = method(_method).apply(this, arguments);
     if (result !== void 0) {
       return result;
     }
-    var newAssertion = new Assertion();
+    let newAssertion = new Assertion();
     transferFlags(this, newAssertion);
     return newAssertion;
   }, "overwritingChainableMethodWrapper");
@@ -1686,8 +1768,7 @@ function compareByInspect(a, b) {
 }
 __name(compareByInspect, "compareByInspect");
 function getOwnEnumerablePropertySymbols(obj) {
-  if (typeof Object.getOwnPropertySymbols !== "function")
-    return [];
+  if (typeof Object.getOwnPropertySymbols !== "function") return [];
   return Object.getOwnPropertySymbols(obj).filter(function(sym) {
     return Object.getOwnPropertyDescriptor(obj, sym).enumerable;
   });
@@ -1697,27 +1778,22 @@ function getOwnEnumerableProperties(obj) {
   return Object.keys(obj).concat(getOwnEnumerablePropertySymbols(obj));
 }
 __name(getOwnEnumerableProperties, "getOwnEnumerableProperties");
-function _isNaN(value) {
-  return value !== value;
-}
-__name(_isNaN, "_isNaN");
-var isNaN2 = Number.isNaN || _isNaN;
+var isNaN2 = Number.isNaN;
 function isObjectType(obj) {
-  var objectType = type(obj);
-  var objectTypes = ["Array", "Object", "Function"];
+  let objectType = type(obj);
+  let objectTypes = ["Array", "Object", "Function"];
   return objectTypes.indexOf(objectType) !== -1;
 }
 __name(isObjectType, "isObjectType");
 function getOperator(obj, args) {
-  var operator = flag(obj, "operator");
-  var negate = flag(obj, "negate");
-  var expected = args[3];
-  var msg = negate ? args[2] : args[1];
+  let operator = flag(obj, "operator");
+  let negate = flag(obj, "negate");
+  let expected = args[3];
+  let msg = negate ? args[2] : args[1];
   if (operator) {
     return operator;
   }
-  if (typeof msg === "function")
-    msg = msg();
+  if (typeof msg === "function") msg = msg();
   msg = msg || "";
   if (!msg) {
     return void 0;
@@ -1725,7 +1801,7 @@ function getOperator(obj, args) {
   if (/\shave\s/.test(msg)) {
     return void 0;
   }
-  var isObject = isObjectType(expected);
+  let isObject = isObjectType(expected);
   if (/\snot\s/.test(msg)) {
     return isObject ? "notDeepStrictEqual" : "notStrictEqual";
   }
@@ -1790,16 +1866,20 @@ Assertion.addProperty("all", function() {
   flag2(this, "any", false);
 });
 var functionTypes = {
-  "function": ["function", "asyncfunction", "generatorfunction", "asyncgeneratorfunction"],
-  "asyncfunction": ["asyncfunction", "asyncgeneratorfunction"],
-  "generatorfunction": ["generatorfunction", "asyncgeneratorfunction"],
-  "asyncgeneratorfunction": ["asyncgeneratorfunction"]
+  function: [
+    "function",
+    "asyncfunction",
+    "generatorfunction",
+    "asyncgeneratorfunction"
+  ],
+  asyncfunction: ["asyncfunction", "asyncgeneratorfunction"],
+  generatorfunction: ["generatorfunction", "asyncgeneratorfunction"],
+  asyncgeneratorfunction: ["asyncgeneratorfunction"]
 };
 function an(type3, msg) {
-  if (msg)
-    flag2(this, "message", msg);
+  if (msg) flag2(this, "message", msg);
   type3 = type3.toLowerCase();
-  var obj = flag2(this, "object"), article = ~["a", "e", "i", "o", "u"].indexOf(type3.charAt(0)) ? "an " : "a ";
+  let obj = flag2(this, "object"), article = ~["a", "e", "i", "o", "u"].indexOf(type3.charAt(0)) ? "an " : "a ";
   const detectedType = type(obj).toLowerCase();
   if (functionTypes["function"].includes(type3)) {
     this.assert(
@@ -1827,11 +1907,10 @@ function includeChainingBehavior() {
 }
 __name(includeChainingBehavior, "includeChainingBehavior");
 function include(val, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var obj = flag2(this, "object"), objType = type(obj).toLowerCase(), flagMsg = flag2(this, "message"), negate = flag2(this, "negate"), ssfi = flag2(this, "ssfi"), isDeep = flag2(this, "deep"), descriptor = isDeep ? "deep " : "", isEql = isDeep ? flag2(this, "eql") : SameValueZero;
+  if (msg) flag2(this, "message", msg);
+  let obj = flag2(this, "object"), objType = type(obj).toLowerCase(), flagMsg = flag2(this, "message"), negate = flag2(this, "negate"), ssfi = flag2(this, "ssfi"), isDeep = flag2(this, "deep"), descriptor = isDeep ? "deep " : "", isEql = isDeep ? flag2(this, "eql") : SameValueZero;
   flagMsg = flagMsg ? flagMsg + ": " : "";
-  var included = false;
+  let included = false;
   switch (objType) {
     case "string":
       included = obj.indexOf(val) !== -1;
@@ -1869,7 +1948,7 @@ function include(val, msg) {
         included = obj.indexOf(val) !== -1;
       }
       break;
-    default:
+    default: {
       if (val !== Object(val)) {
         throw new AssertionError(
           flagMsg + "the given combination of arguments (" + objType + " and " + type(val).toLowerCase() + ") is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a " + type(val).toLowerCase(),
@@ -1877,9 +1956,11 @@ function include(val, msg) {
           ssfi
         );
       }
-      var props = Object.keys(val), firstErr = null, numErrs = 0;
+      let props = Object.keys(val);
+      let firstErr = null;
+      let numErrs = 0;
       props.forEach(function(prop) {
-        var propAssertion = new Assertion(obj);
+        let propAssertion = new Assertion(obj);
         transferFlags(this, propAssertion, true);
         flag2(propAssertion, "lockSsfi", true);
         if (!negate || props.length === 1) {
@@ -1892,8 +1973,7 @@ function include(val, msg) {
           if (!check_error_exports.compatibleConstructor(err, AssertionError)) {
             throw err;
           }
-          if (firstErr === null)
-            firstErr = err;
+          if (firstErr === null) firstErr = err;
           numErrs++;
         }
       }, this);
@@ -1901,6 +1981,7 @@ function include(val, msg) {
         throw firstErr;
       }
       return;
+    }
   }
   this.assert(
     included,
@@ -1944,13 +2025,14 @@ Assertion.addProperty("callable", function() {
   const msg = message ? `${message}: ` : "";
   const negate = flag2(this, "negate");
   const assertionMessage = negate ? `${msg}expected ${inspect2(val)} not to be a callable function` : `${msg}expected ${inspect2(val)} to be a callable function`;
-  const isCallable = ["Function", "AsyncFunction", "GeneratorFunction", "AsyncGeneratorFunction"].includes(type(val));
+  const isCallable = [
+    "Function",
+    "AsyncFunction",
+    "GeneratorFunction",
+    "AsyncGeneratorFunction"
+  ].includes(type(val));
   if (isCallable && negate || !isCallable && !negate) {
-    throw new AssertionError(
-      assertionMessage,
-      void 0,
-      ssfi
-    );
+    throw new AssertionError(assertionMessage, void 0, ssfi);
   }
 });
 Assertion.addProperty("false", function() {
@@ -1983,7 +2065,7 @@ Assertion.addProperty("NaN", function() {
   );
 });
 function assertExist() {
-  var val = flag2(this, "object");
+  let val = flag2(this, "object");
   this.assert(
     val !== null && val !== void 0,
     "expected #{this} to exist",
@@ -1994,7 +2076,7 @@ __name(assertExist, "assertExist");
 Assertion.addProperty("exist", assertExist);
 Assertion.addProperty("exists", assertExist);
 Assertion.addProperty("empty", function() {
-  var val = flag2(this, "object"), ssfi = flag2(this, "ssfi"), flagMsg = flag2(this, "message"), itemsCount;
+  let val = flag2(this, "object"), ssfi = flag2(this, "ssfi"), flagMsg = flag2(this, "message"), itemsCount;
   flagMsg = flagMsg ? flagMsg + ": " : "";
   switch (type(val).toLowerCase()) {
     case "array":
@@ -2012,9 +2094,10 @@ Assertion.addProperty("empty", function() {
         void 0,
         ssfi
       );
-    case "function":
-      var msg = flagMsg + ".empty was passed a function " + getName(val);
+    case "function": {
+      const msg = flagMsg + ".empty was passed a function " + getName(val);
       throw new AssertionError(msg.trim(), void 0, ssfi);
+    }
     default:
       if (val !== Object(val)) {
         throw new AssertionError(
@@ -2032,7 +2115,7 @@ Assertion.addProperty("empty", function() {
   );
 });
 function checkArguments() {
-  var obj = flag2(this, "object"), type3 = type(obj);
+  let obj = flag2(this, "object"), type3 = type(obj);
   this.assert(
     "Arguments" === type3,
     "expected #{this} to be arguments but got " + type3,
@@ -2043,11 +2126,10 @@ __name(checkArguments, "checkArguments");
 Assertion.addProperty("arguments", checkArguments);
 Assertion.addProperty("Arguments", checkArguments);
 function assertEqual(val, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var obj = flag2(this, "object");
+  if (msg) flag2(this, "message", msg);
+  let obj = flag2(this, "object");
   if (flag2(this, "deep")) {
-    var prevLockSsfi = flag2(this, "lockSsfi");
+    let prevLockSsfi = flag2(this, "lockSsfi");
     flag2(this, "lockSsfi", true);
     this.eql(val);
     flag2(this, "lockSsfi", prevLockSsfi);
@@ -2067,9 +2149,8 @@ Assertion.addMethod("equal", assertEqual);
 Assertion.addMethod("equals", assertEqual);
 Assertion.addMethod("eq", assertEqual);
 function assertEql(obj, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var eql = flag2(this, "eql");
+  if (msg) flag2(this, "message", msg);
+  let eql = flag2(this, "eql");
   this.assert(
     eql(obj, flag2(this, "object")),
     "expected #{this} to deeply equal #{exp}",
@@ -2083,22 +2164,33 @@ __name(assertEql, "assertEql");
 Assertion.addMethod("eql", assertEql);
 Assertion.addMethod("eqls", assertEql);
 function assertAbove(n, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var obj = flag2(this, "object"), doLength = flag2(this, "doLength"), flagMsg = flag2(this, "message"), msgPrefix = flagMsg ? flagMsg + ": " : "", ssfi = flag2(this, "ssfi"), objType = type(obj).toLowerCase(), nType = type(n).toLowerCase();
+  if (msg) flag2(this, "message", msg);
+  let obj = flag2(this, "object"), doLength = flag2(this, "doLength"), flagMsg = flag2(this, "message"), msgPrefix = flagMsg ? flagMsg + ": " : "", ssfi = flag2(this, "ssfi"), objType = type(obj).toLowerCase(), nType = type(n).toLowerCase();
   if (doLength && objType !== "map" && objType !== "set") {
     new Assertion(obj, flagMsg, ssfi, true).to.have.property("length");
   }
-  if (!doLength && (objType === "date" && nType !== "date")) {
-    throw new AssertionError(msgPrefix + "the argument to above must be a date", void 0, ssfi);
+  if (!doLength && objType === "date" && nType !== "date") {
+    throw new AssertionError(
+      msgPrefix + "the argument to above must be a date",
+      void 0,
+      ssfi
+    );
   } else if (!isNumeric(n) && (doLength || isNumeric(obj))) {
-    throw new AssertionError(msgPrefix + "the argument to above must be a number", void 0, ssfi);
-  } else if (!doLength && (objType !== "date" && !isNumeric(obj))) {
-    var printObj = objType === "string" ? "'" + obj + "'" : obj;
-    throw new AssertionError(msgPrefix + "expected " + printObj + " to be a number or a date", void 0, ssfi);
+    throw new AssertionError(
+      msgPrefix + "the argument to above must be a number",
+      void 0,
+      ssfi
+    );
+  } else if (!doLength && objType !== "date" && !isNumeric(obj)) {
+    let printObj = objType === "string" ? "'" + obj + "'" : obj;
+    throw new AssertionError(
+      msgPrefix + "expected " + printObj + " to be a number or a date",
+      void 0,
+      ssfi
+    );
   }
   if (doLength) {
-    var descriptor = "length", itemsCount;
+    let descriptor = "length", itemsCount;
     if (objType === "map" || objType === "set") {
       descriptor = "size";
       itemsCount = obj.size;
@@ -2126,18 +2218,17 @@ Assertion.addMethod("above", assertAbove);
 Assertion.addMethod("gt", assertAbove);
 Assertion.addMethod("greaterThan", assertAbove);
 function assertLeast(n, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var obj = flag2(this, "object"), doLength = flag2(this, "doLength"), flagMsg = flag2(this, "message"), msgPrefix = flagMsg ? flagMsg + ": " : "", ssfi = flag2(this, "ssfi"), objType = type(obj).toLowerCase(), nType = type(n).toLowerCase(), errorMessage, shouldThrow = true;
+  if (msg) flag2(this, "message", msg);
+  let obj = flag2(this, "object"), doLength = flag2(this, "doLength"), flagMsg = flag2(this, "message"), msgPrefix = flagMsg ? flagMsg + ": " : "", ssfi = flag2(this, "ssfi"), objType = type(obj).toLowerCase(), nType = type(n).toLowerCase(), errorMessage, shouldThrow = true;
   if (doLength && objType !== "map" && objType !== "set") {
     new Assertion(obj, flagMsg, ssfi, true).to.have.property("length");
   }
-  if (!doLength && (objType === "date" && nType !== "date")) {
+  if (!doLength && objType === "date" && nType !== "date") {
     errorMessage = msgPrefix + "the argument to least must be a date";
   } else if (!isNumeric(n) && (doLength || isNumeric(obj))) {
     errorMessage = msgPrefix + "the argument to least must be a number";
-  } else if (!doLength && (objType !== "date" && !isNumeric(obj))) {
-    var printObj = objType === "string" ? "'" + obj + "'" : obj;
+  } else if (!doLength && objType !== "date" && !isNumeric(obj)) {
+    let printObj = objType === "string" ? "'" + obj + "'" : obj;
     errorMessage = msgPrefix + "expected " + printObj + " to be a number or a date";
   } else {
     shouldThrow = false;
@@ -2146,7 +2237,7 @@ function assertLeast(n, msg) {
     throw new AssertionError(errorMessage, void 0, ssfi);
   }
   if (doLength) {
-    var descriptor = "length", itemsCount;
+    let descriptor = "length", itemsCount;
     if (objType === "map" || objType === "set") {
       descriptor = "size";
       itemsCount = obj.size;
@@ -2174,18 +2265,17 @@ Assertion.addMethod("least", assertLeast);
 Assertion.addMethod("gte", assertLeast);
 Assertion.addMethod("greaterThanOrEqual", assertLeast);
 function assertBelow(n, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var obj = flag2(this, "object"), doLength = flag2(this, "doLength"), flagMsg = flag2(this, "message"), msgPrefix = flagMsg ? flagMsg + ": " : "", ssfi = flag2(this, "ssfi"), objType = type(obj).toLowerCase(), nType = type(n).toLowerCase(), errorMessage, shouldThrow = true;
+  if (msg) flag2(this, "message", msg);
+  let obj = flag2(this, "object"), doLength = flag2(this, "doLength"), flagMsg = flag2(this, "message"), msgPrefix = flagMsg ? flagMsg + ": " : "", ssfi = flag2(this, "ssfi"), objType = type(obj).toLowerCase(), nType = type(n).toLowerCase(), errorMessage, shouldThrow = true;
   if (doLength && objType !== "map" && objType !== "set") {
     new Assertion(obj, flagMsg, ssfi, true).to.have.property("length");
   }
-  if (!doLength && (objType === "date" && nType !== "date")) {
+  if (!doLength && objType === "date" && nType !== "date") {
     errorMessage = msgPrefix + "the argument to below must be a date";
   } else if (!isNumeric(n) && (doLength || isNumeric(obj))) {
     errorMessage = msgPrefix + "the argument to below must be a number";
-  } else if (!doLength && (objType !== "date" && !isNumeric(obj))) {
-    var printObj = objType === "string" ? "'" + obj + "'" : obj;
+  } else if (!doLength && objType !== "date" && !isNumeric(obj)) {
+    let printObj = objType === "string" ? "'" + obj + "'" : obj;
     errorMessage = msgPrefix + "expected " + printObj + " to be a number or a date";
   } else {
     shouldThrow = false;
@@ -2194,7 +2284,7 @@ function assertBelow(n, msg) {
     throw new AssertionError(errorMessage, void 0, ssfi);
   }
   if (doLength) {
-    var descriptor = "length", itemsCount;
+    let descriptor = "length", itemsCount;
     if (objType === "map" || objType === "set") {
       descriptor = "size";
       itemsCount = obj.size;
@@ -2222,18 +2312,17 @@ Assertion.addMethod("below", assertBelow);
 Assertion.addMethod("lt", assertBelow);
 Assertion.addMethod("lessThan", assertBelow);
 function assertMost(n, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var obj = flag2(this, "object"), doLength = flag2(this, "doLength"), flagMsg = flag2(this, "message"), msgPrefix = flagMsg ? flagMsg + ": " : "", ssfi = flag2(this, "ssfi"), objType = type(obj).toLowerCase(), nType = type(n).toLowerCase(), errorMessage, shouldThrow = true;
+  if (msg) flag2(this, "message", msg);
+  let obj = flag2(this, "object"), doLength = flag2(this, "doLength"), flagMsg = flag2(this, "message"), msgPrefix = flagMsg ? flagMsg + ": " : "", ssfi = flag2(this, "ssfi"), objType = type(obj).toLowerCase(), nType = type(n).toLowerCase(), errorMessage, shouldThrow = true;
   if (doLength && objType !== "map" && objType !== "set") {
     new Assertion(obj, flagMsg, ssfi, true).to.have.property("length");
   }
-  if (!doLength && (objType === "date" && nType !== "date")) {
+  if (!doLength && objType === "date" && nType !== "date") {
     errorMessage = msgPrefix + "the argument to most must be a date";
   } else if (!isNumeric(n) && (doLength || isNumeric(obj))) {
     errorMessage = msgPrefix + "the argument to most must be a number";
-  } else if (!doLength && (objType !== "date" && !isNumeric(obj))) {
-    var printObj = objType === "string" ? "'" + obj + "'" : obj;
+  } else if (!doLength && objType !== "date" && !isNumeric(obj)) {
+    let printObj = objType === "string" ? "'" + obj + "'" : obj;
     errorMessage = msgPrefix + "expected " + printObj + " to be a number or a date";
   } else {
     shouldThrow = false;
@@ -2242,7 +2331,7 @@ function assertMost(n, msg) {
     throw new AssertionError(errorMessage, void 0, ssfi);
   }
   if (doLength) {
-    var descriptor = "length", itemsCount;
+    let descriptor = "length", itemsCount;
     if (objType === "map" || objType === "set") {
       descriptor = "size";
       itemsCount = obj.size;
@@ -2270,18 +2359,17 @@ Assertion.addMethod("most", assertMost);
 Assertion.addMethod("lte", assertMost);
 Assertion.addMethod("lessThanOrEqual", assertMost);
 Assertion.addMethod("within", function(start, finish, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var obj = flag2(this, "object"), doLength = flag2(this, "doLength"), flagMsg = flag2(this, "message"), msgPrefix = flagMsg ? flagMsg + ": " : "", ssfi = flag2(this, "ssfi"), objType = type(obj).toLowerCase(), startType = type(start).toLowerCase(), finishType = type(finish).toLowerCase(), errorMessage, shouldThrow = true, range = startType === "date" && finishType === "date" ? start.toISOString() + ".." + finish.toISOString() : start + ".." + finish;
+  if (msg) flag2(this, "message", msg);
+  let obj = flag2(this, "object"), doLength = flag2(this, "doLength"), flagMsg = flag2(this, "message"), msgPrefix = flagMsg ? flagMsg + ": " : "", ssfi = flag2(this, "ssfi"), objType = type(obj).toLowerCase(), startType = type(start).toLowerCase(), finishType = type(finish).toLowerCase(), errorMessage, shouldThrow = true, range = startType === "date" && finishType === "date" ? start.toISOString() + ".." + finish.toISOString() : start + ".." + finish;
   if (doLength && objType !== "map" && objType !== "set") {
     new Assertion(obj, flagMsg, ssfi, true).to.have.property("length");
   }
-  if (!doLength && (objType === "date" && (startType !== "date" || finishType !== "date"))) {
+  if (!doLength && objType === "date" && (startType !== "date" || finishType !== "date")) {
     errorMessage = msgPrefix + "the arguments to within must be dates";
   } else if ((!isNumeric(start) || !isNumeric(finish)) && (doLength || isNumeric(obj))) {
     errorMessage = msgPrefix + "the arguments to within must be numbers";
-  } else if (!doLength && (objType !== "date" && !isNumeric(obj))) {
-    var printObj = objType === "string" ? "'" + obj + "'" : obj;
+  } else if (!doLength && objType !== "date" && !isNumeric(obj)) {
+    let printObj = objType === "string" ? "'" + obj + "'" : obj;
     errorMessage = msgPrefix + "expected " + printObj + " to be a number or a date";
   } else {
     shouldThrow = false;
@@ -2290,7 +2378,7 @@ Assertion.addMethod("within", function(start, finish, msg) {
     throw new AssertionError(errorMessage, void 0, ssfi);
   }
   if (doLength) {
-    var descriptor = "length", itemsCount;
+    let descriptor = "length", itemsCount;
     if (objType === "map" || objType === "set") {
       descriptor = "size";
       itemsCount = obj.size;
@@ -2311,13 +2399,13 @@ Assertion.addMethod("within", function(start, finish, msg) {
   }
 });
 function assertInstanceOf(constructor, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var target = flag2(this, "object");
-  var ssfi = flag2(this, "ssfi");
-  var flagMsg = flag2(this, "message");
+  if (msg) flag2(this, "message", msg);
+  let target = flag2(this, "object");
+  let ssfi = flag2(this, "ssfi");
+  let flagMsg = flag2(this, "message");
+  let isInstanceOf;
   try {
-    var isInstanceOf = target instanceof constructor;
+    isInstanceOf = target instanceof constructor;
   } catch (err) {
     if (err instanceof TypeError) {
       flagMsg = flagMsg ? flagMsg + ": " : "";
@@ -2329,7 +2417,7 @@ function assertInstanceOf(constructor, msg) {
     }
     throw err;
   }
-  var name = getName(constructor);
+  let name = getName(constructor);
   if (name == null) {
     name = "an unnamed constructor";
   }
@@ -2343,9 +2431,8 @@ __name(assertInstanceOf, "assertInstanceOf");
 Assertion.addMethod("instanceof", assertInstanceOf);
 Assertion.addMethod("instanceOf", assertInstanceOf);
 function assertProperty(name, val, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var isNested = flag2(this, "nested"), isOwn = flag2(this, "own"), flagMsg = flag2(this, "message"), obj = flag2(this, "object"), ssfi = flag2(this, "ssfi"), nameType = typeof name;
+  if (msg) flag2(this, "message", msg);
+  let isNested = flag2(this, "nested"), isOwn = flag2(this, "own"), flagMsg = flag2(this, "message"), obj = flag2(this, "object"), ssfi = flag2(this, "ssfi"), nameType = typeof name;
   flagMsg = flagMsg ? flagMsg + ": " : "";
   if (isNested) {
     if (nameType !== "string") {
@@ -2378,22 +2465,16 @@ function assertProperty(name, val, msg) {
       ssfi
     );
   }
-  var isDeep = flag2(this, "deep"), negate = flag2(this, "negate"), pathInfo = isNested ? getPathInfo(obj, name) : null, value = isNested ? pathInfo.value : obj[name], isEql = isDeep ? flag2(this, "eql") : (val1, val2) => val1 === val2;
-  var descriptor = "";
-  if (isDeep)
-    descriptor += "deep ";
-  if (isOwn)
-    descriptor += "own ";
-  if (isNested)
-    descriptor += "nested ";
+  let isDeep = flag2(this, "deep"), negate = flag2(this, "negate"), pathInfo = isNested ? getPathInfo(obj, name) : null, value = isNested ? pathInfo.value : obj[name], isEql = isDeep ? flag2(this, "eql") : (val1, val2) => val1 === val2;
+  let descriptor = "";
+  if (isDeep) descriptor += "deep ";
+  if (isOwn) descriptor += "own ";
+  if (isNested) descriptor += "nested ";
   descriptor += "property ";
-  var hasProperty2;
-  if (isOwn)
-    hasProperty2 = Object.prototype.hasOwnProperty.call(obj, name);
-  else if (isNested)
-    hasProperty2 = pathInfo.exists;
-  else
-    hasProperty2 = hasProperty(obj, name);
+  let hasProperty2;
+  if (isOwn) hasProperty2 = Object.prototype.hasOwnProperty.call(obj, name);
+  else if (isNested) hasProperty2 = pathInfo.exists;
+  else hasProperty2 = hasProperty(obj, name);
   if (!negate || arguments.length === 1) {
     this.assert(
       hasProperty2,
@@ -2414,7 +2495,7 @@ function assertProperty(name, val, msg) {
 }
 __name(assertProperty, "assertProperty");
 Assertion.addMethod("property", assertProperty);
-function assertOwnProperty(name, value, msg) {
+function assertOwnProperty(_name, _value, _msg) {
   flag2(this, "own", true);
   assertProperty.apply(this, arguments);
 }
@@ -2426,11 +2507,10 @@ function assertOwnPropertyDescriptor(name, descriptor, msg) {
     msg = descriptor;
     descriptor = null;
   }
-  if (msg)
-    flag2(this, "message", msg);
-  var obj = flag2(this, "object");
-  var actualDescriptor = Object.getOwnPropertyDescriptor(Object(obj), name);
-  var eql = flag2(this, "eql");
+  if (msg) flag2(this, "message", msg);
+  let obj = flag2(this, "object");
+  let actualDescriptor = Object.getOwnPropertyDescriptor(Object(obj), name);
+  let eql = flag2(this, "eql");
   if (actualDescriptor && descriptor) {
     this.assert(
       eql(descriptor, actualDescriptor),
@@ -2457,9 +2537,8 @@ function assertLengthChain() {
 }
 __name(assertLengthChain, "assertLengthChain");
 function assertLength(n, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var obj = flag2(this, "object"), objType = type(obj).toLowerCase(), flagMsg = flag2(this, "message"), ssfi = flag2(this, "ssfi"), descriptor = "length", itemsCount;
+  if (msg) flag2(this, "message", msg);
+  let obj = flag2(this, "object"), objType = type(obj).toLowerCase(), flagMsg = flag2(this, "message"), ssfi = flag2(this, "ssfi"), descriptor = "length", itemsCount;
   switch (objType) {
     case "map":
     case "set":
@@ -2482,9 +2561,8 @@ __name(assertLength, "assertLength");
 Assertion.addChainableMethod("length", assertLength, assertLengthChain);
 Assertion.addChainableMethod("lengthOf", assertLength, assertLengthChain);
 function assertMatch(re, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var obj = flag2(this, "object");
+  if (msg) flag2(this, "message", msg);
+  let obj = flag2(this, "object");
   this.assert(
     re.exec(obj),
     "expected #{this} to match " + re,
@@ -2495,9 +2573,8 @@ __name(assertMatch, "assertMatch");
 Assertion.addMethod("match", assertMatch);
 Assertion.addMethod("matches", assertMatch);
 Assertion.addMethod("string", function(str, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var obj = flag2(this, "object"), flagMsg = flag2(this, "message"), ssfi = flag2(this, "ssfi");
+  if (msg) flag2(this, "message", msg);
+  let obj = flag2(this, "object"), flagMsg = flag2(this, "message"), ssfi = flag2(this, "ssfi");
   new Assertion(obj, flagMsg, ssfi, true).is.a("string");
   this.assert(
     ~obj.indexOf(str),
@@ -2506,9 +2583,9 @@ Assertion.addMethod("string", function(str, msg) {
   );
 });
 function assertKeys(keys) {
-  var obj = flag2(this, "object"), objType = type(obj), keysType = type(keys), ssfi = flag2(this, "ssfi"), isDeep = flag2(this, "deep"), str, deepStr = "", actual, ok = true, flagMsg = flag2(this, "message");
+  let obj = flag2(this, "object"), objType = type(obj), keysType = type(keys), ssfi = flag2(this, "ssfi"), isDeep = flag2(this, "deep"), str, deepStr = "", actual, ok = true, flagMsg = flag2(this, "message");
   flagMsg = flagMsg ? flagMsg + ": " : "";
-  var mixedArgsMsg = flagMsg + "when testing keys against an object or an array you must give a single Array|Object|String argument or multiple String arguments";
+  let mixedArgsMsg = flagMsg + "when testing keys against an object or an array you must give a single Array|Object|String argument or multiple String arguments";
   if (objType === "Map" || objType === "Set") {
     deepStr = isDeep ? "deeply " : "";
     actual = [];
@@ -2542,7 +2619,7 @@ function assertKeys(keys) {
   if (!keys.length) {
     throw new AssertionError(flagMsg + "keys required", void 0, ssfi);
   }
-  var len = keys.length, any = flag2(this, "any"), all = flag2(this, "all"), expected = keys, isEql = isDeep ? flag2(this, "eql") : (val1, val2) => val1 === val2;
+  let len = keys.length, any = flag2(this, "any"), all = flag2(this, "all"), expected = keys, isEql = isDeep ? flag2(this, "eql") : (val1, val2) => val1 === val2;
   if (!any && !all) {
     all = true;
   }
@@ -2567,7 +2644,7 @@ function assertKeys(keys) {
     keys = keys.map(function(key) {
       return inspect2(key);
     });
-    var last = keys.pop();
+    let last = keys.pop();
     if (all) {
       str = keys.join(", ") + ", and " + last;
     }
@@ -2592,9 +2669,8 @@ __name(assertKeys, "assertKeys");
 Assertion.addMethod("keys", assertKeys);
 Assertion.addMethod("key", assertKeys);
 function assertThrows(errorLike, errMsgMatcher, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var obj = flag2(this, "object"), ssfi = flag2(this, "ssfi"), flagMsg = flag2(this, "message"), negate = flag2(this, "negate") || false;
+  if (msg) flag2(this, "message", msg);
+  let obj = flag2(this, "object"), ssfi = flag2(this, "ssfi"), flagMsg = flag2(this, "message"), negate = flag2(this, "negate") || false;
   new Assertion(obj, flagMsg, ssfi, true).is.a("function");
   if (isRegExp2(errorLike) || typeof errorLike === "string") {
     errMsgMatcher = errorLike;
@@ -2608,12 +2684,12 @@ function assertThrows(errorLike, errMsgMatcher, msg) {
     errorWasThrown = true;
     caughtErr = err;
   }
-  var everyArgIsUndefined = errorLike === void 0 && errMsgMatcher === void 0;
-  var everyArgIsDefined = Boolean(errorLike && errMsgMatcher);
-  var errorLikeFail = false;
-  var errMsgMatcherFail = false;
+  let everyArgIsUndefined = errorLike === void 0 && errMsgMatcher === void 0;
+  let everyArgIsDefined = Boolean(errorLike && errMsgMatcher);
+  let errorLikeFail = false;
+  let errMsgMatcherFail = false;
   if (everyArgIsUndefined || !everyArgIsUndefined && !negate) {
-    var errorLikeString = "an error";
+    let errorLikeString = "an error";
     if (errorLike instanceof Error) {
       errorLikeString = "#{exp}";
     } else if (errorLike) {
@@ -2640,7 +2716,10 @@ function assertThrows(errorLike, errMsgMatcher, msg) {
   }
   if (errorLike && caughtErr) {
     if (errorLike instanceof Error) {
-      var isCompatibleInstance = check_error_exports.compatibleInstance(caughtErr, errorLike);
+      let isCompatibleInstance = check_error_exports.compatibleInstance(
+        caughtErr,
+        errorLike
+      );
       if (isCompatibleInstance === negate) {
         if (everyArgIsDefined && negate) {
           errorLikeFail = true;
@@ -2655,7 +2734,10 @@ function assertThrows(errorLike, errMsgMatcher, msg) {
         }
       }
     }
-    var isCompatibleConstructor = check_error_exports.compatibleConstructor(caughtErr, errorLike);
+    let isCompatibleConstructor = check_error_exports.compatibleConstructor(
+      caughtErr,
+      errorLike
+    );
     if (isCompatibleConstructor === negate) {
       if (everyArgIsDefined && negate) {
         errorLikeFail = true;
@@ -2671,11 +2753,14 @@ function assertThrows(errorLike, errMsgMatcher, msg) {
     }
   }
   if (caughtErr && errMsgMatcher !== void 0 && errMsgMatcher !== null) {
-    var placeholder = "including";
+    let placeholder = "including";
     if (isRegExp2(errMsgMatcher)) {
       placeholder = "matching";
     }
-    var isCompatibleMessage = check_error_exports.compatibleMessage(caughtErr, errMsgMatcher);
+    let isCompatibleMessage = check_error_exports.compatibleMessage(
+      caughtErr,
+      errMsgMatcher
+    );
     if (isCompatibleMessage === negate) {
       if (everyArgIsDefined && negate) {
         errMsgMatcherFail = true;
@@ -2706,9 +2791,8 @@ Assertion.addMethod("throw", assertThrows);
 Assertion.addMethod("throws", assertThrows);
 Assertion.addMethod("Throw", assertThrows);
 function respondTo(method, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var obj = flag2(this, "object"), itself = flag2(this, "itself"), context = "function" === typeof obj && !itself ? obj.prototype[method] : obj[method];
+  if (msg) flag2(this, "message", msg);
+  let obj = flag2(this, "object"), itself = flag2(this, "itself"), context = "function" === typeof obj && !itself ? obj.prototype[method] : obj[method];
   this.assert(
     "function" === typeof context,
     "expected #{this} to respond to " + inspect2(method),
@@ -2722,10 +2806,9 @@ Assertion.addProperty("itself", function() {
   flag2(this, "itself", true);
 });
 function satisfy(matcher, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var obj = flag2(this, "object");
-  var result = matcher(obj);
+  if (msg) flag2(this, "message", msg);
+  let obj = flag2(this, "object");
+  let result = matcher(obj);
   this.assert(
     result,
     "expected #{this} to satisfy " + objDisplay(matcher),
@@ -2738,21 +2821,31 @@ __name(satisfy, "satisfy");
 Assertion.addMethod("satisfy", satisfy);
 Assertion.addMethod("satisfies", satisfy);
 function closeTo(expected, delta, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var obj = flag2(this, "object"), flagMsg = flag2(this, "message"), ssfi = flag2(this, "ssfi");
+  if (msg) flag2(this, "message", msg);
+  let obj = flag2(this, "object"), flagMsg = flag2(this, "message"), ssfi = flag2(this, "ssfi");
   new Assertion(obj, flagMsg, ssfi, true).is.numeric;
   let message = "A `delta` value is required for `closeTo`";
-  if (delta == void 0)
-    throw new AssertionError(flagMsg ? `${flagMsg}: ${message}` : message, void 0, ssfi);
+  if (delta == void 0) {
+    throw new AssertionError(
+      flagMsg ? `${flagMsg}: ${message}` : message,
+      void 0,
+      ssfi
+    );
+  }
   new Assertion(delta, flagMsg, ssfi, true).is.numeric;
   message = "A `expected` value is required for `closeTo`";
-  if (expected == void 0)
-    throw new AssertionError(flagMsg ? `${flagMsg}: ${message}` : message, void 0, ssfi);
+  if (expected == void 0) {
+    throw new AssertionError(
+      flagMsg ? `${flagMsg}: ${message}` : message,
+      void 0,
+      ssfi
+    );
+  }
   new Assertion(expected, flagMsg, ssfi, true).is.numeric;
   const abs = /* @__PURE__ */ __name((x) => x < 0n ? -x : x, "abs");
+  const strip = /* @__PURE__ */ __name((number) => parseFloat(parseFloat(number).toPrecision(12)), "strip");
   this.assert(
-    abs(obj - expected) <= delta,
+    strip(abs(obj - expected)) <= delta,
     "expected #{this} to be close to " + expected + " +/- " + delta,
     "expected #{this} not to be close to " + expected + " +/- " + delta
   );
@@ -2764,40 +2857,33 @@ function isSubsetOf(_subset, _superset, cmp, contains, ordered) {
   let superset = Array.from(_superset);
   let subset = Array.from(_subset);
   if (!contains) {
-    if (subset.length !== superset.length)
-      return false;
+    if (subset.length !== superset.length) return false;
     superset = superset.slice();
   }
   return subset.every(function(elem, idx) {
-    if (ordered)
-      return cmp ? cmp(elem, superset[idx]) : elem === superset[idx];
+    if (ordered) return cmp ? cmp(elem, superset[idx]) : elem === superset[idx];
     if (!cmp) {
-      var matchIdx = superset.indexOf(elem);
-      if (matchIdx === -1)
-        return false;
-      if (!contains)
-        superset.splice(matchIdx, 1);
+      let matchIdx = superset.indexOf(elem);
+      if (matchIdx === -1) return false;
+      if (!contains) superset.splice(matchIdx, 1);
       return true;
     }
-    return superset.some(function(elem2, matchIdx2) {
-      if (!cmp(elem, elem2))
-        return false;
-      if (!contains)
-        superset.splice(matchIdx2, 1);
+    return superset.some(function(elem2, matchIdx) {
+      if (!cmp(elem, elem2)) return false;
+      if (!contains) superset.splice(matchIdx, 1);
       return true;
     });
   });
 }
 __name(isSubsetOf, "isSubsetOf");
 Assertion.addMethod("members", function(subset, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var obj = flag2(this, "object"), flagMsg = flag2(this, "message"), ssfi = flag2(this, "ssfi");
+  if (msg) flag2(this, "message", msg);
+  let obj = flag2(this, "object"), flagMsg = flag2(this, "message"), ssfi = flag2(this, "ssfi");
   new Assertion(obj, flagMsg, ssfi, true).to.be.iterable;
   new Assertion(subset, flagMsg, ssfi, true).to.be.iterable;
-  var contains = flag2(this, "contains");
-  var ordered = flag2(this, "ordered");
-  var subject, failMsg, failNegateMsg;
+  let contains = flag2(this, "contains");
+  let ordered = flag2(this, "ordered");
+  let subject, failMsg, failNegateMsg;
   if (contains) {
     subject = ordered ? "an ordered superset" : "a superset";
     failMsg = "expected #{this} to be " + subject + " of #{exp}";
@@ -2807,7 +2893,7 @@ Assertion.addMethod("members", function(subset, msg) {
     failMsg = "expected #{this} to have the same " + subject + " as #{exp}";
     failNegateMsg = "expected #{this} to not have the same " + subject + " as #{exp}";
   }
-  var cmp = flag2(this, "deep") ? flag2(this, "eql") : void 0;
+  let cmp = flag2(this, "deep") ? flag2(this, "eql") : void 0;
   this.assert(
     isSubsetOf(subset, obj, cmp, contains, ordered),
     failMsg,
@@ -2818,9 +2904,8 @@ Assertion.addMethod("members", function(subset, msg) {
   );
 });
 Assertion.addProperty("iterable", function(msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var obj = flag2(this, "object");
+  if (msg) flag2(this, "message", msg);
+  let obj = flag2(this, "object");
   this.assert(
     obj != void 0 && obj[Symbol.iterator],
     "expected #{this} to be an iterable",
@@ -2829,9 +2914,8 @@ Assertion.addProperty("iterable", function(msg) {
   );
 });
 function oneOf(list, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var expected = flag2(this, "object"), flagMsg = flag2(this, "message"), ssfi = flag2(this, "ssfi"), contains = flag2(this, "contains"), isDeep = flag2(this, "deep"), eql = flag2(this, "eql");
+  if (msg) flag2(this, "message", msg);
+  let expected = flag2(this, "object"), flagMsg = flag2(this, "message"), ssfi = flag2(this, "ssfi"), contains = flag2(this, "contains"), isDeep = flag2(this, "deep"), eql = flag2(this, "eql");
   new Assertion(list, flagMsg, ssfi, true).to.be.an("array");
   if (contains) {
     this.assert(
@@ -2868,11 +2952,10 @@ function oneOf(list, msg) {
 __name(oneOf, "oneOf");
 Assertion.addMethod("oneOf", oneOf);
 function assertChanges(subject, prop, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var fn = flag2(this, "object"), flagMsg = flag2(this, "message"), ssfi = flag2(this, "ssfi");
+  if (msg) flag2(this, "message", msg);
+  let fn = flag2(this, "object"), flagMsg = flag2(this, "message"), ssfi = flag2(this, "ssfi");
   new Assertion(fn, flagMsg, ssfi, true).is.a("function");
-  var initial;
+  let initial;
   if (!prop) {
     new Assertion(subject, flagMsg, ssfi, true).is.a("function");
     initial = subject();
@@ -2881,8 +2964,8 @@ function assertChanges(subject, prop, msg) {
     initial = subject[prop];
   }
   fn();
-  var final = prop === void 0 || prop === null ? subject() : subject[prop];
-  var msgObj = prop === void 0 || prop === null ? initial : "." + prop;
+  let final = prop === void 0 || prop === null ? subject() : subject[prop];
+  let msgObj = prop === void 0 || prop === null ? initial : "." + prop;
   flag2(this, "deltaMsgObj", msgObj);
   flag2(this, "initialDeltaValue", initial);
   flag2(this, "finalDeltaValue", final);
@@ -2898,11 +2981,10 @@ __name(assertChanges, "assertChanges");
 Assertion.addMethod("change", assertChanges);
 Assertion.addMethod("changes", assertChanges);
 function assertIncreases(subject, prop, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var fn = flag2(this, "object"), flagMsg = flag2(this, "message"), ssfi = flag2(this, "ssfi");
+  if (msg) flag2(this, "message", msg);
+  let fn = flag2(this, "object"), flagMsg = flag2(this, "message"), ssfi = flag2(this, "ssfi");
   new Assertion(fn, flagMsg, ssfi, true).is.a("function");
-  var initial;
+  let initial;
   if (!prop) {
     new Assertion(subject, flagMsg, ssfi, true).is.a("function");
     initial = subject();
@@ -2912,8 +2994,8 @@ function assertIncreases(subject, prop, msg) {
   }
   new Assertion(initial, flagMsg, ssfi, true).is.a("number");
   fn();
-  var final = prop === void 0 || prop === null ? subject() : subject[prop];
-  var msgObj = prop === void 0 || prop === null ? initial : "." + prop;
+  let final = prop === void 0 || prop === null ? subject() : subject[prop];
+  let msgObj = prop === void 0 || prop === null ? initial : "." + prop;
   flag2(this, "deltaMsgObj", msgObj);
   flag2(this, "initialDeltaValue", initial);
   flag2(this, "finalDeltaValue", final);
@@ -2929,11 +3011,10 @@ __name(assertIncreases, "assertIncreases");
 Assertion.addMethod("increase", assertIncreases);
 Assertion.addMethod("increases", assertIncreases);
 function assertDecreases(subject, prop, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var fn = flag2(this, "object"), flagMsg = flag2(this, "message"), ssfi = flag2(this, "ssfi");
+  if (msg) flag2(this, "message", msg);
+  let fn = flag2(this, "object"), flagMsg = flag2(this, "message"), ssfi = flag2(this, "ssfi");
   new Assertion(fn, flagMsg, ssfi, true).is.a("function");
-  var initial;
+  let initial;
   if (!prop) {
     new Assertion(subject, flagMsg, ssfi, true).is.a("function");
     initial = subject();
@@ -2943,8 +3024,8 @@ function assertDecreases(subject, prop, msg) {
   }
   new Assertion(initial, flagMsg, ssfi, true).is.a("number");
   fn();
-  var final = prop === void 0 || prop === null ? subject() : subject[prop];
-  var msgObj = prop === void 0 || prop === null ? initial : "." + prop;
+  let final = prop === void 0 || prop === null ? subject() : subject[prop];
+  let msgObj = prop === void 0 || prop === null ? initial : "." + prop;
   flag2(this, "deltaMsgObj", msgObj);
   flag2(this, "initialDeltaValue", initial);
   flag2(this, "finalDeltaValue", final);
@@ -2960,14 +3041,13 @@ __name(assertDecreases, "assertDecreases");
 Assertion.addMethod("decrease", assertDecreases);
 Assertion.addMethod("decreases", assertDecreases);
 function assertDelta(delta, msg) {
-  if (msg)
-    flag2(this, "message", msg);
-  var msgObj = flag2(this, "deltaMsgObj");
-  var initial = flag2(this, "initialDeltaValue");
-  var final = flag2(this, "finalDeltaValue");
-  var behavior = flag2(this, "deltaBehavior");
-  var realDelta = flag2(this, "realDelta");
-  var expression;
+  if (msg) flag2(this, "message", msg);
+  let msgObj = flag2(this, "deltaMsgObj");
+  let initial = flag2(this, "initialDeltaValue");
+  let final = flag2(this, "finalDeltaValue");
+  let behavior = flag2(this, "deltaBehavior");
+  let realDelta = flag2(this, "realDelta");
+  let expression;
   if (behavior === "change") {
     expression = Math.abs(final - initial) === Math.abs(delta);
   } else {
@@ -2982,8 +3062,8 @@ function assertDelta(delta, msg) {
 __name(assertDelta, "assertDelta");
 Assertion.addMethod("by", assertDelta);
 Assertion.addProperty("extensible", function() {
-  var obj = flag2(this, "object");
-  var isExtensible = obj === Object(obj) && Object.isExtensible(obj);
+  let obj = flag2(this, "object");
+  let isExtensible = obj === Object(obj) && Object.isExtensible(obj);
   this.assert(
     isExtensible,
     "expected #{this} to be extensible",
@@ -2991,8 +3071,8 @@ Assertion.addProperty("extensible", function() {
   );
 });
 Assertion.addProperty("sealed", function() {
-  var obj = flag2(this, "object");
-  var isSealed = obj === Object(obj) ? Object.isSealed(obj) : true;
+  let obj = flag2(this, "object");
+  let isSealed = obj === Object(obj) ? Object.isSealed(obj) : true;
   this.assert(
     isSealed,
     "expected #{this} to be sealed",
@@ -3000,20 +3080,75 @@ Assertion.addProperty("sealed", function() {
   );
 });
 Assertion.addProperty("frozen", function() {
-  var obj = flag2(this, "object");
-  var isFrozen = obj === Object(obj) ? Object.isFrozen(obj) : true;
+  let obj = flag2(this, "object");
+  let isFrozen = obj === Object(obj) ? Object.isFrozen(obj) : true;
   this.assert(
     isFrozen,
     "expected #{this} to be frozen",
     "expected #{this} to not be frozen"
   );
 });
-Assertion.addProperty("finite", function(msg) {
-  var obj = flag2(this, "object");
+Assertion.addProperty("finite", function(_msg) {
+  let obj = flag2(this, "object");
   this.assert(
     typeof obj === "number" && isFinite(obj),
     "expected #{this} to be a finite number",
     "expected #{this} to not be a finite number"
+  );
+});
+function compareSubset(expected, actual) {
+  if (expected === actual) {
+    return true;
+  }
+  if (typeof actual !== typeof expected) {
+    return false;
+  }
+  if (typeof expected !== "object" || expected === null) {
+    return expected === actual;
+  }
+  if (!actual) {
+    return false;
+  }
+  if (Array.isArray(expected)) {
+    if (!Array.isArray(actual)) {
+      return false;
+    }
+    return expected.every(function(exp) {
+      return actual.some(function(act) {
+        return compareSubset(exp, act);
+      });
+    });
+  }
+  if (expected instanceof Date) {
+    if (actual instanceof Date) {
+      return expected.getTime() === actual.getTime();
+    } else {
+      return false;
+    }
+  }
+  return Object.keys(expected).every(function(key) {
+    let expectedValue = expected[key];
+    let actualValue = actual[key];
+    if (typeof expectedValue === "object" && expectedValue !== null && actualValue !== null) {
+      return compareSubset(expectedValue, actualValue);
+    }
+    if (typeof expectedValue === "function") {
+      return expectedValue(actualValue);
+    }
+    return actualValue === expectedValue;
+  });
+}
+__name(compareSubset, "compareSubset");
+Assertion.addMethod("containSubset", function(expected) {
+  const actual = flag(this, "object");
+  const showDiff = config.showDiff;
+  this.assert(
+    compareSubset(expected, actual),
+    "expected #{act} to contain subset #{exp}",
+    "expected #{act} to not contain subset #{exp}",
+    expected,
+    actual,
+    showDiff
   );
 });
 function expect(val, message) {
@@ -3026,11 +3161,15 @@ expect.fail = function(actual, expected, message, operator) {
     actual = void 0;
   }
   message = message || "expect.fail()";
-  throw new AssertionError(message, {
-    actual,
-    expected,
-    operator
-  }, expect.fail);
+  throw new AssertionError(
+    message,
+    {
+      actual,
+      expected,
+      operator
+    },
+    expect.fail
+  );
 };
 var should_exports = {};
 __export(should_exports, {
@@ -3059,18 +3198,22 @@ function loadShould() {
     get: shouldGetter,
     configurable: true
   });
-  var should2 = {};
+  let should2 = {};
   should2.fail = function(actual, expected, message, operator) {
     if (arguments.length < 2) {
       message = actual;
       actual = void 0;
     }
     message = message || "should.fail()";
-    throw new AssertionError(message, {
-      actual,
-      expected,
-      operator
-    }, should2.fail);
+    throw new AssertionError(
+      message,
+      {
+        actual,
+        expected,
+        operator
+      },
+      should2.fail
+    );
   };
   should2.equal = function(actual, expected, message) {
     new Assertion(actual, message).to.equal(expected);
@@ -3099,12 +3242,8 @@ __name(loadShould, "loadShould");
 var should = loadShould;
 var Should = loadShould;
 function assert(express, errmsg) {
-  var test2 = new Assertion(null, null, assert, true);
-  test2.assert(
-    express,
-    errmsg,
-    "[ negation message unavailable ]"
-  );
+  let test2 = new Assertion(null, null, assert, true);
+  test2.assert(express, errmsg, "[ negation message unavailable ]");
 }
 __name(assert, "assert");
 assert.fail = function(actual, expected, message, operator) {
@@ -3113,11 +3252,15 @@ assert.fail = function(actual, expected, message, operator) {
     actual = void 0;
   }
   message = message || "assert.fail()";
-  throw new AssertionError(message, {
-    actual,
-    expected,
-    operator
-  }, assert.fail);
+  throw new AssertionError(
+    message,
+    {
+      actual,
+      expected,
+      operator
+    },
+    assert.fail
+  );
 };
 assert.isOk = function(val, msg) {
   new Assertion(val, msg, assert.isOk, true).is.ok;
@@ -3126,7 +3269,7 @@ assert.isNotOk = function(val, msg) {
   new Assertion(val, msg, assert.isNotOk, true).is.not.ok;
 };
 assert.equal = function(act, exp, msg) {
-  var test2 = new Assertion(act, msg, assert.equal, true);
+  let test2 = new Assertion(act, msg, assert.equal, true);
   test2.assert(
     exp == flag(test2, "object"),
     "expected #{this} to equal #{exp}",
@@ -3137,7 +3280,7 @@ assert.equal = function(act, exp, msg) {
   );
 };
 assert.notEqual = function(act, exp, msg) {
-  var test2 = new Assertion(act, msg, assert.notEqual, true);
+  let test2 = new Assertion(act, msg, assert.notEqual, true);
   test2.assert(
     exp != flag(test2, "object"),
     "expected #{this} to not equal #{exp}",
@@ -3262,7 +3405,9 @@ assert.instanceOf = function(val, type3, msg) {
   new Assertion(val, msg, assert.instanceOf, true).to.be.instanceOf(type3);
 };
 assert.notInstanceOf = function(val, type3, msg) {
-  new Assertion(val, msg, assert.notInstanceOf, true).to.not.be.instanceOf(type3);
+  new Assertion(val, msg, assert.notInstanceOf, true).to.not.be.instanceOf(
+    type3
+  );
 };
 assert.include = function(exp, inc, msg) {
   new Assertion(exp, msg, assert.include, true).include(inc);
@@ -3280,13 +3425,22 @@ assert.nestedInclude = function(exp, inc, msg) {
   new Assertion(exp, msg, assert.nestedInclude, true).nested.include(inc);
 };
 assert.notNestedInclude = function(exp, inc, msg) {
-  new Assertion(exp, msg, assert.notNestedInclude, true).not.nested.include(inc);
+  new Assertion(exp, msg, assert.notNestedInclude, true).not.nested.include(
+    inc
+  );
 };
 assert.deepNestedInclude = function(exp, inc, msg) {
-  new Assertion(exp, msg, assert.deepNestedInclude, true).deep.nested.include(inc);
+  new Assertion(exp, msg, assert.deepNestedInclude, true).deep.nested.include(
+    inc
+  );
 };
 assert.notDeepNestedInclude = function(exp, inc, msg) {
-  new Assertion(exp, msg, assert.notDeepNestedInclude, true).not.deep.nested.include(inc);
+  new Assertion(
+    exp,
+    msg,
+    assert.notDeepNestedInclude,
+    true
+  ).not.deep.nested.include(inc);
 };
 assert.ownInclude = function(exp, inc, msg) {
   new Assertion(exp, msg, assert.ownInclude, true).own.include(inc);
@@ -3298,7 +3452,9 @@ assert.deepOwnInclude = function(exp, inc, msg) {
   new Assertion(exp, msg, assert.deepOwnInclude, true).deep.own.include(inc);
 };
 assert.notDeepOwnInclude = function(exp, inc, msg) {
-  new Assertion(exp, msg, assert.notDeepOwnInclude, true).not.deep.own.include(inc);
+  new Assertion(exp, msg, assert.notDeepOwnInclude, true).not.deep.own.include(
+    inc
+  );
 };
 assert.match = function(exp, re, msg) {
   new Assertion(exp, msg, assert.match, true).to.match(re);
@@ -3316,49 +3472,107 @@ assert.propertyVal = function(obj, prop, val, msg) {
   new Assertion(obj, msg, assert.propertyVal, true).to.have.property(prop, val);
 };
 assert.notPropertyVal = function(obj, prop, val, msg) {
-  new Assertion(obj, msg, assert.notPropertyVal, true).to.not.have.property(prop, val);
+  new Assertion(obj, msg, assert.notPropertyVal, true).to.not.have.property(
+    prop,
+    val
+  );
 };
 assert.deepPropertyVal = function(obj, prop, val, msg) {
-  new Assertion(obj, msg, assert.deepPropertyVal, true).to.have.deep.property(prop, val);
+  new Assertion(obj, msg, assert.deepPropertyVal, true).to.have.deep.property(
+    prop,
+    val
+  );
 };
 assert.notDeepPropertyVal = function(obj, prop, val, msg) {
-  new Assertion(obj, msg, assert.notDeepPropertyVal, true).to.not.have.deep.property(prop, val);
+  new Assertion(
+    obj,
+    msg,
+    assert.notDeepPropertyVal,
+    true
+  ).to.not.have.deep.property(prop, val);
 };
 assert.ownProperty = function(obj, prop, msg) {
   new Assertion(obj, msg, assert.ownProperty, true).to.have.own.property(prop);
 };
 assert.notOwnProperty = function(obj, prop, msg) {
-  new Assertion(obj, msg, assert.notOwnProperty, true).to.not.have.own.property(prop);
+  new Assertion(obj, msg, assert.notOwnProperty, true).to.not.have.own.property(
+    prop
+  );
 };
 assert.ownPropertyVal = function(obj, prop, value, msg) {
-  new Assertion(obj, msg, assert.ownPropertyVal, true).to.have.own.property(prop, value);
+  new Assertion(obj, msg, assert.ownPropertyVal, true).to.have.own.property(
+    prop,
+    value
+  );
 };
 assert.notOwnPropertyVal = function(obj, prop, value, msg) {
-  new Assertion(obj, msg, assert.notOwnPropertyVal, true).to.not.have.own.property(prop, value);
+  new Assertion(
+    obj,
+    msg,
+    assert.notOwnPropertyVal,
+    true
+  ).to.not.have.own.property(prop, value);
 };
 assert.deepOwnPropertyVal = function(obj, prop, value, msg) {
-  new Assertion(obj, msg, assert.deepOwnPropertyVal, true).to.have.deep.own.property(prop, value);
+  new Assertion(
+    obj,
+    msg,
+    assert.deepOwnPropertyVal,
+    true
+  ).to.have.deep.own.property(prop, value);
 };
 assert.notDeepOwnPropertyVal = function(obj, prop, value, msg) {
-  new Assertion(obj, msg, assert.notDeepOwnPropertyVal, true).to.not.have.deep.own.property(prop, value);
+  new Assertion(
+    obj,
+    msg,
+    assert.notDeepOwnPropertyVal,
+    true
+  ).to.not.have.deep.own.property(prop, value);
 };
 assert.nestedProperty = function(obj, prop, msg) {
-  new Assertion(obj, msg, assert.nestedProperty, true).to.have.nested.property(prop);
+  new Assertion(obj, msg, assert.nestedProperty, true).to.have.nested.property(
+    prop
+  );
 };
 assert.notNestedProperty = function(obj, prop, msg) {
-  new Assertion(obj, msg, assert.notNestedProperty, true).to.not.have.nested.property(prop);
+  new Assertion(
+    obj,
+    msg,
+    assert.notNestedProperty,
+    true
+  ).to.not.have.nested.property(prop);
 };
 assert.nestedPropertyVal = function(obj, prop, val, msg) {
-  new Assertion(obj, msg, assert.nestedPropertyVal, true).to.have.nested.property(prop, val);
+  new Assertion(
+    obj,
+    msg,
+    assert.nestedPropertyVal,
+    true
+  ).to.have.nested.property(prop, val);
 };
 assert.notNestedPropertyVal = function(obj, prop, val, msg) {
-  new Assertion(obj, msg, assert.notNestedPropertyVal, true).to.not.have.nested.property(prop, val);
+  new Assertion(
+    obj,
+    msg,
+    assert.notNestedPropertyVal,
+    true
+  ).to.not.have.nested.property(prop, val);
 };
 assert.deepNestedPropertyVal = function(obj, prop, val, msg) {
-  new Assertion(obj, msg, assert.deepNestedPropertyVal, true).to.have.deep.nested.property(prop, val);
+  new Assertion(
+    obj,
+    msg,
+    assert.deepNestedPropertyVal,
+    true
+  ).to.have.deep.nested.property(prop, val);
 };
 assert.notDeepNestedPropertyVal = function(obj, prop, val, msg) {
-  new Assertion(obj, msg, assert.notDeepNestedPropertyVal, true).to.not.have.deep.nested.property(prop, val);
+  new Assertion(
+    obj,
+    msg,
+    assert.notDeepNestedPropertyVal,
+    true
+  ).to.not.have.deep.nested.property(prop, val);
 };
 assert.lengthOf = function(exp, len, msg) {
   new Assertion(exp, msg, assert.lengthOf, true).to.have.lengthOf(len);
@@ -3370,35 +3584,63 @@ assert.hasAllKeys = function(obj, keys, msg) {
   new Assertion(obj, msg, assert.hasAllKeys, true).to.have.all.keys(keys);
 };
 assert.containsAllKeys = function(obj, keys, msg) {
-  new Assertion(obj, msg, assert.containsAllKeys, true).to.contain.all.keys(keys);
+  new Assertion(obj, msg, assert.containsAllKeys, true).to.contain.all.keys(
+    keys
+  );
 };
 assert.doesNotHaveAnyKeys = function(obj, keys, msg) {
-  new Assertion(obj, msg, assert.doesNotHaveAnyKeys, true).to.not.have.any.keys(keys);
+  new Assertion(obj, msg, assert.doesNotHaveAnyKeys, true).to.not.have.any.keys(
+    keys
+  );
 };
 assert.doesNotHaveAllKeys = function(obj, keys, msg) {
-  new Assertion(obj, msg, assert.doesNotHaveAllKeys, true).to.not.have.all.keys(keys);
+  new Assertion(obj, msg, assert.doesNotHaveAllKeys, true).to.not.have.all.keys(
+    keys
+  );
 };
 assert.hasAnyDeepKeys = function(obj, keys, msg) {
-  new Assertion(obj, msg, assert.hasAnyDeepKeys, true).to.have.any.deep.keys(keys);
+  new Assertion(obj, msg, assert.hasAnyDeepKeys, true).to.have.any.deep.keys(
+    keys
+  );
 };
 assert.hasAllDeepKeys = function(obj, keys, msg) {
-  new Assertion(obj, msg, assert.hasAllDeepKeys, true).to.have.all.deep.keys(keys);
+  new Assertion(obj, msg, assert.hasAllDeepKeys, true).to.have.all.deep.keys(
+    keys
+  );
 };
 assert.containsAllDeepKeys = function(obj, keys, msg) {
-  new Assertion(obj, msg, assert.containsAllDeepKeys, true).to.contain.all.deep.keys(keys);
+  new Assertion(
+    obj,
+    msg,
+    assert.containsAllDeepKeys,
+    true
+  ).to.contain.all.deep.keys(keys);
 };
 assert.doesNotHaveAnyDeepKeys = function(obj, keys, msg) {
-  new Assertion(obj, msg, assert.doesNotHaveAnyDeepKeys, true).to.not.have.any.deep.keys(keys);
+  new Assertion(
+    obj,
+    msg,
+    assert.doesNotHaveAnyDeepKeys,
+    true
+  ).to.not.have.any.deep.keys(keys);
 };
 assert.doesNotHaveAllDeepKeys = function(obj, keys, msg) {
-  new Assertion(obj, msg, assert.doesNotHaveAllDeepKeys, true).to.not.have.all.deep.keys(keys);
+  new Assertion(
+    obj,
+    msg,
+    assert.doesNotHaveAllDeepKeys,
+    true
+  ).to.not.have.all.deep.keys(keys);
 };
 assert.throws = function(fn, errorLike, errMsgMatcher, msg) {
   if ("string" === typeof errorLike || errorLike instanceof RegExp) {
     errMsgMatcher = errorLike;
     errorLike = null;
   }
-  var assertErr = new Assertion(fn, msg, assert.throws, true).to.throw(errorLike, errMsgMatcher);
+  let assertErr = new Assertion(fn, msg, assert.throws, true).to.throw(
+    errorLike,
+    errMsgMatcher
+  );
   return flag(assertErr, "object");
 };
 assert.doesNotThrow = function(fn, errorLike, errMsgMatcher, message) {
@@ -3406,10 +3648,13 @@ assert.doesNotThrow = function(fn, errorLike, errMsgMatcher, message) {
     errMsgMatcher = errorLike;
     errorLike = null;
   }
-  new Assertion(fn, message, assert.doesNotThrow, true).to.not.throw(errorLike, errMsgMatcher);
+  new Assertion(fn, message, assert.doesNotThrow, true).to.not.throw(
+    errorLike,
+    errMsgMatcher
+  );
 };
 assert.operator = function(val, operator, val2, msg) {
-  var ok;
+  let ok;
   switch (operator) {
     case "==":
       ok = val == val2;
@@ -3443,7 +3688,7 @@ assert.operator = function(val, operator, val2, msg) {
         assert.operator
       );
   }
-  var test2 = new Assertion(ok, msg, assert.operator, true);
+  let test2 = new Assertion(ok, msg, assert.operator, true);
   test2.assert(
     true === flag(test2, "object"),
     "expected " + inspect2(val) + " to be " + operator + " " + inspect2(val2),
@@ -3454,55 +3699,130 @@ assert.closeTo = function(act, exp, delta, msg) {
   new Assertion(act, msg, assert.closeTo, true).to.be.closeTo(exp, delta);
 };
 assert.approximately = function(act, exp, delta, msg) {
-  new Assertion(act, msg, assert.approximately, true).to.be.approximately(exp, delta);
+  new Assertion(act, msg, assert.approximately, true).to.be.approximately(
+    exp,
+    delta
+  );
 };
 assert.sameMembers = function(set1, set2, msg) {
   new Assertion(set1, msg, assert.sameMembers, true).to.have.same.members(set2);
 };
 assert.notSameMembers = function(set1, set2, msg) {
-  new Assertion(set1, msg, assert.notSameMembers, true).to.not.have.same.members(set2);
+  new Assertion(
+    set1,
+    msg,
+    assert.notSameMembers,
+    true
+  ).to.not.have.same.members(set2);
 };
 assert.sameDeepMembers = function(set1, set2, msg) {
-  new Assertion(set1, msg, assert.sameDeepMembers, true).to.have.same.deep.members(set2);
+  new Assertion(
+    set1,
+    msg,
+    assert.sameDeepMembers,
+    true
+  ).to.have.same.deep.members(set2);
 };
 assert.notSameDeepMembers = function(set1, set2, msg) {
-  new Assertion(set1, msg, assert.notSameDeepMembers, true).to.not.have.same.deep.members(set2);
+  new Assertion(
+    set1,
+    msg,
+    assert.notSameDeepMembers,
+    true
+  ).to.not.have.same.deep.members(set2);
 };
 assert.sameOrderedMembers = function(set1, set2, msg) {
-  new Assertion(set1, msg, assert.sameOrderedMembers, true).to.have.same.ordered.members(set2);
+  new Assertion(
+    set1,
+    msg,
+    assert.sameOrderedMembers,
+    true
+  ).to.have.same.ordered.members(set2);
 };
 assert.notSameOrderedMembers = function(set1, set2, msg) {
-  new Assertion(set1, msg, assert.notSameOrderedMembers, true).to.not.have.same.ordered.members(set2);
+  new Assertion(
+    set1,
+    msg,
+    assert.notSameOrderedMembers,
+    true
+  ).to.not.have.same.ordered.members(set2);
 };
 assert.sameDeepOrderedMembers = function(set1, set2, msg) {
-  new Assertion(set1, msg, assert.sameDeepOrderedMembers, true).to.have.same.deep.ordered.members(set2);
+  new Assertion(
+    set1,
+    msg,
+    assert.sameDeepOrderedMembers,
+    true
+  ).to.have.same.deep.ordered.members(set2);
 };
 assert.notSameDeepOrderedMembers = function(set1, set2, msg) {
-  new Assertion(set1, msg, assert.notSameDeepOrderedMembers, true).to.not.have.same.deep.ordered.members(set2);
+  new Assertion(
+    set1,
+    msg,
+    assert.notSameDeepOrderedMembers,
+    true
+  ).to.not.have.same.deep.ordered.members(set2);
 };
 assert.includeMembers = function(superset, subset, msg) {
-  new Assertion(superset, msg, assert.includeMembers, true).to.include.members(subset);
+  new Assertion(superset, msg, assert.includeMembers, true).to.include.members(
+    subset
+  );
 };
 assert.notIncludeMembers = function(superset, subset, msg) {
-  new Assertion(superset, msg, assert.notIncludeMembers, true).to.not.include.members(subset);
+  new Assertion(
+    superset,
+    msg,
+    assert.notIncludeMembers,
+    true
+  ).to.not.include.members(subset);
 };
 assert.includeDeepMembers = function(superset, subset, msg) {
-  new Assertion(superset, msg, assert.includeDeepMembers, true).to.include.deep.members(subset);
+  new Assertion(
+    superset,
+    msg,
+    assert.includeDeepMembers,
+    true
+  ).to.include.deep.members(subset);
 };
 assert.notIncludeDeepMembers = function(superset, subset, msg) {
-  new Assertion(superset, msg, assert.notIncludeDeepMembers, true).to.not.include.deep.members(subset);
+  new Assertion(
+    superset,
+    msg,
+    assert.notIncludeDeepMembers,
+    true
+  ).to.not.include.deep.members(subset);
 };
 assert.includeOrderedMembers = function(superset, subset, msg) {
-  new Assertion(superset, msg, assert.includeOrderedMembers, true).to.include.ordered.members(subset);
+  new Assertion(
+    superset,
+    msg,
+    assert.includeOrderedMembers,
+    true
+  ).to.include.ordered.members(subset);
 };
 assert.notIncludeOrderedMembers = function(superset, subset, msg) {
-  new Assertion(superset, msg, assert.notIncludeOrderedMembers, true).to.not.include.ordered.members(subset);
+  new Assertion(
+    superset,
+    msg,
+    assert.notIncludeOrderedMembers,
+    true
+  ).to.not.include.ordered.members(subset);
 };
 assert.includeDeepOrderedMembers = function(superset, subset, msg) {
-  new Assertion(superset, msg, assert.includeDeepOrderedMembers, true).to.include.deep.ordered.members(subset);
+  new Assertion(
+    superset,
+    msg,
+    assert.includeDeepOrderedMembers,
+    true
+  ).to.include.deep.ordered.members(subset);
 };
 assert.notIncludeDeepOrderedMembers = function(superset, subset, msg) {
-  new Assertion(superset, msg, assert.notIncludeDeepOrderedMembers, true).to.not.include.deep.ordered.members(subset);
+  new Assertion(
+    superset,
+    msg,
+    assert.notIncludeDeepOrderedMembers,
+    true
+  ).to.not.include.deep.ordered.members(subset);
 };
 assert.oneOf = function(inList, list, msg) {
   new Assertion(inList, msg, assert.oneOf, true).to.be.oneOf(list);
@@ -3510,11 +3830,7 @@ assert.oneOf = function(inList, list, msg) {
 assert.isIterable = function(obj, msg) {
   if (obj == void 0 || !obj[Symbol.iterator]) {
     msg = msg ? `${msg} expected ${inspect2(obj)} to be an iterable` : `expected ${inspect2(obj)} to be an iterable`;
-    throw new AssertionError(
-      msg,
-      void 0,
-      assert.isIterable
-    );
+    throw new AssertionError(msg, void 0, assert.isIterable);
   }
 };
 assert.changes = function(fn, obj, prop, msg) {
@@ -3526,7 +3842,7 @@ assert.changes = function(fn, obj, prop, msg) {
 };
 assert.changesBy = function(fn, obj, prop, delta, msg) {
   if (arguments.length === 4 && typeof obj === "function") {
-    var tmpMsg = delta;
+    let tmpMsg = delta;
     delta = prop;
     msg = tmpMsg;
   } else if (arguments.length === 3) {
@@ -3540,11 +3856,14 @@ assert.doesNotChange = function(fn, obj, prop, msg) {
     msg = prop;
     prop = null;
   }
-  return new Assertion(fn, msg, assert.doesNotChange, true).to.not.change(obj, prop);
+  return new Assertion(fn, msg, assert.doesNotChange, true).to.not.change(
+    obj,
+    prop
+  );
 };
 assert.changesButNotBy = function(fn, obj, prop, delta, msg) {
   if (arguments.length === 4 && typeof obj === "function") {
-    var tmpMsg = delta;
+    let tmpMsg = delta;
     delta = prop;
     msg = tmpMsg;
   } else if (arguments.length === 3) {
@@ -3562,7 +3881,7 @@ assert.increases = function(fn, obj, prop, msg) {
 };
 assert.increasesBy = function(fn, obj, prop, delta, msg) {
   if (arguments.length === 4 && typeof obj === "function") {
-    var tmpMsg = delta;
+    let tmpMsg = delta;
     delta = prop;
     msg = tmpMsg;
   } else if (arguments.length === 3) {
@@ -3576,11 +3895,14 @@ assert.doesNotIncrease = function(fn, obj, prop, msg) {
     msg = prop;
     prop = null;
   }
-  return new Assertion(fn, msg, assert.doesNotIncrease, true).to.not.increase(obj, prop);
+  return new Assertion(fn, msg, assert.doesNotIncrease, true).to.not.increase(
+    obj,
+    prop
+  );
 };
 assert.increasesButNotBy = function(fn, obj, prop, delta, msg) {
   if (arguments.length === 4 && typeof obj === "function") {
-    var tmpMsg = delta;
+    let tmpMsg = delta;
     delta = prop;
     msg = tmpMsg;
   } else if (arguments.length === 3) {
@@ -3598,7 +3920,7 @@ assert.decreases = function(fn, obj, prop, msg) {
 };
 assert.decreasesBy = function(fn, obj, prop, delta, msg) {
   if (arguments.length === 4 && typeof obj === "function") {
-    var tmpMsg = delta;
+    let tmpMsg = delta;
     delta = prop;
     msg = tmpMsg;
   } else if (arguments.length === 3) {
@@ -3612,11 +3934,14 @@ assert.doesNotDecrease = function(fn, obj, prop, msg) {
     msg = prop;
     prop = null;
   }
-  return new Assertion(fn, msg, assert.doesNotDecrease, true).to.not.decrease(obj, prop);
+  return new Assertion(fn, msg, assert.doesNotDecrease, true).to.not.decrease(
+    obj,
+    prop
+  );
 };
 assert.doesNotDecreaseBy = function(fn, obj, prop, delta, msg) {
   if (arguments.length === 4 && typeof obj === "function") {
-    var tmpMsg = delta;
+    let tmpMsg = delta;
     delta = prop;
     msg = tmpMsg;
   } else if (arguments.length === 3) {
@@ -3627,7 +3952,7 @@ assert.doesNotDecreaseBy = function(fn, obj, prop, delta, msg) {
 };
 assert.decreasesButNotBy = function(fn, obj, prop, delta, msg) {
   if (arguments.length === 4 && typeof obj === "function") {
-    var tmpMsg = delta;
+    let tmpMsg = delta;
     delta = prop;
     msg = tmpMsg;
   } else if (arguments.length === 3) {
@@ -3665,13 +3990,36 @@ assert.isEmpty = function(val, msg) {
 assert.isNotEmpty = function(val, msg) {
   new Assertion(val, msg, assert.isNotEmpty, true).to.not.be.empty;
 };
-(/* @__PURE__ */ __name(function alias(name, as) {
+assert.containsSubset = function(val, exp, msg) {
+  new Assertion(val, msg).to.containSubset(exp);
+};
+assert.doesNotContainSubset = function(val, exp, msg) {
+  new Assertion(val, msg).to.not.containSubset(exp);
+};
+var aliases = [
+  ["isOk", "ok"],
+  ["isNotOk", "notOk"],
+  ["throws", "throw"],
+  ["throws", "Throw"],
+  ["isExtensible", "extensible"],
+  ["isNotExtensible", "notExtensible"],
+  ["isSealed", "sealed"],
+  ["isNotSealed", "notSealed"],
+  ["isFrozen", "frozen"],
+  ["isNotFrozen", "notFrozen"],
+  ["isEmpty", "empty"],
+  ["isNotEmpty", "notEmpty"],
+  ["isCallable", "isFunction"],
+  ["isNotCallable", "isNotFunction"],
+  ["containsSubset", "containSubset"]
+];
+for (const [name, as] of aliases) {
   assert[as] = assert[name];
-  return alias;
-}, "alias"))("isOk", "ok")("isNotOk", "notOk")("throws", "throw")("throws", "Throw")("isExtensible", "extensible")("isNotExtensible", "notExtensible")("isSealed", "sealed")("isNotSealed", "notSealed")("isFrozen", "frozen")("isNotFrozen", "notFrozen")("isEmpty", "empty")("isNotEmpty", "notEmpty")("isCallable", "isFunction")("isNotCallable", "isNotFunction");
+}
 var used = [];
 function use(fn) {
   const exports = {
+    use,
     AssertionError,
     util: utils_exports,
     config,
@@ -3808,35 +4156,17 @@ function getPointerId(e) {
   return -1;
 }
 
-// src/constants.ts
-var IS_BROWSER = typeof window !== "undefined" && typeof window.document !== "undefined";
-var HAS_PASSIVE_EVENTS = (() => {
-  let isPassiveEventsSupported = false;
-  try {
-    const passiveOpts = Object.defineProperty({}, "passive", {
-      get: function() {
-        isPassiveEventsSupported = true;
-      }
-    });
-    window.addEventListener("testPassive", null, passiveOpts);
-    window.removeEventListener("testPassive", null, passiveOpts);
-  } catch (e) {
-  }
-  return isPassiveEventsSupported;
-})();
-var HAS_TOUCH_EVENTS = IS_BROWSER && "ontouchstart" in window;
-var HAS_POINTER_EVENTS = IS_BROWSER && !!window.PointerEvent;
-var IS_SAFARI = !!(IS_BROWSER && navigator.vendor && navigator.vendor.indexOf("Apple") > -1 && navigator.userAgent && navigator.userAgent.indexOf("CriOS") == -1 && navigator.userAgent.indexOf("FxiOS") == -1);
-
 // src/utils/parse-listener-options.ts
 function parseListenerOptions(options4 = {}) {
   const { capture = true, passive = true } = options4;
-  if (HAS_PASSIVE_EVENTS) {
-    return { capture, passive };
-  } else {
-    return { capture };
-  }
+  return { capture, passive };
 }
+
+// src/constants.ts
+var IS_BROWSER = typeof window !== "undefined" && typeof window.document !== "undefined";
+var HAS_TOUCH_EVENTS = IS_BROWSER && "ontouchstart" in window;
+var HAS_POINTER_EVENTS = IS_BROWSER && !!window.PointerEvent;
+var IS_SAFARI = !!(IS_BROWSER && navigator.vendor && navigator.vendor.indexOf("Apple") > -1 && navigator.userAgent && navigator.userAgent.indexOf("CriOS") == -1 && navigator.userAgent.indexOf("FxiOS") == -1);
 
 // src/utils/parse-source-events.ts
 function parseSourceEvents(sourceEvents) {
@@ -3986,8 +4316,8 @@ var PointerSensor = class {
    */
   _bindWindowListeners() {
     if (this._areWindowListenersBound) return;
-    const { move, end, cancel } = SOURCE_EVENTS[this._sourceEvents];
-    window.addEventListener(move, this._onMove, this._listenerOptions);
+    const { move: move2, end, cancel } = SOURCE_EVENTS[this._sourceEvents];
+    window.addEventListener(move2, this._onMove, this._listenerOptions);
     window.addEventListener(end, this._onEnd, this._listenerOptions);
     if (cancel) {
       window.addEventListener(cancel, this._onCancel, this._listenerOptions);
@@ -3999,8 +4329,8 @@ var PointerSensor = class {
    */
   _unbindWindowListeners() {
     if (this._areWindowListenersBound) {
-      const { move, end, cancel } = SOURCE_EVENTS[this._sourceEvents];
-      window.removeEventListener(move, this._onMove, this._listenerOptions);
+      const { move: move2, end, cancel } = SOURCE_EVENTS[this._sourceEvents];
+      window.removeEventListener(move2, this._onMove, this._listenerOptions);
       window.removeEventListener(end, this._onEnd, this._listenerOptions);
       if (cancel) {
         window.removeEventListener(cancel, this._onCancel, this._listenerOptions);
@@ -4308,38 +4638,36 @@ import { Emitter as Emitter3 } from "eventti";
 // src/utils/object-cache.ts
 var ObjectCache = class {
   constructor() {
-    this.cache = /* @__PURE__ */ new Map();
-    this.validation = /* @__PURE__ */ new Map();
-    this.cache = /* @__PURE__ */ new Map();
-    this.validation = /* @__PURE__ */ new Map();
+    this._cache = /* @__PURE__ */ new Map();
+    this._validation = /* @__PURE__ */ new Map();
   }
   set(key, value) {
-    this.cache.set(key, value);
-    this.validation.set(key, void 0);
+    this._cache.set(key, value);
+    this._validation.set(key, void 0);
   }
   get(key) {
-    return this.cache.get(key);
+    return this._cache.get(key);
   }
   has(key) {
-    return this.cache.has(key);
+    return this._cache.has(key);
   }
   delete(key) {
-    this.cache.delete(key);
-    this.validation.delete(key);
+    this._cache.delete(key);
+    this._validation.delete(key);
   }
   isValid(key) {
-    return this.validation.has(key);
+    return this._validation.has(key);
   }
   invalidate(key) {
     if (key === void 0) {
-      this.validation.clear();
+      this._validation.clear();
     } else {
-      this.validation.delete(key);
+      this._validation.delete(key);
     }
   }
   clear() {
-    this.cache.clear();
-    this.validation.clear();
+    this._cache.clear();
+    this._validation.clear();
   }
 };
 
@@ -4508,7 +4836,7 @@ function resetMatrix(m) {
 }
 
 // src/utils/get-world-transform-matrix.ts
-var MATRIX = new DOMMatrix();
+var MATRIX = IS_BROWSER ? new DOMMatrix() : null;
 function getWorldTransformMatrix(el, result = new DOMMatrix()) {
   let currentElement = el;
   resetMatrix(result);
@@ -4575,7 +4903,7 @@ function isMatrixWarped(m) {
 }
 
 // src/draggable/draggable-drag-item.ts
-var MEASURE_ELEMENT = createMeasureElement();
+var MEASURE_ELEMENT = IS_BROWSER ? createMeasureElement() : null;
 var DraggableDragItem = class {
   constructor(element, draggable) {
     if (!element.isConnected) {
@@ -4756,10 +5084,10 @@ function areMatricesEqual(m1, m2) {
 }
 
 // src/draggable/draggable.ts
-var SCROLL_LISTENER_OPTIONS = HAS_PASSIVE_EVENTS ? { capture: true, passive: true } : true;
+var SCROLL_LISTENER_OPTIONS = { capture: true, passive: true };
 var POSITION_CHANGE = { x: 0, y: 0 };
-var ELEMENT_MATRIX = new DOMMatrix();
-var TEMP_MATRIX = new DOMMatrix();
+var ELEMENT_MATRIX = IS_BROWSER ? new DOMMatrix() : null;
+var TEMP_MATRIX = IS_BROWSER ? new DOMMatrix() : null;
 var DraggableModifierPhase = {
   Start: "start",
   Move: "move",
@@ -4836,12 +5164,18 @@ var DraggableDefaultSettings = {
     }
     item.element.style.transform = `${ELEMENT_MATRIX}`;
   },
-  positionModifiers: []
+  computeClientRect: ({ drag }) => {
+    return drag.items[0].clientRect || null;
+  },
+  positionModifiers: [],
+  group: null
 };
 var Draggable = class {
   constructor(sensors, options4 = {}) {
+    const { id = Symbol(), ...restOptions } = options4;
+    this.id = id;
     this.sensors = sensors;
-    this.settings = this._parseSettings(options4);
+    this.settings = this._parseSettings(restOptions);
     this.plugins = {};
     this.drag = null;
     this.isDestroyed = false;
@@ -4883,6 +5217,8 @@ var Draggable = class {
       frozenStyles = defaults.frozenStyles,
       positionModifiers = defaults.positionModifiers,
       applyPosition = defaults.applyPosition,
+      computeClientRect = defaults.computeClientRect,
+      group = defaults.group,
       onPrepareStart = defaults.onPrepareStart,
       onStart = defaults.onStart,
       onPrepareMove = defaults.onPrepareMove,
@@ -4897,6 +5233,8 @@ var Draggable = class {
       frozenStyles,
       positionModifiers,
       applyPosition,
+      computeClientRect,
+      group,
       onPrepareStart,
       onStart,
       onPrepareMove,
@@ -5220,6 +5558,11 @@ var Draggable = class {
       ticker.once(tickerPhases.write, this._applyAlign, this._alignId);
     }
   }
+  getClientRect() {
+    const { drag, settings } = this;
+    if (!drag) return null;
+    return settings.computeClientRect?.({ draggable: this, drag }) || null;
+  }
   updateSettings(options4 = {}) {
     this.settings = this._parseSettings(options4, this.settings);
   }
@@ -5244,6 +5587,11 @@ var Draggable = class {
   }
 };
 
+// src/utils/is-document.ts
+function isDocument(value) {
+  return value instanceof Document;
+}
+
 // src/utils/create-full-rect.ts
 function createFullRect(sourceRect, result = { width: 0, height: 0, x: 0, y: 0, left: 0, top: 0, right: 0, bottom: 0 }) {
   if (sourceRect) {
@@ -5263,24 +5611,60 @@ function createFullRect(sourceRect, result = { width: 0, height: 0, x: 0, y: 0, 
 var TEMP_RECT_1 = createFullRect();
 var TEMP_RECT_2 = createFullRect();
 
-// src/pool.ts
-var Pool = class {
-  constructor(createObject, onPut) {
-    this._data = [];
-    this._createObject = createObject;
-    this._onPut = onPut;
+// src/utils/classic-object-pool.ts
+var ClassicObjectPool = class {
+  constructor(getItem, {
+    batchSize = 100,
+    minBatchCount = 0,
+    maxBatchCount = Number.MAX_SAFE_INTEGER,
+    initialBatchCount = 0,
+    shrinkThreshold = 2,
+    onRelease
+  } = {}) {
+    this._batchSize = Math.floor(Math.max(batchSize, 1));
+    this._minSize = Math.floor(Math.max(minBatchCount, 0)) * this._batchSize;
+    this._maxSize = Math.floor(
+      Math.min(Math.max(maxBatchCount * this._batchSize, this._batchSize), Number.MAX_SAFE_INTEGER)
+    );
+    this._shrinkThreshold = Math.floor(Math.max(shrinkThreshold, 1) * this._batchSize);
+    this._data = new Array(
+      Math.floor(Math.max(Math.max(initialBatchCount, minBatchCount) * this._batchSize, 0))
+    );
+    this._index = 0;
+    this._getItem = getItem;
+    this._onRelease = onRelease;
   }
-  pick() {
-    return this._data.length ? this._data.pop() : this._createObject();
+  get(...args) {
+    if (this._index > 0) {
+      return this._getItem(this._data[--this._index], ...args);
+    }
+    if (this._index === 0) {
+      const currentCapacity = this._data.length;
+      const growBy = Math.min(this._batchSize, this._maxSize - currentCapacity);
+      if (growBy > 0) {
+        this._data.length = currentCapacity + growBy;
+      }
+    }
+    return this._getItem(void 0, ...args);
   }
-  put(object) {
-    if (this._data.indexOf(object) === -1) {
-      this._onPut && this._onPut(object);
-      this._data.push(object);
+  release(object) {
+    if (this._index < this._maxSize) {
+      if (this._onRelease) {
+        this._onRelease(object);
+      }
+      this._data[this._index++] = object;
+      if (this._index >= this._shrinkThreshold) {
+        const newCapacity = this._data.length - this._batchSize;
+        if (newCapacity >= this._minSize) {
+          this._data.length = newCapacity;
+          this._index -= this._batchSize;
+        }
+      }
     }
   }
-  reset() {
+  destroy() {
     this._data.length = 0;
+    this._index = 0;
   }
 };
 
@@ -5292,8 +5676,8 @@ function getDistance(a, b) {
   return _getDistance(createFullRect(a, RECT_A), createFullRect(b, RECT_B));
 }
 
-// src/utils/get-intersection.ts
-function getIntersection(a, b, result = { width: 0, height: 0, x: 0, y: 0 }) {
+// src/utils/get-intersection-rect.ts
+function getIntersectionRect(a, b, result = { width: 0, height: 0, x: 0, y: 0 }) {
   const x1 = Math.max(a.x, b.x);
   const x2 = Math.min(a.x + a.width, b.x + b.width);
   if (x2 <= x1) return null;
@@ -5307,15 +5691,12 @@ function getIntersection(a, b, result = { width: 0, height: 0, x: 0, y: 0 }) {
   return result;
 }
 
-// src/utils/get-intersection-area.ts
-function getIntersectionArea(a, b) {
-  const intersection = getIntersection(a, b);
-  return intersection ? intersection.width * intersection.height : 0;
-}
-
 // src/utils/get-intersection-score.ts
-function getIntersectionScore(a, b) {
-  const area = getIntersectionArea(a, b);
+var TEMP_RECT = { width: 0, height: 0, x: 0, y: 0 };
+function getIntersectionScore(a, b, intersectionRect) {
+  if (!intersectionRect) intersectionRect = getIntersectionRect(a, b, TEMP_RECT);
+  if (!intersectionRect) return 0;
+  const area = intersectionRect.width * intersectionRect.height;
   if (!area) return 0;
   const maxArea = Math.min(a.width, b.width) * Math.min(a.height, b.height);
   return area / maxArea * 100;
@@ -5370,7 +5751,7 @@ function isIntersecting(a, b) {
 }
 
 // src/auto-scroll/auto-scroll.ts
-var TEMP_RECT = {
+var TEMP_RECT2 = {
   width: 0,
   height: 0,
   x: 0,
@@ -5617,13 +5998,22 @@ var AutoScroll = class {
       [AUTO_SCROLL_AXIS.y]: /* @__PURE__ */ new Map()
     };
     this._itemData = /* @__PURE__ */ new Map();
-    this._requestPool = new Pool(
-      () => new AutoScrollRequest(),
-      (request) => request.reset()
+    this._requestPool = new ClassicObjectPool(
+      (request) => request || new AutoScrollRequest(),
+      {
+        initialBatchCount: 1,
+        minBatchCount: 1,
+        onRelease: (request) => request.reset()
+      }
     );
-    this._actionPool = new Pool(
-      () => new AutoScrollAction(),
-      (action) => action.reset()
+    this._actionPool = new ClassicObjectPool(
+      (action) => action || new AutoScrollAction(),
+      {
+        batchSize: 10,
+        initialBatchCount: 1,
+        minBatchCount: 1,
+        onRelease: (action) => action.reset()
+      }
     );
     this._frameRead = this._frameRead.bind(this);
     this._frameWrite = this._frameWrite.bind(this);
@@ -5667,7 +6057,7 @@ var AutoScroll = class {
         request.reset();
       }
     } else {
-      request = this._requestPool.pick();
+      request = this._requestPool.get();
       reqMap.set(item, request);
     }
     request.item = item;
@@ -5682,7 +6072,7 @@ var AutoScroll = class {
     const request = reqMap.get(item);
     if (!request) return;
     if (request.action) request.action.removeRequest(request);
-    this._requestPool.put(request);
+    this._requestPool.release(request);
     reqMap.delete(item);
   }
   _checkItemOverlap(item, checkX, checkY) {
@@ -5731,7 +6121,7 @@ var AutoScroll = class {
       const testRect = getRect([testElement, "padding"], window);
       let testScore = getIntersectionScore(clientRect, testRect) || -Infinity;
       if (testScore === -Infinity) {
-        if (target.padding && isIntersecting(clientRect, getPaddedRect(testRect, target.padding, TEMP_RECT))) {
+        if (target.padding && isIntersecting(clientRect, getPaddedRect(testRect, target.padding, TEMP_RECT2))) {
           testScore = -(getDistance(clientRect, testRect) || 0);
         } else {
           continue;
@@ -5854,7 +6244,7 @@ var AutoScroll = class {
       const testScore = getIntersectionScore(clientRect, testRect) || -Infinity;
       if (testScore === -Infinity) {
         const padding = target.scrollPadding || target.padding;
-        if (!(padding && isIntersecting(clientRect, getPaddedRect(testRect, padding, TEMP_RECT)))) {
+        if (!(padding && isIntersecting(clientRect, getPaddedRect(testRect, padding, TEMP_RECT2)))) {
           break;
         }
       }
@@ -5968,7 +6358,7 @@ var AutoScroll = class {
       }
       break;
     }
-    if (!action) action = this._actionPool.pick();
+    if (!action) action = this._actionPool.get();
     action.element = request.element;
     action.addRequest(request);
     request.tick(this._tickDeltaTime);
@@ -5992,7 +6382,7 @@ var AutoScroll = class {
     let i = 0;
     for (i = 0; i < this._actions.length; i++) {
       this._actions[i].scroll();
-      this._actionPool.put(this._actions[i]);
+      this._actionPool.release(this._actions[i]);
     }
     this._actions.length = 0;
   }
@@ -6045,20 +6435,857 @@ var AutoScroll = class {
   }
   destroy() {
     if (this._isDestroyed) return;
-    const items = this.items.slice(0);
-    let i = 0;
-    for (; i < items.length; i++) {
-      this.removeItem(items[i]);
-    }
+    this.items.forEach((item) => this.removeItem(item));
+    this._requestPool.destroy();
+    this._actionPool.destroy();
     this._actions.length = 0;
-    this._requestPool.reset();
-    this._actionPool.reset();
     this._isDestroyed = true;
   }
 };
 
 // src/singletons/auto-scroll.ts
 var autoScroll = new AutoScroll();
+
+// src/dnd-context/dnd-context.ts
+import { Emitter as Emitter5 } from "eventti";
+
+// src/droppable/droppable.ts
+import { Emitter as Emitter4 } from "eventti";
+var DroppableEventType = {
+  Destroy: "destroy"
+};
+var Droppable = class {
+  constructor(element, options4 = {}) {
+    const { id = Symbol(), accept = () => true, data = {} } = options4;
+    this.id = id;
+    this.element = element;
+    this.accept = accept;
+    this.data = data;
+    this.isDestroyed = false;
+    this._clientRect = { x: 0, y: 0, width: 0, height: 0 };
+    this._emitter = new Emitter4();
+    this.updateClientRect();
+  }
+  on(type3, listener, listenerId) {
+    return this._emitter.on(type3, listener, listenerId);
+  }
+  off(type3, listenerId) {
+    this._emitter.off(type3, listenerId);
+  }
+  getClientRect() {
+    return this._clientRect;
+  }
+  updateClientRect(rect) {
+    const bcr = rect || this.element.getBoundingClientRect();
+    const { _clientRect } = this;
+    _clientRect.x = bcr.x;
+    _clientRect.y = bcr.y;
+    _clientRect.width = bcr.width;
+    _clientRect.height = bcr.height;
+  }
+  destroy() {
+    if (this.isDestroyed) return;
+    this.isDestroyed = true;
+    this._emitter.emit(DroppableEventType.Destroy);
+    this._emitter.off();
+  }
+};
+
+// src/utils/fast-object-pool.ts
+var FastObjectPool = class {
+  constructor(getItem) {
+    this._items = [];
+    this._index = 0;
+    this._getItem = getItem;
+  }
+  get(...args) {
+    if (this._index >= this._items.length) {
+      return this._items[this._index++] = this._getItem(void 0, ...args);
+    }
+    return this._getItem(this._items[this._index++], ...args);
+  }
+  resetPointer() {
+    this._index = 0;
+  }
+  resetItems(maxLength = 0) {
+    const newItemCount = Math.max(0, Math.min(maxLength, this._items.length));
+    this._index = Math.min(this._index, newItemCount);
+    this._items.length = newItemCount;
+  }
+};
+
+// src/utils/create-rect.ts
+function createRect(sourceRect, result = { width: 0, height: 0, x: 0, y: 0 }) {
+  if (sourceRect) {
+    result.width = sourceRect.width;
+    result.height = sourceRect.height;
+    result.x = sourceRect.x;
+    result.y = sourceRect.y;
+  }
+  return result;
+}
+
+// src/dnd-context/collision-detector.ts
+var MAX_CACHED_COLLISIONS = 20;
+var EMPTY_SYMBOL = Symbol();
+var CollisionDetector = class {
+  constructor(dndContext) {
+    this._listenerId = Symbol();
+    this._dndContext = dndContext;
+    this._collisionDataPoolCache = [];
+    this._collisionDataPoolMap = /* @__PURE__ */ new Map();
+  }
+  _checkCollision(draggable, droppable, collisionData) {
+    const draggableRect = draggable.getClientRect();
+    const droppableRect = droppable.getClientRect();
+    if (!draggableRect) return null;
+    const intersectionRect = getIntersectionRect(
+      draggableRect,
+      droppableRect,
+      collisionData.intersectionRect
+    );
+    if (intersectionRect === null) return null;
+    const intersectionScore = getIntersectionScore(draggableRect, droppableRect, intersectionRect);
+    if (intersectionScore <= 0) return null;
+    collisionData.droppableId = droppable.id;
+    createRect(droppableRect, collisionData.droppableRect);
+    createRect(draggableRect, collisionData.draggableRect);
+    collisionData.intersectionScore = intersectionScore;
+    return collisionData;
+  }
+  _sortCollisions(_draggable, collisions) {
+    return collisions.sort((a, b) => {
+      const diff = b.intersectionScore - a.intersectionScore;
+      if (diff !== 0) return diff;
+      return a.droppableRect.width * a.droppableRect.height - b.droppableRect.width * b.droppableRect.height;
+    });
+  }
+  _createCollisionData() {
+    return {
+      droppableId: EMPTY_SYMBOL,
+      droppableRect: createRect(),
+      draggableRect: createRect(),
+      intersectionRect: createRect(),
+      intersectionScore: 0
+    };
+  }
+  getCollisionDataPool(draggable) {
+    let pool = this._collisionDataPoolMap.get(draggable);
+    if (!pool) {
+      pool = this._collisionDataPoolCache.pop() || new FastObjectPool((item) => {
+        return item || this._createCollisionData();
+      });
+      this._collisionDataPoolMap.set(draggable, pool);
+    }
+    return pool;
+  }
+  removeCollisionDataPool(draggable) {
+    const pool = this._collisionDataPoolMap.get(draggable);
+    if (pool) {
+      pool.resetItems(MAX_CACHED_COLLISIONS);
+      pool.resetPointer();
+      this._collisionDataPoolCache.push(pool);
+      this._collisionDataPoolMap.delete(draggable);
+    }
+  }
+  detectCollisions(draggable, targets, collisions) {
+    collisions.length = 0;
+    if (!targets.size) {
+      return;
+    }
+    const collisionDataPool = this.getCollisionDataPool(draggable);
+    let collisionData = null;
+    const droppables2 = targets.values();
+    for (const droppable of droppables2) {
+      collisionData = collisionData || collisionDataPool.get();
+      if (this._checkCollision(draggable, droppable, collisionData)) {
+        collisions.push(collisionData);
+        collisionData = null;
+      }
+    }
+    if (collisions.length > 1) {
+      this._sortCollisions(draggable, collisions);
+    }
+    collisionDataPool.resetPointer();
+  }
+  destroy() {
+    this._collisionDataPoolMap.forEach((pool) => {
+      pool.resetItems();
+    });
+  }
+};
+
+// src/dnd-context/dnd-context.ts
+var SCROLL_LISTENER_OPTIONS2 = { capture: true, passive: true };
+var DndContextEventType = {
+  Start: "start",
+  Move: "move",
+  Enter: "enter",
+  Leave: "leave",
+  Collide: "collide",
+  End: "end",
+  AddDraggables: "addDraggables",
+  RemoveDraggables: "removeDraggables",
+  AddDroppables: "addDroppables",
+  RemoveDroppables: "removeDroppables",
+  Destroy: "destroy"
+};
+var DndContext = class {
+  constructor(options4 = {}) {
+    this._onScroll = () => {
+      if (this._drags.size === 0) return;
+      ticker.once(
+        tickerPhases.read,
+        () => {
+          this.updateDroppableClientRects();
+        },
+        this._listenerId
+      );
+      this.detectCollisions();
+    };
+    const { collisionDetector } = options4;
+    this.draggables = /* @__PURE__ */ new Map();
+    this.droppables = /* @__PURE__ */ new Map();
+    this.isDestroyed = false;
+    this._drags = /* @__PURE__ */ new Map();
+    this._listenerId = Symbol();
+    this._emitter = new Emitter5();
+    this._onScroll = this._onScroll.bind(this);
+    this._collisionDetector = collisionDetector ? collisionDetector(this) : new CollisionDetector(this);
+  }
+  get drags() {
+    return this._drags;
+  }
+  _isMatch(draggable, droppable) {
+    let isMatch = typeof droppable.accept === "function" ? droppable.accept(draggable) : droppable.accept.includes(draggable.settings.group);
+    if (isMatch && draggable.drag) {
+      const items = draggable.drag.items;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].element === droppable.element) {
+          return false;
+        }
+      }
+    }
+    return isMatch;
+  }
+  _getTargets(draggable) {
+    const drag = this._drags.get(draggable);
+    if (drag?._targets) return drag._targets;
+    const targets = /* @__PURE__ */ new Map();
+    for (const droppable of this.droppables.values()) {
+      if (this._isMatch(draggable, droppable)) {
+        targets.set(droppable.id, droppable);
+      }
+    }
+    if (drag) drag._targets = targets;
+    return targets;
+  }
+  _onDragPrepareStart(draggable) {
+    if (!this.draggables.has(draggable.id)) return;
+    if (this._drags.get(draggable)) return;
+    this._drags.set(draggable, {
+      isEnded: false,
+      data: {},
+      _targets: null,
+      _cd: {
+        phase: 0 /* Idle */,
+        tickerId: Symbol(),
+        targets: /* @__PURE__ */ new Map(),
+        collisions: [],
+        contacts: /* @__PURE__ */ new Set(),
+        prevContacts: /* @__PURE__ */ new Set(),
+        addedContacts: /* @__PURE__ */ new Set(),
+        persistedContacts: /* @__PURE__ */ new Set()
+      }
+    });
+    if (this._drags.size === 1) {
+      this.updateDroppableClientRects();
+    }
+    this._computeCollisions(draggable);
+    if (this._drags.size === 1) {
+      window.addEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS2);
+    }
+  }
+  _onDragStart(draggable) {
+    const drag = this._drags.get(draggable);
+    if (!drag || drag.isEnded) return;
+    if (this._emitter.listenerCount(DndContextEventType.Start)) {
+      const targets = this._getTargets(draggable);
+      this._emitter.emit(DndContextEventType.Start, {
+        draggable,
+        targets
+      });
+    }
+    this._emitCollisions(draggable);
+  }
+  _onDragPrepareMove(draggable) {
+    const drag = this._drags.get(draggable);
+    if (!drag || drag.isEnded) return;
+    this._computeCollisions(draggable);
+  }
+  _onDragMove(draggable) {
+    const drag = this._drags.get(draggable);
+    if (!drag || drag.isEnded) return;
+    if (this._emitter.listenerCount(DndContextEventType.Move)) {
+      const targets = this._getTargets(draggable);
+      this._emitter.emit(DndContextEventType.Move, {
+        draggable,
+        targets
+      });
+    }
+    this._emitCollisions(draggable);
+  }
+  _onDragEnd(draggable) {
+    this._stopDrag(draggable);
+  }
+  _onDragCancel(draggable) {
+    this._stopDrag(draggable, true);
+  }
+  _onDraggableDestroy(draggable) {
+    this.removeDraggables([draggable]);
+  }
+  // Returns true if the final cleanup was queued to a microtask.
+  _stopDrag(draggable, canceled = false) {
+    const drag = this._drags.get(draggable);
+    if (!drag || drag.isEnded) return false;
+    drag.isEnded = true;
+    const isEmittingCollisions = drag._cd.phase === 3 /* Emitting */;
+    if (!isEmittingCollisions) {
+      this._computeCollisions(draggable, true);
+      this._emitCollisions(draggable, true);
+    }
+    const { targets, collisions, contacts } = drag._cd;
+    if (this._emitter.listenerCount(DndContextEventType.End)) {
+      this._emitter.emit(DndContextEventType.End, {
+        canceled,
+        draggable,
+        targets,
+        collisions,
+        contacts
+      });
+    }
+    if (isEmittingCollisions) {
+      window.queueMicrotask(() => {
+        this._finalizeStopDrag(draggable);
+      });
+      return true;
+    }
+    this._finalizeStopDrag(draggable);
+    return false;
+  }
+  _finalizeStopDrag(draggable) {
+    const drag = this._drags.get(draggable);
+    if (!drag || !drag.isEnded) return;
+    this._drags.delete(draggable);
+    this._collisionDetector.removeCollisionDataPool(draggable);
+    ticker.off(tickerPhases.read, drag._cd.tickerId);
+    ticker.off(tickerPhases.write, drag._cd.tickerId);
+    if (!this._drags.size) {
+      ticker.off(tickerPhases.read, this._listenerId);
+      window.removeEventListener("scroll", this._onScroll, SCROLL_LISTENER_OPTIONS2);
+    }
+  }
+  _computeCollisions(draggable, force = false) {
+    const drag = this._drags.get(draggable);
+    if (!drag || !force && drag.isEnded) return;
+    const cd = drag._cd;
+    switch (cd.phase) {
+      case 1 /* Computing */:
+        throw new Error("Collisions are being computed.");
+      case 3 /* Emitting */:
+        throw new Error("Collisions are being emitted.");
+      default:
+        break;
+    }
+    cd.phase = 1 /* Computing */;
+    cd.targets = this._getTargets(draggable);
+    this._collisionDetector.detectCollisions(draggable, cd.targets, cd.collisions);
+    cd.phase = 2 /* Computed */;
+  }
+  _emitCollisions(draggable, force = false) {
+    const drag = this._drags.get(draggable);
+    if (!drag || !force && drag.isEnded) return;
+    const cd = drag._cd;
+    switch (cd.phase) {
+      case 1 /* Computing */:
+        throw new Error("Collisions are being computed.");
+      case 3 /* Emitting */:
+        throw new Error("Collisions are being emitted.");
+      case 0 /* Idle */:
+        return;
+      default:
+        break;
+    }
+    cd.phase = 3 /* Emitting */;
+    const emitter = this._emitter;
+    const collisions = cd.collisions;
+    const targets = cd.targets;
+    const addedContacts = cd.addedContacts;
+    const persistedContacts = cd.persistedContacts;
+    const prevContacts = cd.contacts;
+    const contacts = cd.prevContacts;
+    cd.prevContacts = prevContacts;
+    cd.contacts = contacts;
+    const removedContacts = prevContacts;
+    addedContacts.clear();
+    persistedContacts.clear();
+    contacts.clear();
+    for (const collision of collisions) {
+      const droppable = targets.get(collision.droppableId);
+      if (!droppable) continue;
+      contacts.add(droppable);
+      if (prevContacts.has(droppable)) {
+        persistedContacts.add(droppable);
+        prevContacts.delete(droppable);
+      } else {
+        addedContacts.add(droppable);
+      }
+    }
+    if (prevContacts.size && emitter.listenerCount(DndContextEventType.Leave)) {
+      emitter.emit(DndContextEventType.Leave, {
+        draggable,
+        targets,
+        collisions,
+        contacts,
+        removedContacts
+      });
+    }
+    if (addedContacts.size && emitter.listenerCount(DndContextEventType.Enter)) {
+      emitter.emit(DndContextEventType.Enter, {
+        draggable,
+        targets,
+        collisions,
+        contacts,
+        addedContacts
+      });
+    }
+    if (emitter.listenerCount(DndContextEventType.Collide) && (contacts.size || removedContacts.size)) {
+      emitter.emit(DndContextEventType.Collide, {
+        draggable,
+        targets,
+        collisions,
+        contacts,
+        addedContacts,
+        removedContacts,
+        persistedContacts
+      });
+    }
+    addedContacts.clear();
+    persistedContacts.clear();
+    prevContacts.clear();
+    cd.phase = 0 /* Idle */;
+  }
+  on(type3, listener, listenerId) {
+    return this._emitter.on(type3, listener, listenerId);
+  }
+  off(type3, listenerId) {
+    this._emitter.off(type3, listenerId);
+  }
+  updateDroppableClientRects() {
+    for (const droppable of this.droppables.values()) {
+      droppable.updateClientRect();
+    }
+  }
+  clearTargets(draggable) {
+    if (draggable) {
+      const drag = this._drags.get(draggable);
+      if (drag) drag._targets = null;
+    } else {
+      for (const drag of this._drags.values()) {
+        drag._targets = null;
+      }
+    }
+  }
+  detectCollisions(draggable) {
+    if (this.isDestroyed) return;
+    if (draggable) {
+      const drag = this._drags.get(draggable);
+      if (!drag || drag.isEnded) return;
+      ticker.once(tickerPhases.read, () => this._computeCollisions(draggable), drag._cd.tickerId);
+      ticker.once(tickerPhases.write, () => this._emitCollisions(draggable), drag._cd.tickerId);
+    } else {
+      for (const [d, drag] of this._drags) {
+        if (drag.isEnded) continue;
+        ticker.once(tickerPhases.read, () => this._computeCollisions(d), drag._cd.tickerId);
+        ticker.once(tickerPhases.write, () => this._emitCollisions(d), drag._cd.tickerId);
+      }
+    }
+  }
+  addDraggables(draggables) {
+    if (this.isDestroyed) return;
+    const addedDraggables = /* @__PURE__ */ new Set();
+    for (const draggable of draggables) {
+      if (this.draggables.has(draggable.id)) continue;
+      addedDraggables.add(draggable);
+      this.draggables.set(draggable.id, draggable);
+      draggable.on(
+        DraggableEventType.PrepareStart,
+        () => {
+          this._onDragPrepareStart(draggable);
+        },
+        this._listenerId
+      );
+      draggable.on(
+        DraggableEventType.Start,
+        () => {
+          this._onDragStart(draggable);
+        },
+        this._listenerId
+      );
+      draggable.on(
+        DraggableEventType.PrepareMove,
+        () => {
+          this._onDragPrepareMove(draggable);
+        },
+        this._listenerId
+      );
+      draggable.on(
+        DraggableEventType.Move,
+        () => {
+          this._onDragMove(draggable);
+        },
+        this._listenerId
+      );
+      draggable.on(
+        DraggableEventType.End,
+        (e) => {
+          if (e?.type === SensorEventType.End) {
+            this._onDragEnd(draggable);
+          } else if (e?.type === SensorEventType.Cancel) {
+            this._onDragCancel(draggable);
+          }
+        },
+        this._listenerId
+      );
+      draggable.on(
+        DraggableEventType.Destroy,
+        () => {
+          this._onDraggableDestroy(draggable);
+        },
+        this._listenerId
+      );
+    }
+    if (!addedDraggables.size) return;
+    if (this._emitter.listenerCount(DndContextEventType.AddDraggables)) {
+      this._emitter.emit(DndContextEventType.AddDraggables, { draggables: addedDraggables });
+    }
+    for (const draggable of addedDraggables) {
+      if (!this.isDestroyed && draggable.drag && !draggable.drag.isEnded) {
+        const startPhase = draggable["_startPhase"];
+        if (startPhase >= 2) this._onDragPrepareStart(draggable);
+        if (startPhase >= 4) this._onDragStart(draggable);
+      }
+    }
+  }
+  removeDraggables(draggables) {
+    if (this.isDestroyed) return;
+    const removedDraggables = /* @__PURE__ */ new Set();
+    for (const draggable of draggables) {
+      if (!this.draggables.has(draggable.id)) continue;
+      removedDraggables.add(draggable);
+      this.draggables.delete(draggable.id);
+      draggable.off(DraggableEventType.PrepareStart, this._listenerId);
+      draggable.off(DraggableEventType.Start, this._listenerId);
+      draggable.off(DraggableEventType.PrepareMove, this._listenerId);
+      draggable.off(DraggableEventType.Move, this._listenerId);
+      draggable.off(DraggableEventType.End, this._listenerId);
+      draggable.off(DraggableEventType.Destroy, this._listenerId);
+    }
+    for (const draggable of removedDraggables) {
+      this._stopDrag(draggable, true);
+    }
+    if (this._emitter.listenerCount(DndContextEventType.RemoveDraggables)) {
+      this._emitter.emit(DndContextEventType.RemoveDraggables, { draggables: removedDraggables });
+    }
+  }
+  addDroppables(droppables2) {
+    if (this.isDestroyed) return;
+    const addedDroppables = /* @__PURE__ */ new Set();
+    for (const droppable of droppables2) {
+      if (this.droppables.has(droppable.id)) continue;
+      addedDroppables.add(droppable);
+      this.droppables.set(droppable.id, droppable);
+      droppable.on(
+        DroppableEventType.Destroy,
+        () => {
+          this.removeDroppables([droppable]);
+        },
+        this._listenerId
+      );
+      this._drags.forEach(({ _targets }, draggable) => {
+        if (_targets && this._isMatch(draggable, droppable)) {
+          _targets.set(droppable.id, droppable);
+          this.detectCollisions(draggable);
+        }
+      });
+    }
+    if (addedDroppables.size && this._emitter.listenerCount(DndContextEventType.AddDroppables)) {
+      this._emitter.emit(DndContextEventType.AddDroppables, { droppables: addedDroppables });
+    }
+  }
+  removeDroppables(droppables2) {
+    if (this.isDestroyed) return;
+    const removedDroppables = /* @__PURE__ */ new Set();
+    for (const droppable of droppables2) {
+      if (!this.droppables.has(droppable.id)) continue;
+      this.droppables.delete(droppable.id);
+      removedDroppables.add(droppable);
+      droppable.off(DroppableEventType.Destroy, this._listenerId);
+      this._drags.forEach(({ _targets }, draggable) => {
+        if (_targets && _targets.has(droppable.id)) {
+          _targets.delete(droppable.id);
+          this.detectCollisions(draggable);
+        }
+      });
+    }
+    if (removedDroppables.size && this._emitter.listenerCount(DndContextEventType.RemoveDroppables)) {
+      this._emitter.emit(DndContextEventType.RemoveDroppables, { droppables: removedDroppables });
+    }
+  }
+  destroy() {
+    if (this.isDestroyed) return;
+    this.isDestroyed = true;
+    this.draggables.forEach((draggable) => {
+      draggable.off(DraggableEventType.PrepareStart, this._listenerId);
+      draggable.off(DraggableEventType.Start, this._listenerId);
+      draggable.off(DraggableEventType.PrepareMove, this._listenerId);
+      draggable.off(DraggableEventType.Move, this._listenerId);
+      draggable.off(DraggableEventType.End, this._listenerId);
+      draggable.off(DraggableEventType.Destroy, this._listenerId);
+    });
+    this.droppables.forEach((droppable) => {
+      droppable.off(DroppableEventType.Destroy, this._listenerId);
+    });
+    const activeDraggables = this._drags.keys();
+    for (const draggable of activeDraggables) {
+      this._stopDrag(draggable, true);
+    }
+    this._emitter.emit(DndContextEventType.Destroy);
+    this._emitter.off();
+    this._collisionDetector.destroy();
+    this.draggables.clear();
+    this.droppables.clear();
+  }
+};
+
+// src/utils/get-clip-ancestors.ts
+var VISIBLE_OVERFLOW = "visible";
+function getClipAncestors(element, includeElement, result = []) {
+  let parent = includeElement ? element : element?.parentNode;
+  result.length = 0;
+  while (parent && !isDocument(parent)) {
+    if (parent instanceof Element) {
+      const style = getStyle(parent);
+      if (!(style.overflowY === VISIBLE_OVERFLOW || style.overflowX === VISIBLE_OVERFLOW)) {
+        result.push(parent);
+      }
+      parent = parent.parentNode;
+    } else if (parent instanceof ShadowRoot) {
+      parent = parent.host;
+    } else {
+      parent = parent.parentNode;
+    }
+  }
+  result.push(window);
+  return result;
+}
+
+// src/dnd-context/advanced-collision-detector.ts
+var cachedDraggableClipMaskRect;
+var EMPTY_RECT = createRect();
+var MAX_RECT = {
+  width: Number.MAX_SAFE_INTEGER,
+  height: Number.MAX_SAFE_INTEGER,
+  x: Number.MAX_SAFE_INTEGER * -0.5,
+  y: Number.MAX_SAFE_INTEGER * -0.5
+};
+var DRAGGABLE_CLIP_ANCESTORS = [];
+var DROPPABLE_CLIP_ANCESTORS = [];
+var DRAGGABLE_CLIP_CHAIN = [];
+var DROPPABLE_CLIP_CHAIN = [];
+function computeDraggableClipAncestors(draggable) {
+  if (!DRAGGABLE_CLIP_ANCESTORS.length) {
+    const dragContainer = draggable.drag?.items?.[0]?.dragContainer;
+    if (dragContainer) {
+      getClipAncestors(dragContainer, true, DRAGGABLE_CLIP_ANCESTORS);
+    } else {
+      DRAGGABLE_CLIP_ANCESTORS.push(window);
+    }
+  }
+}
+function computeDroppableClipAncestors(droppable) {
+  if (!DROPPABLE_CLIP_ANCESTORS.length) {
+    getClipAncestors(droppable.element, false, DROPPABLE_CLIP_ANCESTORS);
+  }
+}
+function getRecursiveIntersectionRect(elements, result = createRect()) {
+  createRect(elements.length ? getRect([elements[0], "padding"], window) : MAX_RECT, result);
+  for (let i = 1; i < elements.length; i++) {
+    const el = elements[i];
+    const rect = getRect([el, "padding"], window);
+    if (!getIntersectionRect(result, rect, result)) {
+      createRect(EMPTY_RECT, result);
+      break;
+    }
+  }
+  return result;
+}
+var AdvancedCollisionDetector = class extends CollisionDetector {
+  constructor(dndContext, options4) {
+    super(dndContext);
+    this._dragStates = /* @__PURE__ */ new Map();
+    this._visibilityLogic = options4?.visibilityLogic || "relative";
+    this._listenersAttached = false;
+    this._clearCache = () => this.clearCache();
+  }
+  _checkCollision(draggable, droppable, collisionData) {
+    const state = this._dragStates.get(draggable);
+    if (!state) return null;
+    const draggableRect = draggable.getClientRect();
+    const droppableRect = droppable.getClientRect();
+    if (!draggableRect || !droppableRect) return null;
+    let clipMaskKey = state.clipMaskKeyMap.get(droppable);
+    if (!clipMaskKey) {
+      const isRelativeLogic = this._visibilityLogic === "relative";
+      DROPPABLE_CLIP_ANCESTORS.length = 0;
+      DRAGGABLE_CLIP_CHAIN.length = 0;
+      DROPPABLE_CLIP_CHAIN.length = 0;
+      computeDroppableClipAncestors(droppable);
+      clipMaskKey = DROPPABLE_CLIP_ANCESTORS[0] || window;
+      state.clipMaskKeyMap.set(droppable, clipMaskKey);
+      if (!state.clipMaskMap.has(clipMaskKey)) {
+        computeDraggableClipAncestors(draggable);
+        if (isRelativeLogic) {
+          let fccc = window;
+          for (const droppableClipAncestor of DROPPABLE_CLIP_ANCESTORS) {
+            if (DRAGGABLE_CLIP_ANCESTORS.includes(droppableClipAncestor)) {
+              fccc = droppableClipAncestor;
+              break;
+            }
+          }
+          for (const draggableClipAncestor of DRAGGABLE_CLIP_ANCESTORS) {
+            if (draggableClipAncestor === fccc) break;
+            DRAGGABLE_CLIP_CHAIN.push(draggableClipAncestor);
+          }
+          for (const droppableClipAncestor of DROPPABLE_CLIP_ANCESTORS) {
+            if (droppableClipAncestor === fccc) break;
+            DROPPABLE_CLIP_CHAIN.push(droppableClipAncestor);
+          }
+        } else {
+          DRAGGABLE_CLIP_CHAIN.push(...DRAGGABLE_CLIP_ANCESTORS);
+          DROPPABLE_CLIP_CHAIN.push(...DROPPABLE_CLIP_ANCESTORS);
+        }
+        const draggableClipMask2 = isRelativeLogic || !cachedDraggableClipMaskRect ? getRecursiveIntersectionRect(DRAGGABLE_CLIP_CHAIN) : createRect(cachedDraggableClipMaskRect);
+        const droppableClipMask2 = getRecursiveIntersectionRect(DROPPABLE_CLIP_CHAIN);
+        if (!isRelativeLogic && !cachedDraggableClipMaskRect) {
+          cachedDraggableClipMaskRect = draggableClipMask2;
+        }
+        state.clipMaskMap.set(clipMaskKey, [draggableClipMask2, droppableClipMask2]);
+      }
+      DROPPABLE_CLIP_ANCESTORS.length = 0;
+      DRAGGABLE_CLIP_CHAIN.length = 0;
+      DROPPABLE_CLIP_CHAIN.length = 0;
+    }
+    const [draggableClipMask, droppableClipMask] = state.clipMaskMap.get(clipMaskKey) || [];
+    if (!draggableClipMask || !droppableClipMask) return null;
+    if (!getIntersectionRect(draggableRect, draggableClipMask, collisionData.draggableVisibleRect)) {
+      return null;
+    }
+    if (!getIntersectionRect(droppableRect, droppableClipMask, collisionData.droppableVisibleRect)) {
+      return null;
+    }
+    if (!getIntersectionRect(
+      collisionData.draggableVisibleRect,
+      collisionData.droppableVisibleRect,
+      collisionData.intersectionRect
+    )) {
+      return null;
+    }
+    const score = getIntersectionScore(
+      collisionData.draggableVisibleRect,
+      collisionData.droppableVisibleRect,
+      collisionData.intersectionRect
+    );
+    if (score <= 0) return null;
+    collisionData.droppableId = droppable.id;
+    createRect(droppableRect, collisionData.droppableRect);
+    createRect(draggableRect, collisionData.draggableRect);
+    collisionData.intersectionScore = score;
+    return collisionData;
+  }
+  _sortCollisions(_draggable, collisions) {
+    return collisions.sort((a, b) => {
+      const diff = b.intersectionScore - a.intersectionScore;
+      if (diff !== 0) return diff;
+      return a.droppableVisibleRect.width * a.droppableVisibleRect.height - b.droppableVisibleRect.width * b.droppableVisibleRect.height;
+    });
+  }
+  _createCollisionData() {
+    const data = super._createCollisionData();
+    data.droppableVisibleRect = createRect();
+    data.draggableVisibleRect = createRect();
+    return data;
+  }
+  _getDragState(draggable) {
+    let state = this._dragStates.get(draggable);
+    if (state) return state;
+    state = {
+      clipMaskKeyMap: /* @__PURE__ */ new Map(),
+      clipMaskMap: /* @__PURE__ */ new Map(),
+      cacheDirty: true
+    };
+    this._dragStates.set(draggable, state);
+    if (!this._listenersAttached) {
+      window.addEventListener("scroll", this._clearCache, {
+        capture: true,
+        passive: true
+      });
+      window.addEventListener("resize", this._clearCache, { passive: true });
+      this._listenersAttached = true;
+    }
+    return state;
+  }
+  // Create or get pool, making sure our drag state exists first.
+  getCollisionDataPool(draggable) {
+    this._getDragState(draggable);
+    return super.getCollisionDataPool(draggable);
+  }
+  removeCollisionDataPool(draggable) {
+    if (this._dragStates.delete(draggable)) {
+      if (this._dndContext.drags.size <= 0) {
+        if (this._listenersAttached) {
+          window.removeEventListener("scroll", this._clearCache, { capture: true });
+          window.removeEventListener("resize", this._clearCache);
+          this._listenersAttached = false;
+        }
+      }
+    }
+    super.removeCollisionDataPool(draggable);
+  }
+  detectCollisions(draggable, targets, collisions) {
+    DRAGGABLE_CLIP_ANCESTORS.length = 0;
+    cachedDraggableClipMaskRect = null;
+    const state = this._getDragState(draggable);
+    if (state.cacheDirty) {
+      state.clipMaskKeyMap.clear();
+      state.clipMaskMap.clear();
+      state.cacheDirty = false;
+    }
+    super.detectCollisions(draggable, targets, collisions);
+    DRAGGABLE_CLIP_ANCESTORS.length = 0;
+    cachedDraggableClipMaskRect = null;
+  }
+  clearCache(draggable) {
+    if (draggable) {
+      const state = this._dragStates.get(draggable);
+      if (state) state.cacheDirty = true;
+    } else {
+      this._dragStates.forEach((state) => {
+        state.cacheDirty = true;
+      });
+    }
+  }
+};
 
 // tests/src/base-sensor/methods/_cancel.ts
 function methodProtectedCancel() {
@@ -6321,11 +7548,11 @@ function methodDestroy() {
        `, () => {
       const s = new BaseSensor();
       const startArgs = { type: "start", x: 1, y: 2 };
-      let events4 = [];
+      let events5 = [];
       s["_start"](startArgs);
-      s.on("start", (data) => void events4.push(data.type));
-      s.on("move", (data) => void events4.push(data.type));
-      s.on("end", (data) => void events4.push(data.type));
+      s.on("start", (data) => void events5.push(data.type));
+      s.on("move", (data) => void events5.push(data.type));
+      s.on("end", (data) => void events5.push(data.type));
       s.on("cancel", (data) => {
         assert.deepEqual(s.drag, { x: startArgs.x, y: startArgs.y });
         assert.equal(s.isDestroyed, true);
@@ -6334,7 +7561,7 @@ function methodDestroy() {
           x: startArgs.x,
           y: startArgs.y
         });
-        events4.push(data.type);
+        events5.push(data.type);
       });
       s.on("destroy", (data) => {
         assert.equal(s.drag, null);
@@ -6342,13 +7569,13 @@ function methodDestroy() {
         assert.deepEqual(data, {
           type: "destroy"
         });
-        events4.push(data.type);
+        events5.push(data.type);
       });
       assert.equal(s["_emitter"].listenerCount(), 5);
       s.destroy();
       assert.equal(s.drag, null);
       assert.equal(s.isDestroyed, true);
-      assert.deepEqual(events4, ["cancel", "destroy"]);
+      assert.deepEqual(events5, ["cancel", "destroy"]);
       assert.equal(s["_emitter"].listenerCount(), 0);
     });
     it(`should (if drag is not active):
@@ -6357,39 +7584,39 @@ function methodDestroy() {
           3. remove all listeners from the internal emitter
        `, () => {
       const s = new BaseSensor();
-      let events4 = [];
-      s.on("start", (data) => void events4.push(data.type));
-      s.on("move", (data) => void events4.push(data.type));
-      s.on("end", (data) => void events4.push(data.type));
-      s.on("cancel", (data) => void events4.push(data.type));
+      let events5 = [];
+      s.on("start", (data) => void events5.push(data.type));
+      s.on("move", (data) => void events5.push(data.type));
+      s.on("end", (data) => void events5.push(data.type));
+      s.on("cancel", (data) => void events5.push(data.type));
       s.on("destroy", (data) => {
         assert.equal(s.drag, null);
         assert.equal(s.isDestroyed, true);
         assert.deepEqual(data, {
           type: "destroy"
         });
-        events4.push(data.type);
+        events5.push(data.type);
       });
       assert.equal(s["_emitter"].listenerCount(), 5);
       s.destroy();
       assert.equal(s.drag, null);
       assert.equal(s.isDestroyed, true);
-      assert.deepEqual(events4, ["destroy"]);
+      assert.deepEqual(events5, ["destroy"]);
       assert.equal(s["_emitter"].listenerCount(), 0);
     });
     it("should not do anything if the sensor is already destroyed", () => {
       const s = new BaseSensor();
       s.destroy();
-      let events4 = [];
-      s.on("start", (data) => void events4.push(data.type));
-      s.on("move", (data) => void events4.push(data.type));
-      s.on("end", (data) => void events4.push(data.type));
-      s.on("cancel", (data) => void events4.push(data.type));
-      s.on("destroy", (data) => void events4.push(data.type));
+      let events5 = [];
+      s.on("start", (data) => void events5.push(data.type));
+      s.on("move", (data) => void events5.push(data.type));
+      s.on("end", (data) => void events5.push(data.type));
+      s.on("cancel", (data) => void events5.push(data.type));
+      s.on("destroy", (data) => void events5.push(data.type));
       s.destroy();
       assert.equal(s.drag, null);
       assert.equal(s.isDestroyed, true);
-      assert.deepEqual(events4, []);
+      assert.deepEqual(events5, []);
     });
   });
 }
@@ -6559,7 +7786,7 @@ function createTestElement(styles2 = {}) {
 // tests/src/utils/focus-element.ts
 function focusElement(element) {
   if (document.activeElement !== element) {
-    element.focus();
+    element.focus({ preventScroll: true });
     element.dispatchEvent(
       new FocusEvent("focus", {
         bubbles: false,
@@ -6582,7 +7809,7 @@ function waitNextFrame() {
 function events() {
   describe("events", () => {
     it("should be called at the right time with the right arguments", async () => {
-      let events4 = [];
+      let events5 = [];
       let currentKeyboardEvent = null;
       const el = createTestElement();
       const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
@@ -6593,53 +7820,53 @@ function events() {
         assert.equal(args.length, 1);
         assert.equal(args[0].type, "start");
         assert.equal(args[0].srcEvent, currentKeyboardEvent);
-        events4.push("preparestart");
+        events5.push("preparestart");
       });
       draggable.on("start", (...args) => {
         assert.equal(args.length, 1);
         assert.equal(args[0].type, "start");
         assert.equal(args[0].srcEvent, currentKeyboardEvent);
-        events4.push("start");
+        events5.push("start");
       });
       draggable.on("preparemove", (...args) => {
         assert.equal(args.length, 1);
         assert.equal(args[0].type, "move");
         assert.equal(args[0].srcEvent, currentKeyboardEvent);
-        events4.push("preparemove");
+        events5.push("preparemove");
       });
       draggable.on("move", (...args) => {
         assert.equal(args.length, 1);
         assert.equal(args[0].type, "move");
         assert.equal(args[0].srcEvent, currentKeyboardEvent);
-        events4.push("move");
+        events5.push("move");
       });
       draggable.on("end", (...args) => {
         assert.equal(args.length, 1);
         assert.equal(args[0]?.type, "end");
         assert.equal(args[0]?.srcEvent, currentKeyboardEvent);
-        events4.push("end");
+        events5.push("end");
       });
       draggable.on("destroy", (...args) => {
         assert.equal(args.length, 0);
-        events4.push("destroy");
+        events5.push("destroy");
       });
       focusElement(el);
       currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
       document.dispatchEvent(currentKeyboardEvent);
       await waitNextFrame();
-      assert.deepEqual(events4, ["preparestart", "start"]);
-      events4.length = 0;
+      assert.deepEqual(events5, ["preparestart", "start"]);
+      events5.length = 0;
       currentKeyboardEvent = new KeyboardEvent("keydown", { key: "ArrowRight" });
       document.dispatchEvent(currentKeyboardEvent);
       await waitNextFrame();
-      assert.deepEqual(events4, ["preparemove", "move"]);
-      events4.length = 0;
+      assert.deepEqual(events5, ["preparemove", "move"]);
+      events5.length = 0;
       currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
       document.dispatchEvent(currentKeyboardEvent);
-      assert.deepEqual(events4, ["end"]);
-      events4.length = 0;
+      assert.deepEqual(events5, ["end"]);
+      events5.length = 0;
       draggable.destroy();
-      assert.deepEqual(events4, ["destroy"]);
+      assert.deepEqual(events5, ["destroy"]);
       keyboardSensor.destroy();
       el.remove();
     });
@@ -7132,7 +8359,7 @@ function optionApplyPosition() {
 function optionCallbacks() {
   describe("callbacks", () => {
     it("should be called at the right time with the right arguments", async () => {
-      let events4 = [];
+      let events5 = [];
       let currentKeyboardEvent = null;
       const el = createTestElement();
       const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
@@ -7145,7 +8372,7 @@ function optionCallbacks() {
           assert.equal(args[0].startEvent.srcEvent, currentKeyboardEvent);
           assert.equal(args[0].prevMoveEvent.srcEvent, currentKeyboardEvent);
           assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
-          events4.push("onPrepareStart");
+          events5.push("onPrepareStart");
         },
         onStart(...args) {
           assert.equal(args.length, 2);
@@ -7154,70 +8381,70 @@ function optionCallbacks() {
           assert.equal(args[0].startEvent.srcEvent, currentKeyboardEvent);
           assert.equal(args[0].prevMoveEvent.srcEvent, currentKeyboardEvent);
           assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
-          events4.push("onStart");
+          events5.push("onStart");
         },
         onPrepareMove(...args) {
           assert.equal(args.length, 2);
           assert.equal(args[0], draggable.drag);
           assert.equal(args[1], draggable);
           assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
-          events4.push("onPrepareMove");
+          events5.push("onPrepareMove");
         },
         onMove(...args) {
           assert.equal(args.length, 2);
           assert.equal(args[0], draggable.drag);
           assert.equal(args[1], draggable);
           assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
-          events4.push("onMove");
+          events5.push("onMove");
         },
         onEnd(...args) {
           assert.equal(args.length, 2);
           assert.equal(args[0], draggable.drag);
           assert.equal(args[1], draggable);
           assert.equal(args[0].endEvent?.srcEvent, currentKeyboardEvent);
-          events4.push("onEnd");
+          events5.push("onEnd");
         },
         onDestroy(...args) {
           assert.equal(args.length, 1);
           assert.equal(args[0], draggable);
-          events4.push("onDestroy");
+          events5.push("onDestroy");
         }
       });
       draggable.on("preparestart", () => {
-        events4.push("preparestart");
+        events5.push("preparestart");
       });
       draggable.on("start", () => {
-        events4.push("start");
+        events5.push("start");
       });
       draggable.on("preparemove", () => {
-        events4.push("preparemove");
+        events5.push("preparemove");
       });
       draggable.on("move", () => {
-        events4.push("move");
+        events5.push("move");
       });
       draggable.on("end", () => {
-        events4.push("end");
+        events5.push("end");
       });
       draggable.on("destroy", () => {
-        events4.push("destroy");
+        events5.push("destroy");
       });
       focusElement(el);
       currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
       document.dispatchEvent(currentKeyboardEvent);
       await waitNextFrame();
-      assert.deepEqual(events4, ["preparestart", "onPrepareStart", "start", "onStart"]);
-      events4.length = 0;
+      assert.deepEqual(events5, ["preparestart", "onPrepareStart", "start", "onStart"]);
+      events5.length = 0;
       currentKeyboardEvent = new KeyboardEvent("keydown", { key: "ArrowRight" });
       document.dispatchEvent(currentKeyboardEvent);
       await waitNextFrame();
-      assert.deepEqual(events4, ["preparemove", "onPrepareMove", "move", "onMove"]);
-      events4.length = 0;
+      assert.deepEqual(events5, ["preparemove", "onPrepareMove", "move", "onMove"]);
+      events5.length = 0;
       currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
       document.dispatchEvent(currentKeyboardEvent);
-      assert.deepEqual(events4, ["end", "onEnd"]);
-      events4.length = 0;
+      assert.deepEqual(events5, ["end", "onEnd"]);
+      events5.length = 0;
       draggable.destroy();
-      assert.deepEqual(events4, ["destroy", "onDestroy"]);
+      assert.deepEqual(events5, ["destroy", "onDestroy"]);
       keyboardSensor.destroy();
       el.remove();
     });
@@ -9496,39 +10723,39 @@ function methodCancel3() {
     it(`should emit "cancel" event with correct arguments after updating instance properties`, () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
-      let events4 = [];
-      s.on("start", (data) => void events4.push(data.type));
-      s.on("move", (data) => void events4.push(data.type));
-      s.on("end", (data) => void events4.push(data.type));
-      s.on("destroy", (data) => void events4.push(data.type));
+      let events5 = [];
+      s.on("start", (data) => void events5.push(data.type));
+      s.on("move", (data) => void events5.push(data.type));
+      s.on("end", (data) => void events5.push(data.type));
+      s.on("destroy", (data) => void events5.push(data.type));
       s.on("cancel", (data) => {
         assert.deepEqual(data, {
           type: "cancel",
           x: s.drag.x,
           y: s.drag.y
         });
-        events4.push(data.type);
+        events5.push(data.type);
       });
       focusElement(el);
       document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
       assert.notEqual(s.drag, null);
       s.cancel();
       assert.equal(s.drag, null);
-      assert.deepEqual(events4, ["start", "cancel"]);
+      assert.deepEqual(events5, ["start", "cancel"]);
       s.destroy();
       el.remove();
     });
     it(`should not do anything if drag is not active`, () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
-      let events4 = [];
-      s.on("start", (data) => void events4.push(data.type));
-      s.on("move", (data) => void events4.push(data.type));
-      s.on("end", (data) => void events4.push(data.type));
-      s.on("destroy", (data) => void events4.push(data.type));
-      s.on("cancel", (data) => void events4.push(data.type));
+      let events5 = [];
+      s.on("start", (data) => void events5.push(data.type));
+      s.on("move", (data) => void events5.push(data.type));
+      s.on("end", (data) => void events5.push(data.type));
+      s.on("destroy", (data) => void events5.push(data.type));
+      s.on("cancel", (data) => void events5.push(data.type));
       s.cancel();
-      assert.deepEqual(events4, []);
+      assert.deepEqual(events5, []);
       s.destroy();
       el.remove();
     });
@@ -9541,21 +10768,21 @@ function methodDestroy4() {
     it("should allow destroying only once", () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
-      let events4 = [];
+      let events5 = [];
       s.destroy();
-      s.on("destroy", (data) => void events4.push(data.type));
+      s.on("destroy", (data) => void events5.push(data.type));
       s.destroy();
-      assert.deepEqual(events4, []);
+      assert.deepEqual(events5, []);
       el.remove();
     });
     describe("if drag active", () => {
       it(`should set isDestroyed property to true, emit "cancel" event with the current x/y coordinates, reset drag data, emit "destroy" event and remove all listeners`, () => {
         const el = createTestElement();
         const s = new KeyboardSensor(el);
-        let events4 = [];
-        s.on("start", (data) => void events4.push(data.type));
-        s.on("move", (data) => void events4.push(data.type));
-        s.on("end", (data) => void events4.push(data.type));
+        let events5 = [];
+        s.on("start", (data) => void events5.push(data.type));
+        s.on("move", (data) => void events5.push(data.type));
+        s.on("end", (data) => void events5.push(data.type));
         s.on("cancel", (data) => {
           assert.notEqual(s.drag, null);
           assert.equal(s.isDestroyed, true);
@@ -9564,13 +10791,13 @@ function methodDestroy4() {
             x: s.drag.x,
             y: s.drag.y
           });
-          events4.push(data.type);
+          events5.push(data.type);
         });
         s.on("destroy", (data) => {
           assert.equal(s.drag, null);
           assert.equal(s.isDestroyed, true);
           assert.deepEqual(data, { type: "destroy" });
-          events4.push(data.type);
+          events5.push(data.type);
         });
         assert.equal(s["_emitter"].listenerCount(), 5);
         focusElement(el);
@@ -9579,7 +10806,7 @@ function methodDestroy4() {
         el.remove();
         assert.equal(s.drag, null);
         assert.equal(s.isDestroyed, true);
-        assert.deepEqual(events4, ["start", "cancel", "destroy"]);
+        assert.deepEqual(events5, ["start", "cancel", "destroy"]);
         assert.equal(s["_emitter"].listenerCount(), 0);
       });
     });
@@ -9587,23 +10814,23 @@ function methodDestroy4() {
       it(`should set isDestroyed property to true, emit "destroy" event and remove all listeners`, () => {
         const el = createTestElement();
         const s = new KeyboardSensor(el);
-        let events4 = [];
-        s.on("start", (data) => void events4.push(data.type));
-        s.on("move", (data) => void events4.push(data.type));
-        s.on("end", (data) => void events4.push(data.type));
-        s.on("cancel", (data) => void events4.push(data.type));
+        let events5 = [];
+        s.on("start", (data) => void events5.push(data.type));
+        s.on("move", (data) => void events5.push(data.type));
+        s.on("end", (data) => void events5.push(data.type));
+        s.on("cancel", (data) => void events5.push(data.type));
         s.on("destroy", (data) => {
           assert.equal(s.drag, null);
           assert.equal(s.isDestroyed, true);
           assert.deepEqual(data, { type: "destroy" });
-          events4.push(data.type);
+          events5.push(data.type);
         });
         assert.equal(s["_emitter"].listenerCount(), 5);
         s.destroy();
         el.remove();
         assert.equal(s.drag, null);
         assert.equal(s.isDestroyed, true);
-        assert.deepEqual(events4, ["destroy"]);
+        assert.deepEqual(events5, ["destroy"]);
         assert.equal(s["_emitter"].listenerCount(), 0);
       });
     });
@@ -9930,6 +11157,1628 @@ describe("KeyboardSensor", () => {
   properties3();
   methods4();
   events3();
+});
+
+// tests/src/utils/keyboard-helpers.ts
+var press = (key) => document.dispatchEvent(new KeyboardEvent("keydown", { key }));
+var startDrag = async (el) => {
+  focusElement(el);
+  press("Enter");
+  await waitNextFrame();
+};
+var endDrag = async () => {
+  press("Enter");
+  await waitNextFrame();
+};
+var move = async (direction, times = 1) => {
+  for (let i = 0; i < times; i++) {
+    press(`Arrow${direction}`);
+    await waitNextFrame();
+  }
+};
+
+// tests/src/dnd-context/events.ts
+function events4() {
+  describe("events", () => {
+    it("should emit start and end events during drag lifecycle", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({ left: "0px", top: "0px" });
+      const dropElement = createTestElement({ left: "200px", top: "0px" });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("start", (data) => {
+        assert.equal(data.draggable, draggable);
+        assert.instanceOf(data.targets, Map);
+        assert.equal(data.targets.size, 1);
+        assert.isTrue(data.targets.has(droppable.id));
+        events5.push("start");
+      });
+      dndContext.on("end", (data) => {
+        assert.equal(data.draggable, draggable);
+        assert.instanceOf(data.targets, Map);
+        assert.equal(data.targets.size, 1);
+        assert.isTrue(data.targets.has(droppable.id));
+        events5.push("end");
+      });
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable]);
+      await startDrag(dragElement);
+      assert.deepEqual(events5, ["start"]);
+      events5.length = 0;
+      await endDrag();
+      assert.deepEqual(events5, ["end"]);
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should emit move events during drag movement", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({ left: "0px", top: "0px" });
+      const dropElement = createTestElement({ left: "200px", top: "0px" });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("move", (data) => {
+        assert.equal(data.draggable, draggable);
+        assert.instanceOf(data.targets, Map);
+        events5.push("move");
+      });
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable]);
+      await startDrag(dragElement);
+      await move("Right");
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0], "move");
+      await endDrag();
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should emit enter and leave events when draggable enters/leaves droppable", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "100px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 101 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", (data) => {
+        events5.push({
+          type: "enter",
+          collisions: data.collisions.length,
+          addedContacts: data.addedContacts.size
+        });
+      });
+      dndContext.on("leave", (data) => {
+        events5.push({
+          type: "leave",
+          collisions: data.collisions.length,
+          removedContacts: data.removedContacts.size
+        });
+      });
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable]);
+      await startDrag(dragElement);
+      await move("Right");
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0].type, "enter");
+      assert.equal(events5[0].collisions, 1);
+      assert.equal(events5[0].addedContacts, 1);
+      await move("Right");
+      assert.equal(events5.length, 2);
+      assert.equal(events5[1].type, "leave");
+      assert.equal(events5[1].collisions, 0);
+      assert.equal(events5[1].removedContacts, 1);
+      await endDrag();
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should include collisions in end event when draggable ends over droppable", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("end", (data) => {
+        assert.equal(data.draggable, draggable);
+        assert.equal(data.collisions.length, 1);
+        assert.isTrue(data.collisions.some((c) => c.droppableId === droppable.id));
+        events5.push("end");
+      });
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable]);
+      await startDrag(dragElement);
+      await endDrag();
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0], "end");
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should emit addDraggables and removeDraggables events", () => {
+      const events5 = [];
+      const dragElement = createTestElement();
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const dndContext = new DndContext();
+      dndContext.on("addDraggables", (data) => {
+        events5.push({ type: "addDraggables", draggables: data.draggables });
+      });
+      dndContext.on("removeDraggables", (data) => {
+        events5.push({ type: "removeDraggables", draggables: data.draggables });
+      });
+      dndContext.addDraggables([draggable]);
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0].type, "addDraggables");
+      assert.equal(events5[0].draggables.has(draggable), true);
+      dndContext.removeDraggables([draggable]);
+      assert.equal(events5.length, 2);
+      assert.equal(events5[1].type, "removeDraggables");
+      assert.equal(events5[1].draggables.has(draggable), true);
+      dndContext.destroy();
+      draggable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+    });
+    it("should emit addDroppable and removeDroppable events", () => {
+      const events5 = [];
+      const dropElement = createTestElement();
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("addDroppables", (data) => {
+        data.droppables.forEach((droppable2) => {
+          events5.push({ type: "addDroppable", droppable: droppable2 });
+        });
+      });
+      dndContext.on("removeDroppables", (data) => {
+        data.droppables.forEach((droppable2) => {
+          events5.push({ type: "removeDroppable", droppable: droppable2 });
+        });
+      });
+      dndContext.addDroppables([droppable]);
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0].type, "addDroppable");
+      assert.equal(events5[0].droppable, droppable);
+      dndContext.removeDroppables([droppable]);
+      assert.equal(events5.length, 2);
+      assert.equal(events5[1].type, "removeDroppable");
+      assert.equal(events5[1].droppable, droppable);
+      dndContext.destroy();
+      droppable.destroy();
+      dropElement.remove();
+    });
+    it("should emit end with canceled=true when drag is cancelled", async () => {
+      const events5 = [];
+      const dragElement = createTestElement();
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const dndContext = new DndContext();
+      dndContext.on("end", (data) => {
+        assert.equal(data.draggable, draggable);
+        assert.isTrue(data.canceled);
+        events5.push("end");
+      });
+      dndContext.addDraggables([draggable]);
+      await startDrag(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0], "end");
+      dndContext.destroy();
+      draggable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+    });
+    it("should emit destroy event when context is destroyed", () => {
+      const events5 = [];
+      const dndContext = new DndContext();
+      dndContext.on("destroy", () => {
+        events5.push("destroy");
+      });
+      dndContext.destroy();
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0], "destroy");
+    });
+  });
+  describe("event flow and ordering", () => {
+    it("should emit leave \u2192 enter \u2192 collide in order when transitioning between droppables", async () => {
+      const order = [];
+      const dragEl = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+      const dropA = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+      const dropB = createTestElement({ left: "50px", top: "0px", width: "40px", height: "40px" });
+      const sensor = new KeyboardSensor(dragEl, { moveDistance: 60 });
+      const draggable = new Draggable([sensor], { elements: () => [dragEl], group: "g" });
+      const droppableA = new Droppable(dropA, { accept: ["g"] });
+      const droppableB = new Droppable(dropB, { accept: ["g"] });
+      const ctx = new DndContext();
+      ctx.on("leave", () => order.push("leave"));
+      ctx.on("enter", () => order.push("enter"));
+      ctx.on("collide", () => order.push("collide"));
+      ctx.addDraggables([draggable]);
+      ctx.addDroppables([droppableA, droppableB]);
+      await startDrag(dragEl);
+      order.length = 0;
+      await move("Right");
+      assert.isTrue(order.includes("enter"));
+      if (order.includes("leave")) {
+        assert.isBelow(order.indexOf("leave"), order.indexOf("enter"));
+      }
+      ctx.destroy();
+      draggable.destroy();
+      droppableA.destroy();
+      droppableB.destroy();
+      sensor.destroy();
+      dragEl.remove();
+      dropA.remove();
+      dropB.remove();
+    });
+    it("should emit end with collisions when ending after first enter", async () => {
+      const events5 = [];
+      const dragEl = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+      const dropEl = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+      const sensor = new KeyboardSensor(dragEl, { moveDistance: 10 });
+      const draggable = new Draggable([sensor], { elements: () => [dragEl], group: "g" });
+      const droppable = new Droppable(dropEl, { accept: ["g"] });
+      const ctx = new DndContext();
+      let gotEnter = false;
+      ctx.on("enter", ({ collisions }) => {
+        events5.push("enter");
+        gotEnter = true;
+        assert.isAtLeast(collisions.length, 1);
+      });
+      ctx.on("end", ({ canceled, collisions }) => {
+        events5.push("end");
+        assert.isFalse(canceled);
+        assert.isAtLeast(collisions.length, 1);
+      });
+      ctx.addDraggables([draggable]);
+      ctx.addDroppables([droppable]);
+      await startDrag(dragEl);
+      await waitNextFrame();
+      assert.isTrue(gotEnter);
+      await endDrag();
+      assert.deepEqual(events5, ["enter", "end"]);
+      ctx.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      sensor.destroy();
+      dragEl.remove();
+      dropEl.remove();
+    });
+    it("should honor clearTargets when accept changes mid-drag", async () => {
+      const events5 = [];
+      const dragEl = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+      const dropEl = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+      let accepts = false;
+      const sensor = new KeyboardSensor(dragEl, { moveDistance: 10 });
+      const draggable = new Draggable([sensor], { elements: () => [dragEl], group: "g" });
+      const droppable = new Droppable(dropEl, { accept: () => accepts });
+      const ctx = new DndContext();
+      ctx.on("enter", () => events5.push("enter"));
+      ctx.addDraggables([draggable]);
+      ctx.addDroppables([droppable]);
+      await startDrag(dragEl);
+      assert.equal(events5.length, 0);
+      accepts = true;
+      ctx.clearTargets(draggable);
+      ctx.detectCollisions(draggable);
+      await waitNextFrame();
+      assert.deepEqual(events5, ["enter"]);
+      ctx.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      sensor.destroy();
+      dragEl.remove();
+      dropEl.remove();
+    });
+    it("should tolerate removing a droppable during enter emission", async () => {
+      const events5 = [];
+      const dragEl = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+      const dropEl = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+      const sensor = new KeyboardSensor(dragEl, { moveDistance: 10 });
+      const draggable = new Draggable([sensor], { elements: () => [dragEl], group: "g" });
+      const droppable = new Droppable(dropEl, { accept: ["g"] });
+      const ctx = new DndContext();
+      let shouldRemove = false;
+      ctx.on("enter", () => {
+        events5.push("enter");
+        shouldRemove = true;
+      });
+      ctx.on("end", () => {
+        events5.push("end");
+      });
+      ctx.addDraggables([draggable]);
+      ctx.addDroppables([droppable]);
+      await startDrag(dragEl);
+      if (shouldRemove) ctx.removeDroppables([droppable]);
+      await waitNextFrame();
+      await endDrag();
+      assert.deepEqual(events5, ["enter", "end"]);
+      assert.isFalse(ctx.droppables.has(droppable.id));
+      ctx.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      sensor.destroy();
+      dragEl.remove();
+      dropEl.remove();
+    });
+    it("should expose mutable drag data via getDragData during lifecycle", async () => {
+      const seen = [];
+      const dragEl = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+      const dropEl = createTestElement({ left: "60px", top: "0px", width: "40px", height: "40px" });
+      const sensor = new KeyboardSensor(dragEl, { moveDistance: 10 });
+      const draggable = new Draggable([sensor], { elements: () => [dragEl], group: "g" });
+      const droppable = new Droppable(dropEl, { accept: ["g"] });
+      const ctx = new DndContext();
+      ctx.on("start", () => {
+        const data = ctx.drags.get(draggable);
+        data.data.counter = 1;
+        seen.push({ phase: "start", value: data.data.counter });
+      });
+      ctx.on("move", () => {
+        const data = ctx.drags.get(draggable);
+        data.data.counter += 1;
+        seen.push({ phase: "move", value: data.data.counter });
+      });
+      ctx.on("end", () => {
+        const data = ctx.drags.get(draggable);
+        assert.isNotNull(data);
+        seen.push({ phase: "end", value: data.data.counter });
+      });
+      ctx.addDraggables([draggable]);
+      ctx.addDroppables([droppable]);
+      await startDrag(dragEl);
+      await move("Right");
+      await endDrag();
+      assert.deepEqual(
+        seen.map((s) => s.phase),
+        ["start", "move", "end"]
+      );
+      assert.deepEqual(
+        seen.map((s) => s.value),
+        [1, 2, 2]
+      );
+      ctx.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      sensor.destroy();
+      dragEl.remove();
+      dropEl.remove();
+    });
+  });
+}
+
+// tests/src/dnd-context/collision-detection.ts
+function collisionDetection() {
+  describe("collision detection", () => {
+    it("should detect collisions when draggable overlaps droppable", async () => {
+      const collisionEvents = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "25px",
+        top: "25px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", (data) => {
+        collisionEvents.push({
+          type: "enter",
+          collisions: data.collisions
+        });
+      });
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable]);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.equal(collisionEvents.length, 1);
+      assert.equal(collisionEvents[0].type, "enter");
+      assert.equal(collisionEvents[0].collisions.length, 1);
+      assert.equal(collisionEvents[0].collisions[0].droppableId, droppable.id);
+      const collisionData = collisionEvents[0].collisions[0];
+      assert.isDefined(collisionData);
+      assert.equal(collisionData.droppableId, droppable.id);
+      assert.isNumber(collisionData.intersectionScore);
+      assert.isTrue(collisionData.intersectionScore > 0);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should not detect collisions when draggable does not overlap droppable", async () => {
+      const collisionEvents = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "100px",
+        top: "100px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", (data) => {
+        collisionEvents.push({
+          type: "enter",
+          collisions: data.collisions
+        });
+      });
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable]);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.equal(collisionEvents.length, 0);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should update collisions when draggable moves", async () => {
+      const collisionEvents = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "60px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 70 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", (data) => {
+        collisionEvents.push({ type: "enter", collisions: data.collisions.length });
+      });
+      dndContext.on("leave", (data) => {
+        collisionEvents.push({ type: "leave", collisions: data.collisions.length });
+      });
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable]);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      assert.equal(collisionEvents.length, 2);
+      assert.equal(collisionEvents[0].type, "enter");
+      assert.equal(collisionEvents[0].collisions, 1);
+      assert.equal(collisionEvents[1].type, "leave");
+      assert.equal(collisionEvents[1].collisions, 0);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should handle multiple droppables correctly", async () => {
+      const collisionEvents = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement1 = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement2 = createTestElement({
+        left: "60px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 60 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable1 = new Droppable(dropElement1, {
+        accept: ["test"]
+      });
+      const droppable2 = new Droppable(dropElement2, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", (data) => {
+        collisionEvents.push({
+          type: "enter",
+          collisions: [...data.collisions]
+        });
+      });
+      dndContext.on("leave", (data) => {
+        collisionEvents.push({
+          type: "leave",
+          collisions: [...data.collisions]
+        });
+      });
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable1, droppable2]);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.equal(collisionEvents.length, 1);
+      assert.equal(collisionEvents[0].type, "enter");
+      assert.equal(collisionEvents[0].collisions.length, 1);
+      assert.isTrue(
+        collisionEvents[0].collisions.some((c) => c.droppableId === droppable1.id)
+      );
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      assert.isTrue(collisionEvents.length >= 2);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable1.destroy();
+      droppable2.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement1.remove();
+      dropElement2.remove();
+    });
+    it("should respect droppable accept criteria", async () => {
+      const collisionEvents = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["other-group"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", () => {
+        collisionEvents.push({ type: "enter" });
+      });
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable]);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.equal(collisionEvents.length, 0);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should work with extended collision data", async () => {
+      const customCollisionEvents = [];
+      let customDetectorCalled = false;
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      class TestDetector extends CollisionDetector {
+        _createCollisionData() {
+          const base = super._createCollisionData();
+          base.customProp = "";
+          return base;
+        }
+        _checkCollision(draggable2, droppable2, data) {
+          customDetectorCalled = true;
+          const result = super._checkCollision(draggable2, droppable2, data);
+          if (!result) return null;
+          result.customProp = "test-value";
+          return result;
+        }
+      }
+      const dndContext = new DndContext({
+        collisionDetector: (ctx) => new TestDetector(ctx)
+      });
+      dndContext.on("enter", (data) => {
+        const collision = data.collisions[0];
+        customCollisionEvents.push({
+          type: "enter",
+          customProp: collision?.customProp
+        });
+      });
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable]);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.isTrue(customDetectorCalled);
+      assert.equal(customCollisionEvents.length, 1);
+      assert.equal(customCollisionEvents[0].customProp, "test-value");
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should update droppable client rects on scroll", async () => {
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable]);
+      const initialRect = droppable.getClientRect();
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      window.dispatchEvent(new Event("scroll"));
+      await waitNextFrame();
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      const updatedRect = droppable.getClientRect();
+      assert.isObject(updatedRect);
+      assert.equal(updatedRect.x, initialRect.x);
+      assert.equal(updatedRect.y, initialRect.y);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should handle collision data correctly", async () => {
+      let collisionData = null;
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", (data) => {
+        collisionData = data.collisions.find((c) => c.droppableId === droppable.id) || null;
+      });
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable]);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      assert.isObject(collisionData);
+      assert.equal(collisionData.droppableId, droppable.id);
+      assert.isNumber(collisionData.droppableRect.x);
+      assert.isNumber(collisionData.droppableRect.y);
+      assert.isNumber(collisionData.droppableRect.width);
+      assert.isNumber(collisionData.droppableRect.height);
+      assert.isNumber(collisionData.intersectionScore);
+      assert.isTrue(collisionData.intersectionScore > 0);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+  });
+}
+
+// tests/src/dnd-context/advanced-collision-detection.ts
+function advancedCollisionDetection() {
+  describe("advanced collision detection", () => {
+    describe("relative visibility logic", () => {
+      it("should not clip if draggable and droppable are within the same clip container", async () => {
+        const collisionEvents = [];
+        const containerElement = createTestElement({
+          left: "0px",
+          top: "0px",
+          width: "100px",
+          height: "100px",
+          overflow: "hidden"
+        });
+        const draggableElement = createTestElement({
+          left: "-100px",
+          top: "-100px",
+          width: "100px",
+          height: "100px"
+        });
+        const droppableElement = createTestElement({
+          left: "-100px",
+          top: "-100px",
+          width: "100px",
+          height: "100px"
+        });
+        containerElement.appendChild(draggableElement);
+        containerElement.appendChild(droppableElement);
+        const keyboard = new KeyboardSensor(draggableElement);
+        const draggable = new Draggable([keyboard], {
+          elements: () => [draggableElement],
+          group: "g"
+        });
+        const droppable = new Droppable(droppableElement, { accept: ["g"] });
+        const dndContext = new DndContext({
+          collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx)
+        });
+        dndContext.addDraggables([draggable]);
+        dndContext.addDroppables([droppable]);
+        dndContext.on("collide", (data) => {
+          collisionEvents.push({ type: "enter", collisions: data.collisions });
+        });
+        focusElement(draggableElement);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        await waitNextFrame();
+        assert.equal(collisionEvents.length, 1);
+        assert.equal(collisionEvents[0].collisions.length, 1);
+        const firstCollision = collisionEvents[0].collisions[0];
+        assert.deepEqual(firstCollision.draggableVisibleRect, {
+          x: -100,
+          y: -100,
+          width: 100,
+          height: 100
+        });
+        assert.deepEqual(firstCollision.droppableVisibleRect, {
+          x: -100,
+          y: -100,
+          width: 100,
+          height: 100
+        });
+        dndContext.destroy();
+        draggable.destroy();
+        droppable.destroy();
+        keyboard.destroy();
+        draggableElement.remove();
+        droppableElement.remove();
+        containerElement.remove();
+      });
+      it("should clip to the clip containers that are not shared by the draggable and droppable", async () => {
+        const collisionEvents = [];
+        const containerElement = createTestElement({
+          left: "-50px",
+          top: "-50px",
+          width: "100px",
+          height: "100px",
+          overflow: "hidden"
+        });
+        const draggableElement = createTestElement({
+          left: "0px",
+          top: "0px",
+          width: "100px",
+          height: "100px"
+        });
+        const droppableElement = createTestElement({
+          left: "50px",
+          top: "50px",
+          width: "100px",
+          height: "100px"
+        });
+        containerElement.appendChild(droppableElement);
+        const keyboard = new KeyboardSensor(draggableElement, { moveDistance: 50 });
+        const draggable = new Draggable([keyboard], {
+          elements: () => [draggableElement],
+          group: "g"
+        });
+        const droppable = new Droppable(droppableElement, { accept: ["g"] });
+        const dndContext = new DndContext({
+          collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx)
+        });
+        dndContext.addDraggables([draggable]);
+        dndContext.addDroppables([droppable]);
+        dndContext.on("collide", (data) => {
+          collisionEvents.push({ type: "enter", collisions: data.collisions });
+        });
+        focusElement(draggableElement);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        await waitNextFrame();
+        assert.equal(collisionEvents.length, 1);
+        assert.equal(collisionEvents[0].collisions.length, 1);
+        const firstCollision = collisionEvents[0].collisions[0];
+        assert.deepEqual(firstCollision.draggableVisibleRect, {
+          x: 0,
+          y: 0,
+          width: 100,
+          height: 100
+        });
+        assert.deepEqual(firstCollision.droppableVisibleRect, {
+          x: 0,
+          y: 0,
+          width: 50,
+          height: 50
+        });
+        dndContext.destroy();
+        draggable.destroy();
+        droppable.destroy();
+        keyboard.destroy();
+        draggableElement.remove();
+        droppableElement.remove();
+        containerElement.remove();
+      });
+    });
+    describe("absolute visibility logic", () => {
+      it("should always compute collisions from the perspective of the user regardless of clip containers", async () => {
+        const collisionEvents = [];
+        const containerElement = createTestElement({
+          left: "-50px",
+          top: "-50px",
+          width: "100px",
+          height: "100px",
+          overflow: "hidden"
+        });
+        const draggableElement = createTestElement({
+          left: "0px",
+          top: "0px",
+          width: "100px",
+          height: "100px"
+        });
+        const droppableElement = createTestElement({
+          left: "0px",
+          top: "0px",
+          width: "100px",
+          height: "100px"
+        });
+        containerElement.appendChild(draggableElement);
+        containerElement.appendChild(droppableElement);
+        const keyboard = new KeyboardSensor(draggableElement, { moveDistance: 50 });
+        const draggable = new Draggable([keyboard], {
+          elements: () => [draggableElement],
+          group: "g"
+        });
+        const droppable = new Droppable(droppableElement, { accept: ["g"] });
+        const dndContext = new DndContext({
+          collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx, { visibilityLogic: "absolute" })
+        });
+        dndContext.addDraggables([draggable]);
+        dndContext.addDroppables([droppable]);
+        dndContext.on("collide", (data) => {
+          collisionEvents.push({ type: "enter", collisions: data.collisions });
+        });
+        focusElement(draggableElement);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+        await waitNextFrame();
+        assert.equal(collisionEvents.length, 1);
+        assert.equal(collisionEvents[0].collisions.length, 1);
+        const firstCollision = collisionEvents[0].collisions[0];
+        assert.deepEqual(firstCollision.draggableVisibleRect, {
+          x: 0,
+          y: 0,
+          width: 50,
+          height: 50
+        });
+        assert.deepEqual(firstCollision.droppableVisibleRect, {
+          x: 0,
+          y: 0,
+          width: 50,
+          height: 50
+        });
+        dndContext.destroy();
+        draggable.destroy();
+        droppable.destroy();
+        keyboard.destroy();
+        draggableElement.remove();
+        droppableElement.remove();
+        containerElement.remove();
+      });
+    });
+  });
+}
+
+// tests/src/dnd-context/droppables.ts
+function droppables() {
+  describe("droppables", () => {
+    it("should accept draggables based on group string array", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "60px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 70 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "valid-group"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["valid-group", "another-group"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", (data) => {
+        events5.push({ type: "enter", targets: data.targets.size });
+      });
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable]);
+      await startDrag(dragElement);
+      await move("Right");
+      await waitNextFrame();
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0].type, "enter");
+      assert.equal(events5[0].targets, 1);
+      await endDrag();
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should reject draggables not in accept group array", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "25px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "invalid-group"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["valid-group", "another-group"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", () => {
+        events5.push({ type: "enter" });
+      });
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable]);
+      await startDrag(dragElement);
+      assert.equal(events5.length, 0);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should accept draggables based on function predicate", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "60px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 70 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test-group"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: (draggable2) => {
+          return draggable2.settings.group === "test-group";
+        }
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", (data) => {
+        events5.push({ type: "enter", targets: data.targets.size });
+      });
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable]);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      await move("Right");
+      await waitNextFrame();
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0].type, "enter");
+      assert.equal(events5[0].targets, 1);
+      await endDrag();
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should reject draggables when function predicate returns false", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "25px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test-group"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: (draggable2) => {
+          return draggable2.settings.group === "different-group";
+        }
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", () => {
+        events5.push({ type: "enter" });
+      });
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable]);
+      await startDrag(dragElement);
+      assert.equal(events5.length, 0);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should not accept draggable when its element matches droppable element", async () => {
+      const events5 = [];
+      const element = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(element, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [element],
+        group: "test"
+      });
+      const droppable = new Droppable(element, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", () => {
+        events5.push({ type: "enter" });
+      });
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable]);
+      await startDrag(element);
+      assert.equal(events5.length, 0);
+      await endDrag();
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      element.remove();
+    });
+    it("should handle droppable data correctly", () => {
+      const element = createTestElement();
+      const droppable = new Droppable(element, {
+        accept: ["test"],
+        data: { custom: "value", id: 123 }
+      });
+      const dndContext = new DndContext();
+      dndContext.addDroppables([droppable]);
+      assert.deepEqual(droppable.data, { custom: "value", id: 123 });
+      droppable.data.newProp = "added";
+      assert.equal(droppable.data.newProp, "added");
+      dndContext.destroy();
+      droppable.destroy();
+      element.remove();
+    });
+    it("should update client rect correctly", () => {
+      const element = createTestElement({
+        left: "50px",
+        top: "75px",
+        width: "100px",
+        height: "150px"
+      });
+      const droppable = new Droppable(element, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.addDroppables([droppable]);
+      const rect = droppable.getClientRect();
+      assert.equal(rect.x, 50);
+      assert.equal(rect.y, 75);
+      assert.equal(rect.width, 100);
+      assert.equal(rect.height, 150);
+      element.style.left = "100px";
+      element.style.top = "200px";
+      droppable.updateClientRect();
+      const updatedRect = droppable.getClientRect();
+      assert.equal(updatedRect.x, 100);
+      assert.equal(updatedRect.y, 200);
+      assert.equal(updatedRect.width, 100);
+      assert.equal(updatedRect.height, 150);
+      dndContext.destroy();
+      droppable.destroy();
+      element.remove();
+    });
+    it("should handle droppable removal during drag", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "60px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 70 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", (data) => {
+        events5.push({ type: "enter", collisions: data.collisions.length });
+      });
+      dndContext.on("leave", (data) => {
+        events5.push({
+          type: "leave",
+          collisions: data.collisions.length,
+          removedContacts: data.removedContacts.size
+        });
+      });
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable]);
+      await startDrag(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+      await waitNextFrame();
+      await waitNextFrame();
+      assert.equal(events5.length, 1);
+      assert.equal(events5[0].type, "enter");
+      assert.equal(events5[0].collisions, 1);
+      dndContext.removeDroppables([droppable]);
+      await waitNextFrame();
+      assert.equal(events5.length, 2);
+      assert.equal(events5[1].type, "leave");
+      assert.equal(events5[1].collisions, 0);
+      assert.equal(events5[1].removedContacts, 1);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("should handle droppable destruction properly", () => {
+      const destroyEvents = [];
+      const element = createTestElement();
+      const droppable = new Droppable(element, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("removeDroppables", (data) => {
+        const removed = Array.from(data.droppables);
+        destroyEvents.push({ type: "removeDroppable", droppable: removed[0] });
+      });
+      dndContext.addDroppables([droppable]);
+      droppable.destroy();
+      assert.equal(destroyEvents.length, 1);
+      assert.equal(destroyEvents[0].type, "removeDroppable");
+      assert.equal(destroyEvents[0].droppable, droppable);
+      assert.isFalse(dndContext.droppables.has(droppable.id));
+      dndContext.destroy();
+      element.remove();
+    });
+    it("should handle collide events each cycle with persistedContacts", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const dropElement = createTestElement({
+        left: "60px",
+        top: "0px",
+        width: "50px",
+        height: "50px"
+      });
+      const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([keyboardSensor], {
+        elements: () => [dragElement],
+        group: "test"
+      });
+      const droppable = new Droppable(dropElement, {
+        accept: ["test"]
+      });
+      const dndContext = new DndContext();
+      dndContext.on("enter", () => {
+        events5.push({ type: "enter" });
+      });
+      dndContext.on("collide", (data) => {
+        events5.push({
+          type: "collide",
+          persistedContacts: data.persistedContacts.size
+        });
+      });
+      dndContext.addDraggables([draggable]);
+      dndContext.addDroppables([droppable]);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      await move("Right", 7);
+      await move("Right");
+      await waitNextFrame();
+      assert.isTrue(events5.length >= 2);
+      assert.equal(events5[0].type, "enter");
+      const collideEvents = events5.slice(1).filter((e) => e.type === "collide");
+      assert.isAtLeast(collideEvents.length, 1);
+      assert.isTrue(collideEvents.some((e) => e.persistedContacts >= 1));
+      await endDrag();
+      dndContext.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      keyboardSensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+  });
+}
+
+// tests/src/dnd-context/methods.ts
+function methods5() {
+  describe("public methods", () => {
+    it("on/off should add and remove listeners by id", async () => {
+      const calls = [];
+      const dragElement = createTestElement();
+      const dropElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "40px",
+        height: "40px"
+      });
+      const sensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
+      const draggable = new Draggable([sensor], { elements: () => [dragElement], group: "g" });
+      const droppable = new Droppable(dropElement, { accept: ["g"] });
+      const ctx = new DndContext();
+      ctx.addDraggables([draggable]);
+      ctx.addDroppables([droppable]);
+      const id1 = ctx.on("start", () => calls.push("a"));
+      ctx.on("start", () => calls.push("b"));
+      ctx.off("start", id1);
+      await startDrag(dragElement);
+      assert.deepEqual(calls, ["b"]);
+      ctx.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      sensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("detectCollisions(draggable) should queue collisions for a single drag", async () => {
+      const events5 = [];
+      const dragElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "40px",
+        height: "40px"
+      });
+      const dropElement = createTestElement({
+        left: "0px",
+        top: "0px",
+        width: "40px",
+        height: "40px"
+      });
+      const sensor = new KeyboardSensor(dragElement, { moveDistance: 1 });
+      const draggable = new Draggable([sensor], { elements: () => [dragElement], group: "g" });
+      const droppable = new Droppable(dropElement, { accept: ["g"] });
+      const ctx = new DndContext();
+      ctx.on("collide", () => events5.push("collide"));
+      ctx.addDraggables([draggable]);
+      ctx.addDroppables([droppable]);
+      focusElement(dragElement);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      events5.length = 0;
+      ctx.detectCollisions(draggable);
+      await waitNextFrame();
+      assert.isTrue(events5.includes("collide"));
+      ctx.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      sensor.destroy();
+      dragElement.remove();
+      dropElement.remove();
+    });
+    it("detectCollisions() without args should queue for all active drags", async () => {
+      const events5 = [];
+      const dragEl1 = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+      const dragEl2 = createTestElement({
+        left: "0px",
+        top: "50px",
+        width: "40px",
+        height: "40px"
+      });
+      const dropEl1 = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+      const dropEl2 = createTestElement({
+        left: "0px",
+        top: "50px",
+        width: "40px",
+        height: "40px"
+      });
+      const s1 = new KeyboardSensor(dragEl1, { moveDistance: 1 });
+      const s2 = new KeyboardSensor(dragEl2, { moveDistance: 1 });
+      const dr1 = new Draggable([s1], { elements: () => [dragEl1], group: "g" });
+      const dr2 = new Draggable([s2], { elements: () => [dragEl2], group: "g" });
+      const dp1 = new Droppable(dropEl1, { accept: ["g"] });
+      const dp2 = new Droppable(dropEl2, { accept: ["g"] });
+      const ctx = new DndContext();
+      ctx.on("collide", ({ draggable }) => events5.push({ d: draggable }));
+      ctx.addDraggables([dr1, dr2]);
+      ctx.addDroppables([dp1, dp2]);
+      focusElement(dragEl1);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      focusElement(dragEl2);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      events5.length = 0;
+      ctx.detectCollisions();
+      await waitNextFrame();
+      assert.isAtLeast(events5.length, 1);
+      ctx.destroy();
+      dr1.destroy();
+      dr2.destroy();
+      dp1.destroy();
+      dp2.destroy();
+      s1.destroy();
+      s2.destroy();
+      dragEl1.remove();
+      dragEl2.remove();
+      dropEl1.remove();
+      dropEl2.remove();
+    });
+    it("updateDroppableClientRects should refresh cached rects", async () => {
+      const el = createTestElement({ left: "0px", top: "0px", width: "50px", height: "50px" });
+      const droppable = new Droppable(el, { accept: ["x"] });
+      const ctx = new DndContext();
+      ctx.addDroppables([droppable]);
+      const before = droppable.getClientRect();
+      el.style.left = "100px";
+      el.style.top = "150px";
+      await waitNextFrame();
+      const expected = el.getBoundingClientRect();
+      ctx.updateDroppableClientRects();
+      const after = droppable.getClientRect();
+      assert.equal(after.x, expected.x);
+      assert.equal(after.y, expected.y);
+      assert.equal(after.width, before.width);
+      assert.equal(after.height, before.height);
+      ctx.destroy();
+      droppable.destroy();
+      el.remove();
+    });
+  });
+  describe("protected methods", () => {
+    it("_isMatch should return false when dragged element equals droppable.element", async () => {
+      const el = createTestElement({ left: "0px", top: "0px", width: "40px", height: "40px" });
+      const sensor = new KeyboardSensor(el, { moveDistance: 10 });
+      const draggable = new Draggable([sensor], { elements: () => [el], group: "g" });
+      const droppable = new Droppable(el, { accept: ["g"] });
+      const ctx = new DndContext();
+      focusElement(el);
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      await waitNextFrame();
+      assert.isFalse(ctx["_isMatch"](draggable, droppable));
+      ctx.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      sensor.destroy();
+      el.remove();
+    });
+    it("_isMatch should respect droppable.accept function", async () => {
+      const dragEl = createTestElement();
+      const dropEl = createTestElement();
+      const sensor = new KeyboardSensor(dragEl, { moveDistance: 10 });
+      const draggable = new Draggable([sensor], { elements: () => [dragEl], group: "g" });
+      const droppable = new Droppable(dropEl, { accept: () => false });
+      const ctx = new DndContext();
+      assert.isFalse(ctx["_isMatch"](draggable, droppable));
+      droppable.accept = () => true;
+      assert.isTrue(ctx["_isMatch"](draggable, droppable));
+      ctx.destroy();
+      draggable.destroy();
+      droppable.destroy();
+      sensor.destroy();
+      dragEl.remove();
+      dropEl.remove();
+    });
+  });
+}
+
+// tests/src/dnd-context/index.ts
+describe("DndContext", () => {
+  events4();
+  collisionDetection();
+  advancedCollisionDetection();
+  droppables();
+  methods5();
 });
 /*! Bundled license information:
 

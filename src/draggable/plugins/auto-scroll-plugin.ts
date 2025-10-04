@@ -1,18 +1,21 @@
-import { Draggable, DraggableEventType, DraggablePluginMap } from '../draggable.js';
+import type { Draggable, DraggablePluginMap } from '../draggable.js';
 
-import { Sensor } from '../../sensors/sensor.js';
+import type { Sensor } from '../../sensors/sensor.js';
 
-import {
+import type { Point, Rect, Writeable } from '../../types.js';
+
+import type {
   AutoScrollItem,
   AutoScrollItemSpeedCallback,
   AutoScrollItemEventCallback,
   AutoScrollItemTarget,
-  autoScrollSmoothSpeed,
 } from '../../auto-scroll/auto-scroll.js';
 
-import { autoScroll } from '../../singletons/auto-scroll.js';
+import { DraggableEventType } from '../draggable.js';
 
-import { Point, Rect, Writeable } from '../../types.js';
+import { autoScrollSmoothSpeed } from '../../auto-scroll/auto-scroll.js';
+
+import { autoScroll } from '../../singletons/auto-scroll.js';
 
 const AUTOSCROLL_POSITION: Point = { x: 0, y: 0 };
 
@@ -46,12 +49,10 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['_events_typ
     },
     getClientRect: (draggable: Draggable<S, E>) => {
       const { drag } = draggable;
-      const primaryItem = drag?.items[0];
 
-      // Try to use the first item for the autoscroll data.
-      if (primaryItem && primaryItem.element) {
-        return primaryItem.clientRect;
-      }
+      // Try to use the default draggable client rect.
+      const clientRect = draggable.getClientRect();
+      if (clientRect) return clientRect;
 
       // Fallback to the sensor's clientX/clientY values and a static size of
       // 50x50px.
@@ -82,7 +83,7 @@ class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['_events_
     this._clientRect = { width: 0, height: 0, x: 0, y: 0 };
   }
 
-  private _getSettings() {
+  protected _getSettings() {
     return this._draggableAutoScroll.settings;
   }
 
