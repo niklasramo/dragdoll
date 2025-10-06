@@ -1,0 +1,15 @@
+body {
+  flex-flow: wrap;
+  place-content: safe center;
+  align-items: safe center;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.card.draggable {
+  flex-grow: 0;
+  flex-shrink: 0;
+  position: relative;
+}
