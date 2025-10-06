@@ -4842,16 +4842,15 @@ $dbc52347541b57ca$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb738
     const transformMatrix = new DOMMatrix().setMatrixValue(draggableElement.style.transform);
     if (!transformMatrix.isIdentity) {
         draggableElement.classList.add('animate');
-        (0, $e434efa1a293c3f2$export$e94d57566be028aa).once((0, $e434efa1a293c3f2$export$ef9171fc2626).write, ()=>{
-            draggableElement.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
-            const onTransitionEnd = (e)=>{
-                if (e.target === draggableElement) {
-                    draggableElement.classList.remove('animate');
-                    draggableElement.removeEventListener('transitionend', onTransitionEnd);
-                }
-            };
-            draggableElement.addEventListener('transitionend', onTransitionEnd);
-        });
+        const onTransitionEnd = (e)=>{
+            if (e.target === draggableElement && e.propertyName === 'transform') {
+                draggableElement.classList.remove('animate');
+                document.body.removeEventListener('transitionend', onTransitionEnd);
+            }
+        };
+        document.body.addEventListener('transitionend', onTransitionEnd);
+        draggableElement.clientHeight; // Force a reflow.
+        draggableElement.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
     }
     // Reset the best match droppable.
     bestMatch?.element.removeAttribute('data-draggable-over');

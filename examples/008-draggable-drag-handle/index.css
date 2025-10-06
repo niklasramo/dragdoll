@@ -3,9 +3,9 @@ body {
   height: 100%;
   display: flex;
   flex-flow: row wrap;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
+  justify-content: safe center;
+  align-items: safe center;
+  align-content: safe center;
   gap: 10px 10px;
 }
 
@@ -19,8 +19,8 @@ body {
   & .handle {
     touch-action: none;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: safe center;
+    align-items: safe center;
     cursor: grab;
     border-radius: 4px;
     background-color: rgba(0, 0, 0, 0.2);

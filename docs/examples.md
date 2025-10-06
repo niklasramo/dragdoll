@@ -90,11 +90,12 @@ draggableElements.forEach((element) => {
 body {
   width: 100%;
   height: 100%;
+  padding: 10px;
   display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
+  flex-flow: row nowrap;
+  justify-content: safe center;
+  align-items: safe center;
+  align-content: safe center;
   gap: 10px 10px;
 }
 
@@ -102,6 +103,14 @@ body {
   position: relative;
   flex-grow: 0;
   flex-shrink: 0;
+}
+
+@media (width < 430px) {
+  .card.draggable {
+    width: calc((100% - 50px) / 4);
+    aspect-ratio: 1 / 1;
+    height: auto;
+  }
 }
 ```
 
@@ -139,8 +148,8 @@ body {
 
 .card {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: safe center;
+  align-items: safe center;
   width: 100px;
   height: 100px;
   background-color: var(--card-bgColor);
@@ -332,8 +341,8 @@ body {
 
 .card {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: safe center;
+  align-items: safe center;
   width: 100px;
   height: 100px;
   background-color: var(--card-bgColor);
@@ -549,8 +558,8 @@ body {
 
 .card {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: safe center;
+  align-items: safe center;
   width: 100px;
   height: 100px;
   background-color: var(--card-bgColor);
@@ -696,9 +705,9 @@ body {
   height: 100%;
   display: flex;
   flex-flow: row wrap;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
+  justify-content: safe center;
+  align-items: safe center;
+  align-content: safe center;
   gap: 10px 10px;
 }
 
@@ -751,8 +760,8 @@ body {
 
 .card {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: safe center;
+  align-items: safe center;
   width: 100px;
   height: 100px;
   background-color: var(--card-bgColor);
@@ -913,8 +922,8 @@ body {
 
 .card {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: safe center;
+  align-items: safe center;
   width: 100px;
   height: 100px;
   background-color: var(--card-bgColor);
@@ -1048,9 +1057,9 @@ body {
   height: 100%;
   display: flex;
   flex-flow: row wrap;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
+  justify-content: safe center;
+  align-items: safe center;
+  align-content: safe center;
   gap: 10px 10px;
 }
 
@@ -1095,8 +1104,8 @@ body {
 
 .card {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: safe center;
+  align-items: safe center;
   width: 100px;
   height: 100px;
   background-color: var(--card-bgColor);
@@ -1237,9 +1246,9 @@ body {
   height: 100%;
   display: flex;
   flex-flow: row wrap;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
+  justify-content: safe center;
+  align-items: safe center;
+  align-content: safe center;
   gap: 10px 10px;
 }
 
@@ -1284,8 +1293,8 @@ body {
 
 .card {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: safe center;
+  align-items: safe center;
   width: 100px;
   height: 100px;
   background-color: var(--card-bgColor);
@@ -1412,9 +1421,9 @@ body {
   height: 100%;
   display: flex;
   flex-flow: row wrap;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
+  justify-content: safe center;
+  align-items: safe center;
+  align-content: safe center;
   gap: 10px 10px;
 }
 
@@ -1428,8 +1437,8 @@ body {
   & .handle {
     touch-action: none;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: safe center;
+    align-items: safe center;
     cursor: grab;
     border-radius: 4px;
     background-color: rgba(0, 0, 0, 0.2);
@@ -1496,8 +1505,8 @@ body {
 
 .card {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: safe center;
+  align-items: safe center;
   width: 100px;
   height: 100px;
   background-color: var(--card-bgColor);
@@ -1652,9 +1661,9 @@ body {
   height: 100%;
   display: flex;
   flex-flow: row wrap;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
+  justify-content: safe center;
+  align-items: safe center;
+  align-content: safe center;
   gap: 10px 10px;
 }
 
@@ -1703,8 +1712,8 @@ body {
 
 .card {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: safe center;
+  align-items: safe center;
   width: 100px;
   height: 100px;
   background-color: var(--card-bgColor);
@@ -1859,17 +1868,26 @@ body {
   width: 100%;
   height: 100%;
   display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
+  flex-flow: row nowrap;
+  justify-content: safe center;
+  align-items: safe center;
+  align-content: safe center;
   gap: 10px 10px;
+  padding: 10px;
 }
 
 .card.draggable {
   position: relative;
   flex-grow: 0;
   flex-shrink: 0;
+}
+
+@media (width < 430px) {
+  .card.draggable {
+    width: calc((100% - 50px) / 4);
+    aspect-ratio: 1 / 1;
+    height: auto;
+  }
 }
 ```
 
@@ -1907,8 +1925,8 @@ body {
 
 .card {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: safe center;
+  align-items: safe center;
   width: 100px;
   height: 100px;
   background-color: var(--card-bgColor);
@@ -2148,10 +2166,11 @@ dndContext.on(DndContextEventType.End, (data) => {
 body {
   flex-flow: column nowrap;
   align-items: normal;
-  justify-content: center;
+  justify-content: safe center;
   gap: 10px;
   width: 100%;
   height: 100%;
+  padding: 10px;
   display: flex;
 }
 
@@ -2159,10 +2178,10 @@ body {
 .droppables {
   width: 100%;
   display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
+  flex-flow: row nowrap;
+  justify-content: safe center;
+  align-items: safe center;
+  align-content: safe center;
   gap: 10px;
 }
 
@@ -2197,6 +2216,15 @@ body {
     box-shadow:
       0 0 0 2px var(--bg-color),
       0 0 0 3.5px var(--card-bgColor--focus);
+  }
+}
+
+@media (width < 430px) {
+  .card.draggable,
+  .droppable {
+    width: calc((100% - 50px) / 4);
+    aspect-ratio: 1 / 1;
+    height: auto;
   }
 }
 ```
@@ -2235,8 +2263,8 @@ body {
 
 .card {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: safe center;
+  align-items: safe center;
   width: 100px;
   height: 100px;
   background-color: var(--card-bgColor);
@@ -2313,8 +2341,6 @@ import {
   AdvancedCollisionDetector,
   AdvancedCollisionData,
   autoScrollPlugin,
-  ticker,
-  tickerPhases,
 } from 'dragdoll';
 
 // Keep track of the best match droppable.
@@ -2453,16 +2479,15 @@ dndContext.on(DndContextEventType.End, ({ draggable, canceled }) => {
   const transformMatrix = new DOMMatrix().setMatrixValue(draggableElement.style.transform);
   if (!transformMatrix.isIdentity) {
     draggableElement.classList.add('animate');
-    ticker.once(tickerPhases.write, () => {
-      draggableElement.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
-      const onTransitionEnd = (e: TransitionEvent) => {
-        if (e.target === draggableElement) {
-          draggableElement.classList.remove('animate');
-          draggableElement.removeEventListener('transitionend', onTransitionEnd);
-        }
-      };
-      draggableElement.addEventListener('transitionend', onTransitionEnd);
-    });
+    const onTransitionEnd = (e: TransitionEvent) => {
+      if (e.target === draggableElement && e.propertyName === 'transform') {
+        draggableElement.classList.remove('animate');
+        document.body.removeEventListener('transitionend', onTransitionEnd);
+      }
+    };
+    document.body.addEventListener('transitionend', onTransitionEnd);
+    draggableElement.clientHeight; // Force a reflow.
+    draggableElement.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
   }
 
   // Reset the best match droppable.
@@ -2500,15 +2525,7 @@ dndContext.on(DndContextEventType.End, ({ draggable, canceled }) => {
             </svg>
           </div>
         </div>
-        <div class="droppable" data-draggable-contained="2">
-          <div class="card draggable" tabindex="0" data-id="2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-              <path
-                d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"
-              />
-            </svg>
-          </div>
-        </div>
+        <div class="droppable"></div>
         <div class="droppable"></div>
         <div class="droppable"></div>
         <div class="droppable"></div>
@@ -2525,8 +2542,8 @@ dndContext.on(DndContextEventType.End, ({ draggable, canceled }) => {
         <div class="droppable"></div>
       </div>
       <div class="scroll-list">
-        <div class="droppable" data-draggable-contained="3">
-          <div class="card draggable" tabindex="0" data-id="3">
+        <div class="droppable" data-draggable-contained="2">
+          <div class="card draggable" tabindex="0" data-id="2">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
               <path
                 d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"
@@ -2534,15 +2551,7 @@ dndContext.on(DndContextEventType.End, ({ draggable, canceled }) => {
             </svg>
           </div>
         </div>
-        <div class="droppable" data-draggable-contained="4">
-          <div class="card draggable" tabindex="0" data-id="4">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-              <path
-                d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z"
-              />
-            </svg>
-          </div>
-        </div>
+        <div class="droppable"></div>
         <div class="droppable"></div>
         <div class="droppable"></div>
         <div class="droppable"></div>
@@ -2568,8 +2577,8 @@ dndContext.on(DndContextEventType.End, ({ draggable, canceled }) => {
 ```css [index.css]
 body {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: safe center;
+  justify-content: safe center;
   width: 100%;
   height: 100%;
 }
@@ -2579,8 +2588,8 @@ body {
   width: 100%;
   height: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: safe center;
+  justify-content: safe center;
   flex-direction: row;
   gap: 20px;
   padding: 20px;
@@ -2588,7 +2597,7 @@ body {
 
 .scroll-list {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  justify-content: center;
+  justify-content: safe center;
   gap: 20px;
   padding: 20px;
   display: grid;
@@ -2635,6 +2644,13 @@ body {
     transition: transform 0.3s cubic-bezier(0.33, 0.975, 0, 1.65);
   }
 }
+
+@media (width < 600px) {
+  .scroll-list {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    justify-content: safe center;
+  }
+}
 ```
 
 ```css [base.css]
@@ -2671,8 +2687,8 @@ body {
 
 .card {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: safe center;
+  align-items: safe center;
   width: 100px;
   height: 100px;
   background-color: var(--card-bgColor);

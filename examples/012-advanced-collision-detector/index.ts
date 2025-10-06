@@ -9,8 +9,6 @@ import {
   AdvancedCollisionDetector,
   AdvancedCollisionData,
   autoScrollPlugin,
-  ticker,
-  tickerPhases,
 } from '../../src';
 
 // Keep track of the best match droppable.
@@ -149,16 +147,15 @@ dndContext.on(DndContextEventType.End, ({ draggable, canceled }) => {
   const transformMatrix = new DOMMatrix().setMatrixValue(draggableElement.style.transform);
   if (!transformMatrix.isIdentity) {
     draggableElement.classList.add('animate');
-    ticker.once(tickerPhases.write, () => {
-      draggableElement.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
-      const onTransitionEnd = (e: TransitionEvent) => {
-        if (e.target === draggableElement) {
-          draggableElement.classList.remove('animate');
-          draggableElement.removeEventListener('transitionend', onTransitionEnd);
-        }
-      };
-      draggableElement.addEventListener('transitionend', onTransitionEnd);
-    });
+    const onTransitionEnd = (e: TransitionEvent) => {
+      if (e.target === draggableElement && e.propertyName === 'transform') {
+        draggableElement.classList.remove('animate');
+        document.body.removeEventListener('transitionend', onTransitionEnd);
+      }
+    };
+    document.body.addEventListener('transitionend', onTransitionEnd);
+    draggableElement.clientHeight; // Force a reflow.
+    draggableElement.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
   }
 
   // Reset the best match droppable.

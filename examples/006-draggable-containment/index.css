@@ -3,9 +3,9 @@ body {
   height: 100%;
   display: flex;
   flex-flow: row wrap;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
+  justify-content: safe center;
+  align-items: safe center;
+  align-content: safe center;
   gap: 10px 10px;
 }
 

@@ -34,8 +34,8 @@ body {
   color: var(--card-color);
   border: 1.5px solid var(--bg-color);
   border-radius: 7px;
-  justify-content: center;
-  align-items: center;
+  justify-content: safe center;
+  align-items: safe center;
   font-size: 30px;
   display: flex;
 
