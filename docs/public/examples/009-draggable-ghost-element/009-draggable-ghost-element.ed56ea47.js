@@ -1,376 +1,3 @@
-const $65ad764949353701$var$STYLE_DECLARATION_CACHE = new WeakMap;
-function $65ad764949353701$export$3d2f074408bd1b82(e, t) {
-    if (t) return window.getComputedStyle(e, t);
-    let C = $65ad764949353701$var$STYLE_DECLARATION_CACHE.get(e)?.deref();
-    return C || (C = window.getComputedStyle(e, null), $65ad764949353701$var$STYLE_DECLARATION_CACHE.set(e, new WeakRef(C))), C;
-}
-
-
-const $8cef340d01b5ba40$export$e44ffb50cc242ec5 = "undefined" != typeof window && void 0 !== window.document;
-const $8cef340d01b5ba40$export$af54264dae9065e6 = !!($8cef340d01b5ba40$export$e44ffb50cc242ec5 && navigator.vendor && navigator.vendor.indexOf("Apple") > -1 && navigator.userAgent && -1 == navigator.userAgent.indexOf("CriOS") && -1 == navigator.userAgent.indexOf("FxiOS"));
-const $8cef340d01b5ba40$export$11fd24d838ebde87 = {
-    content: "content",
-    padding: "padding",
-    scrollbar: "scrollbar",
-    border: "border",
-    margin: "margin"
-};
-const $8cef340d01b5ba40$export$76e909bcfd8ba196 = {
-    [$8cef340d01b5ba40$export$11fd24d838ebde87.content]: !1,
-    [$8cef340d01b5ba40$export$11fd24d838ebde87.padding]: !1,
-    [$8cef340d01b5ba40$export$11fd24d838ebde87.scrollbar]: !0,
-    [$8cef340d01b5ba40$export$11fd24d838ebde87.border]: !0,
-    [$8cef340d01b5ba40$export$11fd24d838ebde87.margin]: !0
-};
-const $8cef340d01b5ba40$export$d2ad2856e215d28e = new Set([
-    "auto",
-    "scroll"
-]);
-const $8cef340d01b5ba40$export$cd414719242f618c = (()=>{
-    try {
-        return window.navigator.userAgentData.brands.some(({ brand: n })=>"Chromium" === n);
-    } catch (n) {
-        return !1;
-    }
-})();
-
-
-
-
-function $5db358c21c70b735$export$fab73c3646bf1f5e(e) {
-    switch((0, $65ad764949353701$export$3d2f074408bd1b82)(e).display){
-        case "none":
-            return null;
-        case "inline":
-        case "contents":
-            return !1;
-        default:
-            return !0;
-    }
-}
-
-
-function $272acad5c935d918$export$e5ce114ae0e5f4e8(n) {
-    const t = (0, $65ad764949353701$export$3d2f074408bd1b82)(n);
-    if (!(0, $8cef340d01b5ba40$export$af54264dae9065e6)) {
-        const { filter: n } = t;
-        if (n && "none" !== n) return !0;
-        const { backdropFilter: e } = t;
-        if (e && "none" !== e) return !0;
-        const { willChange: i } = t;
-        if (i && (i.indexOf("filter") > -1 || i.indexOf("backdrop-filter") > -1)) return !0;
-    }
-    const e = (0, $5db358c21c70b735$export$fab73c3646bf1f5e)(n);
-    if (!e) return e;
-    const { transform: i } = t;
-    if (i && "none" !== i) return !0;
-    const { perspective: r } = t;
-    if (r && "none" !== r) return !0;
-    const { contentVisibility: o } = t;
-    if (o && "auto" === o) return !0;
-    const { contain: f } = t;
-    if (f && ("strict" === f || "content" === f || f.indexOf("paint") > -1 || f.indexOf("layout") > -1)) return !0;
-    const { willChange: c } = t;
-    return !(!c || !(c.indexOf("transform") > -1 || c.indexOf("perspective") > -1 || c.indexOf("contain") > -1)) || !!((0, $8cef340d01b5ba40$export$af54264dae9065e6) && c && c.indexOf("filter") > -1);
-}
-
-
-
-
-function $a923102b6825af41$export$996cb64f2dabb66f(t) {
-    return "static" !== (0, $65ad764949353701$export$3d2f074408bd1b82)(t).position || (0, $272acad5c935d918$export$e5ce114ae0e5f4e8)(t);
-}
-
-
-
-function $7f91b5daceb63fab$export$d8a62a489b442872(e) {
-    return e instanceof HTMLHtmlElement;
-}
-
-
-function $ab425563b6685912$export$940d8225183e1404(e, t = {}) {
-    if ((0, $7f91b5daceb63fab$export$d8a62a489b442872)(e)) return e.ownerDocument.defaultView;
-    const n = t.position || (0, $65ad764949353701$export$3d2f074408bd1b82)(e).position, { skipDisplayNone: i, container: o } = t;
-    switch(n){
-        case "static":
-        case "relative":
-        case "sticky":
-        case "-webkit-sticky":
-            {
-                let t = o || e.parentElement;
-                for(; t;){
-                    const e = (0, $5db358c21c70b735$export$fab73c3646bf1f5e)(t);
-                    if (e) return t;
-                    if (null === e && !i) return null;
-                    t = t.parentElement;
-                }
-                return e.ownerDocument.documentElement;
-            }
-        case "absolute":
-        case "fixed":
-            {
-                const t = "fixed" === n;
-                let l = o || e.parentElement;
-                for(; l;){
-                    const e = t ? (0, $272acad5c935d918$export$e5ce114ae0e5f4e8)(l) : (0, $a923102b6825af41$export$996cb64f2dabb66f)(l);
-                    if (!0 === e) return l;
-                    if (null === e && !i) return null;
-                    l = l.parentElement;
-                }
-                return e.ownerDocument.defaultView;
-            }
-        default:
-            return null;
-    }
-}
-
-
-function $c9c2988a494de166$export$8d3dd0be5eb9f11f(t, e) {
-    return !(t.left + t.width <= e.left || e.left + e.width <= t.left || t.top + t.height <= e.top || e.top + e.height <= t.top);
-}
-
-
-function $e47a48fe2e681492$export$53137579a3174918(t, e, n, o) {
-    return Math.sqrt(Math.pow(n - t, 2) + Math.pow(o - e, 2));
-}
-
-
-function $cbc3988fecfe8835$export$2d670be792dba464(t, e) {
-    if ((0, $c9c2988a494de166$export$8d3dd0be5eb9f11f)(t, e)) return null;
-    const n = t.left + t.width, i = t.top + t.height, o = e.left + e.width, s = e.top + e.height;
-    return n <= e.left ? i <= e.top ? (0, $e47a48fe2e681492$export$53137579a3174918)(n, i, e.left, e.top) : t.top >= s ? (0, $e47a48fe2e681492$export$53137579a3174918)(n, t.top, e.left, s) : e.left - n : t.left >= o ? i <= e.top ? (0, $e47a48fe2e681492$export$53137579a3174918)(t.left, i, o, e.top) : t.top >= s ? (0, $e47a48fe2e681492$export$53137579a3174918)(t.left, t.top, o, s) : t.left - o : i <= e.top ? e.top - i : t.top - s;
-}
-
-
-
-function $4e6b83ae058ab888$export$5a096129d439f843(n) {
-    return n instanceof Window;
-}
-
-
-function $0a0e00e544acad6d$export$62858bae88b53fd0(n) {
-    return n instanceof Document;
-}
-
-
-
-
-const $68c58e6b2159256a$var$SUBPIXEL_OFFSET = new Map;
-let $68c58e6b2159256a$var$testStyleElement = null, $68c58e6b2159256a$var$testParentElement = null, $68c58e6b2159256a$var$testChildElement = null;
-function $68c58e6b2159256a$var$getSubpixelScrollbarSize(t, e) {
-    const n = t.split(".");
-    let l = $68c58e6b2159256a$var$SUBPIXEL_OFFSET.get(n[1]);
-    if (void 0 === l) {
-        $68c58e6b2159256a$var$testStyleElement || ($68c58e6b2159256a$var$testStyleElement = document.createElement("style")), $68c58e6b2159256a$var$testStyleElement.innerHTML = `\n      #mezr-scrollbar-test::-webkit-scrollbar {\n        width: ${t} !important;\n      }\n    `, $68c58e6b2159256a$var$testParentElement && $68c58e6b2159256a$var$testChildElement || ($68c58e6b2159256a$var$testParentElement = document.createElement("div"), $68c58e6b2159256a$var$testChildElement = document.createElement("div"), $68c58e6b2159256a$var$testParentElement.appendChild($68c58e6b2159256a$var$testChildElement), $68c58e6b2159256a$var$testParentElement.id = "mezr-scrollbar-test", $68c58e6b2159256a$var$testParentElement.style.cssText = "\n        all: unset !important;\n        position: fixed !important;\n        top: -200px !important;\n        left: 0px !important;\n        width: 100px !important;\n        height: 100px !important;\n        overflow: scroll !important;\n        pointer-events: none !important;\n        visibility: hidden !important;\n      ", $68c58e6b2159256a$var$testChildElement.style.cssText = "\n        all: unset !important;\n        position: absolute !important;\n        inset: 0 !important;\n      "), document.body.appendChild($68c58e6b2159256a$var$testStyleElement), document.body.appendChild($68c58e6b2159256a$var$testParentElement);
-        l = $68c58e6b2159256a$var$testParentElement.getBoundingClientRect().width - $68c58e6b2159256a$var$testChildElement.getBoundingClientRect().width - e, $68c58e6b2159256a$var$SUBPIXEL_OFFSET.set(n[1], l), document.body.removeChild($68c58e6b2159256a$var$testParentElement), document.body.removeChild($68c58e6b2159256a$var$testStyleElement);
-    }
-    return e + l;
-}
-function $68c58e6b2159256a$export$5ad86f4734d24a64(t, e, n) {
-    if (n <= 0) return 0;
-    if (0, $8cef340d01b5ba40$export$cd414719242f618c) {
-        const n = (0, $65ad764949353701$export$3d2f074408bd1b82)(t, "::-webkit-scrollbar"), l = "x" === e ? n.height : n.width, i = parseFloat(l);
-        if (!Number.isNaN(i) && !Number.isInteger(i)) return $68c58e6b2159256a$var$getSubpixelScrollbarSize(l, i);
-    }
-    return n;
-}
-
-
-function $a606f886c8a27d9b$export$91cf85d6c980faa0(e, r = !1) {
-    if (r) return e.innerWidth;
-    const { innerWidth: t, document: i } = e, { documentElement: n } = i, { clientWidth: c } = n;
-    return t - (0, $68c58e6b2159256a$export$5ad86f4734d24a64)(n, "y", t - c);
-}
-
-
-function $0ebef02992ef8024$export$a76b7f4aaec6cdf4({ documentElement: t }) {
-    return Math.max(t.scrollWidth, t.clientWidth, t.getBoundingClientRect().width);
-}
-
-
-
-
-
-
-function $50398bdba06c604f$export$742d7f6cc44470f1(t, e = (0, $8cef340d01b5ba40$export$11fd24d838ebde87).border) {
-    let { width: r } = t.getBoundingClientRect();
-    if (e === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).border) return r;
-    const o = (0, $65ad764949353701$export$3d2f074408bd1b82)(t);
-    return e === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).margin ? (r += Math.max(0, parseFloat(o.marginLeft) || 0), r += Math.max(0, parseFloat(o.marginRight) || 0), r) : (r -= parseFloat(o.borderLeftWidth) || 0, r -= parseFloat(o.borderRightWidth) || 0, e === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).scrollbar ? r : (!(0, $7f91b5daceb63fab$export$d8a62a489b442872)(t) && (0, $8cef340d01b5ba40$export$d2ad2856e215d28e).has(o.overflowY) && (r -= (0, $68c58e6b2159256a$export$5ad86f4734d24a64)(t, "y", Math.round(r) - t.clientWidth)), e === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).padding || (r -= parseFloat(o.paddingLeft) || 0, r -= parseFloat(o.paddingRight) || 0), r));
-}
-
-
-function $667c2544c0b9eb76$export$3c49c185de0c2bfc(t, i = (0, $8cef340d01b5ba40$export$11fd24d838ebde87).border) {
-    return (0, $4e6b83ae058ab888$export$5a096129d439f843)(t) ? (0, $a606f886c8a27d9b$export$91cf85d6c980faa0)(t, (0, $8cef340d01b5ba40$export$76e909bcfd8ba196)[i]) : (0, $0a0e00e544acad6d$export$62858bae88b53fd0)(t) ? (0, $0ebef02992ef8024$export$a76b7f4aaec6cdf4)(t) : (0, $50398bdba06c604f$export$742d7f6cc44470f1)(t, i);
-}
-
-
-
-
-
-
-function $b367ae5c21f58ee3$export$a3648dbc3769cbf4(e, r = !1) {
-    if (r) return e.innerHeight;
-    const { innerHeight: t, document: i } = e, { documentElement: n } = i, { clientHeight: c } = n;
-    return t - (0, $68c58e6b2159256a$export$5ad86f4734d24a64)(n, "x", t - c);
-}
-
-
-function $4bf1cf7803616187$export$5806f5d4b3eb6a6a({ documentElement: t }) {
-    return Math.max(t.scrollHeight, t.clientHeight, t.getBoundingClientRect().height);
-}
-
-
-
-
-
-
-function $44627bae74961b62$export$8e0f1520ce23a388(t, e = (0, $8cef340d01b5ba40$export$11fd24d838ebde87).border) {
-    let { height: r } = t.getBoundingClientRect();
-    if (e === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).border) return r;
-    const o = (0, $65ad764949353701$export$3d2f074408bd1b82)(t);
-    return e === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).margin ? (r += Math.max(0, parseFloat(o.marginTop) || 0), r += Math.max(0, parseFloat(o.marginBottom) || 0), r) : (r -= parseFloat(o.borderTopWidth) || 0, r -= parseFloat(o.borderBottomWidth) || 0, e === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).scrollbar ? r : (!(0, $7f91b5daceb63fab$export$d8a62a489b442872)(t) && (0, $8cef340d01b5ba40$export$d2ad2856e215d28e).has(o.overflowX) && (r -= (0, $68c58e6b2159256a$export$5ad86f4734d24a64)(t, "x", Math.round(r) - t.clientHeight)), e === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).padding || (r -= parseFloat(o.paddingTop) || 0, r -= parseFloat(o.paddingBottom) || 0), r));
-}
-
-
-function $eb568002b951ac5b$export$c08559766941f856(t, e = (0, $8cef340d01b5ba40$export$11fd24d838ebde87).border) {
-    return (0, $4e6b83ae058ab888$export$5a096129d439f843)(t) ? (0, $b367ae5c21f58ee3$export$a3648dbc3769cbf4)(t, (0, $8cef340d01b5ba40$export$76e909bcfd8ba196)[e]) : (0, $0a0e00e544acad6d$export$62858bae88b53fd0)(t) ? (0, $4bf1cf7803616187$export$5806f5d4b3eb6a6a)(t) : (0, $44627bae74961b62$export$8e0f1520ce23a388)(t, e);
-}
-
-
-function $97bb8ef5a3ed1ced$export$ff047630cae37d8e(t) {
-    return t?.constructor === Object;
-}
-
-
-
-
-
-
-
-function $1ddfc565f5f24ff9$export$9f1480883798e819(t, o = (0, $8cef340d01b5ba40$export$11fd24d838ebde87).border) {
-    const e = {
-        left: 0,
-        top: 0
-    };
-    if ((0, $0a0e00e544acad6d$export$62858bae88b53fd0)(t)) return e;
-    if ((0, $4e6b83ae058ab888$export$5a096129d439f843)(t)) return e.left += t.scrollX || 0, e.top += t.scrollY || 0, e;
-    const r = t.ownerDocument.defaultView;
-    r && (e.left += r.scrollX || 0, e.top += r.scrollY || 0);
-    const n = t.getBoundingClientRect();
-    if (e.left += n.left, e.top += n.top, o === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).border) return e;
-    const l = (0, $65ad764949353701$export$3d2f074408bd1b82)(t);
-    return o === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).margin ? (e.left -= Math.max(0, parseFloat(l.marginLeft) || 0), e.top -= Math.max(0, parseFloat(l.marginTop) || 0), e) : (e.left += parseFloat(l.borderLeftWidth) || 0, e.top += parseFloat(l.borderTopWidth) || 0, o === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).scrollbar || o === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).padding || (e.left += parseFloat(l.paddingLeft) || 0, e.top += parseFloat(l.paddingTop) || 0), e);
-}
-
-
-function $099080697fe67d0e$export$622cea445a1c5b7d(t, e) {
-    const o = (0, $97bb8ef5a3ed1ced$export$ff047630cae37d8e)(t) ? {
-        left: t.left,
-        top: t.top
-    } : Array.isArray(t) ? (0, $1ddfc565f5f24ff9$export$9f1480883798e819)(...t) : (0, $1ddfc565f5f24ff9$export$9f1480883798e819)(t);
-    if (e && !(0, $0a0e00e544acad6d$export$62858bae88b53fd0)(e)) {
-        const t = (0, $97bb8ef5a3ed1ced$export$ff047630cae37d8e)(e) ? e : Array.isArray(e) ? (0, $1ddfc565f5f24ff9$export$9f1480883798e819)(e[0], e[1]) : (0, $1ddfc565f5f24ff9$export$9f1480883798e819)(e);
-        o.left -= t.left, o.top -= t.top;
-    }
-    return o;
-}
-
-
-
-function $51639583c18ebb93$export$4b834cebd9e5cebe(t, e) {
-    let i = 0, g = 0;
-    (0, $97bb8ef5a3ed1ced$export$ff047630cae37d8e)(t) ? (i = t.width, g = t.height) : Array.isArray(t) ? (i = (0, $667c2544c0b9eb76$export$3c49c185de0c2bfc)(...t), g = (0, $eb568002b951ac5b$export$c08559766941f856)(...t)) : (i = (0, $667c2544c0b9eb76$export$3c49c185de0c2bfc)(t), g = (0, $eb568002b951ac5b$export$c08559766941f856)(t));
-    const r = (0, $099080697fe67d0e$export$622cea445a1c5b7d)(t, e);
-    return {
-        width: i,
-        height: g,
-        ...r,
-        right: r.left + i,
-        bottom: r.top + g
-    };
-}
-
-
-
-function $24eeb73ae6f9dcc4$export$e4e616e82e79ab9d(t) {
-    return (0, $97bb8ef5a3ed1ced$export$ff047630cae37d8e)(t) ? t : (0, $51639583c18ebb93$export$4b834cebd9e5cebe)(t);
-}
-
-
-function $126ac7744288dbf9$export$79376507b09a66f(e, t) {
-    const c = (0, $24eeb73ae6f9dcc4$export$e4e616e82e79ab9d)(e), i = (0, $24eeb73ae6f9dcc4$export$e4e616e82e79ab9d)(t);
-    return (0, $cbc3988fecfe8835$export$2d670be792dba464)(c, i);
-}
-
-
-
-
-function $8a9f7f9457831eaa$export$72209efa88586d42(t, ...e) {
-    const o = {
-        ...(0, $24eeb73ae6f9dcc4$export$e4e616e82e79ab9d)(t),
-        right: 0,
-        bottom: 0
-    };
-    for (const t of e){
-        const e = (0, $24eeb73ae6f9dcc4$export$e4e616e82e79ab9d)(t), i = Math.max(o.left, e.left), h = Math.min(o.left + o.width, e.left + e.width);
-        if (h <= i) return null;
-        const r = Math.max(o.top, e.top), l = Math.min(o.top + o.height, e.height + e.top);
-        if (l <= r) return null;
-        o.left = i, o.top = r, o.width = h - i, o.height = l - r;
-    }
-    return o.right = o.left + o.width, o.bottom = o.top + o.height, o;
-}
-
-
-
-
-
-
-function $b2d9660139a5b6b9$export$243d7fadef466e38(n, t = {}) {
-    const i = (0, $65ad764949353701$export$3d2f074408bd1b82)(n), { display: o } = i;
-    if ("none" === o || "contents" === o) return null;
-    const e = t.position || (0, $65ad764949353701$export$3d2f074408bd1b82)(n).position, { skipDisplayNone: s, container: r } = t;
-    switch(e){
-        case "relative":
-            return n;
-        case "fixed":
-            return (0, $ab425563b6685912$export$940d8225183e1404)(n, {
-                container: r,
-                position: e,
-                skipDisplayNone: s
-            });
-        case "absolute":
-            {
-                const t = (0, $ab425563b6685912$export$940d8225183e1404)(n, {
-                    container: r,
-                    position: e,
-                    skipDisplayNone: s
-                });
-                return (0, $4e6b83ae058ab888$export$5a096129d439f843)(t) ? n.ownerDocument : t;
-            }
-        default:
-            return null;
-    }
-}
-
-
-
-function $7b360c672c5d4730$export$f63a1e5ecde5e3c4(t, e) {
-    const o = (0, $24eeb73ae6f9dcc4$export$e4e616e82e79ab9d)(t), i = (0, $24eeb73ae6f9dcc4$export$e4e616e82e79ab9d)(e);
-    return {
-        left: i.left - o.left,
-        right: o.left + o.width - (i.left + i.width),
-        top: i.top - o.top,
-        bottom: o.top + o.height - (i.top + i.height)
-    };
-}
-
-
-
-
-
-
 const $b7f29e04c7dc9749$export$61fde4a8bbe7f5d5 = {
     Start: 'start',
     Move: 'move',
@@ -1511,6 +1138,378 @@ class $ce7a95b3ae8104e2$export$12e4b40eac1bcb71 {
 }
 
 
+const $65ad764949353701$var$STYLE_DECLARATION_CACHE = new WeakMap;
+function $65ad764949353701$export$3d2f074408bd1b82(e, t) {
+    if (t) return window.getComputedStyle(e, t);
+    let C = $65ad764949353701$var$STYLE_DECLARATION_CACHE.get(e)?.deref();
+    return C || (C = window.getComputedStyle(e, null), $65ad764949353701$var$STYLE_DECLARATION_CACHE.set(e, new WeakRef(C))), C;
+}
+
+
+const $8cef340d01b5ba40$export$e44ffb50cc242ec5 = "undefined" != typeof window && void 0 !== window.document;
+const $8cef340d01b5ba40$export$af54264dae9065e6 = !!($8cef340d01b5ba40$export$e44ffb50cc242ec5 && navigator.vendor && navigator.vendor.indexOf("Apple") > -1 && navigator.userAgent && -1 == navigator.userAgent.indexOf("CriOS") && -1 == navigator.userAgent.indexOf("FxiOS"));
+const $8cef340d01b5ba40$export$11fd24d838ebde87 = {
+    content: "content",
+    padding: "padding",
+    scrollbar: "scrollbar",
+    border: "border",
+    margin: "margin"
+};
+const $8cef340d01b5ba40$export$76e909bcfd8ba196 = {
+    [$8cef340d01b5ba40$export$11fd24d838ebde87.content]: !1,
+    [$8cef340d01b5ba40$export$11fd24d838ebde87.padding]: !1,
+    [$8cef340d01b5ba40$export$11fd24d838ebde87.scrollbar]: !0,
+    [$8cef340d01b5ba40$export$11fd24d838ebde87.border]: !0,
+    [$8cef340d01b5ba40$export$11fd24d838ebde87.margin]: !0
+};
+const $8cef340d01b5ba40$export$d2ad2856e215d28e = new Set([
+    "auto",
+    "scroll"
+]);
+const $8cef340d01b5ba40$export$cd414719242f618c = (()=>{
+    try {
+        return window.navigator.userAgentData.brands.some(({ brand: n })=>"Chromium" === n);
+    } catch (n) {
+        return !1;
+    }
+})();
+
+
+
+
+function $5db358c21c70b735$export$fab73c3646bf1f5e(e) {
+    switch((0, $65ad764949353701$export$3d2f074408bd1b82)(e).display){
+        case "none":
+            return null;
+        case "inline":
+        case "contents":
+            return !1;
+        default:
+            return !0;
+    }
+}
+
+
+function $272acad5c935d918$export$e5ce114ae0e5f4e8(n) {
+    const t = (0, $65ad764949353701$export$3d2f074408bd1b82)(n);
+    if (!(0, $8cef340d01b5ba40$export$af54264dae9065e6)) {
+        const { filter: n } = t;
+        if (n && "none" !== n) return !0;
+        const { backdropFilter: e } = t;
+        if (e && "none" !== e) return !0;
+        const { willChange: i } = t;
+        if (i && (i.indexOf("filter") > -1 || i.indexOf("backdrop-filter") > -1)) return !0;
+    }
+    const e = (0, $5db358c21c70b735$export$fab73c3646bf1f5e)(n);
+    if (!e) return e;
+    const { transform: i } = t;
+    if (i && "none" !== i) return !0;
+    const { perspective: r } = t;
+    if (r && "none" !== r) return !0;
+    const { contentVisibility: o } = t;
+    if (o && "auto" === o) return !0;
+    const { contain: f } = t;
+    if (f && ("strict" === f || "content" === f || f.indexOf("paint") > -1 || f.indexOf("layout") > -1)) return !0;
+    const { willChange: c } = t;
+    return !(!c || !(c.indexOf("transform") > -1 || c.indexOf("perspective") > -1 || c.indexOf("contain") > -1)) || !!((0, $8cef340d01b5ba40$export$af54264dae9065e6) && c && c.indexOf("filter") > -1);
+}
+
+
+
+
+function $a923102b6825af41$export$996cb64f2dabb66f(t) {
+    return "static" !== (0, $65ad764949353701$export$3d2f074408bd1b82)(t).position || (0, $272acad5c935d918$export$e5ce114ae0e5f4e8)(t);
+}
+
+
+
+function $7f91b5daceb63fab$export$d8a62a489b442872(e) {
+    return e instanceof HTMLHtmlElement;
+}
+
+
+function $ab425563b6685912$export$940d8225183e1404(e, t = {}) {
+    if ((0, $7f91b5daceb63fab$export$d8a62a489b442872)(e)) return e.ownerDocument.defaultView;
+    const n = t.position || (0, $65ad764949353701$export$3d2f074408bd1b82)(e).position, { skipDisplayNone: i, container: o } = t;
+    switch(n){
+        case "static":
+        case "relative":
+        case "sticky":
+        case "-webkit-sticky":
+            {
+                let t = o || e.parentElement;
+                for(; t;){
+                    const e = (0, $5db358c21c70b735$export$fab73c3646bf1f5e)(t);
+                    if (e) return t;
+                    if (null === e && !i) return null;
+                    t = t.parentElement;
+                }
+                return e.ownerDocument.documentElement;
+            }
+        case "absolute":
+        case "fixed":
+            {
+                const t = "fixed" === n;
+                let l = o || e.parentElement;
+                for(; l;){
+                    const e = t ? (0, $272acad5c935d918$export$e5ce114ae0e5f4e8)(l) : (0, $a923102b6825af41$export$996cb64f2dabb66f)(l);
+                    if (!0 === e) return l;
+                    if (null === e && !i) return null;
+                    l = l.parentElement;
+                }
+                return e.ownerDocument.defaultView;
+            }
+        default:
+            return null;
+    }
+}
+
+
+function $c9c2988a494de166$export$8d3dd0be5eb9f11f(t, e) {
+    return !(t.left + t.width <= e.left || e.left + e.width <= t.left || t.top + t.height <= e.top || e.top + e.height <= t.top);
+}
+
+
+function $e47a48fe2e681492$export$53137579a3174918(t, e, n, o) {
+    return Math.sqrt(Math.pow(n - t, 2) + Math.pow(o - e, 2));
+}
+
+
+function $cbc3988fecfe8835$export$2d670be792dba464(t, e) {
+    if ((0, $c9c2988a494de166$export$8d3dd0be5eb9f11f)(t, e)) return null;
+    const n = t.left + t.width, i = t.top + t.height, o = e.left + e.width, s = e.top + e.height;
+    return n <= e.left ? i <= e.top ? (0, $e47a48fe2e681492$export$53137579a3174918)(n, i, e.left, e.top) : t.top >= s ? (0, $e47a48fe2e681492$export$53137579a3174918)(n, t.top, e.left, s) : e.left - n : t.left >= o ? i <= e.top ? (0, $e47a48fe2e681492$export$53137579a3174918)(t.left, i, o, e.top) : t.top >= s ? (0, $e47a48fe2e681492$export$53137579a3174918)(t.left, t.top, o, s) : t.left - o : i <= e.top ? e.top - i : t.top - s;
+}
+
+
+
+function $4e6b83ae058ab888$export$5a096129d439f843(n) {
+    return n instanceof Window;
+}
+
+
+function $0a0e00e544acad6d$export$62858bae88b53fd0(n) {
+    return n instanceof Document;
+}
+
+
+
+
+const $68c58e6b2159256a$var$SUBPIXEL_OFFSET = new Map;
+let $68c58e6b2159256a$var$testStyleElement = null, $68c58e6b2159256a$var$testParentElement = null, $68c58e6b2159256a$var$testChildElement = null;
+function $68c58e6b2159256a$var$getSubpixelScrollbarSize(t, e) {
+    const n = t.split(".");
+    let l = $68c58e6b2159256a$var$SUBPIXEL_OFFSET.get(n[1]);
+    if (void 0 === l) {
+        $68c58e6b2159256a$var$testStyleElement || ($68c58e6b2159256a$var$testStyleElement = document.createElement("style")), $68c58e6b2159256a$var$testStyleElement.innerHTML = `\n      #mezr-scrollbar-test::-webkit-scrollbar {\n        width: ${t} !important;\n      }\n    `, $68c58e6b2159256a$var$testParentElement && $68c58e6b2159256a$var$testChildElement || ($68c58e6b2159256a$var$testParentElement = document.createElement("div"), $68c58e6b2159256a$var$testChildElement = document.createElement("div"), $68c58e6b2159256a$var$testParentElement.appendChild($68c58e6b2159256a$var$testChildElement), $68c58e6b2159256a$var$testParentElement.id = "mezr-scrollbar-test", $68c58e6b2159256a$var$testParentElement.style.cssText = "\n        all: unset !important;\n        position: fixed !important;\n        top: -200px !important;\n        left: 0px !important;\n        width: 100px !important;\n        height: 100px !important;\n        overflow: scroll !important;\n        pointer-events: none !important;\n        visibility: hidden !important;\n      ", $68c58e6b2159256a$var$testChildElement.style.cssText = "\n        all: unset !important;\n        position: absolute !important;\n        inset: 0 !important;\n      "), document.body.appendChild($68c58e6b2159256a$var$testStyleElement), document.body.appendChild($68c58e6b2159256a$var$testParentElement);
+        l = $68c58e6b2159256a$var$testParentElement.getBoundingClientRect().width - $68c58e6b2159256a$var$testChildElement.getBoundingClientRect().width - e, $68c58e6b2159256a$var$SUBPIXEL_OFFSET.set(n[1], l), document.body.removeChild($68c58e6b2159256a$var$testParentElement), document.body.removeChild($68c58e6b2159256a$var$testStyleElement);
+    }
+    return e + l;
+}
+function $68c58e6b2159256a$export$5ad86f4734d24a64(t, e, n) {
+    if (n <= 0) return 0;
+    if (0, $8cef340d01b5ba40$export$cd414719242f618c) {
+        const n = (0, $65ad764949353701$export$3d2f074408bd1b82)(t, "::-webkit-scrollbar"), l = "x" === e ? n.height : n.width, i = parseFloat(l);
+        if (!Number.isNaN(i) && !Number.isInteger(i)) return $68c58e6b2159256a$var$getSubpixelScrollbarSize(l, i);
+    }
+    return n;
+}
+
+
+function $a606f886c8a27d9b$export$91cf85d6c980faa0(e, r = !1) {
+    if (r) return e.innerWidth;
+    const { innerWidth: t, document: i } = e, { documentElement: n } = i, { clientWidth: c } = n;
+    return t - (0, $68c58e6b2159256a$export$5ad86f4734d24a64)(n, "y", t - c);
+}
+
+
+function $0ebef02992ef8024$export$a76b7f4aaec6cdf4({ documentElement: t }) {
+    return Math.max(t.scrollWidth, t.clientWidth, t.getBoundingClientRect().width);
+}
+
+
+
+
+
+
+function $50398bdba06c604f$export$742d7f6cc44470f1(t, e = (0, $8cef340d01b5ba40$export$11fd24d838ebde87).border) {
+    let { width: r } = t.getBoundingClientRect();
+    if (e === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).border) return r;
+    const o = (0, $65ad764949353701$export$3d2f074408bd1b82)(t);
+    return e === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).margin ? (r += Math.max(0, parseFloat(o.marginLeft) || 0), r += Math.max(0, parseFloat(o.marginRight) || 0), r) : (r -= parseFloat(o.borderLeftWidth) || 0, r -= parseFloat(o.borderRightWidth) || 0, e === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).scrollbar ? r : (!(0, $7f91b5daceb63fab$export$d8a62a489b442872)(t) && (0, $8cef340d01b5ba40$export$d2ad2856e215d28e).has(o.overflowY) && (r -= (0, $68c58e6b2159256a$export$5ad86f4734d24a64)(t, "y", Math.round(r) - t.clientWidth)), e === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).padding || (r -= parseFloat(o.paddingLeft) || 0, r -= parseFloat(o.paddingRight) || 0), r));
+}
+
+
+function $667c2544c0b9eb76$export$3c49c185de0c2bfc(t, i = (0, $8cef340d01b5ba40$export$11fd24d838ebde87).border) {
+    return (0, $4e6b83ae058ab888$export$5a096129d439f843)(t) ? (0, $a606f886c8a27d9b$export$91cf85d6c980faa0)(t, (0, $8cef340d01b5ba40$export$76e909bcfd8ba196)[i]) : (0, $0a0e00e544acad6d$export$62858bae88b53fd0)(t) ? (0, $0ebef02992ef8024$export$a76b7f4aaec6cdf4)(t) : (0, $50398bdba06c604f$export$742d7f6cc44470f1)(t, i);
+}
+
+
+
+
+
+
+function $b367ae5c21f58ee3$export$a3648dbc3769cbf4(e, r = !1) {
+    if (r) return e.innerHeight;
+    const { innerHeight: t, document: i } = e, { documentElement: n } = i, { clientHeight: c } = n;
+    return t - (0, $68c58e6b2159256a$export$5ad86f4734d24a64)(n, "x", t - c);
+}
+
+
+function $4bf1cf7803616187$export$5806f5d4b3eb6a6a({ documentElement: t }) {
+    return Math.max(t.scrollHeight, t.clientHeight, t.getBoundingClientRect().height);
+}
+
+
+
+
+
+
+function $44627bae74961b62$export$8e0f1520ce23a388(t, e = (0, $8cef340d01b5ba40$export$11fd24d838ebde87).border) {
+    let { height: r } = t.getBoundingClientRect();
+    if (e === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).border) return r;
+    const o = (0, $65ad764949353701$export$3d2f074408bd1b82)(t);
+    return e === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).margin ? (r += Math.max(0, parseFloat(o.marginTop) || 0), r += Math.max(0, parseFloat(o.marginBottom) || 0), r) : (r -= parseFloat(o.borderTopWidth) || 0, r -= parseFloat(o.borderBottomWidth) || 0, e === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).scrollbar ? r : (!(0, $7f91b5daceb63fab$export$d8a62a489b442872)(t) && (0, $8cef340d01b5ba40$export$d2ad2856e215d28e).has(o.overflowX) && (r -= (0, $68c58e6b2159256a$export$5ad86f4734d24a64)(t, "x", Math.round(r) - t.clientHeight)), e === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).padding || (r -= parseFloat(o.paddingTop) || 0, r -= parseFloat(o.paddingBottom) || 0), r));
+}
+
+
+function $eb568002b951ac5b$export$c08559766941f856(t, e = (0, $8cef340d01b5ba40$export$11fd24d838ebde87).border) {
+    return (0, $4e6b83ae058ab888$export$5a096129d439f843)(t) ? (0, $b367ae5c21f58ee3$export$a3648dbc3769cbf4)(t, (0, $8cef340d01b5ba40$export$76e909bcfd8ba196)[e]) : (0, $0a0e00e544acad6d$export$62858bae88b53fd0)(t) ? (0, $4bf1cf7803616187$export$5806f5d4b3eb6a6a)(t) : (0, $44627bae74961b62$export$8e0f1520ce23a388)(t, e);
+}
+
+
+function $97bb8ef5a3ed1ced$export$ff047630cae37d8e(t) {
+    return t?.constructor === Object;
+}
+
+
+
+
+
+
+
+function $1ddfc565f5f24ff9$export$9f1480883798e819(t, o = (0, $8cef340d01b5ba40$export$11fd24d838ebde87).border) {
+    const e = {
+        left: 0,
+        top: 0
+    };
+    if ((0, $0a0e00e544acad6d$export$62858bae88b53fd0)(t)) return e;
+    if ((0, $4e6b83ae058ab888$export$5a096129d439f843)(t)) return e.left += t.scrollX || 0, e.top += t.scrollY || 0, e;
+    const r = t.ownerDocument.defaultView;
+    r && (e.left += r.scrollX || 0, e.top += r.scrollY || 0);
+    const n = t.getBoundingClientRect();
+    if (e.left += n.left, e.top += n.top, o === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).border) return e;
+    const l = (0, $65ad764949353701$export$3d2f074408bd1b82)(t);
+    return o === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).margin ? (e.left -= Math.max(0, parseFloat(l.marginLeft) || 0), e.top -= Math.max(0, parseFloat(l.marginTop) || 0), e) : (e.left += parseFloat(l.borderLeftWidth) || 0, e.top += parseFloat(l.borderTopWidth) || 0, o === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).scrollbar || o === (0, $8cef340d01b5ba40$export$11fd24d838ebde87).padding || (e.left += parseFloat(l.paddingLeft) || 0, e.top += parseFloat(l.paddingTop) || 0), e);
+}
+
+
+function $099080697fe67d0e$export$622cea445a1c5b7d(t, e) {
+    const o = (0, $97bb8ef5a3ed1ced$export$ff047630cae37d8e)(t) ? {
+        left: t.left,
+        top: t.top
+    } : Array.isArray(t) ? (0, $1ddfc565f5f24ff9$export$9f1480883798e819)(...t) : (0, $1ddfc565f5f24ff9$export$9f1480883798e819)(t);
+    if (e && !(0, $0a0e00e544acad6d$export$62858bae88b53fd0)(e)) {
+        const t = (0, $97bb8ef5a3ed1ced$export$ff047630cae37d8e)(e) ? e : Array.isArray(e) ? (0, $1ddfc565f5f24ff9$export$9f1480883798e819)(e[0], e[1]) : (0, $1ddfc565f5f24ff9$export$9f1480883798e819)(e);
+        o.left -= t.left, o.top -= t.top;
+    }
+    return o;
+}
+
+
+
+function $51639583c18ebb93$export$4b834cebd9e5cebe(t, e) {
+    let i = 0, g = 0;
+    (0, $97bb8ef5a3ed1ced$export$ff047630cae37d8e)(t) ? (i = t.width, g = t.height) : Array.isArray(t) ? (i = (0, $667c2544c0b9eb76$export$3c49c185de0c2bfc)(...t), g = (0, $eb568002b951ac5b$export$c08559766941f856)(...t)) : (i = (0, $667c2544c0b9eb76$export$3c49c185de0c2bfc)(t), g = (0, $eb568002b951ac5b$export$c08559766941f856)(t));
+    const r = (0, $099080697fe67d0e$export$622cea445a1c5b7d)(t, e);
+    return {
+        width: i,
+        height: g,
+        ...r,
+        right: r.left + i,
+        bottom: r.top + g
+    };
+}
+
+
+
+function $24eeb73ae6f9dcc4$export$e4e616e82e79ab9d(t) {
+    return (0, $97bb8ef5a3ed1ced$export$ff047630cae37d8e)(t) ? t : (0, $51639583c18ebb93$export$4b834cebd9e5cebe)(t);
+}
+
+
+function $126ac7744288dbf9$export$79376507b09a66f(e, t) {
+    const c = (0, $24eeb73ae6f9dcc4$export$e4e616e82e79ab9d)(e), i = (0, $24eeb73ae6f9dcc4$export$e4e616e82e79ab9d)(t);
+    return (0, $cbc3988fecfe8835$export$2d670be792dba464)(c, i);
+}
+
+
+
+
+function $8a9f7f9457831eaa$export$72209efa88586d42(t, ...e) {
+    const o = {
+        ...(0, $24eeb73ae6f9dcc4$export$e4e616e82e79ab9d)(t),
+        right: 0,
+        bottom: 0
+    };
+    for (const t of e){
+        const e = (0, $24eeb73ae6f9dcc4$export$e4e616e82e79ab9d)(t), i = Math.max(o.left, e.left), h = Math.min(o.left + o.width, e.left + e.width);
+        if (h <= i) return null;
+        const r = Math.max(o.top, e.top), l = Math.min(o.top + o.height, e.height + e.top);
+        if (l <= r) return null;
+        o.left = i, o.top = r, o.width = h - i, o.height = l - r;
+    }
+    return o.right = o.left + o.width, o.bottom = o.top + o.height, o;
+}
+
+
+
+
+
+
+function $b2d9660139a5b6b9$export$243d7fadef466e38(n, t = {}) {
+    const i = (0, $65ad764949353701$export$3d2f074408bd1b82)(n), { display: o } = i;
+    if ("none" === o || "contents" === o) return null;
+    const e = t.position || (0, $65ad764949353701$export$3d2f074408bd1b82)(n).position, { skipDisplayNone: s, container: r } = t;
+    switch(e){
+        case "relative":
+            return n;
+        case "fixed":
+            return (0, $ab425563b6685912$export$940d8225183e1404)(n, {
+                container: r,
+                position: e,
+                skipDisplayNone: s
+            });
+        case "absolute":
+            {
+                const t = (0, $ab425563b6685912$export$940d8225183e1404)(n, {
+                    container: r,
+                    position: e,
+                    skipDisplayNone: s
+                });
+                return (0, $4e6b83ae058ab888$export$5a096129d439f843)(t) ? n.ownerDocument : t;
+            }
+        default:
+            return null;
+    }
+}
+
+
+
+function $7b360c672c5d4730$export$f63a1e5ecde5e3c4(t, e) {
+    const o = (0, $24eeb73ae6f9dcc4$export$e4e616e82e79ab9d)(t), i = (0, $24eeb73ae6f9dcc4$export$e4e616e82e79ab9d)(e);
+    return {
+        left: i.left - o.left,
+        right: o.left + o.width - (i.left + i.width),
+        top: i.top - o.top,
+        bottom: o.top + o.height - (i.top + i.height)
+    };
+}
+
+
+
+
+
 
 const $b75b79b0209a801e$var$STYLE_DECLARATION_CACHE = new WeakMap();
 function $b75b79b0209a801e$export$3d2f074408bd1b82(element) {
@@ -1919,12 +1918,22 @@ class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
 
 
 // A special append method which doesn't lose focus when appending an element.
-function $3ba9e1e7a6850ba1$export$33e13bbfe889ab45(element, container, innerContainer) {
+function $04c2b0e183490645$export$541a53504b84a8d2(container, node, refNode = null) {
+    // Use experimental moveBefore method if it's available.
+    if ('moveBefore' in container && container.isConnected === node.isConnected) try {
+        // @ts-ignore - moveBefore method is experimental.
+        container.moveBefore(node, refNode);
+        return;
+    } catch  {
+    // Ignore the error. This is an optimization, not a critical path.
+    }
+    // Get the focused element and check if the node contains the focused element.
     const focusedElement = document.activeElement;
-    const containsFocus = element.contains(focusedElement);
-    if (innerContainer) innerContainer.append(element);
-    container.append(innerContainer || element);
-    if (containsFocus && document.activeElement !== focusedElement) focusedElement.focus({
+    const containsFocus = node.contains(focusedElement);
+    // Insert the node before the reference node.
+    container.insertBefore(node, refNode);
+    // Restore focus if needed.
+    if (containsFocus && document.activeElement !== focusedElement && focusedElement instanceof HTMLElement) focusedElement.focus({
         preventScroll: true
     });
 }
@@ -2193,7 +2202,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         this._startPhase = 4;
         for (const item of drag.items){
             // Append element within the container element if such is provided.
-            if (item.dragContainer !== item.elementContainer) (0, $3ba9e1e7a6850ba1$export$33e13bbfe889ab45)(item.element, item.dragContainer);
+            if (item.dragContainer !== item.elementContainer) (0, $04c2b0e183490645$export$541a53504b84a8d2)(item.dragContainer, item.element);
             // Freeze element's props if such are provided.
             if (item.frozenStyles) Object.assign(item.element.style, item.frozenStyles);
             // Set element's start position.
@@ -2403,7 +2412,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
                 // different container during the drag process. Also reset alignment
                 // and container offsets for those elements.
                 if (item.elementContainer !== item.dragContainer) {
-                    (0, $3ba9e1e7a6850ba1$export$33e13bbfe889ab45)(item.element, item.elementContainer);
+                    (0, $04c2b0e183490645$export$541a53504b84a8d2)(item.elementContainer, item.element);
                     item.alignmentOffset.x = 0;
                     item.alignmentOffset.y = 0;
                     item.containerOffset.x = 0;
@@ -4718,143 +4727,49 @@ class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$ex
 
 
 
-// Keep track of the best match droppable.
-const $dbc52347541b57ca$var$bestMatchMap = new Map();
-// Get elements.
-const $dbc52347541b57ca$var$scrollContainers = [
-    ...document.querySelectorAll('.scroll-list')
-];
-const $dbc52347541b57ca$var$draggableElements = [
-    ...document.querySelectorAll('.draggable')
-];
-const $dbc52347541b57ca$var$droppableElements = [
-    ...document.querySelectorAll('.droppable')
-];
-// Initialize DndContext.
-const $dbc52347541b57ca$var$dndContext = new (0, $fa11c4bc76a2544e$export$2d5c5ceac203fc1e)({
-    collisionDetector: (ctx)=>new (0, $31f0e541fc872793$export$33a3c5dbfd7c6c65)(ctx)
-});
-// Create droppables.
-const $dbc52347541b57ca$var$droppables = [];
-for (const droppableElement of $dbc52347541b57ca$var$droppableElements){
-    const droppable = new (0, $8cf3b9f73d8dfc46$export$423ec2075359570a)(droppableElement);
-    $dbc52347541b57ca$var$droppables.push(droppable);
-}
-// Create draggables.
-const $dbc52347541b57ca$var$draggables = [];
-for (const draggableElement of $dbc52347541b57ca$var$draggableElements){
-    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-        new (0, $e72ff61c97f755fe$export$b26af955418d6638)(draggableElement),
-        new (0, $7fff4587bd07df96$export$436f6efcc297171)(draggableElement)
-    ], {
-        // Only move the draggable element.
-        elements: ()=>[
-                draggableElement
-            ],
-        // Use the body as the drag container.
-        container: document.body,
-        // Freeze the width and height of the dragged element since we are using
-        // a custom container and the element has percentage based values for
-        // some of it's properties.
-        frozenStyles: ()=>[
-                'width',
-                'height'
-            ],
-        // Allow the drag to start only if the element is not animating.
-        startPredicate: ()=>!draggableElement.classList.contains('animate'),
-        // Toggle the dragging class on the draggable element when the drag starts
-        // and ends.
-        onStart: ()=>{
-            draggableElement.classList.add('dragging');
-        },
-        onEnd: ()=>{
-            draggableElement.classList.remove('dragging');
-        }
-    }).use(// Allow the draggable to scroll the scroll containers when the dragged
-    // element is close to it's edges.
-    (0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
-        targets: $dbc52347541b57ca$var$scrollContainers.map((scrollContainer)=>({
-                element: scrollContainer,
-                axis: 'y',
-                padding: {
-                    top: 0,
-                    bottom: 0
-                }
-            }))
-    }));
-    $dbc52347541b57ca$var$draggables.push(draggable);
-}
-// Add droppables and draggables to the context.
-$dbc52347541b57ca$var$dndContext.addDroppables($dbc52347541b57ca$var$droppables);
-$dbc52347541b57ca$var$dndContext.addDraggables($dbc52347541b57ca$var$draggables);
-// On draggable collision with droppables.
-$dbc52347541b57ca$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Collide, ({ draggable: draggable, contacts: contacts })=>{
-    // Get the draggable element.
-    const draggableElement = draggable.drag?.items[0].element;
-    if (!draggableElement) return;
-    // Get the draggable id.
-    const draggableId = draggableElement.getAttribute('data-id') || '';
-    if (draggableId === '') return;
-    // Get the next best match droppable.
-    let nextBestMatch = null;
-    for (const droppable of contacts){
-        // Skip if the droppable contains a different draggable.
-        const containedDraggableId = droppable.element.getAttribute('data-draggable-contained') || '';
-        if (containedDraggableId && containedDraggableId !== draggableId) continue;
-        // Skip if a different draggable is over the droppable.
-        const overDraggableId = droppable.element.getAttribute('data-draggable-over') || '';
-        if (overDraggableId && overDraggableId !== draggableId) continue;
-        // We found the next best match.
-        nextBestMatch = droppable;
-        break;
+const $fbef1913897e270e$var$element = document.querySelector('.draggable');
+const $fbef1913897e270e$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($fbef1913897e270e$var$element);
+const $fbef1913897e270e$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($fbef1913897e270e$var$element);
+const $fbef1913897e270e$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $fbef1913897e270e$var$pointerSensor,
+    $fbef1913897e270e$var$keyboardSensor
+], {
+    elements: ()=>{
+        // Clone the element and align the clone with the original element.
+        const elemRect = $fbef1913897e270e$var$element.getBoundingClientRect();
+        const clone = $fbef1913897e270e$var$element.cloneNode(true);
+        clone.style.position = 'fixed';
+        clone.style.width = `${elemRect.width}px`;
+        clone.style.height = `${elemRect.height}px`;
+        clone.style.left = `${elemRect.left}px`;
+        clone.style.top = `${elemRect.top}px`;
+        // Add the ghost and dragging class to the clone. The ghost element will be
+        // in dragging state for the duration of it's existence.
+        clone.classList.add('ghost', 'dragging');
+        // We need to reset the transform to avoid the ghost element being offset
+        // unintentionally. In this specific case, if we don't reset the transform,
+        // the ghost element will be offset by the original element's transform.
+        clone.style.transform = '';
+        // Append the ghost element to the body.
+        document.body.appendChild(clone);
+        return [
+            clone
+        ];
+    },
+    onStart: ()=>{
+        $fbef1913897e270e$var$element.classList.add('dragging');
+    },
+    onEnd: (drag)=>{
+        const dragItem = drag.items[0];
+        // Move the original element to the ghost element's position. We use DOMMatrix
+        // to first combine the original element's transform with the ghost element's
+        // transform and then apply the combined transform to the original element.
+        const matrix = new DOMMatrix().setMatrixValue(`translate(${dragItem.position.x}px, ${dragItem.position.y}px) ${$fbef1913897e270e$var$element.style.transform}`);
+        $fbef1913897e270e$var$element.style.transform = `${matrix}`;
+        // Remove the ghost element.
+        dragItem.element.remove();
+        $fbef1913897e270e$var$element.classList.remove('dragging');
     }
-    // Update the best match droppable if it's changed.
-    const bestMatch = $dbc52347541b57ca$var$bestMatchMap.get(draggable);
-    if (nextBestMatch !== null && nextBestMatch !== bestMatch) {
-        bestMatch?.element.removeAttribute('data-draggable-over');
-        nextBestMatch.element.setAttribute('data-draggable-over', draggableId);
-        $dbc52347541b57ca$var$bestMatchMap.set(draggable, nextBestMatch);
-    }
-});
-// On drag end.
-$dbc52347541b57ca$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).End, ({ draggable: draggable, canceled: canceled })=>{
-    const draggableElement = draggable.drag?.items[0].element;
-    if (!draggableElement) return;
-    // Find out the original container and the target container based on the best
-    // match droppable.
-    const bestMatch = $dbc52347541b57ca$var$bestMatchMap.get(draggable);
-    const originalContainer = draggableElement.parentElement;
-    const targetContainer = !canceled && bestMatch ? bestMatch.element : originalContainer;
-    // If draggable moved into a different container.
-    if (originalContainer !== targetContainer) {
-        // Move the draggable to the target container. While doing that, let's add
-        // the offset between the original container and the target container to the
-        // draggable's transform so it's visual position does not change.
-        const offsetData = (0, $099080697fe67d0e$export$622cea445a1c5b7d)(originalContainer, targetContainer);
-        const transformString = `translate(${offsetData.left}px, ${offsetData.top}px) ${draggableElement.style.transform}`;
-        draggableElement.style.transform = transformString;
-        targetContainer.appendChild(draggableElement);
-        // Move the data-draggable-contained attribute to the target container.
-        originalContainer.removeAttribute('data-draggable-contained');
-        targetContainer.setAttribute('data-draggable-contained', draggableElement.getAttribute('data-id'));
-    }
-    // Animate the draggable's transform back to "zero" (no transform).
-    const transformMatrix = new DOMMatrix().setMatrixValue(draggableElement.style.transform);
-    if (!transformMatrix.isIdentity) {
-        draggableElement.classList.add('animate');
-        const onTransitionEnd = (e)=>{
-            if (e.target === draggableElement && e.propertyName === 'transform') {
-                draggableElement.classList.remove('animate');
-                document.body.removeEventListener('transitionend', onTransitionEnd);
-            }
-        };
-        document.body.addEventListener('transitionend', onTransitionEnd);
-        draggableElement.clientHeight; // Force a reflow.
-        draggableElement.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
-    }
-    // Reset the best match droppable.
-    bestMatch?.element.removeAttribute('data-draggable-over');
-    $dbc52347541b57ca$var$bestMatchMap.delete(draggable);
 });
 
 

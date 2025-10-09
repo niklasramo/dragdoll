@@ -1918,12 +1918,22 @@ class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
 
 
 // A special append method which doesn't lose focus when appending an element.
-function $3ba9e1e7a6850ba1$export$33e13bbfe889ab45(element, container, innerContainer) {
+function $04c2b0e183490645$export$541a53504b84a8d2(container, node, refNode = null) {
+    // Use experimental moveBefore method if it's available.
+    if ('moveBefore' in container && container.isConnected === node.isConnected) try {
+        // @ts-ignore - moveBefore method is experimental.
+        container.moveBefore(node, refNode);
+        return;
+    } catch  {
+    // Ignore the error. This is an optimization, not a critical path.
+    }
+    // Get the focused element and check if the node contains the focused element.
     const focusedElement = document.activeElement;
-    const containsFocus = element.contains(focusedElement);
-    if (innerContainer) innerContainer.append(element);
-    container.append(innerContainer || element);
-    if (containsFocus && document.activeElement !== focusedElement) focusedElement.focus({
+    const containsFocus = node.contains(focusedElement);
+    // Insert the node before the reference node.
+    container.insertBefore(node, refNode);
+    // Restore focus if needed.
+    if (containsFocus && document.activeElement !== focusedElement && focusedElement instanceof HTMLElement) focusedElement.focus({
         preventScroll: true
     });
 }
@@ -2192,7 +2202,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         this._startPhase = 4;
         for (const item of drag.items){
             // Append element within the container element if such is provided.
-            if (item.dragContainer !== item.elementContainer) (0, $3ba9e1e7a6850ba1$export$33e13bbfe889ab45)(item.element, item.dragContainer);
+            if (item.dragContainer !== item.elementContainer) (0, $04c2b0e183490645$export$541a53504b84a8d2)(item.dragContainer, item.element);
             // Freeze element's props if such are provided.
             if (item.frozenStyles) Object.assign(item.element.style, item.frozenStyles);
             // Set element's start position.
@@ -2402,7 +2412,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
                 // different container during the drag process. Also reset alignment
                 // and container offsets for those elements.
                 if (item.elementContainer !== item.dragContainer) {
-                    (0, $3ba9e1e7a6850ba1$export$33e13bbfe889ab45)(item.element, item.elementContainer);
+                    (0, $04c2b0e183490645$export$541a53504b84a8d2)(item.elementContainer, item.element);
                     item.alignmentOffset.x = 0;
                     item.alignmentOffset.y = 0;
                     item.containerOffset.x = 0;
@@ -4717,25 +4727,41 @@ class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$ex
 
 
 
-const $dffb89cf206e4bcc$var$element = document.querySelector('.draggable');
-const $dffb89cf206e4bcc$var$handle = $dffb89cf206e4bcc$var$element.querySelector('.handle');
-const $dffb89cf206e4bcc$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($dffb89cf206e4bcc$var$handle);
-const $dffb89cf206e4bcc$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($dffb89cf206e4bcc$var$element);
-const $dffb89cf206e4bcc$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $dffb89cf206e4bcc$var$pointerSensor,
-    $dffb89cf206e4bcc$var$keyboardSensor
+const $72821dbb08df4f25$var$element = document.querySelector('.draggable');
+const $72821dbb08df4f25$var$dragContainer = document.querySelector('.drag-container');
+const $72821dbb08df4f25$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($72821dbb08df4f25$var$element);
+const $72821dbb08df4f25$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($72821dbb08df4f25$var$element, {
+    computeSpeed: ()=>100
+});
+const $72821dbb08df4f25$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+    $72821dbb08df4f25$var$pointerSensor,
+    $72821dbb08df4f25$var$keyboardSensor
 ], {
+    container: $72821dbb08df4f25$var$dragContainer,
     elements: ()=>[
-            $dffb89cf206e4bcc$var$element
+            $72821dbb08df4f25$var$element
+        ],
+    frozenStyles: ()=>[
+            'left',
+            'top'
         ],
     onStart: ()=>{
-        $dffb89cf206e4bcc$var$element.classList.add('dragging');
-        if ($dffb89cf206e4bcc$var$draggable.drag.sensor instanceof (0, $e72ff61c97f755fe$export$b26af955418d6638)) $dffb89cf206e4bcc$var$element.classList.add('pointer-dragging');
-        else $dffb89cf206e4bcc$var$element.classList.add('keyboard-dragging');
+        $72821dbb08df4f25$var$element.classList.add('dragging');
     },
     onEnd: ()=>{
-        $dffb89cf206e4bcc$var$element.classList.remove('dragging', 'pointer-dragging', 'keyboard-dragging');
+        $72821dbb08df4f25$var$element.classList.remove('dragging');
     }
-});
+}).use((0, $244877ffe9407e42$export$c0f5c18ade842ccd)({
+    targets: [
+        {
+            element: window,
+            axis: 'y',
+            padding: {
+                top: Infinity,
+                bottom: Infinity
+            }
+        }
+    ]
+}));
 
 

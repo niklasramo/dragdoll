@@ -5057,13 +5057,19 @@ var DraggableDragItem = class {
   }
 };
 
-// src/utils/append-element.ts
-function appendElement(element, container, innerContainer) {
+// src/utils/move-before.ts
+function moveBefore(container, node, refNode = null) {
+  if ("moveBefore" in container && container.isConnected === node.isConnected) {
+    try {
+      container.moveBefore(node, refNode);
+      return;
+    } catch {
+    }
+  }
   const focusedElement = document.activeElement;
-  const containsFocus = element.contains(focusedElement);
-  if (innerContainer) innerContainer.append(element);
-  container.append(innerContainer || element);
-  if (containsFocus && document.activeElement !== focusedElement) {
+  const containsFocus = node.contains(focusedElement);
+  container.insertBefore(node, refNode);
+  if (containsFocus && document.activeElement !== focusedElement && focusedElement instanceof HTMLElement) {
     focusedElement.focus({ preventScroll: true });
   }
 }
@@ -5314,7 +5320,7 @@ var Draggable = class {
     this._startPhase = 4 /* Apply */;
     for (const item of drag.items) {
       if (item.dragContainer !== item.elementContainer) {
-        appendElement(item.element, item.dragContainer);
+        moveBefore(item.dragContainer, item.element);
       }
       if (item.frozenStyles) {
         Object.assign(item.element.style, item.frozenStyles);
@@ -5495,7 +5501,7 @@ var Draggable = class {
     if (startPhase === 5 /* FinishApply */) {
       for (const item of drag.items) {
         if (item.elementContainer !== item.dragContainer) {
-          appendElement(item.element, item.elementContainer);
+          moveBefore(item.elementContainer, item.element);
           item.alignmentOffset.x = 0;
           item.alignmentOffset.y = 0;
           item.containerOffset.x = 0;

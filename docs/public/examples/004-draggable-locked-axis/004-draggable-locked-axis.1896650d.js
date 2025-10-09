@@ -1918,12 +1918,22 @@ class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
 
 
 // A special append method which doesn't lose focus when appending an element.
-function $3ba9e1e7a6850ba1$export$33e13bbfe889ab45(element, container, innerContainer) {
+function $04c2b0e183490645$export$541a53504b84a8d2(container, node, refNode = null) {
+    // Use experimental moveBefore method if it's available.
+    if ('moveBefore' in container && container.isConnected === node.isConnected) try {
+        // @ts-ignore - moveBefore method is experimental.
+        container.moveBefore(node, refNode);
+        return;
+    } catch  {
+    // Ignore the error. This is an optimization, not a critical path.
+    }
+    // Get the focused element and check if the node contains the focused element.
     const focusedElement = document.activeElement;
-    const containsFocus = element.contains(focusedElement);
-    if (innerContainer) innerContainer.append(element);
-    container.append(innerContainer || element);
-    if (containsFocus && document.activeElement !== focusedElement) focusedElement.focus({
+    const containsFocus = node.contains(focusedElement);
+    // Insert the node before the reference node.
+    container.insertBefore(node, refNode);
+    // Restore focus if needed.
+    if (containsFocus && document.activeElement !== focusedElement && focusedElement instanceof HTMLElement) focusedElement.focus({
         preventScroll: true
     });
 }
@@ -2192,7 +2202,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         this._startPhase = 4;
         for (const item of drag.items){
             // Append element within the container element if such is provided.
-            if (item.dragContainer !== item.elementContainer) (0, $3ba9e1e7a6850ba1$export$33e13bbfe889ab45)(item.element, item.dragContainer);
+            if (item.dragContainer !== item.elementContainer) (0, $04c2b0e183490645$export$541a53504b84a8d2)(item.dragContainer, item.element);
             // Freeze element's props if such are provided.
             if (item.frozenStyles) Object.assign(item.element.style, item.frozenStyles);
             // Set element's start position.
@@ -2402,7 +2412,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
                 // different container during the drag process. Also reset alignment
                 // and container offsets for those elements.
                 if (item.elementContainer !== item.dragContainer) {
-                    (0, $3ba9e1e7a6850ba1$export$33e13bbfe889ab45)(item.element, item.elementContainer);
+                    (0, $04c2b0e183490645$export$541a53504b84a8d2)(item.elementContainer, item.element);
                     item.alignmentOffset.x = 0;
                     item.alignmentOffset.y = 0;
                     item.containerOffset.x = 0;

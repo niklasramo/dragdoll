@@ -12,7 +12,7 @@ import { DraggableDragItem } from './draggable-drag-item.js';
 
 import { ticker, tickerPhases } from '../singletons/ticker.js';
 
-import { appendElement } from '../utils/append-element.js';
+import { moveBefore } from '../utils/move-before.js';
 
 import { roundNumber } from '../utils/round-number.js';
 
@@ -463,7 +463,7 @@ export class Draggable<
     for (const item of drag.items) {
       // Append element within the container element if such is provided.
       if (item.dragContainer !== item.elementContainer) {
-        appendElement(item.element, item.dragContainer);
+        moveBefore(item.dragContainer, item.element);
       }
 
       // Freeze element's props if such are provided.
@@ -751,7 +751,7 @@ export class Draggable<
         // different container during the drag process. Also reset alignment
         // and container offsets for those elements.
         if (item.elementContainer !== item.dragContainer) {
-          appendElement(item.element, item.elementContainer);
+          moveBefore(item.elementContainer, item.element);
           item.alignmentOffset.x = 0;
           item.alignmentOffset.y = 0;
           item.containerOffset.x = 0;

@@ -1918,12 +1918,22 @@ class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
 
 
 // A special append method which doesn't lose focus when appending an element.
-function $3ba9e1e7a6850ba1$export$33e13bbfe889ab45(element, container, innerContainer) {
+function $04c2b0e183490645$export$541a53504b84a8d2(container, node, refNode = null) {
+    // Use experimental moveBefore method if it's available.
+    if ('moveBefore' in container && container.isConnected === node.isConnected) try {
+        // @ts-ignore - moveBefore method is experimental.
+        container.moveBefore(node, refNode);
+        return;
+    } catch  {
+    // Ignore the error. This is an optimization, not a critical path.
+    }
+    // Get the focused element and check if the node contains the focused element.
     const focusedElement = document.activeElement;
-    const containsFocus = element.contains(focusedElement);
-    if (innerContainer) innerContainer.append(element);
-    container.append(innerContainer || element);
-    if (containsFocus && document.activeElement !== focusedElement) focusedElement.focus({
+    const containsFocus = node.contains(focusedElement);
+    // Insert the node before the reference node.
+    container.insertBefore(node, refNode);
+    // Restore focus if needed.
+    if (containsFocus && document.activeElement !== focusedElement && focusedElement instanceof HTMLElement) focusedElement.focus({
         preventScroll: true
     });
 }
@@ -2192,7 +2202,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         this._startPhase = 4;
         for (const item of drag.items){
             // Append element within the container element if such is provided.
-            if (item.dragContainer !== item.elementContainer) (0, $3ba9e1e7a6850ba1$export$33e13bbfe889ab45)(item.element, item.dragContainer);
+            if (item.dragContainer !== item.elementContainer) (0, $04c2b0e183490645$export$541a53504b84a8d2)(item.dragContainer, item.element);
             // Freeze element's props if such are provided.
             if (item.frozenStyles) Object.assign(item.element.style, item.frozenStyles);
             // Set element's start position.
@@ -2402,7 +2412,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
                 // different container during the drag process. Also reset alignment
                 // and container offsets for those elements.
                 if (item.elementContainer !== item.dragContainer) {
-                    (0, $3ba9e1e7a6850ba1$export$33e13bbfe889ab45)(item.element, item.elementContainer);
+                    (0, $04c2b0e183490645$export$541a53504b84a8d2)(item.elementContainer, item.element);
                     item.alignmentOffset.x = 0;
                     item.alignmentOffset.y = 0;
                     item.containerOffset.x = 0;
@@ -4717,49 +4727,37 @@ class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$ex
 
 
 
-const $fbef1913897e270e$var$element = document.querySelector('.draggable');
-const $fbef1913897e270e$var$pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)($fbef1913897e270e$var$element);
-const $fbef1913897e270e$var$keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)($fbef1913897e270e$var$element);
-const $fbef1913897e270e$var$draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
-    $fbef1913897e270e$var$pointerSensor,
-    $fbef1913897e270e$var$keyboardSensor
-], {
-    elements: ()=>{
-        // Clone the element and align the clone with the original element.
-        const elemRect = $fbef1913897e270e$var$element.getBoundingClientRect();
-        const clone = $fbef1913897e270e$var$element.cloneNode(true);
-        clone.style.position = 'fixed';
-        clone.style.width = `${elemRect.width}px`;
-        clone.style.height = `${elemRect.height}px`;
-        clone.style.left = `${elemRect.left}px`;
-        clone.style.top = `${elemRect.top}px`;
-        // Add the ghost and dragging class to the clone. The ghost element will be
-        // in dragging state for the duration of it's existence.
-        clone.classList.add('ghost', 'dragging');
-        // We need to reset the transform to avoid the ghost element being offset
-        // unintentionally. In this specific case, if we don't reset the transform,
-        // the ghost element will be offset by the original element's transform.
-        clone.style.transform = '';
-        // Append the ghost element to the body.
-        document.body.appendChild(clone);
-        return [
-            clone
-        ];
-    },
-    onStart: ()=>{
-        $fbef1913897e270e$var$element.classList.add('dragging');
-    },
-    onEnd: (drag)=>{
-        const dragItem = drag.items[0];
-        // Move the original element to the ghost element's position. We use DOMMatrix
-        // to first combine the original element's transform with the ghost element's
-        // transform and then apply the combined transform to the original element.
-        const matrix = new DOMMatrix().setMatrixValue(`translate(${dragItem.position.x}px, ${dragItem.position.y}px) ${$fbef1913897e270e$var$element.style.transform}`);
-        $fbef1913897e270e$var$element.style.transform = `${matrix}`;
-        // Remove the ghost element.
-        dragItem.element.remove();
-        $fbef1913897e270e$var$element.classList.remove('dragging');
-    }
+const $9d29fe00413f3681$var$draggableElements = [
+    ...document.querySelectorAll('.draggable')
+];
+$9d29fe00413f3681$var$draggableElements.forEach((element)=>{
+    const otherElements = $9d29fe00413f3681$var$draggableElements.filter((el)=>el !== element);
+    const pointerSensor = new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element);
+    const keyboardSensor = new (0, $7fff4587bd07df96$export$436f6efcc297171)(element);
+    const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
+        pointerSensor,
+        keyboardSensor
+    ], {
+        elements: ()=>{
+            return [
+                element,
+                ...otherElements
+            ];
+        },
+        startPredicate: ()=>{
+            return !element.classList.contains('dragging');
+        },
+        onStart: (drag)=>{
+            drag.items.forEach((item)=>{
+                item.element.classList.add('dragging');
+            });
+        },
+        onEnd: (drag)=>{
+            drag.items.forEach((item)=>{
+                item.element.classList.remove('dragging');
+            });
+        }
+    });
 });
 
 

@@ -1918,12 +1918,22 @@ class $93e17dd02dc97955$export$b87fb2dc7f11ca52 {
 
 
 // A special append method which doesn't lose focus when appending an element.
-function $3ba9e1e7a6850ba1$export$33e13bbfe889ab45(element, container, innerContainer) {
+function $04c2b0e183490645$export$541a53504b84a8d2(container, node, refNode = null) {
+    // Use experimental moveBefore method if it's available.
+    if ('moveBefore' in container && container.isConnected === node.isConnected) try {
+        // @ts-ignore - moveBefore method is experimental.
+        container.moveBefore(node, refNode);
+        return;
+    } catch  {
+    // Ignore the error. This is an optimization, not a critical path.
+    }
+    // Get the focused element and check if the node contains the focused element.
     const focusedElement = document.activeElement;
-    const containsFocus = element.contains(focusedElement);
-    if (innerContainer) innerContainer.append(element);
-    container.append(innerContainer || element);
-    if (containsFocus && document.activeElement !== focusedElement) focusedElement.focus({
+    const containsFocus = node.contains(focusedElement);
+    // Insert the node before the reference node.
+    container.insertBefore(node, refNode);
+    // Restore focus if needed.
+    if (containsFocus && document.activeElement !== focusedElement && focusedElement instanceof HTMLElement) focusedElement.focus({
         preventScroll: true
     });
 }
@@ -2192,7 +2202,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
         this._startPhase = 4;
         for (const item of drag.items){
             // Append element within the container element if such is provided.
-            if (item.dragContainer !== item.elementContainer) (0, $3ba9e1e7a6850ba1$export$33e13bbfe889ab45)(item.element, item.dragContainer);
+            if (item.dragContainer !== item.elementContainer) (0, $04c2b0e183490645$export$541a53504b84a8d2)(item.dragContainer, item.element);
             // Freeze element's props if such are provided.
             if (item.frozenStyles) Object.assign(item.element.style, item.frozenStyles);
             // Set element's start position.
@@ -2402,7 +2412,7 @@ class $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882 {
                 // different container during the drag process. Also reset alignment
                 // and container offsets for those elements.
                 if (item.elementContainer !== item.dragContainer) {
-                    (0, $3ba9e1e7a6850ba1$export$33e13bbfe889ab45)(item.element, item.elementContainer);
+                    (0, $04c2b0e183490645$export$541a53504b84a8d2)(item.elementContainer, item.element);
                     item.alignmentOffset.x = 0;
                     item.alignmentOffset.y = 0;
                     item.containerOffset.x = 0;
@@ -4717,26 +4727,26 @@ class $31f0e541fc872793$export$33a3c5dbfd7c6c65 extends (0, $24bdaa72c91e807d$ex
 
 
 
-let $f3affae21016fe5a$var$zIndex = 0;
+let $442b81886a1bd3aa$var$zIndex = 0;
 // Initialize context and get elements
-const $f3affae21016fe5a$var$dndContext = new (0, $fa11c4bc76a2544e$export$2d5c5ceac203fc1e)();
-const $f3affae21016fe5a$var$draggableElements = [
+const $442b81886a1bd3aa$var$dndContext = new (0, $fa11c4bc76a2544e$export$2d5c5ceac203fc1e)();
+const $442b81886a1bd3aa$var$draggableElements = [
     ...document.querySelectorAll('.draggable')
 ];
-const $f3affae21016fe5a$var$droppableElements = [
+const $442b81886a1bd3aa$var$droppableElements = [
     ...document.querySelectorAll('.droppable')
 ];
 // Create droppables
-$f3affae21016fe5a$var$droppableElements.forEach((element)=>{
+$442b81886a1bd3aa$var$droppableElements.forEach((element)=>{
     const droppable = new (0, $8cf3b9f73d8dfc46$export$423ec2075359570a)(element);
     droppable.data.overIds = new Set();
     droppable.data.droppedIds = new Set();
-    $f3affae21016fe5a$var$dndContext.addDroppables([
+    $442b81886a1bd3aa$var$dndContext.addDroppables([
         droppable
     ]);
 });
 // Create draggables
-$f3affae21016fe5a$var$draggableElements.forEach((element)=>{
+$442b81886a1bd3aa$var$draggableElements.forEach((element)=>{
     const draggable = new (0, $0d0c72b4b6dc9dbb$export$f2a139e5d18b9882)([
         new (0, $e72ff61c97f755fe$export$b26af955418d6638)(element),
         new (0, $7fff4587bd07df96$export$436f6efcc297171)(element)
@@ -4747,13 +4757,13 @@ $f3affae21016fe5a$var$draggableElements.forEach((element)=>{
         startPredicate: ()=>!element.classList.contains('dragging'),
         onStart: ()=>{
             element.classList.add('dragging');
-            element.style.zIndex = `${++$f3affae21016fe5a$var$zIndex}`;
+            element.style.zIndex = `${++$442b81886a1bd3aa$var$zIndex}`;
         },
         onEnd: ()=>{
             element.classList.remove('dragging');
         }
     });
-    $f3affae21016fe5a$var$dndContext.addDraggables([
+    $442b81886a1bd3aa$var$dndContext.addDraggables([
         draggable
     ]);
 });
@@ -4761,7 +4771,7 @@ $f3affae21016fe5a$var$draggableElements.forEach((element)=>{
 // On drag start loop through all target droppables and remove the draggable id
 // from the dropped ids set. If the dropped ids set is empty, remove the
 // "draggable-dropped" class from the droppable element.
-$f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Start, (data)=>{
+$442b81886a1bd3aa$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Start, (data)=>{
     const { draggable: draggable, targets: targets } = data;
     targets.forEach((droppable)=>{
         droppable.data.droppedIds.delete(draggable.id);
@@ -4770,7 +4780,7 @@ $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb738
 });
 // On each collision change, keep track of the overIds set for each droppable
 // and update the "draggable-over" class based on the over ids set.
-$f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Collide, (data)=>{
+$442b81886a1bd3aa$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).Collide, (data)=>{
     const { draggable: draggable, contacts: contacts, removedContacts: removedContacts } = data;
     // Remove the draggable id from the droppables that stopped colliding and
     // remove the "draggable-over" class from the droppable element if there are
@@ -4794,7 +4804,7 @@ $f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb738
         ++i;
     }
 });
-$f3affae21016fe5a$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).End, (data)=>{
+$442b81886a1bd3aa$var$dndContext.on((0, $fa11c4bc76a2544e$export$360ab8c194eb7385).End, (data)=>{
     const { draggable: draggable, contacts: contacts } = data;
     // For the first colliding droppable (best match), add the draggable id to the
     // dropped ids set, add the "draggable-dropped" class to the droppable
