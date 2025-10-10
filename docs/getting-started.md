@@ -2,8 +2,7 @@
 
 ## Install
 
-DragDoll is distributed as ES modules with subpath imports. Each module has its
-own entry point so you can import only what you need.
+DragDoll is distributed as ES modules with subpath imports. Each module has its own entry point so you can import only what you need.
 
 There are three dependencies, [Eventti](https://github.com/niklasramo/eventti), [Tikki](https://github.com/niklasramo/tikki) and [Mezr](https://github.com/niklasramo/mezr), all of which are lightweight and performant libraries. Eventti is used for emitting all the events, Tikki is used for managing the animation loop when necessary and a few utilities from Mezr are used for calculating tricky DOM bits.
 
