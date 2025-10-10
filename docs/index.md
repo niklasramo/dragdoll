@@ -28,4 +28,4 @@ For complete drag and drop experiences, DragDoll also provides [`DndContext`](/d
 
 - **Utilizing Native Drag and Drop**: By not using the native HTML Drag and Drop API, DragDoll misses out on crucial features like file drag-and-drop and dragging items between different windows. It's still a bit unclear how to integrate the native API with DragDoll in a clear and ergonomic way, but figuring this out is a high priority for us.
 
-- **Guides & Plugins**: We're working on a few guides and plugins for common and more advanced use cases that will make DragDoll even more powerful.
+- **Support for other Frameworks**: Expect support for frontend frameworks like React, Vue, Svelte, etc. in the future.
