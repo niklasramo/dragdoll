@@ -2,7 +2,8 @@ import { assert } from 'chai';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
-import { Draggable, KeyboardSensor } from '../../../../src/index.js';
+import { Draggable } from 'dragdoll/draggable';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 
 export function optionCallbacks() {
   describe('callbacks', () => {

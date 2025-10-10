@@ -7,7 +7,8 @@ KeyboardSensor listens to keyboard events and normalizes them into unified drag 
 ## Example
 
 ```ts
-import { KeyboardSensor, Draggable } from 'dragdoll';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
+import { Draggable } from 'dragdoll/draggable';
 
 // Create a keyboard sensor instance that listens to keydown events and starts
 // emitting drag events when the provided element is focused and a start key

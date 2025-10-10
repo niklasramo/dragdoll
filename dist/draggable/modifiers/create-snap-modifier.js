@@ -1,0 +1,2 @@
+function e(e,t){return Math.round(e/t)*t}function t(t,n,r){let i=r-n,a=Math.abs(i);if(a>=t){let n=a%t;return e(i>0?i-n:i+n,t)}return 0}function n(e,n){return function(r,{item:i}){let a=i.data.__snap__||(i.data.__snap__={snapX:0,snapY:0,sensorX:0,sensorY:0});a.sensorX+=r.x,a.sensorY+=r.y;let o=t(e,a.snapX,a.sensorX),s=t(n,a.snapY,a.sensorY);return a.snapX+=o,a.snapY+=s,r.x=o,r.y=s,r}}export{n as createSnapModifier};
+//# sourceMappingURL=create-snap-modifier.js.map

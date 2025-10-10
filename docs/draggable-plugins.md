@@ -9,7 +9,9 @@ Note that you can't remove a plugin from a Draggable instance and can't add a pl
 Let's build an example plugin, which logs draggable events based on options we provide it:
 
 ```ts
-import { Draggable, KeyboardSensor, Sensor } from 'dragdoll';
+import { Draggable } from 'dragdoll/draggable';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
+import { Sensor } from 'dragdoll/sensors';
 
 const DRAGGABLE_EVENTS = [
   'preparestart',

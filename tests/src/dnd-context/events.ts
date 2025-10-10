@@ -2,7 +2,10 @@ import { assert } from 'chai';
 import { createTestElement } from '../utils/create-test-element.js';
 import { waitNextFrame } from '../utils/wait-next-frame.js';
 import { startDrag, endDrag, move } from '../utils/keyboard-helpers.js';
-import { DndContext, Draggable, Droppable, KeyboardSensor } from '../../../src/index.js';
+import { DndContext } from 'dragdoll/dnd-context';
+import { Draggable } from 'dragdoll/draggable';
+import { Droppable } from 'dragdoll/droppable';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 
 export function events() {
   describe('events', () => {

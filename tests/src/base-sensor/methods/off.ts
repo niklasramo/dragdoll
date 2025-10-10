@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { BaseSensor } from '../../../../src/index.js';
+import { BaseSensor } from 'dragdoll/sensors/base';
 
 export function methodOff() {
   describe('off', () => {

@@ -1,0 +1,9 @@
+import "../../types-Cmt4yuYh.js";
+import { Sensor } from "../../sensor-BDsc365V.js";
+import { DraggableModifier } from "../../draggable-DJlxblxx.js";
+
+//#region src/draggable/modifiers/create-snap-modifier.d.ts
+declare function createSnapModifier<S extends Sensor[], E extends S[number]['_events_type']>(cellWidth: number, cellHeight: number): DraggableModifier<S, E>;
+//#endregion
+export { createSnapModifier };
+//# sourceMappingURL=create-snap-modifier.d.ts.map

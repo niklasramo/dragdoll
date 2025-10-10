@@ -1,4 +1,7 @@
-import { Draggable, PointerSensor, KeyboardSensor, createSnapModifier } from '../../src';
+import { Draggable } from 'dragdoll/draggable';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
+import { createSnapModifier } from 'dragdoll/draggable/modifiers/snap';
 
 const GRID_WIDTH = 40;
 const GRID_HEIGHT = 40;

@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import { createFakeDrag } from '../../utils/create-fake-drag.js';
-import { PointerSensor } from '../../../../src/index.js';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
 
 export function optionSourceEvents() {
   describe('sourceEvents', () => {

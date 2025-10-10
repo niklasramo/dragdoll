@@ -7,7 +7,8 @@ BaseMotionSensor is an extendable base class tailor-made for scenarios where you
 ## Example
 
 ```ts
-import { BaseMotionSensor, Draggable } from 'dragdoll';
+import { BaseMotionSensor } from 'dragdoll/sensors/base-motion';
+import { Draggable } from 'dragdoll/draggable';
 
 // Create a custom controller sensor which starts moving the provided
 // element "virtually" in random direction with random speed when you press

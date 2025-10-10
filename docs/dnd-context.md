@@ -5,8 +5,11 @@ The `DndContext` class tracks collisions between draggables and droppables and d
 ## Example
 
 ```ts
-import { DndContext, Draggable, Droppable, CollisionDetector } from 'dragdoll';
-import { PointerSensor } from 'dragdoll';
+import { DndContext } from 'dragdoll/dnd-context';
+import { CollisionDetector } from 'dragdoll/dnd-context/collision-detector';
+import { Draggable } from 'dragdoll/draggable';
+import { Droppable } from 'dragdoll/droppable';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
 
 // Create a DndContext instance.
 const dndContext = new DndContext();

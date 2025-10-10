@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import { createTestElement } from '../utils/create-test-element.js';
-import { PointerSensor } from '../../../src/index.js';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
 
 export function misc() {
   describe('misc', () => {

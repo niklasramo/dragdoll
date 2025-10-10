@@ -1,4 +1,4 @@
-import { getDistance as _getDistance } from 'mezr';
+import { getDistance as _getDistance } from 'mezr/getDistance';
 
 import { createFullRect } from './create-full-rect.js';
 

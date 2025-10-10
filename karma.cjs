@@ -8,7 +8,7 @@ module.exports = function (config) {
       'karma-chrome-launcher',
       'karma-firefox-launcher',
     ],
-    files: ['./tests/dist/tests.global.js'],
+    files: ['./tests/dist/tests.umd.js'],
     reporters: ['mocha'],
     singleRun: true,
     logLevel: config.LOG_INFO,

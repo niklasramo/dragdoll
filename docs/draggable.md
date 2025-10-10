@@ -5,7 +5,9 @@ Draggable class acts as an orchestrator for any amount of sensors and moves DOM 
 ## Example
 
 ```ts
-import { PointerSensor, KeyboardSensor, Draggable } from 'dragdoll';
+import { Draggable } from 'dragdoll/draggable';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);

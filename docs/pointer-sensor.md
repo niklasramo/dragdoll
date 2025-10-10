@@ -5,7 +5,8 @@ PointerSensor listens to pointer events, touch events and mouse events and norma
 ## Example
 
 ```ts
-import { PointerSensor, Draggable } from 'dragdoll';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { Draggable } from 'dragdoll/draggable';
 
 // Create a pointer sensor instance which tracks pointer/touch/mouse events in
 // window and emits drag events.

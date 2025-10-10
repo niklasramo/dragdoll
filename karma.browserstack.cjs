@@ -13,7 +13,7 @@ module.exports = function (config) {
     basePath: '',
     frameworks: ['mocha'],
     plugins: ['karma-mocha', 'karma-mocha-reporter', 'karma-browserstack-launcher'],
-    files: ['./tests/dist/tests.global.js'],
+    files: ['./tests/dist/tests.umd.js'],
     reporters: ['mocha', 'BrowserStack'],
     logLevel: config.LOG_INFO,
     colors: true,
