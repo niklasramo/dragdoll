@@ -1,7 +1,12 @@
-import { Parcel } from '@parcel/core';
 import fs from 'fs/promises';
 import path from 'path';
 import { JSDOM } from 'jsdom';
+import { build } from 'rolldown';
+
+function createUmdName(exampleName) {
+  const base = exampleName.replace(/[^a-zA-Z0-9_$]/g, '_');
+  return base.length ? `Example_${base}` : 'ExampleBundle';
+}
 
 async function buildExampleDirectories() {
   const examplesDir = path.join(process.cwd(), './examples/');
@@ -13,32 +18,78 @@ async function buildExampleDirectories() {
 
     // Get dir name and path to index.html.
     const exampleName = dir.name;
-    const examplePath = path.join(examplesDir, exampleName, 'index.html');
+    const exampleHtmlPath = path.join(examplesDir, exampleName, 'index.html');
+    const exampleTsPath = path.join(examplesDir, exampleName, 'index.ts');
+    const exampleCssPath = path.join(examplesDir, exampleName, 'index.css');
+    const baseCssSrcPath = path.join(examplesDir, 'assets', 'base.css');
 
     // Make sure index.html exists in the directory.
     try {
-      await fs.access(examplePath);
+      await fs.access(exampleHtmlPath);
+    } catch {
+      continue;
+    }
+
+    // Ensure TS entry exists for bundling.
+    try {
+      await fs.access(exampleTsPath);
     } catch {
       continue;
     }
 
     // If index.html exists, proceed with the build.
     const outputDir = path.join(process.cwd(), `./docs/public/examples/${exampleName}`);
+    await fs.mkdir(outputDir, { recursive: true });
 
-    // Init and run the Parcel bundler.
-    const parcel = new Parcel({
-      entries: examplePath,
-      defaultConfig: '@parcel/config-default',
-      mode: 'production',
-      shouldDisableCache: true,
-      defaultTargetOptions: {
-        distDir: outputDir,
-        publicUrl: `./`,
-        sourceMaps: false,
-        shouldOptimize: false,
+    // Bundle JS with rolldown to UMD.
+    const umdName = createUmdName(exampleName);
+    await build({
+      input: exampleTsPath,
+      output: {
+        file: path.join(outputDir, 'index.umd.js'),
+        format: 'umd',
+        name: umdName,
       },
     });
-    await parcel.run();
+
+    // Copy CSS files.
+    try {
+      await fs.copyFile(exampleCssPath, path.join(outputDir, 'index.css'));
+    } catch {}
+    try {
+      await fs.copyFile(baseCssSrcPath, path.join(outputDir, 'base.css'));
+    } catch {}
+
+    // Rewrite and copy HTML.
+    try {
+      const html = await fs.readFile(exampleHtmlPath, 'utf8');
+      const dom = new JSDOM(html);
+      const { document } = dom.window;
+
+      // Replace base.css link to local file.
+      const links = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
+      links.forEach((link) => {
+        const href = link.getAttribute('href') || '';
+        if (href.includes('../assets/base.css')) {
+          link.setAttribute('href', 'base.css');
+        }
+      });
+
+      // Replace module script pointing to TS with UMD JS.
+      const scripts = Array.from(document.querySelectorAll('script'));
+      scripts.forEach((script) => {
+        const src = script.getAttribute('src') || '';
+        if (src.endsWith('index.ts')) {
+          script.removeAttribute('type');
+          script.setAttribute('src', 'index.umd.js');
+        }
+      });
+
+      await fs.writeFile(path.join(outputDir, 'index.html'), dom.serialize());
+    } catch {
+      // TODO: Consider logging HTML processing errors per example.
+    }
+
     console.log(`Built example: ${exampleName}`);
   }
 }
@@ -82,9 +133,6 @@ async function buildExamplesMarkdown() {
       const { document } = dom.window;
       const title = document.title;
       const description = document.querySelector('meta[name="description"]')?.content || '';
-
-      // Modify the index.ts content to include the correct import path.
-      indexTsContent = indexTsContent.replace('../../src', 'dragdoll');
 
       // Modify the base.css link from the HTML content.
       indexHtmlContent = indexHtmlContent.replace('../assets/base.css', 'base.css');

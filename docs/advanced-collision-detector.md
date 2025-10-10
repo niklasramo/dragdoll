@@ -7,7 +7,8 @@ The `AdvancedCollisionDetector` extends the base [`CollisionDetector`](/collisio
 ## Example
 
 ```ts
-import { DndContext, AdvancedCollisionDetector } from 'dragdoll';
+import { DndContext } from 'dragdoll/dnd-context';
+import { AdvancedCollisionDetector } from 'dragdoll/dnd-context/advanced-collision-detector';
 
 // By default, uses relative visibility logic (relative to the first common clip
 // container (FCCC) between the draggable and droppable).

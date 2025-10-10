@@ -15,7 +15,9 @@ You can store temporary state data, which exists only for the duration of the dr
 ## Example
 
 ```ts
-import { Draggable, PointerSensor, KeyboardSensor } from 'dragdoll';
+import { Draggable } from 'dragdoll/draggable';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);

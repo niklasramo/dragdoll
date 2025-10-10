@@ -5,7 +5,7 @@ The `Droppable` class defines drop targets where draggable elements can be dropp
 ## Example
 
 ```ts
-import { Droppable } from 'dragdoll';
+import { Droppable } from 'dragdoll/droppable';
 
 const dropZone = document.querySelector('.drop-zone') as HTMLElement;
 const droppable = new Droppable(dropZone, {

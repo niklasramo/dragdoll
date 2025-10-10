@@ -2,7 +2,9 @@
 
 ## Install
 
-DragDoll has three dependencies, [Eventti](https://github.com/niklasramo/eventti), [Tikki](https://github.com/niklasramo/tikki) and [Mezr](https://github.com/niklasramo/mezr), all of which are lightweight and performant libraries. Eventti is used for emitting all the events, Tikki is used for managing the animation loop when necessary and Mezr is used for calculating tricky DOM bits.
+DragDoll is distributed as ES modules with subpath imports. Each module has its own entry point so you can import only what you need.
+
+There are three dependencies, [Eventti](https://github.com/niklasramo/eventti), [Tikki](https://github.com/niklasramo/tikki) and [Mezr](https://github.com/niklasramo/mezr), all of which are lightweight and performant libraries. Eventti is used for emitting all the events, Tikki is used for managing the animation loop when necessary and a few utilities from Mezr are used for calculating tricky DOM bits.
 
 ### Node
 
@@ -16,15 +18,19 @@ $ npm install dragdoll eventti tikki mezr
 <script type="importmap">
   {
     "imports": {
-      "eventti": "https://cdn.jsdelivr.net/npm/eventti@4.0.0/dist/eventti.js",
-      "tikki": "https://cdn.jsdelivr.net/npm/tikki@3.0.1/dist/tikki.js",
-      "mezr": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/index.js",
-      "dragdoll": "https://cdn.jsdelivr.net/npm/dragdoll@0.5.0/dist/dragdoll.js"
+      "eventti": "https://cdn.jsdelivr.net/npm/eventti@4.0.3/dist/eventti.js",
+      "tikki": "https://cdn.jsdelivr.net/npm/tikki@3.0.2/dist/tikki.js",
+      "mezr/getRect": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getRect.js",
+      "mezr/getDistance": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getDistance.js",
+      "mezr/getOffsetContainer": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getOffsetContainer.js",
+      "dragdoll/draggable": "https://cdn.jsdelivr.net/npm/dragdoll@0.8.0/dist/draggable.js",
+      "dragdoll/sensors/pointer": "https://cdn.jsdelivr.net/npm/dragdoll@0.8.0/dist/sensors/pointer.js"
     }
   }
 </script>
 <script type="module">
-  import { Draggable, PointerSensor } from 'dragdoll';
+  import { Draggable } from 'dragdoll/draggable';
+  import { PointerSensor } from 'dragdoll/sensors/pointer';
   // etc...
 </script>
 ```
@@ -32,7 +38,9 @@ $ npm install dragdoll eventti tikki mezr
 ## Usage
 
 ```ts
-import { PointerSensor, KeyboardSensor, Draggable } from 'dragdoll';
+import { Draggable } from 'dragdoll/draggable';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 
 // Let's assume that you have this element in DOM and you want to drag it
 // around.

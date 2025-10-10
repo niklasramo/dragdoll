@@ -1,6 +1,6 @@
 {
   "name": "dragdoll",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Modular and extensible drag & drop system.",
   "keywords": [
     "drag",
@@ -20,12 +20,81 @@
     "url": "git@github.com:niklasramo/dragdoll.git"
   },
   "type": "module",
-  "source": "./src/index.ts",
-  "main": "./dist/dragdoll.js",
+  "sideEffects": [
+    "tests/**"
+  ],
   "exports": {
-    ".": {
-      "import": "./dist/dragdoll.js",
-      "require": "./dist/dragdoll.cjs"
+    "./sensors": {
+      "types": "./dist/sensors.d.ts",
+      "import": "./dist/sensors.js"
+    },
+    "./sensors/base": {
+      "types": "./dist/sensors/base.d.ts",
+      "import": "./dist/sensors/base.js"
+    },
+    "./sensors/base-motion": {
+      "types": "./dist/sensors/base-motion.d.ts",
+      "import": "./dist/sensors/base-motion.js"
+    },
+    "./sensors/pointer": {
+      "types": "./dist/sensors/pointer.d.ts",
+      "import": "./dist/sensors/pointer.js"
+    },
+    "./sensors/keyboard": {
+      "types": "./dist/sensors/keyboard.d.ts",
+      "import": "./dist/sensors/keyboard.js"
+    },
+    "./sensors/keyboard-motion": {
+      "types": "./dist/sensors/keyboard-motion.d.ts",
+      "import": "./dist/sensors/keyboard-motion.js"
+    },
+    "./draggable": {
+      "types": "./dist/draggable.d.ts",
+      "import": "./dist/draggable.js"
+    },
+    "./draggable/helpers/create-touch-delay-predicate": {
+      "types": "./dist/draggable/helpers/create-touch-delay-predicate.d.ts",
+      "import": "./dist/draggable/helpers/create-touch-delay-predicate.js"
+    },
+    "./draggable/modifiers/snap": {
+      "types": "./dist/draggable/modifiers/snap.d.ts",
+      "import": "./dist/draggable/modifiers/snap.js"
+    },
+    "./draggable/modifiers/containment": {
+      "types": "./dist/draggable/modifiers/containment.d.ts",
+      "import": "./dist/draggable/modifiers/containment.js"
+    },
+    "./draggable/plugins/auto-scroll": {
+      "types": "./dist/draggable/plugins/auto-scroll.d.ts",
+      "import": "./dist/draggable/plugins/auto-scroll.js"
+    },
+    "./dnd-context": {
+      "types": "./dist/dnd-context.d.ts",
+      "import": "./dist/dnd-context.js"
+    },
+    "./dnd-context/collision-detector": {
+      "types": "./dist/dnd-context/collision-detector.d.ts",
+      "import": "./dist/dnd-context/collision-detector.js"
+    },
+    "./dnd-context/advanced-collision-detector": {
+      "types": "./dist/dnd-context/advanced-collision-detector.d.ts",
+      "import": "./dist/dnd-context/advanced-collision-detector.js"
+    },
+    "./droppable": {
+      "types": "./dist/droppable.d.ts",
+      "import": "./dist/droppable.js"
+    },
+    "./auto-scroll": {
+      "types": "./dist/auto-scroll.d.ts",
+      "import": "./dist/auto-scroll.js"
+    },
+    "./singletons/auto-scroll": {
+      "types": "./dist/singletons/auto-scroll.d.ts",
+      "import": "./dist/singletons/auto-scroll.js"
+    },
+    "./singletons/ticker": {
+      "types": "./dist/singletons/ticker.d.ts",
+      "import": "./dist/singletons/ticker.js"
     }
   },
   "files": [
@@ -39,10 +108,10 @@
     "main": false
   },
   "scripts": {
-    "build": "npm run clean-dist && npm run ts-check && npm run build-lib && npm run build-tests && npm run build-examples && npm run format && npm run size",
+    "build": "npm run clean-dist && npm run build-lib && npm run build-tests && npm run build-examples && npm run format && npm run ts-check",
     "build-examples": "node ./scripts/build-examples.mjs",
-    "build-lib": "tsup --config ./tsup.config.lib.ts",
-    "build-tests": "tsup --config ./tsup.config.tests.ts",
+    "build-lib": "tsdown --config ./tsdown.config.lib.ts",
+    "build-tests": "tsdown --config ./tsdown.config.tests.ts",
     "clean-dist": "rimraf ./dist && rimraf ./tests/dist && rimraf ./docs/public/examples",
     "dev": "vitepress dev docs --host",
     "docs-build": "vitepress build docs",
@@ -51,20 +120,17 @@
     "lint": "npm run prettier-check && npm run ts-check",
     "prettier-check": "prettier --check --no-error-on-unmatched-pattern \"./**/*\"",
     "prettier-fix": "prettier --write --no-error-on-unmatched-pattern \"./**/*\"",
-    "size": "for file in ./dist/*.{js,cjs}; do echo $file && gzip-size $file --include-original; done;",
     "test": "karma start karma.browserstack.cjs",
     "test-local": "karma start karma.cjs",
     "ts-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@parcel/config-default": "2.16.0",
     "@types/chai": "5.2.2",
     "@types/mocha": "10.0.10",
-    "chai": "5.2.1",
+    "chai": "6.2.0",
     "cpy-cli": "6.0.0",
     "dotenv": "17.2.3",
     "eventti": "4.0.3",
-    "gzip-size-cli": "5.1.0",
     "jsdom": "27.0.0",
     "karma": "6.4.4",
     "karma-browserstack-launcher": "1.6.0",
@@ -74,11 +140,11 @@
     "karma-mocha-reporter": "2.2.5",
     "mezr": "1.1.0",
     "mocha": "11.7.4",
-    "parcel": "2.16.0",
     "prettier": "3.6.2",
     "rimraf": "6.0.1",
+    "rolldown": "1.0.0-beta.42",
     "tikki": "3.0.2",
-    "tsup": "8.5.0",
+    "tsdown": "0.15.6",
     "typescript": "5.9.3",
     "vitepress": "1.6.4",
     "vue": "3.5.22"

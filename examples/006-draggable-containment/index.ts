@@ -1,9 +1,7 @@
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createContainmentModifier,
-} from '../../src';
+import { Draggable } from 'dragdoll/draggable';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
+import { createContainmentModifier } from 'dragdoll/draggable/modifiers/containment';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);

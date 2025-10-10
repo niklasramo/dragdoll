@@ -9,7 +9,8 @@ For more advanced collision detection, you can extend the `CollisionDetector` cl
 ## Example
 
 ```ts
-import { CollisionDetector, DndContext } from 'dragdoll';
+import { CollisionDetector } from 'dragdoll/dnd-context/collision-detector';
+import { DndContext } from 'dragdoll/dnd-context';
 
 interface CustomCollisionData extends CollisionData {
   foo: string;
@@ -146,8 +147,8 @@ interface CollisionData {
 }
 ```
 
-You can also import the interface from the `dragdoll` package:
+You can also import the interface from the `dragdoll` subpath:
 
 ```ts
-import { CollisionData } from 'dragdoll';
+import { CollisionData } from 'dragdoll/dnd-context/collision-detector';
 ```

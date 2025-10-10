@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { createFakeDrag } from '../../utils/create-fake-drag.js';
-import { PointerSensor, PointerSensorStartEvent } from '../../../../src/index.js';
+import { PointerSensor, type PointerSensorStartEvent } from 'dragdoll/sensors/pointer';
 
 export function eventStart() {
   describe('start', () => {

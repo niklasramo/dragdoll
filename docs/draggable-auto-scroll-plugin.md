@@ -7,7 +7,10 @@ Adds autoscrolling superpowers to a Draggable instance.
 ## Example
 
 ```ts
-import { PointerSensor, KeyboardSensor, Draggable, autoScrollPlugin } from 'dragdoll';
+import { Draggable } from 'dragdoll/draggable';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
+import { autoScrollPlugin } from 'dragdoll/draggable/plugins/auto-scroll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
@@ -46,7 +49,7 @@ Using the AutoScroll plugin very is simple:
 3. The plugin will get registered to Draggable instance as `"autoscroll"` (accessible via `draggable.plugins.autoscroll`).
 
 ```ts
-import { autoScrollPlugin } from 'dragdoll';
+import { autoScrollPlugin } from 'dragdoll/draggable/plugins/auto-scroll';
 
 draggable.use(
   autoScrollPlugin({

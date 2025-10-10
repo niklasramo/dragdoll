@@ -9,7 +9,9 @@ A minimal setup with four draggable elements using pointer and keyboard (motion)
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
+import { Draggable } from 'dragdoll/draggable';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
 
 let zIndex = 0;
 
@@ -215,7 +217,10 @@ This example demonstrates quite a lot of things. We use a drag container and fre
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable, PointerSensor, KeyboardMotionSensor, autoScrollPlugin } from 'dragdoll';
+import { Draggable } from 'dragdoll/draggable';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
+import { autoScrollPlugin } from 'dragdoll/draggable/plugins/auto-scroll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const dragContainer = document.querySelector('.drag-container') as HTMLElement;
@@ -408,7 +413,10 @@ Draggable automagically handles (2D) transformed ancestors and the dragged eleme
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable, PointerSensor, KeyboardMotionSensor, autoScrollPlugin } from 'dragdoll';
+import { Draggable } from 'dragdoll/draggable';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
+import { autoScrollPlugin } from 'dragdoll/draggable/plugins/auto-scroll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const dragContainer = document.querySelector('.drag-container') as HTMLElement;
@@ -625,7 +633,9 @@ Here we have two elements which can be dragged on one axis only. You can use thi
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
+import { Draggable } from 'dragdoll/draggable';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
 
 let zIndex = 0;
 
@@ -827,7 +837,10 @@ A simple demo on how to use the built-in snap modifier.
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable, PointerSensor, KeyboardSensor, createSnapModifier } from 'dragdoll';
+import { Draggable } from 'dragdoll/draggable';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
+import { createSnapModifier } from 'dragdoll/draggable/modifiers/snap';
 
 const GRID_WIDTH = 40;
 const GRID_HEIGHT = 40;
@@ -989,12 +1002,10 @@ A simple demo on how to use the built-in containment modifier. The first argumen
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  createContainmentModifier,
-} from 'dragdoll';
+import { Draggable } from 'dragdoll/draggable';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
+import { createContainmentModifier } from 'dragdoll/draggable/modifiers/containment';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
@@ -1171,7 +1182,9 @@ Here we use a custom position modifier to align the dragged element's center wit
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
+import { Draggable } from 'dragdoll/draggable';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
@@ -1360,7 +1373,9 @@ A simple example on how to create a drag handle. There is no built-in 'handle' o
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
+import { Draggable } from 'dragdoll/draggable';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const handle = element.querySelector('.handle') as HTMLElement;
@@ -1572,7 +1587,9 @@ A commong drag and drop pattern is using a temporary 'ghost' element during the 
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
+import { Draggable } from 'dragdoll/draggable';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
@@ -1779,7 +1796,9 @@ Sometimes you might want to drag multiple elements at once and DragDoll provides
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable, PointerSensor, KeyboardMotionSensor } from 'dragdoll';
+import { Draggable } from 'dragdoll/draggable';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
 
 const draggableElements = [...document.querySelectorAll('.draggable')] as HTMLElement[];
 
@@ -1987,19 +2006,16 @@ body {
 
 A basic example of using DndContext with Draggable and Droppable elements. Here we highlight the dropzone element that overlaps most with the dragged element.
 
-<div class="example"><iframe src="/dragdoll/examples/011-dnd-context/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/011-dnd-context/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/examples/011-dnd-basic/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/011-dnd-basic/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
 ```ts [index.ts]
-import {
-  Draggable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  DndContext,
-  Droppable,
-  DndContextEventType,
-} from 'dragdoll';
+import { DndContext, DndContextEventType } from 'dragdoll/dnd-context';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
+import { Droppable } from 'dragdoll/droppable';
+import { Draggable } from 'dragdoll/draggable';
 
 let zIndex = 0;
 
@@ -2325,23 +2341,22 @@ body {
 
 Advanced collision detection with scrollable droppable lists. Here we can see how the advanced collision detector respects the visibility of the droppables. Only the visible parts of the droppables (as seen from the perspective of the draggable) are considered for collisions.
 
-<div class="example"><iframe src="/dragdoll/examples/012-advanced-collision-detector/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/012-advanced-collision-detector/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/examples/012-dnd-advanced-collision-detector/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/012-dnd-advanced-collision-detector/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
 ```ts [index.ts]
 import { getOffset } from 'mezr';
+import { DndContext, DndContextEventType } from 'dragdoll/dnd-context';
 import {
-  DndContext,
-  Draggable,
-  Droppable,
-  PointerSensor,
-  KeyboardMotionSensor,
-  DndContextEventType,
   AdvancedCollisionDetector,
   AdvancedCollisionData,
-  autoScrollPlugin,
-} from 'dragdoll';
+} from 'dragdoll/dnd-context/advanced-collision-detector';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
+import { Droppable } from 'dragdoll/droppable';
+import { Draggable } from 'dragdoll/draggable';
+import { autoScrollPlugin } from 'dragdoll/draggable/plugins/auto-scroll';
 
 // Keep track of the best match droppable.
 const bestMatchMap: Map<Draggable<any>, Droppable> = new Map();

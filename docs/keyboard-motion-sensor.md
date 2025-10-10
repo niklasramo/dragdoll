@@ -7,7 +7,8 @@ KeyboardMotionSensor uses keyboard as the input for controlling drag movement sm
 ## Example
 
 ```ts
-import { KeyboardMotionSensor, Draggable } from 'dragdoll';
+import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
+import { Draggable } from 'dragdoll/draggable';
 
 // Create a keyboard motion sensor instance that listens to keydown events and
 // starts emitting drag events when the provided element is focused and a start

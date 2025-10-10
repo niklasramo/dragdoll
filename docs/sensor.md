@@ -5,7 +5,7 @@ A sensor, in the context of DragDoll, is conceptually a constrained event emitte
 DragDoll provides a TypeScript interface for validating base functionality of a sensor. Your custom sensor can extend the Sensor API as much as it needs as long as it doesn't break it.
 
 ```ts
-import { Sensor, SensorEvents } from 'dragdoll';
+import { Sensor, SensorEvents } from 'dragdoll/sensors';
 
 class CustomSensor<E extends SensorEvents = SensorEvents> implements Sensor<E> {
   declare _events_type: E;
@@ -88,7 +88,7 @@ The field is not actually outputted to the JavaScript code, so it doesn't affect
 If you don't use TypeScript, you can ignore this field completely.
 
 ```ts
-import { Sensor, SensorEvents } from 'dragdoll';
+import { Sensor, SensorEvents } from 'dragdoll/sensors';
 
 class CustomSensor<E extends SensorEvents = SensorEvents> implements Sensor<E> {
   declare _events_type: E;

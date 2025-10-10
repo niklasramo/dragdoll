@@ -1,6 +1,8 @@
 import { assert } from 'chai';
 import { createTestElement } from '../../utils/create-test-element.js';
-import { Draggable, KeyboardSensor, Sensor } from '../../../../src/index.js';
+import { Draggable } from 'dragdoll/draggable';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
+import { Sensor } from 'dragdoll/sensors';
 
 export function methodUse() {
   describe('use', () => {

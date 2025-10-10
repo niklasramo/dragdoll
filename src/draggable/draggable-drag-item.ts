@@ -6,7 +6,7 @@ import type { Sensor } from '../sensors/sensor.js';
 
 import type { CSSProperties, Point, Rect } from '../types.js';
 
-import { getOffsetContainer } from 'mezr';
+import { getOffsetContainer } from 'mezr/getOffsetContainer';
 
 import { getStyle } from '../utils/get-style.js';
 

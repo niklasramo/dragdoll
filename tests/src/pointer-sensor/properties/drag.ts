@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { PointerSensor } from '../../../../src/index.js';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
 import { createFakeDrag } from '../../utils/create-fake-drag.js';
 import { createTestElement } from '../../utils/create-test-element.js';
 

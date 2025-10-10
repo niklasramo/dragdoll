@@ -16,7 +16,10 @@ For `mouse` and `pen` events the predicate is resolved immediately. For `touch` 
 ### Examples
 
 ```ts
-import { Draggable, PointerSensor, KeyboardSensor, createTouchDelayPredicate } from 'dragdoll';
+import { Draggable } from 'dragdoll/draggable';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
+import { createTouchDelayPredicate } from 'dragdoll/draggable/helpers/create-touch-delay-predicate';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
