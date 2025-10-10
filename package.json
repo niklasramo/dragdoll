@@ -25,52 +25,52 @@
   ],
   "exports": {
     "./sensors": {
-      "types": "./dist/sensors/sensor.d.ts",
-      "import": "./dist/sensors/sensor.js"
+      "types": "./dist/sensors.d.ts",
+      "import": "./dist/sensors.js"
     },
     "./sensors/base": {
-      "types": "./dist/sensors/base-sensor.d.ts",
-      "import": "./dist/sensors/base-sensor.js"
+      "types": "./dist/sensors/base.d.ts",
+      "import": "./dist/sensors/base.js"
     },
     "./sensors/base-motion": {
-      "types": "./dist/sensors/base-motion-sensor.d.ts",
-      "import": "./dist/sensors/base-motion-sensor.js"
+      "types": "./dist/sensors/base-motion.d.ts",
+      "import": "./dist/sensors/base-motion.js"
     },
     "./sensors/pointer": {
-      "types": "./dist/sensors/pointer-sensor.d.ts",
-      "import": "./dist/sensors/pointer-sensor.js"
+      "types": "./dist/sensors/pointer.d.ts",
+      "import": "./dist/sensors/pointer.js"
     },
     "./sensors/keyboard": {
-      "types": "./dist/sensors/keyboard-sensor.d.ts",
-      "import": "./dist/sensors/keyboard-sensor.js"
+      "types": "./dist/sensors/keyboard.d.ts",
+      "import": "./dist/sensors/keyboard.js"
     },
     "./sensors/keyboard-motion": {
-      "types": "./dist/sensors/keyboard-motion-sensor.d.ts",
-      "import": "./dist/sensors/keyboard-motion-sensor.js"
+      "types": "./dist/sensors/keyboard-motion.d.ts",
+      "import": "./dist/sensors/keyboard-motion.js"
     },
     "./draggable": {
-      "types": "./dist/draggable/draggable.d.ts",
-      "import": "./dist/draggable/draggable.js"
+      "types": "./dist/draggable.d.ts",
+      "import": "./dist/draggable.js"
     },
     "./draggable/helpers/create-touch-delay-predicate": {
       "types": "./dist/draggable/helpers/create-touch-delay-predicate.d.ts",
       "import": "./dist/draggable/helpers/create-touch-delay-predicate.js"
     },
     "./draggable/modifiers/snap": {
-      "types": "./dist/draggable/modifiers/create-snap-modifier.d.ts",
-      "import": "./dist/draggable/modifiers/create-snap-modifier.js"
+      "types": "./dist/draggable/modifiers/snap.d.ts",
+      "import": "./dist/draggable/modifiers/snap.js"
     },
     "./draggable/modifiers/containment": {
-      "types": "./dist/draggable/modifiers/create-containment-modifier.d.ts",
-      "import": "./dist/draggable/modifiers/create-containment-modifier.js"
+      "types": "./dist/draggable/modifiers/containment.d.ts",
+      "import": "./dist/draggable/modifiers/containment.js"
     },
     "./draggable/plugins/auto-scroll": {
-      "types": "./dist/draggable/plugins/auto-scroll-plugin.d.ts",
-      "import": "./dist/draggable/plugins/auto-scroll-plugin.js"
+      "types": "./dist/draggable/plugins/auto-scroll.d.ts",
+      "import": "./dist/draggable/plugins/auto-scroll.js"
     },
     "./dnd-context": {
-      "types": "./dist/dnd-context/dnd-context.d.ts",
-      "import": "./dist/dnd-context/dnd-context.js"
+      "types": "./dist/dnd-context.d.ts",
+      "import": "./dist/dnd-context.js"
     },
     "./dnd-context/collision-detector": {
       "types": "./dist/dnd-context/collision-detector.d.ts",
@@ -81,12 +81,12 @@
       "import": "./dist/dnd-context/advanced-collision-detector.js"
     },
     "./droppable": {
-      "types": "./dist/droppable/droppable.d.ts",
-      "import": "./dist/droppable/droppable.js"
+      "types": "./dist/droppable.d.ts",
+      "import": "./dist/droppable.js"
     },
     "./auto-scroll": {
-      "types": "./dist/auto-scroll/auto-scroll.d.ts",
-      "import": "./dist/auto-scroll/auto-scroll.js"
+      "types": "./dist/auto-scroll.d.ts",
+      "import": "./dist/auto-scroll.js"
     },
     "./singletons/auto-scroll": {
       "types": "./dist/singletons/auto-scroll.d.ts",

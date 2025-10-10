@@ -1090,7 +1090,7 @@ var n$1 = class {
 };
 
 //#endregion
-//#region dist/sensors/keyboard-sensor.js
+//#region dist/sensors/keyboard.js
 const n$2 = {
 	moveDistance: 25,
 	cancelOnBlur: !0,
@@ -1217,7 +1217,7 @@ var r = class extends n$1 {
 };
 
 //#endregion
-//#region dist/draggable/modifiers/create-snap-modifier.js
+//#region dist/draggable/modifiers/snap.js
 function e(e$4, t$4) {
 	return Math.round(e$4 / t$4) * t$4;
 }

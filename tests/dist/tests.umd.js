@@ -4690,7 +4690,7 @@ var z = class {
 };
 
 //#endregion
-//#region dist/sensors/keyboard-sensor.js
+//#region dist/sensors/keyboard.js
 const n$6 = {
 	moveDistance: 25,
 	cancelOnBlur: !0,
@@ -8622,7 +8622,7 @@ var a = class {
 };
 
 //#endregion
-//#region dist/dnd-context/dnd-context.js
+//#region dist/dnd-context.js
 var s$1 = function(e$5) {
 	return e$5[e$5.Idle = 0] = `Idle`, e$5[e$5.Computing = 1] = `Computing`, e$5[e$5.Computed = 2] = `Computed`, e$5[e$5.Emitting = 3] = `Emitting`, e$5;
 }(s$1 || {});

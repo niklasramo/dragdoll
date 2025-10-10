@@ -1135,7 +1135,7 @@ var i$1 = class extends n$3 {
 };
 
 //#endregion
-//#region dist/sensors/keyboard-motion-sensor.js
+//#region dist/sensors/keyboard-motion.js
 const n$2 = [
 	`start`,
 	`cancel`,
@@ -1837,7 +1837,7 @@ var N = class {
 const t = new N();
 
 //#endregion
-//#region dist/draggable/plugins/auto-scroll-plugin.js
+//#region dist/draggable/plugins/auto-scroll.js
 const r = {
 	x: 0,
 	y: 0

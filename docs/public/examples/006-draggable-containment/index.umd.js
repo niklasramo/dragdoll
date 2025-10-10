@@ -1134,7 +1134,7 @@ var i$1 = class extends n$2 {
 };
 
 //#endregion
-//#region dist/sensors/keyboard-motion-sensor.js
+//#region dist/sensors/keyboard-motion.js
 const n$1 = [
 	`start`,
 	`cancel`,
@@ -1279,7 +1279,7 @@ function e(e$4, t$3 = {
 }
 
 //#endregion
-//#region dist/draggable/modifiers/create-containment-modifier.js
+//#region dist/draggable/modifiers/containment.js
 const n = e(), r = e(), i = {
 	change: 0,
 	drift: 0

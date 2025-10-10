@@ -53,4 +53,4 @@ declare class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEven
 }
 //#endregion
 export { KeyboardSensor, KeyboardSensorCancelEvent, KeyboardSensorDestroyEvent, KeyboardSensorEndEvent, KeyboardSensorEvents, KeyboardSensorMoveEvent, KeyboardSensorPredicate, KeyboardSensorSettings, KeyboardSensorStartEvent, keyboardSensorDefaults };
-//# sourceMappingURL=keyboard-sensor.d.ts.map
+//# sourceMappingURL=keyboard.d.ts.map

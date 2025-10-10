@@ -24,8 +24,8 @@ $ npm install dragdoll eventti tikki mezr
       "mezr/getRect": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getRect.js",
       "mezr/getDistance": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getDistance.js",
       "mezr/getOffsetContainer": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getOffsetContainer.js",
-      "dragdoll/draggable": "https://cdn.jsdelivr.net/npm/dragdoll@0.8.0/dist/draggable/draggable.js",
-      "dragdoll/sensors/pointer": "https://cdn.jsdelivr.net/npm/dragdoll@0.8.0/dist/sensors/pointer-sensor.js"
+      "dragdoll/draggable": "https://cdn.jsdelivr.net/npm/dragdoll@0.8.0/dist/draggable.js",
+      "dragdoll/sensors/pointer": "https://cdn.jsdelivr.net/npm/dragdoll@0.8.0/dist/sensors/pointer.js"
     }
   }
 </script>

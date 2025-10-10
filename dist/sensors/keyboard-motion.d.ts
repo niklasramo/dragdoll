@@ -49,4 +49,4 @@ declare class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboa
 }
 //#endregion
 export { KeyboardMotionSensor, KeyboardMotionSensorEvents, KeyboardMotionSensorSettings, keyboardMotionSensorDefaults };
-//# sourceMappingURL=keyboard-motion-sensor.d.ts.map
+//# sourceMappingURL=keyboard-motion.d.ts.map

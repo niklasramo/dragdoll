@@ -1134,7 +1134,7 @@ var i = class extends n$1 {
 };
 
 //#endregion
-//#region dist/sensors/keyboard-motion-sensor.js
+//#region dist/sensors/keyboard-motion.js
 const n = [
 	`start`,
 	`cancel`,

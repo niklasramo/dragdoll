@@ -1188,7 +1188,7 @@ var a$3 = class {
 };
 
 //#endregion
-//#region dist/dnd-context/dnd-context.js
+//#region dist/dnd-context.js
 var s$4 = function(e$6) {
 	return e$6[e$6.Idle = 0] = `Idle`, e$6[e$6.Computing = 1] = `Computing`, e$6[e$6.Computed = 2] = `Computed`, e$6[e$6.Emitting = 3] = `Emitting`, e$6;
 }(s$4 || {});
@@ -1833,7 +1833,7 @@ var i$1 = class extends n$4 {
 };
 
 //#endregion
-//#region dist/sensors/keyboard-motion-sensor.js
+//#region dist/sensors/keyboard-motion.js
 const n$3 = [
 	`start`,
 	`cancel`,
@@ -2328,7 +2328,7 @@ var N = class {
 const t = new N();
 
 //#endregion
-//#region dist/draggable/plugins/auto-scroll-plugin.js
+//#region dist/draggable/plugins/auto-scroll.js
 const r = {
 	x: 0,
 	y: 0

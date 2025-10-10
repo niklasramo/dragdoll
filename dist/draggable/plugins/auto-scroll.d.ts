@@ -47,4 +47,4 @@ declare function autoScrollPlugin<S extends Sensor[], E extends S[number]['_even
 };
 //#endregion
 export { DraggableAutoScroll, DraggableAutoScrollOptions, DraggableAutoScrollSettings, autoScrollPlugin };
-//# sourceMappingURL=auto-scroll-plugin.d.ts.map
+//# sourceMappingURL=auto-scroll.d.ts.map

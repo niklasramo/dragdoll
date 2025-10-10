@@ -1017,7 +1017,7 @@ var a$2 = class {
 };
 
 //#endregion
-//#region dist/dnd-context/dnd-context.js
+//#region dist/dnd-context.js
 var s$1 = function(e$4) {
 	return e$4[e$4.Idle = 0] = `Idle`, e$4[e$4.Computing = 1] = `Computing`, e$4[e$4.Computed = 2] = `Computed`, e$4[e$4.Emitting = 3] = `Emitting`, e$4;
 }(s$1 || {});
@@ -1526,7 +1526,7 @@ var i = class extends n$2 {
 };
 
 //#endregion
-//#region dist/sensors/keyboard-motion-sensor.js
+//#region dist/sensors/keyboard-motion.js
 const n$1 = [
 	`start`,
 	`cancel`,

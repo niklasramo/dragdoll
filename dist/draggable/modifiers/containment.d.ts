@@ -6,4 +6,4 @@ import { DraggableModifier, DraggableModifierData } from "../../draggable-DJlxbl
 declare function createContainmentModifier<S extends Sensor[], E extends S[number]['_events_type']>(getContainerRect: (data: DraggableModifierData<S, E>) => Rect, trackSensorDrift?: boolean | ((data: DraggableModifierData<S, E>) => boolean)): DraggableModifier<S, E>;
 //#endregion
 export { createContainmentModifier };
-//# sourceMappingURL=create-containment-modifier.d.ts.map
+//# sourceMappingURL=containment.d.ts.map
