@@ -38,10 +38,10 @@ https://niklasramo.github.io/dragdoll/
 
 ## Repo structure
 
-- `dragdoll-root` - Root package.
-- [`packages/dragdoll`](packages/dragdoll) - The core dragdoll package.
-- [`packages/dragdoll-docs`](packages/dragdoll-docs) - Docs for the dragdoll package.
-- [`packages/dragdoll-tests`](packages/dragdoll-tests) - Tests for the dragdoll package.
+- [`dragdoll-root`](./) - Root package.
+- [`packages/dragdoll`](./packages/dragdoll) - The core dragdoll package.
+- [`packages/dragdoll-docs`](./packages/dragdoll-docs) - Docs for the dragdoll package.
+- [`packages/dragdoll-tests`](./packages/dragdoll-tests) - Tests for the dragdoll package.
 
 ## Copyright
 
