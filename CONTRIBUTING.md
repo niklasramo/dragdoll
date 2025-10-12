@@ -30,7 +30,7 @@ Please [create an issue](https://github.com/niklasramo/dragdoll/issues/new) and 
        - Runs tests (from `dragdoll-tests`) locally in Chrome and Firefox. You have to have them both installed.
 4. **Do the updates.**
    - Remember scope. Don't refactor things that are not related to the pull request.
-   - After you're done update unit tests and docs (`README.md`) if necessary.
+   - After you're done update tests (`dragdoll-tests`) and docs (`dragdoll-docs`) if necessary.
 5. **Build and test changes.**
    - Run `npm run build` to build the lib after the changes and then run `npm run test:browserstack` (or `npm run test:local`) to make sure the changes didn't cause regressions.
 6. **Create the pull request.**
