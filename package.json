@@ -1,128 +1,25 @@
 {
-  "name": "dragdoll",
-  "version": "0.8.0",
-  "description": "Modular and extensible drag & drop system.",
-  "keywords": [
-    "drag",
-    "drop",
-    "dnd",
-    "draggable",
-    "droppable"
-  ],
-  "license": "MIT",
-  "author": {
-    "name": "Niklas Rämö",
-    "email": "inramo@gmail.com",
-    "url": "https://github.com/niklasramo"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:niklasramo/dragdoll.git"
-  },
+  "name": "dragdoll-root",
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
-  "sideEffects": [
-    "tests/**"
+  "workspaces": [
+    "packages/dragdoll",
+    "packages/dragdoll-docs",
+    "packages/dragdoll-tests"
   ],
-  "exports": {
-    "./sensors": {
-      "types": "./dist/sensors.d.ts",
-      "import": "./dist/sensors.js"
-    },
-    "./sensors/base": {
-      "types": "./dist/sensors/base.d.ts",
-      "import": "./dist/sensors/base.js"
-    },
-    "./sensors/base-motion": {
-      "types": "./dist/sensors/base-motion.d.ts",
-      "import": "./dist/sensors/base-motion.js"
-    },
-    "./sensors/pointer": {
-      "types": "./dist/sensors/pointer.d.ts",
-      "import": "./dist/sensors/pointer.js"
-    },
-    "./sensors/keyboard": {
-      "types": "./dist/sensors/keyboard.d.ts",
-      "import": "./dist/sensors/keyboard.js"
-    },
-    "./sensors/keyboard-motion": {
-      "types": "./dist/sensors/keyboard-motion.d.ts",
-      "import": "./dist/sensors/keyboard-motion.js"
-    },
-    "./draggable": {
-      "types": "./dist/draggable.d.ts",
-      "import": "./dist/draggable.js"
-    },
-    "./draggable/helpers/create-touch-delay-predicate": {
-      "types": "./dist/draggable/helpers/create-touch-delay-predicate.d.ts",
-      "import": "./dist/draggable/helpers/create-touch-delay-predicate.js"
-    },
-    "./draggable/modifiers/snap": {
-      "types": "./dist/draggable/modifiers/snap.d.ts",
-      "import": "./dist/draggable/modifiers/snap.js"
-    },
-    "./draggable/modifiers/containment": {
-      "types": "./dist/draggable/modifiers/containment.d.ts",
-      "import": "./dist/draggable/modifiers/containment.js"
-    },
-    "./draggable/plugins/auto-scroll": {
-      "types": "./dist/draggable/plugins/auto-scroll.d.ts",
-      "import": "./dist/draggable/plugins/auto-scroll.js"
-    },
-    "./dnd-context": {
-      "types": "./dist/dnd-context.d.ts",
-      "import": "./dist/dnd-context.js"
-    },
-    "./dnd-context/collision-detector": {
-      "types": "./dist/dnd-context/collision-detector.d.ts",
-      "import": "./dist/dnd-context/collision-detector.js"
-    },
-    "./dnd-context/advanced-collision-detector": {
-      "types": "./dist/dnd-context/advanced-collision-detector.d.ts",
-      "import": "./dist/dnd-context/advanced-collision-detector.js"
-    },
-    "./droppable": {
-      "types": "./dist/droppable.d.ts",
-      "import": "./dist/droppable.js"
-    },
-    "./auto-scroll": {
-      "types": "./dist/auto-scroll.d.ts",
-      "import": "./dist/auto-scroll.js"
-    },
-    "./singletons/auto-scroll": {
-      "types": "./dist/singletons/auto-scroll.d.ts",
-      "import": "./dist/singletons/auto-scroll.js"
-    },
-    "./singletons/ticker": {
-      "types": "./dist/singletons/ticker.d.ts",
-      "import": "./dist/singletons/ticker.js"
-    }
-  },
-  "files": [
-    "src",
-    "dist",
-    "package.json",
-    "README.md",
-    "LICENSE.md"
-  ],
-  "targets": {
-    "main": false
-  },
   "scripts": {
-    "build": "npm run clean-dist && npm run build-lib && npm run build-tests && npm run build-examples && npm run format && npm run ts-check",
-    "build-examples": "node ./scripts/build-examples.mjs",
-    "build-lib": "tsdown --config ./tsdown.config.lib.ts",
-    "build-tests": "tsdown --config ./tsdown.config.tests.ts",
-    "clean-dist": "rimraf ./dist && rimraf ./tests/dist && rimraf ./docs/public/examples",
-    "dev": "vitepress dev docs --host",
-    "docs-build": "vitepress build docs",
-    "docs-serve": "vitepress serve docs",
-    "format": "npm run prettier-fix",
-    "lint": "npm run prettier-check && npm run ts-check",
-    "prettier-check": "prettier --check --no-error-on-unmatched-pattern \"./**/*\"",
-    "prettier-fix": "prettier --write --no-error-on-unmatched-pattern \"./**/*\"",
-    "test": "karma start karma.browserstack.cjs",
-    "test-local": "karma start karma.cjs",
-    "ts-check": "tsc --noEmit"
+    "build": "npm run build --workspace=dragdoll --workspace=dragdoll-tests && npm run build:examples --workspace=dragdoll-docs && npm run format",
+    "test:browserstack": "npm run test:browserstack --workspace=dragdoll-tests",
+    "test:local": "npm run test:local --workspace=dragdoll-tests",
+    "docs:dev": "npm run dev --workspace=dragdoll-docs",
+    "docs:build": "npm run build --workspace=dragdoll-docs",
+    "docs:serve": "npm run serve --workspace=dragdoll-docs",
+    "prettier:check": "prettier --check --no-error-on-unmatched-pattern \"./*.{js,ts,md,json,yml}\" \"./.github/**/*.yml\" && npm run prettier:check --workspaces --if-present",
+    "prettier:write": "prettier --write --no-error-on-unmatched-pattern \"./*.{js,ts,md,json,yml}\" \"./.github/**/*.yml\" && npm run prettier:write --workspaces --if-present",
+    "ts:check": "npm run ts:check --workspaces --if-present",
+    "format": "npm run prettier:write",
+    "lint": "npm run ts:check && npm run prettier:check"
   },
   "devDependencies": {
     "@types/chai": "5.2.2",
@@ -148,10 +45,5 @@
     "typescript": "5.9.3",
     "vitepress": "1.6.4",
     "vue": "3.5.22"
-  },
-  "peerDependencies": {
-    "eventti": "^4.0.3",
-    "mezr": "^1.1.0",
-    "tikki": "^3.0.2"
   }
 }

@@ -36,6 +36,13 @@ No frameworks were abused while writing this library. It's all vanilla framework
 
 https://niklasramo.github.io/dragdoll/
 
+## Repo structure
+
+- `dragdoll-root` - Root package.
+- [`packages/dragdoll`](packages/dragdoll) - The core dragdoll package.
+- [`packages/dragdoll-docs`](packages/dragdoll-docs) - Docs for the dragdoll package.
+- [`packages/dragdoll-tests`](packages/dragdoll-tests) - Tests for the dragdoll package.
+
 ## Copyright
 
 Copyright © 2022-2024, Niklas Rämö (inramo@gmail.com). Licensed under the [MIT license](/LICENSE.md).
