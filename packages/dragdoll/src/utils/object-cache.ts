@@ -1,4 +1,4 @@
-export class ObjectCache<Key extends any, Value extends any> {
+export class ObjectCache<Key, Value> {
   protected _cache: Map<Key, Value>;
   protected _validation: Map<Key, undefined>;
 

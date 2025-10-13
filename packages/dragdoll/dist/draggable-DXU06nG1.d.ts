@@ -3,7 +3,7 @@ import { Sensor, SensorEvents } from "./sensor-BDsc365V.js";
 import { Emitter, EventListenerId } from "eventti";
 
 //#region src/utils/object-cache.d.ts
-declare class ObjectCache<Key extends any, Value extends any> {
+declare class ObjectCache<Key, Value> {
   protected _cache: Map<Key, Value>;
   protected _validation: Map<Key, undefined>;
   constructor();
@@ -210,4 +210,4 @@ declare class Draggable<S extends Sensor[] = Sensor[], E extends S[number]['_eve
 }
 //#endregion
 export { Draggable, DraggableApplyPositionPhase, DraggableDefaultSettings, DraggableDrag, DraggableDragItem, DraggableEventCallbacks, DraggableEventType, DraggableId, DraggableModifier, DraggableModifierData, DraggableModifierPhase, DraggablePlugin, DraggablePluginMap, DraggableSettings };
-//# sourceMappingURL=draggable-CXuSEtCp.d.ts.map
+//# sourceMappingURL=draggable-DXU06nG1.d.ts.map

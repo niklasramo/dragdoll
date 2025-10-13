@@ -1,5 +1,4 @@
 import type { Sensor } from '../../sensors/sensor.js';
-
 import type { DraggableModifier } from '../draggable.js';
 
 function round(value: number, multipleOf: number) {

@@ -1,28 +1,16 @@
-import type { Writeable, CSSProperties, Point, Rect } from '../types.js';
-
-import type { Sensor, SensorEvents } from '../sensors/sensor.js';
-
-import { SensorEventType } from '../sensors/sensor.js';
-
 import { Emitter, EventListenerId } from 'eventti';
-
-import { DraggableDrag } from './draggable-drag.js';
-
-import { DraggableDragItem } from './draggable-drag-item.js';
-
-import { ticker, tickerPhases } from '../singletons/ticker.js';
-
-import { moveBefore } from '../utils/move-before.js';
-
-import { roundNumber } from '../utils/round-number.js';
-
-import { resetMatrix } from '../utils/reset-matrix.js';
-
-import { areMatricesEqual } from '../utils/are-matrices-equal.js';
-
-import { isMatrixWarped } from '../utils/is-matrix-warped.js';
-
 import { IS_BROWSER } from '../constants.js';
+import type { Sensor, SensorEvents } from '../sensors/sensor.js';
+import { SensorEventType } from '../sensors/sensor.js';
+import { ticker, tickerPhases } from '../singletons/ticker.js';
+import type { CSSProperties, Point, Rect, Writeable } from '../types.js';
+import { areMatricesEqual } from '../utils/are-matrices-equal.js';
+import { isMatrixWarped } from '../utils/is-matrix-warped.js';
+import { moveBefore } from '../utils/move-before.js';
+import { resetMatrix } from '../utils/reset-matrix.js';
+import { roundNumber } from '../utils/round-number.js';
+import { DraggableDrag } from './draggable-drag.js';
+import { DraggableDragItem } from './draggable-drag-item.js';
 
 const SCROLL_LISTENER_OPTIONS = { capture: true, passive: true };
 
@@ -241,6 +229,7 @@ export const DraggableDefaultSettings: DraggableSettings<any, any> = {
 export class Draggable<
   S extends Sensor[] = Sensor[],
   E extends S[number]['_events_type'] = S[number]['_events_type'],
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   P extends DraggablePluginMap = {},
 > {
   readonly id: DraggableId;

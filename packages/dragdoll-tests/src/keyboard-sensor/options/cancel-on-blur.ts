@@ -1,9 +1,9 @@
 import { assert } from 'chai';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
+import { blurElement } from '../../utils/blur-element.js';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { focusElement } from '../../utils/focus-element.js';
-import { blurElement } from '../../utils/blur-element.js';
 import { wait } from '../../utils/wait.js';
-import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 
 export function optionCancelOnBlur() {
   describe('cancelOnBlur', () => {

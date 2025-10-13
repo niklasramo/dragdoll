@@ -1,7 +1,7 @@
 import { assert } from 'chai';
-import { createTestElement } from '../../utils/create-test-element.js';
 import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
+import { createTestElement } from '../../utils/create-test-element.js';
 
 export function methodUpdateSettings() {
   describe('updateSettings', () => {

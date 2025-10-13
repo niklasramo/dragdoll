@@ -1,10 +1,7 @@
-import type { Rect, Writeable } from '../types.js';
-
 import type { EventListenerId } from 'eventti';
-
-import type { Draggable } from '../draggable/draggable.js';
-
 import { Emitter } from 'eventti';
+import type { Draggable } from '../draggable/draggable.js';
+import type { Rect, Writeable } from '../types.js';
 
 export type DroppableId = symbol | string | number;
 

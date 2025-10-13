@@ -3656,7 +3656,7 @@ function methodDestroy$3() {
 				x: 1,
 				y: 2
 			});
-			let msgs = [];
+			const msgs = [];
 			s$4.on("cancel", () => void msgs.push("cancel"));
 			s$4.on("destroy", () => void msgs.push("destroy"));
 			s$4.destroy();
@@ -3669,7 +3669,7 @@ function methodDestroy$3() {
        2. emit "destroy" event
        3. remove all listeners from the internal emitter`, () => {
 			const s$4 = new n$5();
-			let msgs = [];
+			const msgs = [];
 			s$4.on("cancel", () => void msgs.push("cancel"));
 			s$4.on("destroy", () => void msgs.push("destroy"));
 			s$4.destroy();
@@ -3838,53 +3838,6 @@ describe("BaseSensor", () => {
 });
 
 //#endregion
-//#region src/utils/create-test-element.ts
-const defaultStyles = {
-	display: "block",
-	position: "absolute",
-	left: "0px",
-	top: "0px",
-	width: "100px",
-	height: "100px",
-	padding: "0px",
-	margin: "0px",
-	boxSizing: "border-box",
-	backgroundColor: "red"
-};
-function createTestElement(styles$1 = {}) {
-	const el = document.createElement("div");
-	el.tabIndex = 0;
-	Object.assign(el.style, {
-		...defaultStyles,
-		...styles$1
-	});
-	document.body.appendChild(el);
-	return el;
-}
-
-//#endregion
-//#region src/utils/focus-element.ts
-function focusElement(element) {
-	if (document.activeElement !== element) {
-		element.focus({ preventScroll: true });
-		element.dispatchEvent(new FocusEvent("focus", {
-			bubbles: false,
-			cancelable: true
-		}));
-	}
-}
-
-//#endregion
-//#region src/utils/wait-next-frame.ts
-function waitNextFrame() {
-	return new Promise((resolve) => {
-		window.requestAnimationFrame(() => {
-			resolve(void 0);
-		});
-	});
-}
-
-//#endregion
 //#region ../../node_modules/tikki/dist/index.js
 var _$2 = E$1, o$1 = class {
 	constructor(e$5 = {}) {
@@ -4016,7 +3969,7 @@ const t$2 = {
 	read: Symbol(),
 	write: Symbol()
 };
-let n$2 = new l$4({ phases: [t$2.read, t$2.write] });
+let n$3 = new l$4({ phases: [t$2.read, t$2.write] });
 
 //#endregion
 //#region ../dragdoll/dist/constants-BG0DGMmK.js
@@ -4183,8 +4136,29 @@ function getOffsetContainer(n$7, t$6 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-BBskafZU.js
-var s$3 = class {
+//#region ../dragdoll/dist/draggable-qBrB_jQL.js
+function s$3(e$5, t$6) {
+	return e$5.isIdentity && t$6.isIdentity ? !0 : e$5.is2D && t$6.is2D ? e$5.a === t$6.a && e$5.b === t$6.b && e$5.c === t$6.c && e$5.d === t$6.d && e$5.e === t$6.e && e$5.f === t$6.f : e$5.m11 === t$6.m11 && e$5.m12 === t$6.m12 && e$5.m13 === t$6.m13 && e$5.m14 === t$6.m14 && e$5.m21 === t$6.m21 && e$5.m22 === t$6.m22 && e$5.m23 === t$6.m23 && e$5.m24 === t$6.m24 && e$5.m31 === t$6.m31 && e$5.m32 === t$6.m32 && e$5.m33 === t$6.m33 && e$5.m34 === t$6.m34 && e$5.m41 === t$6.m41 && e$5.m42 === t$6.m42 && e$5.m43 === t$6.m43 && e$5.m44 === t$6.m44;
+}
+function c$3(e$5) {
+	return e$5.m11 !== 1 || e$5.m12 !== 0 || e$5.m13 !== 0 || e$5.m14 !== 0 || e$5.m21 !== 0 || e$5.m22 !== 1 || e$5.m23 !== 0 || e$5.m24 !== 0 || e$5.m31 !== 0 || e$5.m32 !== 0 || e$5.m33 !== 1 || e$5.m34 !== 0 || e$5.m43 !== 0 || e$5.m44 !== 1;
+}
+function l$3(e$5, t$6, n$7 = null) {
+	if (`moveBefore` in e$5 && e$5.isConnected === t$6.isConnected) try {
+		e$5.moveBefore(t$6, n$7);
+		return;
+	} catch {}
+	let r$3 = document.activeElement, i$2 = t$6.contains(r$3);
+	e$5.insertBefore(t$6, n$7), i$2 && document.activeElement !== r$3 && r$3 instanceof HTMLElement && r$3.focus({ preventScroll: !0 });
+}
+function u$3(e$5) {
+	return e$5.setMatrixValue(`scale(1, 1)`);
+}
+function d$1(e$5, t$6 = 0) {
+	let n$7 = 10 ** t$6;
+	return Math.round((e$5 + 2 ** -52) * n$7) / n$7;
+}
+var f$1 = class {
 	constructor() {
 		this._cache = /* @__PURE__ */ new Map(), this._validation = /* @__PURE__ */ new Map();
 	}
@@ -4209,92 +4183,18 @@ var s$3 = class {
 	clear() {
 		this._cache.clear(), this._validation.clear();
 	}
-}, c$3 = class {
+}, p$1 = class {
 	constructor(e$5, t$6) {
-		this.sensor = e$5, this.startEvent = t$6, this.prevMoveEvent = t$6, this.moveEvent = t$6, this.endEvent = null, this.items = [], this.isEnded = !1, this._matrixCache = new s$3(), this._clientOffsetCache = new s$3();
+		this.sensor = e$5, this.startEvent = t$6, this.prevMoveEvent = t$6, this.moveEvent = t$6, this.endEvent = null, this.items = [], this.isEnded = !1, this._matrixCache = new f$1(), this._clientOffsetCache = new f$1();
 	}
 };
-function l$3(e$5, t$6 = {
-	x: 0,
-	y: 0
-}) {
-	if (t$6.x = 0, t$6.y = 0, e$5 instanceof Window) return t$6;
-	if (e$5 instanceof Document) return t$6.x = window.scrollX * -1, t$6.y = window.scrollY * -1, t$6;
-	let { x: n$7, y: r$3 } = e$5.getBoundingClientRect(), a$2 = t(e$5);
-	return t$6.x = n$7 + (parseFloat(a$2.borderLeftWidth) || 0), t$6.y = r$3 + (parseFloat(a$2.borderTopWidth) || 0), t$6;
-}
-function u$3(e$5) {
-	return typeof e$5 == `object` && !!e$5 && `x` in e$5 && `y` in e$5;
-}
-const d$1 = {
-	x: 0,
-	y: 0
-}, f$1 = {
-	x: 0,
-	y: 0
-};
-function p$1(e$5, t$6, n$7 = {
-	x: 0,
-	y: 0
-}) {
-	let r$3 = u$3(e$5) ? e$5 : l$3(e$5, d$1), i$2 = u$3(t$6) ? t$6 : l$3(t$6, f$1);
-	return n$7.x = i$2.x - r$3.x, n$7.y = i$2.y - r$3.y, n$7;
-}
-function m$1(e$5) {
-	let t$6 = t(e$5), n$7 = parseFloat(t$6.height) || 0;
-	return t$6.boxSizing === `border-box` ? n$7 : (n$7 += parseFloat(t$6.borderTopWidth) || 0, n$7 += parseFloat(t$6.borderBottomWidth) || 0, n$7 += parseFloat(t$6.paddingTop) || 0, n$7 += parseFloat(t$6.paddingBottom) || 0, e$5 instanceof HTMLElement && (n$7 += e$5.offsetHeight - e$5.clientHeight), n$7);
-}
-function h$1(e$5) {
-	let t$6 = t(e$5), n$7 = parseFloat(t$6.width) || 0;
-	return t$6.boxSizing === `border-box` ? n$7 : (n$7 += parseFloat(t$6.borderLeftWidth) || 0, n$7 += parseFloat(t$6.borderRightWidth) || 0, n$7 += parseFloat(t$6.paddingLeft) || 0, n$7 += parseFloat(t$6.paddingRight) || 0, e$5 instanceof HTMLElement && (n$7 += e$5.offsetWidth - e$5.clientWidth), n$7);
-}
-function g$1(e$5, t$6 = !1) {
-	let { translate: n$7, rotate: r$3, scale: a$2, transform: o$2 } = t(e$5), s$4 = ``;
-	if (n$7 && n$7 !== `none`) {
-		let [t$7 = `0px`, r$4 = `0px`, i$2] = n$7.split(` `);
-		t$7.includes(`%`) && (t$7 = `${parseFloat(t$7) / 100 * h$1(e$5)}px`), r$4.includes(`%`) && (r$4 = `${parseFloat(r$4) / 100 * m$1(e$5)}px`), i$2 ? s$4 += `translate3d(${t$7},${r$4},${i$2})` : s$4 += `translate(${t$7},${r$4})`;
-	}
-	if (r$3 && r$3 !== `none`) {
-		let e$6 = r$3.split(` `);
-		e$6.length > 1 ? s$4 += `rotate3d(${e$6.join(`,`)})` : s$4 += `rotate(${e$6.join(`,`)})`;
-	}
-	if (a$2 && a$2 !== `none`) {
-		let e$6 = a$2.split(` `);
-		e$6.length === 3 ? s$4 += `scale3d(${e$6.join(`,`)})` : s$4 += `scale(${e$6.join(`,`)})`;
-	}
-	return !t$6 && o$2 && o$2 !== `none` && (s$4 += o$2), s$4;
-}
-function _$1(e$5) {
-	let t$6 = e$5.split(` `), n$7 = ``, r$3 = ``, i$2 = ``;
-	return t$6.length === 1 ? n$7 = r$3 = t$6[0] : t$6.length === 2 ? [n$7, r$3] = t$6 : [n$7, r$3, i$2] = t$6, {
-		x: parseFloat(n$7) || 0,
-		y: parseFloat(r$3) || 0,
-		z: parseFloat(i$2) || 0
-	};
-}
-function v$2(e$5) {
-	return e$5.setMatrixValue(`scale(1, 1)`);
-}
-const y$1 = e$3 ? new DOMMatrix() : null;
-function b(e$5, t$6 = new DOMMatrix()) {
-	let n$7 = e$5;
-	for (v$2(t$6); n$7;) {
-		let e$6 = g$1(n$7);
-		if (e$6 && (y$1.setMatrixValue(e$6), !y$1.isIdentity)) {
-			let { transformOrigin: e$7 } = t(n$7), { x: r$3, y: a$2, z: o$2 } = _$1(e$7);
-			o$2 === 0 ? y$1.setMatrixValue(`translate(${r$3}px,${a$2}px) ${y$1} translate(${r$3 * -1}px,${a$2 * -1}px)`) : y$1.setMatrixValue(`translate3d(${r$3}px,${a$2}px,${o$2}px) ${y$1} translate3d(${r$3 * -1}px,${a$2 * -1}px,${o$2 * -1}px)`), t$6.preMultiplySelf(y$1);
-		}
-		n$7 = n$7.parentElement;
-	}
-	return t$6;
-}
-function x(e$5, t$6, n$7 = !1) {
+function m$1(e$5, t$6, n$7 = !1) {
 	let { style: r$3 } = e$5;
 	for (let e$6 in t$6) r$3.setProperty(e$6, t$6[e$6], n$7 ? `important` : ``);
 }
-function S() {
+function h$1() {
 	let e$5 = document.createElement(`div`);
-	return e$5.classList.add(`dragdoll-measure`), x(e$5, {
+	return e$5.classList.add(`dragdoll-measure`), m$1(e$5, {
 		display: `block`,
 		position: `absolute`,
 		inset: `0px`,
@@ -4309,17 +4209,85 @@ function S() {
 		"pointer-events": `none`
 	}, !0), e$5;
 }
-function C(e$5) {
-	return e$5.m11 !== 1 || e$5.m12 !== 0 || e$5.m13 !== 0 || e$5.m14 !== 0 || e$5.m21 !== 0 || e$5.m22 !== 1 || e$5.m23 !== 0 || e$5.m24 !== 0 || e$5.m31 !== 0 || e$5.m32 !== 0 || e$5.m33 !== 1 || e$5.m34 !== 0 || e$5.m43 !== 0 || e$5.m44 !== 1;
+function g$1(e$5, t$6 = {
+	x: 0,
+	y: 0
+}) {
+	if (t$6.x = 0, t$6.y = 0, e$5 instanceof Window) return t$6;
+	if (e$5 instanceof Document) return t$6.x = window.scrollX * -1, t$6.y = window.scrollY * -1, t$6;
+	let { x: n$7, y: r$3 } = e$5.getBoundingClientRect(), a$2 = t(e$5);
+	return t$6.x = n$7 + (parseFloat(a$2.borderLeftWidth) || 0), t$6.y = r$3 + (parseFloat(a$2.borderTopWidth) || 0), t$6;
 }
-const w = e$3 ? S() : null;
-var T = class {
+function _$1(e$5) {
+	let t$6 = t(e$5), n$7 = parseFloat(t$6.height) || 0;
+	return t$6.boxSizing === `border-box` ? n$7 : (n$7 += parseFloat(t$6.borderTopWidth) || 0, n$7 += parseFloat(t$6.borderBottomWidth) || 0, n$7 += parseFloat(t$6.paddingTop) || 0, n$7 += parseFloat(t$6.paddingBottom) || 0, e$5 instanceof HTMLElement && (n$7 += e$5.offsetHeight - e$5.clientHeight), n$7);
+}
+function v$2(e$5) {
+	let t$6 = t(e$5), n$7 = parseFloat(t$6.width) || 0;
+	return t$6.boxSizing === `border-box` ? n$7 : (n$7 += parseFloat(t$6.borderLeftWidth) || 0, n$7 += parseFloat(t$6.borderRightWidth) || 0, n$7 += parseFloat(t$6.paddingLeft) || 0, n$7 += parseFloat(t$6.paddingRight) || 0, e$5 instanceof HTMLElement && (n$7 += e$5.offsetWidth - e$5.clientWidth), n$7);
+}
+function y$1(e$5, t$6 = !1) {
+	let { translate: n$7, rotate: r$3, scale: a$2, transform: o$2 } = t(e$5), s$4 = ``;
+	if (n$7 && n$7 !== `none`) {
+		let [t$7 = `0px`, r$4 = `0px`, i$2] = n$7.split(` `);
+		t$7.includes(`%`) && (t$7 = `${parseFloat(t$7) / 100 * v$2(e$5)}px`), r$4.includes(`%`) && (r$4 = `${parseFloat(r$4) / 100 * _$1(e$5)}px`), i$2 ? s$4 += `translate3d(${t$7},${r$4},${i$2})` : s$4 += `translate(${t$7},${r$4})`;
+	}
+	if (r$3 && r$3 !== `none`) {
+		let e$6 = r$3.split(` `);
+		e$6.length > 1 ? s$4 += `rotate3d(${e$6.join(`,`)})` : s$4 += `rotate(${e$6.join(`,`)})`;
+	}
+	if (a$2 && a$2 !== `none`) {
+		let e$6 = a$2.split(` `);
+		e$6.length === 3 ? s$4 += `scale3d(${e$6.join(`,`)})` : s$4 += `scale(${e$6.join(`,`)})`;
+	}
+	return !t$6 && o$2 && o$2 !== `none` && (s$4 += o$2), s$4;
+}
+function b(e$5) {
+	return typeof e$5 == `object` && !!e$5 && `x` in e$5 && `y` in e$5;
+}
+const x = {
+	x: 0,
+	y: 0
+}, S = {
+	x: 0,
+	y: 0
+};
+function C(e$5, t$6, n$7 = {
+	x: 0,
+	y: 0
+}) {
+	let r$3 = b(e$5) ? e$5 : g$1(e$5, x), i$2 = b(t$6) ? t$6 : g$1(t$6, S);
+	return n$7.x = i$2.x - r$3.x, n$7.y = i$2.y - r$3.y, n$7;
+}
+function w(e$5) {
+	let t$6 = e$5.split(` `), n$7 = ``, r$3 = ``, i$2 = ``;
+	return t$6.length === 1 ? n$7 = r$3 = t$6[0] : t$6.length === 2 ? [n$7, r$3] = t$6 : [n$7, r$3, i$2] = t$6, {
+		x: parseFloat(n$7) || 0,
+		y: parseFloat(r$3) || 0,
+		z: parseFloat(i$2) || 0
+	};
+}
+const T = e$3 ? new DOMMatrix() : null;
+function E(e$5, t$6 = new DOMMatrix()) {
+	let n$7 = e$5;
+	for (u$3(t$6); n$7;) {
+		let e$6 = y$1(n$7);
+		if (e$6 && (T.setMatrixValue(e$6), !T.isIdentity)) {
+			let { transformOrigin: e$7 } = t(n$7), { x: r$3, y: a$2, z: o$2 } = w(e$7);
+			o$2 === 0 ? T.setMatrixValue(`translate(${r$3}px,${a$2}px) ${T} translate(${r$3 * -1}px,${a$2 * -1}px)`) : T.setMatrixValue(`translate3d(${r$3}px,${a$2}px,${o$2}px) ${T} translate3d(${r$3 * -1}px,${a$2 * -1}px,${o$2 * -1}px)`), t$6.preMultiplySelf(T);
+		}
+		n$7 = n$7.parentElement;
+	}
+	return t$6;
+}
+const D = e$3 ? h$1() : null;
+var O = class {
 	constructor(e$5, t$6) {
 		if (!e$5.isConnected) throw Error(`Element is not connected`);
 		let { drag: n$7 } = t$6;
 		if (!n$7) throw Error(`Drag is not defined`);
-		let r$3 = t(e$5), a$2 = e$5.getBoundingClientRect(), s$4 = g$1(e$5, !0);
-		this.data = {}, this.element = e$5, this.elementTransformOrigin = _$1(r$3.transformOrigin), this.elementTransformMatrix = new DOMMatrix().setMatrixValue(s$4 + r$3.transform), this.elementOffsetMatrix = new DOMMatrix(s$4).invertSelf(), this.frozenStyles = null, this.unfrozenStyles = null, this.position = {
+		let r$3 = t(e$5), a$2 = e$5.getBoundingClientRect(), s$4 = y$1(e$5, !0);
+		this.data = {}, this.element = e$5, this.elementTransformOrigin = w(r$3.transformOrigin), this.elementTransformMatrix = new DOMMatrix().setMatrixValue(s$4 + r$3.transform), this.elementOffsetMatrix = new DOMMatrix(s$4).invertSelf(), this.frozenStyles = null, this.unfrozenStyles = null, this.position = {
 			x: 0,
 			y: 0
 		}, this.containerOffset = {
@@ -4377,25 +4345,25 @@ var T = class {
 		[this.elementContainer, this.dragContainer].forEach((e$5) => {
 			if (!this._matrixCache.isValid(e$5)) {
 				let t$6 = this._matrixCache.get(e$5) || [new DOMMatrix(), new DOMMatrix()], [n$7, r$3] = t$6;
-				b(e$5, n$7), r$3.setMatrixValue(n$7.toString()).invertSelf(), this._matrixCache.set(e$5, t$6);
+				E(e$5, n$7), r$3.setMatrixValue(n$7.toString()).invertSelf(), this._matrixCache.set(e$5, t$6);
 			}
 		});
 	}
 	_updateContainerOffset() {
 		let { elementOffsetContainer: e$5, elementContainer: t$6, dragOffsetContainer: n$7, dragContainer: r$3, containerOffset: i$2, _clientOffsetCache: a$2, _matrixCache: o$2 } = this;
 		if (e$5 !== n$7) {
-			let [s$4, c$4] = [[r$3, n$7], [t$6, e$5]].map(([e$6, t$7]) => {
+			let [s$4, l$5] = [[r$3, n$7], [t$6, e$5]].map(([e$6, t$7]) => {
 				let n$8 = a$2.get(t$7) || {
 					x: 0,
 					y: 0
 				};
 				if (!a$2.isValid(t$7)) {
 					let r$4 = o$2.get(e$6);
-					t$7 instanceof HTMLElement && r$4 && !r$4[0].isIdentity ? C(r$4[0]) ? (w.style.setProperty(`transform`, r$4[1].toString(), `important`), t$7.append(w), l$3(w, n$8), w.remove()) : (l$3(t$7, n$8), n$8.x -= r$4[0].m41, n$8.y -= r$4[0].m42) : l$3(t$7, n$8);
+					t$7 instanceof HTMLElement && r$4 && !r$4[0].isIdentity ? c$3(r$4[0]) ? (D.style.setProperty(`transform`, r$4[1].toString(), `important`), t$7.append(D), g$1(D, n$8), D.remove()) : (g$1(t$7, n$8), n$8.x -= r$4[0].m41, n$8.y -= r$4[0].m42) : g$1(t$7, n$8);
 				}
 				return a$2.set(t$7, n$8), n$8;
 			});
-			p$1(s$4, c$4, i$2);
+			C(s$4, l$5, i$2);
 		} else i$2.x = 0, i$2.y = 0;
 	}
 	getContainerMatrix() {
@@ -4412,21 +4380,6 @@ var T = class {
 		}
 	}
 };
-function E(e$5, t$6, n$7 = null) {
-	if (`moveBefore` in e$5 && e$5.isConnected === t$6.isConnected) try {
-		e$5.moveBefore(t$6, n$7);
-		return;
-	} catch {}
-	let r$3 = document.activeElement, i$2 = t$6.contains(r$3);
-	e$5.insertBefore(t$6, n$7), i$2 && document.activeElement !== r$3 && r$3 instanceof HTMLElement && r$3.focus({ preventScroll: !0 });
-}
-function D(e$5, t$6 = 0) {
-	let n$7 = 10 ** t$6;
-	return Math.round((e$5 + 2 ** -52) * n$7) / n$7;
-}
-function O(e$5, t$6) {
-	return e$5.isIdentity && t$6.isIdentity ? !0 : e$5.is2D && t$6.is2D ? e$5.a === t$6.a && e$5.b === t$6.b && e$5.c === t$6.c && e$5.d === t$6.d && e$5.e === t$6.e && e$5.f === t$6.f : e$5.m11 === t$6.m11 && e$5.m12 === t$6.m12 && e$5.m13 === t$6.m13 && e$5.m14 === t$6.m14 && e$5.m21 === t$6.m21 && e$5.m22 === t$6.m22 && e$5.m23 === t$6.m23 && e$5.m24 === t$6.m24 && e$5.m31 === t$6.m31 && e$5.m32 === t$6.m32 && e$5.m33 === t$6.m33 && e$5.m34 === t$6.m34 && e$5.m41 === t$6.m41 && e$5.m42 === t$6.m42 && e$5.m43 === t$6.m43 && e$5.m44 === t$6.m44;
-}
 const k = {
 	capture: !0,
 	passive: !0
@@ -4463,8 +4416,8 @@ const F = {
 	elements: () => null,
 	frozenStyles: () => null,
 	applyPosition: ({ item: e$5, phase: t$6 }) => {
-		let n$7 = t$6 === I.End || t$6 === I.EndAlign, [r$3, i$2] = e$5.getContainerMatrix(), [a$2, o$2] = e$5.getDragContainerMatrix(), { position: s$4, alignmentOffset: c$4, containerOffset: l$5, elementTransformMatrix: u$5, elementTransformOrigin: d$2, elementOffsetMatrix: f$2 } = e$5, { x: p$2, y: m$2, z: h$2 } = d$2, g$2 = !u$5.isIdentity && (p$2 !== 0 || m$2 !== 0 || h$2 !== 0), _$3 = s$4.x + c$4.x + l$5.x, y$2 = s$4.y + c$4.y + l$5.y;
-		v$2(j), g$2 && (h$2 === 0 ? j.translateSelf(-p$2, -m$2) : j.translateSelf(-p$2, -m$2, -h$2)), n$7 ? i$2.isIdentity || j.multiplySelf(i$2) : o$2.isIdentity || j.multiplySelf(o$2), v$2(M).translateSelf(_$3, y$2), j.multiplySelf(M), r$3.isIdentity || j.multiplySelf(r$3), g$2 && (v$2(M).translateSelf(p$2, m$2, h$2), j.multiplySelf(M)), u$5.isIdentity || j.multiplySelf(u$5), f$2.isIdentity || j.preMultiplySelf(f$2), e$5.element.style.transform = `${j}`;
+		let n$7 = t$6 === I.End || t$6 === I.EndAlign, [r$3, i$2] = e$5.getContainerMatrix(), [a$2, o$2] = e$5.getDragContainerMatrix(), { position: s$4, alignmentOffset: c$4, containerOffset: l$5, elementTransformMatrix: d$2, elementTransformOrigin: f$2, elementOffsetMatrix: p$2 } = e$5, { x: m$2, y: h$2, z: g$2 } = f$2, _$3 = !d$2.isIdentity && (m$2 !== 0 || h$2 !== 0 || g$2 !== 0), v$3 = s$4.x + c$4.x + l$5.x, y$2 = s$4.y + c$4.y + l$5.y;
+		u$3(j), _$3 && (g$2 === 0 ? j.translateSelf(-m$2, -h$2) : j.translateSelf(-m$2, -h$2, -g$2)), n$7 ? i$2.isIdentity || j.multiplySelf(i$2) : o$2.isIdentity || j.multiplySelf(o$2), u$3(M).translateSelf(v$3, y$2), j.multiplySelf(M), r$3.isIdentity || j.multiplySelf(r$3), _$3 && (u$3(M).translateSelf(m$2, h$2, g$2), j.multiplySelf(M)), d$2.isIdentity || j.multiplySelf(d$2), p$2.isIdentity || j.preMultiplySelf(p$2), e$5.element.style.transform = `${j}`;
 	},
 	computeClientRect: ({ drag: e$5 }) => e$5.items[0].clientRect || null,
 	positionModifiers: [],
@@ -4520,7 +4473,7 @@ var z = class {
 				break;
 			}
 			case P.Resolved:
-				this.drag && (this.drag.moveEvent = e$5, n$2.once(t$2.read, this._prepareMove, this._moveId), n$2.once(t$2.write, this._applyMove, this._moveId));
+				this.drag && (this.drag.moveEvent = e$5, n$3.once(t$2.read, this._prepareMove, this._moveId), n$3.once(t$2.write, this._applyMove, this._moveId));
 				break;
 		}
 	}
@@ -4538,13 +4491,13 @@ var z = class {
 		e$5 && (this._startPhase = N.Prepare, e$5.items = (this.settings.elements({
 			draggable: this,
 			drag: e$5
-		}) || []).map((e$6) => new T(e$6, this)), this._applyModifiers(F.Start, 0, 0), this._emit(L.PrepareStart, e$5.startEvent), this.settings.onPrepareStart?.(e$5, this), this._startPhase = N.FinishPrepare);
+		}) || []).map((e$6) => new O(e$6, this)), this._applyModifiers(F.Start, 0, 0), this._emit(L.PrepareStart, e$5.startEvent), this.settings.onPrepareStart?.(e$5, this), this._startPhase = N.FinishPrepare);
 	}
 	_applyStart() {
 		let e$5 = this.drag;
 		if (e$5) {
 			this._startPhase = N.Apply;
-			for (let t$6 of e$5.items) t$6.dragContainer !== t$6.elementContainer && E(t$6.dragContainer, t$6.element), t$6.frozenStyles && Object.assign(t$6.element.style, t$6.frozenStyles), this.settings.applyPosition({
+			for (let t$6 of e$5.items) t$6.dragContainer !== t$6.elementContainer && l$3(t$6.dragContainer, t$6.element), t$6.frozenStyles && Object.assign(t$6.element.style, t$6.frozenStyles), this.settings.applyPosition({
 				phase: I.Start,
 				draggable: this,
 				drag: e$5,
@@ -4552,9 +4505,9 @@ var z = class {
 			});
 			for (let t$6 of e$5.items) {
 				let e$6 = t$6.getContainerMatrix()[0], n$7 = t$6.getDragContainerMatrix()[0];
-				if (O(e$6, n$7) || !C(e$6) && !C(n$7)) continue;
+				if (s$3(e$6, n$7) || !c$3(e$6) && !c$3(n$7)) continue;
 				let r$3 = t$6.element.getBoundingClientRect(), { alignmentOffset: i$2 } = t$6;
-				i$2.x += D(t$6.clientRect.x - r$3.x, 3), i$2.y += D(t$6.clientRect.y - r$3.y, 3);
+				i$2.x += d$1(t$6.clientRect.x - r$3.x, 3), i$2.y += d$1(t$6.clientRect.y - r$3.y, 3);
 			}
 			for (let t$6 of e$5.items) {
 				let { alignmentOffset: n$7 } = t$6;
@@ -4630,9 +4583,9 @@ var z = class {
 		let i$2 = this._sensorData.get(e$5);
 		if (!i$2) return;
 		let a$2 = r$3 || i$2.predicateEvent;
-		i$2.predicateState === P.Pending && a$2 && (this._startPhase = N.Init, i$2.predicateState = P.Resolved, i$2.predicateEvent = null, this.drag = new c$3(e$5, a$2), this._sensorData.forEach((t$6, n$7) => {
+		i$2.predicateState === P.Pending && a$2 && (this._startPhase = N.Init, i$2.predicateState = P.Resolved, i$2.predicateEvent = null, this.drag = new p$1(e$5, a$2), this._sensorData.forEach((t$6, n$7) => {
 			n$7 !== e$5 && (t$6.predicateState = P.Rejected, t$6.predicateEvent = null);
-		}), n$2.once(t$2.read, this._prepareStart, this._startId), n$2.once(t$2.write, this._applyStart, this._startId));
+		}), n$3.once(t$2.read, this._prepareStart, this._startId), n$3.once(t$2.write, this._applyStart, this._startId));
 	}
 	rejectStartPredicate(e$5) {
 		let t$6 = this._sensorData.get(e$5);
@@ -4643,9 +4596,9 @@ var z = class {
 		if (!e$5 || e$5.isEnded) return;
 		let r$3 = this._startPhase;
 		if (r$3 === N.Prepare || r$3 === N.Apply) throw Error(`Cannot stop drag start process at this point`);
-		if (this._startPhase = N.None, e$5.isEnded = !0, n$2.off(t$2.read, this._startId), n$2.off(t$2.write, this._startId), n$2.off(t$2.read, this._moveId), n$2.off(t$2.write, this._moveId), n$2.off(t$2.read, this._alignId), n$2.off(t$2.write, this._alignId), window.removeEventListener(`scroll`, this._onScroll, k), r$3 > N.Init && this._applyModifiers(F.End, 0, 0), r$3 === N.FinishApply) {
+		if (this._startPhase = N.None, e$5.isEnded = !0, n$3.off(t$2.read, this._startId), n$3.off(t$2.write, this._startId), n$3.off(t$2.read, this._moveId), n$3.off(t$2.write, this._moveId), n$3.off(t$2.read, this._alignId), n$3.off(t$2.write, this._alignId), window.removeEventListener(`scroll`, this._onScroll, k), r$3 > N.Init && this._applyModifiers(F.End, 0, 0), r$3 === N.FinishApply) {
 			for (let t$6 of e$5.items) {
-				if (t$6.elementContainer !== t$6.dragContainer && (E(t$6.elementContainer, t$6.element), t$6.alignmentOffset.x = 0, t$6.alignmentOffset.y = 0, t$6.containerOffset.x = 0, t$6.containerOffset.y = 0), t$6.unfrozenStyles) for (let e$6 in t$6.unfrozenStyles) t$6.element.style[e$6] = t$6.unfrozenStyles[e$6] || ``;
+				if (t$6.elementContainer !== t$6.dragContainer && (l$3(t$6.elementContainer, t$6.element), t$6.alignmentOffset.x = 0, t$6.alignmentOffset.y = 0, t$6.containerOffset.x = 0, t$6.containerOffset.y = 0), t$6.unfrozenStyles) for (let e$6 in t$6.unfrozenStyles) t$6.element.style[e$6] = t$6.unfrozenStyles[e$6] || ``;
 				this.settings.applyPosition({
 					phase: I.End,
 					draggable: this,
@@ -4655,7 +4608,7 @@ var z = class {
 			}
 			for (let t$6 of e$5.items) if (t$6.elementContainer !== t$6.dragContainer) {
 				let e$6 = t$6.element.getBoundingClientRect();
-				t$6.alignmentOffset.x = D(t$6.clientRect.x - e$6.x, 3), t$6.alignmentOffset.y = D(t$6.clientRect.y - e$6.y, 3);
+				t$6.alignmentOffset.x = d$1(t$6.clientRect.x - e$6.x, 3), t$6.alignmentOffset.y = d$1(t$6.clientRect.y - e$6.y, 3);
 			}
 			for (let t$6 of e$5.items) t$6.elementContainer !== t$6.dragContainer && (t$6.alignmentOffset.x !== 0 || t$6.alignmentOffset.y !== 0) && this.settings.applyPosition({
 				phase: I.EndAlign,
@@ -4667,7 +4620,7 @@ var z = class {
 		this._emit(L.End, e$5.endEvent), this.settings.onEnd?.(e$5, this), this.drag = null;
 	}
 	align(e$5 = !1) {
-		this.drag && (e$5 ? (this._prepareAlign(), this._applyAlign()) : (n$2.once(t$2.read, this._prepareAlign, this._alignId), n$2.once(t$2.write, this._applyAlign, this._alignId)));
+		this.drag && (e$5 ? (this._prepareAlign(), this._applyAlign()) : (n$3.once(t$2.read, this._prepareAlign, this._alignId), n$3.once(t$2.write, this._applyAlign, this._alignId)));
 	}
 	getClientRect() {
 		let { drag: e$5, settings: t$6 } = this;
@@ -4817,68 +4770,48 @@ var r = class extends n$5 {
 };
 
 //#endregion
-//#region src/draggable/events.ts
-function events$3() {
-	describe("events", () => {
-		it("should be called at the right time with the right arguments", async () => {
-			let events$5 = [];
-			let currentKeyboardEvent = null;
-			const el = createTestElement();
-			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
-			draggable.on("preparestart", (...args) => {
-				assert.equal(args.length, 1);
-				assert.equal(args[0].type, "start");
-				assert.equal(args[0].srcEvent, currentKeyboardEvent);
-				events$5.push("preparestart");
-			});
-			draggable.on("start", (...args) => {
-				assert.equal(args.length, 1);
-				assert.equal(args[0].type, "start");
-				assert.equal(args[0].srcEvent, currentKeyboardEvent);
-				events$5.push("start");
-			});
-			draggable.on("preparemove", (...args) => {
-				assert.equal(args.length, 1);
-				assert.equal(args[0].type, "move");
-				assert.equal(args[0].srcEvent, currentKeyboardEvent);
-				events$5.push("preparemove");
-			});
-			draggable.on("move", (...args) => {
-				assert.equal(args.length, 1);
-				assert.equal(args[0].type, "move");
-				assert.equal(args[0].srcEvent, currentKeyboardEvent);
-				events$5.push("move");
-			});
-			draggable.on("end", (...args) => {
-				assert.equal(args.length, 1);
-				assert.equal(args[0]?.type, "end");
-				assert.equal(args[0]?.srcEvent, currentKeyboardEvent);
-				events$5.push("end");
-			});
-			draggable.on("destroy", (...args) => {
-				assert.equal(args.length, 0);
-				events$5.push("destroy");
-			});
-			focusElement(el);
-			currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
-			document.dispatchEvent(currentKeyboardEvent);
-			await waitNextFrame();
-			assert.deepEqual(events$5, ["preparestart", "start"]);
-			events$5.length = 0;
-			currentKeyboardEvent = new KeyboardEvent("keydown", { key: "ArrowRight" });
-			document.dispatchEvent(currentKeyboardEvent);
-			await waitNextFrame();
-			assert.deepEqual(events$5, ["preparemove", "move"]);
-			events$5.length = 0;
-			currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
-			document.dispatchEvent(currentKeyboardEvent);
-			assert.deepEqual(events$5, ["end"]);
-			events$5.length = 0;
-			draggable.destroy();
-			assert.deepEqual(events$5, ["destroy"]);
-			keyboardSensor.destroy();
-			el.remove();
+//#region src/utils/create-test-element.ts
+const defaultStyles = {
+	display: "block",
+	position: "absolute",
+	left: "0px",
+	top: "0px",
+	width: "100px",
+	height: "100px",
+	padding: "0px",
+	margin: "0px",
+	boxSizing: "border-box",
+	backgroundColor: "red"
+};
+function createTestElement(styles$1 = {}) {
+	const el = document.createElement("div");
+	el.tabIndex = 0;
+	Object.assign(el.style, {
+		...defaultStyles,
+		...styles$1
+	});
+	document.body.appendChild(el);
+	return el;
+}
+
+//#endregion
+//#region src/utils/focus-element.ts
+function focusElement(element) {
+	if (document.activeElement !== element) {
+		element.focus({ preventScroll: true });
+		element.dispatchEvent(new FocusEvent("focus", {
+			bubbles: false,
+			cancelable: true
+		}));
+	}
+}
+
+//#endregion
+//#region src/utils/wait-next-frame.ts
+function waitNextFrame() {
+	return new Promise((resolve) => {
+		window.requestAnimationFrame(() => {
+			resolve(void 0);
 		});
 	});
 }
@@ -5351,7 +5284,7 @@ function optionApplyPosition() {
 function optionCallbacks() {
 	describe("callbacks", () => {
 		it("should be called at the right time with the right arguments", async () => {
-			let events$5 = [];
+			const events$5 = [];
 			let currentKeyboardEvent = null;
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
@@ -5515,8 +5448,8 @@ function optionContainer() {
 					elements: () => [el]
 				});
 				const originalContainer = el.parentNode;
-				let containerRect = container.getBoundingClientRect();
-				let elRect = el.getBoundingClientRect();
+				const containerRect = container.getBoundingClientRect();
+				const elRect = el.getBoundingClientRect();
 				assert.notEqual(elRect.x, containerRect.x, "1: " + assertMsg);
 				assert.notEqual(elRect.y, containerRect.y, "2: " + assertMsg);
 				focusElement(el);
@@ -5773,7 +5706,7 @@ function optionFrozenStyles() {
 function optionPositionModifiers() {
 	describe("positionModifiers", () => {
 		it("should modify the dragged element position", async () => {
-			let phaseCounter = {
+			const phaseCounter = {
 				start: 0,
 				move: 0,
 				end: 0
@@ -6023,6 +5956,228 @@ function options$2() {
 }
 
 //#endregion
+//#region src/draggable/events.ts
+function events$3() {
+	describe("events", () => {
+		it("should be called at the right time with the right arguments", async () => {
+			const events$5 = [];
+			let currentKeyboardEvent = null;
+			const el = createTestElement();
+			const keyboardSensor = new r(el, { moveDistance: 1 });
+			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			draggable.on("preparestart", (...args) => {
+				assert.equal(args.length, 1);
+				assert.equal(args[0].type, "start");
+				assert.equal(args[0].srcEvent, currentKeyboardEvent);
+				events$5.push("preparestart");
+			});
+			draggable.on("start", (...args) => {
+				assert.equal(args.length, 1);
+				assert.equal(args[0].type, "start");
+				assert.equal(args[0].srcEvent, currentKeyboardEvent);
+				events$5.push("start");
+			});
+			draggable.on("preparemove", (...args) => {
+				assert.equal(args.length, 1);
+				assert.equal(args[0].type, "move");
+				assert.equal(args[0].srcEvent, currentKeyboardEvent);
+				events$5.push("preparemove");
+			});
+			draggable.on("move", (...args) => {
+				assert.equal(args.length, 1);
+				assert.equal(args[0].type, "move");
+				assert.equal(args[0].srcEvent, currentKeyboardEvent);
+				events$5.push("move");
+			});
+			draggable.on("end", (...args) => {
+				assert.equal(args.length, 1);
+				assert.equal(args[0]?.type, "end");
+				assert.equal(args[0]?.srcEvent, currentKeyboardEvent);
+				events$5.push("end");
+			});
+			draggable.on("destroy", (...args) => {
+				assert.equal(args.length, 0);
+				events$5.push("destroy");
+			});
+			focusElement(el);
+			currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
+			document.dispatchEvent(currentKeyboardEvent);
+			await waitNextFrame();
+			assert.deepEqual(events$5, ["preparestart", "start"]);
+			events$5.length = 0;
+			currentKeyboardEvent = new KeyboardEvent("keydown", { key: "ArrowRight" });
+			document.dispatchEvent(currentKeyboardEvent);
+			await waitNextFrame();
+			assert.deepEqual(events$5, ["preparemove", "move"]);
+			events$5.length = 0;
+			currentKeyboardEvent = new KeyboardEvent("keydown", { key: "Enter" });
+			document.dispatchEvent(currentKeyboardEvent);
+			assert.deepEqual(events$5, ["end"]);
+			events$5.length = 0;
+			draggable.destroy();
+			assert.deepEqual(events$5, ["destroy"]);
+			keyboardSensor.destroy();
+			el.remove();
+		});
+	});
+}
+
+//#endregion
+//#region ../dragdoll/dist/pointer-sensor-Dbu_Xu9q.js
+function i$1(e$5, t$6) {
+	if (`pointerId` in e$5) return e$5.pointerId === t$6 ? e$5 : null;
+	if (`changedTouches` in e$5) {
+		let n$7 = 0;
+		for (; n$7 < e$5.changedTouches.length; n$7++) if (e$5.changedTouches[n$7].identifier === t$6) return e$5.changedTouches[n$7];
+		return null;
+	}
+	return e$5;
+}
+function a$1(e$5) {
+	return `pointerId` in e$5 ? e$5.pointerId : `changedTouches` in e$5 ? e$5.changedTouches[0] ? e$5.changedTouches[0].identifier : null : -1;
+}
+function o(e$5) {
+	return `pointerType` in e$5 ? e$5.pointerType : `touches` in e$5 ? `touch` : `mouse`;
+}
+function s$2(e$5 = {}) {
+	let { capture: t$6 = !0, passive: n$7 = !0 } = e$5;
+	return {
+		capture: t$6,
+		passive: n$7
+	};
+}
+function c$2(e$5) {
+	return e$5 === `auto` || e$5 === void 0 ? n$4 ? `pointer` : t$5 ? `touch` : `mouse` : e$5;
+}
+const l$2 = {
+	pointer: {
+		start: `pointerdown`,
+		move: `pointermove`,
+		cancel: `pointercancel`,
+		end: `pointerup`
+	},
+	touch: {
+		start: `touchstart`,
+		move: `touchmove`,
+		cancel: `touchcancel`,
+		end: `touchend`
+	},
+	mouse: {
+		start: `mousedown`,
+		move: `mousemove`,
+		cancel: ``,
+		end: `mouseup`
+	}
+};
+var u$2 = class {
+	constructor(e$5, t$6 = {}) {
+		let { listenerOptions: n$7 = {}, sourceEvents: i$2 = `auto`, startPredicate: a$2 = (e$6) => !(`button` in e$6 && e$6.button > 0) } = t$6;
+		this.element = e$5, this.drag = null, this.isDestroyed = !1, this._areWindowListenersBound = !1, this._startPredicate = a$2, this._listenerOptions = s$2(n$7), this._sourceEvents = c$2(i$2), this._emitter = new v$1(), this._onStart = this._onStart.bind(this), this._onMove = this._onMove.bind(this), this._onCancel = this._onCancel.bind(this), this._onEnd = this._onEnd.bind(this), e$5.addEventListener(l$2[this._sourceEvents].start, this._onStart, this._listenerOptions);
+	}
+	_getTrackedPointerEventData(e$5) {
+		return this.drag ? i$1(e$5, this.drag.pointerId) : null;
+	}
+	_onStart(t$6) {
+		if (this.isDestroyed || this.drag || !this._startPredicate(t$6)) return;
+		let n$7 = a$1(t$6);
+		if (n$7 === null) return;
+		let r$3 = i$1(t$6, n$7);
+		if (r$3 === null) return;
+		let s$4 = {
+			pointerId: n$7,
+			pointerType: o(t$6),
+			x: r$3.clientX,
+			y: r$3.clientY
+		};
+		this.drag = s$4;
+		let c$4 = {
+			...s$4,
+			type: e$2.Start,
+			srcEvent: t$6,
+			target: r$3.target
+		};
+		this._emitter.emit(c$4.type, c$4), this.drag && this._bindWindowListeners();
+	}
+	_onMove(t$6) {
+		if (!this.drag) return;
+		let n$7 = this._getTrackedPointerEventData(t$6);
+		if (!n$7) return;
+		this.drag.x = n$7.clientX, this.drag.y = n$7.clientY;
+		let r$3 = {
+			type: e$2.Move,
+			srcEvent: t$6,
+			target: n$7.target,
+			...this.drag
+		};
+		this._emitter.emit(r$3.type, r$3);
+	}
+	_onCancel(t$6) {
+		if (!this.drag) return;
+		let n$7 = this._getTrackedPointerEventData(t$6);
+		if (!n$7) return;
+		this.drag.x = n$7.clientX, this.drag.y = n$7.clientY;
+		let r$3 = {
+			type: e$2.Cancel,
+			srcEvent: t$6,
+			target: n$7.target,
+			...this.drag
+		};
+		this._emitter.emit(r$3.type, r$3), this._resetDrag();
+	}
+	_onEnd(t$6) {
+		if (!this.drag) return;
+		let n$7 = this._getTrackedPointerEventData(t$6);
+		if (!n$7) return;
+		this.drag.x = n$7.clientX, this.drag.y = n$7.clientY;
+		let r$3 = {
+			type: e$2.End,
+			srcEvent: t$6,
+			target: n$7.target,
+			...this.drag
+		};
+		this._emitter.emit(r$3.type, r$3), this._resetDrag();
+	}
+	_bindWindowListeners() {
+		if (this._areWindowListenersBound) return;
+		let { move: e$5, end: t$6, cancel: n$7 } = l$2[this._sourceEvents];
+		window.addEventListener(e$5, this._onMove, this._listenerOptions), window.addEventListener(t$6, this._onEnd, this._listenerOptions), n$7 && window.addEventListener(n$7, this._onCancel, this._listenerOptions), this._areWindowListenersBound = !0;
+	}
+	_unbindWindowListeners() {
+		if (this._areWindowListenersBound) {
+			let { move: e$5, end: t$6, cancel: n$7 } = l$2[this._sourceEvents];
+			window.removeEventListener(e$5, this._onMove, this._listenerOptions), window.removeEventListener(t$6, this._onEnd, this._listenerOptions), n$7 && window.removeEventListener(n$7, this._onCancel, this._listenerOptions), this._areWindowListenersBound = !1;
+		}
+	}
+	_resetDrag() {
+		this.drag = null, this._unbindWindowListeners();
+	}
+	cancel() {
+		if (!this.drag) return;
+		let t$6 = {
+			type: e$2.Cancel,
+			srcEvent: null,
+			target: null,
+			...this.drag
+		};
+		this._emitter.emit(t$6.type, t$6), this._resetDrag();
+	}
+	updateSettings(e$5) {
+		if (this.isDestroyed) return;
+		let { listenerOptions: t$6, sourceEvents: n$7, startPredicate: r$3 } = e$5, i$2 = c$2(n$7), a$2 = s$2(t$6);
+		r$3 && this._startPredicate !== r$3 && (this._startPredicate = r$3), (t$6 && (this._listenerOptions.capture !== a$2.capture || this._listenerOptions.passive === a$2.passive) || n$7 && this._sourceEvents !== i$2) && (this.element.removeEventListener(l$2[this._sourceEvents].start, this._onStart, this._listenerOptions), this._unbindWindowListeners(), this.cancel(), n$7 && (this._sourceEvents = i$2), t$6 && a$2 && (this._listenerOptions = a$2), this.element.addEventListener(l$2[this._sourceEvents].start, this._onStart, this._listenerOptions));
+	}
+	on(e$5, t$6, n$7) {
+		return this._emitter.on(e$5, t$6, n$7);
+	}
+	off(e$5, t$6) {
+		this._emitter.off(e$5, t$6);
+	}
+	destroy() {
+		this.isDestroyed || (this.isDestroyed = !0, this.cancel(), this._emitter.emit(e$2.Destroy, { type: e$2.Destroy }), this._emitter.off(), this.element.removeEventListener(l$2[this._sourceEvents].start, this._onStart, this._listenerOptions));
+	}
+};
+
+//#endregion
 //#region src/utils/fake-touch.ts
 var FakeTouch = class {
 	constructor(options$3 = {}) {
@@ -6166,161 +6321,6 @@ async function createFakeDrag(steps, options$3) {
 		}
 	}
 }
-
-//#endregion
-//#region ../dragdoll/dist/pointer-sensor-DZDIojjB.js
-function i$1(e$5, t$6) {
-	if (`pointerId` in e$5) return e$5.pointerId === t$6 ? e$5 : null;
-	if (`changedTouches` in e$5) {
-		let n$7 = 0;
-		for (; n$7 < e$5.changedTouches.length; n$7++) if (e$5.changedTouches[n$7].identifier === t$6) return e$5.changedTouches[n$7];
-		return null;
-	}
-	return e$5;
-}
-function a$1(e$5) {
-	return `pointerType` in e$5 ? e$5.pointerType : `touches` in e$5 ? `touch` : `mouse`;
-}
-function o(e$5) {
-	return `pointerId` in e$5 ? e$5.pointerId : `changedTouches` in e$5 ? e$5.changedTouches[0] ? e$5.changedTouches[0].identifier : null : -1;
-}
-function s$2(e$5 = {}) {
-	let { capture: t$6 = !0, passive: n$7 = !0 } = e$5;
-	return {
-		capture: t$6,
-		passive: n$7
-	};
-}
-function c$2(e$5) {
-	return e$5 === `auto` || e$5 === void 0 ? n$4 ? `pointer` : t$5 ? `touch` : `mouse` : e$5;
-}
-const l$2 = {
-	pointer: {
-		start: `pointerdown`,
-		move: `pointermove`,
-		cancel: `pointercancel`,
-		end: `pointerup`
-	},
-	touch: {
-		start: `touchstart`,
-		move: `touchmove`,
-		cancel: `touchcancel`,
-		end: `touchend`
-	},
-	mouse: {
-		start: `mousedown`,
-		move: `mousemove`,
-		cancel: ``,
-		end: `mouseup`
-	}
-};
-var u$2 = class {
-	constructor(e$5, t$6 = {}) {
-		let { listenerOptions: n$7 = {}, sourceEvents: i$2 = `auto`, startPredicate: a$2 = (e$6) => !(`button` in e$6 && e$6.button > 0) } = t$6;
-		this.element = e$5, this.drag = null, this.isDestroyed = !1, this._areWindowListenersBound = !1, this._startPredicate = a$2, this._listenerOptions = s$2(n$7), this._sourceEvents = c$2(i$2), this._emitter = new v$1(), this._onStart = this._onStart.bind(this), this._onMove = this._onMove.bind(this), this._onCancel = this._onCancel.bind(this), this._onEnd = this._onEnd.bind(this), e$5.addEventListener(l$2[this._sourceEvents].start, this._onStart, this._listenerOptions);
-	}
-	_getTrackedPointerEventData(e$5) {
-		return this.drag ? i$1(e$5, this.drag.pointerId) : null;
-	}
-	_onStart(t$6) {
-		if (this.isDestroyed || this.drag || !this._startPredicate(t$6)) return;
-		let n$7 = o(t$6);
-		if (n$7 === null) return;
-		let r$3 = i$1(t$6, n$7);
-		if (r$3 === null) return;
-		let s$4 = {
-			pointerId: n$7,
-			pointerType: a$1(t$6),
-			x: r$3.clientX,
-			y: r$3.clientY
-		};
-		this.drag = s$4;
-		let c$4 = {
-			...s$4,
-			type: e$2.Start,
-			srcEvent: t$6,
-			target: r$3.target
-		};
-		this._emitter.emit(c$4.type, c$4), this.drag && this._bindWindowListeners();
-	}
-	_onMove(t$6) {
-		if (!this.drag) return;
-		let n$7 = this._getTrackedPointerEventData(t$6);
-		if (!n$7) return;
-		this.drag.x = n$7.clientX, this.drag.y = n$7.clientY;
-		let r$3 = {
-			type: e$2.Move,
-			srcEvent: t$6,
-			target: n$7.target,
-			...this.drag
-		};
-		this._emitter.emit(r$3.type, r$3);
-	}
-	_onCancel(t$6) {
-		if (!this.drag) return;
-		let n$7 = this._getTrackedPointerEventData(t$6);
-		if (!n$7) return;
-		this.drag.x = n$7.clientX, this.drag.y = n$7.clientY;
-		let r$3 = {
-			type: e$2.Cancel,
-			srcEvent: t$6,
-			target: n$7.target,
-			...this.drag
-		};
-		this._emitter.emit(r$3.type, r$3), this._resetDrag();
-	}
-	_onEnd(t$6) {
-		if (!this.drag) return;
-		let n$7 = this._getTrackedPointerEventData(t$6);
-		if (!n$7) return;
-		this.drag.x = n$7.clientX, this.drag.y = n$7.clientY;
-		let r$3 = {
-			type: e$2.End,
-			srcEvent: t$6,
-			target: n$7.target,
-			...this.drag
-		};
-		this._emitter.emit(r$3.type, r$3), this._resetDrag();
-	}
-	_bindWindowListeners() {
-		if (this._areWindowListenersBound) return;
-		let { move: e$5, end: t$6, cancel: n$7 } = l$2[this._sourceEvents];
-		window.addEventListener(e$5, this._onMove, this._listenerOptions), window.addEventListener(t$6, this._onEnd, this._listenerOptions), n$7 && window.addEventListener(n$7, this._onCancel, this._listenerOptions), this._areWindowListenersBound = !0;
-	}
-	_unbindWindowListeners() {
-		if (this._areWindowListenersBound) {
-			let { move: e$5, end: t$6, cancel: n$7 } = l$2[this._sourceEvents];
-			window.removeEventListener(e$5, this._onMove, this._listenerOptions), window.removeEventListener(t$6, this._onEnd, this._listenerOptions), n$7 && window.removeEventListener(n$7, this._onCancel, this._listenerOptions), this._areWindowListenersBound = !1;
-		}
-	}
-	_resetDrag() {
-		this.drag = null, this._unbindWindowListeners();
-	}
-	cancel() {
-		if (!this.drag) return;
-		let t$6 = {
-			type: e$2.Cancel,
-			srcEvent: null,
-			target: null,
-			...this.drag
-		};
-		this._emitter.emit(t$6.type, t$6), this._resetDrag();
-	}
-	updateSettings(e$5) {
-		if (this.isDestroyed) return;
-		let { listenerOptions: t$6, sourceEvents: n$7, startPredicate: r$3 } = e$5, i$2 = c$2(n$7), a$2 = s$2(t$6);
-		r$3 && this._startPredicate !== r$3 && (this._startPredicate = r$3), (t$6 && (this._listenerOptions.capture !== a$2.capture || this._listenerOptions.passive === a$2.passive) || n$7 && this._sourceEvents !== i$2) && (this.element.removeEventListener(l$2[this._sourceEvents].start, this._onStart, this._listenerOptions), this._unbindWindowListeners(), this.cancel(), n$7 && (this._sourceEvents = i$2), t$6 && a$2 && (this._listenerOptions = a$2), this.element.addEventListener(l$2[this._sourceEvents].start, this._onStart, this._listenerOptions));
-	}
-	on(e$5, t$6, n$7) {
-		return this._emitter.on(e$5, t$6, n$7);
-	}
-	off(e$5, t$6) {
-		this._emitter.off(e$5, t$6);
-	}
-	destroy() {
-		this.isDestroyed || (this.isDestroyed = !0, this.cancel(), this._emitter.emit(e$2.Destroy, { type: e$2.Destroy }), this._emitter.off(), this.element.removeEventListener(l$2[this._sourceEvents].start, this._onStart, this._listenerOptions));
-	}
-};
 
 //#endregion
 //#region src/draggable/misc.ts
@@ -7544,6 +7544,436 @@ describe("PointerSensor", () => {
 });
 
 //#endregion
+//#region src/keyboard-sensor/events/cancel.ts
+function eventCancel() {
+	describe("cancel", () => {
+		it("should be triggered on drag cancel", () => {
+			const el = createTestElement();
+			const s$4 = new r(el);
+			const cancelEvent = {
+				type: "cancel",
+				x: 0,
+				y: 0,
+				srcEvent: new KeyboardEvent("keydown", { key: "Escape" })
+			};
+			let cancelEventCount = 0;
+			s$4.on("cancel", (e$5) => {
+				assert.deepEqual(e$5, cancelEvent);
+				++cancelEventCount;
+			});
+			focusElement(el);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			document.dispatchEvent(cancelEvent.srcEvent);
+			assert.equal(cancelEventCount, 1);
+			el.remove();
+			s$4.destroy();
+		});
+	});
+}
+
+//#endregion
+//#region src/keyboard-sensor/events/destroy.ts
+function eventDestroy() {
+	describe("destroy", () => {
+		it("should be triggered on destroy", () => {
+			const el = createTestElement();
+			const s$4 = new r(el);
+			let destroyEventCount = 0;
+			s$4.on("destroy", (e$5) => {
+				assert.deepEqual(e$5, { type: "destroy" });
+				++destroyEventCount;
+			});
+			s$4.destroy();
+			assert.equal(destroyEventCount, 1);
+			el.remove();
+		});
+	});
+}
+
+//#endregion
+//#region src/keyboard-sensor/events/end.ts
+function eventEnd() {
+	describe("end", () => {
+		it("should be triggered on drag end", () => {
+			const el = createTestElement();
+			const s$4 = new r(el);
+			const endEvent = {
+				type: "end",
+				x: 0,
+				y: 0,
+				srcEvent: new KeyboardEvent("keydown", { key: "Enter" })
+			};
+			let endEventCount = 0;
+			s$4.on("end", (e$5) => {
+				assert.deepEqual(e$5, endEvent);
+				++endEventCount;
+			});
+			focusElement(el);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			document.dispatchEvent(endEvent.srcEvent);
+			assert.equal(endEventCount, 1);
+			el.remove();
+			s$4.destroy();
+		});
+	});
+}
+
+//#endregion
+//#region src/keyboard-sensor/events/move.ts
+function eventMove() {
+	describe("move", () => {
+		it("should be triggered on drag move", () => {
+			const el = createTestElement();
+			const s$4 = new r(el, { moveDistance: 1 });
+			let expectedEvent;
+			let moveEventCount = 0;
+			s$4.on("move", (e$5) => {
+				assert.deepEqual(e$5, expectedEvent);
+				++moveEventCount;
+			});
+			focusElement(el);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			expectedEvent = {
+				type: "move",
+				x: -1,
+				y: 0,
+				srcEvent: new KeyboardEvent("keydown", { key: "ArrowLeft" })
+			};
+			document.dispatchEvent(expectedEvent.srcEvent);
+			expectedEvent = {
+				type: "move",
+				x: 0,
+				y: 0,
+				srcEvent: new KeyboardEvent("keydown", { key: "ArrowRight" })
+			};
+			document.dispatchEvent(expectedEvent.srcEvent);
+			expectedEvent = {
+				type: "move",
+				x: 0,
+				y: -1,
+				srcEvent: new KeyboardEvent("keydown", { key: "ArrowUp" })
+			};
+			document.dispatchEvent(expectedEvent.srcEvent);
+			expectedEvent = {
+				type: "move",
+				x: 0,
+				y: 0,
+				srcEvent: new KeyboardEvent("keydown", { key: "ArrowDown" })
+			};
+			document.dispatchEvent(expectedEvent.srcEvent);
+			assert.equal(moveEventCount, 4);
+			el.remove();
+			s$4.destroy();
+		});
+	});
+}
+
+//#endregion
+//#region src/keyboard-sensor/events/start.ts
+function eventStart() {
+	describe("start", () => {
+		it(`should be triggered on drag start`, function() {
+			const el = createTestElement({
+				left: "10px",
+				top: "20px"
+			});
+			const s$4 = new r(el);
+			const expectedEvent = {
+				type: "start",
+				x: 10,
+				y: 20,
+				srcEvent: new KeyboardEvent("keydown", { key: "Enter" })
+			};
+			let startEventCount = 0;
+			s$4.on("start", (e$5) => {
+				assert.deepEqual(e$5, expectedEvent);
+				++startEventCount;
+			});
+			focusElement(el);
+			document.dispatchEvent(expectedEvent.srcEvent);
+			assert.equal(startEventCount, 1);
+			el.remove();
+			s$4.destroy();
+		});
+	});
+}
+
+//#endregion
+//#region src/keyboard-sensor/events/index.ts
+function events$1() {
+	describe("events", () => {
+		eventCancel();
+		eventDestroy();
+		eventEnd();
+		eventMove();
+		eventStart();
+	});
+}
+
+//#endregion
+//#region src/keyboard-sensor/methods/cancel.ts
+function methodCancel() {
+	describe("cancel", () => {
+		it(`should emit "cancel" event with correct arguments after updating instance properties`, () => {
+			const el = createTestElement();
+			const s$4 = new r(el);
+			const events$5 = [];
+			s$4.on("start", (data) => void events$5.push(data.type));
+			s$4.on("move", (data) => void events$5.push(data.type));
+			s$4.on("end", (data) => void events$5.push(data.type));
+			s$4.on("destroy", (data) => void events$5.push(data.type));
+			s$4.on("cancel", (data) => {
+				assert.deepEqual(data, {
+					type: "cancel",
+					x: s$4.drag.x,
+					y: s$4.drag.y
+				});
+				events$5.push(data.type);
+			});
+			focusElement(el);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			assert.notEqual(s$4.drag, null);
+			s$4.cancel();
+			assert.equal(s$4.drag, null);
+			assert.deepEqual(events$5, ["start", "cancel"]);
+			s$4.destroy();
+			el.remove();
+		});
+		it(`should not do anything if drag is not active`, () => {
+			const el = createTestElement();
+			const s$4 = new r(el);
+			const events$5 = [];
+			s$4.on("start", (data) => void events$5.push(data.type));
+			s$4.on("move", (data) => void events$5.push(data.type));
+			s$4.on("end", (data) => void events$5.push(data.type));
+			s$4.on("destroy", (data) => void events$5.push(data.type));
+			s$4.on("cancel", (data) => void events$5.push(data.type));
+			s$4.cancel();
+			assert.deepEqual(events$5, []);
+			s$4.destroy();
+			el.remove();
+		});
+	});
+}
+
+//#endregion
+//#region src/keyboard-sensor/methods/destroy.ts
+function methodDestroy() {
+	describe("destroy", () => {
+		it("should allow destroying only once", () => {
+			const el = createTestElement();
+			const s$4 = new r(el);
+			const events$5 = [];
+			s$4.destroy();
+			s$4.on("destroy", (data) => void events$5.push(data.type));
+			s$4.destroy();
+			assert.deepEqual(events$5, []);
+			el.remove();
+		});
+		describe("if drag active", () => {
+			it(`should set isDestroyed property to true, emit "cancel" event with the current x/y coordinates, reset drag data, emit "destroy" event and remove all listeners`, () => {
+				const el = createTestElement();
+				const s$4 = new r(el);
+				const events$5 = [];
+				s$4.on("start", (data) => void events$5.push(data.type));
+				s$4.on("move", (data) => void events$5.push(data.type));
+				s$4.on("end", (data) => void events$5.push(data.type));
+				s$4.on("cancel", (data) => {
+					assert.notEqual(s$4.drag, null);
+					assert.equal(s$4.isDestroyed, true);
+					assert.deepEqual(data, {
+						type: "cancel",
+						x: s$4.drag.x,
+						y: s$4.drag.y
+					});
+					events$5.push(data.type);
+				});
+				s$4.on("destroy", (data) => {
+					assert.equal(s$4.drag, null);
+					assert.equal(s$4.isDestroyed, true);
+					assert.deepEqual(data, { type: "destroy" });
+					events$5.push(data.type);
+				});
+				assert.equal(s$4["_emitter"].listenerCount(), 5);
+				focusElement(el);
+				document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+				s$4.destroy();
+				el.remove();
+				assert.equal(s$4.drag, null);
+				assert.equal(s$4.isDestroyed, true);
+				assert.deepEqual(events$5, [
+					"start",
+					"cancel",
+					"destroy"
+				]);
+				assert.equal(s$4["_emitter"].listenerCount(), 0);
+			});
+		});
+		describe("if drag is not active", () => {
+			it(`should set isDestroyed property to true, emit "destroy" event and remove all listeners`, () => {
+				const el = createTestElement();
+				const s$4 = new r(el);
+				const events$5 = [];
+				s$4.on("start", (data) => void events$5.push(data.type));
+				s$4.on("move", (data) => void events$5.push(data.type));
+				s$4.on("end", (data) => void events$5.push(data.type));
+				s$4.on("cancel", (data) => void events$5.push(data.type));
+				s$4.on("destroy", (data) => {
+					assert.equal(s$4.drag, null);
+					assert.equal(s$4.isDestroyed, true);
+					assert.deepEqual(data, { type: "destroy" });
+					events$5.push(data.type);
+				});
+				assert.equal(s$4["_emitter"].listenerCount(), 5);
+				s$4.destroy();
+				el.remove();
+				assert.equal(s$4.drag, null);
+				assert.equal(s$4.isDestroyed, true);
+				assert.deepEqual(events$5, ["destroy"]);
+				assert.equal(s$4["_emitter"].listenerCount(), 0);
+			});
+		});
+	});
+}
+
+//#endregion
+//#region src/keyboard-sensor/methods/off.ts
+function methodOff() {
+	describe("off", () => {
+		it("should remove an event listener based on id", () => {
+			const el = createTestElement();
+			const s$4 = new r(el);
+			let msg = "";
+			const idA = s$4.on("start", () => void (msg += "a"));
+			s$4.on("start", () => void (msg += "b"));
+			s$4.off("start", idA);
+			focusElement(el);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			assert.equal(msg, "b");
+			s$4.destroy();
+			el.remove();
+		});
+	});
+}
+
+//#endregion
+//#region src/keyboard-sensor/methods/on.ts
+function methodOn() {
+	describe("on", () => {
+		it("should return a unique symbol by default", () => {
+			const el = createTestElement();
+			const s$4 = new r(el);
+			const idA = s$4.on("start", () => {});
+			const idB = s$4.on("start", () => {});
+			assert.equal(typeof idA, "symbol");
+			assert.notEqual(idA, idB);
+			el.remove();
+			s$4.destroy();
+		});
+		it("should allow duplicate event listeners", () => {
+			const el = createTestElement();
+			const s$4 = new r(el);
+			let counter = 0;
+			const listener = () => {
+				++counter;
+			};
+			s$4.on("start", listener);
+			s$4.on("start", listener);
+			focusElement(el);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			assert.equal(counter, 2);
+			el.remove();
+			s$4.destroy();
+		});
+		it("should remove the existing listener and add the new one if the same id is used", () => {
+			const el = createTestElement();
+			const s$4 = new r(el);
+			let msg = "";
+			s$4.on("start", () => void (msg += "a"), 1);
+			s$4.on("start", () => void (msg += "b"), 2);
+			s$4.on("start", () => void (msg += "c"), 1);
+			focusElement(el);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			assert.equal(msg, "bc");
+			el.remove();
+			s$4.destroy();
+		});
+		it("should allow defining a custom id (string/symbol/number) for the event listener via third argument", () => {
+			const el = createTestElement();
+			const s$4 = new r(el);
+			const idA = Symbol();
+			assert.equal(s$4.on("start", () => {}, idA), idA);
+			const idB = 1;
+			assert.equal(s$4.on("start", () => {}, idB), idB);
+			const idC = "foo";
+			assert.equal(s$4.on("start", () => {}, idC), idC);
+			el.remove();
+			s$4.destroy();
+		});
+	});
+}
+
+//#endregion
+//#region src/keyboard-sensor/methods/update-settings.ts
+function methodUpdateSettings() {
+	describe("updateSettings", () => {
+		it(`should update settings`, function() {
+			const initSettings = {
+				moveDistance: 25,
+				cancelOnBlur: false,
+				cancelOnVisibilityChange: false,
+				startPredicate: () => null,
+				movePredicate: () => null,
+				cancelPredicate: () => null,
+				endPredicate: () => null
+			};
+			const updatedSettings = {
+				moveDistance: 50,
+				cancelOnBlur: true,
+				cancelOnVisibilityChange: true,
+				startPredicate: () => void 0,
+				movePredicate: () => void 0,
+				cancelPredicate: () => void 0,
+				endPredicate: () => void 0
+			};
+			const el = createTestElement();
+			const s$4 = new r(el, initSettings);
+			assert.equal(s$4.moveDistance.x, initSettings.moveDistance);
+			assert.equal(s$4.moveDistance.y, initSettings.moveDistance);
+			assert.equal(s$4["_cancelOnBlur"], initSettings.cancelOnBlur);
+			assert.equal(s$4["_cancelOnVisibilityChange"], initSettings.cancelOnVisibilityChange);
+			assert.equal(s$4["_startPredicate"], initSettings.startPredicate);
+			assert.equal(s$4["_movePredicate"], initSettings.movePredicate);
+			assert.equal(s$4["_cancelPredicate"], initSettings.cancelPredicate);
+			assert.equal(s$4["_endPredicate"], initSettings.endPredicate);
+			s$4.updateSettings(updatedSettings);
+			assert.equal(s$4.moveDistance.x, updatedSettings.moveDistance);
+			assert.equal(s$4.moveDistance.y, updatedSettings.moveDistance);
+			assert.equal(s$4["_cancelOnBlur"], updatedSettings.cancelOnBlur);
+			assert.equal(s$4["_cancelOnVisibilityChange"], updatedSettings.cancelOnVisibilityChange);
+			assert.equal(s$4["_startPredicate"], updatedSettings.startPredicate);
+			assert.equal(s$4["_movePredicate"], updatedSettings.movePredicate);
+			assert.equal(s$4["_cancelPredicate"], updatedSettings.cancelPredicate);
+			assert.equal(s$4["_endPredicate"], updatedSettings.endPredicate);
+			s$4.destroy();
+			el.remove();
+		});
+	});
+}
+
+//#endregion
+//#region src/keyboard-sensor/methods/index.ts
+function methods$1() {
+	describe("methods", () => {
+		methodCancel();
+		methodDestroy();
+		methodOff();
+		methodOn();
+		methodUpdateSettings();
+	});
+}
+
+//#endregion
 //#region src/utils/blur-element.ts
 function blurElement(element) {
 	if (element === document.activeElement) {
@@ -8026,436 +8456,6 @@ function properties() {
 }
 
 //#endregion
-//#region src/keyboard-sensor/methods/cancel.ts
-function methodCancel() {
-	describe("cancel", () => {
-		it(`should emit "cancel" event with correct arguments after updating instance properties`, () => {
-			const el = createTestElement();
-			const s$4 = new r(el);
-			let events$5 = [];
-			s$4.on("start", (data) => void events$5.push(data.type));
-			s$4.on("move", (data) => void events$5.push(data.type));
-			s$4.on("end", (data) => void events$5.push(data.type));
-			s$4.on("destroy", (data) => void events$5.push(data.type));
-			s$4.on("cancel", (data) => {
-				assert.deepEqual(data, {
-					type: "cancel",
-					x: s$4.drag.x,
-					y: s$4.drag.y
-				});
-				events$5.push(data.type);
-			});
-			focusElement(el);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			assert.notEqual(s$4.drag, null);
-			s$4.cancel();
-			assert.equal(s$4.drag, null);
-			assert.deepEqual(events$5, ["start", "cancel"]);
-			s$4.destroy();
-			el.remove();
-		});
-		it(`should not do anything if drag is not active`, () => {
-			const el = createTestElement();
-			const s$4 = new r(el);
-			let events$5 = [];
-			s$4.on("start", (data) => void events$5.push(data.type));
-			s$4.on("move", (data) => void events$5.push(data.type));
-			s$4.on("end", (data) => void events$5.push(data.type));
-			s$4.on("destroy", (data) => void events$5.push(data.type));
-			s$4.on("cancel", (data) => void events$5.push(data.type));
-			s$4.cancel();
-			assert.deepEqual(events$5, []);
-			s$4.destroy();
-			el.remove();
-		});
-	});
-}
-
-//#endregion
-//#region src/keyboard-sensor/methods/destroy.ts
-function methodDestroy() {
-	describe("destroy", () => {
-		it("should allow destroying only once", () => {
-			const el = createTestElement();
-			const s$4 = new r(el);
-			let events$5 = [];
-			s$4.destroy();
-			s$4.on("destroy", (data) => void events$5.push(data.type));
-			s$4.destroy();
-			assert.deepEqual(events$5, []);
-			el.remove();
-		});
-		describe("if drag active", () => {
-			it(`should set isDestroyed property to true, emit "cancel" event with the current x/y coordinates, reset drag data, emit "destroy" event and remove all listeners`, () => {
-				const el = createTestElement();
-				const s$4 = new r(el);
-				let events$5 = [];
-				s$4.on("start", (data) => void events$5.push(data.type));
-				s$4.on("move", (data) => void events$5.push(data.type));
-				s$4.on("end", (data) => void events$5.push(data.type));
-				s$4.on("cancel", (data) => {
-					assert.notEqual(s$4.drag, null);
-					assert.equal(s$4.isDestroyed, true);
-					assert.deepEqual(data, {
-						type: "cancel",
-						x: s$4.drag.x,
-						y: s$4.drag.y
-					});
-					events$5.push(data.type);
-				});
-				s$4.on("destroy", (data) => {
-					assert.equal(s$4.drag, null);
-					assert.equal(s$4.isDestroyed, true);
-					assert.deepEqual(data, { type: "destroy" });
-					events$5.push(data.type);
-				});
-				assert.equal(s$4["_emitter"].listenerCount(), 5);
-				focusElement(el);
-				document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-				s$4.destroy();
-				el.remove();
-				assert.equal(s$4.drag, null);
-				assert.equal(s$4.isDestroyed, true);
-				assert.deepEqual(events$5, [
-					"start",
-					"cancel",
-					"destroy"
-				]);
-				assert.equal(s$4["_emitter"].listenerCount(), 0);
-			});
-		});
-		describe("if drag is not active", () => {
-			it(`should set isDestroyed property to true, emit "destroy" event and remove all listeners`, () => {
-				const el = createTestElement();
-				const s$4 = new r(el);
-				let events$5 = [];
-				s$4.on("start", (data) => void events$5.push(data.type));
-				s$4.on("move", (data) => void events$5.push(data.type));
-				s$4.on("end", (data) => void events$5.push(data.type));
-				s$4.on("cancel", (data) => void events$5.push(data.type));
-				s$4.on("destroy", (data) => {
-					assert.equal(s$4.drag, null);
-					assert.equal(s$4.isDestroyed, true);
-					assert.deepEqual(data, { type: "destroy" });
-					events$5.push(data.type);
-				});
-				assert.equal(s$4["_emitter"].listenerCount(), 5);
-				s$4.destroy();
-				el.remove();
-				assert.equal(s$4.drag, null);
-				assert.equal(s$4.isDestroyed, true);
-				assert.deepEqual(events$5, ["destroy"]);
-				assert.equal(s$4["_emitter"].listenerCount(), 0);
-			});
-		});
-	});
-}
-
-//#endregion
-//#region src/keyboard-sensor/methods/off.ts
-function methodOff() {
-	describe("off", () => {
-		it("should remove an event listener based on id", () => {
-			const el = createTestElement();
-			const s$4 = new r(el);
-			let msg = "";
-			const idA = s$4.on("start", () => void (msg += "a"));
-			s$4.on("start", () => void (msg += "b"));
-			s$4.off("start", idA);
-			focusElement(el);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			assert.equal(msg, "b");
-			s$4.destroy();
-			el.remove();
-		});
-	});
-}
-
-//#endregion
-//#region src/keyboard-sensor/methods/on.ts
-function methodOn() {
-	describe("on", () => {
-		it("should return a unique symbol by default", () => {
-			const el = createTestElement();
-			const s$4 = new r(el);
-			const idA = s$4.on("start", () => {});
-			const idB = s$4.on("start", () => {});
-			assert.equal(typeof idA, "symbol");
-			assert.notEqual(idA, idB);
-			el.remove();
-			s$4.destroy();
-		});
-		it("should allow duplicate event listeners", () => {
-			const el = createTestElement();
-			const s$4 = new r(el);
-			let counter = 0;
-			const listener = () => {
-				++counter;
-			};
-			s$4.on("start", listener);
-			s$4.on("start", listener);
-			focusElement(el);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			assert.equal(counter, 2);
-			el.remove();
-			s$4.destroy();
-		});
-		it("should remove the existing listener and add the new one if the same id is used", () => {
-			const el = createTestElement();
-			const s$4 = new r(el);
-			let msg = "";
-			s$4.on("start", () => void (msg += "a"), 1);
-			s$4.on("start", () => void (msg += "b"), 2);
-			s$4.on("start", () => void (msg += "c"), 1);
-			focusElement(el);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			assert.equal(msg, "bc");
-			el.remove();
-			s$4.destroy();
-		});
-		it("should allow defining a custom id (string/symbol/number) for the event listener via third argument", () => {
-			const el = createTestElement();
-			const s$4 = new r(el);
-			const idA = Symbol();
-			assert.equal(s$4.on("start", () => {}, idA), idA);
-			const idB = 1;
-			assert.equal(s$4.on("start", () => {}, idB), idB);
-			const idC = "foo";
-			assert.equal(s$4.on("start", () => {}, idC), idC);
-			el.remove();
-			s$4.destroy();
-		});
-	});
-}
-
-//#endregion
-//#region src/keyboard-sensor/methods/update-settings.ts
-function methodUpdateSettings() {
-	describe("updateSettings", () => {
-		it(`should update settings`, function() {
-			const initSettings = {
-				moveDistance: 25,
-				cancelOnBlur: false,
-				cancelOnVisibilityChange: false,
-				startPredicate: () => null,
-				movePredicate: () => null,
-				cancelPredicate: () => null,
-				endPredicate: () => null
-			};
-			const updatedSettings = {
-				moveDistance: 50,
-				cancelOnBlur: true,
-				cancelOnVisibilityChange: true,
-				startPredicate: () => void 0,
-				movePredicate: () => void 0,
-				cancelPredicate: () => void 0,
-				endPredicate: () => void 0
-			};
-			const el = createTestElement();
-			const s$4 = new r(el, initSettings);
-			assert.equal(s$4.moveDistance.x, initSettings.moveDistance);
-			assert.equal(s$4.moveDistance.y, initSettings.moveDistance);
-			assert.equal(s$4["_cancelOnBlur"], initSettings.cancelOnBlur);
-			assert.equal(s$4["_cancelOnVisibilityChange"], initSettings.cancelOnVisibilityChange);
-			assert.equal(s$4["_startPredicate"], initSettings.startPredicate);
-			assert.equal(s$4["_movePredicate"], initSettings.movePredicate);
-			assert.equal(s$4["_cancelPredicate"], initSettings.cancelPredicate);
-			assert.equal(s$4["_endPredicate"], initSettings.endPredicate);
-			s$4.updateSettings(updatedSettings);
-			assert.equal(s$4.moveDistance.x, updatedSettings.moveDistance);
-			assert.equal(s$4.moveDistance.y, updatedSettings.moveDistance);
-			assert.equal(s$4["_cancelOnBlur"], updatedSettings.cancelOnBlur);
-			assert.equal(s$4["_cancelOnVisibilityChange"], updatedSettings.cancelOnVisibilityChange);
-			assert.equal(s$4["_startPredicate"], updatedSettings.startPredicate);
-			assert.equal(s$4["_movePredicate"], updatedSettings.movePredicate);
-			assert.equal(s$4["_cancelPredicate"], updatedSettings.cancelPredicate);
-			assert.equal(s$4["_endPredicate"], updatedSettings.endPredicate);
-			s$4.destroy();
-			el.remove();
-		});
-	});
-}
-
-//#endregion
-//#region src/keyboard-sensor/methods/index.ts
-function methods$1() {
-	describe("methods", () => {
-		methodCancel();
-		methodDestroy();
-		methodOff();
-		methodOn();
-		methodUpdateSettings();
-	});
-}
-
-//#endregion
-//#region src/keyboard-sensor/events/cancel.ts
-function eventCancel() {
-	describe("cancel", () => {
-		it("should be triggered on drag cancel", () => {
-			const el = createTestElement();
-			const s$4 = new r(el);
-			const cancelEvent = {
-				type: "cancel",
-				x: 0,
-				y: 0,
-				srcEvent: new KeyboardEvent("keydown", { key: "Escape" })
-			};
-			let cancelEventCount = 0;
-			s$4.on("cancel", (e$5) => {
-				assert.deepEqual(e$5, cancelEvent);
-				++cancelEventCount;
-			});
-			focusElement(el);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			document.dispatchEvent(cancelEvent.srcEvent);
-			assert.equal(cancelEventCount, 1);
-			el.remove();
-			s$4.destroy();
-		});
-	});
-}
-
-//#endregion
-//#region src/keyboard-sensor/events/destroy.ts
-function eventDestroy() {
-	describe("destroy", () => {
-		it("should be triggered on destroy", () => {
-			const el = createTestElement();
-			const s$4 = new r(el);
-			let destroyEventCount = 0;
-			s$4.on("destroy", (e$5) => {
-				assert.deepEqual(e$5, { type: "destroy" });
-				++destroyEventCount;
-			});
-			s$4.destroy();
-			assert.equal(destroyEventCount, 1);
-			el.remove();
-		});
-	});
-}
-
-//#endregion
-//#region src/keyboard-sensor/events/end.ts
-function eventEnd() {
-	describe("end", () => {
-		it("should be triggered on drag end", () => {
-			const el = createTestElement();
-			const s$4 = new r(el);
-			const endEvent = {
-				type: "end",
-				x: 0,
-				y: 0,
-				srcEvent: new KeyboardEvent("keydown", { key: "Enter" })
-			};
-			let endEventCount = 0;
-			s$4.on("end", (e$5) => {
-				assert.deepEqual(e$5, endEvent);
-				++endEventCount;
-			});
-			focusElement(el);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			document.dispatchEvent(endEvent.srcEvent);
-			assert.equal(endEventCount, 1);
-			el.remove();
-			s$4.destroy();
-		});
-	});
-}
-
-//#endregion
-//#region src/keyboard-sensor/events/move.ts
-function eventMove() {
-	describe("move", () => {
-		it("should be triggered on drag move", () => {
-			const el = createTestElement();
-			const s$4 = new r(el, { moveDistance: 1 });
-			let expectedEvent;
-			let moveEventCount = 0;
-			s$4.on("move", (e$5) => {
-				assert.deepEqual(e$5, expectedEvent);
-				++moveEventCount;
-			});
-			focusElement(el);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			expectedEvent = {
-				type: "move",
-				x: -1,
-				y: 0,
-				srcEvent: new KeyboardEvent("keydown", { key: "ArrowLeft" })
-			};
-			document.dispatchEvent(expectedEvent.srcEvent);
-			expectedEvent = {
-				type: "move",
-				x: 0,
-				y: 0,
-				srcEvent: new KeyboardEvent("keydown", { key: "ArrowRight" })
-			};
-			document.dispatchEvent(expectedEvent.srcEvent);
-			expectedEvent = {
-				type: "move",
-				x: 0,
-				y: -1,
-				srcEvent: new KeyboardEvent("keydown", { key: "ArrowUp" })
-			};
-			document.dispatchEvent(expectedEvent.srcEvent);
-			expectedEvent = {
-				type: "move",
-				x: 0,
-				y: 0,
-				srcEvent: new KeyboardEvent("keydown", { key: "ArrowDown" })
-			};
-			document.dispatchEvent(expectedEvent.srcEvent);
-			assert.equal(moveEventCount, 4);
-			el.remove();
-			s$4.destroy();
-		});
-	});
-}
-
-//#endregion
-//#region src/keyboard-sensor/events/start.ts
-function eventStart() {
-	describe("start", () => {
-		it(`should be triggered on drag start`, function() {
-			const el = createTestElement({
-				left: "10px",
-				top: "20px"
-			});
-			const s$4 = new r(el);
-			const expectedEvent = {
-				type: "start",
-				x: 10,
-				y: 20,
-				srcEvent: new KeyboardEvent("keydown", { key: "Enter" })
-			};
-			let startEventCount = 0;
-			s$4.on("start", (e$5) => {
-				assert.deepEqual(e$5, expectedEvent);
-				++startEventCount;
-			});
-			focusElement(el);
-			document.dispatchEvent(expectedEvent.srcEvent);
-			assert.equal(startEventCount, 1);
-			el.remove();
-			s$4.destroy();
-		});
-	});
-}
-
-//#endregion
-//#region src/keyboard-sensor/events/index.ts
-function events$1() {
-	describe("events", () => {
-		eventCancel();
-		eventDestroy();
-		eventEnd();
-		eventMove();
-		eventStart();
-	});
-}
-
-//#endregion
 //#region src/keyboard-sensor/index.ts
 describe("KeyboardSensor", () => {
 	beforeEach(() => {
@@ -8471,25 +8471,6 @@ describe("KeyboardSensor", () => {
 	methods$1();
 	events$1();
 });
-
-//#endregion
-//#region src/utils/keyboard-helpers.ts
-const press = (key) => document.dispatchEvent(new KeyboardEvent("keydown", { key }));
-const startDrag = async (el) => {
-	focusElement(el);
-	press("Enter");
-	await waitNextFrame();
-};
-const endDrag = async () => {
-	press("Enter");
-	await waitNextFrame();
-};
-const move = async (direction, times = 1) => {
-	for (let i$2 = 0; i$2 < times; i$2++) {
-		press(`Arrow${direction}`);
-		await waitNextFrame();
-	}
-};
 
 //#endregion
 //#region ../dragdoll/dist/get-intersection-score-nMuj0vta.js
@@ -8548,8 +8529,16 @@ var n = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/collision-detector-Dl1FQ6MW.js
-var n$3 = class {
+//#region ../dragdoll/dist/collision-detector-DNLDdjWK.js
+function n$2(e$5, t$6 = {
+	width: 0,
+	height: 0,
+	x: 0,
+	y: 0
+}) {
+	return e$5 && (t$6.width = e$5.width, t$6.height = e$5.height, t$6.x = e$5.x, t$6.y = e$5.y), t$6;
+}
+var r$1 = class {
 	constructor(e$5) {
 		this._items = [], this._index = 0, this._getItem = e$5;
 	}
@@ -8564,26 +8553,18 @@ var n$3 = class {
 		this._index = Math.min(this._index, t$6), this._items.length = t$6;
 	}
 };
-function r$1(e$5, t$6 = {
-	width: 0,
-	height: 0,
-	x: 0,
-	y: 0
-}) {
-	return e$5 && (t$6.width = e$5.width, t$6.height = e$5.height, t$6.x = e$5.x, t$6.y = e$5.y), t$6;
-}
 const i = Symbol();
 var a = class {
 	constructor(e$5) {
 		this._listenerId = Symbol(), this._dndContext = e$5, this._collisionDataPoolCache = [], this._collisionDataPoolMap = /* @__PURE__ */ new Map();
 	}
-	_checkCollision(n$7, i$2, a$2) {
-		let o$2 = n$7.getClientRect(), s$4 = i$2.getClientRect();
+	_checkCollision(r$3, i$2, a$2) {
+		let o$2 = r$3.getClientRect(), s$4 = i$2.getClientRect();
 		if (!o$2) return null;
 		let c$4 = e$1(o$2, s$4, a$2.intersectionRect);
 		if (c$4 === null) return null;
 		let l$5 = n$1(o$2, s$4, c$4);
-		return l$5 <= 0 ? null : (a$2.droppableId = i$2.id, r$1(s$4, a$2.droppableRect), r$1(o$2, a$2.draggableRect), a$2.intersectionScore = l$5, a$2);
+		return l$5 <= 0 ? null : (a$2.droppableId = i$2.id, n$2(s$4, a$2.droppableRect), n$2(o$2, a$2.draggableRect), a$2.intersectionScore = l$5, a$2);
 	}
 	_sortCollisions(e$5, t$6) {
 		return t$6.sort((e$6, t$7) => {
@@ -8594,15 +8575,15 @@ var a = class {
 	_createCollisionData() {
 		return {
 			droppableId: i,
-			droppableRect: r$1(),
-			draggableRect: r$1(),
-			intersectionRect: r$1(),
+			droppableRect: n$2(),
+			draggableRect: n$2(),
+			intersectionRect: n$2(),
 			intersectionScore: 0
 		};
 	}
 	getCollisionDataPool(e$5) {
 		let t$6 = this._collisionDataPoolMap.get(e$5);
-		return t$6 || (t$6 = this._collisionDataPoolCache.pop() || new n$3((e$6) => e$6 || this._createCollisionData()), this._collisionDataPoolMap.set(e$5, t$6)), t$6;
+		return t$6 || (t$6 = this._collisionDataPoolCache.pop() || new r$1((e$6) => e$6 || this._createCollisionData()), this._collisionDataPoolMap.set(e$5, t$6)), t$6;
 	}
 	removeCollisionDataPool(e$5) {
 		let t$6 = this._collisionDataPoolMap.get(e$5);
@@ -8645,7 +8626,7 @@ const c$1 = {
 var u = class {
 	constructor(e$5 = {}) {
 		this._onScroll = () => {
-			this._drags.size !== 0 && (n$2.once(t$2.read, () => {
+			this._drags.size !== 0 && (n$3.once(t$2.read, () => {
 				this.updateDroppableClientRects();
 			}, this._listenerId), this.detectCollisions());
 		};
@@ -8745,7 +8726,7 @@ var u = class {
 	}
 	_finalizeStopDrag(e$5) {
 		let r$3 = this._drags.get(e$5);
-		!r$3 || !r$3.isEnded || (this._drags.delete(e$5), this._collisionDetector.removeCollisionDataPool(e$5), n$2.off(t$2.read, r$3._cd.tickerId), n$2.off(t$2.write, r$3._cd.tickerId), this._drags.size || (n$2.off(t$2.read, this._listenerId), window.removeEventListener(`scroll`, this._onScroll, c$1)));
+		!r$3 || !r$3.isEnded || (this._drags.delete(e$5), this._collisionDetector.removeCollisionDataPool(e$5), n$3.off(t$2.read, r$3._cd.tickerId), n$3.off(t$2.write, r$3._cd.tickerId), this._drags.size || (n$3.off(t$2.read, this._listenerId), window.removeEventListener(`scroll`, this._onScroll, c$1)));
 	}
 	_computeCollisions(e$5, t$6 = !1) {
 		let n$7 = this._drags.get(e$5);
@@ -8818,8 +8799,8 @@ var u = class {
 		if (!this.isDestroyed) if (e$5) {
 			let r$3 = this._drags.get(e$5);
 			if (!r$3 || r$3.isEnded) return;
-			n$2.once(t$2.read, () => this._computeCollisions(e$5), r$3._cd.tickerId), n$2.once(t$2.write, () => this._emitCollisions(e$5), r$3._cd.tickerId);
-		} else for (let [e$6, r$3] of this._drags) r$3.isEnded || (n$2.once(t$2.read, () => this._computeCollisions(e$6), r$3._cd.tickerId), n$2.once(t$2.write, () => this._emitCollisions(e$6), r$3._cd.tickerId));
+			n$3.once(t$2.read, () => this._computeCollisions(e$5), r$3._cd.tickerId), n$3.once(t$2.write, () => this._emitCollisions(e$5), r$3._cd.tickerId);
+		} else for (let [e$6, r$3] of this._drags) r$3.isEnded || (n$3.once(t$2.read, () => this._computeCollisions(e$6), r$3._cd.tickerId), n$3.once(t$2.write, () => this._emitCollisions(e$6), r$3._cd.tickerId));
 	}
 	addDraggables(t$6) {
 		if (this.isDestroyed) return;
@@ -8882,6 +8863,1278 @@ var u = class {
 		this._emitter.emit(l$1.Destroy), this._emitter.off(), this._collisionDetector.destroy(), this.draggables.clear(), this.droppables.clear();
 	}
 };
+
+//#endregion
+//#region ../dragdoll/dist/is-document-BqbrfopC.js
+function e(e$5) {
+	return e$5 instanceof Document;
+}
+
+//#endregion
+//#region ../../node_modules/mezr/dist/esm/utils/isDocument.js
+function isDocument(n$7) {
+	return n$7 instanceof Document;
+}
+
+//#endregion
+//#region ../../node_modules/mezr/dist/esm/utils/getPreciseScrollbarSize.js
+const SUBPIXEL_OFFSET = /* @__PURE__ */ new Map();
+let testStyleElement = null, testParentElement = null, testChildElement = null;
+function getSubpixelScrollbarSize(t$6, e$5) {
+	const n$7 = t$6.split(".");
+	let l$5 = SUBPIXEL_OFFSET.get(n$7[1]);
+	if (void 0 === l$5) {
+		testStyleElement || (testStyleElement = document.createElement("style")), testStyleElement.innerHTML = `\n      #mezr-scrollbar-test::-webkit-scrollbar {\n        width: ${t$6} !important;\n      }\n    `, testParentElement && testChildElement || (testParentElement = document.createElement("div"), testChildElement = document.createElement("div"), testParentElement.appendChild(testChildElement), testParentElement.id = "mezr-scrollbar-test", testParentElement.style.cssText = "\n        all: unset !important;\n        position: fixed !important;\n        top: -200px !important;\n        left: 0px !important;\n        width: 100px !important;\n        height: 100px !important;\n        overflow: scroll !important;\n        pointer-events: none !important;\n        visibility: hidden !important;\n      ", testChildElement.style.cssText = "\n        all: unset !important;\n        position: absolute !important;\n        inset: 0 !important;\n      "), document.body.appendChild(testStyleElement), document.body.appendChild(testParentElement);
+		l$5 = testParentElement.getBoundingClientRect().width - testChildElement.getBoundingClientRect().width - e$5, SUBPIXEL_OFFSET.set(n$7[1], l$5), document.body.removeChild(testParentElement), document.body.removeChild(testStyleElement);
+	}
+	return e$5 + l$5;
+}
+function getPreciseScrollbarSize(t$6, e$5, n$7) {
+	if (n$7 <= 0) return 0;
+	if (IS_CHROMIUM) {
+		const n$8 = getStyle(t$6, "::-webkit-scrollbar"), l$5 = "x" === e$5 ? n$8.height : n$8.width, i$2 = parseFloat(l$5);
+		if (!Number.isNaN(i$2) && !Number.isInteger(i$2)) return getSubpixelScrollbarSize(l$5, i$2);
+	}
+	return n$7;
+}
+
+//#endregion
+//#region ../../node_modules/mezr/dist/esm/utils/getWindowWidth.js
+function getWindowWidth(e$5, r$3 = !1) {
+	if (r$3) return e$5.innerWidth;
+	const { innerWidth: t$6, document: i$2 } = e$5, { documentElement: n$7 } = i$2, { clientWidth: c$4 } = n$7;
+	return t$6 - getPreciseScrollbarSize(n$7, "y", t$6 - c$4);
+}
+
+//#endregion
+//#region ../../node_modules/mezr/dist/esm/utils/getDocumentWidth.js
+function getDocumentWidth({ documentElement: t$6 }) {
+	return Math.max(t$6.scrollWidth, t$6.clientWidth, t$6.getBoundingClientRect().width);
+}
+
+//#endregion
+//#region ../../node_modules/mezr/dist/esm/utils/getElementWidth.js
+function getElementWidth(t$6, e$5 = BOX_EDGE.border) {
+	let { width: r$3 } = t$6.getBoundingClientRect();
+	if (e$5 === BOX_EDGE.border) return r$3;
+	const o$2 = getStyle(t$6);
+	return e$5 === BOX_EDGE.margin ? (r$3 += Math.max(0, parseFloat(o$2.marginLeft) || 0), r$3 += Math.max(0, parseFloat(o$2.marginRight) || 0), r$3) : (r$3 -= parseFloat(o$2.borderLeftWidth) || 0, r$3 -= parseFloat(o$2.borderRightWidth) || 0, e$5 === BOX_EDGE.scrollbar ? r$3 : (!isDocumentElement(t$6) && SCROLLABLE_OVERFLOWS.has(o$2.overflowY) && (r$3 -= getPreciseScrollbarSize(t$6, "y", Math.round(r$3) - t$6.clientWidth)), e$5 === BOX_EDGE.padding || (r$3 -= parseFloat(o$2.paddingLeft) || 0, r$3 -= parseFloat(o$2.paddingRight) || 0), r$3));
+}
+
+//#endregion
+//#region ../../node_modules/mezr/dist/esm/getWidth.js
+function getWidth(t$6, i$2 = BOX_EDGE.border) {
+	return isWindow(t$6) ? getWindowWidth(t$6, INCLUDE_WINDOW_SCROLLBAR[i$2]) : isDocument(t$6) ? getDocumentWidth(t$6) : getElementWidth(t$6, i$2);
+}
+
+//#endregion
+//#region ../../node_modules/mezr/dist/esm/utils/getWindowHeight.js
+function getWindowHeight(e$5, r$3 = !1) {
+	if (r$3) return e$5.innerHeight;
+	const { innerHeight: t$6, document: i$2 } = e$5, { documentElement: n$7 } = i$2, { clientHeight: c$4 } = n$7;
+	return t$6 - getPreciseScrollbarSize(n$7, "x", t$6 - c$4);
+}
+
+//#endregion
+//#region ../../node_modules/mezr/dist/esm/utils/getDocumentHeight.js
+function getDocumentHeight({ documentElement: t$6 }) {
+	return Math.max(t$6.scrollHeight, t$6.clientHeight, t$6.getBoundingClientRect().height);
+}
+
+//#endregion
+//#region ../../node_modules/mezr/dist/esm/utils/getElementHeight.js
+function getElementHeight(t$6, e$5 = BOX_EDGE.border) {
+	let { height: r$3 } = t$6.getBoundingClientRect();
+	if (e$5 === BOX_EDGE.border) return r$3;
+	const o$2 = getStyle(t$6);
+	return e$5 === BOX_EDGE.margin ? (r$3 += Math.max(0, parseFloat(o$2.marginTop) || 0), r$3 += Math.max(0, parseFloat(o$2.marginBottom) || 0), r$3) : (r$3 -= parseFloat(o$2.borderTopWidth) || 0, r$3 -= parseFloat(o$2.borderBottomWidth) || 0, e$5 === BOX_EDGE.scrollbar ? r$3 : (!isDocumentElement(t$6) && SCROLLABLE_OVERFLOWS.has(o$2.overflowX) && (r$3 -= getPreciseScrollbarSize(t$6, "x", Math.round(r$3) - t$6.clientHeight)), e$5 === BOX_EDGE.padding || (r$3 -= parseFloat(o$2.paddingTop) || 0, r$3 -= parseFloat(o$2.paddingBottom) || 0), r$3));
+}
+
+//#endregion
+//#region ../../node_modules/mezr/dist/esm/getHeight.js
+function getHeight(t$6, e$5 = BOX_EDGE.border) {
+	return isWindow(t$6) ? getWindowHeight(t$6, INCLUDE_WINDOW_SCROLLBAR[e$5]) : isDocument(t$6) ? getDocumentHeight(t$6) : getElementHeight(t$6, e$5);
+}
+
+//#endregion
+//#region ../../node_modules/mezr/dist/esm/utils/isRectObject.js
+function isRectObject(t$6) {
+	return t$6?.constructor === Object;
+}
+
+//#endregion
+//#region ../../node_modules/mezr/dist/esm/utils/getOffsetFromDocument.js
+function getOffsetFromDocument(t$6, o$2 = BOX_EDGE.border) {
+	const e$5 = {
+		left: 0,
+		top: 0
+	};
+	if (isDocument(t$6)) return e$5;
+	if (isWindow(t$6)) return e$5.left += t$6.scrollX || 0, e$5.top += t$6.scrollY || 0, e$5;
+	const r$3 = t$6.ownerDocument.defaultView;
+	r$3 && (e$5.left += r$3.scrollX || 0, e$5.top += r$3.scrollY || 0);
+	const n$7 = t$6.getBoundingClientRect();
+	if (e$5.left += n$7.left, e$5.top += n$7.top, o$2 === BOX_EDGE.border) return e$5;
+	const l$5 = getStyle(t$6);
+	return o$2 === BOX_EDGE.margin ? (e$5.left -= Math.max(0, parseFloat(l$5.marginLeft) || 0), e$5.top -= Math.max(0, parseFloat(l$5.marginTop) || 0), e$5) : (e$5.left += parseFloat(l$5.borderLeftWidth) || 0, e$5.top += parseFloat(l$5.borderTopWidth) || 0, o$2 === BOX_EDGE.scrollbar || o$2 === BOX_EDGE.padding || (e$5.left += parseFloat(l$5.paddingLeft) || 0, e$5.top += parseFloat(l$5.paddingTop) || 0), e$5);
+}
+
+//#endregion
+//#region ../../node_modules/mezr/dist/esm/getOffset.js
+function getOffset(t$6, e$5) {
+	const o$2 = isRectObject(t$6) ? {
+		left: t$6.left,
+		top: t$6.top
+	} : Array.isArray(t$6) ? getOffsetFromDocument(...t$6) : getOffsetFromDocument(t$6);
+	if (e$5 && !isDocument(e$5)) {
+		const t$7 = isRectObject(e$5) ? e$5 : Array.isArray(e$5) ? getOffsetFromDocument(e$5[0], e$5[1]) : getOffsetFromDocument(e$5);
+		o$2.left -= t$7.left, o$2.top -= t$7.top;
+	}
+	return o$2;
+}
+
+//#endregion
+//#region ../../node_modules/mezr/dist/esm/getRect.js
+function getRect(t$6, e$5) {
+	let i$2 = 0, g$2 = 0;
+	isRectObject(t$6) ? (i$2 = t$6.width, g$2 = t$6.height) : Array.isArray(t$6) ? (i$2 = getWidth(...t$6), g$2 = getHeight(...t$6)) : (i$2 = getWidth(t$6), g$2 = getHeight(t$6));
+	const r$3 = getOffset(t$6, e$5);
+	return {
+		width: i$2,
+		height: g$2,
+		...r$3,
+		right: r$3.left + i$2,
+		bottom: r$3.top + g$2
+	};
+}
+
+//#endregion
+//#region ../dragdoll/dist/get-rect-rpTuZ8DC.js
+function t$1(...t$6) {
+	let { width: n$7, height: r$3, left: i$2, top: a$2 } = getRect(...t$6);
+	return {
+		width: n$7,
+		height: r$3,
+		x: i$2,
+		y: a$2
+	};
+}
+
+//#endregion
+//#region ../dragdoll/dist/dnd-context/advanced-collision-detector.js
+const s = `visible`;
+function c(n$7, r$3, i$2 = []) {
+	let a$2 = r$3 ? n$7 : n$7?.parentNode;
+	for (i$2.length = 0; a$2 && !e(a$2);) if (a$2 instanceof Element) {
+		let t$6 = t(a$2);
+		t$6.overflowY === s || t$6.overflowX === s || i$2.push(a$2), a$2 = a$2.parentNode;
+	} else a$2 = a$2 instanceof ShadowRoot ? a$2.host : a$2.parentNode;
+	return i$2.push(window), i$2;
+}
+let l;
+const u$1 = n$2(), d = {
+	width: 2 ** 53 - 1,
+	height: 2 ** 53 - 1,
+	x: (2 ** 53 - 1) * -.5,
+	y: (2 ** 53 - 1) * -.5
+}, f = [], p = [], m = [], h = [];
+function g(e$5) {
+	if (!f.length) {
+		let t$6 = e$5.drag?.items?.[0]?.dragContainer;
+		t$6 ? c(t$6, !0, f) : f.push(window);
+	}
+}
+function _(e$5) {
+	p.length || c(e$5.element, !1, p);
+}
+function v(e$5, t$6 = n$2()) {
+	n$2(e$5.length ? t$1([e$5[0], `padding`], window) : d, t$6);
+	for (let r$3 = 1; r$3 < e$5.length; r$3++) {
+		let a$2 = e$5[r$3];
+		if (!e$1(t$6, t$1([a$2, `padding`], window), t$6)) {
+			n$2(u$1, t$6);
+			break;
+		}
+	}
+	return t$6;
+}
+var y = class extends a {
+	constructor(e$5, t$6) {
+		super(e$5), this._dragStates = /* @__PURE__ */ new Map(), this._visibilityLogic = t$6?.visibilityLogic || `relative`, this._listenersAttached = !1, this._clearCache = () => this.clearCache();
+	}
+	_checkCollision(e$5, t$6, i$2) {
+		let a$2 = this._dragStates.get(e$5);
+		if (!a$2) return null;
+		let s$4 = e$5.getClientRect(), c$4 = t$6.getClientRect();
+		if (!s$4 || !c$4) return null;
+		let u$5 = a$2.clipMaskKeyMap.get(t$6);
+		if (!u$5) {
+			let n$7 = this._visibilityLogic === `relative`;
+			if (p.length = 0, m.length = 0, h.length = 0, _(t$6), u$5 = p[0] || window, a$2.clipMaskKeyMap.set(t$6, u$5), !a$2.clipMaskMap.has(u$5)) {
+				if (g(e$5), n$7) {
+					let e$6 = window;
+					for (let t$8 of p) if (f.includes(t$8)) {
+						e$6 = t$8;
+						break;
+					}
+					for (let t$8 of f) {
+						if (t$8 === e$6) break;
+						m.push(t$8);
+					}
+					for (let t$8 of p) {
+						if (t$8 === e$6) break;
+						h.push(t$8);
+					}
+				} else m.push(...f), h.push(...p);
+				let t$7 = n$7 || !l ? v(m) : n$2(l), r$3 = v(h);
+				!n$7 && !l && (l = t$7), a$2.clipMaskMap.set(u$5, [t$7, r$3]);
+			}
+			p.length = 0, m.length = 0, h.length = 0;
+		}
+		let [d$2, y$2] = a$2.clipMaskMap.get(u$5) || [];
+		if (!d$2 || !y$2 || !e$1(s$4, d$2, i$2.draggableVisibleRect) || !e$1(c$4, y$2, i$2.droppableVisibleRect) || !e$1(i$2.draggableVisibleRect, i$2.droppableVisibleRect, i$2.intersectionRect)) return null;
+		let b$1 = n$1(i$2.draggableVisibleRect, i$2.droppableVisibleRect, i$2.intersectionRect);
+		return b$1 <= 0 ? null : (i$2.droppableId = t$6.id, n$2(c$4, i$2.droppableRect), n$2(s$4, i$2.draggableRect), i$2.intersectionScore = b$1, i$2);
+	}
+	_sortCollisions(e$5, t$6) {
+		return t$6.sort((e$6, t$7) => {
+			let n$7 = t$7.intersectionScore - e$6.intersectionScore;
+			return n$7 === 0 ? e$6.droppableVisibleRect.width * e$6.droppableVisibleRect.height - t$7.droppableVisibleRect.width * t$7.droppableVisibleRect.height : n$7;
+		});
+	}
+	_createCollisionData() {
+		let e$5 = super._createCollisionData();
+		return e$5.droppableVisibleRect = n$2(), e$5.draggableVisibleRect = n$2(), e$5;
+	}
+	_getDragState(e$5) {
+		let t$6 = this._dragStates.get(e$5);
+		return t$6 || (t$6 = {
+			clipMaskKeyMap: /* @__PURE__ */ new Map(),
+			clipMaskMap: /* @__PURE__ */ new Map(),
+			cacheDirty: !0
+		}, this._dragStates.set(e$5, t$6), this._listenersAttached ||= (window.addEventListener(`scroll`, this._clearCache, {
+			capture: !0,
+			passive: !0
+		}), window.addEventListener(`resize`, this._clearCache, { passive: !0 }), !0), t$6);
+	}
+	getCollisionDataPool(e$5) {
+		return this._getDragState(e$5), super.getCollisionDataPool(e$5);
+	}
+	removeCollisionDataPool(e$5) {
+		this._dragStates.delete(e$5) && this._dndContext.drags.size <= 0 && (this._listenersAttached &&= (window.removeEventListener(`scroll`, this._clearCache, { capture: !0 }), window.removeEventListener(`resize`, this._clearCache), !1)), super.removeCollisionDataPool(e$5);
+	}
+	detectCollisions(e$5, t$6, n$7) {
+		f.length = 0, l = null;
+		let r$3 = this._getDragState(e$5);
+		r$3.cacheDirty &&= (r$3.clipMaskKeyMap.clear(), r$3.clipMaskMap.clear(), !1), super.detectCollisions(e$5, t$6, n$7), f.length = 0, l = null;
+	}
+	clearCache(e$5) {
+		if (e$5) {
+			let t$6 = this._dragStates.get(e$5);
+			t$6 && (t$6.cacheDirty = !0);
+		} else this._dragStates.forEach((e$6) => {
+			e$6.cacheDirty = !0;
+		});
+	}
+};
+
+//#endregion
+//#region src/dnd-context/advanced-collision-detection.ts
+function advancedCollisionDetection() {
+	describe("advanced collision detection", () => {
+		describe("relative visibility logic", () => {
+			it("should not clip if draggable and droppable are within the same clip container", async () => {
+				const collisionEvents = [];
+				const containerElement = createTestElement({
+					left: "0px",
+					top: "0px",
+					width: "100px",
+					height: "100px",
+					overflow: "hidden"
+				});
+				const draggableElement = createTestElement({
+					left: "-100px",
+					top: "-100px",
+					width: "100px",
+					height: "100px"
+				});
+				const droppableElement = createTestElement({
+					left: "-100px",
+					top: "-100px",
+					width: "100px",
+					height: "100px"
+				});
+				containerElement.appendChild(draggableElement);
+				containerElement.appendChild(droppableElement);
+				const keyboard = new r(draggableElement);
+				const draggable = new z([keyboard], {
+					elements: () => [draggableElement],
+					group: "g"
+				});
+				const droppable = new n(droppableElement, { accept: ["g"] });
+				const dndContext = new u({ collisionDetector: (ctx) => new y(ctx) });
+				dndContext.addDraggables([draggable]);
+				dndContext.addDroppables([droppable]);
+				dndContext.on("collide", (data) => {
+					collisionEvents.push({
+						type: "enter",
+						collisions: data.collisions
+					});
+				});
+				focusElement(draggableElement);
+				document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+				await waitNextFrame();
+				assert.equal(collisionEvents.length, 1);
+				assert.equal(collisionEvents[0].collisions.length, 1);
+				const firstCollision = collisionEvents[0].collisions[0];
+				assert.deepEqual(firstCollision.draggableVisibleRect, {
+					x: -100,
+					y: -100,
+					width: 100,
+					height: 100
+				});
+				assert.deepEqual(firstCollision.droppableVisibleRect, {
+					x: -100,
+					y: -100,
+					width: 100,
+					height: 100
+				});
+				dndContext.destroy();
+				draggable.destroy();
+				droppable.destroy();
+				keyboard.destroy();
+				draggableElement.remove();
+				droppableElement.remove();
+				containerElement.remove();
+			});
+			it("should clip to the clip containers that are not shared by the draggable and droppable", async () => {
+				const collisionEvents = [];
+				const containerElement = createTestElement({
+					left: "-50px",
+					top: "-50px",
+					width: "100px",
+					height: "100px",
+					overflow: "hidden"
+				});
+				const draggableElement = createTestElement({
+					left: "0px",
+					top: "0px",
+					width: "100px",
+					height: "100px"
+				});
+				const droppableElement = createTestElement({
+					left: "50px",
+					top: "50px",
+					width: "100px",
+					height: "100px"
+				});
+				containerElement.appendChild(droppableElement);
+				const keyboard = new r(draggableElement, { moveDistance: 50 });
+				const draggable = new z([keyboard], {
+					elements: () => [draggableElement],
+					group: "g"
+				});
+				const droppable = new n(droppableElement, { accept: ["g"] });
+				const dndContext = new u({ collisionDetector: (ctx) => new y(ctx) });
+				dndContext.addDraggables([draggable]);
+				dndContext.addDroppables([droppable]);
+				dndContext.on("collide", (data) => {
+					collisionEvents.push({
+						type: "enter",
+						collisions: data.collisions
+					});
+				});
+				focusElement(draggableElement);
+				document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+				await waitNextFrame();
+				assert.equal(collisionEvents.length, 1);
+				assert.equal(collisionEvents[0].collisions.length, 1);
+				const firstCollision = collisionEvents[0].collisions[0];
+				assert.deepEqual(firstCollision.draggableVisibleRect, {
+					x: 0,
+					y: 0,
+					width: 100,
+					height: 100
+				});
+				assert.deepEqual(firstCollision.droppableVisibleRect, {
+					x: 0,
+					y: 0,
+					width: 50,
+					height: 50
+				});
+				dndContext.destroy();
+				draggable.destroy();
+				droppable.destroy();
+				keyboard.destroy();
+				draggableElement.remove();
+				droppableElement.remove();
+				containerElement.remove();
+			});
+		});
+		describe("absolute visibility logic", () => {
+			it("should always compute collisions from the perspective of the user regardless of clip containers", async () => {
+				const collisionEvents = [];
+				const containerElement = createTestElement({
+					left: "-50px",
+					top: "-50px",
+					width: "100px",
+					height: "100px",
+					overflow: "hidden"
+				});
+				const draggableElement = createTestElement({
+					left: "0px",
+					top: "0px",
+					width: "100px",
+					height: "100px"
+				});
+				const droppableElement = createTestElement({
+					left: "0px",
+					top: "0px",
+					width: "100px",
+					height: "100px"
+				});
+				containerElement.appendChild(draggableElement);
+				containerElement.appendChild(droppableElement);
+				const keyboard = new r(draggableElement, { moveDistance: 50 });
+				const draggable = new z([keyboard], {
+					elements: () => [draggableElement],
+					group: "g"
+				});
+				const droppable = new n(droppableElement, { accept: ["g"] });
+				const dndContext = new u({ collisionDetector: (ctx) => new y(ctx, { visibilityLogic: "absolute" }) });
+				dndContext.addDraggables([draggable]);
+				dndContext.addDroppables([droppable]);
+				dndContext.on("collide", (data) => {
+					collisionEvents.push({
+						type: "enter",
+						collisions: data.collisions
+					});
+				});
+				focusElement(draggableElement);
+				document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+				await waitNextFrame();
+				assert.equal(collisionEvents.length, 1);
+				assert.equal(collisionEvents[0].collisions.length, 1);
+				const firstCollision = collisionEvents[0].collisions[0];
+				assert.deepEqual(firstCollision.draggableVisibleRect, {
+					x: 0,
+					y: 0,
+					width: 50,
+					height: 50
+				});
+				assert.deepEqual(firstCollision.droppableVisibleRect, {
+					x: 0,
+					y: 0,
+					width: 50,
+					height: 50
+				});
+				dndContext.destroy();
+				draggable.destroy();
+				droppable.destroy();
+				keyboard.destroy();
+				draggableElement.remove();
+				droppableElement.remove();
+				containerElement.remove();
+			});
+		});
+	});
+}
+
+//#endregion
+//#region src/dnd-context/collision-detection.ts
+function collisionDetection() {
+	describe("collision detection", () => {
+		it("should detect collisions when draggable overlaps droppable", async () => {
+			const collisionEvents = [];
+			const dragElement = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const dropElement = createTestElement({
+				left: "25px",
+				top: "25px",
+				width: "50px",
+				height: "50px"
+			});
+			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
+			const draggable = new z([keyboardSensor], {
+				elements: () => [dragElement],
+				group: "test"
+			});
+			const droppable = new n(dropElement, { accept: ["test"] });
+			const dndContext = new u();
+			dndContext.on("enter", (data) => {
+				collisionEvents.push({
+					type: "enter",
+					collisions: data.collisions
+				});
+			});
+			dndContext.addDraggables([draggable]);
+			dndContext.addDroppables([droppable]);
+			focusElement(dragElement);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			await waitNextFrame();
+			assert.equal(collisionEvents.length, 1);
+			assert.equal(collisionEvents[0].type, "enter");
+			assert.equal(collisionEvents[0].collisions.length, 1);
+			assert.equal(collisionEvents[0].collisions[0].droppableId, droppable.id);
+			const collisionData = collisionEvents[0].collisions[0];
+			assert.isDefined(collisionData);
+			assert.equal(collisionData.droppableId, droppable.id);
+			assert.isNumber(collisionData.intersectionScore);
+			assert.isTrue(collisionData.intersectionScore > 0);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			dndContext.destroy();
+			draggable.destroy();
+			droppable.destroy();
+			keyboardSensor.destroy();
+			dragElement.remove();
+			dropElement.remove();
+		});
+		it("should not detect collisions when draggable does not overlap droppable", async () => {
+			const collisionEvents = [];
+			const dragElement = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const dropElement = createTestElement({
+				left: "100px",
+				top: "100px",
+				width: "50px",
+				height: "50px"
+			});
+			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
+			const draggable = new z([keyboardSensor], {
+				elements: () => [dragElement],
+				group: "test"
+			});
+			const droppable = new n(dropElement, { accept: ["test"] });
+			const dndContext = new u();
+			dndContext.on("enter", (data) => {
+				collisionEvents.push({
+					type: "enter",
+					collisions: data.collisions
+				});
+			});
+			dndContext.addDraggables([draggable]);
+			dndContext.addDroppables([droppable]);
+			focusElement(dragElement);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			await waitNextFrame();
+			assert.equal(collisionEvents.length, 0);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			dndContext.destroy();
+			draggable.destroy();
+			droppable.destroy();
+			keyboardSensor.destroy();
+			dragElement.remove();
+			dropElement.remove();
+		});
+		it("should update collisions when draggable moves", async () => {
+			const collisionEvents = [];
+			const dragElement = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const dropElement = createTestElement({
+				left: "60px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const keyboardSensor = new r(dragElement, { moveDistance: 70 });
+			const draggable = new z([keyboardSensor], {
+				elements: () => [dragElement],
+				group: "test"
+			});
+			const droppable = new n(dropElement, { accept: ["test"] });
+			const dndContext = new u();
+			dndContext.on("enter", (data) => {
+				collisionEvents.push({
+					type: "enter",
+					collisions: data.collisions.length
+				});
+			});
+			dndContext.on("leave", (data) => {
+				collisionEvents.push({
+					type: "leave",
+					collisions: data.collisions.length
+				});
+			});
+			dndContext.addDraggables([draggable]);
+			dndContext.addDroppables([droppable]);
+			focusElement(dragElement);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			await waitNextFrame();
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+			await waitNextFrame();
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+			await waitNextFrame();
+			assert.equal(collisionEvents.length, 2);
+			assert.equal(collisionEvents[0].type, "enter");
+			assert.equal(collisionEvents[0].collisions, 1);
+			assert.equal(collisionEvents[1].type, "leave");
+			assert.equal(collisionEvents[1].collisions, 0);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			dndContext.destroy();
+			draggable.destroy();
+			droppable.destroy();
+			keyboardSensor.destroy();
+			dragElement.remove();
+			dropElement.remove();
+		});
+		it("should handle multiple droppables correctly", async () => {
+			const collisionEvents = [];
+			const dragElement = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const dropElement1 = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const dropElement2 = createTestElement({
+				left: "60px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const keyboardSensor = new r(dragElement, { moveDistance: 60 });
+			const draggable = new z([keyboardSensor], {
+				elements: () => [dragElement],
+				group: "test"
+			});
+			const droppable1 = new n(dropElement1, { accept: ["test"] });
+			const droppable2 = new n(dropElement2, { accept: ["test"] });
+			const dndContext = new u();
+			dndContext.on("enter", (data) => {
+				collisionEvents.push({
+					type: "enter",
+					collisions: [...data.collisions]
+				});
+			});
+			dndContext.on("leave", (data) => {
+				collisionEvents.push({
+					type: "leave",
+					collisions: [...data.collisions]
+				});
+			});
+			dndContext.addDraggables([draggable]);
+			dndContext.addDroppables([droppable1, droppable2]);
+			focusElement(dragElement);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			await waitNextFrame();
+			assert.equal(collisionEvents.length, 1);
+			assert.equal(collisionEvents[0].type, "enter");
+			assert.equal(collisionEvents[0].collisions.length, 1);
+			assert.isTrue(collisionEvents[0].collisions.some((c$4) => c$4.droppableId === droppable1.id));
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+			await waitNextFrame();
+			assert.isTrue(collisionEvents.length >= 2);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			dndContext.destroy();
+			draggable.destroy();
+			droppable1.destroy();
+			droppable2.destroy();
+			keyboardSensor.destroy();
+			dragElement.remove();
+			dropElement1.remove();
+			dropElement2.remove();
+		});
+		it("should respect droppable accept criteria", async () => {
+			const collisionEvents = [];
+			const dragElement = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const dropElement = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
+			const draggable = new z([keyboardSensor], {
+				elements: () => [dragElement],
+				group: "test"
+			});
+			const droppable = new n(dropElement, { accept: ["other-group"] });
+			const dndContext = new u();
+			dndContext.on("enter", () => {
+				collisionEvents.push({ type: "enter" });
+			});
+			dndContext.addDraggables([draggable]);
+			dndContext.addDroppables([droppable]);
+			focusElement(dragElement);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			await waitNextFrame();
+			assert.equal(collisionEvents.length, 0);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			dndContext.destroy();
+			draggable.destroy();
+			droppable.destroy();
+			keyboardSensor.destroy();
+			dragElement.remove();
+			dropElement.remove();
+		});
+		it("should work with extended collision data", async () => {
+			const customCollisionEvents = [];
+			let customDetectorCalled = false;
+			const dragElement = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const dropElement = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
+			const draggable = new z([keyboardSensor], {
+				elements: () => [dragElement],
+				group: "test"
+			});
+			const droppable = new n(dropElement, { accept: ["test"] });
+			class TestDetector extends a {
+				_createCollisionData() {
+					const base = super._createCollisionData();
+					base.customProp = "";
+					return base;
+				}
+				_checkCollision(draggable$1, droppable$1, data) {
+					customDetectorCalled = true;
+					const result = super._checkCollision(draggable$1, droppable$1, data);
+					if (!result) return null;
+					result.customProp = "test-value";
+					return result;
+				}
+			}
+			const dndContext = new u({ collisionDetector: (ctx) => new TestDetector(ctx) });
+			dndContext.on("enter", (data) => {
+				const collision = data.collisions[0];
+				customCollisionEvents.push({
+					type: "enter",
+					customProp: collision?.customProp
+				});
+			});
+			dndContext.addDraggables([draggable]);
+			dndContext.addDroppables([droppable]);
+			focusElement(dragElement);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			await waitNextFrame();
+			assert.isTrue(customDetectorCalled);
+			assert.equal(customCollisionEvents.length, 1);
+			assert.equal(customCollisionEvents[0].customProp, "test-value");
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			dndContext.destroy();
+			draggable.destroy();
+			droppable.destroy();
+			keyboardSensor.destroy();
+			dragElement.remove();
+			dropElement.remove();
+		});
+		it("should update droppable client rects on scroll", async () => {
+			const dragElement = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const dropElement = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
+			const draggable = new z([keyboardSensor], {
+				elements: () => [dragElement],
+				group: "test"
+			});
+			const droppable = new n(dropElement, { accept: ["test"] });
+			const dndContext = new u();
+			dndContext.addDraggables([draggable]);
+			dndContext.addDroppables([droppable]);
+			const initialRect = droppable.getClientRect();
+			focusElement(dragElement);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			await waitNextFrame();
+			window.dispatchEvent(new Event("scroll"));
+			await waitNextFrame();
+			await new Promise((resolve) => setTimeout(resolve, 50));
+			const updatedRect = droppable.getClientRect();
+			assert.isObject(updatedRect);
+			assert.equal(updatedRect.x, initialRect.x);
+			assert.equal(updatedRect.y, initialRect.y);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			await waitNextFrame();
+			dndContext.destroy();
+			draggable.destroy();
+			droppable.destroy();
+			keyboardSensor.destroy();
+			dragElement.remove();
+			dropElement.remove();
+		});
+		it("should handle collision data correctly", async () => {
+			let collisionData = null;
+			const dragElement = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const dropElement = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
+			const draggable = new z([keyboardSensor], {
+				elements: () => [dragElement],
+				group: "test"
+			});
+			const droppable = new n(dropElement, { accept: ["test"] });
+			const dndContext = new u();
+			dndContext.on("enter", (data) => {
+				collisionData = data.collisions.find((c$4) => c$4.droppableId === droppable.id) || null;
+			});
+			dndContext.addDraggables([draggable]);
+			dndContext.addDroppables([droppable]);
+			focusElement(dragElement);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			await waitNextFrame();
+			await new Promise((resolve) => setTimeout(resolve, 50));
+			assert.isObject(collisionData);
+			assert.equal(collisionData.droppableId, droppable.id);
+			assert.isNumber(collisionData.droppableRect.x);
+			assert.isNumber(collisionData.droppableRect.y);
+			assert.isNumber(collisionData.droppableRect.width);
+			assert.isNumber(collisionData.droppableRect.height);
+			assert.isNumber(collisionData.intersectionScore);
+			assert.isTrue(collisionData.intersectionScore > 0);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			await waitNextFrame();
+			dndContext.destroy();
+			draggable.destroy();
+			droppable.destroy();
+			keyboardSensor.destroy();
+			dragElement.remove();
+			dropElement.remove();
+		});
+	});
+}
+
+//#endregion
+//#region src/utils/keyboard-helpers.ts
+const press = (key) => document.dispatchEvent(new KeyboardEvent("keydown", { key }));
+const startDrag = async (el) => {
+	focusElement(el);
+	press("Enter");
+	await waitNextFrame();
+};
+const endDrag = async () => {
+	press("Enter");
+	await waitNextFrame();
+};
+const move = async (direction, times = 1) => {
+	for (let i$2 = 0; i$2 < times; i$2++) {
+		press(`Arrow${direction}`);
+		await waitNextFrame();
+	}
+};
+
+//#endregion
+//#region src/dnd-context/droppables.ts
+function droppables() {
+	describe("droppables", () => {
+		it("should accept draggables based on group string array", async () => {
+			const events$5 = [];
+			const dragElement = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const dropElement = createTestElement({
+				left: "60px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const keyboardSensor = new r(dragElement, { moveDistance: 70 });
+			const draggable = new z([keyboardSensor], {
+				elements: () => [dragElement],
+				group: "valid-group"
+			});
+			const droppable = new n(dropElement, { accept: ["valid-group", "another-group"] });
+			const dndContext = new u();
+			dndContext.on("enter", (data) => {
+				events$5.push({
+					type: "enter",
+					targets: data.targets.size
+				});
+			});
+			dndContext.addDraggables([draggable]);
+			dndContext.addDroppables([droppable]);
+			await startDrag(dragElement);
+			await move("Right");
+			await waitNextFrame();
+			assert.equal(events$5.length, 1);
+			assert.equal(events$5[0].type, "enter");
+			assert.equal(events$5[0].targets, 1);
+			await endDrag();
+			dndContext.destroy();
+			draggable.destroy();
+			droppable.destroy();
+			keyboardSensor.destroy();
+			dragElement.remove();
+			dropElement.remove();
+		});
+		it("should reject draggables not in accept group array", async () => {
+			const events$5 = [];
+			const dragElement = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const dropElement = createTestElement({
+				left: "25px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
+			const draggable = new z([keyboardSensor], {
+				elements: () => [dragElement],
+				group: "invalid-group"
+			});
+			const droppable = new n(dropElement, { accept: ["valid-group", "another-group"] });
+			const dndContext = new u();
+			dndContext.on("enter", () => {
+				events$5.push({ type: "enter" });
+			});
+			dndContext.addDraggables([draggable]);
+			dndContext.addDroppables([droppable]);
+			await startDrag(dragElement);
+			assert.equal(events$5.length, 0);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			dndContext.destroy();
+			draggable.destroy();
+			droppable.destroy();
+			keyboardSensor.destroy();
+			dragElement.remove();
+			dropElement.remove();
+		});
+		it("should accept draggables based on function predicate", async () => {
+			const events$5 = [];
+			const dragElement = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const dropElement = createTestElement({
+				left: "60px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const keyboardSensor = new r(dragElement, { moveDistance: 70 });
+			const draggable = new z([keyboardSensor], {
+				elements: () => [dragElement],
+				group: "test-group"
+			});
+			const droppable = new n(dropElement, { accept: (draggable$1) => {
+				return draggable$1.settings.group === "test-group";
+			} });
+			const dndContext = new u();
+			dndContext.on("enter", (data) => {
+				events$5.push({
+					type: "enter",
+					targets: data.targets.size
+				});
+			});
+			dndContext.addDraggables([draggable]);
+			dndContext.addDroppables([droppable]);
+			focusElement(dragElement);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			await waitNextFrame();
+			await move("Right");
+			await waitNextFrame();
+			assert.equal(events$5.length, 1);
+			assert.equal(events$5[0].type, "enter");
+			assert.equal(events$5[0].targets, 1);
+			await endDrag();
+			dndContext.destroy();
+			draggable.destroy();
+			droppable.destroy();
+			keyboardSensor.destroy();
+			dragElement.remove();
+			dropElement.remove();
+		});
+		it("should reject draggables when function predicate returns false", async () => {
+			const events$5 = [];
+			const dragElement = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const dropElement = createTestElement({
+				left: "25px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
+			const draggable = new z([keyboardSensor], {
+				elements: () => [dragElement],
+				group: "test-group"
+			});
+			const droppable = new n(dropElement, { accept: (draggable$1) => {
+				return draggable$1.settings.group === "different-group";
+			} });
+			const dndContext = new u();
+			dndContext.on("enter", () => {
+				events$5.push({ type: "enter" });
+			});
+			dndContext.addDraggables([draggable]);
+			dndContext.addDroppables([droppable]);
+			await startDrag(dragElement);
+			assert.equal(events$5.length, 0);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			dndContext.destroy();
+			draggable.destroy();
+			droppable.destroy();
+			keyboardSensor.destroy();
+			dragElement.remove();
+			dropElement.remove();
+		});
+		it("should not accept draggable when its element matches droppable element", async () => {
+			const events$5 = [];
+			const element = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const keyboardSensor = new r(element, { moveDistance: 10 });
+			const draggable = new z([keyboardSensor], {
+				elements: () => [element],
+				group: "test"
+			});
+			const droppable = new n(element, { accept: ["test"] });
+			const dndContext = new u();
+			dndContext.on("enter", () => {
+				events$5.push({ type: "enter" });
+			});
+			dndContext.addDraggables([draggable]);
+			dndContext.addDroppables([droppable]);
+			await startDrag(element);
+			assert.equal(events$5.length, 0);
+			await endDrag();
+			dndContext.destroy();
+			draggable.destroy();
+			droppable.destroy();
+			keyboardSensor.destroy();
+			element.remove();
+		});
+		it("should handle droppable data correctly", () => {
+			const element = createTestElement();
+			const droppable = new n(element, {
+				accept: ["test"],
+				data: {
+					custom: "value",
+					id: 123
+				}
+			});
+			const dndContext = new u();
+			dndContext.addDroppables([droppable]);
+			assert.deepEqual(droppable.data, {
+				custom: "value",
+				id: 123
+			});
+			droppable.data.newProp = "added";
+			assert.equal(droppable.data.newProp, "added");
+			dndContext.destroy();
+			droppable.destroy();
+			element.remove();
+		});
+		it("should update client rect correctly", () => {
+			const element = createTestElement({
+				left: "50px",
+				top: "75px",
+				width: "100px",
+				height: "150px"
+			});
+			const droppable = new n(element, { accept: ["test"] });
+			const dndContext = new u();
+			dndContext.addDroppables([droppable]);
+			const rect = droppable.getClientRect();
+			assert.equal(rect.x, 50);
+			assert.equal(rect.y, 75);
+			assert.equal(rect.width, 100);
+			assert.equal(rect.height, 150);
+			element.style.left = "100px";
+			element.style.top = "200px";
+			droppable.updateClientRect();
+			const updatedRect = droppable.getClientRect();
+			assert.equal(updatedRect.x, 100);
+			assert.equal(updatedRect.y, 200);
+			assert.equal(updatedRect.width, 100);
+			assert.equal(updatedRect.height, 150);
+			dndContext.destroy();
+			droppable.destroy();
+			element.remove();
+		});
+		it("should handle droppable removal during drag", async () => {
+			const events$5 = [];
+			const dragElement = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const dropElement = createTestElement({
+				left: "60px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const keyboardSensor = new r(dragElement, { moveDistance: 70 });
+			const draggable = new z([keyboardSensor], {
+				elements: () => [dragElement],
+				group: "test"
+			});
+			const droppable = new n(dropElement, { accept: ["test"] });
+			const dndContext = new u();
+			dndContext.on("enter", (data) => {
+				events$5.push({
+					type: "enter",
+					collisions: data.collisions.length
+				});
+			});
+			dndContext.on("leave", (data) => {
+				events$5.push({
+					type: "leave",
+					collisions: data.collisions.length,
+					removedContacts: data.removedContacts.size
+				});
+			});
+			dndContext.addDraggables([draggable]);
+			dndContext.addDroppables([droppable]);
+			await startDrag(dragElement);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+			await waitNextFrame();
+			await waitNextFrame();
+			assert.equal(events$5.length, 1);
+			assert.equal(events$5[0].type, "enter");
+			assert.equal(events$5[0].collisions, 1);
+			dndContext.removeDroppables([droppable]);
+			await waitNextFrame();
+			assert.equal(events$5.length, 2);
+			assert.equal(events$5[1].type, "leave");
+			assert.equal(events$5[1].collisions, 0);
+			assert.equal(events$5[1].removedContacts, 1);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			dndContext.destroy();
+			draggable.destroy();
+			droppable.destroy();
+			keyboardSensor.destroy();
+			dragElement.remove();
+			dropElement.remove();
+		});
+		it("should handle droppable destruction properly", () => {
+			const destroyEvents = [];
+			const element = createTestElement();
+			const droppable = new n(element, { accept: ["test"] });
+			const dndContext = new u();
+			dndContext.on("removeDroppables", (data) => {
+				const removed = Array.from(data.droppables);
+				destroyEvents.push({
+					type: "removeDroppable",
+					droppable: removed[0]
+				});
+			});
+			dndContext.addDroppables([droppable]);
+			droppable.destroy();
+			assert.equal(destroyEvents.length, 1);
+			assert.equal(destroyEvents[0].type, "removeDroppable");
+			assert.equal(destroyEvents[0].droppable, droppable);
+			assert.isFalse(dndContext.droppables.has(droppable.id));
+			dndContext.destroy();
+			element.remove();
+		});
+		it("should handle collide events each cycle with persistedContacts", async () => {
+			const events$5 = [];
+			const dragElement = createTestElement({
+				left: "0px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const dropElement = createTestElement({
+				left: "60px",
+				top: "0px",
+				width: "50px",
+				height: "50px"
+			});
+			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
+			const draggable = new z([keyboardSensor], {
+				elements: () => [dragElement],
+				group: "test"
+			});
+			const droppable = new n(dropElement, { accept: ["test"] });
+			const dndContext = new u();
+			dndContext.on("enter", () => {
+				events$5.push({ type: "enter" });
+			});
+			dndContext.on("collide", (data) => {
+				events$5.push({
+					type: "collide",
+					persistedContacts: data.persistedContacts.size
+				});
+			});
+			dndContext.addDraggables([draggable]);
+			dndContext.addDroppables([droppable]);
+			focusElement(dragElement);
+			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+			await waitNextFrame();
+			await move("Right", 7);
+			await move("Right");
+			await waitNextFrame();
+			assert.isTrue(events$5.length >= 2);
+			assert.equal(events$5[0].type, "enter");
+			const collideEvents = events$5.slice(1).filter((e$5) => e$5.type === "collide");
+			assert.isAtLeast(collideEvents.length, 1);
+			assert.isTrue(collideEvents.some((e$5) => e$5.persistedContacts >= 1));
+			await endDrag();
+			dndContext.destroy();
+			draggable.destroy();
+			droppable.destroy();
+			keyboardSensor.destroy();
+			dragElement.remove();
+			dropElement.remove();
+		});
+	});
+}
 
 //#endregion
 //#region src/dnd-context/events.ts
@@ -9409,1259 +10662,6 @@ function events() {
 			sensor.destroy();
 			dragEl.remove();
 			dropEl.remove();
-		});
-	});
-}
-
-//#endregion
-//#region src/dnd-context/collision-detection.ts
-function collisionDetection() {
-	describe("collision detection", () => {
-		it("should detect collisions when draggable overlaps droppable", async () => {
-			const collisionEvents = [];
-			const dragElement = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const dropElement = createTestElement({
-				left: "25px",
-				top: "25px",
-				width: "50px",
-				height: "50px"
-			});
-			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
-				elements: () => [dragElement],
-				group: "test"
-			});
-			const droppable = new n(dropElement, { accept: ["test"] });
-			const dndContext = new u();
-			dndContext.on("enter", (data) => {
-				collisionEvents.push({
-					type: "enter",
-					collisions: data.collisions
-				});
-			});
-			dndContext.addDraggables([draggable]);
-			dndContext.addDroppables([droppable]);
-			focusElement(dragElement);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			await waitNextFrame();
-			assert.equal(collisionEvents.length, 1);
-			assert.equal(collisionEvents[0].type, "enter");
-			assert.equal(collisionEvents[0].collisions.length, 1);
-			assert.equal(collisionEvents[0].collisions[0].droppableId, droppable.id);
-			const collisionData = collisionEvents[0].collisions[0];
-			assert.isDefined(collisionData);
-			assert.equal(collisionData.droppableId, droppable.id);
-			assert.isNumber(collisionData.intersectionScore);
-			assert.isTrue(collisionData.intersectionScore > 0);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			dndContext.destroy();
-			draggable.destroy();
-			droppable.destroy();
-			keyboardSensor.destroy();
-			dragElement.remove();
-			dropElement.remove();
-		});
-		it("should not detect collisions when draggable does not overlap droppable", async () => {
-			const collisionEvents = [];
-			const dragElement = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const dropElement = createTestElement({
-				left: "100px",
-				top: "100px",
-				width: "50px",
-				height: "50px"
-			});
-			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
-				elements: () => [dragElement],
-				group: "test"
-			});
-			const droppable = new n(dropElement, { accept: ["test"] });
-			const dndContext = new u();
-			dndContext.on("enter", (data) => {
-				collisionEvents.push({
-					type: "enter",
-					collisions: data.collisions
-				});
-			});
-			dndContext.addDraggables([draggable]);
-			dndContext.addDroppables([droppable]);
-			focusElement(dragElement);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			await waitNextFrame();
-			assert.equal(collisionEvents.length, 0);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			dndContext.destroy();
-			draggable.destroy();
-			droppable.destroy();
-			keyboardSensor.destroy();
-			dragElement.remove();
-			dropElement.remove();
-		});
-		it("should update collisions when draggable moves", async () => {
-			const collisionEvents = [];
-			const dragElement = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const dropElement = createTestElement({
-				left: "60px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const keyboardSensor = new r(dragElement, { moveDistance: 70 });
-			const draggable = new z([keyboardSensor], {
-				elements: () => [dragElement],
-				group: "test"
-			});
-			const droppable = new n(dropElement, { accept: ["test"] });
-			const dndContext = new u();
-			dndContext.on("enter", (data) => {
-				collisionEvents.push({
-					type: "enter",
-					collisions: data.collisions.length
-				});
-			});
-			dndContext.on("leave", (data) => {
-				collisionEvents.push({
-					type: "leave",
-					collisions: data.collisions.length
-				});
-			});
-			dndContext.addDraggables([draggable]);
-			dndContext.addDroppables([droppable]);
-			focusElement(dragElement);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			await waitNextFrame();
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-			await waitNextFrame();
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-			await waitNextFrame();
-			assert.equal(collisionEvents.length, 2);
-			assert.equal(collisionEvents[0].type, "enter");
-			assert.equal(collisionEvents[0].collisions, 1);
-			assert.equal(collisionEvents[1].type, "leave");
-			assert.equal(collisionEvents[1].collisions, 0);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			dndContext.destroy();
-			draggable.destroy();
-			droppable.destroy();
-			keyboardSensor.destroy();
-			dragElement.remove();
-			dropElement.remove();
-		});
-		it("should handle multiple droppables correctly", async () => {
-			const collisionEvents = [];
-			const dragElement = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const dropElement1 = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const dropElement2 = createTestElement({
-				left: "60px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const keyboardSensor = new r(dragElement, { moveDistance: 60 });
-			const draggable = new z([keyboardSensor], {
-				elements: () => [dragElement],
-				group: "test"
-			});
-			const droppable1 = new n(dropElement1, { accept: ["test"] });
-			const droppable2 = new n(dropElement2, { accept: ["test"] });
-			const dndContext = new u();
-			dndContext.on("enter", (data) => {
-				collisionEvents.push({
-					type: "enter",
-					collisions: [...data.collisions]
-				});
-			});
-			dndContext.on("leave", (data) => {
-				collisionEvents.push({
-					type: "leave",
-					collisions: [...data.collisions]
-				});
-			});
-			dndContext.addDraggables([draggable]);
-			dndContext.addDroppables([droppable1, droppable2]);
-			focusElement(dragElement);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			await waitNextFrame();
-			assert.equal(collisionEvents.length, 1);
-			assert.equal(collisionEvents[0].type, "enter");
-			assert.equal(collisionEvents[0].collisions.length, 1);
-			assert.isTrue(collisionEvents[0].collisions.some((c$4) => c$4.droppableId === droppable1.id));
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-			await waitNextFrame();
-			assert.isTrue(collisionEvents.length >= 2);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			dndContext.destroy();
-			draggable.destroy();
-			droppable1.destroy();
-			droppable2.destroy();
-			keyboardSensor.destroy();
-			dragElement.remove();
-			dropElement1.remove();
-			dropElement2.remove();
-		});
-		it("should respect droppable accept criteria", async () => {
-			const collisionEvents = [];
-			const dragElement = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const dropElement = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
-				elements: () => [dragElement],
-				group: "test"
-			});
-			const droppable = new n(dropElement, { accept: ["other-group"] });
-			const dndContext = new u();
-			dndContext.on("enter", () => {
-				collisionEvents.push({ type: "enter" });
-			});
-			dndContext.addDraggables([draggable]);
-			dndContext.addDroppables([droppable]);
-			focusElement(dragElement);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			await waitNextFrame();
-			assert.equal(collisionEvents.length, 0);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			dndContext.destroy();
-			draggable.destroy();
-			droppable.destroy();
-			keyboardSensor.destroy();
-			dragElement.remove();
-			dropElement.remove();
-		});
-		it("should work with extended collision data", async () => {
-			const customCollisionEvents = [];
-			let customDetectorCalled = false;
-			const dragElement = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const dropElement = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
-				elements: () => [dragElement],
-				group: "test"
-			});
-			const droppable = new n(dropElement, { accept: ["test"] });
-			class TestDetector extends a {
-				_createCollisionData() {
-					const base = super._createCollisionData();
-					base.customProp = "";
-					return base;
-				}
-				_checkCollision(draggable$1, droppable$1, data) {
-					customDetectorCalled = true;
-					const result = super._checkCollision(draggable$1, droppable$1, data);
-					if (!result) return null;
-					result.customProp = "test-value";
-					return result;
-				}
-			}
-			const dndContext = new u({ collisionDetector: (ctx) => new TestDetector(ctx) });
-			dndContext.on("enter", (data) => {
-				const collision = data.collisions[0];
-				customCollisionEvents.push({
-					type: "enter",
-					customProp: collision?.customProp
-				});
-			});
-			dndContext.addDraggables([draggable]);
-			dndContext.addDroppables([droppable]);
-			focusElement(dragElement);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			await waitNextFrame();
-			assert.isTrue(customDetectorCalled);
-			assert.equal(customCollisionEvents.length, 1);
-			assert.equal(customCollisionEvents[0].customProp, "test-value");
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			dndContext.destroy();
-			draggable.destroy();
-			droppable.destroy();
-			keyboardSensor.destroy();
-			dragElement.remove();
-			dropElement.remove();
-		});
-		it("should update droppable client rects on scroll", async () => {
-			const dragElement = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const dropElement = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
-				elements: () => [dragElement],
-				group: "test"
-			});
-			const droppable = new n(dropElement, { accept: ["test"] });
-			const dndContext = new u();
-			dndContext.addDraggables([draggable]);
-			dndContext.addDroppables([droppable]);
-			const initialRect = droppable.getClientRect();
-			focusElement(dragElement);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			await waitNextFrame();
-			window.dispatchEvent(new Event("scroll"));
-			await waitNextFrame();
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			const updatedRect = droppable.getClientRect();
-			assert.isObject(updatedRect);
-			assert.equal(updatedRect.x, initialRect.x);
-			assert.equal(updatedRect.y, initialRect.y);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			await waitNextFrame();
-			dndContext.destroy();
-			draggable.destroy();
-			droppable.destroy();
-			keyboardSensor.destroy();
-			dragElement.remove();
-			dropElement.remove();
-		});
-		it("should handle collision data correctly", async () => {
-			let collisionData = null;
-			const dragElement = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const dropElement = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
-				elements: () => [dragElement],
-				group: "test"
-			});
-			const droppable = new n(dropElement, { accept: ["test"] });
-			const dndContext = new u();
-			dndContext.on("enter", (data) => {
-				collisionData = data.collisions.find((c$4) => c$4.droppableId === droppable.id) || null;
-			});
-			dndContext.addDraggables([draggable]);
-			dndContext.addDroppables([droppable]);
-			focusElement(dragElement);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			await waitNextFrame();
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			assert.isObject(collisionData);
-			assert.equal(collisionData.droppableId, droppable.id);
-			assert.isNumber(collisionData.droppableRect.x);
-			assert.isNumber(collisionData.droppableRect.y);
-			assert.isNumber(collisionData.droppableRect.width);
-			assert.isNumber(collisionData.droppableRect.height);
-			assert.isNumber(collisionData.intersectionScore);
-			assert.isTrue(collisionData.intersectionScore > 0);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			await waitNextFrame();
-			dndContext.destroy();
-			draggable.destroy();
-			droppable.destroy();
-			keyboardSensor.destroy();
-			dragElement.remove();
-			dropElement.remove();
-		});
-	});
-}
-
-//#endregion
-//#region ../dragdoll/dist/is-document-BqbrfopC.js
-function e(e$5) {
-	return e$5 instanceof Document;
-}
-
-//#endregion
-//#region ../../node_modules/mezr/dist/esm/utils/isDocument.js
-function isDocument(n$7) {
-	return n$7 instanceof Document;
-}
-
-//#endregion
-//#region ../../node_modules/mezr/dist/esm/utils/getPreciseScrollbarSize.js
-const SUBPIXEL_OFFSET = /* @__PURE__ */ new Map();
-let testStyleElement = null, testParentElement = null, testChildElement = null;
-function getSubpixelScrollbarSize(t$6, e$5) {
-	const n$7 = t$6.split(".");
-	let l$5 = SUBPIXEL_OFFSET.get(n$7[1]);
-	if (void 0 === l$5) {
-		testStyleElement || (testStyleElement = document.createElement("style")), testStyleElement.innerHTML = `\n      #mezr-scrollbar-test::-webkit-scrollbar {\n        width: ${t$6} !important;\n      }\n    `, testParentElement && testChildElement || (testParentElement = document.createElement("div"), testChildElement = document.createElement("div"), testParentElement.appendChild(testChildElement), testParentElement.id = "mezr-scrollbar-test", testParentElement.style.cssText = "\n        all: unset !important;\n        position: fixed !important;\n        top: -200px !important;\n        left: 0px !important;\n        width: 100px !important;\n        height: 100px !important;\n        overflow: scroll !important;\n        pointer-events: none !important;\n        visibility: hidden !important;\n      ", testChildElement.style.cssText = "\n        all: unset !important;\n        position: absolute !important;\n        inset: 0 !important;\n      "), document.body.appendChild(testStyleElement), document.body.appendChild(testParentElement);
-		l$5 = testParentElement.getBoundingClientRect().width - testChildElement.getBoundingClientRect().width - e$5, SUBPIXEL_OFFSET.set(n$7[1], l$5), document.body.removeChild(testParentElement), document.body.removeChild(testStyleElement);
-	}
-	return e$5 + l$5;
-}
-function getPreciseScrollbarSize(t$6, e$5, n$7) {
-	if (n$7 <= 0) return 0;
-	if (IS_CHROMIUM) {
-		const n$8 = getStyle(t$6, "::-webkit-scrollbar"), l$5 = "x" === e$5 ? n$8.height : n$8.width, i$2 = parseFloat(l$5);
-		if (!Number.isNaN(i$2) && !Number.isInteger(i$2)) return getSubpixelScrollbarSize(l$5, i$2);
-	}
-	return n$7;
-}
-
-//#endregion
-//#region ../../node_modules/mezr/dist/esm/utils/getWindowWidth.js
-function getWindowWidth(e$5, r$3 = !1) {
-	if (r$3) return e$5.innerWidth;
-	const { innerWidth: t$6, document: i$2 } = e$5, { documentElement: n$7 } = i$2, { clientWidth: c$4 } = n$7;
-	return t$6 - getPreciseScrollbarSize(n$7, "y", t$6 - c$4);
-}
-
-//#endregion
-//#region ../../node_modules/mezr/dist/esm/utils/getDocumentWidth.js
-function getDocumentWidth({ documentElement: t$6 }) {
-	return Math.max(t$6.scrollWidth, t$6.clientWidth, t$6.getBoundingClientRect().width);
-}
-
-//#endregion
-//#region ../../node_modules/mezr/dist/esm/utils/getElementWidth.js
-function getElementWidth(t$6, e$5 = BOX_EDGE.border) {
-	let { width: r$3 } = t$6.getBoundingClientRect();
-	if (e$5 === BOX_EDGE.border) return r$3;
-	const o$2 = getStyle(t$6);
-	return e$5 === BOX_EDGE.margin ? (r$3 += Math.max(0, parseFloat(o$2.marginLeft) || 0), r$3 += Math.max(0, parseFloat(o$2.marginRight) || 0), r$3) : (r$3 -= parseFloat(o$2.borderLeftWidth) || 0, r$3 -= parseFloat(o$2.borderRightWidth) || 0, e$5 === BOX_EDGE.scrollbar ? r$3 : (!isDocumentElement(t$6) && SCROLLABLE_OVERFLOWS.has(o$2.overflowY) && (r$3 -= getPreciseScrollbarSize(t$6, "y", Math.round(r$3) - t$6.clientWidth)), e$5 === BOX_EDGE.padding || (r$3 -= parseFloat(o$2.paddingLeft) || 0, r$3 -= parseFloat(o$2.paddingRight) || 0), r$3));
-}
-
-//#endregion
-//#region ../../node_modules/mezr/dist/esm/getWidth.js
-function getWidth(t$6, i$2 = BOX_EDGE.border) {
-	return isWindow(t$6) ? getWindowWidth(t$6, INCLUDE_WINDOW_SCROLLBAR[i$2]) : isDocument(t$6) ? getDocumentWidth(t$6) : getElementWidth(t$6, i$2);
-}
-
-//#endregion
-//#region ../../node_modules/mezr/dist/esm/utils/getWindowHeight.js
-function getWindowHeight(e$5, r$3 = !1) {
-	if (r$3) return e$5.innerHeight;
-	const { innerHeight: t$6, document: i$2 } = e$5, { documentElement: n$7 } = i$2, { clientHeight: c$4 } = n$7;
-	return t$6 - getPreciseScrollbarSize(n$7, "x", t$6 - c$4);
-}
-
-//#endregion
-//#region ../../node_modules/mezr/dist/esm/utils/getDocumentHeight.js
-function getDocumentHeight({ documentElement: t$6 }) {
-	return Math.max(t$6.scrollHeight, t$6.clientHeight, t$6.getBoundingClientRect().height);
-}
-
-//#endregion
-//#region ../../node_modules/mezr/dist/esm/utils/getElementHeight.js
-function getElementHeight(t$6, e$5 = BOX_EDGE.border) {
-	let { height: r$3 } = t$6.getBoundingClientRect();
-	if (e$5 === BOX_EDGE.border) return r$3;
-	const o$2 = getStyle(t$6);
-	return e$5 === BOX_EDGE.margin ? (r$3 += Math.max(0, parseFloat(o$2.marginTop) || 0), r$3 += Math.max(0, parseFloat(o$2.marginBottom) || 0), r$3) : (r$3 -= parseFloat(o$2.borderTopWidth) || 0, r$3 -= parseFloat(o$2.borderBottomWidth) || 0, e$5 === BOX_EDGE.scrollbar ? r$3 : (!isDocumentElement(t$6) && SCROLLABLE_OVERFLOWS.has(o$2.overflowX) && (r$3 -= getPreciseScrollbarSize(t$6, "x", Math.round(r$3) - t$6.clientHeight)), e$5 === BOX_EDGE.padding || (r$3 -= parseFloat(o$2.paddingTop) || 0, r$3 -= parseFloat(o$2.paddingBottom) || 0), r$3));
-}
-
-//#endregion
-//#region ../../node_modules/mezr/dist/esm/getHeight.js
-function getHeight(t$6, e$5 = BOX_EDGE.border) {
-	return isWindow(t$6) ? getWindowHeight(t$6, INCLUDE_WINDOW_SCROLLBAR[e$5]) : isDocument(t$6) ? getDocumentHeight(t$6) : getElementHeight(t$6, e$5);
-}
-
-//#endregion
-//#region ../../node_modules/mezr/dist/esm/utils/isRectObject.js
-function isRectObject(t$6) {
-	return t$6?.constructor === Object;
-}
-
-//#endregion
-//#region ../../node_modules/mezr/dist/esm/utils/getOffsetFromDocument.js
-function getOffsetFromDocument(t$6, o$2 = BOX_EDGE.border) {
-	const e$5 = {
-		left: 0,
-		top: 0
-	};
-	if (isDocument(t$6)) return e$5;
-	if (isWindow(t$6)) return e$5.left += t$6.scrollX || 0, e$5.top += t$6.scrollY || 0, e$5;
-	const r$3 = t$6.ownerDocument.defaultView;
-	r$3 && (e$5.left += r$3.scrollX || 0, e$5.top += r$3.scrollY || 0);
-	const n$7 = t$6.getBoundingClientRect();
-	if (e$5.left += n$7.left, e$5.top += n$7.top, o$2 === BOX_EDGE.border) return e$5;
-	const l$5 = getStyle(t$6);
-	return o$2 === BOX_EDGE.margin ? (e$5.left -= Math.max(0, parseFloat(l$5.marginLeft) || 0), e$5.top -= Math.max(0, parseFloat(l$5.marginTop) || 0), e$5) : (e$5.left += parseFloat(l$5.borderLeftWidth) || 0, e$5.top += parseFloat(l$5.borderTopWidth) || 0, o$2 === BOX_EDGE.scrollbar || o$2 === BOX_EDGE.padding || (e$5.left += parseFloat(l$5.paddingLeft) || 0, e$5.top += parseFloat(l$5.paddingTop) || 0), e$5);
-}
-
-//#endregion
-//#region ../../node_modules/mezr/dist/esm/getOffset.js
-function getOffset(t$6, e$5) {
-	const o$2 = isRectObject(t$6) ? {
-		left: t$6.left,
-		top: t$6.top
-	} : Array.isArray(t$6) ? getOffsetFromDocument(...t$6) : getOffsetFromDocument(t$6);
-	if (e$5 && !isDocument(e$5)) {
-		const t$7 = isRectObject(e$5) ? e$5 : Array.isArray(e$5) ? getOffsetFromDocument(e$5[0], e$5[1]) : getOffsetFromDocument(e$5);
-		o$2.left -= t$7.left, o$2.top -= t$7.top;
-	}
-	return o$2;
-}
-
-//#endregion
-//#region ../../node_modules/mezr/dist/esm/getRect.js
-function getRect(t$6, e$5) {
-	let i$2 = 0, g$2 = 0;
-	isRectObject(t$6) ? (i$2 = t$6.width, g$2 = t$6.height) : Array.isArray(t$6) ? (i$2 = getWidth(...t$6), g$2 = getHeight(...t$6)) : (i$2 = getWidth(t$6), g$2 = getHeight(t$6));
-	const r$3 = getOffset(t$6, e$5);
-	return {
-		width: i$2,
-		height: g$2,
-		...r$3,
-		right: r$3.left + i$2,
-		bottom: r$3.top + g$2
-	};
-}
-
-//#endregion
-//#region ../dragdoll/dist/get-rect-rpTuZ8DC.js
-function t$1(...t$6) {
-	let { width: n$7, height: r$3, left: i$2, top: a$2 } = getRect(...t$6);
-	return {
-		width: n$7,
-		height: r$3,
-		x: i$2,
-		y: a$2
-	};
-}
-
-//#endregion
-//#region ../dragdoll/dist/dnd-context/advanced-collision-detector.js
-const s = `visible`;
-function c(n$7, r$3, i$2 = []) {
-	let a$2 = r$3 ? n$7 : n$7?.parentNode;
-	for (i$2.length = 0; a$2 && !e(a$2);) if (a$2 instanceof Element) {
-		let t$6 = t(a$2);
-		t$6.overflowY === s || t$6.overflowX === s || i$2.push(a$2), a$2 = a$2.parentNode;
-	} else a$2 = a$2 instanceof ShadowRoot ? a$2.host : a$2.parentNode;
-	return i$2.push(window), i$2;
-}
-let l;
-const u$1 = r$1(), d = {
-	width: 2 ** 53 - 1,
-	height: 2 ** 53 - 1,
-	x: (2 ** 53 - 1) * -.5,
-	y: (2 ** 53 - 1) * -.5
-}, f = [], p = [], m = [], h = [];
-function g(e$5) {
-	if (!f.length) {
-		let t$6 = e$5.drag?.items?.[0]?.dragContainer;
-		t$6 ? c(t$6, !0, f) : f.push(window);
-	}
-}
-function _(e$5) {
-	p.length || c(e$5.element, !1, p);
-}
-function v(e$5, t$6 = r$1()) {
-	r$1(e$5.length ? t$1([e$5[0], `padding`], window) : d, t$6);
-	for (let r$3 = 1; r$3 < e$5.length; r$3++) {
-		let a$2 = e$5[r$3];
-		if (!e$1(t$6, t$1([a$2, `padding`], window), t$6)) {
-			r$1(u$1, t$6);
-			break;
-		}
-	}
-	return t$6;
-}
-var y = class extends a {
-	constructor(e$5, t$6) {
-		super(e$5), this._dragStates = /* @__PURE__ */ new Map(), this._visibilityLogic = t$6?.visibilityLogic || `relative`, this._listenersAttached = !1, this._clearCache = () => this.clearCache();
-	}
-	_checkCollision(e$5, t$6, i$2) {
-		let a$2 = this._dragStates.get(e$5);
-		if (!a$2) return null;
-		let s$4 = e$5.getClientRect(), c$4 = t$6.getClientRect();
-		if (!s$4 || !c$4) return null;
-		let u$5 = a$2.clipMaskKeyMap.get(t$6);
-		if (!u$5) {
-			let n$7 = this._visibilityLogic === `relative`;
-			if (p.length = 0, m.length = 0, h.length = 0, _(t$6), u$5 = p[0] || window, a$2.clipMaskKeyMap.set(t$6, u$5), !a$2.clipMaskMap.has(u$5)) {
-				if (g(e$5), n$7) {
-					let e$6 = window;
-					for (let t$8 of p) if (f.includes(t$8)) {
-						e$6 = t$8;
-						break;
-					}
-					for (let t$8 of f) {
-						if (t$8 === e$6) break;
-						m.push(t$8);
-					}
-					for (let t$8 of p) {
-						if (t$8 === e$6) break;
-						h.push(t$8);
-					}
-				} else m.push(...f), h.push(...p);
-				let t$7 = n$7 || !l ? v(m) : r$1(l), r$3 = v(h);
-				!n$7 && !l && (l = t$7), a$2.clipMaskMap.set(u$5, [t$7, r$3]);
-			}
-			p.length = 0, m.length = 0, h.length = 0;
-		}
-		let [d$2, y$2] = a$2.clipMaskMap.get(u$5) || [];
-		if (!d$2 || !y$2 || !e$1(s$4, d$2, i$2.draggableVisibleRect) || !e$1(c$4, y$2, i$2.droppableVisibleRect) || !e$1(i$2.draggableVisibleRect, i$2.droppableVisibleRect, i$2.intersectionRect)) return null;
-		let b$1 = n$1(i$2.draggableVisibleRect, i$2.droppableVisibleRect, i$2.intersectionRect);
-		return b$1 <= 0 ? null : (i$2.droppableId = t$6.id, r$1(c$4, i$2.droppableRect), r$1(s$4, i$2.draggableRect), i$2.intersectionScore = b$1, i$2);
-	}
-	_sortCollisions(e$5, t$6) {
-		return t$6.sort((e$6, t$7) => {
-			let n$7 = t$7.intersectionScore - e$6.intersectionScore;
-			return n$7 === 0 ? e$6.droppableVisibleRect.width * e$6.droppableVisibleRect.height - t$7.droppableVisibleRect.width * t$7.droppableVisibleRect.height : n$7;
-		});
-	}
-	_createCollisionData() {
-		let e$5 = super._createCollisionData();
-		return e$5.droppableVisibleRect = r$1(), e$5.draggableVisibleRect = r$1(), e$5;
-	}
-	_getDragState(e$5) {
-		let t$6 = this._dragStates.get(e$5);
-		return t$6 || (t$6 = {
-			clipMaskKeyMap: /* @__PURE__ */ new Map(),
-			clipMaskMap: /* @__PURE__ */ new Map(),
-			cacheDirty: !0
-		}, this._dragStates.set(e$5, t$6), this._listenersAttached ||= (window.addEventListener(`scroll`, this._clearCache, {
-			capture: !0,
-			passive: !0
-		}), window.addEventListener(`resize`, this._clearCache, { passive: !0 }), !0), t$6);
-	}
-	getCollisionDataPool(e$5) {
-		return this._getDragState(e$5), super.getCollisionDataPool(e$5);
-	}
-	removeCollisionDataPool(e$5) {
-		this._dragStates.delete(e$5) && this._dndContext.drags.size <= 0 && (this._listenersAttached &&= (window.removeEventListener(`scroll`, this._clearCache, { capture: !0 }), window.removeEventListener(`resize`, this._clearCache), !1)), super.removeCollisionDataPool(e$5);
-	}
-	detectCollisions(e$5, t$6, n$7) {
-		f.length = 0, l = null;
-		let r$3 = this._getDragState(e$5);
-		r$3.cacheDirty &&= (r$3.clipMaskKeyMap.clear(), r$3.clipMaskMap.clear(), !1), super.detectCollisions(e$5, t$6, n$7), f.length = 0, l = null;
-	}
-	clearCache(e$5) {
-		if (e$5) {
-			let t$6 = this._dragStates.get(e$5);
-			t$6 && (t$6.cacheDirty = !0);
-		} else this._dragStates.forEach((e$6) => {
-			e$6.cacheDirty = !0;
-		});
-	}
-};
-
-//#endregion
-//#region src/dnd-context/advanced-collision-detection.ts
-function advancedCollisionDetection() {
-	describe("advanced collision detection", () => {
-		describe("relative visibility logic", () => {
-			it("should not clip if draggable and droppable are within the same clip container", async () => {
-				const collisionEvents = [];
-				const containerElement = createTestElement({
-					left: "0px",
-					top: "0px",
-					width: "100px",
-					height: "100px",
-					overflow: "hidden"
-				});
-				const draggableElement = createTestElement({
-					left: "-100px",
-					top: "-100px",
-					width: "100px",
-					height: "100px"
-				});
-				const droppableElement = createTestElement({
-					left: "-100px",
-					top: "-100px",
-					width: "100px",
-					height: "100px"
-				});
-				containerElement.appendChild(draggableElement);
-				containerElement.appendChild(droppableElement);
-				const keyboard = new r(draggableElement);
-				const draggable = new z([keyboard], {
-					elements: () => [draggableElement],
-					group: "g"
-				});
-				const droppable = new n(droppableElement, { accept: ["g"] });
-				const dndContext = new u({ collisionDetector: (ctx) => new y(ctx) });
-				dndContext.addDraggables([draggable]);
-				dndContext.addDroppables([droppable]);
-				dndContext.on("collide", (data) => {
-					collisionEvents.push({
-						type: "enter",
-						collisions: data.collisions
-					});
-				});
-				focusElement(draggableElement);
-				document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-				await waitNextFrame();
-				assert.equal(collisionEvents.length, 1);
-				assert.equal(collisionEvents[0].collisions.length, 1);
-				const firstCollision = collisionEvents[0].collisions[0];
-				assert.deepEqual(firstCollision.draggableVisibleRect, {
-					x: -100,
-					y: -100,
-					width: 100,
-					height: 100
-				});
-				assert.deepEqual(firstCollision.droppableVisibleRect, {
-					x: -100,
-					y: -100,
-					width: 100,
-					height: 100
-				});
-				dndContext.destroy();
-				draggable.destroy();
-				droppable.destroy();
-				keyboard.destroy();
-				draggableElement.remove();
-				droppableElement.remove();
-				containerElement.remove();
-			});
-			it("should clip to the clip containers that are not shared by the draggable and droppable", async () => {
-				const collisionEvents = [];
-				const containerElement = createTestElement({
-					left: "-50px",
-					top: "-50px",
-					width: "100px",
-					height: "100px",
-					overflow: "hidden"
-				});
-				const draggableElement = createTestElement({
-					left: "0px",
-					top: "0px",
-					width: "100px",
-					height: "100px"
-				});
-				const droppableElement = createTestElement({
-					left: "50px",
-					top: "50px",
-					width: "100px",
-					height: "100px"
-				});
-				containerElement.appendChild(droppableElement);
-				const keyboard = new r(draggableElement, { moveDistance: 50 });
-				const draggable = new z([keyboard], {
-					elements: () => [draggableElement],
-					group: "g"
-				});
-				const droppable = new n(droppableElement, { accept: ["g"] });
-				const dndContext = new u({ collisionDetector: (ctx) => new y(ctx) });
-				dndContext.addDraggables([draggable]);
-				dndContext.addDroppables([droppable]);
-				dndContext.on("collide", (data) => {
-					collisionEvents.push({
-						type: "enter",
-						collisions: data.collisions
-					});
-				});
-				focusElement(draggableElement);
-				document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-				await waitNextFrame();
-				assert.equal(collisionEvents.length, 1);
-				assert.equal(collisionEvents[0].collisions.length, 1);
-				const firstCollision = collisionEvents[0].collisions[0];
-				assert.deepEqual(firstCollision.draggableVisibleRect, {
-					x: 0,
-					y: 0,
-					width: 100,
-					height: 100
-				});
-				assert.deepEqual(firstCollision.droppableVisibleRect, {
-					x: 0,
-					y: 0,
-					width: 50,
-					height: 50
-				});
-				dndContext.destroy();
-				draggable.destroy();
-				droppable.destroy();
-				keyboard.destroy();
-				draggableElement.remove();
-				droppableElement.remove();
-				containerElement.remove();
-			});
-		});
-		describe("absolute visibility logic", () => {
-			it("should always compute collisions from the perspective of the user regardless of clip containers", async () => {
-				const collisionEvents = [];
-				const containerElement = createTestElement({
-					left: "-50px",
-					top: "-50px",
-					width: "100px",
-					height: "100px",
-					overflow: "hidden"
-				});
-				const draggableElement = createTestElement({
-					left: "0px",
-					top: "0px",
-					width: "100px",
-					height: "100px"
-				});
-				const droppableElement = createTestElement({
-					left: "0px",
-					top: "0px",
-					width: "100px",
-					height: "100px"
-				});
-				containerElement.appendChild(draggableElement);
-				containerElement.appendChild(droppableElement);
-				const keyboard = new r(draggableElement, { moveDistance: 50 });
-				const draggable = new z([keyboard], {
-					elements: () => [draggableElement],
-					group: "g"
-				});
-				const droppable = new n(droppableElement, { accept: ["g"] });
-				const dndContext = new u({ collisionDetector: (ctx) => new y(ctx, { visibilityLogic: "absolute" }) });
-				dndContext.addDraggables([draggable]);
-				dndContext.addDroppables([droppable]);
-				dndContext.on("collide", (data) => {
-					collisionEvents.push({
-						type: "enter",
-						collisions: data.collisions
-					});
-				});
-				focusElement(draggableElement);
-				document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-				await waitNextFrame();
-				assert.equal(collisionEvents.length, 1);
-				assert.equal(collisionEvents[0].collisions.length, 1);
-				const firstCollision = collisionEvents[0].collisions[0];
-				assert.deepEqual(firstCollision.draggableVisibleRect, {
-					x: 0,
-					y: 0,
-					width: 50,
-					height: 50
-				});
-				assert.deepEqual(firstCollision.droppableVisibleRect, {
-					x: 0,
-					y: 0,
-					width: 50,
-					height: 50
-				});
-				dndContext.destroy();
-				draggable.destroy();
-				droppable.destroy();
-				keyboard.destroy();
-				draggableElement.remove();
-				droppableElement.remove();
-				containerElement.remove();
-			});
-		});
-	});
-}
-
-//#endregion
-//#region src/dnd-context/droppables.ts
-function droppables() {
-	describe("droppables", () => {
-		it("should accept draggables based on group string array", async () => {
-			const events$5 = [];
-			const dragElement = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const dropElement = createTestElement({
-				left: "60px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const keyboardSensor = new r(dragElement, { moveDistance: 70 });
-			const draggable = new z([keyboardSensor], {
-				elements: () => [dragElement],
-				group: "valid-group"
-			});
-			const droppable = new n(dropElement, { accept: ["valid-group", "another-group"] });
-			const dndContext = new u();
-			dndContext.on("enter", (data) => {
-				events$5.push({
-					type: "enter",
-					targets: data.targets.size
-				});
-			});
-			dndContext.addDraggables([draggable]);
-			dndContext.addDroppables([droppable]);
-			await startDrag(dragElement);
-			await move("Right");
-			await waitNextFrame();
-			assert.equal(events$5.length, 1);
-			assert.equal(events$5[0].type, "enter");
-			assert.equal(events$5[0].targets, 1);
-			await endDrag();
-			dndContext.destroy();
-			draggable.destroy();
-			droppable.destroy();
-			keyboardSensor.destroy();
-			dragElement.remove();
-			dropElement.remove();
-		});
-		it("should reject draggables not in accept group array", async () => {
-			const events$5 = [];
-			const dragElement = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const dropElement = createTestElement({
-				left: "25px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
-				elements: () => [dragElement],
-				group: "invalid-group"
-			});
-			const droppable = new n(dropElement, { accept: ["valid-group", "another-group"] });
-			const dndContext = new u();
-			dndContext.on("enter", () => {
-				events$5.push({ type: "enter" });
-			});
-			dndContext.addDraggables([draggable]);
-			dndContext.addDroppables([droppable]);
-			await startDrag(dragElement);
-			assert.equal(events$5.length, 0);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			dndContext.destroy();
-			draggable.destroy();
-			droppable.destroy();
-			keyboardSensor.destroy();
-			dragElement.remove();
-			dropElement.remove();
-		});
-		it("should accept draggables based on function predicate", async () => {
-			const events$5 = [];
-			const dragElement = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const dropElement = createTestElement({
-				left: "60px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const keyboardSensor = new r(dragElement, { moveDistance: 70 });
-			const draggable = new z([keyboardSensor], {
-				elements: () => [dragElement],
-				group: "test-group"
-			});
-			const droppable = new n(dropElement, { accept: (draggable$1) => {
-				return draggable$1.settings.group === "test-group";
-			} });
-			const dndContext = new u();
-			dndContext.on("enter", (data) => {
-				events$5.push({
-					type: "enter",
-					targets: data.targets.size
-				});
-			});
-			dndContext.addDraggables([draggable]);
-			dndContext.addDroppables([droppable]);
-			focusElement(dragElement);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			await waitNextFrame();
-			await move("Right");
-			await waitNextFrame();
-			assert.equal(events$5.length, 1);
-			assert.equal(events$5[0].type, "enter");
-			assert.equal(events$5[0].targets, 1);
-			await endDrag();
-			dndContext.destroy();
-			draggable.destroy();
-			droppable.destroy();
-			keyboardSensor.destroy();
-			dragElement.remove();
-			dropElement.remove();
-		});
-		it("should reject draggables when function predicate returns false", async () => {
-			const events$5 = [];
-			const dragElement = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const dropElement = createTestElement({
-				left: "25px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
-				elements: () => [dragElement],
-				group: "test-group"
-			});
-			const droppable = new n(dropElement, { accept: (draggable$1) => {
-				return draggable$1.settings.group === "different-group";
-			} });
-			const dndContext = new u();
-			dndContext.on("enter", () => {
-				events$5.push({ type: "enter" });
-			});
-			dndContext.addDraggables([draggable]);
-			dndContext.addDroppables([droppable]);
-			await startDrag(dragElement);
-			assert.equal(events$5.length, 0);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			dndContext.destroy();
-			draggable.destroy();
-			droppable.destroy();
-			keyboardSensor.destroy();
-			dragElement.remove();
-			dropElement.remove();
-		});
-		it("should not accept draggable when its element matches droppable element", async () => {
-			const events$5 = [];
-			const element = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const keyboardSensor = new r(element, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
-				elements: () => [element],
-				group: "test"
-			});
-			const droppable = new n(element, { accept: ["test"] });
-			const dndContext = new u();
-			dndContext.on("enter", () => {
-				events$5.push({ type: "enter" });
-			});
-			dndContext.addDraggables([draggable]);
-			dndContext.addDroppables([droppable]);
-			await startDrag(element);
-			assert.equal(events$5.length, 0);
-			await endDrag();
-			dndContext.destroy();
-			draggable.destroy();
-			droppable.destroy();
-			keyboardSensor.destroy();
-			element.remove();
-		});
-		it("should handle droppable data correctly", () => {
-			const element = createTestElement();
-			const droppable = new n(element, {
-				accept: ["test"],
-				data: {
-					custom: "value",
-					id: 123
-				}
-			});
-			const dndContext = new u();
-			dndContext.addDroppables([droppable]);
-			assert.deepEqual(droppable.data, {
-				custom: "value",
-				id: 123
-			});
-			droppable.data.newProp = "added";
-			assert.equal(droppable.data.newProp, "added");
-			dndContext.destroy();
-			droppable.destroy();
-			element.remove();
-		});
-		it("should update client rect correctly", () => {
-			const element = createTestElement({
-				left: "50px",
-				top: "75px",
-				width: "100px",
-				height: "150px"
-			});
-			const droppable = new n(element, { accept: ["test"] });
-			const dndContext = new u();
-			dndContext.addDroppables([droppable]);
-			const rect = droppable.getClientRect();
-			assert.equal(rect.x, 50);
-			assert.equal(rect.y, 75);
-			assert.equal(rect.width, 100);
-			assert.equal(rect.height, 150);
-			element.style.left = "100px";
-			element.style.top = "200px";
-			droppable.updateClientRect();
-			const updatedRect = droppable.getClientRect();
-			assert.equal(updatedRect.x, 100);
-			assert.equal(updatedRect.y, 200);
-			assert.equal(updatedRect.width, 100);
-			assert.equal(updatedRect.height, 150);
-			dndContext.destroy();
-			droppable.destroy();
-			element.remove();
-		});
-		it("should handle droppable removal during drag", async () => {
-			const events$5 = [];
-			const dragElement = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const dropElement = createTestElement({
-				left: "60px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const keyboardSensor = new r(dragElement, { moveDistance: 70 });
-			const draggable = new z([keyboardSensor], {
-				elements: () => [dragElement],
-				group: "test"
-			});
-			const droppable = new n(dropElement, { accept: ["test"] });
-			const dndContext = new u();
-			dndContext.on("enter", (data) => {
-				events$5.push({
-					type: "enter",
-					collisions: data.collisions.length
-				});
-			});
-			dndContext.on("leave", (data) => {
-				events$5.push({
-					type: "leave",
-					collisions: data.collisions.length,
-					removedContacts: data.removedContacts.size
-				});
-			});
-			dndContext.addDraggables([draggable]);
-			dndContext.addDroppables([droppable]);
-			await startDrag(dragElement);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-			await waitNextFrame();
-			await waitNextFrame();
-			assert.equal(events$5.length, 1);
-			assert.equal(events$5[0].type, "enter");
-			assert.equal(events$5[0].collisions, 1);
-			dndContext.removeDroppables([droppable]);
-			await waitNextFrame();
-			assert.equal(events$5.length, 2);
-			assert.equal(events$5[1].type, "leave");
-			assert.equal(events$5[1].collisions, 0);
-			assert.equal(events$5[1].removedContacts, 1);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			dndContext.destroy();
-			draggable.destroy();
-			droppable.destroy();
-			keyboardSensor.destroy();
-			dragElement.remove();
-			dropElement.remove();
-		});
-		it("should handle droppable destruction properly", () => {
-			const destroyEvents = [];
-			const element = createTestElement();
-			const droppable = new n(element, { accept: ["test"] });
-			const dndContext = new u();
-			dndContext.on("removeDroppables", (data) => {
-				const removed = Array.from(data.droppables);
-				destroyEvents.push({
-					type: "removeDroppable",
-					droppable: removed[0]
-				});
-			});
-			dndContext.addDroppables([droppable]);
-			droppable.destroy();
-			assert.equal(destroyEvents.length, 1);
-			assert.equal(destroyEvents[0].type, "removeDroppable");
-			assert.equal(destroyEvents[0].droppable, droppable);
-			assert.isFalse(dndContext.droppables.has(droppable.id));
-			dndContext.destroy();
-			element.remove();
-		});
-		it("should handle collide events each cycle with persistedContacts", async () => {
-			const events$5 = [];
-			const dragElement = createTestElement({
-				left: "0px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const dropElement = createTestElement({
-				left: "60px",
-				top: "0px",
-				width: "50px",
-				height: "50px"
-			});
-			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
-				elements: () => [dragElement],
-				group: "test"
-			});
-			const droppable = new n(dropElement, { accept: ["test"] });
-			const dndContext = new u();
-			dndContext.on("enter", () => {
-				events$5.push({ type: "enter" });
-			});
-			dndContext.on("collide", (data) => {
-				events$5.push({
-					type: "collide",
-					persistedContacts: data.persistedContacts.size
-				});
-			});
-			dndContext.addDraggables([draggable]);
-			dndContext.addDroppables([droppable]);
-			focusElement(dragElement);
-			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-			await waitNextFrame();
-			await move("Right", 7);
-			await move("Right");
-			await waitNextFrame();
-			assert.isTrue(events$5.length >= 2);
-			assert.equal(events$5[0].type, "enter");
-			const collideEvents = events$5.slice(1).filter((e$5) => e$5.type === "collide");
-			assert.isAtLeast(collideEvents.length, 1);
-			assert.isTrue(collideEvents.some((e$5) => e$5.persistedContacts >= 1));
-			await endDrag();
-			dndContext.destroy();
-			draggable.destroy();
-			droppable.destroy();
-			keyboardSensor.destroy();
-			dragElement.remove();
-			dropElement.remove();
 		});
 	});
 }

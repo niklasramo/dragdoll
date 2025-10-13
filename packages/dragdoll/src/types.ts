@@ -23,12 +23,6 @@ export interface RectFull extends Rect {
   bottom: number;
 }
 
-export type FilterNotStartingWith<Set, Needle extends string> = Set extends `${Needle}${infer _X}`
-  ? never
-  : Set;
-
-export type RemoveUnderscoreProperties<T extends {}> = Pick<T, FilterNotStartingWith<keyof T, '_'>>;
-
 export type CSSProperties = Partial<
   Omit<
     CSSStyleDeclaration,

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vitepress dev docs --host",
     "build": "vitepress build docs",
-    "build:examples": "node ./scripts/build-examples.mjs",
+    "build:examples": "prettier --check --no-error-on-unmatched-pattern \"./examples/**/*.{html,css,ts}\" && node ./scripts/build-examples.mjs",
     "serve": "vitepress serve docs",
     "prettier:check": "prettier --check --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,html,css,yml,yaml}\"",
     "prettier:write": "prettier --write --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,html,css,yml,yaml}\"",

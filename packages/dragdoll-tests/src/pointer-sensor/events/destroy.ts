@@ -1,6 +1,6 @@
 import { assert } from 'chai';
-import { createTestElement } from '../../utils/create-test-element.js';
 import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { createTestElement } from '../../utils/create-test-element.js';
 
 export function eventDestroy() {
   describe('destroy', () => {

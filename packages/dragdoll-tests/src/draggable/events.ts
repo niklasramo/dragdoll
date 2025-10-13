@@ -1,14 +1,14 @@
 import { assert } from 'chai';
+import { Draggable } from 'dragdoll/draggable';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../utils/create-test-element.js';
 import { focusElement } from '../utils/focus-element.js';
 import { waitNextFrame } from '../utils/wait-next-frame.js';
-import { Draggable } from 'dragdoll/draggable';
-import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 
 export function events() {
   describe('events', () => {
     it('should be called at the right time with the right arguments', async () => {
-      let events: string[] = [];
+      const events: string[] = [];
       let currentKeyboardEvent: KeyboardEvent | null = null;
       const el = createTestElement();
       const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
@@ -47,7 +47,7 @@ export function events() {
       draggable.on('end', (...args) => {
         assert.equal(args.length, 1);
         assert.equal(args[0]?.type, 'end');
-        // @ts-ignore
+        // @ts-expect-error - srcEvent is optional.
         assert.equal(args[0]?.srcEvent, currentKeyboardEvent);
         events.push('end');
       });

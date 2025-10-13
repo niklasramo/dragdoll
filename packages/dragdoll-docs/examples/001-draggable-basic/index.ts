@@ -1,6 +1,6 @@
 import { Draggable } from 'dragdoll/draggable';
-import { PointerSensor } from 'dragdoll/sensors/pointer';
 import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
 
 let zIndex = 0;
 

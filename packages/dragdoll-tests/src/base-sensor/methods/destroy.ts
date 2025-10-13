@@ -11,7 +11,7 @@ export function methodDestroy() {
        5. remove all listeners from the internal emitter`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
-      let msgs: string[] = [];
+      const msgs: string[] = [];
       s.on('cancel', () => void msgs.push('cancel'));
       s.on('destroy', () => void msgs.push('destroy'));
       s.destroy();
@@ -25,7 +25,7 @@ export function methodDestroy() {
        2. emit "destroy" event
        3. remove all listeners from the internal emitter`, () => {
       const s = new BaseSensor();
-      let msgs: string[] = [];
+      const msgs: string[] = [];
       s.on('cancel', () => void msgs.push('cancel'));
       s.on('destroy', () => void msgs.push('destroy'));
       s.destroy();

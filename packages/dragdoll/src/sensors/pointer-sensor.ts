@@ -1,29 +1,20 @@
-import type { Events, EventListenerId } from 'eventti';
-
+import type { EventListenerId, Events } from 'eventti';
+import { Emitter } from 'eventti';
+import type { ListenerOptions, PointerType, Writeable } from '../types.js';
+import { getPointerEventData } from '../utils/get-pointer-event-data.js';
+import { getPointerId } from '../utils/get-pointer-id.js';
+import { getPointerType } from '../utils/get-pointer-type.js';
+import { parseListenerOptions } from '../utils/parse-listener-options.js';
+import { parseSourceEvents } from '../utils/parse-source-events.js';
 import type {
   Sensor,
-  SensorStartEvent,
-  SensorMoveEvent,
   SensorCancelEvent,
-  SensorEndEvent,
   SensorDestroyEvent,
+  SensorEndEvent,
+  SensorMoveEvent,
+  SensorStartEvent,
 } from './sensor.js';
-
-import type { ListenerOptions, Writeable, PointerType } from '../types.js';
-
-import { Emitter } from 'eventti';
-
 import { SensorEventType } from './sensor.js';
-
-import { getPointerEventData } from '../utils/get-pointer-event-data.js';
-
-import { getPointerType } from '../utils/get-pointer-type.js';
-
-import { getPointerId } from '../utils/get-pointer-id.js';
-
-import { parseListenerOptions } from '../utils/parse-listener-options.js';
-
-import { parseSourceEvents } from '../utils/parse-source-events.js';
 
 const POINTER_EVENTS = {
   start: 'pointerdown',

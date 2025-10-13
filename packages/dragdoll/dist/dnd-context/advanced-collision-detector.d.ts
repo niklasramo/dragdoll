@@ -1,8 +1,8 @@
 import { Rect } from "../types-YkY4KRu0.js";
-import { CollisionData, CollisionDetector, DndContext, FastObjectPool } from "../dnd-context-BG0z_vgm.js";
+import { CollisionData, CollisionDetector, DndContext, FastObjectPool } from "../collision-detector-Dkdi_wdd.js";
 import "../sensor-BDsc365V.js";
-import { Draggable } from "../draggable-CXuSEtCp.js";
-import { Droppable } from "../droppable-D_nbepVC.js";
+import { Draggable } from "../draggable-DXU06nG1.js";
+import { Droppable } from "../droppable-DDkEFxD4.js";
 
 //#region src/dnd-context/advanced-collision-detector.d.ts
 interface DragState {

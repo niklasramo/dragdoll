@@ -1,14 +1,14 @@
-import type { DndContext } from './dnd-context.js';
-import type { CollisionData } from './collision-detector.js';
 import type { Draggable } from '../draggable/draggable.js';
 import type { Droppable } from '../droppable/droppable.js';
 import type { Rect } from '../types.js';
-import { CollisionDetector } from './collision-detector.js';
-import { getRect } from '../utils/get-rect.js';
 import { createRect } from '../utils/create-rect.js';
+import { getClipAncestors } from '../utils/get-clip-ancestors.js';
 import { getIntersectionRect } from '../utils/get-intersection-rect.js';
 import { getIntersectionScore } from '../utils/get-intersection-score.js';
-import { getClipAncestors } from '../utils/get-clip-ancestors.js';
+import { getRect } from '../utils/get-rect.js';
+import type { CollisionData } from './collision-detector.js';
+import { CollisionDetector } from './collision-detector.js';
+import type { DndContext } from './dnd-context.js';
 
 interface DragState {
   clipMaskKeyMap: Map<Droppable, Element | Window>;

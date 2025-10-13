@@ -1,8 +1,8 @@
 import { addDefaultPageStyles, removeDefaultPageStyles } from '../utils/default-page-styles.js';
+import { events } from './events/index.js';
+import { methods } from './methods/index.js';
 import { options } from './options/index.js';
 import { properties } from './properties/index.js';
-import { methods } from './methods/index.js';
-import { events } from './events/index.js';
 
 describe('KeyboardSensor', () => {
   beforeEach(() => {

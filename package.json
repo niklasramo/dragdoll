@@ -17,9 +17,11 @@
     "docs:serve": "npm run serve --workspace=dragdoll-docs",
     "prettier:check": "prettier --check --no-error-on-unmatched-pattern \"./*.{js,ts,md,json,yml}\" \"./.github/**/*.yml\" && npm run prettier:check --workspaces --if-present",
     "prettier:write": "prettier --write --no-error-on-unmatched-pattern \"./*.{js,ts,md,json,yml}\" \"./.github/**/*.yml\" && npm run prettier:write --workspaces --if-present",
+    "eslint:check": "eslint . --ext .ts,.tsx,.js,.jsx,.mjs,.mts,.cjs,.cts --max-warnings 0",
+    "eslint:write": "eslint . --ext .ts,.tsx,.js,.jsx,.mjs,.mts,.cjs,.cts --fix",
     "ts:check": "npm run ts:check --workspaces --if-present",
-    "format": "npm run prettier:write",
-    "lint": "npm run ts:check && npm run prettier:check"
+    "format": "npm run eslint:write && npm run prettier:write",
+    "lint": "npm run ts:check && npm run prettier:check && npm run eslint:check"
   },
   "devDependencies": {
     "@types/chai": "5.2.2",
@@ -28,6 +30,8 @@
     "cpy-cli": "6.0.0",
     "dotenv": "17.2.3",
     "eventti": "4.0.3",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-simple-import-sort": "12.1.1",
     "jsdom": "27.0.0",
     "karma": "6.4.4",
     "karma-browserstack-launcher": "1.6.0",
@@ -43,6 +47,7 @@
     "tikki": "3.0.2",
     "tsdown": "0.15.6",
     "typescript": "5.9.3",
+    "typescript-eslint": "8.46.0",
     "vitepress": "1.6.4",
     "vue": "3.5.22"
   }

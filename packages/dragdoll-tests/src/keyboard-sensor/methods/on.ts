@@ -1,7 +1,7 @@
 import { assert } from 'chai';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { focusElement } from '../../utils/focus-element.js';
-import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 
 export function methodOn() {
   describe('on', () => {

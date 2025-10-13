@@ -1,8 +1,8 @@
 import { DndContext, DndContextEventType } from 'dragdoll/dnd-context';
-import { PointerSensor } from 'dragdoll/sensors/pointer';
-import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
-import { Droppable } from 'dragdoll/droppable';
 import { Draggable } from 'dragdoll/draggable';
+import { Droppable } from 'dragdoll/droppable';
+import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
 
 let zIndex = 0;
 

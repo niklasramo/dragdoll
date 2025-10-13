@@ -1,30 +1,17 @@
-import type { Draggable } from './draggable.js';
-
-import type { ObjectCache } from '../utils/object-cache.js';
-
-import type { Sensor } from '../sensors/sensor.js';
-
-import type { CSSProperties, Point, Rect } from '../types.js';
-
 import { getOffsetContainer } from 'mezr/getOffsetContainer';
-
-import { getStyle } from '../utils/get-style.js';
-
-import { getClientOffset } from '../utils/get-client-offset.js';
-
-import { getOffsetDiff } from '../utils/get-offset-diff.js';
-
-import { getWorldTransformMatrix } from '../utils/get-world-transform-matrix.js';
-
-import { createMeasureElement } from '../utils/create-measure-element.js';
-
-import { isMatrixWarped } from '../utils/is-matrix-warped.js';
-
-import { parseTransformOrigin } from '../utils/parse-transform-origin.js';
-
-import { getElementTransformString } from '../utils/get-element-transform-string.js';
-
 import { IS_BROWSER } from '../constants.js';
+import type { Sensor } from '../sensors/sensor.js';
+import type { CSSProperties, Point, Rect } from '../types.js';
+import { createMeasureElement } from '../utils/create-measure-element.js';
+import { getClientOffset } from '../utils/get-client-offset.js';
+import { getElementTransformString } from '../utils/get-element-transform-string.js';
+import { getOffsetDiff } from '../utils/get-offset-diff.js';
+import { getStyle } from '../utils/get-style.js';
+import { getWorldTransformMatrix } from '../utils/get-world-transform-matrix.js';
+import { isMatrixWarped } from '../utils/is-matrix-warped.js';
+import type { ObjectCache } from '../utils/object-cache.js';
+import { parseTransformOrigin } from '../utils/parse-transform-origin.js';
+import type { Draggable } from './draggable.js';
 
 const MEASURE_ELEMENT = IS_BROWSER ? createMeasureElement() : null;
 

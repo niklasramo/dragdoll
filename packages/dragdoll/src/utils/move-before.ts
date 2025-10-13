@@ -3,7 +3,7 @@ export function moveBefore(container: Node, node: Node, refNode: Node | null = n
   // Use experimental moveBefore method if it's available.
   if ('moveBefore' in container && container.isConnected === node.isConnected) {
     try {
-      // @ts-ignore - moveBefore method is experimental.
+      // @ts-expect-error - moveBefore method is experimental.
       container.moveBefore(node, refNode);
       return;
     } catch {

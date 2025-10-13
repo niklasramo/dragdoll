@@ -1,6 +1,6 @@
 import "../../types-YkY4KRu0.js";
 import { Sensor } from "../../sensor-BDsc365V.js";
-import { Draggable } from "../../draggable-CXuSEtCp.js";
+import { Draggable } from "../../draggable-DXU06nG1.js";
 import { PointerSensor } from "../../pointer-sensor-DsDcFNIw.js";
 
 //#region src/draggable/helpers/create-touch-delay-predicate.d.ts

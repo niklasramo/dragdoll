@@ -1,14 +1,14 @@
 import { assert } from 'chai';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { focusElement } from '../../utils/focus-element.js';
-import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 
 export function methodDestroy() {
   describe('destroy', () => {
     it('should allow destroying only once', () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
-      let events: string[] = [];
+      const events: string[] = [];
 
       // Destroy the sensor.
       s.destroy();
@@ -30,7 +30,7 @@ export function methodDestroy() {
       it(`should set isDestroyed property to true, emit "cancel" event with the current x/y coordinates, reset drag data, emit "destroy" event and remove all listeners`, () => {
         const el = createTestElement();
         const s = new KeyboardSensor(el);
-        let events: string[] = [];
+        const events: string[] = [];
 
         s.on('start', (data) => void events.push(data.type));
         s.on('move', (data) => void events.push(data.type));
@@ -83,7 +83,7 @@ export function methodDestroy() {
       it(`should set isDestroyed property to true, emit "destroy" event and remove all listeners`, () => {
         const el = createTestElement();
         const s = new KeyboardSensor(el);
-        let events: string[] = [];
+        const events: string[] = [];
 
         s.on('start', (data) => void events.push(data.type));
         s.on('move', (data) => void events.push(data.type));

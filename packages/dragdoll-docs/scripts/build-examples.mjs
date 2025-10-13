@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
-import path from 'path';
 import { JSDOM } from 'jsdom';
+import path from 'path';
 import { build } from 'rolldown';
 
 function createUmdName(exampleName) {
@@ -55,10 +55,14 @@ async function buildExampleDirectories() {
     // Copy CSS files.
     try {
       await fs.copyFile(exampleCssPath, path.join(outputDir, 'index.css'));
-    } catch {}
+    } catch {
+      console.log(`Error copying CSS file: ${exampleCssPath}`);
+    }
     try {
       await fs.copyFile(baseCssSrcPath, path.join(outputDir, 'base.css'));
-    } catch {}
+    } catch {
+      console.log(`Error copying base CSS file: ${baseCssSrcPath}`);
+    }
 
     // Rewrite and copy HTML.
     try {
@@ -124,9 +128,9 @@ async function buildExamplesMarkdown() {
     try {
       // Get file contents.
       let indexHtmlContent = await fs.readFile(indexHtmlPath, 'utf8');
-      let indexTsContent = await fs.readFile(indexTsPath, 'utf8');
-      let indexCssContent = await fs.readFile(indexCssPath, 'utf8');
-      let baseCssContent = await fs.readFile(baseCssPath, 'utf8');
+      const indexTsContent = await fs.readFile(indexTsPath, 'utf8');
+      const indexCssContent = await fs.readFile(indexCssPath, 'utf8');
+      const baseCssContent = await fs.readFile(baseCssPath, 'utf8');
 
       // Parse the title and description from the HTML content.
       const dom = new JSDOM(indexHtmlContent);

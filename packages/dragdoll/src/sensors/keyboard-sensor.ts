@@ -1,17 +1,14 @@
+import type { Point } from '../types.js';
+import { BaseSensor } from './base-sensor.js';
 import type {
   Sensor,
-  SensorStartEvent,
-  SensorMoveEvent,
   SensorCancelEvent,
-  SensorEndEvent,
   SensorDestroyEvent,
+  SensorEndEvent,
+  SensorMoveEvent,
+  SensorStartEvent,
 } from './sensor.js';
-
-import type { Point } from '../types.js';
-
 import { SensorEventType } from './sensor.js';
-
-import { BaseSensor } from './base-sensor.js';
 
 export type KeyboardSensorPredicate<E extends KeyboardSensorEvents = KeyboardSensorEvents> = (
   e: KeyboardEvent,

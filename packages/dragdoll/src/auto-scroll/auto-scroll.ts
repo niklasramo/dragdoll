@@ -1,25 +1,14 @@
-import type { Point, Rect } from '../types.js';
-
-import { ClassicObjectPool } from '../utils/classic-object-pool.js';
-
 import { ticker, tickerPhases } from '../singletons/ticker.js';
-
+import type { Point, Rect } from '../types.js';
+import { ClassicObjectPool } from '../utils/classic-object-pool.js';
 import { getDistance } from '../utils/get-distance.js';
-
 import { getIntersectionScore } from '../utils/get-intersection-score.js';
-
 import { getRect } from '../utils/get-rect.js';
-
 import { getScrollElement } from '../utils/get-scroll-element.js';
-
 import { getScrollLeft } from '../utils/get-scroll-left.js';
-
 import { getScrollLeftMax } from '../utils/get-scroll-left-max.js';
-
 import { getScrollTop } from '../utils/get-scroll-top.js';
-
 import { getScrollTopMax } from '../utils/get-scroll-top-max.js';
-
 import { isIntersecting } from '../utils/is-intersecting.js';
 
 //

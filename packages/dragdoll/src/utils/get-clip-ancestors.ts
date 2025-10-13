@@ -1,5 +1,5 @@
-import { isDocument } from './is-document.js';
 import { getStyle } from './get-style.js';
+import { isDocument } from './is-document.js';
 
 const VISIBLE_OVERFLOW = 'visible';
 

@@ -1,10 +1,10 @@
 import { assert } from 'chai';
+import { Draggable } from 'dragdoll/draggable';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { roundNumber } from '../../utils/round-number.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
-import { Draggable } from 'dragdoll/draggable';
-import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 
 export function optionContainer() {
   describe('container', () => {
@@ -74,8 +74,8 @@ export function optionContainer() {
           const originalContainer = el.parentNode;
 
           // Make sure the element and container are not at the same position.
-          let containerRect = container.getBoundingClientRect();
-          let elRect = el.getBoundingClientRect();
+          const containerRect = container.getBoundingClientRect();
+          const elRect = el.getBoundingClientRect();
           assert.notEqual(elRect.x, containerRect.x, '1: ' + assertMsg);
           assert.notEqual(elRect.y, containerRect.y, '2: ' + assertMsg);
 

@@ -1,8 +1,8 @@
+import { IS_BROWSER } from '../constants.js';
 import { getElementTransformString } from './get-element-transform-string.js';
 import { getStyle } from './get-style.js';
 import { parseTransformOrigin } from './parse-transform-origin.js';
 import { resetMatrix } from './reset-matrix.js';
-import { IS_BROWSER } from '../constants.js';
 
 const MATRIX = IS_BROWSER ? new DOMMatrix() : null;
 

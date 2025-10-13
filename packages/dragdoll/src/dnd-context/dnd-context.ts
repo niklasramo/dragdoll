@@ -1,16 +1,10 @@
-import type { Writeable } from '../types.js';
-
 import { Emitter, EventListenerId } from 'eventti';
-
 import { Draggable, DraggableEventType, DraggableId } from '../draggable/draggable.js';
-
 import { Droppable, DroppableEventType, DroppableId } from '../droppable/droppable.js';
-
 import { SensorEventType } from '../sensors/sensor.js';
-
-import { CollisionDetector, CollisionData } from './collision-detector.js';
-
 import { ticker, tickerPhases } from '../singletons/ticker.js';
+import type { Writeable } from '../types.js';
+import { CollisionData, CollisionDetector } from './collision-detector.js';
 
 enum CollisionDetectionPhase {
   Idle = 0,
@@ -27,7 +21,7 @@ interface DndContextInternalDragData<T extends CollisionData = CollisionData> {
   _targets: Map<DroppableId, Droppable> | null;
   _cd: {
     phase: CollisionDetectionPhase;
-    tickerId: Symbol;
+    tickerId: symbol;
     targets: Map<DroppableId, Droppable>;
     collisions: T[];
     contacts: Set<Droppable>;
@@ -122,7 +116,7 @@ export class DndContext<T extends CollisionData = CollisionData> {
   protected _drags: Map<Draggable<any>, DndContextInternalDragData<T>>;
 
   // Used for all all event listeners and scroll ticker listener.
-  protected _listenerId: Symbol;
+  protected _listenerId: symbol;
 
   // The current collision detection function.
   protected _collisionDetector: CollisionDetector<T>;
@@ -156,7 +150,7 @@ export class DndContext<T extends CollisionData = CollisionData> {
   }
 
   protected _isMatch(draggable: Draggable<any>, droppable: Droppable) {
-    let isMatch =
+    const isMatch =
       typeof droppable.accept === 'function'
         ? droppable.accept(draggable)
         : droppable.accept.includes(draggable.settings.group as any);

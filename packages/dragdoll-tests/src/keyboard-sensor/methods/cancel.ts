@@ -1,14 +1,14 @@
 import { assert } from 'chai';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { focusElement } from '../../utils/focus-element.js';
-import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 
 export function methodCancel() {
   describe('cancel', () => {
     it(`should emit "cancel" event with correct arguments after updating instance properties`, () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
-      let events: string[] = [];
+      const events: string[] = [];
 
       s.on('start', (data) => void events.push(data.type));
       s.on('move', (data) => void events.push(data.type));
@@ -47,7 +47,7 @@ export function methodCancel() {
     it(`should not do anything if drag is not active`, () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
-      let events: string[] = [];
+      const events: string[] = [];
 
       s.on('start', (data) => void events.push(data.type));
       s.on('move', (data) => void events.push(data.type));

@@ -1,8 +1,6 @@
 import { getDistance as _getDistance } from 'mezr/getDistance';
-
-import { createFullRect } from './create-full-rect.js';
-
 import { Rect } from '../types.js';
+import { createFullRect } from './create-full-rect.js';
 
 const RECT_A = createFullRect();
 const RECT_B = createFullRect();

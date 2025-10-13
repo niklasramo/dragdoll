@@ -1,21 +1,15 @@
-import type { Draggable, DraggablePluginMap } from '../draggable.js';
-
-import type { Sensor } from '../../sensors/sensor.js';
-
-import type { Point, Rect, Writeable } from '../../types.js';
-
 import type {
   AutoScrollItem,
-  AutoScrollItemSpeedCallback,
   AutoScrollItemEventCallback,
+  AutoScrollItemSpeedCallback,
   AutoScrollItemTarget,
 } from '../../auto-scroll/auto-scroll.js';
-
-import { DraggableEventType } from '../draggable.js';
-
 import { autoScrollSmoothSpeed } from '../../auto-scroll/auto-scroll.js';
-
+import type { Sensor } from '../../sensors/sensor.js';
 import { autoScroll } from '../../singletons/auto-scroll.js';
+import type { Point, Rect, Writeable } from '../../types.js';
+import type { Draggable, DraggablePluginMap } from '../draggable.js';
+import { DraggableEventType } from '../draggable.js';
 
 const AUTOSCROLL_POSITION: Point = { x: 0, y: 0 };
 

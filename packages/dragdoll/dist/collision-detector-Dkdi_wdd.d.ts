@@ -1,6 +1,6 @@
 import { Rect } from "./types-YkY4KRu0.js";
-import { Draggable, DraggableId } from "./draggable-CXuSEtCp.js";
-import { Droppable, DroppableId } from "./droppable-D_nbepVC.js";
+import { Draggable, DraggableId } from "./draggable-DXU06nG1.js";
+import { Droppable, DroppableId } from "./droppable-DDkEFxD4.js";
 import { Emitter, EventListenerId } from "eventti";
 
 //#region src/utils/fast-object-pool.d.ts
@@ -12,29 +12,6 @@ declare class FastObjectPool<Item extends NonNullable<any>, ItemArgs extends any
   get(...args: ItemArgs): Item;
   resetPointer(): void;
   resetItems(maxLength?: number): void;
-}
-//#endregion
-//#region src/dnd-context/collision-detector.d.ts
-interface CollisionData {
-  droppableId: DroppableId;
-  droppableRect: Rect;
-  draggableRect: Rect;
-  intersectionRect: Rect;
-  intersectionScore: number;
-}
-declare class CollisionDetector<T extends CollisionData = CollisionData> {
-  protected _listenerId: Symbol;
-  protected _dndContext: DndContext<T>;
-  protected _collisionDataPoolCache: FastObjectPool<T, []>[];
-  protected _collisionDataPoolMap: Map<Draggable<any>, FastObjectPool<T, []>>;
-  constructor(dndContext: DndContext<T>);
-  protected _checkCollision(draggable: Draggable<any>, droppable: Droppable, collisionData: T): T | null;
-  protected _sortCollisions(_draggable: Draggable<any>, collisions: T[]): T[];
-  protected _createCollisionData(): T;
-  getCollisionDataPool(draggable: Draggable<any>): FastObjectPool<T, []>;
-  removeCollisionDataPool(draggable: Draggable<any>): void;
-  detectCollisions(draggable: Draggable<any>, targets: Map<DroppableId, Droppable>, collisions: T[]): void;
-  destroy(): void;
 }
 //#endregion
 //#region src/dnd-context/dnd-context.d.ts
@@ -52,7 +29,7 @@ interface DndContextInternalDragData<T extends CollisionData = CollisionData> {
   _targets: Map<DroppableId, Droppable> | null;
   _cd: {
     phase: CollisionDetectionPhase;
-    tickerId: Symbol;
+    tickerId: symbol;
     targets: Map<DroppableId, Droppable>;
     collisions: T[];
     contacts: Set<Droppable>;
@@ -142,7 +119,7 @@ declare class DndContext<T extends CollisionData = CollisionData> {
   readonly droppables: ReadonlyMap<DroppableId, Droppable>;
   readonly isDestroyed: boolean;
   protected _drags: Map<Draggable<any>, DndContextInternalDragData<T>>;
-  protected _listenerId: Symbol;
+  protected _listenerId: symbol;
   protected _collisionDetector: CollisionDetector<T>;
   protected _emitter: Emitter<{ [K in keyof DndContextEventCallbacks<T>]: DndContextEventCallbacks<T>[K] }>;
   constructor(options?: DndContextOptions<T>);
@@ -173,5 +150,28 @@ declare class DndContext<T extends CollisionData = CollisionData> {
   destroy(): void;
 }
 //#endregion
+//#region src/dnd-context/collision-detector.d.ts
+interface CollisionData {
+  droppableId: DroppableId;
+  droppableRect: Rect;
+  draggableRect: Rect;
+  intersectionRect: Rect;
+  intersectionScore: number;
+}
+declare class CollisionDetector<T extends CollisionData = CollisionData> {
+  protected _listenerId: symbol;
+  protected _dndContext: DndContext<T>;
+  protected _collisionDataPoolCache: FastObjectPool<T, []>[];
+  protected _collisionDataPoolMap: Map<Draggable<any>, FastObjectPool<T, []>>;
+  constructor(dndContext: DndContext<T>);
+  protected _checkCollision(draggable: Draggable<any>, droppable: Droppable, collisionData: T): T | null;
+  protected _sortCollisions(_draggable: Draggable<any>, collisions: T[]): T[];
+  protected _createCollisionData(): T;
+  getCollisionDataPool(draggable: Draggable<any>): FastObjectPool<T, []>;
+  removeCollisionDataPool(draggable: Draggable<any>): void;
+  detectCollisions(draggable: Draggable<any>, targets: Map<DroppableId, Droppable>, collisions: T[]): void;
+  destroy(): void;
+}
+//#endregion
 export { CollisionData, CollisionDetector, DndContext, DndContextDragData, DndContextEventCallbacks, DndContextEventType, DndContextOptions, FastObjectPool };
-//# sourceMappingURL=dnd-context-BG0z_vgm.d.ts.map
+//# sourceMappingURL=collision-detector-Dkdi_wdd.d.ts.map

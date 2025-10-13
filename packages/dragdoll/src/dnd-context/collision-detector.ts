@@ -1,11 +1,11 @@
 import type { Draggable } from '../draggable/draggable.js';
 import type { Droppable, DroppableId } from '../droppable/droppable.js';
-import type { DndContext } from './dnd-context.js';
+import { Rect } from '../types.js';
+import { createRect } from '../utils/create-rect.js';
 import { FastObjectPool } from '../utils/fast-object-pool.js';
 import { getIntersectionRect } from '../utils/get-intersection-rect.js';
 import { getIntersectionScore } from '../utils/get-intersection-score.js';
-import { createRect } from '../utils/create-rect.js';
-import { Rect } from '../types.js';
+import type { DndContext } from './dnd-context.js';
 
 // The max amount of collisions we keep in collision pool when we return it
 // to the pool cache.
@@ -27,7 +27,7 @@ export interface CollisionData {
 }
 
 export class CollisionDetector<T extends CollisionData = CollisionData> {
-  protected _listenerId: Symbol;
+  protected _listenerId: symbol;
   protected _dndContext: DndContext<T>;
   protected _collisionDataPoolCache: FastObjectPool<T, []>[];
   protected _collisionDataPoolMap: Map<Draggable<any>, FastObjectPool<T, []>>;

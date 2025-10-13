@@ -1,5 +1,4 @@
-import type { Phase, FrameCallback } from 'tikki';
-
+import type { FrameCallback, Phase } from 'tikki';
 import { AutoTicker } from 'tikki';
 
 export const tickerPhases = {

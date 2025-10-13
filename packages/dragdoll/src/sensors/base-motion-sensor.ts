@@ -1,14 +1,9 @@
-import type { Sensor, SensorEvents } from './sensor.js';
-
-import type { BaseSensorDragData } from './base-sensor.js';
-
-import type { Point, Writeable } from '../types.js';
-
-import { BaseSensor } from './base-sensor.js';
-
-import { SensorEventType } from './sensor.js';
-
 import { ticker, tickerPhases } from '../singletons/ticker.js';
+import type { Point, Writeable } from '../types.js';
+import type { BaseSensorDragData } from './base-sensor.js';
+import { BaseSensor } from './base-sensor.js';
+import type { Sensor, SensorEvents } from './sensor.js';
+import { SensorEventType } from './sensor.js';
 
 export interface BaseMotionSensorTickEvent {
   type: 'tick';
