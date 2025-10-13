@@ -1,13 +1,6 @@
-import "../../types-YkY4KRu0.js";
-import { Sensor } from "../../sensor-BDsc365V.js";
-import { Draggable } from "../../draggable-DXU06nG1.js";
-import { PointerSensor } from "../../pointer-sensor-DsDcFNIw.js";
-
-//#region src/draggable/helpers/create-touch-delay-predicate.d.ts
-declare function createTouchDelayPredicate<S extends (Sensor | PointerSensor)[] = (Sensor | PointerSensor)[], D extends Draggable<S> = Draggable<S>>(options?: {
-  touchDelay?: number;
-  fallback?: D['settings']['startPredicate'];
-}): D["settings"]["startPredicate"];
-//#endregion
+import "../../types-CEK9qPqM.js";
+import "../../sensor-DbtiV--O.js";
+import "../../draggable-B2wfNgol.js";
+import "../../pointer-sensor-BOkv3Shr.js";
+import { createTouchDelayPredicate } from "../../create-touch-delay-predicate-CRFqs4ij.js";
 export { createTouchDelayPredicate };
-//# sourceMappingURL=create-touch-delay-predicate.d.ts.map

@@ -1,2 +1,0 @@
-import{AutoTicker as e}from"tikki";const t={read:Symbol(),write:Symbol()};let n=new e({phases:[t.read,t.write]});function r(e,r){n=e,Object.assign(t,r)}export{r as setTicker,n as ticker,t as tickerPhases};
-//# sourceMappingURL=ticker-EaCO7G8S.js.map

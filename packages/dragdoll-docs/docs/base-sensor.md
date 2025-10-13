@@ -2,6 +2,67 @@
 
 BaseSensor is an extendable base class to ease the process of creating custom sensors. It does not do anything by itself, but it does implement the [`Sensor`](/sensor) API and provides you some protected helper methods for controlling the state of the drag process. It's used by [`KeyboardSensor`](/keyboard-sensor) so you can check out implementation tips there.
 
+## Example
+
+```ts
+import { BaseSensor } from 'dragdoll/sensors/base';
+
+// A sensor that moves (the amount of hopDistance) in a random direction when
+// you double-click the provided target element.
+class DoubleClickHopSensor extends BaseSensor {
+  private hopDistance: number;
+  private target: Document | HTMLElement;
+  private timerId: number | null;
+  private onDoubleClickBound: (e: MouseEvent) => void;
+
+  constructor(hopDistance = 50, target: Document | HTMLElement = document) {
+    super();
+    this.hopDistance = hopDistance;
+    this.target = target;
+    this.timerId = null;
+    this.onDoubleClickBound = this.onDoubleClick.bind(this);
+    target.addEventListener('dblclick', this.onDoubleClickBound);
+  }
+
+  private onDoubleClick(e: MouseEvent) {
+    // If we are already dragging, don't do anything.
+    if (this.drag) return;
+
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const angle = Math.random() * 2 * Math.PI;
+    const dx = Math.round(this.hopDistance * Math.cos(angle));
+    const dy = Math.round(this.hopDistance * Math.sin(angle));
+    const endX = startX + dx;
+    const endY = startY + dy;
+
+    // Start the drag.
+    this._start({ type: 'start', x: startX, y: startY });
+
+    // Add a small delay between the start and the move to allow Draggable
+    // to start the drag process.
+    this.timerId = window.setTimeout(() => {
+      this.timerId = null;
+      this._move({ type: 'move', x: endX, y: endY });
+      this._end({ type: 'end', x: endX, y: endY });
+    }, 100);
+  }
+
+  destroy() {
+    if (this.isDestroyed) return;
+    if (this.timerId !== null) window.clearTimeout(this.timerId);
+    this.target.removeEventListener('dblclick', this.onDoubleClickBound);
+    super.destroy();
+  }
+}
+
+// Usage
+const hopSensor = new DoubleClickHopSensor(80);
+hopSensor.on('start', (e) => console.log('start', e.x, e.y));
+hopSensor.on('move', (e) => console.log('move', e.x, e.y));
+hopSensor.on('end', (e) => console.log('end', e.x, e.y));
+```
+
 ## Constructor
 
 ```ts

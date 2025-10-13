@@ -1,1 +1,1 @@
-import"../sensor-TzqXogk2.js";import{BaseSensor as e}from"../base-sensor-cUrlV0_m.js";export{e as BaseSensor};
+import"../sensor-C-EBcfly.js";import{BaseSensor as e}from"../base-sensor-6CQrwFkA.js";export{e as BaseSensor};

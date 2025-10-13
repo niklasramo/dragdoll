@@ -1,6 +1,6 @@
 {
   "name": "dragdoll",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Modular and extensible drag & drop system.",
   "keywords": [
     "drag",
@@ -22,6 +22,10 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
     "./sensors": {
       "types": "./dist/sensors.d.ts",
       "import": "./dist/sensors.js"
@@ -93,7 +97,8 @@
     "./singletons/ticker": {
       "types": "./dist/singletons/ticker.d.ts",
       "import": "./dist/singletons/ticker.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "src",

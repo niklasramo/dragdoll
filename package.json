@@ -9,7 +9,7 @@
     "packages/dragdoll-tests"
   ],
   "scripts": {
-    "build": "npm run build --workspace=dragdoll --workspace=dragdoll-tests && npm run build:examples --workspace=dragdoll-docs && npm run format",
+    "build": "npm run format && npm run build --workspace=dragdoll --workspace=dragdoll-tests && npm run build:examples --workspace=dragdoll-docs && npm run format",
     "test:browserstack": "npm run test:browserstack --workspace=dragdoll-tests",
     "test:local": "npm run test:local --workspace=dragdoll-tests",
     "docs:dev": "npm run dev --workspace=dragdoll-docs",

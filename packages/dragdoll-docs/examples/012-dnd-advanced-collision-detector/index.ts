@@ -1,13 +1,14 @@
-import { DndContext, DndContextEventType } from 'dragdoll/dnd-context';
 import {
   AdvancedCollisionData,
   AdvancedCollisionDetector,
-} from 'dragdoll/dnd-context/advanced-collision-detector';
-import { Draggable } from 'dragdoll/draggable';
-import { autoScrollPlugin } from 'dragdoll/draggable/plugins/auto-scroll';
-import { Droppable } from 'dragdoll/droppable';
-import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
-import { PointerSensor } from 'dragdoll/sensors/pointer';
+  autoScrollPlugin,
+  DndContext,
+  DndContextEventType,
+  Draggable,
+  Droppable,
+  KeyboardMotionSensor,
+  PointerSensor,
+} from 'dragdoll';
 import { getOffset } from 'mezr';
 
 // Keep track of the best match droppable.

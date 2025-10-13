@@ -1,8 +1,4 @@
-import "../types-YkY4KRu0.js";
-import { AutoScroll } from "../auto-scroll-CqbVc9sh.js";
-
-//#region src/singletons/auto-scroll.d.ts
-declare const autoScroll: AutoScroll;
-//#endregion
+import "../types-CEK9qPqM.js";
+import "../auto-scroll-Lt4FzAiU.js";
+import { autoScroll } from "../auto-scroll-C0hkH-Hd.js";
 export { autoScroll };
-//# sourceMappingURL=auto-scroll.d.ts.map

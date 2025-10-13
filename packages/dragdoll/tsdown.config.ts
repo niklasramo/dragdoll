@@ -2,6 +2,7 @@ import { defineConfig } from 'tsdown';
 
 export default defineConfig({
   entry: {
+    index: 'src/index.ts',
     sensors: 'src/sensors/sensor.ts',
     'sensors/base': 'src/sensors/base-sensor.ts',
     'sensors/base-motion': 'src/sensors/base-motion-sensor.ts',

@@ -1,7 +1,4 @@
-import { Draggable } from 'dragdoll/draggable';
-import { autoScrollPlugin } from 'dragdoll/draggable/plugins/auto-scroll';
-import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
-import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { autoScrollPlugin, Draggable, KeyboardMotionSensor, PointerSensor } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const dragContainer = document.querySelector('.drag-container') as HTMLElement;

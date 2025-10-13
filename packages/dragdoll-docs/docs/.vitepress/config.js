@@ -1,4 +1,6 @@
-import { version } from '../../package.json';
+import pkg from 'dragdoll/package.json' assert { type: 'json' };
+
+const { version } = pkg;
 
 export default {
   base: '/dragdoll/',

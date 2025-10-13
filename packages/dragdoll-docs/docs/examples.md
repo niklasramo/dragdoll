@@ -9,9 +9,7 @@ A minimal setup with four draggable elements using pointer and keyboard (motion)
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable } from 'dragdoll/draggable';
-import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
-import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { Draggable, KeyboardMotionSensor, PointerSensor } from 'dragdoll';
 
 let zIndex = 0;
 
@@ -217,10 +215,7 @@ This example demonstrates quite a lot of things. We use a drag container and fre
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable } from 'dragdoll/draggable';
-import { autoScrollPlugin } from 'dragdoll/draggable/plugins/auto-scroll';
-import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
-import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { autoScrollPlugin, Draggable, KeyboardMotionSensor, PointerSensor } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const dragContainer = document.querySelector('.drag-container') as HTMLElement;
@@ -413,10 +408,7 @@ Draggable automagically handles (2D) transformed ancestors and the dragged eleme
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable } from 'dragdoll/draggable';
-import { autoScrollPlugin } from 'dragdoll/draggable/plugins/auto-scroll';
-import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
-import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { autoScrollPlugin, Draggable, KeyboardMotionSensor, PointerSensor } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const dragContainer = document.querySelector('.drag-container') as HTMLElement;
@@ -633,9 +625,7 @@ Here we have two elements which can be dragged on one axis only. You can use thi
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable } from 'dragdoll/draggable';
-import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
-import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { Draggable, KeyboardMotionSensor, PointerSensor } from 'dragdoll';
 
 let zIndex = 0;
 
@@ -837,10 +827,7 @@ A simple demo on how to use the built-in snap modifier.
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable } from 'dragdoll/draggable';
-import { createSnapModifier } from 'dragdoll/draggable/modifiers/snap';
-import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
-import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { createSnapModifier, Draggable, KeyboardSensor, PointerSensor } from 'dragdoll';
 
 const GRID_WIDTH = 40;
 const GRID_HEIGHT = 40;
@@ -1002,10 +989,12 @@ A simple demo on how to use the built-in containment modifier. The first argumen
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable } from 'dragdoll/draggable';
-import { createContainmentModifier } from 'dragdoll/draggable/modifiers/containment';
-import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
-import { PointerSensor } from 'dragdoll/sensors/pointer';
+import {
+  createContainmentModifier,
+  Draggable,
+  KeyboardMotionSensor,
+  PointerSensor,
+} from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
@@ -1182,9 +1171,7 @@ Here we use a custom position modifier to align the dragged element's center wit
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable } from 'dragdoll/draggable';
-import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
-import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { Draggable, KeyboardMotionSensor, PointerSensor } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
@@ -1373,9 +1360,7 @@ A simple example on how to create a drag handle. There is no built-in 'handle' o
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable } from 'dragdoll/draggable';
-import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
-import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { Draggable, KeyboardMotionSensor, PointerSensor } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const handle = element.querySelector('.handle') as HTMLElement;
@@ -1587,9 +1572,7 @@ A commong drag and drop pattern is using a temporary 'ghost' element during the 
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable } from 'dragdoll/draggable';
-import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
-import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { Draggable, KeyboardMotionSensor, PointerSensor } from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
@@ -1796,9 +1779,7 @@ Sometimes you might want to drag multiple elements at once and DragDoll provides
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable } from 'dragdoll/draggable';
-import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
-import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { Draggable, KeyboardMotionSensor, PointerSensor } from 'dragdoll';
 
 const draggableElements = [...document.querySelectorAll('.draggable')] as HTMLElement[];
 
@@ -2011,11 +1992,14 @@ A basic example of using DndContext with Draggable and Droppable elements. Here 
 ::: code-group
 
 ```ts [index.ts]
-import { DndContext, DndContextEventType } from 'dragdoll/dnd-context';
-import { Draggable } from 'dragdoll/draggable';
-import { Droppable } from 'dragdoll/droppable';
-import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
-import { PointerSensor } from 'dragdoll/sensors/pointer';
+import {
+  DndContext,
+  DndContextEventType,
+  Draggable,
+  Droppable,
+  KeyboardMotionSensor,
+  PointerSensor,
+} from 'dragdoll';
 
 let zIndex = 0;
 
@@ -2346,16 +2330,17 @@ Advanced collision detection with scrollable droppable lists. Here we can see ho
 ::: code-group
 
 ```ts [index.ts]
-import { DndContext, DndContextEventType } from 'dragdoll/dnd-context';
 import {
   AdvancedCollisionData,
   AdvancedCollisionDetector,
-} from 'dragdoll/dnd-context/advanced-collision-detector';
-import { Draggable } from 'dragdoll/draggable';
-import { autoScrollPlugin } from 'dragdoll/draggable/plugins/auto-scroll';
-import { Droppable } from 'dragdoll/droppable';
-import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
-import { PointerSensor } from 'dragdoll/sensors/pointer';
+  autoScrollPlugin,
+  DndContext,
+  DndContextEventType,
+  Draggable,
+  Droppable,
+  KeyboardMotionSensor,
+  PointerSensor,
+} from 'dragdoll';
 import { getOffset } from 'mezr';
 
 // Keep track of the best match droppable.
