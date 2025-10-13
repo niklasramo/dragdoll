@@ -143,10 +143,16 @@ function sidebarGuide() {
       text: 'Drag and Drop',
       collapsible: false,
       items: [
-        { text: 'DndContext', link: '/dnd-context' },
+        {
+          text: 'DndContext',
+          link: '/dnd-context',
+          collapsible: false,
+          items: [
+            { text: 'CollisionDetector', link: '/collision-detector' },
+            { text: 'AdvancedCollisionDetector', link: '/advanced-collision-detector' },
+          ],
+        },
         { text: 'Droppable', link: '/droppable' },
-        { text: 'CollisionDetector', link: '/collision-detector' },
-        { text: 'AdvancedCollisionDetector', link: '/advanced-collision-detector' },
       ],
     },
   ];
