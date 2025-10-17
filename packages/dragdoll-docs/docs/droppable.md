@@ -39,9 +39,10 @@ new Droppable(element: HTMLElement | SVGSVGElement, options?: DroppableOptions);
        - The unique identifier for this droppable. A string, number, or symbol.
        - Default: a unique symbol.
      - **`accept`**
-       - Either an array of drop target identifiers (strings, numbers, symbols) or a
-         function that takes a draggable instance and returns a boolean.
-       - Default: a function that returns `true` (accepts all).
+       - Either an array of identifiers (`DroppableAcceptId[]`) or a predicate `(draggable) => boolean`.
+       - Array mode: accepts draggables whose `draggable.settings.group` is included in the array. `null` groups never match arrays.
+       - Function mode: decide acceptance in code; you may read `draggable.settings.group` or ignore it entirely.
+       - Default: `() => true` (accepts all draggables).
      - **`data`**
        - An object containing custom data for the droppable.
        - Default: an empty object.
@@ -70,7 +71,12 @@ The associated DOM element whose bounding client rectangle is used for collision
 type accept = DroppableAcceptId[] | ((draggable: Draggable<any>) => boolean);
 ```
 
-The acceptance criteria for draggable elements. This can be either an array of drop target identifiers or a function that takes a draggable instance and returns a boolean. You can modify this property at any time, but do know that it will only affect the droppable instance after the next collision detection cycle. So modifying this won't instantly emit any `enter/over/leave` events.
+Controls which draggables can collide with this droppable when used in a [DndContext](/dnd-context).
+
+- Array mode: accepts a draggable when it's [`group`](/draggable#group) is included in the array.
+- Function mode: called during collision detection for every candidate. Return `true` to accept, `false` to reject. You can incorporate the draggable's [`group`](/draggable#group) here or come up with any other acceptance criteria.
+
+Default is `() => true` (accepts all draggables).
 
 ### data
 

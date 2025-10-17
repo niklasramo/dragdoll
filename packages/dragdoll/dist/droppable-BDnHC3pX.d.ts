@@ -1,5 +1,5 @@
 import { Rect } from "./types-CEK9qPqM.js";
-import { Draggable } from "./draggable-B2wfNgol.js";
+import { Draggable } from "./draggable-rDEVLiCd.js";
 import { Emitter, EventListenerId } from "eventti";
 
 //#region src/droppable/droppable.d.ts
@@ -38,4 +38,4 @@ declare class Droppable {
 }
 //#endregion
 export { Droppable, DroppableAcceptId, DroppableEventCallbacks, DroppableEventType, DroppableId, DroppableOptions };
-//# sourceMappingURL=droppable-CqqJsI5E.d.ts.map
+//# sourceMappingURL=droppable-BDnHC3pX.d.ts.map

@@ -257,7 +257,7 @@ dndContext.clearTargets(draggable);
 dndContext.clearTargets();
 ```
 
-Clears cached target information for the specified draggable (or all active draggables when called without an argument), forcing re-evaluation on the next detection. Call this if the draggable's group changes or if any droppable's `accept` criteria changes during a drag. Targets are computed on drag start and cached for performance.
+Clears cached target information for the specified draggable (or all active draggables when called without an argument), forcing re-evaluation on the next detection. Call this if the draggable's [group](/draggable#group) changes or if any droppable's [`accept`](/droppable#accept) criteria changes during a drag. Targets are computed on drag start and cached for performance.
 
 ### destroy
 

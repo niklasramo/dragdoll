@@ -89,6 +89,11 @@ declare const DraggableModifierPhase: {
   readonly End: "end";
 };
 type DraggableModifierPhase = (typeof DraggableModifierPhase)[keyof typeof DraggableModifierPhase];
+declare const DraggableSensorProcessingMode: {
+  readonly Immediate: "immediate";
+  readonly Sampled: "sampled";
+};
+type DraggableSensorProcessingMode = (typeof DraggableSensorProcessingMode)[keyof typeof DraggableSensorProcessingMode];
 declare const DraggableApplyPositionPhase: {
   readonly Start: "start";
   readonly StartAlign: "start-align";
@@ -133,6 +138,7 @@ interface DraggableSettings<S extends Sensor[], E extends S[number]['_events_typ
     draggable: Draggable<S, E>;
     drag: DraggableDrag<S, E>;
   }) => Readonly<Rect> | null;
+  sensorProcessingMode?: DraggableSensorProcessingMode;
   group?: string | number | symbol | null;
   onPrepareStart?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
   onStart?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
@@ -209,5 +215,5 @@ declare class Draggable<S extends Sensor[] = Sensor[], E extends S[number]['_eve
   destroy(): void;
 }
 //#endregion
-export { Draggable, DraggableApplyPositionPhase, DraggableDefaultSettings, DraggableDrag, DraggableDragItem, DraggableEventCallbacks, DraggableEventType, DraggableId, DraggableModifier, DraggableModifierData, DraggableModifierPhase, DraggablePlugin, DraggablePluginMap, DraggableSettings };
-//# sourceMappingURL=draggable-B2wfNgol.d.ts.map
+export { Draggable, DraggableApplyPositionPhase, DraggableDefaultSettings, DraggableDrag, DraggableDragItem, DraggableEventCallbacks, DraggableEventType, DraggableId, DraggableModifier, DraggableModifierData, DraggableModifierPhase, DraggablePlugin, DraggablePluginMap, DraggableSensorProcessingMode, DraggableSettings };
+//# sourceMappingURL=draggable-rDEVLiCd.d.ts.map

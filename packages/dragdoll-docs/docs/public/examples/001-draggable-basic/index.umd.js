@@ -380,7 +380,7 @@ function getOffsetContainer(n$4, t$3 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-CPxcoDV9.js
+//#region ../dragdoll/dist/draggable-DooaWjWu.js
 function s$1(e$3, t$3) {
 	return e$3.isIdentity && t$3.isIdentity ? !0 : e$3.is2D && t$3.is2D ? e$3.a === t$3.a && e$3.b === t$3.b && e$3.c === t$3.c && e$3.d === t$3.d && e$3.e === t$3.e && e$3.f === t$3.f : e$3.m11 === t$3.m11 && e$3.m12 === t$3.m12 && e$3.m13 === t$3.m13 && e$3.m14 === t$3.m14 && e$3.m21 === t$3.m21 && e$3.m22 === t$3.m22 && e$3.m23 === t$3.m23 && e$3.m24 === t$3.m24 && e$3.m31 === t$3.m31 && e$3.m32 === t$3.m32 && e$3.m33 === t$3.m33 && e$3.m34 === t$3.m34 && e$3.m41 === t$3.m41 && e$3.m42 === t$3.m42 && e$3.m43 === t$3.m43 && e$3.m44 === t$3.m44;
 }
@@ -641,33 +641,37 @@ const F = {
 	Move: `move`,
 	End: `end`
 }, I = {
+	Immediate: `immediate`,
+	Sampled: `sampled`
+}, L = {
 	Start: `start`,
 	StartAlign: `start-align`,
 	Move: `move`,
 	Align: `align`,
 	End: `end`,
 	EndAlign: `end-align`
-}, L = {
+}, R = {
 	PrepareStart: `preparestart`,
 	Start: `start`,
 	PrepareMove: `preparemove`,
 	Move: `move`,
 	End: `end`,
 	Destroy: `destroy`
-}, R = {
+}, z = {
 	container: null,
 	startPredicate: () => !0,
 	elements: () => null,
 	frozenStyles: () => null,
 	applyPosition: ({ item: e$3, phase: t$3 }) => {
-		let n$4 = t$3 === I.End || t$3 === I.EndAlign, [r$2, i$3] = e$3.getContainerMatrix(), [a$2, o$2] = e$3.getDragContainerMatrix(), { position: s$2, alignmentOffset: c$2, containerOffset: l$3, elementTransformMatrix: d$1, elementTransformOrigin: f$1, elementOffsetMatrix: p$1 } = e$3, { x: m$1, y: h$1, z: g$1 } = f$1, _$2 = !d$1.isIdentity && (m$1 !== 0 || h$1 !== 0 || g$1 !== 0), v$2 = s$2.x + c$2.x + l$3.x, y$1 = s$2.y + c$2.y + l$3.y;
+		let n$4 = t$3 === L.End || t$3 === L.EndAlign, [r$2, i$3] = e$3.getContainerMatrix(), [a$2, o$2] = e$3.getDragContainerMatrix(), { position: s$2, alignmentOffset: c$2, containerOffset: l$3, elementTransformMatrix: d$1, elementTransformOrigin: f$1, elementOffsetMatrix: p$1 } = e$3, { x: m$1, y: h$1, z: g$1 } = f$1, _$2 = !d$1.isIdentity && (m$1 !== 0 || h$1 !== 0 || g$1 !== 0), v$2 = s$2.x + c$2.x + l$3.x, y$1 = s$2.y + c$2.y + l$3.y;
 		u$1(j), _$2 && (g$1 === 0 ? j.translateSelf(-m$1, -h$1) : j.translateSelf(-m$1, -h$1, -g$1)), n$4 ? i$3.isIdentity || j.multiplySelf(i$3) : o$2.isIdentity || j.multiplySelf(o$2), u$1(M).translateSelf(v$2, y$1), j.multiplySelf(M), r$2.isIdentity || j.multiplySelf(r$2), _$2 && (u$1(M).translateSelf(m$1, h$1, g$1), j.multiplySelf(M)), d$1.isIdentity || j.multiplySelf(d$1), p$1.isIdentity || j.preMultiplySelf(p$1), e$3.element.style.transform = `${j}`;
 	},
 	computeClientRect: ({ drag: e$3 }) => e$3.items[0].clientRect || null,
 	positionModifiers: [],
+	sensorProcessingMode: I.Sampled,
 	group: null
 };
-var z = class {
+var B = class {
 	constructor(e$3, t$3 = {}) {
 		let { id: n$4 = Symbol(),...r$2 } = t$3;
 		this.id = n$4, this.sensors = e$3, this.settings = this._parseSettings(r$2), this.plugins = {}, this.drag = null, this.isDestroyed = !1, this._sensorData = /* @__PURE__ */ new Map(), this._emitter = new v(), this._startPhase = N.None, this._startId = Symbol(), this._moveId = Symbol(), this._alignId = Symbol(), this._onMove = this._onMove.bind(this), this._onScroll = this._onScroll.bind(this), this._onEnd = this._onEnd.bind(this), this._prepareStart = this._prepareStart.bind(this), this._applyStart = this._applyStart.bind(this), this._prepareMove = this._prepareMove.bind(this), this._applyMove = this._applyMove.bind(this), this._prepareAlign = this._prepareAlign.bind(this), this._applyAlign = this._applyAlign.bind(this), this.sensors.forEach((e$4) => {
@@ -681,8 +685,8 @@ var z = class {
 			e$4.on(e.Start, t$4, t$4), e$4.on(e.Move, t$4, t$4), e$4.on(e.Cancel, n$5, n$5), e$4.on(e.End, n$5, n$5), e$4.on(e.Destroy, n$5, n$5);
 		});
 	}
-	_parseSettings(e$3, t$3 = R) {
-		let { container: n$4 = t$3.container, startPredicate: r$2 = t$3.startPredicate, elements: i$3 = t$3.elements, frozenStyles: a$2 = t$3.frozenStyles, positionModifiers: o$2 = t$3.positionModifiers, applyPosition: s$2 = t$3.applyPosition, computeClientRect: c$2 = t$3.computeClientRect, group: l$3 = t$3.group, onPrepareStart: u$3 = t$3.onPrepareStart, onStart: d$1 = t$3.onStart, onPrepareMove: f$1 = t$3.onPrepareMove, onMove: p$1 = t$3.onMove, onEnd: m$1 = t$3.onEnd, onDestroy: h$1 = t$3.onDestroy } = e$3 || {};
+	_parseSettings(e$3, t$3 = z) {
+		let { container: n$4 = t$3.container, startPredicate: r$2 = t$3.startPredicate, elements: i$3 = t$3.elements, frozenStyles: a$2 = t$3.frozenStyles, positionModifiers: o$2 = t$3.positionModifiers, applyPosition: s$2 = t$3.applyPosition, computeClientRect: c$2 = t$3.computeClientRect, sensorProcessingMode: l$3 = t$3.sensorProcessingMode, group: u$3 = t$3.group, onPrepareStart: d$1 = t$3.onPrepareStart, onStart: f$1 = t$3.onStart, onPrepareMove: p$1 = t$3.onPrepareMove, onMove: m$1 = t$3.onMove, onEnd: h$1 = t$3.onEnd, onDestroy: g$1 = t$3.onDestroy } = e$3 || {};
 		return {
 			container: n$4,
 			startPredicate: r$2,
@@ -691,13 +695,14 @@ var z = class {
 			positionModifiers: o$2,
 			applyPosition: s$2,
 			computeClientRect: c$2,
-			group: l$3,
-			onPrepareStart: u$3,
-			onStart: d$1,
-			onPrepareMove: f$1,
-			onMove: p$1,
-			onEnd: m$1,
-			onDestroy: h$1
+			sensorProcessingMode: l$3,
+			group: u$3,
+			onPrepareStart: d$1,
+			onStart: f$1,
+			onPrepareMove: p$1,
+			onMove: m$1,
+			onEnd: h$1,
+			onDestroy: g$1
 		};
 	}
 	_emit(e$3, ...t$3) {
@@ -717,7 +722,7 @@ var z = class {
 				break;
 			}
 			case P.Resolved:
-				this.drag && (this.drag.moveEvent = n$4, n$1.once(t.read, this._prepareMove, this._moveId), n$1.once(t.write, this._applyMove, this._moveId));
+				this.drag && (this.drag.moveEvent = n$4, this.settings.sensorProcessingMode === I.Immediate ? (this._prepareMove(), this._applyMove()) : (n$1.once(t.read, this._prepareMove, this._moveId), n$1.once(t.write, this._applyMove, this._moveId)));
 				break;
 		}
 	}
@@ -735,14 +740,14 @@ var z = class {
 		e$3 && (this._startPhase = N.Prepare, e$3.items = (this.settings.elements({
 			draggable: this,
 			drag: e$3
-		}) || []).map((e$4) => new O(e$4, this)), this._applyModifiers(F.Start, 0, 0), this._emit(L.PrepareStart, e$3.startEvent), this.settings.onPrepareStart?.(e$3, this), this._startPhase = N.FinishPrepare);
+		}) || []).map((e$4) => new O(e$4, this)), this._applyModifiers(F.Start, 0, 0), this._emit(R.PrepareStart, e$3.startEvent), this.settings.onPrepareStart?.(e$3, this), this._startPhase = N.FinishPrepare);
 	}
 	_applyStart() {
 		let e$3 = this.drag;
 		if (e$3) {
 			this._startPhase = N.Apply;
 			for (let t$3 of e$3.items) t$3.dragContainer !== t$3.elementContainer && l$1(t$3.dragContainer, t$3.element), t$3.frozenStyles && Object.assign(t$3.element.style, t$3.frozenStyles), this.settings.applyPosition({
-				phase: I.Start,
+				phase: L.Start,
 				draggable: this,
 				drag: e$3,
 				item: t$3
@@ -756,31 +761,31 @@ var z = class {
 			for (let t$3 of e$3.items) {
 				let { alignmentOffset: n$4 } = t$3;
 				(n$4.x !== 0 || n$4.y !== 0) && this.settings.applyPosition({
-					phase: I.StartAlign,
+					phase: L.StartAlign,
 					draggable: this,
 					drag: e$3,
 					item: t$3
 				});
 			}
-			window.addEventListener(`scroll`, this._onScroll, k), this._emit(L.Start, e$3.startEvent), this.settings.onStart?.(e$3, this), this._startPhase = N.FinishApply;
+			window.addEventListener(`scroll`, this._onScroll, k), this._emit(R.Start, e$3.startEvent), this.settings.onStart?.(e$3, this), this._startPhase = N.FinishApply;
 		}
 	}
 	_prepareMove() {
 		let e$3 = this.drag;
 		if (!e$3) return;
 		let { moveEvent: t$3, prevMoveEvent: n$4 } = e$3;
-		t$3 !== n$4 && (this._applyModifiers(F.Move, t$3.x - n$4.x, t$3.y - n$4.y), this._emit(L.PrepareMove, t$3), !e$3.isEnded && (this.settings.onPrepareMove?.(e$3, this), !e$3.isEnded && (e$3.prevMoveEvent = t$3)));
+		t$3 !== n$4 && (this._applyModifiers(F.Move, t$3.x - n$4.x, t$3.y - n$4.y), this._emit(R.PrepareMove, t$3), !e$3.isEnded && (this.settings.onPrepareMove?.(e$3, this), !e$3.isEnded && (e$3.prevMoveEvent = t$3)));
 	}
 	_applyMove() {
 		let e$3 = this.drag;
 		if (e$3) {
 			for (let t$3 of e$3.items) t$3._moveDiff.x = 0, t$3._moveDiff.y = 0, this.settings.applyPosition({
-				phase: I.Move,
+				phase: L.Move,
 				draggable: this,
 				drag: e$3,
 				item: t$3
 			});
-			this._emit(L.Move, e$3.moveEvent), !e$3.isEnded && this.settings.onMove?.(e$3, this);
+			this._emit(R.Move, e$3.moveEvent), !e$3.isEnded && this.settings.onMove?.(e$3, this);
 		}
 	}
 	_prepareAlign() {
@@ -795,7 +800,7 @@ var z = class {
 	_applyAlign() {
 		let { drag: e$3 } = this;
 		if (e$3) for (let t$3 of e$3.items) t$3._alignDiff.x = 0, t$3._alignDiff.y = 0, this.settings.applyPosition({
-			phase: I.Align,
+			phase: L.Align,
 			draggable: this,
 			drag: e$3,
 			item: t$3
@@ -829,7 +834,7 @@ var z = class {
 		let a$2 = r$2 || i$3.predicateEvent;
 		i$3.predicateState === P.Pending && a$2 && (this._startPhase = N.Init, i$3.predicateState = P.Resolved, i$3.predicateEvent = null, this.drag = new p(n$4, a$2), this._sensorData.forEach((e$3, t$3) => {
 			t$3 !== n$4 && (e$3.predicateState = P.Rejected, e$3.predicateEvent = null);
-		}), n$1.once(t.read, this._prepareStart, this._startId), n$1.once(t.write, this._applyStart, this._startId));
+		}), this.settings.sensorProcessingMode === I.Immediate ? (this._prepareStart(), this._applyStart()) : (n$1.once(t.read, this._prepareStart, this._startId), n$1.once(t.write, this._applyStart, this._startId)));
 	}
 	rejectStartPredicate(e$3) {
 		let t$3 = this._sensorData.get(e$3);
@@ -837,14 +842,13 @@ var z = class {
 	}
 	stop() {
 		let n$4 = this.drag;
-		if (!n$4 || n$4.isEnded) return;
-		let r$2 = this._startPhase;
-		if (r$2 === N.Prepare || r$2 === N.Apply) throw Error(`Cannot stop drag start process at this point`);
-		if (this._startPhase = N.None, n$4.isEnded = !0, n$1.off(t.read, this._startId), n$1.off(t.write, this._startId), n$1.off(t.read, this._moveId), n$1.off(t.write, this._moveId), n$1.off(t.read, this._alignId), n$1.off(t.write, this._alignId), window.removeEventListener(`scroll`, this._onScroll, k), r$2 > N.Init && this._applyModifiers(F.End, 0, 0), r$2 === N.FinishApply) {
+		if (!(!n$4 || n$4.isEnded)) {
+			if (this._startPhase === N.Prepare || this._startPhase === N.Apply) throw Error(`Cannot stop drag start process at this point`);
+			n$4.isEnded = !0, this._startPhase === N.Init && this._prepareStart(), this._startPhase === N.FinishPrepare && this._applyStart(), this._startPhase = N.None, n$1.off(t.read, this._startId), n$1.off(t.write, this._startId), n$1.off(t.read, this._moveId), n$1.off(t.write, this._moveId), n$1.off(t.read, this._alignId), n$1.off(t.write, this._alignId), window.removeEventListener(`scroll`, this._onScroll, k), this._applyModifiers(F.End, 0, 0);
 			for (let e$3 of n$4.items) {
 				if (e$3.elementContainer !== e$3.dragContainer && (l$1(e$3.elementContainer, e$3.element), e$3.alignmentOffset.x = 0, e$3.alignmentOffset.y = 0, e$3.containerOffset.x = 0, e$3.containerOffset.y = 0), e$3.unfrozenStyles) for (let t$3 in e$3.unfrozenStyles) e$3.element.style[t$3] = e$3.unfrozenStyles[t$3] || ``;
 				this.settings.applyPosition({
-					phase: I.End,
+					phase: L.End,
 					draggable: this,
 					drag: n$4,
 					item: e$3
@@ -855,16 +859,16 @@ var z = class {
 				e$3.alignmentOffset.x = d(e$3.clientRect.x - t$3.x, 3), e$3.alignmentOffset.y = d(e$3.clientRect.y - t$3.y, 3);
 			}
 			for (let e$3 of n$4.items) e$3.elementContainer !== e$3.dragContainer && (e$3.alignmentOffset.x !== 0 || e$3.alignmentOffset.y !== 0) && this.settings.applyPosition({
-				phase: I.EndAlign,
+				phase: L.EndAlign,
 				draggable: this,
 				drag: n$4,
 				item: e$3
 			});
-		} else if (r$2 === N.FinishPrepare) for (let e$3 of n$4.items) e$3.clientRect.x -= e$3.position.x, e$3.clientRect.y -= e$3.position.y, e$3.position.x = 0, e$3.position.y = 0, e$3.elementContainer !== e$3.dragContainer && (e$3.alignmentOffset.x = 0, e$3.alignmentOffset.y = 0, e$3.containerOffset.x = 0, e$3.containerOffset.y = 0);
-		this._emit(L.End, n$4.endEvent), this.settings.onEnd?.(n$4, this), this.drag = null;
+			this._emit(R.End, n$4.endEvent), this.settings.onEnd?.(n$4, this), this.drag = null;
+		}
 	}
 	align(n$4 = !1) {
-		this.drag && (n$4 ? (this._prepareAlign(), this._applyAlign()) : (n$1.once(t.read, this._prepareAlign, this._alignId), n$1.once(t.write, this._applyAlign, this._alignId)));
+		this.drag && (n$4 || this.settings.sensorProcessingMode === I.Immediate ? (this._prepareAlign(), this._applyAlign()) : (n$1.once(t.read, this._prepareAlign, this._alignId), n$1.once(t.write, this._applyAlign, this._alignId)));
 	}
 	getClientRect() {
 		let { drag: e$3, settings: t$3 } = this;
@@ -882,7 +886,7 @@ var z = class {
 	destroy() {
 		this.isDestroyed || (this.isDestroyed = !0, this.stop(), this._sensorData.forEach(({ onMove: e$3, onEnd: t$3 }, n$4) => {
 			n$4.off(e.Start, e$3), n$4.off(e.Move, e$3), n$4.off(e.Cancel, t$3), n$4.off(e.End, t$3), n$4.off(e.Destroy, t$3);
-		}), this._sensorData.clear(), this._emit(L.Destroy), this.settings.onDestroy?.(this), this._emitter.off());
+		}), this._sensorData.clear(), this._emit(R.Destroy), this.settings.onDestroy?.(this), this._emitter.off());
 	}
 };
 
@@ -1267,7 +1271,7 @@ var a = class extends i {
 //#region examples/001-draggable-basic/index.ts
 let zIndex = 0;
 [...document.querySelectorAll(".draggable")].forEach((element) => {
-	new z([new u(element), new a(element)], {
+	new B([new u(element), new a(element)], {
 		elements: () => [element],
 		onStart: () => {
 			element.classList.add("dragging");

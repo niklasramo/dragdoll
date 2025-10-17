@@ -7,7 +7,7 @@ A collection of official helper functions for creating custom draggable logic.
 ## `createTouchDelayPredicate`
 
 > [!DANGER]
-> This helper is experimental, unfortunately. Preventing native scroll on touch devices _after_ touchstart event is finicky. It doesn't always work reliably. And it gets especially tricky within iframes. Use with caution and test thoroughly.
+> This helper is experimental, unfortunately. Preventing native scroll on touch devices _after_ touchstart event is finicky. It doesn't always work reliably. And it gets especially tricky within iframes. Consider this helper a best effort, use with caution and test thoroughly.
 
 A custom start predicate for starting drag after a long press on touch devices. Assumes you are using [`PointerSensor`](/pointer-sensor) for the [`Draggable`](/draggable) instance.
 

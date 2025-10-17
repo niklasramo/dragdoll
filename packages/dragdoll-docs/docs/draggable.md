@@ -191,6 +191,33 @@ type positionModifiers = DraggableModifier[];
 
 An array of position modifier functions that should return the position change of a dragged element. Checkout the [Draggable Modifiers](/draggable-modifiers) page for detailed information.
 
+### sensorProcessingMode
+
+```ts
+type DraggableSensorProcessingMode = 'sampled' | 'immediate';
+
+type sensorProcessingMode = DraggableSensorProcessingMode;
+```
+
+Defines how the sensor events should be processed.
+
+- `'sampled'`: Upon receiving a "start" or "move" event from a sensor, the Draggable will schedule a task to process the event during the next tick. If another "start" or "move" event is received before the next tick Draggable will discard the previous event and process the latest event instead during the next tick. This method of "sampling" the sensor events is highly useful to avoid redundant work and layout thrashing, but there may be edge cases where you might want to use the immediate mode instead.
+- `'immediate'`: The sensor events are processed immediately (synchronously) as they are emitted. This might cause performance issues (layout thrashing to be specific) if the sensor events are emitted too frequently.
+
+Default is `'sampled'`.
+
+### group
+
+```ts
+type group = string | number | symbol | null;
+```
+
+An identifier used by [DndContext](/dnd-context) when matching a `Draggable` to [`Droppable`](/droppable) targets.
+
+If a `Droppable` includes this id in its [`accept`](/droppable#accept) array, the `Draggable` will be matched to the `Droppable` and there will be collision detection enabled between the two.
+
+Default is `null`.
+
 ### onPrepareStart
 
 ```ts

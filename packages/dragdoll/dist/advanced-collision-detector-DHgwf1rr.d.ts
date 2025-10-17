@@ -1,7 +1,7 @@
 import { Rect } from "./types-CEK9qPqM.js";
-import { CollisionData, CollisionDetector, DndContext, FastObjectPool } from "./collision-detector-CK9VWaCY.js";
-import { Draggable } from "./draggable-B2wfNgol.js";
-import { Droppable } from "./droppable-CqqJsI5E.js";
+import { CollisionData, CollisionDetector, DndContext, FastObjectPool } from "./collision-detector-D2AQujkR.js";
+import { Draggable } from "./draggable-rDEVLiCd.js";
+import { Droppable } from "./droppable-BDnHC3pX.js";
 
 //#region src/dnd-context/advanced-collision-detector.d.ts
 interface DragState {
@@ -32,4 +32,4 @@ declare class AdvancedCollisionDetector<T extends AdvancedCollisionData = Advanc
 }
 //#endregion
 export { AdvancedCollisionData, AdvancedCollisionDetector };
-//# sourceMappingURL=advanced-collision-detector-CnlSzH-O.d.ts.map
+//# sourceMappingURL=advanced-collision-detector-DHgwf1rr.d.ts.map

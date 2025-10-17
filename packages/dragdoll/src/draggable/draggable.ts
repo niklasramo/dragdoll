@@ -46,6 +46,14 @@ export const DraggableModifierPhase = {
 export type DraggableModifierPhase =
   (typeof DraggableModifierPhase)[keyof typeof DraggableModifierPhase];
 
+export const DraggableSensorProcessingMode = {
+  Immediate: 'immediate',
+  Sampled: 'sampled',
+} as const;
+
+export type DraggableSensorProcessingMode =
+  (typeof DraggableSensorProcessingMode)[keyof typeof DraggableSensorProcessingMode];
+
 export const DraggableApplyPositionPhase = {
   Start: 'start',
   StartAlign: 'start-align',
@@ -98,6 +106,7 @@ export interface DraggableSettings<S extends Sensor[], E extends S[number]['_eve
     draggable: Draggable<S, E>;
     drag: DraggableDrag<S, E>;
   }) => Readonly<Rect> | null;
+  sensorProcessingMode?: DraggableSensorProcessingMode;
   group?: string | number | symbol | null;
   onPrepareStart?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
   onStart?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
@@ -223,6 +232,7 @@ export const DraggableDefaultSettings: DraggableSettings<any, any> = {
     return drag.items[0].clientRect || null;
   },
   positionModifiers: [],
+  sensorProcessingMode: DraggableSensorProcessingMode.Sampled,
   group: null,
 } as const;
 
@@ -311,6 +321,7 @@ export class Draggable<
       positionModifiers = defaults.positionModifiers,
       applyPosition = defaults.applyPosition,
       computeClientRect = defaults.computeClientRect,
+      sensorProcessingMode = defaults.sensorProcessingMode,
       group = defaults.group,
       onPrepareStart = defaults.onPrepareStart,
       onStart = defaults.onStart,
@@ -328,6 +339,7 @@ export class Draggable<
       positionModifiers,
       applyPosition,
       computeClientRect,
+      sensorProcessingMode,
       group,
       onPrepareStart,
       onStart,
@@ -374,8 +386,13 @@ export class Draggable<
         // Move the element if dragging is active.
         if (this.drag) {
           (this.drag as Writeable<typeof this.drag>).moveEvent = e;
-          ticker.once(tickerPhases.read, this._prepareMove, this._moveId);
-          ticker.once(tickerPhases.write, this._applyMove, this._moveId);
+          if (this.settings.sensorProcessingMode === DraggableSensorProcessingMode.Immediate) {
+            this._prepareMove();
+            this._applyMove();
+          } else {
+            ticker.once(tickerPhases.read, this._prepareMove, this._moveId);
+            ticker.once(tickerPhases.write, this._applyMove, this._moveId);
+          }
         }
         break;
       }
@@ -667,7 +684,7 @@ export class Draggable<
     const startEvent = e || sensorData.predicateEvent;
 
     if (sensorData.predicateState === DraggableStartPredicateState.Pending && startEvent) {
-      //  Update start phase.
+      // Update start phase.
       this._startPhase = DragStartPhase.Init;
 
       // Resolve the provided sensor's start predicate.
@@ -684,8 +701,13 @@ export class Draggable<
       });
 
       // Queue drag start.
-      ticker.once(tickerPhases.read, this._prepareStart, this._startId);
-      ticker.once(tickerPhases.write, this._applyStart, this._startId);
+      if (this.settings.sensorProcessingMode === DraggableSensorProcessingMode.Immediate) {
+        this._prepareStart();
+        this._applyStart();
+      } else {
+        ticker.once(tickerPhases.read, this._prepareStart, this._startId);
+        ticker.once(tickerPhases.write, this._applyStart, this._startId);
+      }
     }
   }
 
@@ -701,20 +723,33 @@ export class Draggable<
     const drag = this.drag;
     if (!drag || drag.isEnded) return;
 
-    // Get current start phase.
-    const startPhase = this._startPhase;
-
     // Throw an error if drag is being stopped in the middle of the start
     // prepare or apply process. This is not allowed.
-    if (startPhase === DragStartPhase.Prepare || startPhase === DragStartPhase.Apply) {
+    if (this._startPhase === DragStartPhase.Prepare || this._startPhase === DragStartPhase.Apply) {
       throw new Error('Cannot stop drag start process at this point');
     }
 
-    // Reset drag start phase.
-    this._startPhase = DragStartPhase.None;
-
     // Mark drag process as ended.
     (drag as Writeable<typeof drag>).isEnded = true;
+
+    // If the drag is initiated, but the start preparation process was not
+    // started yet, let's do that now.
+    if (this._startPhase === DragStartPhase.Init) {
+      this._prepareStart();
+    }
+
+    // If the drag is initiated, but the start apply process was not started
+    // yet, let's do that now.
+    if (this._startPhase === DragStartPhase.FinishPrepare) {
+      this._applyStart();
+    }
+
+    // TODO: Should we also apply pending alignment/move callbacks here too?
+    // Might actually make sense, at least the pending alignment callbacks,
+    // unless the end logic handles alignment corrections anyway.
+
+    // Reset drag start phase.
+    this._startPhase = DragStartPhase.None;
 
     // Cancel all queued ticks.
     ticker.off(tickerPhases.read, this._startId);
@@ -727,92 +762,65 @@ export class Draggable<
     // Unbind scroll listener.
     window.removeEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
 
-    // Apply modifiers for the end phase, if needed.
-    if (startPhase > DragStartPhase.Init) {
-      this._applyModifiers(DraggableModifierPhase.End, 0, 0);
+    // Apply modifiers for the end phase.
+    this._applyModifiers(DraggableModifierPhase.End, 0, 0);
+
+    for (const item of drag.items) {
+      // Move elements within the root container if they were moved to a
+      // different container during the drag process. Also reset alignment
+      // and container offsets for those elements.
+      if (item.elementContainer !== item.dragContainer) {
+        moveBefore(item.elementContainer, item.element);
+        item.alignmentOffset.x = 0;
+        item.alignmentOffset.y = 0;
+        item.containerOffset.x = 0;
+        item.containerOffset.y = 0;
+      }
+
+      // Unfreeze element's props if such are provided.
+      if (item.unfrozenStyles) {
+        for (const key in item.unfrozenStyles) {
+          item.element.style[key as keyof CSSProperties] =
+            item.unfrozenStyles[key as keyof CSSProperties] || '';
+        }
+      }
+
+      // Set (maybe) final position after drag.
+      this.settings.applyPosition({
+        phase: DraggableApplyPositionPhase.End,
+        draggable: this,
+        drag,
+        item,
+      });
     }
 
-    // If the drag start process was successfully finished before stopping it,
-    // we need to do quite a bit of cleanup and finalization.
-    if (startPhase === DragStartPhase.FinishApply) {
-      for (const item of drag.items) {
-        // Move elements within the root container if they were moved to a
-        // different container during the drag process. Also reset alignment
-        // and container offsets for those elements.
-        if (item.elementContainer !== item.dragContainer) {
-          moveBefore(item.elementContainer, item.element);
-          item.alignmentOffset.x = 0;
-          item.alignmentOffset.y = 0;
-          item.containerOffset.x = 0;
-          item.containerOffset.y = 0;
-        }
+    // Make sure that all elements that were reparented during the drag process
+    // are actually aligned with the item's cached client rect data. NB: This
+    // procedure causes a reflow, but it's necessary to ensure that the elements
+    // are visually aligned correctly. We do the DOM reading in a separate loop
+    // to avoid layout thrashing more than necessary.
+    for (const item of drag.items) {
+      if (item.elementContainer !== item.dragContainer) {
+        const itemRect = item.element.getBoundingClientRect();
+        // Round the align diff to nearest 3rd decimal to avoid applying it if
+        // the value is so small that it's not visible.
+        item.alignmentOffset.x = roundNumber(item.clientRect.x - itemRect.x, 3);
+        item.alignmentOffset.y = roundNumber(item.clientRect.y - itemRect.y, 3);
+      }
+    }
 
-        // Unfreeze element's props if such are provided.
-        if (item.unfrozenStyles) {
-          for (const key in item.unfrozenStyles) {
-            item.element.style[key as keyof CSSProperties] =
-              item.unfrozenStyles[key as keyof CSSProperties] || '';
-          }
-        }
-
-        // Set (maybe) final position after drag.
+    // Apply final alignment to all the elements that need it.
+    for (const item of drag.items) {
+      if (
+        item.elementContainer !== item.dragContainer &&
+        (item.alignmentOffset.x !== 0 || item.alignmentOffset.y !== 0)
+      ) {
         this.settings.applyPosition({
-          phase: DraggableApplyPositionPhase.End,
+          phase: DraggableApplyPositionPhase.EndAlign,
           draggable: this,
           drag,
           item,
         });
-      }
-
-      // Make sure that all elements that were reparented during the drag process
-      // are actually aligned with the item's cached client rect data. NB: This
-      // procedure causes a reflow, but it's necessary to ensure that the elements
-      // are visually aligned correctly. We do the DOM reading in a separate loop
-      // to avoid layout thrashing more than necessary.
-      for (const item of drag.items) {
-        if (item.elementContainer !== item.dragContainer) {
-          const itemRect = item.element.getBoundingClientRect();
-          // Round the align diff to nearest 3rd decimal to avoid applying it if
-          // the value is so small that it's not visible.
-          item.alignmentOffset.x = roundNumber(item.clientRect.x - itemRect.x, 3);
-          item.alignmentOffset.y = roundNumber(item.clientRect.y - itemRect.y, 3);
-        }
-      }
-
-      // Apply final alignment to all the elements that need it.
-      for (const item of drag.items) {
-        if (
-          item.elementContainer !== item.dragContainer &&
-          (item.alignmentOffset.x !== 0 || item.alignmentOffset.y !== 0)
-        ) {
-          this.settings.applyPosition({
-            phase: DraggableApplyPositionPhase.EndAlign,
-            draggable: this,
-            drag,
-            item,
-          });
-        }
-      }
-    }
-    // In the very special case where the drag start process was stopped after
-    // all the data for items was calculated, but never applied, we need to
-    // only modify the item data a bit for the callback.
-    else if (startPhase === DragStartPhase.FinishPrepare) {
-      for (const item of drag.items) {
-        // Make sure the client rect and position data reflects the reality. As
-        // the item was never moved, we can just reset the position data.
-        item.clientRect.x -= item.position.x;
-        item.clientRect.y -= item.position.y;
-        item.position.x = 0;
-        item.position.y = 0;
-
-        // Reset alignment and container offsets.
-        if (item.elementContainer !== item.dragContainer) {
-          item.alignmentOffset.x = 0;
-          item.alignmentOffset.y = 0;
-          item.containerOffset.x = 0;
-          item.containerOffset.y = 0;
-        }
       }
     }
 
@@ -828,7 +836,7 @@ export class Draggable<
 
   align(instant = false) {
     if (!this.drag) return;
-    if (instant) {
+    if (instant || this.settings.sensorProcessingMode === DraggableSensorProcessingMode.Immediate) {
       this._prepareAlign();
       this._applyAlign();
     } else {

@@ -4136,7 +4136,7 @@ function getOffsetContainer(n$7, t$6 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-CPxcoDV9.js
+//#region ../dragdoll/dist/draggable-DooaWjWu.js
 function s$3(e$5, t$6) {
 	return e$5.isIdentity && t$6.isIdentity ? !0 : e$5.is2D && t$6.is2D ? e$5.a === t$6.a && e$5.b === t$6.b && e$5.c === t$6.c && e$5.d === t$6.d && e$5.e === t$6.e && e$5.f === t$6.f : e$5.m11 === t$6.m11 && e$5.m12 === t$6.m12 && e$5.m13 === t$6.m13 && e$5.m14 === t$6.m14 && e$5.m21 === t$6.m21 && e$5.m22 === t$6.m22 && e$5.m23 === t$6.m23 && e$5.m24 === t$6.m24 && e$5.m31 === t$6.m31 && e$5.m32 === t$6.m32 && e$5.m33 === t$6.m33 && e$5.m34 === t$6.m34 && e$5.m41 === t$6.m41 && e$5.m42 === t$6.m42 && e$5.m43 === t$6.m43 && e$5.m44 === t$6.m44;
 }
@@ -4397,33 +4397,37 @@ const F = {
 	Move: `move`,
 	End: `end`
 }, I = {
+	Immediate: `immediate`,
+	Sampled: `sampled`
+}, L = {
 	Start: `start`,
 	StartAlign: `start-align`,
 	Move: `move`,
 	Align: `align`,
 	End: `end`,
 	EndAlign: `end-align`
-}, L = {
+}, R = {
 	PrepareStart: `preparestart`,
 	Start: `start`,
 	PrepareMove: `preparemove`,
 	Move: `move`,
 	End: `end`,
 	Destroy: `destroy`
-}, R = {
+}, z = {
 	container: null,
 	startPredicate: () => !0,
 	elements: () => null,
 	frozenStyles: () => null,
 	applyPosition: ({ item: e$5, phase: t$6 }) => {
-		let n$7 = t$6 === I.End || t$6 === I.EndAlign, [r$3, i$2] = e$5.getContainerMatrix(), [a$2, o$2] = e$5.getDragContainerMatrix(), { position: s$4, alignmentOffset: c$4, containerOffset: l$5, elementTransformMatrix: d$2, elementTransformOrigin: f$2, elementOffsetMatrix: p$2 } = e$5, { x: m$2, y: h$2, z: g$2 } = f$2, _$3 = !d$2.isIdentity && (m$2 !== 0 || h$2 !== 0 || g$2 !== 0), v$3 = s$4.x + c$4.x + l$5.x, y$2 = s$4.y + c$4.y + l$5.y;
+		let n$7 = t$6 === L.End || t$6 === L.EndAlign, [r$3, i$2] = e$5.getContainerMatrix(), [a$2, o$2] = e$5.getDragContainerMatrix(), { position: s$4, alignmentOffset: c$4, containerOffset: l$5, elementTransformMatrix: d$2, elementTransformOrigin: f$2, elementOffsetMatrix: p$2 } = e$5, { x: m$2, y: h$2, z: g$2 } = f$2, _$3 = !d$2.isIdentity && (m$2 !== 0 || h$2 !== 0 || g$2 !== 0), v$3 = s$4.x + c$4.x + l$5.x, y$2 = s$4.y + c$4.y + l$5.y;
 		u$3(j), _$3 && (g$2 === 0 ? j.translateSelf(-m$2, -h$2) : j.translateSelf(-m$2, -h$2, -g$2)), n$7 ? i$2.isIdentity || j.multiplySelf(i$2) : o$2.isIdentity || j.multiplySelf(o$2), u$3(M).translateSelf(v$3, y$2), j.multiplySelf(M), r$3.isIdentity || j.multiplySelf(r$3), _$3 && (u$3(M).translateSelf(m$2, h$2, g$2), j.multiplySelf(M)), d$2.isIdentity || j.multiplySelf(d$2), p$2.isIdentity || j.preMultiplySelf(p$2), e$5.element.style.transform = `${j}`;
 	},
 	computeClientRect: ({ drag: e$5 }) => e$5.items[0].clientRect || null,
 	positionModifiers: [],
+	sensorProcessingMode: I.Sampled,
 	group: null
 };
-var z = class {
+var B = class {
 	constructor(e$5, t$6 = {}) {
 		let { id: n$7 = Symbol(),...r$3 } = t$6;
 		this.id = n$7, this.sensors = e$5, this.settings = this._parseSettings(r$3), this.plugins = {}, this.drag = null, this.isDestroyed = !1, this._sensorData = /* @__PURE__ */ new Map(), this._emitter = new v$1(), this._startPhase = N.None, this._startId = Symbol(), this._moveId = Symbol(), this._alignId = Symbol(), this._onMove = this._onMove.bind(this), this._onScroll = this._onScroll.bind(this), this._onEnd = this._onEnd.bind(this), this._prepareStart = this._prepareStart.bind(this), this._applyStart = this._applyStart.bind(this), this._prepareMove = this._prepareMove.bind(this), this._applyMove = this._applyMove.bind(this), this._prepareAlign = this._prepareAlign.bind(this), this._applyAlign = this._applyAlign.bind(this), this.sensors.forEach((e$6) => {
@@ -4437,8 +4441,8 @@ var z = class {
 			e$6.on(e$2.Start, t$7, t$7), e$6.on(e$2.Move, t$7, t$7), e$6.on(e$2.Cancel, n$8, n$8), e$6.on(e$2.End, n$8, n$8), e$6.on(e$2.Destroy, n$8, n$8);
 		});
 	}
-	_parseSettings(e$5, t$6 = R) {
-		let { container: n$7 = t$6.container, startPredicate: r$3 = t$6.startPredicate, elements: i$2 = t$6.elements, frozenStyles: a$2 = t$6.frozenStyles, positionModifiers: o$2 = t$6.positionModifiers, applyPosition: s$4 = t$6.applyPosition, computeClientRect: c$4 = t$6.computeClientRect, group: l$5 = t$6.group, onPrepareStart: u$5 = t$6.onPrepareStart, onStart: d$2 = t$6.onStart, onPrepareMove: f$2 = t$6.onPrepareMove, onMove: p$2 = t$6.onMove, onEnd: m$2 = t$6.onEnd, onDestroy: h$2 = t$6.onDestroy } = e$5 || {};
+	_parseSettings(e$5, t$6 = z) {
+		let { container: n$7 = t$6.container, startPredicate: r$3 = t$6.startPredicate, elements: i$2 = t$6.elements, frozenStyles: a$2 = t$6.frozenStyles, positionModifiers: o$2 = t$6.positionModifiers, applyPosition: s$4 = t$6.applyPosition, computeClientRect: c$4 = t$6.computeClientRect, sensorProcessingMode: l$5 = t$6.sensorProcessingMode, group: u$5 = t$6.group, onPrepareStart: d$2 = t$6.onPrepareStart, onStart: f$2 = t$6.onStart, onPrepareMove: p$2 = t$6.onPrepareMove, onMove: m$2 = t$6.onMove, onEnd: h$2 = t$6.onEnd, onDestroy: g$2 = t$6.onDestroy } = e$5 || {};
 		return {
 			container: n$7,
 			startPredicate: r$3,
@@ -4447,13 +4451,14 @@ var z = class {
 			positionModifiers: o$2,
 			applyPosition: s$4,
 			computeClientRect: c$4,
-			group: l$5,
-			onPrepareStart: u$5,
-			onStart: d$2,
-			onPrepareMove: f$2,
-			onMove: p$2,
-			onEnd: m$2,
-			onDestroy: h$2
+			sensorProcessingMode: l$5,
+			group: u$5,
+			onPrepareStart: d$2,
+			onStart: f$2,
+			onPrepareMove: p$2,
+			onMove: m$2,
+			onEnd: h$2,
+			onDestroy: g$2
 		};
 	}
 	_emit(e$5, ...t$6) {
@@ -4473,7 +4478,7 @@ var z = class {
 				break;
 			}
 			case P.Resolved:
-				this.drag && (this.drag.moveEvent = n$7, n$3.once(t$2.read, this._prepareMove, this._moveId), n$3.once(t$2.write, this._applyMove, this._moveId));
+				this.drag && (this.drag.moveEvent = n$7, this.settings.sensorProcessingMode === I.Immediate ? (this._prepareMove(), this._applyMove()) : (n$3.once(t$2.read, this._prepareMove, this._moveId), n$3.once(t$2.write, this._applyMove, this._moveId)));
 				break;
 		}
 	}
@@ -4491,14 +4496,14 @@ var z = class {
 		e$5 && (this._startPhase = N.Prepare, e$5.items = (this.settings.elements({
 			draggable: this,
 			drag: e$5
-		}) || []).map((e$6) => new O(e$6, this)), this._applyModifiers(F.Start, 0, 0), this._emit(L.PrepareStart, e$5.startEvent), this.settings.onPrepareStart?.(e$5, this), this._startPhase = N.FinishPrepare);
+		}) || []).map((e$6) => new O(e$6, this)), this._applyModifiers(F.Start, 0, 0), this._emit(R.PrepareStart, e$5.startEvent), this.settings.onPrepareStart?.(e$5, this), this._startPhase = N.FinishPrepare);
 	}
 	_applyStart() {
 		let e$5 = this.drag;
 		if (e$5) {
 			this._startPhase = N.Apply;
 			for (let t$6 of e$5.items) t$6.dragContainer !== t$6.elementContainer && l$3(t$6.dragContainer, t$6.element), t$6.frozenStyles && Object.assign(t$6.element.style, t$6.frozenStyles), this.settings.applyPosition({
-				phase: I.Start,
+				phase: L.Start,
 				draggable: this,
 				drag: e$5,
 				item: t$6
@@ -4512,31 +4517,31 @@ var z = class {
 			for (let t$6 of e$5.items) {
 				let { alignmentOffset: n$7 } = t$6;
 				(n$7.x !== 0 || n$7.y !== 0) && this.settings.applyPosition({
-					phase: I.StartAlign,
+					phase: L.StartAlign,
 					draggable: this,
 					drag: e$5,
 					item: t$6
 				});
 			}
-			window.addEventListener(`scroll`, this._onScroll, k), this._emit(L.Start, e$5.startEvent), this.settings.onStart?.(e$5, this), this._startPhase = N.FinishApply;
+			window.addEventListener(`scroll`, this._onScroll, k), this._emit(R.Start, e$5.startEvent), this.settings.onStart?.(e$5, this), this._startPhase = N.FinishApply;
 		}
 	}
 	_prepareMove() {
 		let e$5 = this.drag;
 		if (!e$5) return;
 		let { moveEvent: t$6, prevMoveEvent: n$7 } = e$5;
-		t$6 !== n$7 && (this._applyModifiers(F.Move, t$6.x - n$7.x, t$6.y - n$7.y), this._emit(L.PrepareMove, t$6), !e$5.isEnded && (this.settings.onPrepareMove?.(e$5, this), !e$5.isEnded && (e$5.prevMoveEvent = t$6)));
+		t$6 !== n$7 && (this._applyModifiers(F.Move, t$6.x - n$7.x, t$6.y - n$7.y), this._emit(R.PrepareMove, t$6), !e$5.isEnded && (this.settings.onPrepareMove?.(e$5, this), !e$5.isEnded && (e$5.prevMoveEvent = t$6)));
 	}
 	_applyMove() {
 		let e$5 = this.drag;
 		if (e$5) {
 			for (let t$6 of e$5.items) t$6._moveDiff.x = 0, t$6._moveDiff.y = 0, this.settings.applyPosition({
-				phase: I.Move,
+				phase: L.Move,
 				draggable: this,
 				drag: e$5,
 				item: t$6
 			});
-			this._emit(L.Move, e$5.moveEvent), !e$5.isEnded && this.settings.onMove?.(e$5, this);
+			this._emit(R.Move, e$5.moveEvent), !e$5.isEnded && this.settings.onMove?.(e$5, this);
 		}
 	}
 	_prepareAlign() {
@@ -4551,7 +4556,7 @@ var z = class {
 	_applyAlign() {
 		let { drag: e$5 } = this;
 		if (e$5) for (let t$6 of e$5.items) t$6._alignDiff.x = 0, t$6._alignDiff.y = 0, this.settings.applyPosition({
-			phase: I.Align,
+			phase: L.Align,
 			draggable: this,
 			drag: e$5,
 			item: t$6
@@ -4585,7 +4590,7 @@ var z = class {
 		let a$2 = r$3 || i$2.predicateEvent;
 		i$2.predicateState === P.Pending && a$2 && (this._startPhase = N.Init, i$2.predicateState = P.Resolved, i$2.predicateEvent = null, this.drag = new p$1(n$7, a$2), this._sensorData.forEach((e$5, t$6) => {
 			t$6 !== n$7 && (e$5.predicateState = P.Rejected, e$5.predicateEvent = null);
-		}), n$3.once(t$2.read, this._prepareStart, this._startId), n$3.once(t$2.write, this._applyStart, this._startId));
+		}), this.settings.sensorProcessingMode === I.Immediate ? (this._prepareStart(), this._applyStart()) : (n$3.once(t$2.read, this._prepareStart, this._startId), n$3.once(t$2.write, this._applyStart, this._startId)));
 	}
 	rejectStartPredicate(e$5) {
 		let t$6 = this._sensorData.get(e$5);
@@ -4593,14 +4598,13 @@ var z = class {
 	}
 	stop() {
 		let n$7 = this.drag;
-		if (!n$7 || n$7.isEnded) return;
-		let r$3 = this._startPhase;
-		if (r$3 === N.Prepare || r$3 === N.Apply) throw Error(`Cannot stop drag start process at this point`);
-		if (this._startPhase = N.None, n$7.isEnded = !0, n$3.off(t$2.read, this._startId), n$3.off(t$2.write, this._startId), n$3.off(t$2.read, this._moveId), n$3.off(t$2.write, this._moveId), n$3.off(t$2.read, this._alignId), n$3.off(t$2.write, this._alignId), window.removeEventListener(`scroll`, this._onScroll, k), r$3 > N.Init && this._applyModifiers(F.End, 0, 0), r$3 === N.FinishApply) {
+		if (!(!n$7 || n$7.isEnded)) {
+			if (this._startPhase === N.Prepare || this._startPhase === N.Apply) throw Error(`Cannot stop drag start process at this point`);
+			n$7.isEnded = !0, this._startPhase === N.Init && this._prepareStart(), this._startPhase === N.FinishPrepare && this._applyStart(), this._startPhase = N.None, n$3.off(t$2.read, this._startId), n$3.off(t$2.write, this._startId), n$3.off(t$2.read, this._moveId), n$3.off(t$2.write, this._moveId), n$3.off(t$2.read, this._alignId), n$3.off(t$2.write, this._alignId), window.removeEventListener(`scroll`, this._onScroll, k), this._applyModifiers(F.End, 0, 0);
 			for (let e$5 of n$7.items) {
 				if (e$5.elementContainer !== e$5.dragContainer && (l$3(e$5.elementContainer, e$5.element), e$5.alignmentOffset.x = 0, e$5.alignmentOffset.y = 0, e$5.containerOffset.x = 0, e$5.containerOffset.y = 0), e$5.unfrozenStyles) for (let t$6 in e$5.unfrozenStyles) e$5.element.style[t$6] = e$5.unfrozenStyles[t$6] || ``;
 				this.settings.applyPosition({
-					phase: I.End,
+					phase: L.End,
 					draggable: this,
 					drag: n$7,
 					item: e$5
@@ -4611,16 +4615,16 @@ var z = class {
 				e$5.alignmentOffset.x = d$1(e$5.clientRect.x - t$6.x, 3), e$5.alignmentOffset.y = d$1(e$5.clientRect.y - t$6.y, 3);
 			}
 			for (let e$5 of n$7.items) e$5.elementContainer !== e$5.dragContainer && (e$5.alignmentOffset.x !== 0 || e$5.alignmentOffset.y !== 0) && this.settings.applyPosition({
-				phase: I.EndAlign,
+				phase: L.EndAlign,
 				draggable: this,
 				drag: n$7,
 				item: e$5
 			});
-		} else if (r$3 === N.FinishPrepare) for (let e$5 of n$7.items) e$5.clientRect.x -= e$5.position.x, e$5.clientRect.y -= e$5.position.y, e$5.position.x = 0, e$5.position.y = 0, e$5.elementContainer !== e$5.dragContainer && (e$5.alignmentOffset.x = 0, e$5.alignmentOffset.y = 0, e$5.containerOffset.x = 0, e$5.containerOffset.y = 0);
-		this._emit(L.End, n$7.endEvent), this.settings.onEnd?.(n$7, this), this.drag = null;
+			this._emit(R.End, n$7.endEvent), this.settings.onEnd?.(n$7, this), this.drag = null;
+		}
 	}
 	align(n$7 = !1) {
-		this.drag && (n$7 ? (this._prepareAlign(), this._applyAlign()) : (n$3.once(t$2.read, this._prepareAlign, this._alignId), n$3.once(t$2.write, this._applyAlign, this._alignId)));
+		this.drag && (n$7 || this.settings.sensorProcessingMode === I.Immediate ? (this._prepareAlign(), this._applyAlign()) : (n$3.once(t$2.read, this._prepareAlign, this._alignId), n$3.once(t$2.write, this._applyAlign, this._alignId)));
 	}
 	getClientRect() {
 		let { drag: e$5, settings: t$6 } = this;
@@ -4638,7 +4642,7 @@ var z = class {
 	destroy() {
 		this.isDestroyed || (this.isDestroyed = !0, this.stop(), this._sensorData.forEach(({ onMove: e$5, onEnd: t$6 }, n$7) => {
 			n$7.off(e$2.Start, e$5), n$7.off(e$2.Move, e$5), n$7.off(e$2.Cancel, t$6), n$7.off(e$2.End, t$6), n$7.off(e$2.Destroy, t$6);
-		}), this._sensorData.clear(), this._emit(L.Destroy), this.settings.onDestroy?.(this), this._emitter.off());
+		}), this._sensorData.clear(), this._emit(R.Destroy), this.settings.onDestroy?.(this), this._emitter.off());
 	}
 };
 
@@ -4823,7 +4827,7 @@ function methodAlign() {
 		it("should align the element visually", async () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			let rect = el.getBoundingClientRect();
 			assert.equal(rect.x, 0);
 			assert.equal(rect.y, 0);
@@ -4870,7 +4874,7 @@ function methodDestroy$2() {
 		it("should destroy the draggable instance", async () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			let destroyEventCount = 0;
 			draggable.on("destroy", () => {
 				++destroyEventCount;
@@ -4901,7 +4905,7 @@ function methodOff$2() {
 		it("should remove an event listener based on id", async () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			let result = "";
 			const idA = draggable.on("start", () => {
 				result += "a";
@@ -4928,7 +4932,7 @@ function methodOn$2() {
 		it("should return a unique symbol by default", () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			const idA = draggable.on("start", () => {});
 			const idB = draggable.on("start", () => {});
 			assert.equal(typeof idA, "symbol");
@@ -4940,7 +4944,7 @@ function methodOn$2() {
 		it("should allow duplicate event listeners", async () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			let counter = 0;
 			const listener = () => {
 				++counter;
@@ -4958,7 +4962,7 @@ function methodOn$2() {
 		it("should remove the existing listener and add the new one if the same id is used", async () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			let msg = "";
 			draggable.on("start", () => void (msg += "a"), 1);
 			draggable.on("start", () => void (msg += "b"), 2);
@@ -4974,7 +4978,7 @@ function methodOn$2() {
 		it("should allow defining a custom id (string/symbol/number) for the event listener via third argument", () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			const idA = Symbol();
 			assert.equal(draggable.on("start", () => {}, idA), idA);
 			const idB = 1;
@@ -4996,7 +5000,7 @@ function methodStop() {
 			const el = createTestElement();
 			const elRect = el.getBoundingClientRect();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [el],
 				onEnd: (drag) => {
 					onEndCalled = true;
@@ -5025,7 +5029,7 @@ function methodStop() {
 			const el = createTestElement();
 			const elRect = el.getBoundingClientRect();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [el],
 				onEnd: (drag) => {
 					onEndCalled = true;
@@ -5059,7 +5063,7 @@ function methodUpdateSettings$2() {
 		it("should update the container setting", () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			const newContainer = createTestElement();
 			draggable.updateSettings({ container: newContainer });
 			assert.equal(draggable.settings.container, newContainer);
@@ -5071,7 +5075,7 @@ function methodUpdateSettings$2() {
 		it("should update the startPredicate setting", () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			const newStartPredicate = () => false;
 			draggable.updateSettings({ startPredicate: newStartPredicate });
 			assert.equal(draggable.settings.startPredicate, newStartPredicate);
@@ -5083,7 +5087,7 @@ function methodUpdateSettings$2() {
 			const elA = createTestElement();
 			const elB = createTestElement();
 			const keyboardSensor = new r(elA, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [elA] });
+			const draggable = new B([keyboardSensor], { elements: () => [elA] });
 			const newElements = () => [elB];
 			draggable.updateSettings({ elements: newElements });
 			assert.equal(draggable.settings.elements, newElements);
@@ -5095,7 +5099,7 @@ function methodUpdateSettings$2() {
 		it("should update the frozenStyles setting", () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			const newFrozenStyles = () => ({ position: "absolute" });
 			draggable.updateSettings({ frozenStyles: newFrozenStyles });
 			assert.equal(draggable.settings.frozenStyles, newFrozenStyles);
@@ -5106,7 +5110,7 @@ function methodUpdateSettings$2() {
 		it("should update the positionModifiers setting", () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			const newPositionModifiers = [(change) => ({
 				x: change.x + 10,
 				y: change.y + 10
@@ -5120,7 +5124,7 @@ function methodUpdateSettings$2() {
 		it("should update the applyPosition setting", () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			const newApplyPosition = () => {};
 			draggable.updateSettings({ applyPosition: newApplyPosition });
 			assert.equal(draggable.settings.applyPosition, newApplyPosition);
@@ -5131,7 +5135,7 @@ function methodUpdateSettings$2() {
 		it("should update the onPrepareStart setting", () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			const newOnPrepareStart = () => {};
 			draggable.updateSettings({ onPrepareStart: newOnPrepareStart });
 			assert.equal(draggable.settings.onPrepareStart, newOnPrepareStart);
@@ -5142,7 +5146,7 @@ function methodUpdateSettings$2() {
 		it("should update the onStart setting", () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			const newOnStart = () => {};
 			draggable.updateSettings({ onStart: newOnStart });
 			assert.equal(draggable.settings.onStart, newOnStart);
@@ -5153,7 +5157,7 @@ function methodUpdateSettings$2() {
 		it("should update the onPrepareMove setting", () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			const newOnPrepareMove = () => {};
 			draggable.updateSettings({ onPrepareMove: newOnPrepareMove });
 			assert.equal(draggable.settings.onPrepareMove, newOnPrepareMove);
@@ -5164,7 +5168,7 @@ function methodUpdateSettings$2() {
 		it("should update the onMove setting", () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			const newOnMove = () => {};
 			draggable.updateSettings({ onMove: newOnMove });
 			assert.equal(draggable.settings.onMove, newOnMove);
@@ -5175,7 +5179,7 @@ function methodUpdateSettings$2() {
 		it("should update the onEnd setting", () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			const newOnEnd = () => {};
 			draggable.updateSettings({ onEnd: newOnEnd });
 			assert.equal(draggable.settings.onEnd, newOnEnd);
@@ -5186,7 +5190,7 @@ function methodUpdateSettings$2() {
 		it("should update the onDestroy setting", () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			const newOnDestroy = () => {};
 			draggable.updateSettings({ onDestroy: newOnDestroy });
 			assert.equal(draggable.settings.onDestroy, newOnDestroy);
@@ -5204,7 +5208,7 @@ function methodUse() {
 		it("should register a plugin", () => {
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			function testPlugin() {
 				return (_draggable) => {
 					const pluginInstance = {
@@ -5249,7 +5253,7 @@ function optionApplyPosition() {
 			let expectedPhase = "";
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [el],
 				applyPosition: (args) => {
 					++callCount;
@@ -5288,7 +5292,7 @@ function optionCallbacks() {
 			let currentKeyboardEvent = null;
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [el],
 				onPrepareStart(...args) {
 					assert.equal(args.length, 2);
@@ -5401,7 +5405,7 @@ function optionContainer() {
 			const container = createTestElement();
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				container,
 				elements: () => [el]
 			});
@@ -5443,7 +5447,7 @@ function optionContainer() {
 					transform: "translate(-1px, -5px)"
 				});
 				const keyboardSensor = new r(el, { moveDistance: 1 });
-				const draggable = new z([keyboardSensor], {
+				const draggable = new B([keyboardSensor], {
 					container,
 					elements: () => [el]
 				});
@@ -5515,7 +5519,7 @@ function optionContainer() {
 				transformOrigin: "30px 35px"
 			});
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [el],
 				container: dragContainer1
 			});
@@ -5564,7 +5568,7 @@ function optionElements() {
 			const elB = createTestElement();
 			const elC = createTestElement();
 			const keyboardSensor = new r(elA, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [elB, elC] });
+			const draggable = new B([keyboardSensor], { elements: () => [elB, elC] });
 			focusElement(elA);
 			document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
 			document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
@@ -5595,7 +5599,7 @@ function optionFrozenStyles() {
 			let callCount = 0;
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [el],
 				frozenStyles: (args) => {
 					++callCount;
@@ -5624,7 +5628,7 @@ function optionFrozenStyles() {
 			const container = createTestElement();
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				container,
 				elements: () => [el],
 				frozenStyles: () => {
@@ -5666,7 +5670,7 @@ function optionFrozenStyles() {
 			const container = createTestElement();
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				container,
 				elements: () => [el],
 				frozenStyles: () => {
@@ -5713,7 +5717,7 @@ function optionPositionModifiers() {
 			};
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [el],
 				positionModifiers: [(position, args) => {
 					assert.equal(args.draggable, draggable);
@@ -5780,7 +5784,7 @@ function optionStartPredicate$2() {
 			let callCount = 0;
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [el],
 				startPredicate: () => {
 					++callCount;
@@ -5813,7 +5817,7 @@ function optionStartPredicate$2() {
 			let keyboardEvent = null;
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [el],
 				startPredicate: (args) => {
 					++callCount;
@@ -5844,7 +5848,7 @@ function optionStartPredicate$2() {
 			let callCount = 0;
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [el],
 				startPredicate: () => {
 					++callCount;
@@ -5871,7 +5875,7 @@ function optionStartPredicate$2() {
 			let callCount = 0;
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [el],
 				startPredicate: () => {
 					++callCount;
@@ -5907,7 +5911,7 @@ function optionStartPredicate$2() {
 			let callCount = 0;
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [el],
 				startPredicate: () => {
 					++callCount;
@@ -5964,7 +5968,7 @@ function events$3() {
 			let currentKeyboardEvent = null;
 			const el = createTestElement();
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			draggable.on("preparestart", (...args) => {
 				assert.equal(args.length, 1);
 				assert.equal(args[0].type, "start");
@@ -6330,7 +6334,7 @@ function misc$1() {
 			const el = createTestElement();
 			const pointerSensor = new u$2(el, { sourceEvents: "mouse" });
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([pointerSensor, keyboardSensor], { elements: () => [el] });
+			const draggable = new B([pointerSensor, keyboardSensor], { elements: () => [el] });
 			let rect = el.getBoundingClientRect();
 			assert.equal(rect.x, 0);
 			assert.equal(rect.y, 0);
@@ -6392,7 +6396,7 @@ function misc$1() {
 				transformOrigin: "15px 20px"
 			});
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			container1.appendChild(container2);
 			container2.appendChild(container3);
 			container3.appendChild(el);
@@ -6442,7 +6446,7 @@ function misc$1() {
 				transformOrigin: "15px 20px"
 			});
 			const keyboardSensor = new r(el, { moveDistance: 1 });
-			const draggable = new z([keyboardSensor], { elements: () => [el] });
+			const draggable = new B([keyboardSensor], { elements: () => [el] });
 			container1.appendChild(container2);
 			container2.appendChild(container3);
 			container3.appendChild(el);
@@ -8603,7 +8607,7 @@ var n = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/dnd-context-8vlFXUrJ.js
+//#region ../dragdoll/dist/dnd-context-Dtnycqos.js
 var s$1 = function(e$5) {
 	return e$5[e$5.Idle = 0] = `Idle`, e$5[e$5.Computing = 1] = `Computing`, e$5[e$5.Computed = 2] = `Computed`, e$5[e$5.Emitting = 3] = `Emitting`, e$5;
 }(s$1 || {});
@@ -8805,17 +8809,17 @@ var u = class {
 	addDraggables(e$5) {
 		if (this.isDestroyed) return;
 		let t$6 = /* @__PURE__ */ new Set();
-		for (let n$7 of e$5) this.draggables.has(n$7.id) || (t$6.add(n$7), this.draggables.set(n$7.id, n$7), n$7.on(L.PrepareStart, () => {
+		for (let n$7 of e$5) this.draggables.has(n$7.id) || (t$6.add(n$7), this.draggables.set(n$7.id, n$7), n$7.on(R.PrepareStart, () => {
 			this._onDragPrepareStart(n$7);
-		}, this._listenerId), n$7.on(L.Start, () => {
+		}, this._listenerId), n$7.on(R.Start, () => {
 			this._onDragStart(n$7);
-		}, this._listenerId), n$7.on(L.PrepareMove, () => {
+		}, this._listenerId), n$7.on(R.PrepareMove, () => {
 			this._onDragPrepareMove(n$7);
-		}, this._listenerId), n$7.on(L.Move, () => {
+		}, this._listenerId), n$7.on(R.Move, () => {
 			this._onDragMove(n$7);
-		}, this._listenerId), n$7.on(L.End, (e$6) => {
+		}, this._listenerId), n$7.on(R.End, (e$6) => {
 			e$6?.type === e$2.End ? this._onDragEnd(n$7) : e$6?.type === e$2.Cancel && this._onDragCancel(n$7);
-		}, this._listenerId), n$7.on(L.Destroy, () => {
+		}, this._listenerId), n$7.on(R.Destroy, () => {
 			this._onDraggableDestroy(n$7);
 		}, this._listenerId));
 		if (t$6.size) {
@@ -8829,7 +8833,7 @@ var u = class {
 	removeDraggables(e$5) {
 		if (this.isDestroyed) return;
 		let t$6 = /* @__PURE__ */ new Set();
-		for (let n$7 of e$5) this.draggables.has(n$7.id) && (t$6.add(n$7), this.draggables.delete(n$7.id), n$7.off(L.PrepareStart, this._listenerId), n$7.off(L.Start, this._listenerId), n$7.off(L.PrepareMove, this._listenerId), n$7.off(L.Move, this._listenerId), n$7.off(L.End, this._listenerId), n$7.off(L.Destroy, this._listenerId));
+		for (let n$7 of e$5) this.draggables.has(n$7.id) && (t$6.add(n$7), this.draggables.delete(n$7.id), n$7.off(R.PrepareStart, this._listenerId), n$7.off(R.Start, this._listenerId), n$7.off(R.PrepareMove, this._listenerId), n$7.off(R.Move, this._listenerId), n$7.off(R.End, this._listenerId), n$7.off(R.Destroy, this._listenerId));
 		for (let e$6 of t$6) this._stopDrag(e$6, !0);
 		this._emitter.listenerCount(l$1.RemoveDraggables) && this._emitter.emit(l$1.RemoveDraggables, { draggables: t$6 });
 	}
@@ -8854,7 +8858,7 @@ var u = class {
 	destroy() {
 		if (this.isDestroyed) return;
 		this.isDestroyed = !0, this.draggables.forEach((e$6) => {
-			e$6.off(L.PrepareStart, this._listenerId), e$6.off(L.Start, this._listenerId), e$6.off(L.PrepareMove, this._listenerId), e$6.off(L.Move, this._listenerId), e$6.off(L.End, this._listenerId), e$6.off(L.Destroy, this._listenerId);
+			e$6.off(R.PrepareStart, this._listenerId), e$6.off(R.Start, this._listenerId), e$6.off(R.PrepareMove, this._listenerId), e$6.off(R.Move, this._listenerId), e$6.off(R.End, this._listenerId), e$6.off(R.Destroy, this._listenerId);
 		}), this.droppables.forEach((e$6) => {
 			e$6.off(t$3.Destroy, this._listenerId);
 		});
@@ -9167,7 +9171,7 @@ function advancedCollisionDetection() {
 				containerElement.appendChild(draggableElement);
 				containerElement.appendChild(droppableElement);
 				const keyboard = new r(draggableElement);
-				const draggable = new z([keyboard], {
+				const draggable = new B([keyboard], {
 					elements: () => [draggableElement],
 					group: "g"
 				});
@@ -9230,7 +9234,7 @@ function advancedCollisionDetection() {
 				});
 				containerElement.appendChild(droppableElement);
 				const keyboard = new r(draggableElement, { moveDistance: 50 });
-				const draggable = new z([keyboard], {
+				const draggable = new B([keyboard], {
 					elements: () => [draggableElement],
 					group: "g"
 				});
@@ -9296,7 +9300,7 @@ function advancedCollisionDetection() {
 				containerElement.appendChild(draggableElement);
 				containerElement.appendChild(droppableElement);
 				const keyboard = new r(draggableElement, { moveDistance: 50 });
-				const draggable = new z([keyboard], {
+				const draggable = new B([keyboard], {
 					elements: () => [draggableElement],
 					group: "g"
 				});
@@ -9359,7 +9363,7 @@ function collisionDetection() {
 				height: "50px"
 			});
 			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "test"
 			});
@@ -9408,7 +9412,7 @@ function collisionDetection() {
 				height: "50px"
 			});
 			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "test"
 			});
@@ -9449,7 +9453,7 @@ function collisionDetection() {
 				height: "50px"
 			});
 			const keyboardSensor = new r(dragElement, { moveDistance: 70 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "test"
 			});
@@ -9510,7 +9514,7 @@ function collisionDetection() {
 				height: "50px"
 			});
 			const keyboardSensor = new r(dragElement, { moveDistance: 60 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "test"
 			});
@@ -9566,7 +9570,7 @@ function collisionDetection() {
 				height: "50px"
 			});
 			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "test"
 			});
@@ -9605,7 +9609,7 @@ function collisionDetection() {
 				height: "50px"
 			});
 			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "test"
 			});
@@ -9662,7 +9666,7 @@ function collisionDetection() {
 				height: "50px"
 			});
 			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "test"
 			});
@@ -9705,7 +9709,7 @@ function collisionDetection() {
 				height: "50px"
 			});
 			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "test"
 			});
@@ -9778,7 +9782,7 @@ function droppables() {
 				height: "50px"
 			});
 			const keyboardSensor = new r(dragElement, { moveDistance: 70 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "valid-group"
 			});
@@ -9821,7 +9825,7 @@ function droppables() {
 				height: "50px"
 			});
 			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "invalid-group"
 			});
@@ -9857,7 +9861,7 @@ function droppables() {
 				height: "50px"
 			});
 			const keyboardSensor = new r(dragElement, { moveDistance: 70 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "test-group"
 			});
@@ -9904,7 +9908,7 @@ function droppables() {
 				height: "50px"
 			});
 			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "test-group"
 			});
@@ -9936,7 +9940,7 @@ function droppables() {
 				height: "50px"
 			});
 			const keyboardSensor = new r(element, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [element],
 				group: "test"
 			});
@@ -10019,7 +10023,7 @@ function droppables() {
 				height: "50px"
 			});
 			const keyboardSensor = new r(dragElement, { moveDistance: 70 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "test"
 			});
@@ -10097,7 +10101,7 @@ function droppables() {
 				height: "50px"
 			});
 			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "test"
 			});
@@ -10151,7 +10155,7 @@ function events() {
 				top: "0px"
 			});
 			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "test"
 			});
@@ -10196,7 +10200,7 @@ function events() {
 				top: "0px"
 			});
 			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "test"
 			});
@@ -10236,7 +10240,7 @@ function events() {
 				height: "50px"
 			});
 			const keyboardSensor = new r(dragElement, { moveDistance: 101 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "test"
 			});
@@ -10292,7 +10296,7 @@ function events() {
 				height: "50px"
 			});
 			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "test"
 			});
@@ -10321,7 +10325,7 @@ function events() {
 			const events$5 = [];
 			const dragElement = createTestElement();
 			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "test"
 			});
@@ -10388,7 +10392,7 @@ function events() {
 			const events$5 = [];
 			const dragElement = createTestElement();
 			const keyboardSensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([keyboardSensor], {
+			const draggable = new B([keyboardSensor], {
 				elements: () => [dragElement],
 				group: "test"
 			});
@@ -10441,7 +10445,7 @@ function events() {
 				height: "40px"
 			});
 			const sensor = new r(dragEl, { moveDistance: 60 });
-			const draggable = new z([sensor], {
+			const draggable = new B([sensor], {
 				elements: () => [dragEl],
 				group: "g"
 			});
@@ -10482,7 +10486,7 @@ function events() {
 				height: "40px"
 			});
 			const sensor = new r(dragEl, { moveDistance: 10 });
-			const draggable = new z([sensor], {
+			const draggable = new B([sensor], {
 				elements: () => [dragEl],
 				group: "g"
 			});
@@ -10529,7 +10533,7 @@ function events() {
 			});
 			let accepts = false;
 			const sensor = new r(dragEl, { moveDistance: 10 });
-			const draggable = new z([sensor], {
+			const draggable = new B([sensor], {
 				elements: () => [dragEl],
 				group: "g"
 			});
@@ -10567,7 +10571,7 @@ function events() {
 				height: "40px"
 			});
 			const sensor = new r(dragEl, { moveDistance: 10 });
-			const draggable = new z([sensor], {
+			const draggable = new B([sensor], {
 				elements: () => [dragEl],
 				group: "g"
 			});
@@ -10611,7 +10615,7 @@ function events() {
 				height: "40px"
 			});
 			const sensor = new r(dragEl, { moveDistance: 10 });
-			const draggable = new z([sensor], {
+			const draggable = new B([sensor], {
 				elements: () => [dragEl],
 				group: "g"
 			});
@@ -10680,7 +10684,7 @@ function methods() {
 				height: "40px"
 			});
 			const sensor = new r(dragElement, { moveDistance: 10 });
-			const draggable = new z([sensor], {
+			const draggable = new B([sensor], {
 				elements: () => [dragElement],
 				group: "g"
 			});
@@ -10715,7 +10719,7 @@ function methods() {
 				height: "40px"
 			});
 			const sensor = new r(dragElement, { moveDistance: 1 });
-			const draggable = new z([sensor], {
+			const draggable = new B([sensor], {
 				elements: () => [dragElement],
 				group: "g"
 			});
@@ -10766,11 +10770,11 @@ function methods() {
 			});
 			const s1 = new r(dragEl1, { moveDistance: 1 });
 			const s2 = new r(dragEl2, { moveDistance: 1 });
-			const dr1 = new z([s1], {
+			const dr1 = new B([s1], {
 				elements: () => [dragEl1],
 				group: "g"
 			});
-			const dr2 = new z([s2], {
+			const dr2 = new B([s2], {
 				elements: () => [dragEl2],
 				group: "g"
 			});
@@ -10836,7 +10840,7 @@ function methods() {
 				height: "40px"
 			});
 			const sensor = new r(el, { moveDistance: 10 });
-			const draggable = new z([sensor], {
+			const draggable = new B([sensor], {
 				elements: () => [el],
 				group: "g"
 			});
@@ -10856,7 +10860,7 @@ function methods() {
 			const dragEl = createTestElement();
 			const dropEl = createTestElement();
 			const sensor = new r(dragEl, { moveDistance: 10 });
-			const draggable = new z([sensor], {
+			const draggable = new B([sensor], {
 				elements: () => [dragEl],
 				group: "g"
 			});
