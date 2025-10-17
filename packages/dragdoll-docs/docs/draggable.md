@@ -480,3 +480,76 @@ draggable.destroy();
 ```
 
 Destroy the draggable. Disposes all allocated memory and removes all bound event listeners.
+
+## Events
+
+The callbacks receive the sensor event that triggered the Draggable event. See the [Sensor](/sensor) docs for the exact event shapes.
+
+### preparestart
+
+```ts
+// Type
+type preparestart = (event: SensorStartEvent | SensorMoveEvent) => void;
+```
+
+Emitted during the drag start preparation phase, after items are created and start-phase modifiers are applied, but before any DOM writes (container reparenting, frozen styles, initial position application).
+
+- **Event Data**:
+  - `event` — Sensor event that resolved the start predicate (`'start'` or `'move'`)
+
+### start
+
+```ts
+// Type
+type start = (event: SensorStartEvent | SensorMoveEvent) => void;
+```
+
+Emitted when the drag start apply phase completes (after potential reparenting, frozen styles, initial position application, and scroll listener binding).
+
+- **Event Data**:
+  - `event` — Sensor event that initiated the drag (`'start'` or `'move'`)
+
+### preparemove
+
+```ts
+// Type
+type preparemove = (event: SensorMoveEvent) => void;
+```
+
+Emitted each time a new move is processed during the read/prepare phase, after move-phase modifiers are applied and before DOM writes. Use this to compute state that depends on the new position but does not write to the DOM.
+
+- **Event Data**:
+  - `event` — Sensor move event
+
+### move
+
+```ts
+// Type
+type move = (event: SensorMoveEvent) => void;
+```
+
+Emitted after the move apply phase when the element positions have been applied.
+
+- **Event Data**:
+  - `event` — Sensor move event
+
+### end
+
+```ts
+// Type
+type end = (event: SensorEndEvent | SensorCancelEvent | SensorDestroyEvent | null) => void;
+```
+
+Emitted after the drag end procedure completes (end-phase modifiers, potential reparenting back, unfreezing, final alignment and position application). The argument may be `null` if the drag was stopped programmatically without a sensor event.
+
+- **Event Data**:
+  - `event` — Sensor end/cancel/destroy event, or `null`
+
+### destroy
+
+```ts
+// Type
+type destroy = () => void;
+```
+
+Emitted when the Draggable instance is destroyed via [`destroy`](#destroy) method.
