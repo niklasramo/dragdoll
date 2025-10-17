@@ -4,6 +4,7 @@ import { optionContainer } from './container.js';
 import { optionElements } from './elements.js';
 import { optionFrozenStyles } from './frozen-styles.js';
 import { optionPositionModifiers } from './position-modifiers.js';
+import { optionSensorProcessingMode } from './sensor-processing-mode.js';
 import { optionStartPredicate } from './start-predicate.js';
 
 export function options() {
@@ -15,5 +16,6 @@ export function options() {
     optionFrozenStyles();
     optionPositionModifiers();
     optionStartPredicate();
+    optionSensorProcessingMode();
   });
 }

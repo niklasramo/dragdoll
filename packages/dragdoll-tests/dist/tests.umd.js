@@ -5777,6 +5777,80 @@ function optionPositionModifiers() {
 }
 
 //#endregion
+//#region src/draggable/options/sensor-processing-mode.ts
+var SyncSensor = class extends n$5 {
+	run(x0 = 0, y0 = 0, x1 = 10, y1 = 10) {
+		this._start({
+			type: "start",
+			x: x0,
+			y: y0
+		});
+		this._move({
+			type: "move",
+			x: x1,
+			y: y1
+		});
+		this._end({
+			type: "end",
+			x: x1,
+			y: y1
+		});
+	}
+};
+function optionSensorProcessingMode() {
+	describe("sensorProcessingMode", () => {
+		it("sampled: preparestart, start, end", () => {
+			const el = createTestElement();
+			const sensor = new SyncSensor();
+			const events$5 = [];
+			const draggable = new B([sensor], {
+				elements: () => [el],
+				sensorProcessingMode: "sampled"
+			});
+			draggable.on("preparestart", () => events$5.push("preparestart"));
+			draggable.on("start", () => events$5.push("start"));
+			draggable.on("preparemove", () => events$5.push("preparemove"));
+			draggable.on("move", () => events$5.push("move"));
+			draggable.on("end", () => events$5.push("end"));
+			sensor.run();
+			assert.deepEqual(events$5, [
+				"preparestart",
+				"start",
+				"end"
+			]);
+			draggable.destroy();
+			sensor.destroy();
+			el.remove();
+		});
+		it("immediate: preparestart, start, preparemove, move, end", () => {
+			const el = createTestElement();
+			const sensor = new SyncSensor();
+			const events$5 = [];
+			const draggable = new B([sensor], {
+				elements: () => [el],
+				sensorProcessingMode: "immediate"
+			});
+			draggable.on("preparestart", () => events$5.push("preparestart"));
+			draggable.on("start", () => events$5.push("start"));
+			draggable.on("preparemove", () => events$5.push("preparemove"));
+			draggable.on("move", () => events$5.push("move"));
+			draggable.on("end", () => events$5.push("end"));
+			sensor.run();
+			assert.deepEqual(events$5, [
+				"preparestart",
+				"start",
+				"preparemove",
+				"move",
+				"end"
+			]);
+			draggable.destroy();
+			sensor.destroy();
+			el.remove();
+		});
+	});
+}
+
+//#endregion
 //#region src/draggable/options/start-predicate.ts
 function optionStartPredicate$2() {
 	describe("startPredicate", () => {
@@ -5956,6 +6030,7 @@ function options$2() {
 		optionFrozenStyles();
 		optionPositionModifiers();
 		optionStartPredicate$2();
+		optionSensorProcessingMode();
 	});
 }
 
