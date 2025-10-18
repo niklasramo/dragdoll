@@ -350,7 +350,8 @@ export function collisionDetection() {
       dndContext.addDraggables([draggable]);
       dndContext.addDroppables([droppable]);
 
-      // Start dragging (elements overlap but droppable doesn't accept this group)
+      // Start dragging (elements overlap but droppable doesn't accept this
+      // group)
       focusElement(dragElement);
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 

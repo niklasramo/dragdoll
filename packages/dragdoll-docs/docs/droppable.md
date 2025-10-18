@@ -40,8 +40,8 @@ new Droppable(element: HTMLElement | SVGSVGElement, options?: DroppableOptions);
        - Default: a unique symbol.
      - **`accept`**
        - Either a set of identifiers (`Set<DraggableDndGroup>`) or a predicate `(draggable) => boolean`.
-       - Set mode: accepts draggables whose `draggable.settings.dndGroups` set contains any of the identifiers in the set.
-       - Function mode: decide acceptance in code; you may read `draggable.settings.dndGroups` or ignore it entirely.
+       - Set mode: accepts draggables whose [`dndGroups`](/draggable#dndgroups) set contains any of the identifiers in the set.
+       - Function mode: decide acceptance via a function that receives the draggable as an argument.
        - Default: `() => true` (accepts all draggables).
      - **`data`**
        - An object containing custom data for the droppable.
@@ -71,9 +71,9 @@ The associated DOM element whose bounding client rectangle is used for collision
 type accept = Set<DraggableDndGroup> | ((draggable: Draggable<any>) => boolean);
 ```
 
-Controls which draggables can collide with this droppable when used in a [DndContext](/dnd-context).
+Controls which draggables can collide with this droppable when used in a [`DndContext`](/dnd-context).
 
-- Set mode: accepts a draggable when it's [`dndGroups`](/draggable#dndgroups) set contains any of the identifiers in the set.
+- Set mode: accepts a draggable when its [`dndGroups`](/draggable#dndgroups) set contains any of the identifiers in this set.
 - Function mode: called during collision detection for every candidate. Return `true` to accept, `false` to reject. You can incorporate the draggable's [`dndGroups`](/draggable#dndgroups) here or come up with any other acceptance criteria.
 
 Default is `() => true` (accepts all draggables).

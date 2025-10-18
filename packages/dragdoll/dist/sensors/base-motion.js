@@ -1,1 +1,1 @@
-import"../ticker-ep3c22TT.js";import"../sensor-C-EBcfly.js";import"../base-sensor-6CQrwFkA.js";import{BaseMotionSensor as e}from"../base-motion-sensor-BbLuAcN2.js";export{e as BaseMotionSensor};
+import"../ticker-CAFcKU20.js";import"../sensor-C-EBcfly.js";import"../base-sensor-6CQrwFkA.js";import{BaseMotionSensor as e}from"../base-motion-sensor-DuT5ttYp.js";export{e as BaseMotionSensor};

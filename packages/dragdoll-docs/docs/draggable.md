@@ -213,7 +213,7 @@ type DraggableDndGroup = string | number | symbol;
 type dndGroups = Set<DraggableDndGroup>;
 ```
 
-A set of identifiers used by [DndContext](/dnd-context) when matching a `Draggable` to [`Droppable`](/droppable) targets.
+A set of identifiers used by [`DndContext`](/dnd-context) when matching a `Draggable` to [`Droppable`](/droppable).
 
 If a `Droppable` includes any of these identifiers in its [`accept`](/droppable#accept) set, the `Draggable` will be matched to the `Droppable` and there will be collision detection enabled between the two.
 
@@ -363,6 +363,8 @@ The last optional argument is the listener id, which is normally created automat
 
 The method returns a listener id, which can be used to remove this specific listener. By default this will always be a symbol unless manually provided.
 
+Check out the [events](#events) section for more information.
+
 ### off
 
 ```ts
@@ -484,7 +486,9 @@ Destroy the draggable. Disposes all allocated memory and removes all bound event
 
 ## Events
 
-The callbacks receive the sensor event that triggered the Draggable event. See the [Sensor](/sensor) docs for the exact event shapes.
+These are all the events that the Draggable instance can emit via the [`on`](#on) method.
+
+The listener functions receive the sensor event that triggered the Draggable event. See the [Sensor](/sensor) docs for the exact event shapes.
 
 ### preparestart
 
@@ -493,7 +497,9 @@ The callbacks receive the sensor event that triggered the Draggable event. See t
 type preparestart = (event: SensorStartEvent | SensorMoveEvent) => void;
 ```
 
-Emitted during the drag start preparation phase, after items are created and start-phase modifiers are applied, but before any DOM writes (container reparenting, frozen styles, initial position application).
+Emitted at the end of the drag start preparation phase, just before the [`onPrepareStart`](#onpreparestart) callback is called.
+
+The start preparation phase is called during the write phase of the ticker and it's intended for doing all the necessary DOM reads and computations for the drag start. You should avoid doing any DOM writes in this phase as that would cause layout thrashing.
 
 - **Event Data**:
   - `event` — Sensor event that resolved the start predicate (`'start'` or `'move'`)
@@ -505,7 +511,9 @@ Emitted during the drag start preparation phase, after items are created and sta
 type start = (event: SensorStartEvent | SensorMoveEvent) => void;
 ```
 
-Emitted when the drag start apply phase completes (after potential reparenting, frozen styles, initial position application, and scroll listener binding).
+Emitted at the end of the drag start apply phase, just before the [`onStart`](#onstart) callback is called.
+
+The start apply phase is called during the write phase of the ticker and it's intended for applying the initial positions to the dragged elements, applying the frozen styles and other initial setup that require writing to the DOM. You should avoid doing any DOM reads in this phase as that would cause layout thrashing.
 
 - **Event Data**:
   - `event` — Sensor event that initiated the drag (`'start'` or `'move'`)
@@ -517,7 +525,9 @@ Emitted when the drag start apply phase completes (after potential reparenting, 
 type preparemove = (event: SensorMoveEvent) => void;
 ```
 
-Emitted each time a new move is processed during the read/prepare phase, after move-phase modifiers are applied and before DOM writes. Use this to compute state that depends on the new position but does not write to the DOM.
+Emitted at the end of the drag move preparation phase, just before the [`onPrepareMove`](#onpreparemove) callback is called.
+
+The move preparation phase is called during the read phase of the ticker and it's intended for computing the new position of the dragged elements based on the sensor data. You should avoid doing any DOM writes in this phase as that would cause layout thrashing.
 
 - **Event Data**:
   - `event` — Sensor move event
@@ -529,7 +539,9 @@ Emitted each time a new move is processed during the read/prepare phase, after m
 type move = (event: SensorMoveEvent) => void;
 ```
 
-Emitted after the move apply phase when the element positions have been applied.
+Emitted at the end of the drag move apply phase, just before the [`onMove`](#onmove) callback is called.
+
+The move apply phase is called during the write phase of the ticker and it's intended for applying the new positions to the dragged elements. You should avoid doing any DOM reads in this phase as that would cause layout thrashing.
 
 - **Event Data**:
   - `event` — Sensor move event
@@ -541,10 +553,12 @@ Emitted after the move apply phase when the element positions have been applied.
 type end = (event: SensorEndEvent | SensorCancelEvent | SensorDestroyEvent | null) => void;
 ```
 
-Emitted after the drag end procedure completes (end-phase modifiers, potential reparenting back, unfreezing, final alignment and position application). The argument may be `null` if the drag was stopped programmatically without a sensor event.
+Emitted at the end of the drag end procedure, just before the [`onEnd`](#onend) callback is called.
+
+The end procedure is called synchronously after the drag ends and it's intended for doing all the necessary cleanup after the drag ends. It's not bound to any phase of the ticker and it's called immediately after the drag ends.
 
 - **Event Data**:
-  - `event` — Sensor end/cancel/destroy event, or `null`
+  - `event` — Sensor end/cancel/destroy event. The only time the `event` argument will be `null` is if the drag was stopped programmatically using [`stop`](#stop) method without a sensor event.
 
 ### destroy
 

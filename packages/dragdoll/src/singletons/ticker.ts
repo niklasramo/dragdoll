@@ -1,5 +1,5 @@
 import type { FrameCallback, Phase } from 'tikki';
-import { AutoTicker } from 'tikki';
+import { AutoTicker, createRequestFrame } from 'tikki';
 
 export const tickerPhases = {
   read: Symbol(),
@@ -8,6 +8,8 @@ export const tickerPhases = {
 
 export let ticker = new AutoTicker<Phase>({
   phases: [tickerPhases.read, tickerPhases.write],
+  // Let's do a no-op request frame for non-browser environments.
+  requestFrame: typeof window !== 'undefined' ? createRequestFrame() : () => () => {},
 });
 
 export function setTicker(

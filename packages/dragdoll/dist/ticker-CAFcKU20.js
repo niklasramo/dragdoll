@@ -1,0 +1,2 @@
+import{AutoTicker as e,createRequestFrame as t}from"tikki";const n={read:Symbol(),write:Symbol()};let r=new e({phases:[n.read,n.write],requestFrame:typeof window<`u`?t():()=>()=>{}});function i(e,t){r=e,Object.assign(n,t)}export{i as setTicker,r as ticker,n as tickerPhases};
+//# sourceMappingURL=ticker-CAFcKU20.js.map
