@@ -1,0 +1,1 @@
+import{setTicker as e,ticker as t,tickerPhases as n}from"../ticker-CAFcKU20.js";export{e as setTicker,t as ticker,n as tickerPhases};

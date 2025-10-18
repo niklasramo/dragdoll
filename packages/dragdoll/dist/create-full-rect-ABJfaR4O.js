@@ -1,0 +1,2 @@
+function e(e,t={width:0,height:0,x:0,y:0,left:0,top:0,right:0,bottom:0}){return e&&(t.width=e.width,t.height=e.height,t.x=e.x,t.y=e.y,t.left=e.x,t.top=e.y,t.right=e.x+e.width,t.bottom=e.y+e.height),t}export{e as createFullRect};
+//# sourceMappingURL=create-full-rect-ABJfaR4O.js.map

@@ -14,9 +14,9 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Build docs
-        run: npm run docs-build
+        run: npm run docs:build
       - name: Deploy docs
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/.vitepress/dist
+          publish_dir: packages/dragdoll-docs/docs/.vitepress/dist

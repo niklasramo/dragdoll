@@ -1,0 +1,32 @@
+import { assert } from 'chai';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { createTestElement } from '../utils/create-test-element.js';
+
+export function misc() {
+  describe('misc', () => {
+    describe('target element parameter', () => {
+      it('should accept document.documentElement', function () {
+        const s = new PointerSensor(document.documentElement, { sourceEvents: 'mouse' });
+        document.documentElement.dispatchEvent(new MouseEvent('mousedown'));
+        assert.notEqual(s.drag, null);
+        s.destroy();
+      });
+
+      it('should accept document.body', function () {
+        const s = new PointerSensor(document.body, { sourceEvents: 'mouse' });
+        document.body.dispatchEvent(new MouseEvent('mousedown'));
+        assert.notEqual(s.drag, null);
+        s.destroy();
+      });
+
+      it('should accept a descendant of document.body', function () {
+        const el = createTestElement();
+        const s = new PointerSensor(el, { sourceEvents: 'mouse' });
+        el.dispatchEvent(new MouseEvent('mousedown'));
+        assert.notEqual(s.drag, null);
+        el.remove();
+        s.destroy();
+      });
+    });
+  });
+}

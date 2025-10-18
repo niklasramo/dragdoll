@@ -1,0 +1,1 @@
+import{createSnapModifier as e}from"../../create-snap-modifier-D1nk7is-.js";export{e as createSnapModifier};

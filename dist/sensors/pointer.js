@@ -1,1 +1,0 @@
-import"../sensor-TzqXogk2.js";import{PointerSensor as e}from"../pointer-sensor-DZDIojjB.js";import"../constants-BG0DGMmK.js";export{e as PointerSensor};

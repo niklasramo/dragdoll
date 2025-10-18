@@ -1,1 +1,0 @@
-import{setTicker as e,ticker as t,tickerPhases as n}from"../ticker-EaCO7G8S.js";export{e as setTicker,t as ticker,n as tickerPhases};

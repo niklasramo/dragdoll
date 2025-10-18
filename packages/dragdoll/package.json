@@ -1,0 +1,121 @@
+{
+  "name": "dragdoll",
+  "version": "0.9.0",
+  "description": "Modular and extensible drag & drop system.",
+  "keywords": [
+    "drag",
+    "drop",
+    "dnd",
+    "draggable",
+    "droppable"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Niklas Rämö",
+    "email": "inramo@gmail.com",
+    "url": "https://github.com/niklasramo"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:niklasramo/dragdoll.git"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./sensors": {
+      "types": "./dist/sensors.d.ts",
+      "import": "./dist/sensors.js"
+    },
+    "./sensors/base": {
+      "types": "./dist/sensors/base.d.ts",
+      "import": "./dist/sensors/base.js"
+    },
+    "./sensors/base-motion": {
+      "types": "./dist/sensors/base-motion.d.ts",
+      "import": "./dist/sensors/base-motion.js"
+    },
+    "./sensors/pointer": {
+      "types": "./dist/sensors/pointer.d.ts",
+      "import": "./dist/sensors/pointer.js"
+    },
+    "./sensors/keyboard": {
+      "types": "./dist/sensors/keyboard.d.ts",
+      "import": "./dist/sensors/keyboard.js"
+    },
+    "./sensors/keyboard-motion": {
+      "types": "./dist/sensors/keyboard-motion.d.ts",
+      "import": "./dist/sensors/keyboard-motion.js"
+    },
+    "./draggable": {
+      "types": "./dist/draggable.d.ts",
+      "import": "./dist/draggable.js"
+    },
+    "./draggable/helpers/create-touch-delay-predicate": {
+      "types": "./dist/draggable/helpers/create-touch-delay-predicate.d.ts",
+      "import": "./dist/draggable/helpers/create-touch-delay-predicate.js"
+    },
+    "./draggable/modifiers/snap": {
+      "types": "./dist/draggable/modifiers/snap.d.ts",
+      "import": "./dist/draggable/modifiers/snap.js"
+    },
+    "./draggable/modifiers/containment": {
+      "types": "./dist/draggable/modifiers/containment.d.ts",
+      "import": "./dist/draggable/modifiers/containment.js"
+    },
+    "./draggable/plugins/auto-scroll": {
+      "types": "./dist/draggable/plugins/auto-scroll.d.ts",
+      "import": "./dist/draggable/plugins/auto-scroll.js"
+    },
+    "./dnd-context": {
+      "types": "./dist/dnd-context.d.ts",
+      "import": "./dist/dnd-context.js"
+    },
+    "./dnd-context/collision-detector": {
+      "types": "./dist/dnd-context/collision-detector.d.ts",
+      "import": "./dist/dnd-context/collision-detector.js"
+    },
+    "./dnd-context/advanced-collision-detector": {
+      "types": "./dist/dnd-context/advanced-collision-detector.d.ts",
+      "import": "./dist/dnd-context/advanced-collision-detector.js"
+    },
+    "./droppable": {
+      "types": "./dist/droppable.d.ts",
+      "import": "./dist/droppable.js"
+    },
+    "./auto-scroll": {
+      "types": "./dist/auto-scroll.d.ts",
+      "import": "./dist/auto-scroll.js"
+    },
+    "./singletons/auto-scroll": {
+      "types": "./dist/singletons/auto-scroll.d.ts",
+      "import": "./dist/singletons/auto-scroll.js"
+    },
+    "./singletons/ticker": {
+      "types": "./dist/singletons/ticker.d.ts",
+      "import": "./dist/singletons/ticker.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "dist",
+    "package.json",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "scripts": {
+    "build": "tsdown --config ./tsdown.config.ts",
+    "prettier:check": "prettier --check --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,yml,yaml}\"",
+    "prettier:write": "prettier --write --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,yml,yaml}\"",
+    "ts:check": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "eventti": "^4.0.3",
+    "mezr": "^1.1.0",
+    "tikki": "^3.0.2"
+  }
+}

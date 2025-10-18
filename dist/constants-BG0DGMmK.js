@@ -1,2 +1,0 @@
-const e=typeof window<`u`&&window.document!==void 0,t=e&&`ontouchstart`in window,n=e&&!!window.PointerEvent;e&&navigator.vendor&&navigator.vendor.indexOf(`Apple`)>-1&&navigator.userAgent&&navigator.userAgent.indexOf(`CriOS`)==-1&&navigator.userAgent.indexOf(`FxiOS`);export{n as HAS_POINTER_EVENTS,t as HAS_TOUCH_EVENTS,e as IS_BROWSER};
-//# sourceMappingURL=constants-BG0DGMmK.js.map
