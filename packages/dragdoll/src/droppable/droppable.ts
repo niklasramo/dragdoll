@@ -1,11 +1,9 @@
 import type { EventListenerId } from 'eventti';
 import { Emitter } from 'eventti';
-import type { Draggable } from '../draggable/draggable.js';
+import type { Draggable, DraggableDndGroup } from '../draggable/draggable.js';
 import type { Rect, Writeable } from '../types.js';
 
 export type DroppableId = symbol | string | number;
-
-export type DroppableAcceptId = string | number | symbol;
 
 export const DroppableEventType = {
   Destroy: 'destroy',
@@ -19,14 +17,14 @@ export interface DroppableEventCallbacks {
 
 export interface DroppableOptions {
   id?: DroppableId;
-  accept?: DroppableAcceptId[] | ((draggable: Draggable<any>) => boolean);
+  accept?: Set<DraggableDndGroup> | ((draggable: Draggable<any>) => boolean);
   data?: { [key: string]: any };
 }
 
 export class Droppable {
   readonly id: DroppableId;
   readonly element: HTMLElement | SVGSVGElement;
-  accept: DroppableAcceptId[] | ((draggable: Draggable<any>) => boolean);
+  accept: Set<DraggableDndGroup> | ((draggable: Draggable<any>) => boolean);
   data: { [key: string]: any };
   readonly isDestroyed: boolean;
   protected _clientRect: Rect;

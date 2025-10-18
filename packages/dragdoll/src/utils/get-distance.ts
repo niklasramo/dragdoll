@@ -1,5 +1,5 @@
 import { getDistance as _getDistance } from 'mezr/getDistance';
-import { Rect } from '../types.js';
+import type { Rect } from '../types.js';
 import { createFullRect } from './create-full-rect.js';
 
 const RECT_A = createFullRect();

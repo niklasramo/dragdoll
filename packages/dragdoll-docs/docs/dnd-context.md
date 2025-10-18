@@ -19,7 +19,7 @@ const draggableElement = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(draggableElement);
 const draggable = new Draggable([pointerSensor], {
   elements: () => [draggableElement],
-  group: 'groupA',
+  dndGroups: ['groupA'],
 });
 
 // Create a droppable

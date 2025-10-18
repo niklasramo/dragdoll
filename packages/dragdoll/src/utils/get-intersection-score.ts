@@ -1,4 +1,4 @@
-import { Rect } from '../types.js';
+import type { Rect } from '../types.js';
 import { getIntersectionRect } from './get-intersection-rect.js';
 
 const TEMP_RECT: Rect = { width: 0, height: 0, x: 0, y: 0 };

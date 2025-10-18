@@ -1,7 +1,7 @@
 import { Point, Rect } from "./types-CEK9qPqM.js";
 import { AutoScrollItem, AutoScrollItemEventCallback, AutoScrollItemSpeedCallback, AutoScrollItemTarget } from "./auto-scroll-Lt4FzAiU.js";
 import { Sensor } from "./sensor-DbtiV--O.js";
-import { Draggable, DraggablePluginMap } from "./draggable-rDEVLiCd.js";
+import { Draggable, DraggablePluginMap } from "./draggable-CGDdXxXW.js";
 
 //#region src/draggable/plugins/auto-scroll-plugin.d.ts
 declare class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['_events_type']> implements AutoScrollItem {
@@ -47,4 +47,4 @@ declare function autoScrollPlugin<S extends Sensor[], E extends S[number]['_even
 };
 //#endregion
 export { DraggableAutoScroll, DraggableAutoScrollOptions, DraggableAutoScrollSettings, autoScrollPlugin };
-//# sourceMappingURL=auto-scroll-plugin-5-qIFujW.d.ts.map
+//# sourceMappingURL=auto-scroll-plugin-Cqch7FtB.d.ts.map

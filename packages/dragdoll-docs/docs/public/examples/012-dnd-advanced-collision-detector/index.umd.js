@@ -1147,7 +1147,7 @@ function getOffsetContainer(n$7, t$7 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-DooaWjWu.js
+//#region ../dragdoll/dist/draggable-C0ryZvr6.js
 function s$3(e$6, t$7) {
 	return e$6.isIdentity && t$7.isIdentity ? !0 : e$6.is2D && t$7.is2D ? e$6.a === t$7.a && e$6.b === t$7.b && e$6.c === t$7.c && e$6.d === t$7.d && e$6.e === t$7.e && e$6.f === t$7.f : e$6.m11 === t$7.m11 && e$6.m12 === t$7.m12 && e$6.m13 === t$7.m13 && e$6.m14 === t$7.m14 && e$6.m21 === t$7.m21 && e$6.m22 === t$7.m22 && e$6.m23 === t$7.m23 && e$6.m24 === t$7.m24 && e$6.m31 === t$7.m31 && e$6.m32 === t$7.m32 && e$6.m33 === t$7.m33 && e$6.m34 === t$7.m34 && e$6.m41 === t$7.m41 && e$6.m42 === t$7.m42 && e$6.m43 === t$7.m43 && e$6.m44 === t$7.m44;
 }
@@ -1436,7 +1436,7 @@ const F = {
 	computeClientRect: ({ drag: e$6 }) => e$6.items[0].clientRect || null,
 	positionModifiers: [],
 	sensorProcessingMode: I.Sampled,
-	group: null
+	dndGroups: /* @__PURE__ */ new Set()
 };
 var B = class {
 	constructor(e$6, t$7 = {}) {
@@ -1453,7 +1453,7 @@ var B = class {
 		});
 	}
 	_parseSettings(e$6, t$7 = z) {
-		let { container: n$7 = t$7.container, startPredicate: r$4 = t$7.startPredicate, elements: i$5 = t$7.elements, frozenStyles: a$4 = t$7.frozenStyles, positionModifiers: o$4 = t$7.positionModifiers, applyPosition: s$6 = t$7.applyPosition, computeClientRect: c$6 = t$7.computeClientRect, sensorProcessingMode: l$6 = t$7.sensorProcessingMode, group: u$6 = t$7.group, onPrepareStart: d$3 = t$7.onPrepareStart, onStart: f$3 = t$7.onStart, onPrepareMove: p$3 = t$7.onPrepareMove, onMove: m$3 = t$7.onMove, onEnd: h$3 = t$7.onEnd, onDestroy: g$3 = t$7.onDestroy } = e$6 || {};
+		let { container: n$7 = t$7.container, startPredicate: r$4 = t$7.startPredicate, elements: i$5 = t$7.elements, frozenStyles: a$4 = t$7.frozenStyles, positionModifiers: o$4 = t$7.positionModifiers, applyPosition: s$6 = t$7.applyPosition, computeClientRect: c$6 = t$7.computeClientRect, sensorProcessingMode: l$6 = t$7.sensorProcessingMode, dndGroups: u$6 = t$7.dndGroups, onPrepareStart: d$3 = t$7.onPrepareStart, onStart: f$3 = t$7.onStart, onPrepareMove: p$3 = t$7.onPrepareMove, onMove: m$3 = t$7.onMove, onEnd: h$3 = t$7.onEnd, onDestroy: g$3 = t$7.onDestroy } = e$6 || {};
 		return {
 			container: n$7,
 			startPredicate: r$4,
@@ -1463,7 +1463,7 @@ var B = class {
 			applyPosition: s$6,
 			computeClientRect: c$6,
 			sensorProcessingMode: l$6,
-			group: u$6,
+			dndGroups: u$6,
 			onPrepareStart: d$3,
 			onStart: f$3,
 			onPrepareMove: p$3,
@@ -1689,7 +1689,7 @@ var n = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/dnd-context-Dtnycqos.js
+//#region ../dragdoll/dist/dnd-context-B0dcvuev.js
 var s$2 = function(e$6) {
 	return e$6[e$6.Idle = 0] = `Idle`, e$6[e$6.Computing = 1] = `Computing`, e$6[e$6.Computed = 2] = `Computed`, e$6[e$6.Emitting = 3] = `Emitting`, e$6;
 }(s$2 || {});
@@ -1723,7 +1723,14 @@ var u = class {
 		return this._drags;
 	}
 	_isMatch(e$6, t$7) {
-		let n$7 = typeof t$7.accept == `function` ? t$7.accept(e$6) : t$7.accept.includes(e$6.settings.group);
+		let n$7 = !1;
+		if (typeof t$7.accept == `function`) n$7 = t$7.accept(e$6);
+		else {
+			let r$4 = e$6.settings.dndGroups, i$5 = t$7.accept;
+			if (!r$4 || r$4.size === 0 || i$5.size === 0) return !1;
+			let a$4 = i$5.size < r$4.size, o$4 = a$4 ? i$5 : r$4, s$6 = a$4 ? r$4 : i$5;
+			for (let e$7 of o$4) s$6.has(e$7) && (n$7 = !0);
+		}
 		if (n$7 && e$6.drag) {
 			let n$8 = e$6.drag.items;
 			for (let e$7 = 0; e$7 < n$8.length; e$7++) if (n$8[e$7].element === t$7.element) return !1;
@@ -2110,7 +2117,7 @@ var u$1 = class {
 const t$1 = new N();
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-plugin-C9GsmFkN.js
+//#region ../dragdoll/dist/auto-scroll-plugin-SoOS2_pz.js
 const r$1 = {
 	x: 0,
 	y: 0

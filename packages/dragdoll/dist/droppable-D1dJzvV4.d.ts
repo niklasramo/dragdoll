@@ -1,10 +1,9 @@
 import { Rect } from "./types-CEK9qPqM.js";
-import { Draggable } from "./draggable-rDEVLiCd.js";
+import { Draggable, DraggableDndGroup } from "./draggable-CGDdXxXW.js";
 import { Emitter, EventListenerId } from "eventti";
 
 //#region src/droppable/droppable.d.ts
 type DroppableId = symbol | string | number;
-type DroppableAcceptId = string | number | symbol;
 declare const DroppableEventType: {
   readonly Destroy: "destroy";
 };
@@ -14,7 +13,7 @@ interface DroppableEventCallbacks {
 }
 interface DroppableOptions {
   id?: DroppableId;
-  accept?: DroppableAcceptId[] | ((draggable: Draggable<any>) => boolean);
+  accept?: Set<DraggableDndGroup> | ((draggable: Draggable<any>) => boolean);
   data?: {
     [key: string]: any;
   };
@@ -22,7 +21,7 @@ interface DroppableOptions {
 declare class Droppable {
   readonly id: DroppableId;
   readonly element: HTMLElement | SVGSVGElement;
-  accept: DroppableAcceptId[] | ((draggable: Draggable<any>) => boolean);
+  accept: Set<DraggableDndGroup> | ((draggable: Draggable<any>) => boolean);
   data: {
     [key: string]: any;
   };
@@ -37,5 +36,5 @@ declare class Droppable {
   destroy(): void;
 }
 //#endregion
-export { Droppable, DroppableAcceptId, DroppableEventCallbacks, DroppableEventType, DroppableId, DroppableOptions };
-//# sourceMappingURL=droppable-BDnHC3pX.d.ts.map
+export { Droppable, DroppableEventCallbacks, DroppableEventType, DroppableId, DroppableOptions };
+//# sourceMappingURL=droppable-D1dJzvV4.d.ts.map

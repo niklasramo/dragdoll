@@ -380,7 +380,7 @@ function getOffsetContainer(n$4, t$3 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-DooaWjWu.js
+//#region ../dragdoll/dist/draggable-C0ryZvr6.js
 function s$1(e$3, t$3) {
 	return e$3.isIdentity && t$3.isIdentity ? !0 : e$3.is2D && t$3.is2D ? e$3.a === t$3.a && e$3.b === t$3.b && e$3.c === t$3.c && e$3.d === t$3.d && e$3.e === t$3.e && e$3.f === t$3.f : e$3.m11 === t$3.m11 && e$3.m12 === t$3.m12 && e$3.m13 === t$3.m13 && e$3.m14 === t$3.m14 && e$3.m21 === t$3.m21 && e$3.m22 === t$3.m22 && e$3.m23 === t$3.m23 && e$3.m24 === t$3.m24 && e$3.m31 === t$3.m31 && e$3.m32 === t$3.m32 && e$3.m33 === t$3.m33 && e$3.m34 === t$3.m34 && e$3.m41 === t$3.m41 && e$3.m42 === t$3.m42 && e$3.m43 === t$3.m43 && e$3.m44 === t$3.m44;
 }
@@ -669,7 +669,7 @@ const F = {
 	computeClientRect: ({ drag: e$3 }) => e$3.items[0].clientRect || null,
 	positionModifiers: [],
 	sensorProcessingMode: I.Sampled,
-	group: null
+	dndGroups: /* @__PURE__ */ new Set()
 };
 var B = class {
 	constructor(e$3, t$3 = {}) {
@@ -686,7 +686,7 @@ var B = class {
 		});
 	}
 	_parseSettings(e$3, t$3 = z) {
-		let { container: n$4 = t$3.container, startPredicate: r$2 = t$3.startPredicate, elements: i$3 = t$3.elements, frozenStyles: a$2 = t$3.frozenStyles, positionModifiers: o$2 = t$3.positionModifiers, applyPosition: s$2 = t$3.applyPosition, computeClientRect: c$2 = t$3.computeClientRect, sensorProcessingMode: l$3 = t$3.sensorProcessingMode, group: u$3 = t$3.group, onPrepareStart: d$1 = t$3.onPrepareStart, onStart: f$1 = t$3.onStart, onPrepareMove: p$1 = t$3.onPrepareMove, onMove: m$1 = t$3.onMove, onEnd: h$1 = t$3.onEnd, onDestroy: g$1 = t$3.onDestroy } = e$3 || {};
+		let { container: n$4 = t$3.container, startPredicate: r$2 = t$3.startPredicate, elements: i$3 = t$3.elements, frozenStyles: a$2 = t$3.frozenStyles, positionModifiers: o$2 = t$3.positionModifiers, applyPosition: s$2 = t$3.applyPosition, computeClientRect: c$2 = t$3.computeClientRect, sensorProcessingMode: l$3 = t$3.sensorProcessingMode, dndGroups: u$3 = t$3.dndGroups, onPrepareStart: d$1 = t$3.onPrepareStart, onStart: f$1 = t$3.onStart, onPrepareMove: p$1 = t$3.onPrepareMove, onMove: m$1 = t$3.onMove, onEnd: h$1 = t$3.onEnd, onDestroy: g$1 = t$3.onDestroy } = e$3 || {};
 		return {
 			container: n$4,
 			startPredicate: r$2,
@@ -696,7 +696,7 @@ var B = class {
 			applyPosition: s$2,
 			computeClientRect: c$2,
 			sensorProcessingMode: l$3,
-			group: u$3,
+			dndGroups: u$3,
 			onPrepareStart: d$1,
 			onStart: f$1,
 			onPrepareMove: p$1,

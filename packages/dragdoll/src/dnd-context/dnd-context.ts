@@ -1,10 +1,14 @@
-import { Emitter, EventListenerId } from 'eventti';
-import { Draggable, DraggableEventType, DraggableId } from '../draggable/draggable.js';
-import { Droppable, DroppableEventType, DroppableId } from '../droppable/droppable.js';
+import type { EventListenerId } from 'eventti';
+import { Emitter } from 'eventti';
+import type { Draggable, DraggableId } from '../draggable/draggable.js';
+import { DraggableEventType } from '../draggable/draggable.js';
+import type { Droppable, DroppableId } from '../droppable/droppable.js';
+import { DroppableEventType } from '../droppable/droppable.js';
 import { SensorEventType } from '../sensors/sensor.js';
 import { ticker, tickerPhases } from '../singletons/ticker.js';
 import type { Writeable } from '../types.js';
-import { CollisionData, CollisionDetector } from './collision-detector.js';
+import type { CollisionData } from './collision-detector.js';
+import { CollisionDetector } from './collision-detector.js';
 
 enum CollisionDetectionPhase {
   Idle = 0,
@@ -150,10 +154,35 @@ export class DndContext<T extends CollisionData = CollisionData> {
   }
 
   protected _isMatch(draggable: Draggable<any>, droppable: Droppable) {
-    const isMatch =
-      typeof droppable.accept === 'function'
-        ? droppable.accept(draggable)
-        : droppable.accept.includes(draggable.settings.group as any);
+    let isMatch = false;
+
+    // If the droppable has an accept function, use it to determine the match.
+    if (typeof droppable.accept === 'function') {
+      isMatch = droppable.accept(draggable);
+    }
+    // Otherwise, use the groups to determine the match.
+    else {
+      const draggableSet = draggable.settings.dndGroups;
+      const droppableSet = droppable.accept;
+
+      // Make sure that there are groups to match.
+      if (!draggableSet || draggableSet.size === 0 || droppableSet.size === 0) {
+        return false;
+      }
+
+      // Find out which set is smaller.
+      const isDroppableSetSmaller = droppableSet.size < draggableSet.size;
+      const smallerSet = isDroppableSetSmaller ? droppableSet : draggableSet;
+      const largerSet = isDroppableSetSmaller ? draggableSet : droppableSet;
+
+      // Loop through the smaller set and check if any of the groups match the
+      // larger set.
+      for (const group of smallerSet) {
+        if (largerSet.has(group)) {
+          isMatch = true;
+        }
+      }
+    }
 
     // Make sure that none of the draggable's elements match the droppable's
     // element.

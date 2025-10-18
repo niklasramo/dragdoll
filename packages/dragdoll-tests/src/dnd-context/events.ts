@@ -18,11 +18,11 @@ export function events() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'test',
+        dndGroups: new Set(['test']),
       });
 
       const droppable = new Droppable(dropElement, {
-        accept: ['test'],
+        accept: new Set(['test']),
       });
 
       const dndContext = new DndContext();
@@ -72,11 +72,11 @@ export function events() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'test',
+        dndGroups: new Set(['test']),
       });
 
       const droppable = new Droppable(dropElement, {
-        accept: ['test'],
+        accept: new Set(['test']),
       });
 
       const dndContext = new DndContext();
@@ -135,11 +135,11 @@ export function events() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 101 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'test',
+        dndGroups: new Set(['test']),
       });
 
       const droppable = new Droppable(dropElement, {
-        accept: ['test'],
+        accept: new Set(['test']),
       });
 
       const dndContext = new DndContext();
@@ -216,11 +216,11 @@ export function events() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'test',
+        dndGroups: new Set(['test']),
       });
 
       const droppable = new Droppable(dropElement, {
-        accept: ['test'],
+        accept: new Set(['test']),
       });
 
       const dndContext = new DndContext();
@@ -260,7 +260,7 @@ export function events() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'test',
+        dndGroups: new Set(['test']),
       });
 
       const dndContext = new DndContext();
@@ -299,7 +299,7 @@ export function events() {
       const dropElement = createTestElement();
 
       const droppable = new Droppable(dropElement, {
-        accept: ['test'],
+        accept: new Set(['test']),
       });
 
       const dndContext = new DndContext();
@@ -343,7 +343,7 @@ export function events() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'test',
+        dndGroups: new Set(['test']),
       });
 
       const dndContext = new DndContext();
@@ -396,9 +396,12 @@ export function events() {
       const dropB = createTestElement({ left: '50px', top: '0px', width: '40px', height: '40px' });
 
       const sensor = new KeyboardSensor(dragEl, { moveDistance: 60 });
-      const draggable = new Draggable([sensor], { elements: () => [dragEl], group: 'g' });
-      const droppableA = new Droppable(dropA, { accept: ['g'] });
-      const droppableB = new Droppable(dropB, { accept: ['g'] });
+      const draggable = new Draggable([sensor], {
+        elements: () => [dragEl],
+        dndGroups: new Set(['g']),
+      });
+      const droppableA = new Droppable(dropA, { accept: new Set(['g']) });
+      const droppableB = new Droppable(dropB, { accept: new Set(['g']) });
       const ctx = new DndContext();
 
       ctx.on('leave', () => order.push('leave'));
@@ -434,8 +437,11 @@ export function events() {
       const dropEl = createTestElement({ left: '0px', top: '0px', width: '40px', height: '40px' });
 
       const sensor = new KeyboardSensor(dragEl, { moveDistance: 10 });
-      const draggable = new Draggable([sensor], { elements: () => [dragEl], group: 'g' });
-      const droppable = new Droppable(dropEl, { accept: ['g'] });
+      const draggable = new Draggable([sensor], {
+        elements: () => [dragEl],
+        dndGroups: new Set(['g']),
+      });
+      const droppable = new Droppable(dropEl, { accept: new Set(['g']) });
       const ctx = new DndContext();
 
       let gotEnter = false;
@@ -476,7 +482,10 @@ export function events() {
 
       let accepts = false;
       const sensor = new KeyboardSensor(dragEl, { moveDistance: 10 });
-      const draggable = new Draggable([sensor], { elements: () => [dragEl], group: 'g' });
+      const draggable = new Draggable([sensor], {
+        elements: () => [dragEl],
+        dndGroups: new Set(['g']),
+      });
       const droppable = new Droppable(dropEl, { accept: () => accepts });
       const ctx = new DndContext();
 
@@ -510,8 +519,11 @@ export function events() {
       const dropEl = createTestElement({ left: '0px', top: '0px', width: '40px', height: '40px' });
 
       const sensor = new KeyboardSensor(dragEl, { moveDistance: 10 });
-      const draggable = new Draggable([sensor], { elements: () => [dragEl], group: 'g' });
-      const droppable = new Droppable(dropEl, { accept: ['g'] });
+      const draggable = new Draggable([sensor], {
+        elements: () => [dragEl],
+        dndGroups: new Set(['g']),
+      });
+      const droppable = new Droppable(dropEl, { accept: new Set(['g']) });
       const ctx = new DndContext();
 
       let shouldRemove = false;
@@ -550,8 +562,11 @@ export function events() {
       const dropEl = createTestElement({ left: '60px', top: '0px', width: '40px', height: '40px' });
 
       const sensor = new KeyboardSensor(dragEl, { moveDistance: 10 });
-      const draggable = new Draggable([sensor], { elements: () => [dragEl], group: 'g' });
-      const droppable = new Droppable(dropEl, { accept: ['g'] });
+      const draggable = new Draggable([sensor], {
+        elements: () => [dragEl],
+        dndGroups: new Set(['g']),
+      });
+      const droppable = new Droppable(dropEl, { accept: new Set(['g']) });
       const ctx = new DndContext();
 
       ctx.on('start', () => {

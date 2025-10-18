@@ -37,6 +37,8 @@ enum DraggableStartPredicateState {
 
 export type DraggableId = symbol | string | number;
 
+export type DraggableDndGroup = string | number | symbol;
+
 export const DraggableModifierPhase = {
   Start: 'start',
   Move: 'move',
@@ -107,7 +109,7 @@ export interface DraggableSettings<S extends Sensor[], E extends S[number]['_eve
     drag: DraggableDrag<S, E>;
   }) => Readonly<Rect> | null;
   sensorProcessingMode?: DraggableSensorProcessingMode;
-  group?: string | number | symbol | null;
+  dndGroups?: Set<DraggableDndGroup>;
   onPrepareStart?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
   onStart?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
   onPrepareMove?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
@@ -233,7 +235,7 @@ export const DraggableDefaultSettings: DraggableSettings<any, any> = {
   },
   positionModifiers: [],
   sensorProcessingMode: DraggableSensorProcessingMode.Sampled,
-  group: null,
+  dndGroups: new Set(),
 } as const;
 
 export class Draggable<
@@ -322,7 +324,7 @@ export class Draggable<
       applyPosition = defaults.applyPosition,
       computeClientRect = defaults.computeClientRect,
       sensorProcessingMode = defaults.sensorProcessingMode,
-      group = defaults.group,
+      dndGroups = defaults.dndGroups,
       onPrepareStart = defaults.onPrepareStart,
       onStart = defaults.onStart,
       onPrepareMove = defaults.onPrepareMove,
@@ -340,7 +342,7 @@ export class Draggable<
       applyPosition,
       computeClientRect,
       sensorProcessingMode,
-      group,
+      dndGroups,
       onPrepareStart,
       onStart,
       onPrepareMove,

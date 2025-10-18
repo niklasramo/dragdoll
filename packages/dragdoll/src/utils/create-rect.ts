@@ -1,4 +1,4 @@
-import { Rect } from '../types.js';
+import type { Rect } from '../types.js';
 
 export function createRect(sourceRect?: Rect, result: Rect = { width: 0, height: 0, x: 0, y: 0 }) {
   if (sourceRect) {

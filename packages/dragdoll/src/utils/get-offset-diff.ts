@@ -1,4 +1,4 @@
-import { Point } from '../types.js';
+import type { Point } from '../types.js';
 import { getClientOffset } from './get-client-offset.js';
 import { isPoint } from './is-point.js';
 

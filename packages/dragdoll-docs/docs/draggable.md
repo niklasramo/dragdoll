@@ -206,17 +206,18 @@ Defines how the sensor events should be processed.
 
 Default is `'sampled'`.
 
-### group
+### dndGroups
 
 ```ts
-type group = string | number | symbol | null;
+type DraggableDndGroup = string | number | symbol;
+type dndGroups = Set<DraggableDndGroup>;
 ```
 
-An identifier used by [DndContext](/dnd-context) when matching a `Draggable` to [`Droppable`](/droppable) targets.
+A set of identifiers used by [DndContext](/dnd-context) when matching a `Draggable` to [`Droppable`](/droppable) targets.
 
-If a `Droppable` includes this id in its [`accept`](/droppable#accept) array, the `Draggable` will be matched to the `Droppable` and there will be collision detection enabled between the two.
+If a `Droppable` includes any of these identifiers in its [`accept`](/droppable#accept) set, the `Draggable` will be matched to the `Droppable` and there will be collision detection enabled between the two.
 
-Default is `null`.
+Default is an empty set.
 
 ### onPrepareStart
 

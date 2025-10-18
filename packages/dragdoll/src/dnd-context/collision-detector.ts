@@ -1,6 +1,6 @@
 import type { Draggable } from '../draggable/draggable.js';
 import type { Droppable, DroppableId } from '../droppable/droppable.js';
-import { Rect } from '../types.js';
+import type { Rect } from '../types.js';
 import { createRect } from '../utils/create-rect.js';
 import { FastObjectPool } from '../utils/fast-object-pool.js';
 import { getIntersectionRect } from '../utils/get-intersection-rect.js';

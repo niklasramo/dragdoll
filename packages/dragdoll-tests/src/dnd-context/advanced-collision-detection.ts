@@ -48,9 +48,9 @@ export function advancedCollisionDetection() {
         const keyboard = new KeyboardSensor(draggableElement);
         const draggable = new Draggable([keyboard], {
           elements: () => [draggableElement],
-          group: 'g',
+          dndGroups: new Set(['g']),
         });
-        const droppable = new Droppable(droppableElement, { accept: ['g'] });
+        const droppable = new Droppable(droppableElement, { accept: new Set(['g']) });
         const dndContext = new DndContext<AdvancedCollisionData>({
           collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx),
         });
@@ -123,9 +123,9 @@ export function advancedCollisionDetection() {
         const keyboard = new KeyboardSensor(draggableElement, { moveDistance: 50 });
         const draggable = new Draggable([keyboard], {
           elements: () => [draggableElement],
-          group: 'g',
+          dndGroups: new Set(['g']),
         });
-        const droppable = new Droppable(droppableElement, { accept: ['g'] });
+        const droppable = new Droppable(droppableElement, { accept: new Set(['g']) });
         const dndContext = new DndContext<AdvancedCollisionData>({
           collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx),
         });
@@ -201,9 +201,9 @@ export function advancedCollisionDetection() {
         const keyboard = new KeyboardSensor(draggableElement, { moveDistance: 50 });
         const draggable = new Draggable([keyboard], {
           elements: () => [draggableElement],
-          group: 'g',
+          dndGroups: new Set(['g']),
         });
-        const droppable = new Droppable(droppableElement, { accept: ['g'] });
+        const droppable = new Droppable(droppableElement, { accept: new Set(['g']) });
         const dndContext = new DndContext<AdvancedCollisionData>({
           collisionDetector: (ctx) =>
             new AdvancedCollisionDetector(ctx, { visibilityLogic: 'absolute' }),

@@ -39,9 +39,9 @@ new Droppable(element: HTMLElement | SVGSVGElement, options?: DroppableOptions);
        - The unique identifier for this droppable. A string, number, or symbol.
        - Default: a unique symbol.
      - **`accept`**
-       - Either an array of identifiers (`DroppableAcceptId[]`) or a predicate `(draggable) => boolean`.
-       - Array mode: accepts draggables whose `draggable.settings.group` is included in the array. `null` groups never match arrays.
-       - Function mode: decide acceptance in code; you may read `draggable.settings.group` or ignore it entirely.
+       - Either a set of identifiers (`Set<DraggableDndGroup>`) or a predicate `(draggable) => boolean`.
+       - Set mode: accepts draggables whose `draggable.settings.dndGroups` set contains any of the identifiers in the set.
+       - Function mode: decide acceptance in code; you may read `draggable.settings.dndGroups` or ignore it entirely.
        - Default: `() => true` (accepts all draggables).
      - **`data`**
        - An object containing custom data for the droppable.
@@ -68,13 +68,13 @@ The associated DOM element whose bounding client rectangle is used for collision
 ### accept
 
 ```ts
-type accept = DroppableAcceptId[] | ((draggable: Draggable<any>) => boolean);
+type accept = Set<DraggableDndGroup> | ((draggable: Draggable<any>) => boolean);
 ```
 
 Controls which draggables can collide with this droppable when used in a [DndContext](/dnd-context).
 
-- Array mode: accepts a draggable when it's [`group`](/draggable#group) is included in the array.
-- Function mode: called during collision detection for every candidate. Return `true` to accept, `false` to reject. You can incorporate the draggable's [`group`](/draggable#group) here or come up with any other acceptance criteria.
+- Set mode: accepts a draggable when it's [`dndGroups`](/draggable#dndgroups) set contains any of the identifiers in the set.
+- Function mode: called during collision detection for every candidate. Return `true` to accept, `false` to reject. You can incorporate the draggable's [`dndGroups`](/draggable#dndgroups) here or come up with any other acceptance criteria.
 
 Default is `() => true` (accepts all draggables).
 

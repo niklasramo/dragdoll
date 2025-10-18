@@ -1,4 +1,4 @@
-import { Point } from '../types.js';
+import type { Point } from '../types.js';
 import { getStyle } from './get-style.js';
 
 // Computes element's (padding box) offset from the window's top-left corner.

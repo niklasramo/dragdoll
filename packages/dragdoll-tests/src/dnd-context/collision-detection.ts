@@ -32,11 +32,11 @@ export function collisionDetection() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'test',
+        dndGroups: new Set(['test']),
       });
 
       const droppable = new Droppable(dropElement, {
-        accept: ['test'],
+        accept: new Set(['test']),
       });
 
       const dndContext = new DndContext();
@@ -102,11 +102,11 @@ export function collisionDetection() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'test',
+        dndGroups: new Set(['test']),
       });
 
       const droppable = new Droppable(dropElement, {
-        accept: ['test'],
+        accept: new Set(['test']),
       });
 
       const dndContext = new DndContext();
@@ -162,11 +162,11 @@ export function collisionDetection() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 70 }); // Move past droppable
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'test',
+        dndGroups: new Set(['test']),
       });
 
       const droppable = new Droppable(dropElement, {
-        accept: ['test'],
+        accept: new Set(['test']),
       });
 
       const dndContext = new DndContext();
@@ -247,15 +247,15 @@ export function collisionDetection() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 60 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'test',
+        dndGroups: new Set(['test']),
       });
 
       const droppable1 = new Droppable(dropElement1, {
-        accept: ['test'],
+        accept: new Set(['test']),
       });
 
       const droppable2 = new Droppable(dropElement2, {
-        accept: ['test'],
+        accept: new Set(['test']),
       });
 
       const dndContext = new DndContext();
@@ -333,12 +333,12 @@ export function collisionDetection() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'test',
+        dndGroups: new Set(['test']),
       });
 
       // Droppable that doesn't accept 'test' group
       const droppable = new Droppable(dropElement, {
-        accept: ['other-group'],
+        accept: new Set(['other-group']),
       });
 
       const dndContext = new DndContext();
@@ -396,11 +396,11 @@ export function collisionDetection() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'test',
+        dndGroups: new Set(['test']),
       });
 
       const droppable = new Droppable(dropElement, {
-        accept: ['test'],
+        accept: new Set(['test']),
       });
 
       class TestDetector extends CollisionDetector<CustomCollisionData> {
@@ -479,11 +479,11 @@ export function collisionDetection() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'test',
+        dndGroups: new Set(['test']),
       });
 
       const droppable = new Droppable(dropElement, {
-        accept: ['test'],
+        accept: new Set(['test']),
       });
 
       const dndContext = new DndContext();
@@ -548,11 +548,11 @@ export function collisionDetection() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'test',
+        dndGroups: new Set(['test']),
       });
 
       const droppable = new Droppable(dropElement, {
-        accept: ['test'],
+        accept: new Set(['test']),
       });
 
       const dndContext = new DndContext();

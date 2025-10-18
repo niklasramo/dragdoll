@@ -31,11 +31,11 @@ export function droppables() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 70 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'valid-group',
+        dndGroups: new Set(['valid-group']),
       });
 
       const droppable = new Droppable(dropElement, {
-        accept: ['valid-group', 'another-group'],
+        accept: new Set(['valid-group', 'another-group']),
       });
 
       const dndContext = new DndContext();
@@ -91,11 +91,11 @@ export function droppables() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'invalid-group',
+        dndGroups: new Set(['invalid-group']),
       });
 
       const droppable = new Droppable(dropElement, {
-        accept: ['valid-group', 'another-group'],
+        accept: new Set(['valid-group', 'another-group']),
       });
 
       const dndContext = new DndContext();
@@ -145,12 +145,12 @@ export function droppables() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 70 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'test-group',
+        dndGroups: new Set(['test-group']),
       });
 
       const droppable = new Droppable(dropElement, {
         accept: (draggable) => {
-          return draggable.settings.group === 'test-group';
+          return !!draggable.settings.dndGroups?.has('test-group');
         },
       });
 
@@ -210,12 +210,12 @@ export function droppables() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'test-group',
+        dndGroups: new Set(['test-group']),
       });
 
       const droppable = new Droppable(dropElement, {
         accept: (draggable) => {
-          return draggable.settings.group === 'different-group';
+          return !!draggable.settings.dndGroups?.has('different-group');
         },
       });
 
@@ -260,11 +260,11 @@ export function droppables() {
       const keyboardSensor = new KeyboardSensor(element, { moveDistance: 10 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [element],
-        group: 'test',
+        dndGroups: new Set(['test']),
       });
 
       const droppable = new Droppable(element, {
-        accept: ['test'],
+        accept: new Set(['test']),
       });
 
       const dndContext = new DndContext();
@@ -297,7 +297,7 @@ export function droppables() {
       const element = createTestElement();
 
       const droppable = new Droppable(element, {
-        accept: ['test'],
+        accept: new Set(['test']),
         data: { custom: 'value', id: 123 },
       });
 
@@ -326,7 +326,7 @@ export function droppables() {
       });
 
       const droppable = new Droppable(element, {
-        accept: ['test'],
+        accept: new Set(['test']),
       });
 
       const dndContext = new DndContext();
@@ -377,11 +377,11 @@ export function droppables() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 70 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'test',
+        dndGroups: new Set(['test']),
       });
 
       const droppable = new Droppable(dropElement, {
-        accept: ['test'],
+        accept: new Set(['test']),
       });
 
       const dndContext = new DndContext();
@@ -441,7 +441,7 @@ export function droppables() {
 
       const element = createTestElement();
       const droppable = new Droppable(element, {
-        accept: ['test'],
+        accept: new Set(['test']),
       });
 
       const dndContext = new DndContext();
@@ -489,11 +489,11 @@ export function droppables() {
       const keyboardSensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [dragElement],
-        group: 'test',
+        dndGroups: new Set(['test']),
       });
 
       const droppable = new Droppable(dropElement, {
-        accept: ['test'],
+        accept: new Set(['test']),
       });
 
       const dndContext = new DndContext();

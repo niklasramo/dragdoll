@@ -83,6 +83,7 @@ declare enum DraggableStartPredicateState {
   Rejected = 2,
 }
 type DraggableId = symbol | string | number;
+type DraggableDndGroup = string | number | symbol;
 declare const DraggableModifierPhase: {
   readonly Start: "start";
   readonly Move: "move";
@@ -139,7 +140,7 @@ interface DraggableSettings<S extends Sensor[], E extends S[number]['_events_typ
     drag: DraggableDrag<S, E>;
   }) => Readonly<Rect> | null;
   sensorProcessingMode?: DraggableSensorProcessingMode;
-  group?: string | number | symbol | null;
+  dndGroups?: Set<DraggableDndGroup>;
   onPrepareStart?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
   onStart?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
   onPrepareMove?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
@@ -215,5 +216,5 @@ declare class Draggable<S extends Sensor[] = Sensor[], E extends S[number]['_eve
   destroy(): void;
 }
 //#endregion
-export { Draggable, DraggableApplyPositionPhase, DraggableDefaultSettings, DraggableDrag, DraggableDragItem, DraggableEventCallbacks, DraggableEventType, DraggableId, DraggableModifier, DraggableModifierData, DraggableModifierPhase, DraggablePlugin, DraggablePluginMap, DraggableSensorProcessingMode, DraggableSettings };
-//# sourceMappingURL=draggable-rDEVLiCd.d.ts.map
+export { Draggable, DraggableApplyPositionPhase, DraggableDefaultSettings, DraggableDndGroup, DraggableDrag, DraggableDragItem, DraggableEventCallbacks, DraggableEventType, DraggableId, DraggableModifier, DraggableModifierData, DraggableModifierPhase, DraggablePlugin, DraggablePluginMap, DraggableSensorProcessingMode, DraggableSettings };
+//# sourceMappingURL=draggable-CGDdXxXW.d.ts.map

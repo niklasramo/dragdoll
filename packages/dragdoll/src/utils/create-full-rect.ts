@@ -1,4 +1,4 @@
-import { Rect, RectFull } from '../types.js';
+import type { Rect, RectFull } from '../types.js';
 
 export function createFullRect(
   sourceRect?: Rect,

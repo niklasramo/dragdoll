@@ -1,5 +1,5 @@
 import { getRect as mezrGetRect } from 'mezr/getRect';
-import { Rect } from '../types.js';
+import type { Rect } from '../types.js';
 
 /**
  * A wrapper around `getRect` from `mezr` that returns a `Rect` object.

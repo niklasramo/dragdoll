@@ -22,8 +22,11 @@ export function methods() {
       });
 
       const sensor = new KeyboardSensor(dragElement, { moveDistance: 10 });
-      const draggable = new Draggable([sensor], { elements: () => [dragElement], group: 'g' });
-      const droppable = new Droppable(dropElement, { accept: ['g'] });
+      const draggable = new Draggable([sensor], {
+        elements: () => [dragElement],
+        dndGroups: new Set(['g']),
+      });
+      const droppable = new Droppable(dropElement, { accept: new Set(['g']) });
       const ctx = new DndContext();
 
       ctx.addDraggables([draggable]);
@@ -64,8 +67,11 @@ export function methods() {
       });
 
       const sensor = new KeyboardSensor(dragElement, { moveDistance: 1 });
-      const draggable = new Draggable([sensor], { elements: () => [dragElement], group: 'g' });
-      const droppable = new Droppable(dropElement, { accept: ['g'] });
+      const draggable = new Draggable([sensor], {
+        elements: () => [dragElement],
+        dndGroups: new Set(['g']),
+      });
+      const droppable = new Droppable(dropElement, { accept: new Set(['g']) });
       const ctx = new DndContext();
 
       ctx.on('collide', () => events.push('collide'));
@@ -112,10 +118,10 @@ export function methods() {
 
       const s1 = new KeyboardSensor(dragEl1, { moveDistance: 1 });
       const s2 = new KeyboardSensor(dragEl2, { moveDistance: 1 });
-      const dr1 = new Draggable([s1], { elements: () => [dragEl1], group: 'g' });
-      const dr2 = new Draggable([s2], { elements: () => [dragEl2], group: 'g' });
-      const dp1 = new Droppable(dropEl1, { accept: ['g'] });
-      const dp2 = new Droppable(dropEl2, { accept: ['g'] });
+      const dr1 = new Draggable([s1], { elements: () => [dragEl1], dndGroups: new Set(['g']) });
+      const dr2 = new Draggable([s2], { elements: () => [dragEl2], dndGroups: new Set(['g']) });
+      const dp1 = new Droppable(dropEl1, { accept: new Set(['g']) });
+      const dp2 = new Droppable(dropEl2, { accept: new Set(['g']) });
       const ctx = new DndContext();
 
       ctx.on('collide', ({ draggable }) => events.push({ d: draggable }));
@@ -152,7 +158,7 @@ export function methods() {
     });
     it('updateDroppableClientRects should refresh cached rects', async () => {
       const el = createTestElement({ left: '0px', top: '0px', width: '50px', height: '50px' });
-      const droppable = new Droppable(el, { accept: ['x'] });
+      const droppable = new Droppable(el, { accept: new Set(['x']) });
       const ctx = new DndContext();
       ctx.addDroppables([droppable]);
 
@@ -185,8 +191,11 @@ export function methods() {
     it('_isMatch should return false when dragged element equals droppable.element', async () => {
       const el = createTestElement({ left: '0px', top: '0px', width: '40px', height: '40px' });
       const sensor = new KeyboardSensor(el, { moveDistance: 10 });
-      const draggable = new Draggable([sensor], { elements: () => [el], group: 'g' });
-      const droppable = new Droppable(el, { accept: ['g'] });
+      const draggable = new Draggable([sensor], {
+        elements: () => [el],
+        dndGroups: new Set(['g']),
+      });
+      const droppable = new Droppable(el, { accept: new Set(['g']) });
       const ctx = new DndContext();
 
       // When not dragging, isMatch may be true; start drag so internal items exist
@@ -207,7 +216,10 @@ export function methods() {
       const dragEl = createTestElement();
       const dropEl = createTestElement();
       const sensor = new KeyboardSensor(dragEl, { moveDistance: 10 });
-      const draggable = new Draggable([sensor], { elements: () => [dragEl], group: 'g' });
+      const draggable = new Draggable([sensor], {
+        elements: () => [dragEl],
+        dndGroups: new Set(['g']),
+      });
       const droppable = new Droppable(dropEl, { accept: () => false });
       const ctx = new DndContext();
 

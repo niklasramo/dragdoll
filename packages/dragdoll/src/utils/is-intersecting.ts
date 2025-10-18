@@ -1,4 +1,4 @@
-import { Rect } from '../types.js';
+import type { Rect } from '../types.js';
 
 /**
  * Check if two rectangles intersect.

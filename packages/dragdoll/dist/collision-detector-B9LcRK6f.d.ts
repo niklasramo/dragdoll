@@ -1,6 +1,6 @@
 import { Rect } from "./types-CEK9qPqM.js";
-import { Draggable, DraggableId } from "./draggable-rDEVLiCd.js";
-import { Droppable, DroppableId } from "./droppable-BDnHC3pX.js";
+import { Draggable, DraggableId } from "./draggable-CGDdXxXW.js";
+import { Droppable, DroppableId } from "./droppable-D1dJzvV4.js";
 import { Emitter, EventListenerId } from "eventti";
 
 //#region src/utils/fast-object-pool.d.ts
@@ -174,4 +174,4 @@ declare class CollisionDetector<T extends CollisionData = CollisionData> {
 }
 //#endregion
 export { CollisionData, CollisionDetector, DndContext, DndContextDragData, DndContextEventCallbacks, DndContextEventType, DndContextOptions, FastObjectPool };
-//# sourceMappingURL=collision-detector-D2AQujkR.d.ts.map
+//# sourceMappingURL=collision-detector-B9LcRK6f.d.ts.map
