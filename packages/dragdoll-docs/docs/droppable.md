@@ -76,6 +76,9 @@ Controls which draggables can collide with this droppable when used in a [`DndCo
 - Set mode: accepts a draggable when its [`dndGroups`](/draggable#dndgroups) set contains any of the identifiers in this set.
 - Function mode: called during collision detection for every candidate. Return `true` to accept, `false` to reject. You can incorporate the draggable's [`dndGroups`](/draggable#dndgroups) here or come up with any other acceptance criteria.
 
+> [!IMPORTANT]
+> In most real-world use cases you don't want the Draggable and Droppable colliding with each other if the Droppable's [`element`](#element) is contained within any of the Draggable's dragged elements. This is why [DndContext](/dnd-context) will automatically discard such matches and you don't have to worry about it yourself. In the rare case that you do want this behavior, you can override this behavior by overriding the [DndContext's](/dnd-context) protected `_isMatch` method.
+
 Default is `() => true` (accepts all draggables).
 
 ### data

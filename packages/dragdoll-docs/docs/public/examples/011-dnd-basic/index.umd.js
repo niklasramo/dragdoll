@@ -1024,7 +1024,7 @@ var n = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/dnd-context-CuyeEdWl.js
+//#region ../dragdoll/dist/dnd-context-DKTVH6Ht.js
 var s$1 = function(e$4) {
 	return e$4[e$4.Idle = 0] = `Idle`, e$4[e$4.Computing = 1] = `Computing`, e$4[e$4.Computed = 2] = `Computed`, e$4[e$4.Emitting = 3] = `Emitting`, e$4;
 }(s$1 || {});
@@ -1064,11 +1064,14 @@ var u = class {
 			let r$4 = e$4.settings.dndGroups, i$4 = t$4.accept;
 			if (!r$4 || r$4.size === 0 || i$4.size === 0) return !1;
 			let a$3 = i$4.size < r$4.size, o$2 = a$3 ? i$4 : r$4, s$3 = a$3 ? r$4 : i$4;
-			for (let e$5 of o$2) s$3.has(e$5) && (n$7 = !0);
+			for (let e$5 of o$2) if (s$3.has(e$5)) {
+				n$7 = !0;
+				break;
+			}
 		}
 		if (n$7 && e$4.drag) {
 			let n$8 = e$4.drag.items;
-			for (let e$5 = 0; e$5 < n$8.length; e$5++) if (n$8[e$5].element === t$4.element) return !1;
+			for (let e$5 = 0; e$5 < n$8.length; e$5++) if (n$8[e$5].element.contains(t$4.element)) return !1;
 		}
 		return n$7;
 	}
