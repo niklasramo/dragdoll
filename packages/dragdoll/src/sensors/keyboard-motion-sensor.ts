@@ -245,7 +245,7 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
     }
   }
 
-  updateSettings(options: Partial<KeyboardMotionSensorSettings<E>> = {}) {
+  updateSettings(options: Partial<KeyboardMotionSensorSettings<E>>) {
     let moveKeysMayNeedUpdate = false;
 
     const { cancelOnBlur, cancelOnVisibilityChange, startPredicate, computeSpeed } = options;

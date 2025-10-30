@@ -22,19 +22,22 @@ const keyboardSensor = new KeyboardSensor(element, {
 });
 const draggable = new Draggable([pointerSensor, keyboardSensor], {
   elements: () => [element],
-  positionModifiers: createSnapModifier(CELL_WIDTH, CELL_HEIGHT),
+  positionModifiers: [createSnapModifier(CELL_WIDTH, CELL_HEIGHT)],
 });
 ```
 
 ## Syntax
 
-<!-- prettier-ignore -->
 ```ts
-type createSnapModifier = (
+function createSnapModifier<S extends Sensor[]>(
   cellWidth: number,
-  cellHeight: number
-) => DraggableModifier;
+  cellHeight: number,
+): DraggableModifier<S>;
 ```
+
+## Type variables
+
+1. **S** - The types of the sensors that the modifier will use.
 
 ## Parameters
 
@@ -48,4 +51,4 @@ type createSnapModifier = (
 
 ## Returns
 
-A modifier function that can be provided to the [`positionModifiers`](/draggable#positionmodifiers) option of the [`Draggable`](/draggable) constructor.
+A [modifier](/draggable#draggablemodifier) function that can be provided to the [`positionModifiers`](/draggable#positionmodifiers) option of the [`Draggable`](/draggable) constructor.

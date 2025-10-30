@@ -20,11 +20,10 @@ function getScrollables(element: Element) {
 
 export function createTouchDelayPredicate<
   S extends (Sensor | PointerSensor)[] = (Sensor | PointerSensor)[],
-  D extends Draggable<S> = Draggable<S>,
 >(
   options: {
     touchDelay?: number;
-    fallback?: D['settings']['startPredicate'];
+    fallback?: Draggable<S>['settings']['startPredicate'];
   } = {},
 ) {
   let dragAllowed: boolean | undefined = undefined;
@@ -57,7 +56,7 @@ export function createTouchDelayPredicate<
     }
   };
 
-  const pointerSensorStartPredicate: D['settings']['startPredicate'] = (data) => {
+  const pointerSensorStartPredicate: Draggable<S>['settings']['startPredicate'] = (data) => {
     if (!(data.sensor instanceof PointerSensor)) {
       return fallback(data);
     }

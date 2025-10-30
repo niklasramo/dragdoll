@@ -20,13 +20,13 @@ const AUTOSCROLL_CLIENT_RECT: Rect = {
   y: 0,
 };
 
-function getDefaultSettings<S extends Sensor[], E extends S[number]['_events_type']>() {
+function getDefaultSettings<S extends Sensor[]>() {
   return {
     targets: [],
     inertAreaSize: 0.2,
     speed: autoScrollSmoothSpeed(),
     smoothStop: false,
-    getPosition: (draggable: Draggable<S, E>) => {
+    getPosition: (draggable: Draggable<S>) => {
       const { drag } = draggable;
       const primaryItem = drag?.items[0];
 
@@ -41,7 +41,7 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['_events_typ
       AUTOSCROLL_POSITION.y = e ? e.y : 0;
       return AUTOSCROLL_POSITION;
     },
-    getClientRect: (draggable: Draggable<S, E>) => {
+    getClientRect: (draggable: Draggable<S>) => {
       const { drag } = draggable;
 
       // Try to use the default draggable client rect.
@@ -62,15 +62,13 @@ function getDefaultSettings<S extends Sensor[], E extends S[number]['_events_typ
   };
 }
 
-class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['_events_type']>
-  implements AutoScrollItem
-{
-  protected _draggableAutoScroll: DraggableAutoScroll<S, E>;
-  protected _draggable: Draggable<S, E>;
+class DraggableAutoScrollProxy<S extends Sensor[]> implements AutoScrollItem {
+  protected _draggableAutoScroll: DraggableAutoScroll<S>;
+  protected _draggable: Draggable<S>;
   protected _position: AutoScrollItem['position'];
   protected _clientRect: AutoScrollItem['clientRect'];
 
-  constructor(draggableAutoScroll: DraggableAutoScroll<S, E>, draggable: Draggable<S, E>) {
+  constructor(draggableAutoScroll: DraggableAutoScroll<S>, draggable: Draggable<S>) {
     this._draggableAutoScroll = draggableAutoScroll;
     this._draggable = draggable;
     this._position = { x: 0, y: 0 };
@@ -136,35 +134,28 @@ class DraggableAutoScrollProxy<S extends Sensor[], E extends S[number]['_events_
   }
 }
 
-export interface DraggableAutoScrollSettings<
-  S extends Sensor[],
-  E extends S[number]['_events_type'],
-> {
-  targets: AutoScrollItemTarget[] | ((draggable: Draggable<S, E>) => AutoScrollItemTarget[]);
+export interface DraggableAutoScrollSettings<S extends Sensor[]> {
+  targets: AutoScrollItemTarget[] | ((draggable: Draggable<S>) => AutoScrollItemTarget[]);
   inertAreaSize: number;
   speed: number | AutoScrollItemSpeedCallback;
   smoothStop: boolean;
-  getPosition: ((draggable: Draggable<S, E>) => Point) | null;
-  getClientRect: ((draggable: Draggable<S, E>) => Rect) | null;
+  getPosition: ((draggable: Draggable<S>) => Point) | null;
+  getClientRect: ((draggable: Draggable<S>) => Rect) | null;
   onStart: AutoScrollItemEventCallback | null;
   onStop: AutoScrollItemEventCallback | null;
 }
 
-export type DraggableAutoScrollOptions<
-  S extends Sensor[],
-  E extends S[number]['_events_type'],
-> = Partial<DraggableAutoScrollSettings<S, E>>;
+export type DraggableAutoScrollOptions<S extends Sensor[]> = Partial<
+  DraggableAutoScrollSettings<S>
+>;
 
-export class DraggableAutoScroll<
-  S extends Sensor[] = Sensor[],
-  E extends S[number]['_events_type'] = S[number]['_events_type'],
-> {
+export class DraggableAutoScroll<S extends Sensor[] = Sensor[]> {
   readonly name: 'autoscroll';
   readonly version: string;
-  readonly settings: DraggableAutoScrollSettings<S, E>;
-  protected _autoScrollProxy: DraggableAutoScrollProxy<S, E> | null;
+  readonly settings: DraggableAutoScrollSettings<S>;
+  protected _autoScrollProxy: DraggableAutoScrollProxy<S> | null;
 
-  constructor(draggable: Draggable<S, E>, options: DraggableAutoScrollOptions<S, E> = {}) {
+  constructor(draggable: Draggable<S>, options: DraggableAutoScrollOptions<S> = {}) {
     this.name = 'autoscroll';
     this.version = '0.0.3';
     this.settings = this._parseSettings(options);
@@ -217,12 +208,10 @@ export class DraggableAutoScroll<
   }
 }
 
-export function autoScrollPlugin<
-  S extends Sensor[],
-  E extends S[number]['_events_type'],
-  P extends DraggablePluginMap,
->(options?: DraggableAutoScrollOptions<S, E>) {
-  return (draggable: Draggable<S, E, P>) => {
+export function autoScrollPlugin<S extends Sensor[], P extends DraggablePluginMap>(
+  options?: DraggableAutoScrollOptions<S>,
+) {
+  return (draggable: Draggable<S, P>) => {
     const p = new DraggableAutoScroll(draggable, options);
     const d = draggable as typeof draggable & {
       plugins: { [p.name]: typeof p };

@@ -9,7 +9,7 @@ import { Droppable } from 'dragdoll/droppable';
 
 const dropZone = document.querySelector('.drop-zone') as HTMLElement;
 const droppable = new Droppable(dropZone, {
-  accept: ['groupA'],
+  accept: new Set(['groupA']),
   data: { info: 'Custom drop zone info' },
 });
 
@@ -22,40 +22,48 @@ droppable.on('destroy', () => {
 droppable.destroy();
 ```
 
-## Constructor
+## Class
 
 ```ts
-new Droppable(element: HTMLElement | SVGSVGElement, options?: DroppableOptions);
+class Droppable {
+  constructor(element: HTMLElement | SVGSVGElement, options: DroppableOptions = {}) {}
+}
 ```
 
-### Parameters
+### Constructor Parameters
 
 1. **element**
    - The target DOM element that represents the drop zone.
-
 2. **options**
-   - An optional options object with the following properties:
-     - **`id`**
-       - The unique identifier for this droppable. A string, number, or symbol.
-       - Default: a unique symbol.
-     - **`accept`**
-       - Either a set of identifiers (`Set<DraggableDndGroup>`) or a predicate `(draggable) => boolean`.
-       - Set mode: accepts draggables whose [`dndGroups`](/draggable#dndgroups) set contains any of the identifiers in the set.
-       - Function mode: decide acceptance via a function that receives the draggable as an argument.
-       - Default: `() => true` (accepts all draggables).
-     - **`data`**
-       - An object containing custom data for the droppable.
-       - Default: an empty object.
+   - An optional options object following the [`DroppableOptions`](#droppableoptions) interface.
+   - Check out the [Options](#options) section for more information.
+   - Default: `{}`.
+
+## Options
+
+Here you can find more information about the options you can provide to the constructor. The typings here follow the [`DroppableOptions`](#droppableoptions) interface.
+
+### id
+
+Check out the [`id`](#id-1) property docs for more information.
+
+### accept
+
+Check out the [`accept`](#accept-1) property docs for more information.
+
+### data
+
+Check out the [`data`](#data-1) property docs for more information.
 
 ## Properties
 
 ### id
 
 ```ts
-type id = string | number | symbol;
+type id = DroppableId;
 ```
 
-The unique identifier for this droppable. Defaults to a unique symbol. Read-only.
+The unique identifier for this droppable. Default is a unique symbol. Read-only.
 
 ### element
 
@@ -68,7 +76,7 @@ The associated DOM element whose bounding client rectangle is used for collision
 ### accept
 
 ```ts
-type accept = Set<DraggableDndGroup> | ((draggable: Draggable<any>) => boolean);
+type accept = Set<DraggableDndGroup> | ((draggable: AnyDraggable) => boolean);
 ```
 
 Controls which draggables can collide with this droppable when used in a [`DndContext`](/dnd-context).
@@ -102,64 +110,73 @@ Boolean flag indicating whether this instance has been destroyed. Read-only.
 ### on
 
 ```ts
-// Type
-type on = (type: 'destroy', listener: () => void, listenerId?: ListenerId) => ListenerId;
+type on = <T extends keyof DroppableEventCallbacks>(
+  type: T,
+  listener: DroppableEventCallbacks[T],
+  listenerId?: SensorEventListenerId,
+) => SensorEventListenerId;
+```
 
-type ListenerId = null | string | number | symbol | Function | Object;
+Adds a listener to a droppable event. Returns a [listener id](/sensor#sensoreventlistenerid), which can be used to remove this specific listener. By default this will always be a symbol unless manually provided.
 
-// Usage
+Please check the [Events](#events) section for more information about the events and their payloads.
+
+**Example**
+
+```ts
 droppable.on('destroy', (e) => {
   console.log('destroy', e);
 });
 ```
 
-Adds an event listener to the Droppable instance.
-
-The listener function receives no arguments.
-
-The last optional argument is the listener id, which is normally created automatically, but can be provided here manually too.
-
-The method returns a listener id, which can be used to remove this specific listener. By default this will always be a symbol unless manually provided.
-
 ### off
 
 ```ts
-// Type
-type off = (
-  type: 'destroy',
-  listenerId: null | string | number | symbol | Function | Object,
+type off = <T extends keyof DroppableEventCallbacks>(
+  type: T,
+  listenerId: SensorEventListenerId,
 ) => void;
+```
 
-// Usage
+Removes a listener (based on [listener id](/sensor#sensoreventlistenerid)) from a droppable event.
+
+**Example**
+
+```ts
 const id = droppable.on('destroy', () => console.log('destroy'));
 droppable.off('destroy', id);
 ```
 
-Removes a listener (based on listener id) from an event. The first argument is the event type and the second argument is the listener id.
-
 ### getClientRect
 
 ```ts
-// Type
 type getClientRect = () => Readonly<Rect>;
-
-// Usage
-const rect = droppable.getClientRect();
-console.log(rect.width, rect.height, rect.left, rect.top);
 ```
 
 Returns the cached bounding client rectangle of the droppable as a read-only object. This rect is updated when `updateClientRect()` is called (e.g., by `DndContext` at drag start or on scroll).
 
+**Example**
+
+```ts
+const rect = droppable.getClientRect();
+console.log(rect.x, rect.y, rect.width, rect.height);
+```
+
 ### updateClientRect
 
 ```ts
-// Type
 type updateClientRect = (rect?: Rect) => void;
+```
 
-// Usage (read from the DOM)
+Updates the cached client rectangle by reading the current bounding client rectangle of the element, or by using a provided `Rect`.
+
+**Example**
+
+```ts
+// Read from the DOM.
 droppable.updateClientRect();
 
-// Usage (provide a custom bounding client rectangle)
+// Provide a custom bounding client rectangle.
 droppable.updateClientRect({
   x: 100,
   y: 100,
@@ -168,19 +185,73 @@ droppable.updateClientRect({
 });
 ```
 
-Updates the cached client rectangle by reading the current bounding client rectangle of the element, or by using a provided `Rect`.
-
 ### destroy
 
 ```ts
-// Type
 type destroy = () => void;
-
-// Usage
-droppable.destroy();
 ```
 
 Destroys the droppable instance:
 
 - Emits the `destroy` event (if any listeners are registered).
 - Marks the droppable as destroyed to prevent further operations.
+
+**Example**
+
+```ts
+droppable.destroy();
+```
+
+## Events
+
+### destroy
+
+Emitted when the droppable is destroyed. There is no payload for this event.
+
+## Types
+
+### DroppableId
+
+```ts
+// Import
+import type { DroppableId } from 'dragdoll/droppable';
+
+// Type
+type DroppableId = symbol | string | number;
+```
+
+### DroppableEventType
+
+```ts
+// Import
+import type { DroppableEventType } from 'dragdoll/droppable';
+
+// Type
+type DroppableEventType = 'destroy';
+```
+
+### DroppableEventCallbacks
+
+```ts
+// Import
+import type { DroppableEventCallbacks } from 'dragdoll/droppable';
+
+// Interface
+interface DroppableEventCallbacks {
+  destroy: () => void;
+}
+```
+
+### DroppableOptions
+
+```ts
+// Import
+import type { DroppableOptions } from 'dragdoll/droppable';
+
+// Interface
+interface DroppableOptions {
+  id?: DroppableId;
+  accept?: Set<DraggableDndGroup> | ((draggable: AnyDraggable) => boolean);
+  data?: { [key: string]: any };
+}
+```

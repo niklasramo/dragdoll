@@ -4,14 +4,14 @@
 
 Draggable has a very simple plugin system, which allows you to extend the default functionality. Plugins are added to a Draggable instance via [`use`](/draggable#use) method, one by one, preferably at the same time when instantiating the Draggable.
 
-Note that you can't remove a plugin from a Draggable instance and can't add a plugin with the same name twice. If your plugin depends on a specific version of a specific plugin you need to do the checking manually yourself during plugin instantiation and e.g. throw and error if conditions are not met. All the plugins are added to [`draggable.plugins`](/draggable#plugins) property, which you can use to do such checking.
+Note that you can't remove a plugin from a Draggable instance and can't add a plugin with the same name twice. If your plugin depends on a specific version of a specific plugin you need to do the checking manually yourself during plugin instantiation and e.g. throw an error if conditions are not met. All the plugins are added to [`draggable.plugins`](/draggable#plugins) property, which you can use to do such checking.
 
 Let's build an example plugin, which logs draggable events based on options we provide it:
 
 ```ts
 import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
-import { Sensor } from 'dragdoll/sensors';
+import type { Sensor } from 'dragdoll/sensors';
 
 const DRAGGABLE_EVENTS = [
   'preparestart',
@@ -32,7 +32,7 @@ function loggerPlugin<S extends Sensor[], E extends S[number]['_events_type']>(
   options: LoggerPluginOptions = {},
 ) {
   // This is the actual Draggable plugin, a function which:
-  // 1. Receives the Draggable instance as it's argument.
+  // 1. Receives the Draggable instance as its argument.
   // 2. Creates the plugin instance and adds it to the draggable.plugins
   //    object.
   // 3. Listens to Draggable instance's events and does whatever else it needs
@@ -46,7 +46,7 @@ function loggerPlugin<S extends Sensor[], E extends S[number]['_events_type']>(
       version: '1.0.0',
     } as const;
 
-    // In case our plugin depended on some other plugin we could check it's
+    // In case our plugin depended on some other plugin we could check its
     // existence here.
     /*
     const fooPlugin = draggable.plugins['foo'];

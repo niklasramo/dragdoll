@@ -15,7 +15,7 @@ new Draggable([pointerSensor, keyboardSensor], {
     clone.style.top = `${elemRect.top}px`;
 
     // Add the ghost and dragging class to the clone. The ghost element will be
-    // in dragging state for the duration of it's existence.
+    // in dragging state for the duration of its existence.
     clone.classList.add('ghost', 'dragging');
 
     // We need to reset the transform to avoid the ghost element being offset

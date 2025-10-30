@@ -4139,7 +4139,7 @@ function getOffsetContainer(n$7, t$5 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-C1QBodX1.js
+//#region ../dragdoll/dist/draggable-b_bwyIic.js
 function s$3(e$5, t$5) {
 	return e$5.isIdentity && t$5.isIdentity ? !0 : e$5.is2D && t$5.is2D ? e$5.a === t$5.a && e$5.b === t$5.b && e$5.c === t$5.c && e$5.d === t$5.d && e$5.e === t$5.e && e$5.f === t$5.f : e$5.m11 === t$5.m11 && e$5.m12 === t$5.m12 && e$5.m13 === t$5.m13 && e$5.m14 === t$5.m14 && e$5.m21 === t$5.m21 && e$5.m22 === t$5.m22 && e$5.m23 === t$5.m23 && e$5.m24 === t$5.m24 && e$5.m31 === t$5.m31 && e$5.m32 === t$5.m32 && e$5.m33 === t$5.m33 && e$5.m34 === t$5.m34 && e$5.m41 === t$5.m41 && e$5.m42 === t$5.m42 && e$5.m43 === t$5.m43 && e$5.m44 === t$5.m44;
 }
@@ -4163,10 +4163,10 @@ function d$1(e$5, t$5 = 0) {
 }
 var f$1 = class {
 	constructor() {
-		this._cache = /* @__PURE__ */ new Map(), this._validation = /* @__PURE__ */ new Map();
+		this._cache = /* @__PURE__ */ new Map(), this._validation = /* @__PURE__ */ new Set();
 	}
 	set(e$5, t$5) {
-		this._cache.set(e$5, t$5), this._validation.set(e$5, void 0);
+		this._cache.set(e$5, t$5), this._validation.add(e$5);
 	}
 	get(e$5) {
 		return this._cache.get(e$5);
@@ -4496,14 +4496,14 @@ var B = class {
 	}
 	_prepareStart() {
 		let e$5 = this.drag;
-		e$5 && (this._startPhase = N.Prepare, e$5.items = (this.settings.elements({
+		!e$5 || this._startPhase !== N.Init || (this._startPhase = N.Prepare, e$5.items = (this.settings.elements({
 			draggable: this,
 			drag: e$5
 		}) || []).map((e$6) => new O(e$6, this)), this._applyModifiers(F.Start, 0, 0), this._emit(R.PrepareStart, e$5.startEvent), this.settings.onPrepareStart?.(e$5, this), this._startPhase = N.FinishPrepare);
 	}
 	_applyStart() {
 		let e$5 = this.drag;
-		if (e$5) {
+		if (!(!e$5 || this._startPhase !== N.FinishPrepare)) {
 			this._startPhase = N.Apply;
 			for (let t$5 of e$5.items) t$5.dragContainer !== t$5.elementContainer && l$3(t$5.dragContainer, t$5.element), t$5.frozenStyles && Object.assign(t$5.element.style, t$5.frozenStyles), this.settings.applyPosition({
 				phase: L.Start,
@@ -4531,13 +4531,13 @@ var B = class {
 	}
 	_prepareMove() {
 		let e$5 = this.drag;
-		if (!e$5) return;
+		if (!e$5 || e$5.isEnded) return;
 		let { moveEvent: t$5, prevMoveEvent: n$7 } = e$5;
 		t$5 !== n$7 && (this._applyModifiers(F.Move, t$5.x - n$7.x, t$5.y - n$7.y), this._emit(R.PrepareMove, t$5), !e$5.isEnded && (this.settings.onPrepareMove?.(e$5, this), !e$5.isEnded && (e$5.prevMoveEvent = t$5)));
 	}
 	_applyMove() {
 		let e$5 = this.drag;
-		if (e$5) {
+		if (!(!e$5 || e$5.isEnded)) {
 			for (let t$5 of e$5.items) t$5._moveDiff.x = 0, t$5._moveDiff.y = 0, this.settings.applyPosition({
 				phase: L.Move,
 				draggable: this,
@@ -4549,7 +4549,7 @@ var B = class {
 	}
 	_prepareAlign() {
 		let { drag: e$5 } = this;
-		if (e$5) for (let t$5 of e$5.items) {
+		if (!(!e$5 || e$5.isEnded)) for (let t$5 of e$5.items) {
 			let { x: e$6, y: n$7 } = t$5.element.getBoundingClientRect(), r$4 = t$5.clientRect.x - t$5._moveDiff.x - e$6;
 			t$5.alignmentOffset.x = t$5.alignmentOffset.x - t$5._alignDiff.x + r$4, t$5._alignDiff.x = r$4;
 			let i$2 = t$5.clientRect.y - t$5._moveDiff.y - n$7;
@@ -4558,7 +4558,7 @@ var B = class {
 	}
 	_applyAlign() {
 		let { drag: e$5 } = this;
-		if (e$5) for (let t$5 of e$5.items) t$5._alignDiff.x = 0, t$5._alignDiff.y = 0, this.settings.applyPosition({
+		if (!(!e$5 || e$5.isEnded)) for (let t$5 of e$5.items) t$5._alignDiff.x = 0, t$5._alignDiff.y = 0, this.settings.applyPosition({
 			phase: L.Align,
 			draggable: this,
 			drag: e$5,
@@ -4603,7 +4603,7 @@ var B = class {
 		let n$7 = this.drag;
 		if (!(!n$7 || n$7.isEnded)) {
 			if (this._startPhase === N.Prepare || this._startPhase === N.Apply) throw Error(`Cannot stop drag start process at this point`);
-			n$7.isEnded = !0, this._startPhase === N.Init && this._prepareStart(), this._startPhase === N.FinishPrepare && this._applyStart(), this._startPhase = N.None, r$1.off(n$3.read, this._startId), r$1.off(n$3.write, this._startId), r$1.off(n$3.read, this._moveId), r$1.off(n$3.write, this._moveId), r$1.off(n$3.read, this._alignId), r$1.off(n$3.write, this._alignId), window.removeEventListener(`scroll`, this._onScroll, k), this._applyModifiers(F.End, 0, 0);
+			n$7.isEnded = !0, this._prepareStart(), this._applyStart(), this._startPhase = N.None, r$1.off(n$3.read, this._startId), r$1.off(n$3.write, this._startId), r$1.off(n$3.read, this._moveId), r$1.off(n$3.write, this._moveId), r$1.off(n$3.read, this._alignId), r$1.off(n$3.write, this._alignId), window.removeEventListener(`scroll`, this._onScroll, k), this._applyModifiers(F.End, 0, 0);
 			for (let e$5 of n$7.items) {
 				if (e$5.elementContainer !== e$5.dragContainer && (l$3(e$5.elementContainer, e$5.element), e$5.alignmentOffset.x = 0, e$5.alignmentOffset.y = 0, e$5.containerOffset.x = 0, e$5.containerOffset.y = 0), e$5.unfrozenStyles) for (let t$5 in e$5.unfrozenStyles) e$5.element.style[t$5] = e$5.unfrozenStyles[t$5] || ``;
 				this.settings.applyPosition({
@@ -4627,7 +4627,7 @@ var B = class {
 		}
 	}
 	align(n$7 = !1) {
-		this.drag && (n$7 || this.settings.sensorProcessingMode === I.Immediate ? (this._prepareAlign(), this._applyAlign()) : (r$1.once(n$3.read, this._prepareAlign, this._alignId), r$1.once(n$3.write, this._applyAlign, this._alignId)));
+		!this.drag || this.drag.isEnded || (n$7 || this.settings.sensorProcessingMode === I.Immediate ? (this._prepareAlign(), this._applyAlign()) : (r$1.once(n$3.read, this._prepareAlign, this._alignId), r$1.once(n$3.write, this._applyAlign, this._alignId)));
 	}
 	getClientRect() {
 		let { drag: e$5, settings: t$5 } = this;
@@ -4636,7 +4636,7 @@ var B = class {
 			drag: e$5
 		}) || null;
 	}
-	updateSettings(e$5 = {}) {
+	updateSettings(e$5) {
 		this.settings = this._parseSettings(e$5, this.settings);
 	}
 	use(e$5) {
@@ -4650,7 +4650,7 @@ var B = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/keyboard-sensor-CJl8XkdN.js
+//#region ../dragdoll/dist/keyboard-sensor-D1L60kQK.js
 const n$6 = {
 	moveDistance: 25,
 	cancelOnBlur: !0,
@@ -4767,7 +4767,7 @@ var r = class extends n$5 {
 			return;
 		}
 	}
-	updateSettings(e$5 = {}) {
+	updateSettings(e$5) {
 		let { moveDistance: t$5, cancelOnBlur: n$7, cancelOnVisibilityChange: r$4, startPredicate: i$2, movePredicate: a$2, cancelPredicate: o$2, endPredicate: s$4 } = e$5;
 		t$5 !== void 0 && (typeof t$5 == `number` ? this.moveDistance.x = this.moveDistance.y = t$5 : (this.moveDistance.x = t$5.x, this.moveDistance.y = t$5.y)), n$7 !== void 0 && this._cancelOnBlur !== n$7 && (this._cancelOnBlur = n$7, n$7 ? this.element?.addEventListener(`blur`, this._blurCancelHandler) : this.element?.removeEventListener(`blur`, this._blurCancelHandler)), r$4 !== void 0 && this._cancelOnVisibilityChange !== r$4 && (this._cancelOnVisibilityChange = r$4, r$4 ? document.addEventListener(`visibilitychange`, this._internalCancel) : document.removeEventListener(`visibilitychange`, this._internalCancel)), i$2 && (this._startPredicate = i$2), a$2 && (this._movePredicate = a$2), o$2 && (this._cancelPredicate = o$2), s$4 && (this._endPredicate = s$4);
 	}
@@ -8580,7 +8580,7 @@ function n$1(n$7, r$4, i$2) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/collision-detector-C_qir_i0.js
+//#region ../dragdoll/dist/collision-detector-C24DZfyT.js
 function n$2(e$5, t$5 = {
 	width: 0,
 	height: 0,
@@ -8591,15 +8591,16 @@ function n$2(e$5, t$5 = {
 }
 var r$2 = class {
 	constructor(e$5) {
-		this._items = [], this._index = 0, this._getItem = e$5;
+		this._items = [], this._index = 0, this._initItem = e$5;
 	}
-	get(...e$5) {
-		return this._index >= this._items.length ? this._items[this._index++] = this._getItem(void 0, ...e$5) : this._getItem(this._items[this._index++], ...e$5);
+	allocate(...e$5) {
+		let t$5 = this._index, n$7 = this._items, r$4 = this._initItem(n$7[t$5], ...e$5);
+		return n$7[t$5] = r$4, ++this._index, r$4;
 	}
-	resetPointer() {
+	reset() {
 		this._index = 0;
 	}
-	resetItems(e$5 = 0) {
+	truncate(e$5 = 0) {
 		let t$5 = Math.max(0, Math.min(e$5, this._items.length));
 		this._index = Math.min(this._index, t$5), this._items.length = t$5;
 	}
@@ -8607,7 +8608,7 @@ var r$2 = class {
 const i = Symbol();
 var a = class {
 	constructor(e$5) {
-		this._listenerId = Symbol(), this._dndContext = e$5, this._collisionDataPoolCache = [], this._collisionDataPoolMap = /* @__PURE__ */ new Map();
+		this._listenerId = Symbol(), this._dndContext = e$5, this._cdArenaPool = [], this._cdArenaMap = /* @__PURE__ */ new Map();
 	}
 	_checkCollision(r$4, i$2, a$2) {
 		let o$2 = r$4.getClientRect(), s$4 = i$2.getClientRect();
@@ -8632,34 +8633,34 @@ var a = class {
 			intersectionScore: 0
 		};
 	}
-	getCollisionDataPool(e$5) {
-		let t$5 = this._collisionDataPoolMap.get(e$5);
-		return t$5 || (t$5 = this._collisionDataPoolCache.pop() || new r$2((e$6) => e$6 || this._createCollisionData()), this._collisionDataPoolMap.set(e$5, t$5)), t$5;
+	_getCollisionDataArena(e$5) {
+		let t$5 = this._cdArenaMap.get(e$5);
+		return t$5 || (t$5 = this._cdArenaPool.pop() || new r$2((e$6) => e$6 || this._createCollisionData()), this._cdArenaMap.set(e$5, t$5)), t$5;
 	}
-	removeCollisionDataPool(e$5) {
-		let t$5 = this._collisionDataPoolMap.get(e$5);
-		t$5 && (t$5.resetItems(20), t$5.resetPointer(), this._collisionDataPoolCache.push(t$5), this._collisionDataPoolMap.delete(e$5));
+	_removeCollisionDataArena(e$5) {
+		let t$5 = this._cdArenaMap.get(e$5);
+		t$5 && (t$5.truncate(20), t$5.reset(), this._cdArenaPool.push(t$5), this._cdArenaMap.delete(e$5));
 	}
 	detectCollisions(e$5, t$5, n$7) {
 		if (n$7.length = 0, !t$5.size) return;
-		let r$4 = this.getCollisionDataPool(e$5), i$2 = null, a$2 = t$5.values();
-		for (let t$6 of a$2) i$2 ||= r$4.get(), this._checkCollision(e$5, t$6, i$2) && (n$7.push(i$2), i$2 = null);
-		n$7.length > 1 && this._sortCollisions(e$5, n$7), r$4.resetPointer();
+		let r$4 = this._getCollisionDataArena(e$5), i$2 = null, a$2 = t$5.values();
+		for (let t$6 of a$2) i$2 ||= r$4.allocate(), this._checkCollision(e$5, t$6, i$2) && (n$7.push(i$2), i$2 = null);
+		n$7.length > 1 && this._sortCollisions(e$5, n$7), r$4.reset();
 	}
 	destroy() {
-		this._collisionDataPoolMap.forEach((e$5) => {
-			e$5.resetItems();
+		this._cdArenaMap.forEach((e$5) => {
+			e$5.truncate();
 		});
 	}
 };
 
 //#endregion
-//#region ../dragdoll/dist/droppable-BW9Ygu-q.js
+//#region ../dragdoll/dist/droppable-SOYeMTHF.js
 const t$2 = { Destroy: `destroy` };
 var n = class {
 	constructor(t$5, n$7 = {}) {
 		let { id: r$4 = Symbol(), accept: i$2 = () => !0, data: a$2 = {} } = n$7;
-		this.id = r$4, this.element = t$5, this.accept = i$2, this.data = a$2, this.isDestroyed = !1, this._clientRect = {
+		this.id = r$4, this.element = t$5, this.isDestroyed = !1, this.accept = i$2, this.data = a$2, this._clientRect = {
 			x: 0,
 			y: 0,
 			width: 0,
@@ -8685,7 +8686,7 @@ var n = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/dnd-context-DKTVH6Ht.js
+//#region ../dragdoll/dist/dnd-context-BjJhlSlB.js
 var s$1 = function(e$5) {
 	return e$5[e$5.Idle = 0] = `Idle`, e$5[e$5.Computing = 1] = `Computing`, e$5[e$5.Computed = 2] = `Computed`, e$5[e$5.Emitting = 3] = `Emitting`, e$5;
 }(s$1 || {});
@@ -8799,26 +8800,19 @@ var u = class {
 	_onDraggableDestroy(e$5) {
 		this.removeDraggables([e$5]);
 	}
-	_stopDrag(e$5, t$5 = !1) {
-		let n$7 = this._drags.get(e$5);
-		if (!n$7 || n$7.isEnded) return !1;
-		n$7.isEnded = !0;
-		let r$4 = n$7._cd.phase === s$1.Emitting;
-		r$4 || (this._computeCollisions(e$5, !0), this._emitCollisions(e$5, !0));
-		let { targets: i$2, collisions: a$2, contacts: o$2 } = n$7._cd;
-		return this._emitter.listenerCount(l$1.End) && this._emitter.emit(l$1.End, {
-			canceled: t$5,
-			draggable: e$5,
-			targets: i$2,
-			collisions: a$2,
-			contacts: o$2
-		}), r$4 ? (window.queueMicrotask(() => {
-			this._finalizeStopDrag(e$5);
-		}), !0) : (this._finalizeStopDrag(e$5), !1);
-	}
-	_finalizeStopDrag(n$7) {
-		let r$4 = this._drags.get(n$7);
-		!r$4 || !r$4.isEnded || (this._drags.delete(n$7), this._collisionDetector.removeCollisionDataPool(n$7), r$1.off(n$3.read, r$4._cd.tickerId), r$1.off(n$3.write, r$4._cd.tickerId), this._drags.size || (r$1.off(n$3.read, this._listenerId), window.removeEventListener(`scroll`, this._onScroll, c$1)));
+	_stopDrag(n$7, r$4 = !1) {
+		let i$2 = this._drags.get(n$7);
+		if (!i$2 || i$2.isEnded) return;
+		if (i$2._cd.phase === s$1.Emitting) throw Error(`Cannot stop dragging while collisions are being emitted.`);
+		i$2.isEnded = !0, this._computeCollisions(n$7, !0), this._emitCollisions(n$7, !0);
+		let { targets: a$2, collisions: o$2, contacts: u$5 } = i$2._cd;
+		this._emitter.listenerCount(l$1.End) && this._emitter.emit(l$1.End, {
+			canceled: r$4,
+			draggable: n$7,
+			targets: a$2,
+			collisions: o$2,
+			contacts: u$5
+		}), this._drags.delete(n$7), this._collisionDetector._removeCollisionDataArena(n$7), r$1.off(n$3.read, i$2._cd.tickerId), r$1.off(n$3.write, i$2._cd.tickerId), this._drags.size || (r$1.off(n$3.read, this._listenerId), window.removeEventListener(`scroll`, this._onScroll, c$1));
 	}
 	_computeCollisions(e$5, t$5 = !1) {
 		let n$7 = this._drags.get(e$5);
@@ -8945,6 +8939,7 @@ var u = class {
 	}
 	destroy() {
 		if (this.isDestroyed) return;
+		if (Array.from(this._drags.values()).some((e$6) => e$6._cd.phase === s$1.Emitting)) throw Error(`Cannot destroy the DndContext while collisions are being emitted.`);
 		this.isDestroyed = !0, this.draggables.forEach((e$6) => {
 			e$6.off(R.PrepareStart, this._listenerId), e$6.off(R.Start, this._listenerId), e$6.off(R.PrepareMove, this._listenerId), e$6.off(R.Move, this._listenerId), e$6.off(R.End, this._listenerId), e$6.off(R.Destroy, this._listenerId);
 		}), this.droppables.forEach((e$6) => {
@@ -9113,7 +9108,7 @@ function e$1(e$5) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/advanced-collision-detector-BXyCbT9h.js
+//#region ../dragdoll/dist/advanced-collision-detector-Cg49M3ge.js
 const s = `visible`;
 function c(e$5, t$5, n$7 = []) {
 	let r$4 = t$5 ? e$5 : e$5?.parentNode;
@@ -9209,11 +9204,11 @@ var y = class extends a {
 			passive: !0
 		}), window.addEventListener(`resize`, this._clearCache, { passive: !0 }), !0), t$5);
 	}
-	getCollisionDataPool(e$5) {
-		return this._getDragState(e$5), super.getCollisionDataPool(e$5);
+	_getCollisionDataArena(e$5) {
+		return this._getDragState(e$5), super._getCollisionDataArena(e$5);
 	}
-	removeCollisionDataPool(e$5) {
-		this._dragStates.delete(e$5) && this._dndContext.drags.size <= 0 && (this._listenersAttached &&= (window.removeEventListener(`scroll`, this._clearCache, { capture: !0 }), window.removeEventListener(`resize`, this._clearCache), !1)), super.removeCollisionDataPool(e$5);
+	_removeCollisionDataArena(e$5) {
+		this._dragStates.delete(e$5) && this._dndContext.drags.size <= 0 && (this._listenersAttached &&= (window.removeEventListener(`scroll`, this._clearCache, { capture: !0 }), window.removeEventListener(`resize`, this._clearCache), !1)), super._removeCollisionDataArena(e$5);
 	}
 	detectCollisions(e$5, t$5, n$7) {
 		f.length = 0, l = null;

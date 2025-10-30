@@ -1,2 +1,2 @@
-import { Sensor, SensorCancelEvent, SensorDestroyEvent, SensorEndEvent, SensorEventType, SensorEvents, SensorMoveEvent, SensorStartEvent } from "./sensor-DbtiV--O.js";
-export { Sensor, SensorCancelEvent, SensorDestroyEvent, SensorEndEvent, SensorEventType, SensorEvents, SensorMoveEvent, SensorStartEvent };
+import { Sensor, SensorCancelEvent, SensorDestroyEvent, SensorEndEvent, SensorEventListenerId, SensorEventType, SensorEvents, SensorMoveEvent, SensorStartEvent } from "./sensor-IikAh47T.js";
+export { Sensor, SensorCancelEvent, SensorDestroyEvent, SensorEndEvent, SensorEventListenerId, SensorEventType, SensorEvents, SensorMoveEvent, SensorStartEvent };

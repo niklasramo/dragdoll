@@ -36,16 +36,9 @@ class DoubleClickHopSensor extends BaseSensor {
     const endX = startX + dx;
     const endY = startY + dy;
 
-    // Start the drag.
     this._start({ type: 'start', x: startX, y: startY });
-
-    // Add a small delay between the start and the move to allow Draggable
-    // to start the drag process.
-    this.timerId = window.setTimeout(() => {
-      this.timerId = null;
-      this._move({ type: 'move', x: endX, y: endY });
-      this._end({ type: 'end', x: endX, y: endY });
-    }, 100);
+    this._move({ type: 'move', x: endX, y: endY });
+    this._end({ type: 'end', x: endX, y: endY });
   }
 
   destroy() {
@@ -63,29 +56,31 @@ hopSensor.on('move', (e) => console.log('move', e.x, e.y));
 hopSensor.on('end', (e) => console.log('end', e.x, e.y));
 ```
 
-## Constructor
+## Class
 
 ```ts
-class BaseSensor {
+class BaseSensor<E extends SensorEvents = SensorEvents> implements Sensor<E> {
   constructor() {}
 }
 ```
 
-The constuctor accepts no arguments.
+The BaseSensor class is a generic that implements the [`Sensor`](/sensor) interface.
+
+### Type Variables
+
+1. **E**
+   - The type of the events that the sensor will emit.
+   - Default: [`SensorEvents`](/sensor#sensorevents).
 
 ## Properties
 
 ### drag
 
 ```ts
-type drag = {
-  // Coordinates of the drag within the viewport.
-  readonly x: number;
-  readonly y: number;
-} | null;
+type drag = BaseSensorDragData | null;
 ```
 
-Current drag data or `null` when drag is inactive. Read-only.
+Current drag data or `null` when drag is inactive. The drag data follows the [`BaseSensorDragData`](#basesensordragdata) interface. Read-only.
 
 ### isDestroyed
 
@@ -108,72 +103,65 @@ An event emitter, instance of [Eventti Emitter](https://github.com/niklasramo/ev
 ### on
 
 ```ts
-// Type
-type on = (
-  type: 'start' | 'move' | 'cancel' | 'end' | 'destroy',
-  listener: (
-    e:
-      | {
-          type: 'start' | 'move' | 'end' | 'cancel';
-          x: number;
-          y: number;
-        }
-      | {
-          type: 'destroy';
-        },
-  ) => void,
-  listenerId?: ListenerId,
-) => ListenerId;
-
-type ListenerId = null | string | number | symbol | Function | Object;
-
-// Usage
-baseSensor.on('start', (e) => {
-  console.log('start', e);
-});
+type on<T extends keyof E> = (
+  type: T,
+  listener: (e: E[T]) => void,
+  listenerId?: SensorEventListenerId,
+) => SensorEventListenerId;
 ```
 
-Adds a listener to a sensor event. Returns a listener id, which can be used to remove this specific listener. By default this will always be a symbol unless manually provided.
+Adds a listener to a sensor event. Returns a [listener id](/sensor#sensoreventlistenerid), which can be used to remove this specific listener. By default this will always be a symbol unless manually provided.
+
+Please check the [Events](#events) section for more information about the events and their payloads.
+
+**Example**
+
+```ts
+baseSensor.on('start', (e) => console.log('start', e));
+```
 
 ### off
 
 ```ts
-// Type
-type off = (
-  type: 'start' | 'move' | 'cancel' | 'end' | 'destroy',
-  listenerId: null | string | number | symbol | Function | Object,
-) => void;
+type off<T extends keyof E> = (type: T, listenerId: SensorEventListenerId) => void;
+```
 
-// Usage
+Removes a listener (based on [listener id](/sensor#sensoreventlistenerid)) from a sensor event.
+
+**Example**
+
+```ts
 const id = baseSensor.on('start', (e) => console.log('start', e));
 baseSensor.off('start', id);
 ```
 
-Removes a listener (based on listener id) from a sensor event.
-
 ### cancel
 
 ```ts
-// Type
 type cancel = () => void;
-
-// Usage
-baseSensor.cancel();
 ```
 
 Forcibly cancel the sensor's current drag process. The purpose of this method is to have a manual way of aborting the drag procedure at all times.
 
+**Example**
+
+```ts
+baseSensor.cancel();
+```
+
 ### destroy
 
 ```ts
-// Type
 type destroy = () => void;
-
-// Usage
-baseSensor.destroy();
 ```
 
 Destroy the sensor. Disposes all allocated memory and removes all bound event listeners.
+
+**Example**
+
+```ts
+baseSensor.destroy();
+```
 
 ## Protected Methods
 
@@ -182,47 +170,74 @@ These methods are not meant to be exposed publicly, but they are available for a
 ### \_start
 
 ```ts
-// Type
-type _start = (data: { type: 'start'; x: number; y: number }) => void;
-
-// Usage
-baseSensor._start({ type: 'start', x: 100, y: 200 });
+type _start = (data: SensorStartEvent) => void;
 ```
 
-Protected method, which starts the drag process and emits drag start event with the provided data.
+Protected method, which starts the drag process and emits drag [start event](/sensor#sensorstartevent) with the provided data.
+
+**Example**
+
+```ts
+baseSensor._start({ type: 'start', x: 100, y: 200 });
+```
 
 ### \_move
 
 ```ts
-// Type
-type _move = (data: { type: 'move'; x: number; y: number }) => void;
-
-// Usage
-baseSensor._move({ type: 'move', x: 100, y: 200 });
+type _move = (data: SensorMoveEvent) => void;
 ```
 
-Protected method, which emits drag move event with the provided data.
+Protected method, which emits drag [move event](/sensor#sensormoveevent) with the provided data.
+
+**Example**
+
+```ts
+baseSensor._move({ type: 'move', x: 100, y: 200 });
+```
 
 ### \_end
 
 ```ts
-// Type
-type _end = (data: { type: 'end'; x: number; y: number }) => void;
-
-// Usage
-baseSensor._end({ type: 'end', x: 100, y: 200 });
+type _end = (data: SensorEndEvent) => void;
 ```
 
-Protected method, which ends the drag process and emits drag end event with the provided data.
+Protected method, which ends the drag process and emits drag [end event](/sensor#sensorendevent) with the provided data.
+
+**Example**
+
+```ts
+baseSensor._end({ type: 'end', x: 100, y: 200 });
+```
 
 ### \_cancel
 
 ```ts
-// Type
-type _cancel = (data: { type: 'cancel'; x: number; y: number }) => void;
+type _cancel = (data: SensorCancelEvent) => void;
+```
 
-// Usage
+Protected method, which cancels the drag process and emits drag [cancel event](/sensor#sensorcancelevent) with the provided data.
+
+**Example**
+
+```ts
 baseSensor._cancel({ type: 'cancel', x: 100, y: 200 });
 ```
 
-Protected method, which cancels the drag process and emits drag cancel event with the provided data.
+## Events
+
+BaseSensor emits the default sensor events as described in the [Sensor Events](/sensor#events) documentation.
+
+## Types
+
+### BaseSensorDragData
+
+```ts
+// Import
+import type { BaseSensorDragData } from 'dragdoll/sensors/base';
+
+// Interface
+interface BaseSensorDragData {
+  readonly x: number;
+  readonly y: number;
+}
+```

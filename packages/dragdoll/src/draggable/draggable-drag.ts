@@ -3,18 +3,21 @@ import type { Point } from '../types.js';
 import { ObjectCache } from '../utils/object-cache.js';
 import type { DraggableDragItem } from './draggable-drag-item.js';
 
-export class DraggableDrag<S extends Sensor[], E extends S[number]['_events_type']> {
+// Internal type for inferring the events type from the sensor type.
+type E<S extends Sensor[]> = S[number]['_events_type'];
+
+export class DraggableDrag<S extends Sensor[]> {
   readonly sensor: S[number];
-  readonly startEvent: E['start'] | E['move'];
-  readonly prevMoveEvent: E['start'] | E['move'];
-  readonly moveEvent: E['start'] | E['move'];
-  readonly endEvent: E['end'] | E['cancel'] | E['destroy'] | null;
+  readonly startEvent: E<S>['start'] | E<S>['move'];
+  readonly prevMoveEvent: E<S>['start'] | E<S>['move'];
+  readonly moveEvent: E<S>['start'] | E<S>['move'];
+  readonly endEvent: E<S>['end'] | E<S>['cancel'] | E<S>['destroy'] | null;
   readonly items: DraggableDragItem[];
   readonly isEnded: boolean;
   protected _matrixCache: ObjectCache<HTMLElement | SVGSVGElement, [DOMMatrix, DOMMatrix]>;
   protected _clientOffsetCache: ObjectCache<HTMLElement | SVGSVGElement | Window | Document, Point>;
 
-  constructor(sensor: S[number], startEvent: E['start'] | E['move']) {
+  constructor(sensor: S[number], startEvent: E<S>['start'] | E<S>['move']) {
     this.sensor = sensor;
     this.startEvent = startEvent;
     this.prevMoveEvent = startEvent;

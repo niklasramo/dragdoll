@@ -15,10 +15,7 @@ import type { Draggable } from './draggable.js';
 
 const MEASURE_ELEMENT = IS_BROWSER ? createMeasureElement() : null;
 
-export class DraggableDragItem<
-  S extends Sensor[] = Sensor[],
-  E extends S[number]['_events_type'] = S[number]['_events_type'],
-> {
+export class DraggableDragItem<S extends Sensor[] = Sensor[]> {
   data: { [key: string]: any };
   readonly element: HTMLElement | SVGSVGElement;
   readonly elementContainer: HTMLElement;
@@ -39,7 +36,7 @@ export class DraggableDragItem<
   protected _matrixCache: ObjectCache<HTMLElement | SVGSVGElement, [DOMMatrix, DOMMatrix]>;
   protected _clientOffsetCache: ObjectCache<HTMLElement | SVGSVGElement | Window | Document, Point>;
 
-  constructor(element: HTMLElement | SVGSVGElement, draggable: Draggable<S, E>) {
+  constructor(element: HTMLElement | SVGSVGElement, draggable: Draggable<S>) {
     // Make sure the element is in DOM.
     // https://developer.mozilla.org/en-US/docs/Web/API/Node/isConnected
     if (!element.isConnected) {

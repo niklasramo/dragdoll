@@ -1,15 +1,15 @@
 export class ObjectCache<Key, Value> {
   protected _cache: Map<Key, Value>;
-  protected _validation: Map<Key, undefined>;
+  protected _validation: Set<Key>;
 
   constructor() {
     this._cache = new Map();
-    this._validation = new Map();
+    this._validation = new Set();
   }
 
   set(key: Key, value: Value) {
     this._cache.set(key, value);
-    this._validation.set(key, undefined);
+    this._validation.add(key);
   }
 
   get(key: Key): Value | undefined {

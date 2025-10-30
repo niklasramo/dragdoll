@@ -46,14 +46,16 @@ export interface SensorEvents {
   destroy: SensorDestroyEvent;
 }
 
+export type SensorEventListenerId = EventListenerId;
+
 export abstract class Sensor<E extends SensorEvents = SensorEvents> {
   declare _events_type: E;
   abstract on<T extends keyof E>(
     type: T,
     listener: (eventData: E[T]) => void,
-    listenerId?: EventListenerId,
-  ): EventListenerId;
-  abstract off<T extends keyof E>(type: T, listenerId: EventListenerId): void;
+    listenerId?: SensorEventListenerId,
+  ): SensorEventListenerId;
+  abstract off<T extends keyof E>(type: T, listenerId: SensorEventListenerId): void;
   abstract cancel(): void;
   abstract destroy(): void;
 }

@@ -1,7 +1,7 @@
-import type { EventListenerId, Events } from 'eventti';
+import type { Events } from 'eventti';
 import { Emitter } from 'eventti';
 import type { Writeable } from '../types.js';
-import type { Sensor, SensorEvents } from './sensor.js';
+import type { Sensor, SensorEventListenerId, SensorEvents } from './sensor.js';
 import { SensorEventType } from './sensor.js';
 
 export interface BaseSensorDragData {
@@ -67,12 +67,12 @@ export class BaseSensor<E extends SensorEvents = SensorEvents> implements Sensor
   on<T extends keyof E>(
     type: T,
     listener: (e: E[T]) => void,
-    listenerId?: EventListenerId,
-  ): EventListenerId {
+    listenerId?: SensorEventListenerId,
+  ): SensorEventListenerId {
     return this._emitter.on(type, listener, listenerId);
   }
 
-  off<T extends keyof E>(type: T, listenerId: EventListenerId): void {
+  off<T extends keyof E>(type: T, listenerId: SensorEventListenerId): void {
     this._emitter.off(type, listenerId);
   }
 

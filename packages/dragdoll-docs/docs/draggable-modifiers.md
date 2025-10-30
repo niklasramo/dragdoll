@@ -47,14 +47,13 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
 ## Syntax
 
 ```ts
-type DraggableModifier = (
+// Import
+import type { DraggableModifier } from 'dragdoll/draggable';
+
+// Type
+type DraggableModifier<S extends Sensor[]> = (
   change: { x: number; y: number },
-  data: {
-    draggable: Draggable;
-    drag: DraggableDrag;
-    item: DraggableDragItem;
-    phase: 'start' | 'move' | 'end';
-  },
+  data: DraggableModifierData<S>,
 ) => { x: number; y: number };
 ```
 
@@ -64,12 +63,12 @@ type DraggableModifier = (
    - The current change data object with `x` and `y` properties representing the change in x and y coordinates.
 
 2. **data**
-   - An object containing the following properties:
+   - A [`DraggableModifierData`](/draggable#draggablemodifierdata) object containing the following properties:
      - **draggable**: The [`Draggable`](/draggable) instance.
      - **drag**: The [`DraggableDrag`](/draggable-drag) instance.
      - **item**: The [`DraggableDragItem`](/draggable-drag-item) instance.
-     - **phase**: The phase of the drag operation. Can be `'start'`, `'move'` or `'end'`.
+     - **phase**: The [`phase`](/draggable#draggablemodifierphase) of the drag operation.
 
 ## Returns
 
-Returns the updated change data object with `x` and `y` properties representing the updated change in x and y coordinates. By default the `change` object is a reusable object which's value is reset after the modifier chain has been processed. So it's okay to mutate the object directly, but not store it for later use.
+Returns the updated change data object with `x` and `y` properties representing the updated change in x and y coordinates. By default the `change` object is a reusable object whose value is reset after the modifier chain has been processed. So it's okay to mutate the object directly, but not store it for later use.

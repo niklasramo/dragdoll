@@ -1,3 +1,3 @@
-import "../sensor-DbtiV--O.js";
-import { BaseSensor, BaseSensorDragData } from "../base-sensor-Dug_ryiP.js";
+import "../sensor-IikAh47T.js";
+import { BaseSensor, BaseSensorDragData } from "../base-sensor-D0hb2UJJ.js";
 export { BaseSensor, BaseSensorDragData };

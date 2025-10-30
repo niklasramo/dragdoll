@@ -1,4 +1,4 @@
 import "./types-CEK9qPqM.js";
-import "./sensor-DbtiV--O.js";
-import { Draggable, DraggableApplyPositionPhase, DraggableDefaultSettings, DraggableDndGroup, DraggableDrag, DraggableDragItem, DraggableEventCallbacks, DraggableEventType, DraggableId, DraggableModifier, DraggableModifierData, DraggableModifierPhase, DraggablePlugin, DraggablePluginMap, DraggableSensorProcessingMode, DraggableSettings } from "./draggable-CGDdXxXW.js";
-export { Draggable, DraggableApplyPositionPhase, DraggableDefaultSettings, DraggableDndGroup, DraggableDrag, DraggableDragItem, DraggableEventCallbacks, DraggableEventType, DraggableId, DraggableModifier, DraggableModifierData, DraggableModifierPhase, DraggablePlugin, DraggablePluginMap, DraggableSensorProcessingMode, DraggableSettings };
+import "./sensor-IikAh47T.js";
+import { AnyDraggable, Draggable, DraggableApplyPositionPhase, DraggableDefaultSettings, DraggableDndGroup, DraggableDrag, DraggableDragItem, DraggableEventCallbacks, DraggableEventType, DraggableId, DraggableModifier, DraggableModifierData, DraggableModifierPhase, DraggablePlugin, DraggablePluginMap, DraggableSensorProcessingMode, DraggableSettings } from "./draggable-4HkzSPcJ.js";
+export { AnyDraggable, Draggable, DraggableApplyPositionPhase, DraggableDefaultSettings, DraggableDndGroup, DraggableDrag, DraggableDragItem, DraggableEventCallbacks, DraggableEventType, DraggableId, DraggableModifier, DraggableModifierData, DraggableModifierPhase, DraggablePlugin, DraggablePluginMap, DraggableSensorProcessingMode, DraggableSettings };

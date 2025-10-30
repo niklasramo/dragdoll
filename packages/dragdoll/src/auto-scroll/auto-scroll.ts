@@ -1,6 +1,5 @@
 import { ticker, tickerPhases } from '../singletons/ticker.js';
 import type { Point, Rect } from '../types.js';
-import { ClassicObjectPool } from '../utils/classic-object-pool.js';
 import { getDistance } from '../utils/get-distance.js';
 import { getIntersectionScore } from '../utils/get-intersection-score.js';
 import { getRect } from '../utils/get-rect.js';
@@ -10,6 +9,7 @@ import { getScrollLeftMax } from '../utils/get-scroll-left-max.js';
 import { getScrollTop } from '../utils/get-scroll-top.js';
 import { getScrollTopMax } from '../utils/get-scroll-top-max.js';
 import { isIntersecting } from '../utils/is-intersecting.js';
+import { ObjectPool } from '../utils/object-pool.js';
 
 //
 // CONSTANTS
@@ -455,8 +455,8 @@ export class AutoScroll {
     [AUTO_SCROLL_AXIS.x]: Map<AutoScrollItem, AutoScrollRequest>;
     [AUTO_SCROLL_AXIS.y]: Map<AutoScrollItem, AutoScrollRequest>;
   };
-  protected _requestPool: ClassicObjectPool<AutoScrollRequest>;
-  protected _actionPool: ClassicObjectPool<AutoScrollAction>;
+  protected _requestPool: ObjectPool<AutoScrollRequest>;
+  protected _actionPool: ObjectPool<AutoScrollAction>;
 
   constructor(options: AutoScrollOptions = {}) {
     const { overlapCheckInterval = 150 } = options;
@@ -476,7 +476,7 @@ export class AutoScroll {
       [AUTO_SCROLL_AXIS.y]: new Map(),
     };
     this._itemData = new Map();
-    this._requestPool = new ClassicObjectPool<AutoScrollRequest>(
+    this._requestPool = new ObjectPool<AutoScrollRequest>(
       (request) => request || new AutoScrollRequest(),
       {
         initialBatchCount: 1,
@@ -484,7 +484,7 @@ export class AutoScroll {
         onRelease: (request) => request.reset(),
       },
     );
-    this._actionPool = new ClassicObjectPool<AutoScrollAction>(
+    this._actionPool = new ObjectPool<AutoScrollAction>(
       (action) => action || new AutoScrollAction(),
       {
         batchSize: 10,

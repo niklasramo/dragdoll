@@ -238,7 +238,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
     }
   }
 
-  updateSettings(options: Partial<KeyboardSensorSettings<E>> = {}) {
+  updateSettings(options: Partial<KeyboardSensorSettings<E>>) {
     const {
       moveDistance,
       cancelOnBlur,
