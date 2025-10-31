@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "build": "tsdown --config ./tsdown.config.ts",
-    "test:browserstack": "karma start ./karma.browserstack.cjs",
-    "test:local": "karma start ./karma.cjs",
     "prettier:check": "prettier --check --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,yml,yaml}\"",
     "prettier:write": "prettier --write --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,yml,yaml}\"",
+    "test:browserstack": "karma start ./karma.browserstack.cjs",
+    "test:local": "karma start ./karma.cjs",
     "ts:check": "tsc --noEmit"
   }
 }

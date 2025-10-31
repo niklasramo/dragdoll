@@ -10,18 +10,18 @@
   ],
   "scripts": {
     "build": "npm run format && npm run build --workspace=dragdoll --workspace=dragdoll-tests && npm run build:examples --workspace=dragdoll-docs && npm run format",
-    "test:browserstack": "npm run test:browserstack --workspace=dragdoll-tests",
-    "test:local": "npm run test:local --workspace=dragdoll-tests",
-    "docs:dev": "npm run dev --workspace=dragdoll-docs",
     "docs:build": "npm run build --workspace=dragdoll-docs",
+    "docs:dev": "npm run dev --workspace=dragdoll-docs",
     "docs:serve": "npm run serve --workspace=dragdoll-docs",
-    "prettier:check": "prettier --check --no-error-on-unmatched-pattern \"./*.{js,ts,md,json,yml}\" \"./.github/**/*.yml\" && npm run prettier:check --workspaces --if-present",
-    "prettier:write": "prettier --write --no-error-on-unmatched-pattern \"./*.{js,ts,md,json,yml}\" \"./.github/**/*.yml\" && npm run prettier:write --workspaces --if-present",
     "eslint:check": "eslint . --ext .ts,.tsx,.js,.jsx,.mjs,.mts,.cjs,.cts --max-warnings 0",
     "eslint:write": "eslint . --ext .ts,.tsx,.js,.jsx,.mjs,.mts,.cjs,.cts --fix",
-    "ts:check": "tsc && npm run ts:check --workspaces --if-present",
     "format": "npm run eslint:write && npm run prettier:write",
-    "lint": "npm run ts:check && npm run prettier:check && npm run eslint:check"
+    "lint": "npm run ts:check && npm run prettier:check && npm run eslint:check",
+    "prettier:check": "prettier --check --no-error-on-unmatched-pattern \"./*.{js,ts,md,json,yml}\" \"./.github/**/*.yml\" && npm run prettier:check --workspaces --if-present",
+    "prettier:write": "prettier --write --no-error-on-unmatched-pattern \"./*.{js,ts,md,json,yml}\" \"./.github/**/*.yml\" && npm run prettier:write --workspaces --if-present",
+    "test:browserstack": "npm run test:browserstack --workspace=dragdoll-tests",
+    "test:local": "npm run test:local --workspace=dragdoll-tests",
+    "ts:check": "tsc && npm run ts:check --workspaces --if-present"
   },
   "devDependencies": {
     "@types/chai": "5.2.3",

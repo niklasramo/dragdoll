@@ -4,12 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vitepress dev docs --host",
     "build": "vitepress build docs",
     "build:examples": "node ./scripts/build-examples.mjs",
-    "serve": "vitepress serve docs",
+    "dev": "vitepress dev docs --host",
     "prettier:check": "prettier --check --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,html,css,yml,yaml}\"",
     "prettier:write": "prettier --write --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,html,css,yml,yaml}\"",
+    "serve": "vitepress serve docs",
     "ts:check": "tsc --noEmit"
   }
 }
