@@ -199,7 +199,7 @@ var l$3 = class extends o$1 {
 };
 
 //#endregion
-//#region ../dragdoll/dist/ticker-CAFcKU20.js
+//#region ../dragdoll/dist/ticker-Bio34ZvT.js
 const n$2 = {
 	read: Symbol(),
 	write: Symbol()
@@ -210,7 +210,7 @@ let r$1 = new l$3({
 });
 
 //#endregion
-//#region ../dragdoll/dist/get-intersection-score-CvSlwByb.js
+//#region ../dragdoll/dist/get-intersection-score-YcxwkZs7.js
 function e$3(e$4, t$4, n$7 = {
 	width: 0,
 	height: 0,
@@ -282,7 +282,7 @@ function isDocumentElement(e$4) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/collision-detector-C24DZfyT.js
+//#region ../dragdoll/dist/collision-detector-BraY1xgc.js
 function n$6(e$4, t$4 = {
 	width: 0,
 	height: 0,
@@ -357,7 +357,7 @@ var a$2 = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/get-style-ZZHAkgcg.js
+//#region ../dragdoll/dist/get-style-CC2j8jdv.js
 const e$2 = /* @__PURE__ */ new WeakMap();
 function t$2(t$4) {
 	let n$7 = e$2.get(t$4)?.deref();
@@ -365,12 +365,12 @@ function t$2(t$4) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/constants-gNukEJzy.js
+//#region ../dragdoll/dist/constants-CMClRu_c.js
 const e$1 = typeof window < `u` && window.document !== void 0, t = e$1 && `ontouchstart` in window, n$4 = e$1 && !!window.PointerEvent;
 e$1 && navigator.vendor && navigator.vendor.indexOf(`Apple`) > -1 && navigator.userAgent && navigator.userAgent.indexOf(`CriOS`) == -1 && navigator.userAgent.indexOf(`FxiOS`);
 
 //#endregion
-//#region ../dragdoll/dist/sensor-C-EBcfly.js
+//#region ../dragdoll/dist/sensor-Uwz8qy61.js
 const e = {
 	Start: `start`,
 	Move: `move`,
@@ -483,7 +483,7 @@ function getOffsetContainer(n$7, t$4 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-b_bwyIic.js
+//#region ../dragdoll/dist/draggable-BM9bdNuM.js
 function s$2(e$4, t$4) {
 	return e$4.isIdentity && t$4.isIdentity ? !0 : e$4.is2D && t$4.is2D ? e$4.a === t$4.a && e$4.b === t$4.b && e$4.c === t$4.c && e$4.d === t$4.d && e$4.e === t$4.e && e$4.f === t$4.f : e$4.m11 === t$4.m11 && e$4.m12 === t$4.m12 && e$4.m13 === t$4.m13 && e$4.m14 === t$4.m14 && e$4.m21 === t$4.m21 && e$4.m22 === t$4.m22 && e$4.m23 === t$4.m23 && e$4.m24 === t$4.m24 && e$4.m31 === t$4.m31 && e$4.m32 === t$4.m32 && e$4.m33 === t$4.m33 && e$4.m34 === t$4.m34 && e$4.m41 === t$4.m41 && e$4.m42 === t$4.m42 && e$4.m43 === t$4.m43 && e$4.m44 === t$4.m44;
 }
@@ -994,7 +994,7 @@ var B = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/droppable-SOYeMTHF.js
+//#region ../dragdoll/dist/droppable-CJLSkRZ2.js
 const t$1 = { Destroy: `destroy` };
 var n = class {
 	constructor(t$4, n$7 = {}) {
@@ -1025,7 +1025,7 @@ var n = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/dnd-context-BjJhlSlB.js
+//#region ../dragdoll/dist/dnd-context-BWOOExer.js
 var s$1 = function(e$4) {
 	return e$4[e$4.Idle = 0] = `Idle`, e$4[e$4.Computing = 1] = `Computing`, e$4[e$4.Computed = 2] = `Computed`, e$4[e$4.Emitting = 3] = `Emitting`, e$4;
 }(s$1 || {});
@@ -1291,7 +1291,7 @@ var u = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/pointer-sensor-CyG2cFYy.js
+//#region ../dragdoll/dist/pointer-sensor-BNmXr-6_.js
 function i$2(e$4, t$4) {
 	if (`pointerId` in e$4) return e$4.pointerId === t$4 ? e$4 : null;
 	if (`changedTouches` in e$4) {
@@ -1446,7 +1446,7 @@ var u$1 = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/base-sensor-6CQrwFkA.js
+//#region ../dragdoll/dist/base-sensor-CiXk6Egt.js
 var n$3 = class {
 	constructor() {
 		this.drag = null, this.isDestroyed = !1, this._emitter = new v();
@@ -1494,7 +1494,7 @@ var n$3 = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/base-motion-sensor-DuT5ttYp.js
+//#region ../dragdoll/dist/base-motion-sensor-BxKMtkJL.js
 var i = class extends n$3 {
 	constructor() {
 		super(), this.drag = null, this._direction = {
@@ -1538,7 +1538,7 @@ var i = class extends n$3 {
 };
 
 //#endregion
-//#region ../dragdoll/dist/keyboard-motion-sensor-Cq5nouhk.js
+//#region ../dragdoll/dist/keyboard-motion-sensor-B2HqNPGM.js
 const n$1 = [
 	`start`,
 	`cancel`,

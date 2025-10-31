@@ -3119,7 +3119,7 @@ references to blow the stack.
 */
 
 //#endregion
-//#region ../dragdoll/dist/sensor-C-EBcfly.js
+//#region ../dragdoll/dist/sensor-Uwz8qy61.js
 const e$2 = {
 	Start: `start`,
 	Move: `move`,
@@ -3198,7 +3198,7 @@ var E$1 = {
 };
 
 //#endregion
-//#region ../dragdoll/dist/base-sensor-6CQrwFkA.js
+//#region ../dragdoll/dist/base-sensor-CiXk6Egt.js
 var n$5 = class {
 	constructor() {
 		this.drag = null, this.isDestroyed = !1, this._emitter = new v$1();
@@ -3964,7 +3964,7 @@ var l$4 = class extends o$1 {
 };
 
 //#endregion
-//#region ../dragdoll/dist/ticker-CAFcKU20.js
+//#region ../dragdoll/dist/ticker-Bio34ZvT.js
 const n$3 = {
 	read: Symbol(),
 	write: Symbol()
@@ -3975,7 +3975,7 @@ let r$1 = new l$4({
 });
 
 //#endregion
-//#region ../dragdoll/dist/get-style-ZZHAkgcg.js
+//#region ../dragdoll/dist/get-style-CC2j8jdv.js
 const e$4 = /* @__PURE__ */ new WeakMap();
 function t$1(t$5) {
 	let n$7 = e$4.get(t$5)?.deref();
@@ -3983,7 +3983,7 @@ function t$1(t$5) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/constants-gNukEJzy.js
+//#region ../dragdoll/dist/constants-CMClRu_c.js
 const e$3 = typeof window < `u` && window.document !== void 0, t$4 = e$3 && `ontouchstart` in window, n$4 = e$3 && !!window.PointerEvent;
 e$3 && navigator.vendor && navigator.vendor.indexOf(`Apple`) > -1 && navigator.userAgent && navigator.userAgent.indexOf(`CriOS`) == -1 && navigator.userAgent.indexOf(`FxiOS`);
 
@@ -4139,7 +4139,7 @@ function getOffsetContainer(n$7, t$5 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-b_bwyIic.js
+//#region ../dragdoll/dist/draggable-BM9bdNuM.js
 function s$3(e$5, t$5) {
 	return e$5.isIdentity && t$5.isIdentity ? !0 : e$5.is2D && t$5.is2D ? e$5.a === t$5.a && e$5.b === t$5.b && e$5.c === t$5.c && e$5.d === t$5.d && e$5.e === t$5.e && e$5.f === t$5.f : e$5.m11 === t$5.m11 && e$5.m12 === t$5.m12 && e$5.m13 === t$5.m13 && e$5.m14 === t$5.m14 && e$5.m21 === t$5.m21 && e$5.m22 === t$5.m22 && e$5.m23 === t$5.m23 && e$5.m24 === t$5.m24 && e$5.m31 === t$5.m31 && e$5.m32 === t$5.m32 && e$5.m33 === t$5.m33 && e$5.m34 === t$5.m34 && e$5.m41 === t$5.m41 && e$5.m42 === t$5.m42 && e$5.m43 === t$5.m43 && e$5.m44 === t$5.m44;
 }
@@ -4650,7 +4650,7 @@ var B = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/keyboard-sensor-D1L60kQK.js
+//#region ../dragdoll/dist/keyboard-sensor-BCehwsFy.js
 const n$6 = {
 	moveDistance: 25,
 	cancelOnBlur: !0,
@@ -6105,7 +6105,7 @@ function events$3() {
 }
 
 //#endregion
-//#region ../dragdoll/dist/pointer-sensor-CyG2cFYy.js
+//#region ../dragdoll/dist/pointer-sensor-BNmXr-6_.js
 function i$1(e$5, t$5) {
 	if (`pointerId` in e$5) return e$5.pointerId === t$5 ? e$5 : null;
 	if (`changedTouches` in e$5) {
@@ -8555,7 +8555,7 @@ describe("KeyboardSensor", () => {
 });
 
 //#endregion
-//#region ../dragdoll/dist/get-intersection-score-CvSlwByb.js
+//#region ../dragdoll/dist/get-intersection-score-YcxwkZs7.js
 function e(e$5, t$5, n$7 = {
 	width: 0,
 	height: 0,
@@ -8580,7 +8580,7 @@ function n$1(n$7, r$4, i$2) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/collision-detector-C24DZfyT.js
+//#region ../dragdoll/dist/collision-detector-BraY1xgc.js
 function n$2(e$5, t$5 = {
 	width: 0,
 	height: 0,
@@ -8655,7 +8655,7 @@ var a = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/droppable-SOYeMTHF.js
+//#region ../dragdoll/dist/droppable-CJLSkRZ2.js
 const t$2 = { Destroy: `destroy` };
 var n = class {
 	constructor(t$5, n$7 = {}) {
@@ -8686,7 +8686,7 @@ var n = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/dnd-context-BjJhlSlB.js
+//#region ../dragdoll/dist/dnd-context-BWOOExer.js
 var s$1 = function(e$5) {
 	return e$5[e$5.Idle = 0] = `Idle`, e$5[e$5.Computing = 1] = `Computing`, e$5[e$5.Computed = 2] = `Computed`, e$5[e$5.Emitting = 3] = `Emitting`, e$5;
 }(s$1 || {});
@@ -9090,7 +9090,7 @@ function getRect(t$5, e$5) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/get-rect-BRzLuevJ.js
+//#region ../dragdoll/dist/get-rect-BPdgHRQD.js
 function t(...t$5) {
 	let { width: n$7, height: r$4, left: i$2, top: a$2 } = getRect(...t$5);
 	return {
@@ -9102,13 +9102,13 @@ function t(...t$5) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/is-document-BQAkbLgN.js
+//#region ../dragdoll/dist/is-document-Bkve0NGU.js
 function e$1(e$5) {
 	return e$5 instanceof Document;
 }
 
 //#endregion
-//#region ../dragdoll/dist/advanced-collision-detector-Cg49M3ge.js
+//#region ../dragdoll/dist/advanced-collision-detector-Da5CqO32.js
 const s = `visible`;
 function c(e$5, t$5, n$7 = []) {
 	let r$4 = t$5 ? e$5 : e$5?.parentNode;
@@ -9134,30 +9134,30 @@ function g(e$5) {
 function _(e$5) {
 	p.length || c(e$5.element, !1, p);
 }
-function v(t$5, r$4 = n$2()) {
-	n$2(t$5.length ? t([t$5[0], `padding`], window) : d, r$4);
+function v(t$5, i$2 = n$2()) {
+	n$2(t$5.length ? t([t$5[0], `padding`], window) : d, i$2);
 	for (let a$2 = 1; a$2 < t$5.length; a$2++) {
 		let o$2 = t$5[a$2];
-		if (!e(r$4, t([o$2, `padding`], window), r$4)) {
-			n$2(u$1, r$4);
+		if (!e(i$2, t([o$2, `padding`], window), i$2)) {
+			n$2(u$1, i$2);
 			break;
 		}
 	}
-	return r$4;
+	return i$2;
 }
 var y = class extends a {
 	constructor(e$5, t$5) {
 		super(e$5), this._dragStates = /* @__PURE__ */ new Map(), this._visibilityLogic = t$5?.visibilityLogic || `relative`, this._listenersAttached = !1, this._clearCache = () => this.clearCache();
 	}
-	_checkCollision(n$7, r$4, a$2) {
+	_checkCollision(n$7, i$2, a$2) {
 		let o$2 = this._dragStates.get(n$7);
 		if (!o$2) return null;
-		let s$4 = n$7.getClientRect(), c$4 = r$4.getClientRect();
+		let s$4 = n$7.getClientRect(), c$4 = i$2.getClientRect();
 		if (!s$4 || !c$4) return null;
-		let u$5 = o$2.clipMaskKeyMap.get(r$4);
+		let u$5 = o$2.clipMaskKeyMap.get(i$2);
 		if (!u$5) {
 			let e$5 = this._visibilityLogic === `relative`;
-			if (p.length = 0, m.length = 0, h.length = 0, _(r$4), u$5 = p[0] || window, o$2.clipMaskKeyMap.set(r$4, u$5), !o$2.clipMaskMap.has(u$5)) {
+			if (p.length = 0, m.length = 0, h.length = 0, _(i$2), u$5 = p[0] || window, o$2.clipMaskKeyMap.set(i$2, u$5), !o$2.clipMaskMap.has(u$5)) {
 				if (g(n$7), e$5) {
 					let e$6 = window;
 					for (let t$6 of p) if (f.includes(t$6)) {
@@ -9173,15 +9173,15 @@ var y = class extends a {
 						h.push(t$6);
 					}
 				} else m.push(...f), h.push(...p);
-				let t$5 = e$5 || !l ? v(m) : n$2(l), r$5 = v(h);
-				!e$5 && !l && (l = t$5), o$2.clipMaskMap.set(u$5, [t$5, r$5]);
+				let t$5 = e$5 || !l ? v(m) : n$2(l), i$3 = v(h);
+				!e$5 && !l && (l = t$5), o$2.clipMaskMap.set(u$5, [t$5, i$3]);
 			}
 			p.length = 0, m.length = 0, h.length = 0;
 		}
 		let [d$2, y$2] = o$2.clipMaskMap.get(u$5) || [];
 		if (!d$2 || !y$2 || !e(s$4, d$2, a$2.draggableVisibleRect) || !e(c$4, y$2, a$2.droppableVisibleRect) || !e(a$2.draggableVisibleRect, a$2.droppableVisibleRect, a$2.intersectionRect)) return null;
 		let b$1 = n$1(a$2.draggableVisibleRect, a$2.droppableVisibleRect, a$2.intersectionRect);
-		return b$1 <= 0 ? null : (a$2.droppableId = r$4.id, n$2(c$4, a$2.droppableRect), n$2(s$4, a$2.draggableRect), a$2.intersectionScore = b$1, a$2);
+		return b$1 <= 0 ? null : (a$2.droppableId = i$2.id, n$2(c$4, a$2.droppableRect), n$2(s$4, a$2.draggableRect), a$2.intersectionScore = b$1, a$2);
 	}
 	_sortCollisions(e$5, t$5) {
 		return t$5.sort((e$6, t$6) => {

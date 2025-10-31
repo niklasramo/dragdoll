@@ -1,0 +1,2 @@
+const e=typeof window<`u`&&window.document!==void 0,t=e&&`ontouchstart`in window,n=e&&!!window.PointerEvent;e&&navigator.vendor&&navigator.vendor.indexOf(`Apple`)>-1&&navigator.userAgent&&navigator.userAgent.indexOf(`CriOS`)==-1&&navigator.userAgent.indexOf(`FxiOS`);export{t as n,e as r,n as t};
+//# sourceMappingURL=constants-CMClRu_c.js.map

@@ -1,0 +1,2 @@
+import{AutoTicker as e,createRequestFrame as t}from"tikki";const n={read:Symbol(),write:Symbol()};let r=new e({phases:[n.read,n.write],requestFrame:typeof window<`u`?t():()=>()=>{}});function i(e,t){r=e,Object.assign(n,t)}export{r as n,n as r,i as t};
+//# sourceMappingURL=ticker-Bio34ZvT.js.map

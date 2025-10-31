@@ -199,7 +199,7 @@ var l$5 = class extends o$3 {
 };
 
 //#endregion
-//#region ../dragdoll/dist/ticker-CAFcKU20.js
+//#region ../dragdoll/dist/ticker-Bio34ZvT.js
 const n$2 = {
 	read: Symbol(),
 	write: Symbol()
@@ -210,7 +210,7 @@ let r$1 = new l$5({
 });
 
 //#endregion
-//#region ../dragdoll/dist/create-full-rect-DoTaVvYu.js
+//#region ../dragdoll/dist/create-full-rect-Dd45f4o1.js
 function e$5(e$6, t$6 = {
 	width: 0,
 	height: 0,
@@ -225,7 +225,7 @@ function e$5(e$6, t$6 = {
 }
 
 //#endregion
-//#region ../dragdoll/dist/get-intersection-score-CvSlwByb.js
+//#region ../dragdoll/dist/get-intersection-score-YcxwkZs7.js
 function e$2(e$6, t$6, n$7 = {
 	width: 0,
 	height: 0,
@@ -436,7 +436,7 @@ function getRect(t$6, e$6) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/get-rect-BRzLuevJ.js
+//#region ../dragdoll/dist/get-rect-BPdgHRQD.js
 function t$4(...t$6) {
 	let { width: n$7, height: r$5, left: i$5, top: a$4 } = getRect(...t$6);
 	return {
@@ -480,7 +480,7 @@ function getDistance(e$6, t$6) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-FRZ6ZB-6.js
+//#region ../dragdoll/dist/auto-scroll-BzsvSJTw.js
 const o$2 = e$5(), s$5 = e$5();
 function c$5(e$6, t$6) {
 	return getDistance(e$5(e$6, o$2), e$5(t$6, s$5));
@@ -826,7 +826,7 @@ var N = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/collision-detector-C24DZfyT.js
+//#region ../dragdoll/dist/collision-detector-BraY1xgc.js
 function n$6(e$6, t$6 = {
 	width: 0,
 	height: 0,
@@ -901,7 +901,7 @@ var a$3 = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/get-style-ZZHAkgcg.js
+//#region ../dragdoll/dist/get-style-CC2j8jdv.js
 const e$4 = /* @__PURE__ */ new WeakMap();
 function t$3(t$6) {
 	let n$7 = e$4.get(t$6)?.deref();
@@ -909,13 +909,13 @@ function t$3(t$6) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/is-document-BQAkbLgN.js
+//#region ../dragdoll/dist/is-document-Bkve0NGU.js
 function e$3(e$6) {
 	return e$6 instanceof Document;
 }
 
 //#endregion
-//#region ../dragdoll/dist/advanced-collision-detector-Cg49M3ge.js
+//#region ../dragdoll/dist/advanced-collision-detector-Da5CqO32.js
 const s$4 = `visible`;
 function c$4(e$6, t$6, n$7 = []) {
 	let r$5 = t$6 ? e$6 : e$6?.parentNode;
@@ -941,30 +941,30 @@ function g$1(e$6) {
 function _$1(e$6) {
 	p$1.length || c$4(e$6.element, !1, p$1);
 }
-function v$2(t$6, r$5 = n$6()) {
-	n$6(t$6.length ? t$4([t$6[0], `padding`], window) : d$1, r$5);
+function v$2(t$6, i$5 = n$6()) {
+	n$6(t$6.length ? t$4([t$6[0], `padding`], window) : d$1, i$5);
 	for (let a$4 = 1; a$4 < t$6.length; a$4++) {
 		let o$4 = t$6[a$4];
-		if (!e$2(r$5, t$4([o$4, `padding`], window), r$5)) {
-			n$6(u$3, r$5);
+		if (!e$2(i$5, t$4([o$4, `padding`], window), i$5)) {
+			n$6(u$3, i$5);
 			break;
 		}
 	}
-	return r$5;
+	return i$5;
 }
 var y = class extends a$3 {
 	constructor(e$6, t$6) {
 		super(e$6), this._dragStates = /* @__PURE__ */ new Map(), this._visibilityLogic = t$6?.visibilityLogic || `relative`, this._listenersAttached = !1, this._clearCache = () => this.clearCache();
 	}
-	_checkCollision(n$7, r$5, a$4) {
+	_checkCollision(n$7, i$5, a$4) {
 		let o$4 = this._dragStates.get(n$7);
 		if (!o$4) return null;
-		let s$6 = n$7.getClientRect(), c$6 = r$5.getClientRect();
+		let s$6 = n$7.getClientRect(), c$6 = i$5.getClientRect();
 		if (!s$6 || !c$6) return null;
-		let u$6 = o$4.clipMaskKeyMap.get(r$5);
+		let u$6 = o$4.clipMaskKeyMap.get(i$5);
 		if (!u$6) {
 			let e$6 = this._visibilityLogic === `relative`;
-			if (p$1.length = 0, m$1.length = 0, h$1.length = 0, _$1(r$5), u$6 = p$1[0] || window, o$4.clipMaskKeyMap.set(r$5, u$6), !o$4.clipMaskMap.has(u$6)) {
+			if (p$1.length = 0, m$1.length = 0, h$1.length = 0, _$1(i$5), u$6 = p$1[0] || window, o$4.clipMaskKeyMap.set(i$5, u$6), !o$4.clipMaskMap.has(u$6)) {
 				if (g$1(n$7), e$6) {
 					let e$7 = window;
 					for (let t$7 of p$1) if (f$1.includes(t$7)) {
@@ -980,15 +980,15 @@ var y = class extends a$3 {
 						h$1.push(t$7);
 					}
 				} else m$1.push(...f$1), h$1.push(...p$1);
-				let t$6 = e$6 || !l$3 ? v$2(m$1) : n$6(l$3), r$6 = v$2(h$1);
-				!e$6 && !l$3 && (l$3 = t$6), o$4.clipMaskMap.set(u$6, [t$6, r$6]);
+				let t$6 = e$6 || !l$3 ? v$2(m$1) : n$6(l$3), i$6 = v$2(h$1);
+				!e$6 && !l$3 && (l$3 = t$6), o$4.clipMaskMap.set(u$6, [t$6, i$6]);
 			}
 			p$1.length = 0, m$1.length = 0, h$1.length = 0;
 		}
 		let [d$3, y$3] = o$4.clipMaskMap.get(u$6) || [];
 		if (!d$3 || !y$3 || !e$2(s$6, d$3, a$4.draggableVisibleRect) || !e$2(c$6, y$3, a$4.droppableVisibleRect) || !e$2(a$4.draggableVisibleRect, a$4.droppableVisibleRect, a$4.intersectionRect)) return null;
 		let b$2 = n$5(a$4.draggableVisibleRect, a$4.droppableVisibleRect, a$4.intersectionRect);
-		return b$2 <= 0 ? null : (a$4.droppableId = r$5.id, n$6(c$6, a$4.droppableRect), n$6(s$6, a$4.draggableRect), a$4.intersectionScore = b$2, a$4);
+		return b$2 <= 0 ? null : (a$4.droppableId = i$5.id, n$6(c$6, a$4.droppableRect), n$6(s$6, a$4.draggableRect), a$4.intersectionScore = b$2, a$4);
 	}
 	_sortCollisions(e$6, t$6) {
 		return t$6.sort((e$7, t$7) => {
@@ -1033,12 +1033,12 @@ var y = class extends a$3 {
 };
 
 //#endregion
-//#region ../dragdoll/dist/constants-gNukEJzy.js
+//#region ../dragdoll/dist/constants-CMClRu_c.js
 const e$1 = typeof window < `u` && window.document !== void 0, t$1 = e$1 && `ontouchstart` in window, n$4 = e$1 && !!window.PointerEvent;
 e$1 && navigator.vendor && navigator.vendor.indexOf(`Apple`) > -1 && navigator.userAgent && navigator.userAgent.indexOf(`CriOS`) == -1 && navigator.userAgent.indexOf(`FxiOS`);
 
 //#endregion
-//#region ../dragdoll/dist/sensor-C-EBcfly.js
+//#region ../dragdoll/dist/sensor-Uwz8qy61.js
 const e = {
 	Start: `start`,
 	Move: `move`,
@@ -1151,7 +1151,7 @@ function getOffsetContainer(n$7, t$6 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-b_bwyIic.js
+//#region ../dragdoll/dist/draggable-BM9bdNuM.js
 function s$3(e$6, t$6) {
 	return e$6.isIdentity && t$6.isIdentity ? !0 : e$6.is2D && t$6.is2D ? e$6.a === t$6.a && e$6.b === t$6.b && e$6.c === t$6.c && e$6.d === t$6.d && e$6.e === t$6.e && e$6.f === t$6.f : e$6.m11 === t$6.m11 && e$6.m12 === t$6.m12 && e$6.m13 === t$6.m13 && e$6.m14 === t$6.m14 && e$6.m21 === t$6.m21 && e$6.m22 === t$6.m22 && e$6.m23 === t$6.m23 && e$6.m24 === t$6.m24 && e$6.m31 === t$6.m31 && e$6.m32 === t$6.m32 && e$6.m33 === t$6.m33 && e$6.m34 === t$6.m34 && e$6.m41 === t$6.m41 && e$6.m42 === t$6.m42 && e$6.m43 === t$6.m43 && e$6.m44 === t$6.m44;
 }
@@ -1662,7 +1662,7 @@ var B = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/droppable-SOYeMTHF.js
+//#region ../dragdoll/dist/droppable-CJLSkRZ2.js
 const t$2 = { Destroy: `destroy` };
 var n = class {
 	constructor(t$6, n$7 = {}) {
@@ -1693,7 +1693,7 @@ var n = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/dnd-context-BjJhlSlB.js
+//#region ../dragdoll/dist/dnd-context-BWOOExer.js
 var s$2 = function(e$6) {
 	return e$6[e$6.Idle = 0] = `Idle`, e$6[e$6.Computing = 1] = `Computing`, e$6[e$6.Computed = 2] = `Computed`, e$6[e$6.Emitting = 3] = `Emitting`, e$6;
 }(s$2 || {});
@@ -1959,7 +1959,7 @@ var u = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/pointer-sensor-CyG2cFYy.js
+//#region ../dragdoll/dist/pointer-sensor-BNmXr-6_.js
 function i$3(e$6, t$6) {
 	if (`pointerId` in e$6) return e$6.pointerId === t$6 ? e$6 : null;
 	if (`changedTouches` in e$6) {
@@ -2114,11 +2114,11 @@ var u$1 = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-CULTfnS4.js
+//#region ../dragdoll/dist/auto-scroll-CYnpz5w3.js
 const t = new N();
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-plugin-DqewpaqQ.js
+//#region ../dragdoll/dist/auto-scroll-plugin-CgUl8sXM.js
 const r$2 = {
 	x: 0,
 	y: 0
@@ -2225,7 +2225,7 @@ function c(e$6) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/base-sensor-6CQrwFkA.js
+//#region ../dragdoll/dist/base-sensor-CiXk6Egt.js
 var n$3 = class {
 	constructor() {
 		this.drag = null, this.isDestroyed = !1, this._emitter = new v();
@@ -2273,7 +2273,7 @@ var n$3 = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/base-motion-sensor-DuT5ttYp.js
+//#region ../dragdoll/dist/base-motion-sensor-BxKMtkJL.js
 var i = class extends n$3 {
 	constructor() {
 		super(), this.drag = null, this._direction = {
@@ -2317,7 +2317,7 @@ var i = class extends n$3 {
 };
 
 //#endregion
-//#region ../dragdoll/dist/keyboard-motion-sensor-Cq5nouhk.js
+//#region ../dragdoll/dist/keyboard-motion-sensor-B2HqNPGM.js
 const n$1 = [
 	`start`,
 	`cancel`,

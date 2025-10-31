@@ -199,7 +199,7 @@ var l$2 = class extends o$1 {
 };
 
 //#endregion
-//#region ../dragdoll/dist/ticker-CAFcKU20.js
+//#region ../dragdoll/dist/ticker-Bio34ZvT.js
 const n$4 = {
 	read: Symbol(),
 	write: Symbol()
@@ -257,7 +257,7 @@ function isDocumentElement(e$4) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/get-style-ZZHAkgcg.js
+//#region ../dragdoll/dist/get-style-CC2j8jdv.js
 const e$3 = /* @__PURE__ */ new WeakMap();
 function t$2(t$3) {
 	let n$5 = e$3.get(t$3)?.deref();
@@ -265,12 +265,12 @@ function t$2(t$3) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/constants-gNukEJzy.js
+//#region ../dragdoll/dist/constants-CMClRu_c.js
 const e$2 = typeof window < `u` && window.document !== void 0, t$1 = e$2 && `ontouchstart` in window, n$3 = e$2 && !!window.PointerEvent;
 e$2 && navigator.vendor && navigator.vendor.indexOf(`Apple`) > -1 && navigator.userAgent && navigator.userAgent.indexOf(`CriOS`) == -1 && navigator.userAgent.indexOf(`FxiOS`);
 
 //#endregion
-//#region ../dragdoll/dist/sensor-C-EBcfly.js
+//#region ../dragdoll/dist/sensor-Uwz8qy61.js
 const e = {
 	Start: `start`,
 	Move: `move`,
@@ -383,7 +383,7 @@ function getOffsetContainer(n$5, t$3 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-b_bwyIic.js
+//#region ../dragdoll/dist/draggable-BM9bdNuM.js
 function s$1(e$4, t$3) {
 	return e$4.isIdentity && t$3.isIdentity ? !0 : e$4.is2D && t$3.is2D ? e$4.a === t$3.a && e$4.b === t$3.b && e$4.c === t$3.c && e$4.d === t$3.d && e$4.e === t$3.e && e$4.f === t$3.f : e$4.m11 === t$3.m11 && e$4.m12 === t$3.m12 && e$4.m13 === t$3.m13 && e$4.m14 === t$3.m14 && e$4.m21 === t$3.m21 && e$4.m22 === t$3.m22 && e$4.m23 === t$3.m23 && e$4.m24 === t$3.m24 && e$4.m31 === t$3.m31 && e$4.m32 === t$3.m32 && e$4.m33 === t$3.m33 && e$4.m34 === t$3.m34 && e$4.m41 === t$3.m41 && e$4.m42 === t$3.m42 && e$4.m43 === t$3.m43 && e$4.m44 === t$3.m44;
 }
@@ -894,7 +894,7 @@ var B = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/pointer-sensor-CyG2cFYy.js
+//#region ../dragdoll/dist/pointer-sensor-BNmXr-6_.js
 function i(e$4, t$3) {
 	if (`pointerId` in e$4) return e$4.pointerId === t$3 ? e$4 : null;
 	if (`changedTouches` in e$4) {
@@ -1049,7 +1049,7 @@ var u = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/create-snap-modifier-D1nk7is-.js
+//#region ../dragdoll/dist/create-snap-modifier-BgWO4pEt.js
 function e$1(e$4, t$3) {
 	return Math.round(e$4 / t$3) * t$3;
 }
@@ -1076,7 +1076,7 @@ function n(e$4, n$5) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/base-sensor-6CQrwFkA.js
+//#region ../dragdoll/dist/base-sensor-CiXk6Egt.js
 var n$1 = class {
 	constructor() {
 		this.drag = null, this.isDestroyed = !1, this._emitter = new v();
@@ -1124,7 +1124,7 @@ var n$1 = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/keyboard-sensor-D1L60kQK.js
+//#region ../dragdoll/dist/keyboard-sensor-BCehwsFy.js
 const n$2 = {
 	moveDistance: 25,
 	cancelOnBlur: !0,

@@ -1,5 +1,3 @@
-// @ts-check
-
 import eslint from '@eslint/js';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import prettierConfig from 'eslint-config-prettier';

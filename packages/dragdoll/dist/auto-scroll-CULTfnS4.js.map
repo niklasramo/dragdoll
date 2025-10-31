@@ -1,1 +1,0 @@
-{"version":3,"file":"auto-scroll-CULTfnS4.js","names":[],"sources":["../src/singletons/auto-scroll.ts"],"sourcesContent":["import { AutoScroll } from '../auto-scroll/auto-scroll.js';\n\nexport const autoScroll = new AutoScroll();\n"],"mappings":"uDAEA,MAAa,EAAa,IAAI"}

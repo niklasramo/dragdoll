@@ -19,12 +19,12 @@
     "prettier:write": "prettier --write --no-error-on-unmatched-pattern \"./*.{js,ts,md,json,yml}\" \"./.github/**/*.yml\" && npm run prettier:write --workspaces --if-present",
     "eslint:check": "eslint . --ext .ts,.tsx,.js,.jsx,.mjs,.mts,.cjs,.cts --max-warnings 0",
     "eslint:write": "eslint . --ext .ts,.tsx,.js,.jsx,.mjs,.mts,.cjs,.cts --fix",
-    "ts:check": "npm run ts:check --workspaces --if-present",
+    "ts:check": "tsc && npm run ts:check --workspaces --if-present",
     "format": "npm run eslint:write && npm run prettier:write",
     "lint": "npm run ts:check && npm run prettier:check && npm run eslint:check"
   },
   "devDependencies": {
-    "@types/chai": "5.2.2",
+    "@types/chai": "5.2.3",
     "@types/mocha": "10.0.10",
     "chai": "6.2.0",
     "cpy-cli": "6.0.0",
@@ -32,7 +32,7 @@
     "eventti": "4.0.3",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-simple-import-sort": "12.1.1",
-    "jsdom": "27.0.0",
+    "jsdom": "27.1.0",
     "karma": "6.4.4",
     "karma-browserstack-launcher": "1.6.0",
     "karma-chrome-launcher": "3.2.0",
@@ -43,11 +43,11 @@
     "mocha": "11.7.4",
     "prettier": "3.6.2",
     "rimraf": "6.0.1",
-    "rolldown": "1.0.0-beta.43",
+    "rolldown": "1.0.0-beta.45",
     "tikki": "3.0.2",
-    "tsdown": "0.15.7",
+    "tsdown": "0.15.12",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.46.1",
+    "typescript-eslint": "8.46.2",
     "vitepress": "1.6.4",
     "vue": "3.5.22"
   }
