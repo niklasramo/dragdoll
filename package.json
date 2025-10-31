@@ -6,6 +6,8 @@
   "workspaces": [
     "packages/dragdoll",
     "packages/dragdoll-docs",
+    "packages/dragdoll-react",
+    "packages/dragdoll-react-docs",
     "packages/dragdoll-tests"
   ],
   "scripts": {

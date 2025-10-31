@@ -1,0 +1,55 @@
+{
+  "name": "dragdoll-react",
+  "version": "0.1.0",
+  "description": "React wrapper for dragdoll drag and drop library.",
+  "keywords": [
+    "drag",
+    "drop",
+    "dnd",
+    "draggable",
+    "droppable",
+    "react"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Niklas Rämö",
+    "email": "inramo@gmail.com",
+    "url": "https://github.com/niklasramo"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:niklasramo/dragdoll.git"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "dist",
+    "package.json",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "scripts": {
+    "build": "tsdown --config ./tsdown.config.ts",
+    "prettier:check": "prettier --check --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,yml,yaml}\"",
+    "prettier:write": "prettier --write --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,yml,yaml}\"",
+    "ts:check": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": ">=19.2.0",
+    "react-dom": ">=19.2.0",
+    "dragdoll": "0.9.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "dragdoll": "file:../dragdoll"
+  }
+}
