@@ -11,8 +11,8 @@ export function methodUse() {
       const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
       const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
 
-      function testPlugin<S extends Sensor[], E extends S[number]['_events_type']>() {
-        return (_draggable: Draggable<S, E>) => {
+      function testPlugin<S extends Sensor[]>() {
+        return (_draggable: Draggable<S>) => {
           // Create the plugin instance.
           const pluginInstance = {
             name: 'test',
