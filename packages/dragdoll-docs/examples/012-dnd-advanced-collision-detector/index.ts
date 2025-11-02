@@ -1,6 +1,7 @@
 import {
   AdvancedCollisionData,
   AdvancedCollisionDetector,
+  AnyDraggable,
   autoScrollPlugin,
   DndContext,
   DndContextEventType,
@@ -12,7 +13,7 @@ import {
 import { getOffset } from 'mezr';
 
 // Keep track of the best match droppable.
-const bestMatchMap: Map<Draggable<any>, Droppable> = new Map();
+const bestMatchMap: Map<AnyDraggable, Droppable> = new Map();
 
 // Get elements.
 const scrollContainers = [...document.querySelectorAll('.scroll-list')] as HTMLElement[];
@@ -32,7 +33,7 @@ for (const droppableElement of droppableElements) {
 }
 
 // Create draggables.
-const draggables: Draggable<any>[] = [];
+const draggables: AnyDraggable[] = [];
 for (const draggableElement of draggableElements) {
   const draggable = new Draggable(
     [new PointerSensor(draggableElement), new KeyboardMotionSensor(draggableElement)],
@@ -43,7 +44,7 @@ for (const draggableElement of draggableElements) {
       container: document.body,
       // Freeze the width and height of the dragged element since we are using
       // a custom container and the element has percentage based values for
-      // some of it's properties.
+      // some of its properties.
       frozenStyles: () => ['width', 'height'],
       // Allow the drag to start only if the element is not animating.
       startPredicate: () => !draggableElement.classList.contains('animate'),
@@ -58,7 +59,7 @@ for (const draggableElement of draggableElements) {
     },
   ).use(
     // Allow the draggable to scroll the scroll containers when the dragged
-    // element is close to it's edges.
+    // element is close to its edges.
     autoScrollPlugin({
       targets: scrollContainers.map((scrollContainer) => ({
         element: scrollContainer,
@@ -129,7 +130,7 @@ dndContext.on(DndContextEventType.End, ({ draggable, canceled }) => {
   if (originalContainer !== targetContainer) {
     // Move the draggable to the target container. While doing that, let's add
     // the offset between the original container and the target container to the
-    // draggable's transform so it's visual position does not change.
+    // draggable's transform so its visual position does not change.
     const offsetData = getOffset(originalContainer, targetContainer);
     const transformString = `translate(${offsetData.left}px, ${offsetData.top}px) ${draggableElement.style.transform}`;
     draggableElement.style.transform = transformString;

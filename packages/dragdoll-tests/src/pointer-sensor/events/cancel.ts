@@ -1,11 +1,13 @@
-import { assert } from 'chai';
 import { PointerSensor, type PointerSensorCancelEvent } from 'dragdoll/sensors/pointer';
 import { createFakeDrag } from '../../utils/create-fake-drag.js';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function eventCancel() {
+export default () => {
   describe('cancel', () => {
-    it(`should be triggered correctly on pointercancel`, function () {
+    defaultSetup();
+
+    it(`should be triggered correctly on pointercancel`, async () => {
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'pointer' });
       let cancelEvent: PointerSensorCancelEvent | null = null;
@@ -15,11 +17,11 @@ export function eventCancel() {
         if (cancelEvent === null) {
           cancelEvent = e;
         } else {
-          assert.fail('cancel event listener called twice');
+          expect(false).toBe(true);
         }
       });
 
-      createFakeDrag(
+      await createFakeDrag(
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
@@ -37,7 +39,7 @@ export function eventCancel() {
         },
       );
 
-      assert.deepEqual(cancelEvent, {
+      expect(cancelEvent).toStrictEqual({
         type: 'cancel',
         srcEvent: sourceEvent,
         target: el,
@@ -51,7 +53,7 @@ export function eventCancel() {
       el.remove();
     });
 
-    it(`should be triggered correctly on touchcancel`, function () {
+    it(`should be triggered correctly on touchcancel`, async () => {
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'touch' });
       let cancelEvent: PointerSensorCancelEvent | null = null;
@@ -61,11 +63,11 @@ export function eventCancel() {
         if (cancelEvent === null) {
           cancelEvent = e;
         } else {
-          assert.fail('cancel event listener called twice');
+          expect(false).toBe(true);
         }
       });
 
-      createFakeDrag(
+      await createFakeDrag(
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
@@ -83,7 +85,7 @@ export function eventCancel() {
         },
       );
 
-      assert.deepEqual(cancelEvent, {
+      expect(cancelEvent).toStrictEqual({
         type: 'cancel',
         srcEvent: sourceEvent,
         target: el,
@@ -97,4 +99,4 @@ export function eventCancel() {
       el.remove();
     });
   });
-}
+};

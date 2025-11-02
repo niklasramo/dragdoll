@@ -1,11 +1,13 @@
-import { assert } from 'chai';
 import { PointerSensor } from 'dragdoll/sensors/pointer';
 import { createFakeDrag } from '../../utils/create-fake-drag.js';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function methodCancel() {
+export default () => {
   describe('cancel', () => {
-    it(`should cancel active drag forcefully`, () => {
+    defaultSetup();
+
+    it(`should cancel active drag forcefully`, async () => {
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'pointer' });
       let cancelEventCount = 0;
@@ -14,7 +16,7 @@ export function methodCancel() {
         ++cancelEventCount;
       });
 
-      createFakeDrag(
+      const fakeDrag = createFakeDrag(
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
@@ -23,18 +25,24 @@ export function methodCancel() {
         {
           eventType: 'pointer',
           stepDuration: 0,
-          onAfterStep: () => {
-            assert.notEqual(s.drag, null);
+          onAfterStep: (e) => {
+            if (e.type === 'pointerdown') {
+              expect(s.drag).not.toBe(null);
+            } else {
+              expect(s.drag).toBe(null);
+            }
             s.cancel();
           },
         },
       );
 
-      assert.equal(s.drag, null);
-      assert.equal(cancelEventCount, 1);
+      expect(s.drag).toBe(null);
+      expect(cancelEventCount).toBe(1);
+
+      await fakeDrag;
 
       s.destroy();
       el.remove();
     });
   });
-}
+};

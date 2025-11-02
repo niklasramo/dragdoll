@@ -208,7 +208,7 @@ body {
 
 ## Draggable - Auto Scroll
 
-This example demonstrates quite a lot of things. We use a drag container and freeze `left` and `top` values before we move the dragged element into the drag container. The draggable element has percetage based left and top values, which would not be correct when the element is moved to the drag container, which has different dimensions. Lastly we use the auto scroll plugin and configure it to scroll the viewport on y-axis when the dragged element is close to it's edges. Note that we also set auto scroll target's `padding.top` and `padding.bottom` to `Infinity` to allow the scrolling to continue even if you drag the element past the edges.
+This example demonstrates quite a lot of things. We use a drag container and freeze `left` and `top` values before we move the dragged element into the drag container. The draggable element has percentage based left and top values, which would not be correct when the element is moved to the drag container, which has different dimensions. Lastly we use the auto scroll plugin and configure it to scroll the viewport on y-axis when the dragged element is close to its edges. Note that we also set auto scroll target's `padding.top` and `padding.bottom` to `Infinity` to allow the scrolling to continue even if you drag the element past the edges.
 
 <div class="example"><iframe src="/dragdoll/examples/002-draggable-auto-scroll/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/002-draggable-auto-scroll/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
@@ -254,7 +254,7 @@ new Draggable([pointerSensor, keyboardSensor], {
     <title>Draggable - Auto Scroll</title>
     <meta
       name="description"
-      content="This example demonstrates quite a lot of things. We use a drag container and freeze `left` and `top` values before we move the dragged element into the drag container. The draggable element has percetage based left and top values, which would not be correct when the element is moved to the drag container, which has different dimensions. Lastly we use the auto scroll plugin and configure it to scroll the viewport on y-axis when the dragged element is close to it's edges. Note that we also set auto scroll target's `padding.top` and `padding.bottom` to `Infinity` to allow the scrolling to continue even if you drag the element past the edges."
+      content="This example demonstrates quite a lot of things. We use a drag container and freeze `left` and `top` values before we move the dragged element into the drag container. The draggable element has percentage based left and top values, which would not be correct when the element is moved to the drag container, which has different dimensions. Lastly we use the auto scroll plugin and configure it to scroll the viewport on y-axis when the dragged element is close to its edges. Note that we also set auto scroll target's `padding.top` and `padding.bottom` to `Infinity` to allow the scrolling to continue even if you drag the element past the edges."
     />
     <meta
       name="viewport"
@@ -982,7 +982,7 @@ body {
 
 ## Draggable - Containment
 
-A simple demo on how to use the built-in containment modifier. The first argument of `createContainmentModifier` should be a function that returns the client rect of the containment area. That function is called on every drag 'move' event and also on 'start' and 'end' events. The second argument is a boolean which's value is cached on start event to define if the modifier should track drifting of the sensor when the dragged element hits an edge of the containment area and the sensor keeps on moving away. If the drift is being tracked the draggable element will not be moved to the opposing direction until the sensor is back inside the containment area. By default the drift is tracked only for `PointerSensor`.
+A simple demo on how to use the built-in containment modifier. The first argument of `createContainmentModifier` should be a function that returns the client rect of the containment area. That function is called on every drag 'move' event and also on 'start' and 'end' events. The second argument is a boolean whose value is cached on start event to define if the modifier should track drifting of the sensor when the dragged element hits an edge of the containment area and the sensor keeps on moving away. If the drift is being tracked the draggable element will not be moved to the opposing direction until the sensor is back inside the containment area. By default the drift is tracked only for `PointerSensor`.
 
 <div class="example"><iframe src="/dragdoll/examples/006-draggable-containment/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/006-draggable-containment/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
@@ -1028,7 +1028,7 @@ new Draggable([pointerSensor, keyboardSensor], {
     <title>Draggable - Containment</title>
     <meta
       name="description"
-      content="A simple demo on how to use the built-in containment modifier. The first argument of `createContainmentModifier` should be a function that returns the client rect of the containment area. That function is called on every drag 'move' event and also on 'start' and 'end' events. The second argument is a boolean which's value is cached on start event to define if the modifier should track drifting of the sensor when the dragged element hits an edge of the containment area and the sensor keeps on moving away. If the drift is being tracked the draggable element will not be moved to the opposing direction until the sensor is back inside the containment area. By default the drift is tracked only for `PointerSensor`."
+      content="A simple demo on how to use the built-in containment modifier. The first argument of `createContainmentModifier` should be a function that returns the client rect of the containment area. That function is called on every drag 'move' event and also on 'start' and 'end' events. The second argument is a boolean whose value is cached on start event to define if the modifier should track drifting of the sensor when the dragged element hits an edge of the containment area and the sensor keeps on moving away. If the drift is being tracked the draggable element will not be moved to the opposing direction until the sensor is back inside the containment area. By default the drift is tracked only for `PointerSensor`."
     />
     <meta
       name="viewport"
@@ -1353,7 +1353,7 @@ body {
 
 ## Draggable - Drag Handle
 
-A simple example on how to create a drag handle. There is no built-in 'handle' option, because it would be too limiting. In this example the `PointerSensor` is used for the handle element while the `KeyboardMotionSensor` is used normally for the draggable element. You could also create the `KeyboardMotionSensor` for the handle element if you wished, it's really up to your preferences. Hopefully this showcases how flexible and customizable DragDoll really is with it's sensor system.
+A simple example on how to create a drag handle. There is no built-in 'handle' option, because it would be too limiting. In this example the `PointerSensor` is used for the handle element while the `KeyboardMotionSensor` is used normally for the draggable element. You could also create the `KeyboardMotionSensor` for the handle element if you wished, it's really up to your preferences. Hopefully this showcases how flexible and customizable DragDoll really is with its sensor system.
 
 <div class="example"><iframe src="/dragdoll/examples/008-draggable-drag-handle/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/008-draggable-drag-handle/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
@@ -1390,7 +1390,7 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
     <title>Draggable - Drag Handle</title>
     <meta
       name="description"
-      content="A simple example on how to create a drag handle. There is no built-in 'handle' option, because it would be too limiting. In this example the `PointerSensor` is used for the handle element while the `KeyboardMotionSensor` is used normally for the draggable element. You could also create the `KeyboardMotionSensor` for the handle element if you wished, it's really up to your preferences. Hopefully this showcases how flexible and customizable DragDoll really is with it's sensor system."
+      content="A simple example on how to create a drag handle. There is no built-in 'handle' option, because it would be too limiting. In this example the `PointerSensor` is used for the handle element while the `KeyboardMotionSensor` is used normally for the draggable element. You could also create the `KeyboardMotionSensor` for the handle element if you wished, it's really up to your preferences. Hopefully this showcases how flexible and customizable DragDoll really is with its sensor system."
     />
     <meta
       name="viewport"
@@ -1589,7 +1589,7 @@ new Draggable([pointerSensor, keyboardSensor], {
     clone.style.top = `${elemRect.top}px`;
 
     // Add the ghost and dragging class to the clone. The ghost element will be
-    // in dragging state for the duration of it's existence.
+    // in dragging state for the duration of its existence.
     clone.classList.add('ghost', 'dragging');
 
     // We need to reset the transform to avoid the ghost element being offset
@@ -2333,6 +2333,7 @@ Advanced collision detection with scrollable droppable lists. Here we can see ho
 import {
   AdvancedCollisionData,
   AdvancedCollisionDetector,
+  AnyDraggable,
   autoScrollPlugin,
   DndContext,
   DndContextEventType,
@@ -2344,7 +2345,7 @@ import {
 import { getOffset } from 'mezr';
 
 // Keep track of the best match droppable.
-const bestMatchMap: Map<Draggable<any>, Droppable> = new Map();
+const bestMatchMap: Map<AnyDraggable, Droppable> = new Map();
 
 // Get elements.
 const scrollContainers = [...document.querySelectorAll('.scroll-list')] as HTMLElement[];
@@ -2364,7 +2365,7 @@ for (const droppableElement of droppableElements) {
 }
 
 // Create draggables.
-const draggables: Draggable<any>[] = [];
+const draggables: AnyDraggable[] = [];
 for (const draggableElement of draggableElements) {
   const draggable = new Draggable(
     [new PointerSensor(draggableElement), new KeyboardMotionSensor(draggableElement)],
@@ -2375,7 +2376,7 @@ for (const draggableElement of draggableElements) {
       container: document.body,
       // Freeze the width and height of the dragged element since we are using
       // a custom container and the element has percentage based values for
-      // some of it's properties.
+      // some of its properties.
       frozenStyles: () => ['width', 'height'],
       // Allow the drag to start only if the element is not animating.
       startPredicate: () => !draggableElement.classList.contains('animate'),
@@ -2390,7 +2391,7 @@ for (const draggableElement of draggableElements) {
     },
   ).use(
     // Allow the draggable to scroll the scroll containers when the dragged
-    // element is close to it's edges.
+    // element is close to its edges.
     autoScrollPlugin({
       targets: scrollContainers.map((scrollContainer) => ({
         element: scrollContainer,
@@ -2461,7 +2462,7 @@ dndContext.on(DndContextEventType.End, ({ draggable, canceled }) => {
   if (originalContainer !== targetContainer) {
     // Move the draggable to the target container. While doing that, let's add
     // the offset between the original container and the target container to the
-    // draggable's transform so it's visual position does not change.
+    // draggable's transform so its visual position does not change.
     const offsetData = getOffset(originalContainer, targetContainer);
     const transformString = `translate(${offsetData.left}px, ${offsetData.top}px) ${draggableElement.style.transform}`;
     draggableElement.style.transform = transformString;

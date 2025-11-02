@@ -1,12 +1,14 @@
-import { assert } from 'chai';
 import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
 
-export function optionElements() {
+export default () => {
   describe('elements', () => {
+    defaultSetup();
+
     it('should be a function that returns an array of the dragged elements', async () => {
       const elA = createTestElement();
       const elB = createTestElement();
@@ -25,18 +27,18 @@ export function optionElements() {
 
       // Make sure the a element has not moved.
       const rectA = elA.getBoundingClientRect();
-      assert.equal(rectA.x, 0);
-      assert.equal(rectA.y, 0);
+      expect(rectA.x).toBe(0);
+      expect(rectA.y).toBe(0);
 
       // Make sure the b element has moved.
       const rectB = elB.getBoundingClientRect();
-      assert.equal(rectB.x, 1);
-      assert.equal(rectB.y, 0);
+      expect(rectB.x).toBe(1);
+      expect(rectB.y).toBe(0);
 
       // Make sure the c element has moved.
       const rectC = elC.getBoundingClientRect();
-      assert.equal(rectC.x, 1);
-      assert.equal(rectC.y, 0);
+      expect(rectC.x).toBe(1);
+      expect(rectC.y).toBe(0);
 
       // Reset stuff.
       draggable.destroy();
@@ -46,4 +48,4 @@ export function optionElements() {
       elC.remove();
     });
   });
-}
+};

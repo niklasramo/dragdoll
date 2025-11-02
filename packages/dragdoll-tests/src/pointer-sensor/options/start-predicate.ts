@@ -1,21 +1,23 @@
-import { assert } from 'chai';
 import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function optionStartPredicate() {
+export default () => {
   describe('startPredicate', () => {
-    it('should allow start only when e.button is 0 by default', function () {
+    defaultSetup();
+
+    it('should allow start only when e.button is 0 by default', () => {
       const s = new PointerSensor(document.body, { sourceEvents: 'mouse' });
 
       document.body.dispatchEvent(new MouseEvent('mousedown', { button: 1 }));
-      assert.equal(s.drag, null);
+      expect(s.drag).toBe(null);
 
       document.body.dispatchEvent(new MouseEvent('mousedown', { button: 0 }));
-      assert.notEqual(s.drag, null);
+      expect(s.drag).not.toBe(null);
 
       s.destroy();
     });
 
-    it('should allow start when true is returned and prevent start when false is returned', function () {
+    it('should allow start when true is returned and prevent start when false is returned', () => {
       const s1 = new PointerSensor(document.body, {
         sourceEvents: 'mouse',
         startPredicate: () => true,
@@ -26,11 +28,11 @@ export function optionStartPredicate() {
       });
 
       document.body.dispatchEvent(new MouseEvent('mousedown'));
-      assert.notEqual(s1.drag, null);
-      assert.equal(s2.drag, null);
+      expect(s1.drag).not.toBe(null);
+      expect(s2.drag).toBe(null);
 
       s1.destroy();
       s2.destroy();
     });
   });
-}
+};

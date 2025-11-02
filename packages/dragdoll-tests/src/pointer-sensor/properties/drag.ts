@@ -1,23 +1,25 @@
-import { assert } from 'chai';
 import { PointerSensor } from 'dragdoll/sensors/pointer';
 import { createFakeDrag } from '../../utils/create-fake-drag.js';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function propDrag() {
+export default () => {
   describe('drag', () => {
-    it(`should be null on init`, function () {
+    defaultSetup();
+
+    it(`should be null on init`, () => {
       const s = new PointerSensor(document.body);
-      assert.equal(s.drag, null);
+      expect(s.drag).toBe(null);
       s.destroy();
     });
 
-    it(`should contain drag data during drag`, function () {
+    it(`should contain drag data during drag`, async () => {
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'pointer' });
 
       let dragEventCount = 0;
 
-      createFakeDrag(
+      await createFakeDrag(
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
@@ -31,30 +33,30 @@ export function propDrag() {
           onAfterStep: (e) => {
             ++dragEventCount;
             if (e.type === 'start') {
-              assert.deepEqual(s.drag, {
+              expect(s.drag).toStrictEqual({
                 pointerId: 1,
                 pointerType: 'touch',
                 x: 1,
                 y: 1,
               });
             } else if (e.type === 'move') {
-              assert.deepEqual(s.drag, {
+              expect(s.drag).toStrictEqual({
                 pointerId: 1,
                 pointerType: 'touch',
                 x: 2,
                 y: 2,
               });
             } else if (e.type === 'end') {
-              assert.equal(s.drag, null);
+              expect(s.drag).toBe(null);
             }
           },
         },
       );
 
-      assert.equal(dragEventCount, 3);
+      expect(dragEventCount).toBe(3);
 
       s.destroy();
       el.remove();
     });
   });
-}
+};

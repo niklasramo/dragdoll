@@ -1,10 +1,12 @@
-import { assert } from 'chai';
 import { PointerSensor } from 'dragdoll/sensors/pointer';
 import { createFakeDrag } from '../../utils/create-fake-drag.js';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function methodDestroy() {
+export default () => {
   describe('destroy', () => {
+    defaultSetup();
+
     it(`should destroy the sensor`, () => {
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'pointer' });
@@ -20,14 +22,14 @@ export function methodDestroy() {
 
       s.destroy();
 
-      assert.equal(s.isDestroyed, true);
-      assert.equal(destroyEventCount, 1);
-      assert.equal(cancelEventCount, 0);
+      expect(s.isDestroyed).toBe(true);
+      expect(destroyEventCount).toBe(1);
+      expect(cancelEventCount).toBe(0);
 
       el.remove();
     });
 
-    it(`should destroy the sensor during drag`, () => {
+    it(`should destroy the sensor during drag`, async () => {
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'pointer' });
       let cancelEventCount = 0;
@@ -40,7 +42,7 @@ export function methodDestroy() {
         ++destroyEventCount;
       });
 
-      createFakeDrag(
+      const fakeDrag = createFakeDrag(
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
@@ -49,19 +51,25 @@ export function methodDestroy() {
         {
           eventType: 'pointer',
           stepDuration: 0,
-          onAfterStep: () => {
-            assert.notEqual(s.drag, null);
+          onAfterStep: (e) => {
+            if (e.type === 'pointerdown') {
+              expect(s.drag).not.toBe(null);
+            } else {
+              expect(s.drag).toBe(null);
+            }
             s.destroy();
           },
         },
       );
 
-      assert.equal(s.drag, null);
-      assert.equal(s.isDestroyed, true);
-      assert.equal(destroyEventCount, 1);
-      assert.equal(cancelEventCount, 1);
+      expect(s.drag).toBe(null);
+      expect(s.isDestroyed).toBe(true);
+      expect(destroyEventCount).toBe(1);
+      expect(cancelEventCount).toBe(1);
+
+      await fakeDrag;
 
       el.remove();
     });
   });
-}
+};

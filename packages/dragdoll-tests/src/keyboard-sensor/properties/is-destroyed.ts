@@ -1,23 +1,25 @@
-import { assert } from 'chai';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 
-export function propIsDestroyed() {
+export default () => {
   describe('isDestroyed', () => {
-    it(`should be false on init`, function () {
+    defaultSetup();
+
+    it(`should be false on init`, () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
-      assert.equal(s.isDestroyed, false);
+      expect(s.isDestroyed).toBe(false);
       el.remove();
       s.destroy();
     });
 
-    it(`should be true after destroy method is called`, function () {
+    it(`should be true after destroy method is called`, () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
       s.destroy();
-      assert.equal(s.isDestroyed, true);
+      expect(s.isDestroyed).toBe(true);
       el.remove();
     });
 
@@ -33,10 +35,10 @@ export function propIsDestroyed() {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Drag should not start.
-      assert.equal(s.drag, null);
+      expect(s.drag).toBe(null);
 
       // Remove the element.
       el.remove();
     });
   });
-}
+};

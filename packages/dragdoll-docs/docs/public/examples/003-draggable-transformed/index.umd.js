@@ -199,7 +199,7 @@ var l$3 = class extends o$3 {
 };
 
 //#endregion
-//#region ../dragdoll/dist/ticker-CAFcKU20.js
+//#region ../dragdoll/dist/ticker-Bio34ZvT.js
 const n$1 = {
 	read: Symbol(),
 	write: Symbol()
@@ -210,7 +210,7 @@ let r$1 = new l$3({
 });
 
 //#endregion
-//#region ../dragdoll/dist/create-full-rect-ABJfaR4O.js
+//#region ../dragdoll/dist/create-full-rect-Dd45f4o1.js
 function e$3(e$5, t$5 = {
 	width: 0,
 	height: 0,
@@ -225,7 +225,7 @@ function e$3(e$5, t$5 = {
 }
 
 //#endregion
-//#region ../dragdoll/dist/get-intersection-score-CvSlwByb.js
+//#region ../dragdoll/dist/get-intersection-score-YcxwkZs7.js
 function e$4(e$5, t$5, n$5 = {
 	width: 0,
 	height: 0,
@@ -436,7 +436,7 @@ function getRect(t$5, e$5) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/get-rect-BRzLuevJ.js
+//#region ../dragdoll/dist/get-rect-BPdgHRQD.js
 function t$3(...t$5) {
 	let { width: n$5, height: r$4, left: i$4, top: a$3 } = getRect(...t$5);
 	return {
@@ -480,8 +480,33 @@ function getDistance(e$5, t$5) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-DQA4hZ19.js
-var o$2 = class {
+//#region ../dragdoll/dist/auto-scroll-BzsvSJTw.js
+const o$2 = e$3(), s$3 = e$3();
+function c$3(e$5, t$5) {
+	return getDistance(e$3(e$5, o$2), e$3(t$5, s$3));
+}
+function l$2(e$5) {
+	return e$5 instanceof Window;
+}
+function u$2(e$5) {
+	return l$2(e$5) || e$5 === document.documentElement || e$5 === document.body ? window : e$5;
+}
+function d$1(e$5) {
+	return l$2(e$5) ? e$5.scrollX : e$5.scrollLeft;
+}
+function f$1(e$5) {
+	return l$2(e$5) && (e$5 = document.documentElement), e$5.scrollWidth - e$5.clientWidth;
+}
+function p$1(e$5) {
+	return l$2(e$5) ? e$5.scrollY : e$5.scrollTop;
+}
+function m$1(e$5) {
+	return l$2(e$5) && (e$5 = document.documentElement), e$5.scrollHeight - e$5.clientHeight;
+}
+function h$1(e$5, t$5) {
+	return !(e$5.x + e$5.width <= t$5.x || t$5.x + t$5.width <= e$5.x || e$5.y + e$5.height <= t$5.y || t$5.y + t$5.height <= e$5.y);
+}
+var g$1 = class {
 	constructor(e$5, { batchSize: t$5 = 100, minBatchCount: n$5 = 0, maxBatchCount: r$4 = 2 ** 53 - 1, initialBatchCount: i$4 = 0, shrinkThreshold: a$3 = 2, onRelease: o$4 } = {}) {
 		this._batchSize = Math.floor(Math.max(t$5, 1)), this._minSize = Math.floor(Math.max(n$5, 0)) * this._batchSize, this._maxSize = Math.floor(Math.min(Math.max(r$4 * this._batchSize, this._batchSize), 2 ** 53 - 1)), this._shrinkThreshold = Math.floor(Math.max(a$3, 1) * this._batchSize), this._data = Array(Math.floor(Math.max(Math.max(i$4, n$5) * this._batchSize, 0))), this._index = 0, this._getItem = e$5, this._onRelease = o$4;
 	}
@@ -503,31 +528,6 @@ var o$2 = class {
 		this._data.length = 0, this._index = 0;
 	}
 };
-const s$3 = e$3(), c$3 = e$3();
-function l$2(e$5, t$5) {
-	return getDistance(e$3(e$5, s$3), e$3(t$5, c$3));
-}
-function u$2(e$5) {
-	return e$5 instanceof Window;
-}
-function d$1(e$5) {
-	return u$2(e$5) || e$5 === document.documentElement || e$5 === document.body ? window : e$5;
-}
-function f$1(e$5) {
-	return u$2(e$5) ? e$5.scrollX : e$5.scrollLeft;
-}
-function p$1(e$5) {
-	return u$2(e$5) && (e$5 = document.documentElement), e$5.scrollWidth - e$5.clientWidth;
-}
-function m$1(e$5) {
-	return u$2(e$5) ? e$5.scrollY : e$5.scrollTop;
-}
-function h$1(e$5) {
-	return u$2(e$5) && (e$5 = document.documentElement), e$5.scrollHeight - e$5.clientHeight;
-}
-function g$1(e$5, t$5) {
-	return !(e$5.x + e$5.width <= t$5.x || t$5.x + t$5.width <= e$5.x || e$5.y + e$5.height <= t$5.y || t$5.y + t$5.height <= e$5.y);
-}
 const _$1 = {
 	width: 0,
 	height: 0,
@@ -603,7 +603,7 @@ var k$1 = class {
 		this.requestX === e$5 ? (this.requestX = null, e$5.action = null) : this.requestY === e$5 && (this.requestY = null, e$5.action = null);
 	}
 	computeScrollValues() {
-		this.element && (this.scrollLeft = this.requestX ? this.requestX.value : f$1(this.element), this.scrollTop = this.requestY ? this.requestY.value : m$1(this.element));
+		this.element && (this.scrollLeft = this.requestX ? this.requestX.value : d$1(this.element), this.scrollTop = this.requestY ? this.requestY.value : p$1(this.element));
 	}
 	scroll() {
 		this.element && (this.element.scrollTo ? this.element.scrollTo(this.scrollLeft, this.scrollTop) : (this.element.scrollLeft = this.scrollLeft, this.element.scrollTop = this.scrollTop));
@@ -619,7 +619,7 @@ var k$1 = class {
 		return b$1.forward & this.direction ? E$1(this.value, this.maxValue) : this.value <= 0;
 	}
 	computeCurrentScrollValue() {
-		return this.element ? this.value === this.value ? Math.max(0, Math.min(this.value, this.maxValue)) : y$1.x & this.direction ? f$1(this.element) : m$1(this.element) : 0;
+		return this.element ? this.value === this.value ? Math.max(0, Math.min(this.value, this.maxValue)) : y$1.x & this.direction ? d$1(this.element) : p$1(this.element) : 0;
 	}
 	computeNextScrollValue() {
 		let e$5 = this.speed * (this.deltaTime / 1e3), t$5 = b$1.forward & this.direction ? this.value + e$5 : this.value - e$5;
@@ -664,11 +664,11 @@ var N = class {
 		this.items = [], this.settings = { overlapCheckInterval: t$5 }, this._actions = [], this._isDestroyed = !1, this._isTicking = !1, this._tickTime = 0, this._tickDeltaTime = 0, this._requests = {
 			[y$1.x]: /* @__PURE__ */ new Map(),
 			[y$1.y]: /* @__PURE__ */ new Map()
-		}, this._itemData = /* @__PURE__ */ new Map(), this._requestPool = new o$2((e$6) => e$6 || new j$1(), {
+		}, this._itemData = /* @__PURE__ */ new Map(), this._requestPool = new g$1((e$6) => e$6 || new j$1(), {
 			initialBatchCount: 1,
 			minBatchCount: 1,
 			onRelease: (e$6) => e$6.reset()
-		}), this._actionPool = new o$2((e$6) => e$6 || new A$1(), {
+		}), this._actionPool = new g$1((e$6) => e$6 || new A$1(), {
 			batchSize: 10,
 			initialBatchCount: 1,
 			minBatchCount: 1,
@@ -701,27 +701,27 @@ var N = class {
 			t$5 && this._cancelItemScroll(e$5, y$1.x), n$5 && this._cancelItemScroll(e$5, y$1.y);
 			return;
 		}
-		let c$4 = this._itemData.get(e$5), u$4 = c$4?.directionX, v$3 = c$4?.directionY;
-		if (!u$4 && !v$3) {
+		let l$4 = this._itemData.get(e$5), g$2 = l$4?.directionX, v$3 = l$4?.directionY;
+		if (!g$2 && !v$3) {
 			t$5 && this._cancelItemScroll(e$5, y$1.x), n$5 && this._cancelItemScroll(e$5, y$1.y);
 			return;
 		}
 		let b$2 = null, x$2 = -Infinity, w$2 = 0, k$2 = -Infinity, A$2 = C$1.none, j$2 = 0, M$2 = 0, N$2 = null, P$1 = -Infinity, F$1 = 0, I$1 = -Infinity, L$1 = C$1.none, R$1 = 0, z$1 = 0, B$1 = 0;
 		for (; B$1 < o$4.length; B$1++) {
-			let e$6 = o$4[B$1], c$5 = typeof e$6.threshold == `number` ? e$6.threshold : 50, y$2 = !!(t$5 && u$4 && e$6.axis !== `y`), V = !!(n$5 && v$3 && e$6.axis !== `x`), H = e$6.priority || 0;
+			let e$6 = o$4[B$1], l$5 = typeof e$6.threshold == `number` ? e$6.threshold : 50, y$2 = !!(t$5 && g$2 && e$6.axis !== `y`), V = !!(n$5 && v$3 && e$6.axis !== `x`), H = e$6.priority || 0;
 			if ((!y$2 || H < x$2) && (!V || H < P$1)) continue;
-			let U = d$1(e$6.element || e$6), W = y$2 ? p$1(U) : -1, G = V ? h$1(U) : -1;
+			let U = u$2(e$6.element || e$6), W = y$2 ? f$1(U) : -1, G = V ? m$1(U) : -1;
 			if (W <= 0 && G <= 0) continue;
 			let K = t$3([U, `padding`], window), q = n$4(s$4, K) || -Infinity;
-			if (q === -Infinity) if (e$6.padding && g$1(s$4, T$1(K, e$6.padding, _$1))) q = -(l$2(s$4, K) || 0);
+			if (q === -Infinity) if (e$6.padding && h$1(s$4, T$1(K, e$6.padding, _$1))) q = -(c$3(s$4, K) || 0);
 			else continue;
 			if (y$2 && H >= x$2 && W > 0 && (H > x$2 || q > k$2)) {
-				let e$7 = 0, t$6 = C$1.none, n$6 = D$1(c$5, K.width), r$4 = O$1(n$6, a$3, s$4.width, K.width);
-				u$4 === C$1.right ? (e$7 = K.x + K.width + r$4 - (s$4.x + s$4.width), e$7 <= n$6 && !E$1(f$1(U), W) && (t$6 = C$1.right)) : u$4 === C$1.left && (e$7 = s$4.x - (K.x - r$4), e$7 <= n$6 && f$1(U) > 0 && (t$6 = C$1.left)), t$6 && (b$2 = U, x$2 = H, w$2 = n$6, k$2 = q, A$2 = t$6, j$2 = e$7, M$2 = W);
+				let e$7 = 0, t$6 = C$1.none, n$6 = D$1(l$5, K.width), r$4 = O$1(n$6, a$3, s$4.width, K.width);
+				g$2 === C$1.right ? (e$7 = K.x + K.width + r$4 - (s$4.x + s$4.width), e$7 <= n$6 && !E$1(d$1(U), W) && (t$6 = C$1.right)) : g$2 === C$1.left && (e$7 = s$4.x - (K.x - r$4), e$7 <= n$6 && d$1(U) > 0 && (t$6 = C$1.left)), t$6 && (b$2 = U, x$2 = H, w$2 = n$6, k$2 = q, A$2 = t$6, j$2 = e$7, M$2 = W);
 			}
 			if (V && H >= P$1 && G > 0 && (H > P$1 || q > I$1)) {
-				let e$7 = 0, t$6 = S$1.none, n$6 = D$1(c$5, K.height), r$4 = O$1(n$6, a$3, s$4.height, K.height);
-				v$3 === C$1.down ? (e$7 = K.y + K.height + r$4 - (s$4.y + s$4.height), e$7 <= n$6 && !E$1(m$1(U), G) && (t$6 = C$1.down)) : v$3 === C$1.up && (e$7 = s$4.y - (K.y - r$4), e$7 <= n$6 && m$1(U) > 0 && (t$6 = C$1.up)), t$6 && (N$2 = U, P$1 = H, F$1 = n$6, I$1 = q, L$1 = t$6, R$1 = e$7, z$1 = G);
+				let e$7 = 0, t$6 = S$1.none, n$6 = D$1(l$5, K.height), r$4 = O$1(n$6, a$3, s$4.height, K.height);
+				v$3 === C$1.down ? (e$7 = K.y + K.height + r$4 - (s$4.y + s$4.height), e$7 <= n$6 && !E$1(p$1(U), G) && (t$6 = C$1.down)) : v$3 === C$1.up && (e$7 = s$4.y - (K.y - r$4), e$7 <= n$6 && p$1(U) > 0 && (t$6 = C$1.up)), t$6 && (N$2 = U, P$1 = H, F$1 = n$6, I$1 = q, L$1 = t$6, R$1 = e$7, z$1 = G);
 			}
 		}
 		t$5 && (b$2 && A$2 ? this._requestItemScroll(e$5, y$1.x, b$2, A$2, w$2, j$2, M$2) : this._cancelItemScroll(e$5, y$1.x)), n$5 && (N$2 && L$1 ? this._requestItemScroll(e$5, y$1.y, N$2, L$1, F$1, R$1, z$1) : this._cancelItemScroll(e$5, y$1.y));
@@ -729,22 +729,22 @@ var N = class {
 	_updateScrollRequest(e$5) {
 		let { inertAreaSize: t$5, smoothStop: n$5, targets: a$3, clientRect: o$4 } = e$5.item, s$4 = null, c$4 = 0;
 		for (; c$4 < a$3.length; c$4++) {
-			let n$6 = a$3[c$4], l$4 = d$1(n$6.element || n$6);
+			let n$6 = a$3[c$4], l$4 = u$2(n$6.element || n$6);
 			if (l$4 !== e$5.element) continue;
-			let u$4 = !!(y$1.x & e$5.direction);
-			if (u$4) {
+			let g$2 = !!(y$1.x & e$5.direction);
+			if (g$2) {
 				if (n$6.axis === `y`) continue;
 			} else if (n$6.axis === `x`) continue;
-			let v$3 = u$4 ? p$1(l$4) : h$1(l$4);
+			let v$3 = g$2 ? f$1(l$4) : m$1(l$4);
 			if (v$3 <= 0) break;
 			let x$2 = t$3([l$4, `padding`], window);
 			if ((n$4(o$4, x$2) || -Infinity) === -Infinity) {
 				let e$6 = n$6.scrollPadding || n$6.padding;
-				if (!(e$6 && g$1(o$4, T$1(x$2, e$6, _$1)))) break;
+				if (!(e$6 && h$1(o$4, T$1(x$2, e$6, _$1)))) break;
 			}
-			let S$2 = D$1(typeof n$6.threshold == `number` ? n$6.threshold : 50, u$4 ? x$2.width : x$2.height), w$2 = O$1(S$2, t$5, u$4 ? o$4.width : o$4.height, u$4 ? x$2.width : x$2.height), k$2 = 0;
+			let S$2 = D$1(typeof n$6.threshold == `number` ? n$6.threshold : 50, g$2 ? x$2.width : x$2.height), w$2 = O$1(S$2, t$5, g$2 ? o$4.width : o$4.height, g$2 ? x$2.width : x$2.height), k$2 = 0;
 			if (k$2 = e$5.direction === C$1.left ? o$4.x - (x$2.x - w$2) : e$5.direction === C$1.right ? x$2.x + x$2.width + w$2 - (o$4.x + o$4.width) : e$5.direction === C$1.up ? o$4.y - (x$2.y - w$2) : x$2.y + x$2.height + w$2 - (o$4.y + o$4.height), k$2 > S$2) break;
-			let A$2 = u$4 ? f$1(l$4) : m$1(l$4);
+			let A$2 = g$2 ? d$1(l$4) : p$1(l$4);
 			if (s$4 = b$1.forward & e$5.direction ? E$1(A$2, v$3) : A$2 <= 0, s$4) break;
 			return e$5.maxValue = v$3, e$5.threshold = S$2, e$5.distance = k$2, e$5.isEnding = !1, !0;
 		}
@@ -826,7 +826,7 @@ var N = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/get-style-ZZHAkgcg.js
+//#region ../dragdoll/dist/get-style-CC2j8jdv.js
 const e$2 = /* @__PURE__ */ new WeakMap();
 function t$2(t$5) {
 	let n$5 = e$2.get(t$5)?.deref();
@@ -834,12 +834,12 @@ function t$2(t$5) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/constants-gNukEJzy.js
+//#region ../dragdoll/dist/constants-CMClRu_c.js
 const e$1 = typeof window < `u` && window.document !== void 0, t$1 = e$1 && `ontouchstart` in window, n$3 = e$1 && !!window.PointerEvent;
 e$1 && navigator.vendor && navigator.vendor.indexOf(`Apple`) > -1 && navigator.userAgent && navigator.userAgent.indexOf(`CriOS`) == -1 && navigator.userAgent.indexOf(`FxiOS`);
 
 //#endregion
-//#region ../dragdoll/dist/sensor-C-EBcfly.js
+//#region ../dragdoll/dist/sensor-Uwz8qy61.js
 const e = {
 	Start: `start`,
 	Move: `move`,
@@ -952,7 +952,7 @@ function getOffsetContainer(n$5, t$5 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-C1QBodX1.js
+//#region ../dragdoll/dist/draggable-BM9bdNuM.js
 function s$2(e$5, t$5) {
 	return e$5.isIdentity && t$5.isIdentity ? !0 : e$5.is2D && t$5.is2D ? e$5.a === t$5.a && e$5.b === t$5.b && e$5.c === t$5.c && e$5.d === t$5.d && e$5.e === t$5.e && e$5.f === t$5.f : e$5.m11 === t$5.m11 && e$5.m12 === t$5.m12 && e$5.m13 === t$5.m13 && e$5.m14 === t$5.m14 && e$5.m21 === t$5.m21 && e$5.m22 === t$5.m22 && e$5.m23 === t$5.m23 && e$5.m24 === t$5.m24 && e$5.m31 === t$5.m31 && e$5.m32 === t$5.m32 && e$5.m33 === t$5.m33 && e$5.m34 === t$5.m34 && e$5.m41 === t$5.m41 && e$5.m42 === t$5.m42 && e$5.m43 === t$5.m43 && e$5.m44 === t$5.m44;
 }
@@ -976,10 +976,10 @@ function d(e$5, t$5 = 0) {
 }
 var f = class {
 	constructor() {
-		this._cache = /* @__PURE__ */ new Map(), this._validation = /* @__PURE__ */ new Map();
+		this._cache = /* @__PURE__ */ new Map(), this._validation = /* @__PURE__ */ new Set();
 	}
 	set(e$5, t$5) {
-		this._cache.set(e$5, t$5), this._validation.set(e$5, void 0);
+		this._cache.set(e$5, t$5), this._validation.add(e$5);
 	}
 	get(e$5) {
 		return this._cache.get(e$5);
@@ -1309,14 +1309,14 @@ var B = class {
 	}
 	_prepareStart() {
 		let e$5 = this.drag;
-		e$5 && (this._startPhase = N$1.Prepare, e$5.items = (this.settings.elements({
+		!e$5 || this._startPhase !== N$1.Init || (this._startPhase = N$1.Prepare, e$5.items = (this.settings.elements({
 			draggable: this,
 			drag: e$5
 		}) || []).map((e$6) => new O(e$6, this)), this._applyModifiers(F.Start, 0, 0), this._emit(R.PrepareStart, e$5.startEvent), this.settings.onPrepareStart?.(e$5, this), this._startPhase = N$1.FinishPrepare);
 	}
 	_applyStart() {
 		let e$5 = this.drag;
-		if (e$5) {
+		if (!(!e$5 || this._startPhase !== N$1.FinishPrepare)) {
 			this._startPhase = N$1.Apply;
 			for (let t$5 of e$5.items) t$5.dragContainer !== t$5.elementContainer && l$1(t$5.dragContainer, t$5.element), t$5.frozenStyles && Object.assign(t$5.element.style, t$5.frozenStyles), this.settings.applyPosition({
 				phase: L.Start,
@@ -1344,13 +1344,13 @@ var B = class {
 	}
 	_prepareMove() {
 		let e$5 = this.drag;
-		if (!e$5) return;
+		if (!e$5 || e$5.isEnded) return;
 		let { moveEvent: t$5, prevMoveEvent: n$5 } = e$5;
 		t$5 !== n$5 && (this._applyModifiers(F.Move, t$5.x - n$5.x, t$5.y - n$5.y), this._emit(R.PrepareMove, t$5), !e$5.isEnded && (this.settings.onPrepareMove?.(e$5, this), !e$5.isEnded && (e$5.prevMoveEvent = t$5)));
 	}
 	_applyMove() {
 		let e$5 = this.drag;
-		if (e$5) {
+		if (!(!e$5 || e$5.isEnded)) {
 			for (let t$5 of e$5.items) t$5._moveDiff.x = 0, t$5._moveDiff.y = 0, this.settings.applyPosition({
 				phase: L.Move,
 				draggable: this,
@@ -1362,7 +1362,7 @@ var B = class {
 	}
 	_prepareAlign() {
 		let { drag: e$5 } = this;
-		if (e$5) for (let t$5 of e$5.items) {
+		if (!(!e$5 || e$5.isEnded)) for (let t$5 of e$5.items) {
 			let { x: e$6, y: n$5 } = t$5.element.getBoundingClientRect(), r$4 = t$5.clientRect.x - t$5._moveDiff.x - e$6;
 			t$5.alignmentOffset.x = t$5.alignmentOffset.x - t$5._alignDiff.x + r$4, t$5._alignDiff.x = r$4;
 			let i$4 = t$5.clientRect.y - t$5._moveDiff.y - n$5;
@@ -1371,7 +1371,7 @@ var B = class {
 	}
 	_applyAlign() {
 		let { drag: e$5 } = this;
-		if (e$5) for (let t$5 of e$5.items) t$5._alignDiff.x = 0, t$5._alignDiff.y = 0, this.settings.applyPosition({
+		if (!(!e$5 || e$5.isEnded)) for (let t$5 of e$5.items) t$5._alignDiff.x = 0, t$5._alignDiff.y = 0, this.settings.applyPosition({
 			phase: L.Align,
 			draggable: this,
 			drag: e$5,
@@ -1416,7 +1416,7 @@ var B = class {
 		let n$5 = this.drag;
 		if (!(!n$5 || n$5.isEnded)) {
 			if (this._startPhase === N$1.Prepare || this._startPhase === N$1.Apply) throw Error(`Cannot stop drag start process at this point`);
-			n$5.isEnded = !0, this._startPhase === N$1.Init && this._prepareStart(), this._startPhase === N$1.FinishPrepare && this._applyStart(), this._startPhase = N$1.None, r$1.off(n$1.read, this._startId), r$1.off(n$1.write, this._startId), r$1.off(n$1.read, this._moveId), r$1.off(n$1.write, this._moveId), r$1.off(n$1.read, this._alignId), r$1.off(n$1.write, this._alignId), window.removeEventListener(`scroll`, this._onScroll, k), this._applyModifiers(F.End, 0, 0);
+			n$5.isEnded = !0, this._prepareStart(), this._applyStart(), this._startPhase = N$1.None, r$1.off(n$1.read, this._startId), r$1.off(n$1.write, this._startId), r$1.off(n$1.read, this._moveId), r$1.off(n$1.write, this._moveId), r$1.off(n$1.read, this._alignId), r$1.off(n$1.write, this._alignId), window.removeEventListener(`scroll`, this._onScroll, k), this._applyModifiers(F.End, 0, 0);
 			for (let e$5 of n$5.items) {
 				if (e$5.elementContainer !== e$5.dragContainer && (l$1(e$5.elementContainer, e$5.element), e$5.alignmentOffset.x = 0, e$5.alignmentOffset.y = 0, e$5.containerOffset.x = 0, e$5.containerOffset.y = 0), e$5.unfrozenStyles) for (let t$5 in e$5.unfrozenStyles) e$5.element.style[t$5] = e$5.unfrozenStyles[t$5] || ``;
 				this.settings.applyPosition({
@@ -1440,7 +1440,7 @@ var B = class {
 		}
 	}
 	align(n$5 = !1) {
-		this.drag && (n$5 || this.settings.sensorProcessingMode === I.Immediate ? (this._prepareAlign(), this._applyAlign()) : (r$1.once(n$1.read, this._prepareAlign, this._alignId), r$1.once(n$1.write, this._applyAlign, this._alignId)));
+		!this.drag || this.drag.isEnded || (n$5 || this.settings.sensorProcessingMode === I.Immediate ? (this._prepareAlign(), this._applyAlign()) : (r$1.once(n$1.read, this._prepareAlign, this._alignId), r$1.once(n$1.write, this._applyAlign, this._alignId)));
 	}
 	getClientRect() {
 		let { drag: e$5, settings: t$5 } = this;
@@ -1449,7 +1449,7 @@ var B = class {
 			drag: e$5
 		}) || null;
 	}
-	updateSettings(e$5 = {}) {
+	updateSettings(e$5) {
 		this.settings = this._parseSettings(e$5, this.settings);
 	}
 	use(e$5) {
@@ -1463,7 +1463,7 @@ var B = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/pointer-sensor-CyG2cFYy.js
+//#region ../dragdoll/dist/pointer-sensor-BNmXr-6_.js
 function i$3(e$5, t$5) {
 	if (`pointerId` in e$5) return e$5.pointerId === t$5 ? e$5 : null;
 	if (`changedTouches` in e$5) {
@@ -1618,11 +1618,11 @@ var u = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-BjLM0PHw.js
+//#region ../dragdoll/dist/auto-scroll-CYnpz5w3.js
 const t = new N();
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-plugin-KDmgXWVX.js
+//#region ../dragdoll/dist/auto-scroll-plugin-CgUl8sXM.js
 const r$2 = {
 	x: 0,
 	y: 0
@@ -1729,7 +1729,7 @@ function c(e$5) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/base-sensor-6CQrwFkA.js
+//#region ../dragdoll/dist/base-sensor-CiXk6Egt.js
 var n$2 = class {
 	constructor() {
 		this.drag = null, this.isDestroyed = !1, this._emitter = new v();
@@ -1777,7 +1777,7 @@ var n$2 = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/base-motion-sensor-DuT5ttYp.js
+//#region ../dragdoll/dist/base-motion-sensor-BxKMtkJL.js
 var i = class extends n$2 {
 	constructor() {
 		super(), this.drag = null, this._direction = {
@@ -1821,7 +1821,7 @@ var i = class extends n$2 {
 };
 
 //#endregion
-//#region ../dragdoll/dist/keyboard-motion-sensor-Cgfa6qtI.js
+//#region ../dragdoll/dist/keyboard-motion-sensor-B2HqNPGM.js
 const n = [
 	`start`,
 	`cancel`,
@@ -1930,7 +1930,7 @@ var a = class extends i {
 			return;
 		}
 	}
-	updateSettings(e$5 = {}) {
+	updateSettings(e$5) {
 		let t$5 = !1, { cancelOnBlur: r$4, cancelOnVisibilityChange: i$4, startPredicate: a$3, computeSpeed: o$4 } = e$5;
 		if (r$4 !== void 0 && this._cancelOnBlur !== r$4 && (this._cancelOnBlur = r$4, r$4 ? this.element?.addEventListener(`blur`, this._blurCancelHandler) : this.element?.removeEventListener(`blur`, this._blurCancelHandler)), i$4 !== void 0 && this._cancelOnVisibilityChange !== i$4 && (this._cancelOnVisibilityChange = i$4, i$4 ? document.addEventListener(`visibilitychange`, this._internalCancel) : document.removeEventListener(`visibilitychange`, this._internalCancel)), a$3 !== void 0 && (this._startPredicate = a$3), o$4 !== void 0 && (this._computeSpeed = o$4), n.forEach((n$5, r$5) => {
 			let i$5 = `${n$5}Keys`, a$4 = e$5[i$5];

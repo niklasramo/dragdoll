@@ -1,9 +1,9 @@
-import { optionSourceEvents } from './source-events.js';
-import { optionStartPredicate } from './start-predicate.js';
+import sourceEvents from './source-events.js';
+import startPredicate from './start-predicate.js';
 
-export function options() {
+export default () => {
   describe('options', () => {
-    optionSourceEvents();
-    optionStartPredicate();
+    sourceEvents();
+    startPredicate();
   });
-}
+};

@@ -1,12 +1,14 @@
-import { assert } from 'chai';
 import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
 
-export function methodAlign() {
+export default () => {
   describe('align', () => {
+    defaultSetup();
+
     it('should align the element visually', async () => {
       const el = createTestElement();
       const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
@@ -14,8 +16,8 @@ export function methodAlign() {
 
       // Make sure the element is at the top left corner.
       let rect = el.getBoundingClientRect();
-      assert.equal(rect.x, 0);
-      assert.equal(rect.y, 0);
+      expect(rect.x).toBe(0);
+      expect(rect.y).toBe(0);
 
       // Start dragging the element with keyboard.
       focusElement(el);
@@ -26,8 +28,8 @@ export function methodAlign() {
 
       // Make sure the element has moved.
       rect = el.getBoundingClientRect();
-      assert.equal(rect.x, 1);
-      assert.equal(rect.y, 0);
+      expect(rect.x).toBe(1);
+      expect(rect.y).toBe(0);
 
       // Shift element manually out of alignment.
       el.style.left = parseFloat(el.style.left) + 10 + 'px';
@@ -35,23 +37,23 @@ export function methodAlign() {
 
       // Make sure the element has moved.
       rect = el.getBoundingClientRect();
-      assert.equal(rect.x, 11);
-      assert.equal(rect.y, 10);
+      expect(rect.x).toBe(11);
+      expect(rect.y).toBe(10);
 
       // Align the element asynchronously.
       draggable.align();
 
       // Make sure the element has not been aligned yet.
       rect = el.getBoundingClientRect();
-      assert.equal(rect.x, 11);
-      assert.equal(rect.y, 10);
+      expect(rect.x).toBe(11);
+      expect(rect.y).toBe(10);
 
       await waitNextFrame();
 
       // Make sure the element has been aligned after the next frame.
       rect = el.getBoundingClientRect();
-      assert.equal(rect.x, 1);
-      assert.equal(rect.y, 0);
+      expect(rect.x).toBe(1);
+      expect(rect.y).toBe(0);
 
       // Shift element manually out of alignment, again.
       el.style.left = parseFloat(el.style.left) + 10 + 'px';
@@ -59,16 +61,16 @@ export function methodAlign() {
 
       // Make sure the element has moved.
       rect = el.getBoundingClientRect();
-      assert.equal(rect.x, 11);
-      assert.equal(rect.y, 10);
+      expect(rect.x).toBe(11);
+      expect(rect.y).toBe(10);
 
       // Align the element synchronously.
       draggable.align(true);
 
       // Make sure the element has been aligned synchronously.
       rect = el.getBoundingClientRect();
-      assert.equal(rect.x, 1);
-      assert.equal(rect.y, 0);
+      expect(rect.x).toBe(1);
+      expect(rect.y).toBe(0);
 
       // Reset stuff.
       draggable.destroy();
@@ -76,4 +78,4 @@ export function methodAlign() {
       el.remove();
     });
   });
-}
+};

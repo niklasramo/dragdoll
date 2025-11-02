@@ -1,11 +1,13 @@
-import { assert } from 'chai';
 import { BaseSensor } from 'dragdoll/sensors/base';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function propDrag() {
+export default () => {
   describe('drag', () => {
+    defaultSetup();
+
     it(`should be null on init`, () => {
       const s = new BaseSensor();
-      assert.equal(s.drag, null);
+      expect(s.drag).toBe(null);
       s.destroy();
     });
 
@@ -18,9 +20,9 @@ export function propDrag() {
         y: 0,
       });
 
-      assert.deepEqual(s.drag, { x: 0, y: 0 });
+      expect(s.drag).toStrictEqual({ x: 0, y: 0 });
 
       s.destroy();
     });
   });
-}
+};

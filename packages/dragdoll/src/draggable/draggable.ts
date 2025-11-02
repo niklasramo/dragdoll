@@ -1,6 +1,6 @@
-import { Emitter, EventListenerId } from 'eventti';
+import { Emitter } from 'eventti';
 import { IS_BROWSER } from '../constants.js';
-import type { Sensor, SensorEvents } from '../sensors/sensor.js';
+import type { Sensor, SensorEventListenerId, SensorEvents } from '../sensors/sensor.js';
 import { SensorEventType } from '../sensors/sensor.js';
 import { ticker, tickerPhases } from '../singletons/ticker.js';
 import type { CSSProperties, Point, Rect, Writeable } from '../types.js';
@@ -35,7 +35,12 @@ enum DraggableStartPredicateState {
   Rejected = 2,
 }
 
-export type DraggableId = symbol | string | number;
+// Internal type for inferring the events type from the sensor type.
+type E<S extends Sensor[]> = S[number]['_events_type'];
+
+export type AnyDraggable = Draggable<any, any>;
+
+export type DraggableId = string | number | symbol;
 
 export type DraggableDndGroup = string | number | symbol;
 
@@ -68,54 +73,54 @@ export const DraggableApplyPositionPhase = {
 export type DraggableApplyPositionPhase =
   (typeof DraggableApplyPositionPhase)[keyof typeof DraggableApplyPositionPhase];
 
-export type DraggableModifierData<S extends Sensor[], E extends S[number]['_events_type']> = {
-  draggable: Draggable<S, E>;
-  drag: DraggableDrag<S, E>;
-  item: DraggableDragItem<S, E>;
+export type DraggableModifierData<S extends Sensor[]> = {
+  draggable: Draggable<S>;
+  drag: DraggableDrag<S>;
+  item: DraggableDragItem<S>;
   phase: DraggableModifierPhase;
 };
 
-export type DraggableModifier<S extends Sensor[], E extends S[number]['_events_type']> = (
+export type DraggableModifier<S extends Sensor[]> = (
   change: Point,
-  data: DraggableModifierData<S, E>,
+  data: DraggableModifierData<S>,
 ) => Point;
 
-export interface DraggableSettings<S extends Sensor[], E extends S[number]['_events_type']> {
+export interface DraggableSettings<S extends Sensor[]> {
   container: HTMLElement | null;
   startPredicate: (data: {
-    draggable: Draggable<S, E>;
+    draggable: Draggable<S>;
     sensor: S[number];
-    event: E['start'] | E['move'];
+    event: E<S>['start'] | E<S>['move'];
   }) => boolean | undefined;
   elements: (data: {
-    draggable: Draggable<S, E>;
-    drag: DraggableDrag<S, E>;
+    draggable: Draggable<S>;
+    drag: DraggableDrag<S>;
   }) => (HTMLElement | SVGSVGElement)[] | null;
   frozenStyles: (data: {
-    draggable: Draggable<S, E>;
-    drag: DraggableDrag<S, E>;
-    item: DraggableDragItem<S, E>;
+    draggable: Draggable<S>;
+    drag: DraggableDrag<S>;
+    item: DraggableDragItem<S>;
     style: CSSStyleDeclaration;
   }) => CSSProperties | (keyof CSSProperties)[] | null;
-  positionModifiers: DraggableModifier<S, E>[];
+  positionModifiers: DraggableModifier<S>[];
   applyPosition: (data: {
-    draggable: Draggable<S, E>;
-    drag: DraggableDrag<S, E>;
-    item: DraggableDragItem<S, E>;
+    draggable: Draggable<S>;
+    drag: DraggableDrag<S>;
+    item: DraggableDragItem<S>;
     phase: DraggableApplyPositionPhase;
   }) => void;
   computeClientRect?: (data: {
-    draggable: Draggable<S, E>;
-    drag: DraggableDrag<S, E>;
+    draggable: Draggable<S>;
+    drag: DraggableDrag<S>;
   }) => Readonly<Rect> | null;
   sensorProcessingMode?: DraggableSensorProcessingMode;
   dndGroups?: Set<DraggableDndGroup>;
-  onPrepareStart?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
-  onStart?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
-  onPrepareMove?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
-  onMove?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
-  onEnd?: (drag: DraggableDrag<S, E>, draggable: Draggable<S, E>) => void;
-  onDestroy?: (draggable: Draggable<S, E>) => void;
+  onPrepareStart?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
+  onStart?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
+  onPrepareMove?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
+  onMove?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
+  onEnd?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
+  onDestroy?: (draggable: Draggable<S>) => void;
 }
 
 export interface DraggablePlugin {
@@ -145,7 +150,7 @@ export interface DraggableEventCallbacks<E extends SensorEvents> {
   [DraggableEventType.Destroy]: () => void;
 }
 
-export const DraggableDefaultSettings: DraggableSettings<any, any> = {
+export const DraggableDefaultSettings: DraggableSettings<any> = {
   container: null,
   startPredicate: () => true,
   elements: () => null,
@@ -240,38 +245,37 @@ export const DraggableDefaultSettings: DraggableSettings<any, any> = {
 
 export class Draggable<
   S extends Sensor[] = Sensor[],
-  E extends S[number]['_events_type'] = S[number]['_events_type'],
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   P extends DraggablePluginMap = {},
 > {
   readonly id: DraggableId;
   readonly sensors: S;
-  readonly settings: DraggableSettings<S, E>;
+  readonly settings: DraggableSettings<S>;
   readonly plugins: P;
-  readonly drag: DraggableDrag<S, E> | null;
+  readonly drag: DraggableDrag<S> | null;
   readonly isDestroyed: boolean;
   protected _sensorData: Map<
     S[number],
     {
       predicateState: DraggableStartPredicateState;
-      predicateEvent: E['start'] | E['move'] | null;
-      onMove: (e: Parameters<Draggable<S, E, P>['_onMove']>[0]) => void;
-      onEnd: (e: Parameters<Draggable<S, E, P>['_onEnd']>[0]) => void;
+      predicateEvent: E<S>['start'] | E<S>['move'] | null;
+      onMove: (e: Parameters<Draggable<S, P>['_onMove']>[0]) => void;
+      onEnd: (e: Parameters<Draggable<S, P>['_onEnd']>[0]) => void;
     }
   >;
   protected _emitter: Emitter<{
-    [K in keyof DraggableEventCallbacks<E>]: DraggableEventCallbacks<E>[K];
+    [K in keyof DraggableEventCallbacks<E<S>>]: DraggableEventCallbacks<E<S>>[K];
   }>;
   protected _startPhase: DragStartPhase;
   protected _startId: symbol;
   protected _moveId: symbol;
   protected _alignId: symbol;
 
-  constructor(sensors: S, options: Partial<DraggableSettings<S, E>> & { id?: DraggableId } = {}) {
+  constructor(sensors: S, options: Partial<DraggableSettings<S>> & { id?: DraggableId } = {}) {
     const { id = Symbol(), ...restOptions } = options;
     this.id = id;
     this.sensors = sensors;
-    this.settings = this._parseSettings(restOptions as Partial<DraggableSettings<S, E>>);
+    this.settings = this._parseSettings(restOptions as Partial<DraggableSettings<S>>);
     this.plugins = {} as P;
     this.drag = null;
     this.isDestroyed = false;
@@ -352,14 +356,14 @@ export class Draggable<
     };
   }
 
-  protected _emit<K extends keyof DraggableEventCallbacks<E>>(
+  protected _emit<K extends keyof DraggableEventCallbacks<E<S>>>(
     type: K,
-    ...e: Parameters<DraggableEventCallbacks<E>[K]>
+    ...e: Parameters<DraggableEventCallbacks<E<S>>[K]>
   ) {
     this._emitter.emit(type, ...e);
   }
 
-  protected _onMove(e: E['start'] | E['move'], sensor: S[number]) {
+  protected _onMove(e: E<S>['start'] | E<S>['move'], sensor: S[number]) {
     const sensorData = this._sensorData.get(sensor);
     if (!sensorData) return;
 
@@ -405,7 +409,7 @@ export class Draggable<
     this.align();
   }
 
-  protected _onEnd(e: E['end'] | E['cancel'] | E['destroy'], sensor: S[number]) {
+  protected _onEnd(e: E<S>['end'] | E<S>['cancel'] | E<S>['destroy'], sensor: S[number]) {
     const sensorData = this._sensorData.get(sensor);
     if (!sensorData) return;
 
@@ -429,7 +433,7 @@ export class Draggable<
 
   protected _prepareStart() {
     const drag = this.drag;
-    if (!drag) return;
+    if (!drag || this._startPhase !== DragStartPhase.Init) return;
 
     // Update start phase.
     this._startPhase = DragStartPhase.Prepare;
@@ -463,7 +467,7 @@ export class Draggable<
 
   protected _applyStart() {
     const drag = this.drag;
-    if (!drag) return;
+    if (!drag || this._startPhase !== DragStartPhase.FinishPrepare) return;
 
     // Update start phase.
     this._startPhase = DragStartPhase.Apply;
@@ -541,7 +545,7 @@ export class Draggable<
 
   protected _prepareMove() {
     const drag = this.drag;
-    if (!drag) return;
+    if (!drag || drag.isEnded) return;
 
     // Get next event and previous event so we can compute the movement
     // difference between the clientX/Y values.
@@ -556,7 +560,7 @@ export class Draggable<
     );
 
     // Emit preparemove event.
-    this._emit(DraggableEventType.PrepareMove, moveEvent as E['move']);
+    this._emit(DraggableEventType.PrepareMove, moveEvent as E<S>['move']);
 
     // Make sure that the drag is still active.
     if (drag.isEnded) return;
@@ -573,7 +577,7 @@ export class Draggable<
 
   protected _applyMove() {
     const drag = this.drag;
-    if (!drag) return;
+    if (!drag || drag.isEnded) return;
 
     // Reset movement diff and move the element.
     for (const item of drag.items) {
@@ -589,7 +593,7 @@ export class Draggable<
     }
 
     // Emit move event.
-    this._emit(DraggableEventType.Move, drag.moveEvent as E['move']);
+    this._emit(DraggableEventType.Move, drag.moveEvent as E<S>['move']);
 
     // Make sure that the drag is still active.
     if (drag.isEnded) return;
@@ -600,7 +604,7 @@ export class Draggable<
 
   protected _prepareAlign() {
     const { drag } = this;
-    if (!drag) return;
+    if (!drag || drag.isEnded) return;
 
     for (const item of drag.items) {
       const { x, y } = item.element.getBoundingClientRect();
@@ -624,7 +628,7 @@ export class Draggable<
 
   protected _applyAlign() {
     const { drag } = this;
-    if (!drag) return;
+    if (!drag || drag.isEnded) return;
 
     for (const item of drag.items) {
       item['_alignDiff'].x = 0;
@@ -639,7 +643,7 @@ export class Draggable<
     }
   }
 
-  _applyModifiers(phase: DraggableModifierPhase, changeX: number, changeY: number) {
+  protected _applyModifiers(phase: DraggableModifierPhase, changeX: number, changeY: number) {
     const { drag } = this;
     if (!drag) return;
 
@@ -667,19 +671,22 @@ export class Draggable<
     }
   }
 
-  on<T extends keyof DraggableEventCallbacks<E>>(
+  on<T extends keyof DraggableEventCallbacks<E<S>>>(
     type: T,
-    listener: DraggableEventCallbacks<E>[T],
-    listenerId?: EventListenerId,
-  ): EventListenerId {
+    listener: DraggableEventCallbacks<E<S>>[T],
+    listenerId?: SensorEventListenerId,
+  ): SensorEventListenerId {
     return this._emitter.on(type, listener, listenerId);
   }
 
-  off<T extends keyof DraggableEventCallbacks<E>>(type: T, listenerId: EventListenerId): void {
+  off<T extends keyof DraggableEventCallbacks<E<S>>>(
+    type: T,
+    listenerId: SensorEventListenerId,
+  ): void {
     this._emitter.off(type, listenerId);
   }
 
-  resolveStartPredicate(sensor: S[number], e?: E['start'] | E['move']) {
+  resolveStartPredicate(sensor: S[number], e?: E<S>['start'] | E<S>['move']) {
     const sensorData = this._sensorData.get(sensor);
     if (!sensorData) return;
 
@@ -734,21 +741,11 @@ export class Draggable<
     // Mark drag process as ended.
     (drag as Writeable<typeof drag>).isEnded = true;
 
-    // If the drag is initiated, but the start preparation process was not
-    // started yet, let's do that now.
-    if (this._startPhase === DragStartPhase.Init) {
-      this._prepareStart();
-    }
-
-    // If the drag is initiated, but the start apply process was not started
-    // yet, let's do that now.
-    if (this._startPhase === DragStartPhase.FinishPrepare) {
-      this._applyStart();
-    }
-
-    // TODO: Should we also apply pending alignment/move callbacks here too?
-    // Might actually make sense, at least the pending alignment callbacks,
-    // unless the end logic handles alignment corrections anyway.
+    // Make sure the drag start process is completed.
+    // NB: The methods have guards making sure they are not called if the drag
+    // start process is already completed.
+    this._prepareStart();
+    this._applyStart();
 
     // Reset drag start phase.
     this._startPhase = DragStartPhase.None;
@@ -837,7 +834,7 @@ export class Draggable<
   }
 
   align(instant = false) {
-    if (!this.drag) return;
+    if (!this.drag || this.drag.isEnded) return;
     if (instant || this.settings.sensorProcessingMode === DraggableSensorProcessingMode.Immediate) {
       this._prepareAlign();
       this._applyAlign();
@@ -853,13 +850,11 @@ export class Draggable<
     return settings.computeClientRect?.({ draggable: this, drag }) || null;
   }
 
-  updateSettings(options: Partial<this['settings']> = {}) {
+  updateSettings(options: Partial<this['settings']>) {
     (this as Writeable<this>).settings = this._parseSettings(options, this.settings);
   }
 
-  use<SS extends S, EE extends SS[number]['_events_type'], PP extends P>(
-    plugin: (draggable: this) => Draggable<SS, EE, PP>,
-  ) {
+  use<SS extends S, PP extends P>(plugin: (draggable: this) => Draggable<SS, PP>) {
     return plugin(this);
   }
 

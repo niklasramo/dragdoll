@@ -1,22 +1,24 @@
-import { assert } from 'chai';
 import { BaseSensor } from 'dragdoll/sensors/base';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function methodCancel() {
+export default () => {
   describe('cancel', () => {
+    defaultSetup();
+
     it(`should reset drag data`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
       s.cancel();
-      assert.equal(s.drag, null);
+      expect(s.drag).toBe(null);
       s.destroy();
     });
 
     it(`should not modify isDestroyed property`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
-      assert.equal(s.isDestroyed, false);
+      expect(s.isDestroyed).toBe(false);
       s.cancel();
-      assert.equal(s.isDestroyed, false);
+      expect(s.isDestroyed).toBe(false);
       s.destroy();
     });
 
@@ -24,18 +26,18 @@ export function methodCancel() {
       const s = new BaseSensor();
       let emitCount = 0;
       s.on('cancel', (data) => {
-        assert.deepEqual(s.drag, { x: data.x, y: data.y });
-        assert.equal(s.isDestroyed, false);
-        assert.deepEqual(data, {
+        expect(s.drag).toStrictEqual({ x: data.x, y: data.y });
+        expect(s.isDestroyed).toBe(false);
+        expect(data).toStrictEqual({
           type: 'cancel',
           x: 1,
           y: 2,
-        } as const);
+        });
         ++emitCount;
       });
       s['_start']({ type: 'start', x: 1, y: 2 });
       s.cancel();
-      assert.equal(emitCount, 1);
+      expect(emitCount).toBe(1);
       s.destroy();
     });
 
@@ -45,10 +47,10 @@ export function methodCancel() {
       let emitCount = 0;
       s.on('cancel', () => void ++emitCount);
       s.cancel();
-      assert.deepEqual(s.drag, drag);
-      assert.equal(s.isDestroyed, isDestroyed);
-      assert.equal(emitCount, 0);
+      expect(s.drag).toStrictEqual(drag);
+      expect(s.isDestroyed).toBe(isDestroyed);
+      expect(emitCount).toBe(0);
       s.destroy();
     });
   });
-}
+};

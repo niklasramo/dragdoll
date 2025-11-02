@@ -49,58 +49,46 @@ const dndContext = new DndContext({
 });
 ```
 
-## Constructor
+## Class
 
 ```ts
 class CollisionDetector<T extends CollisionData = CollisionData> {
-  constructor(dndContext: DndContext) {}
+  constructor(dndContext: DndContext<T>) {}
 }
 ```
 
-### Parameters
+### Type Variables
+
+1. **T**
+   - The type of the collision data.
+   - Defaults to [`CollisionData`](#collisiondata).
+
+### Constructor Parameters
 
 1. **dndContext**
-
-- The `DndContext` instance this collision detector belongs to.
-
-## Extensibility hooks (override in subclasses)
-
-- `_checkCollision(draggable, droppable, data): T | null`
-  - Compute collision and return `data` or `null`. Default uses intersection.
-- `_sortCollisions(draggable, collisions): T[]`
-  - Sort by score descending, then droppable size (ascending) as a tiebreaker.
-- `_createCollisionData(): T`
-  - Create a pooled data object. Override to extend `CollisionData`.
+   - The [`DndContext`](/dnd-context) instance this collision detector belongs to.
 
 ## Methods
 
 ### detectCollisions
 
 ```ts
-detectCollisions(
-  draggable: Draggable<any>,
+type detectCollisions = (
+  draggable: AnyDraggable,
   targets: Map<DroppableId, Droppable>,
   collisions: T[],
-): void
+) => void;
 ```
 
-Detects collisions between a draggable and a map of droppable targets. Populates the provided `collisions` array in-place with `CollisionData` objects. Each draggable is assigned a pool of `CollisionData` objects to reuse between detections. That pool of collision data objects is automatically freed up for reuse when the draggable stops dragging (`DndContext` calls the `removeCollisionDataPool` method at the end of the drag operation).
-
-The algorithm:
-
-1. Clears the provided `collisions` array.
-2. Iterates through all target droppables (from the `targets` Map).
-3. For each droppable, uses the pooled `collisionData` object; if a collision is found, pushes it.
-4. Sorts the collisions by relevance/priority.
-5. Resets the object pool pointer for reuse in the next cycle.
+Detects collisions between a draggable and a map of droppable targets. Populates the provided `collisions` array in-place with `CollisionData` objects. Each draggable is assigned an _arena_ of `CollisionData` objects to reuse between detections. That arena of collision data objects is automatically freed up for reuse when the draggable stops dragging (`DndContext` calls the `_removeCollisionDataArena` method at the end of the drag operation).
 
 ### destroy
 
 ```ts
-destroy(): void
+type destroy = () => void;
 ```
 
-Cleans up resources, resets the object pool, and removes event listeners. Note that you don't need to call this method manually after it's connected to the `DndContext` instance as it will be called automatically when the `DndContext` instance is destroyed.
+Cleans up resources, deallocates collision data arenas and removes event listeners. Note that you don't need to call this method manually after it's connected to the `DndContext` instance as it will be called automatically when the `DndContext` instance is destroyed.
 
 ## Protected methods
 
@@ -109,7 +97,7 @@ These methods are meant to be overridden by subclasses. You can use them to cont
 ### \_checkCollision
 
 ```ts
-_checkCollision(draggable: Draggable<any>, droppable: Droppable, data: T): T | null
+type _checkCollision = (draggable: AnyDraggable, droppable: Droppable, data: T) => T | null;
 ```
 
 Checks if a collision exists between a draggable and a droppable. Should return the provided `data` object if a collision is found with the updated values and `null` if no collision is found.
@@ -117,7 +105,7 @@ Checks if a collision exists between a draggable and a droppable. Should return 
 ### \_sortCollisions
 
 ```ts
-_sortCollisions(draggable: Draggable<any>, collisions: T[]): T[]
+type _sortCollisions = (draggable: AnyDraggable, collisions: T[]) => T[];
 ```
 
 Sorts the collisions from the most relevant to the least relevant. Should return the sorted array. The default implementation sorts by intersection score descending, then by droppable size descending.
@@ -125,30 +113,57 @@ Sorts the collisions from the most relevant to the least relevant. Should return
 ### \_createCollisionData
 
 ```ts
-_createCollisionData(): T
+type _createCollisionData = () => T;
 ```
 
 Creates a new collision data object. Should return a new `CollisionData` object. The final values for the object will be computed by the `_checkCollision` method.
 
-## CollisionData Interface
+### \_getCollisionDataArena
 
 ```ts
+type _getCollisionDataArena = (draggable: AnyDraggable) => ObjectArena<T>;
+```
+
+Allocates the collision data arena for a draggable. The arena is used to store the collision data objects for the draggable.
+
+### \_removeCollisionDataArena
+
+```ts
+type _removeCollisionDataArena = (draggable: AnyDraggable) => void;
+```
+
+Removes the collision data arena for a draggable. The arena is used to store the collision data objects for the draggable.
+
+## Extensibility hooks
+
+The CollisionDetector class provides the following extensibility hooks for subclasses to override.
+
+- `_checkCollision(draggable, droppable, data): T | null`
+  - Compute collision and return `data` or `null`. Default uses intersection.
+- `_sortCollisions(draggable, collisions): T[]`
+  - Sort by score descending, then droppable size (ascending) as a tiebreaker.
+- `_createCollisionData(): T`
+  - Create a pooled data object. Override to extend [`CollisionData`](#collisiondata-interface).
+
+## Types
+
+### CollisionData
+
+```ts
+// Import
+import type { CollisionData } from 'dragdoll/dnd-context/collision-detector';
+
+// Interface
 interface CollisionData {
   // The droppable's unique ID (droppable.id)
-  droppableId: Symbol;
+  droppableId: DroppableId;
   // The droppable's client rect (droppable.getClientRect())
-  droppableRect: Rect;
+  droppableRect: { x: number; y: number; width: number; height: number };
   // The draggable's client rect (draggable.getClientRect())
-  draggableRect: Rect;
+  draggableRect: { x: number; y: number; width: number; height: number };
   // The intersection rect between draggable and droppable
-  intersectionRect: Rect;
+  intersectionRect: { x: number; y: number; width: number; height: number };
   // Collision score (higher = better match)
   intersectionScore: number;
 }
-```
-
-You can also import the interface from the `dragdoll` subpath:
-
-```ts
-import { CollisionData } from 'dragdoll/dnd-context/collision-detector';
 ```

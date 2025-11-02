@@ -4,6 +4,25 @@
 
 DraggableDragItem class instance holds all the information about a drag item. All the drag items are available via the [`items`](/draggable-drag#items) property of the DraggableDrag instance.
 
+## Class
+
+```ts
+export class DraggableDragItem<S extends Sensor[] = Sensor[]> {
+  constructor(element: HTMLElement | SVGSVGElement, draggable: Draggable<S>) {}
+}
+```
+
+The DraggableDragItem class is a generic that accepts the following type variables:
+
+1. **S** - The types of the sensors that the DraggableDragItem will use as inputs for moving the provided elements around.
+
+The constructor accepts the following arguments:
+
+1. **element**
+   - The element that is being dragged.
+2. **draggable**
+   - The Draggable instance that is tracking this drag item.
+
 ## Properties
 
 ### data
@@ -72,6 +91,14 @@ type elementOffsetMatrix = DOMMatrix;
 
 The dragged element's original computed [individual transforms](https://drafts.csswg.org/css-transforms-2/#individual-transforms) (translate, rotate and scale) combined into one matrix and inversed. This is needed for offsetting the individual transforms when computing the element's transform during drag. Read-only.
 
+### elementTransformOrigin
+
+```ts
+type elementTransformOrigin = { x: number; y: number; z: number };
+```
+
+The dragged element's original computed [transform origin](https://developer.mozilla.org/en-US/docs/Web/CSS/transform-origin). Read-only.
+
 ### frozenStyles
 
 ```ts
@@ -91,10 +118,10 @@ A key value object of the frozen CSS properties and their unfrozen (original) va
 ### clientRect
 
 ```ts
-type clientRect = { width: number; height: number; left: number; top: number };
+type clientRect = { x: number; y: number; width: number; height: number };
 ```
 
-Cached bounding client rect of the dragged element. The `width` and `height` of this object can be updated using the [`updateSize`](#updatesize) method. The `left` and `top` are automatically updated whenever [position](#position) changes. Read-only.
+Cached bounding client rect of the dragged element. The `width` and `height` of this object can be updated using the [`updateSize`](#updatesize) method. The `x` and `y` are automatically updated whenever [position](#position) changes. Read-only.
 
 ### position
 
@@ -146,12 +173,16 @@ Returns the world transform matrix of the [`dragContainer`](#dragcontainer), whi
 
 ```ts
 type updateSize = (dimensions?: { width: number; height: number }) => void;
-
-// Usage: Compute and update the item's size
-dragItem.updateSize();
-
-// Usage: Update the item's size to specific dimensions
-dragItem.updateSize({ width: 100, height: 100 });
 ```
 
 Update the item's size. This method is useful when the item's size changes during the drag process. If the dimensions argument is not provided, the method will compute the new size based on the element's bounding client rect. Otherwise, the method will update the item's size to the provided dimensions.
+
+**Example**
+
+```ts
+// Compute and update the item's size.
+dragItem.updateSize();
+
+// Update the item's size to specific dimensions.
+dragItem.updateSize({ width: 100, height: 100 });
+```

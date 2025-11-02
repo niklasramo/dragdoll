@@ -1,12 +1,14 @@
-import { assert } from 'chai';
 import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../utils/create-test-element.js';
+import { defaultSetup } from '../utils/default-setup.js';
 import { focusElement } from '../utils/focus-element.js';
 import { waitNextFrame } from '../utils/wait-next-frame.js';
 
-export function events() {
+export default () => {
   describe('events', () => {
+    defaultSetup();
+
     it('should be called at the right time with the right arguments', async () => {
       const events: string[] = [];
       let currentKeyboardEvent: KeyboardEvent | null = null;
@@ -17,43 +19,43 @@ export function events() {
       });
 
       draggable.on('preparestart', (...args) => {
-        assert.equal(args.length, 1);
-        assert.equal(args[0].type, 'start');
-        assert.equal(args[0].srcEvent, currentKeyboardEvent);
+        expect(args.length).toBe(1);
+        expect(args[0].type).toBe('start');
+        expect(args[0].srcEvent).toBe(currentKeyboardEvent);
         events.push('preparestart');
       });
 
       draggable.on('start', (...args) => {
-        assert.equal(args.length, 1);
-        assert.equal(args[0].type, 'start');
-        assert.equal(args[0].srcEvent, currentKeyboardEvent);
+        expect(args.length).toBe(1);
+        expect(args[0].type).toBe('start');
+        expect(args[0].srcEvent).toBe(currentKeyboardEvent);
         events.push('start');
       });
 
       draggable.on('preparemove', (...args) => {
-        assert.equal(args.length, 1);
-        assert.equal(args[0].type, 'move');
-        assert.equal(args[0].srcEvent, currentKeyboardEvent);
+        expect(args.length).toBe(1);
+        expect(args[0].type).toBe('move');
+        expect(args[0].srcEvent).toBe(currentKeyboardEvent);
         events.push('preparemove');
       });
 
       draggable.on('move', (...args) => {
-        assert.equal(args.length, 1);
-        assert.equal(args[0].type, 'move');
-        assert.equal(args[0].srcEvent, currentKeyboardEvent);
+        expect(args.length).toBe(1);
+        expect(args[0].type).toBe('move');
+        expect(args[0].srcEvent).toBe(currentKeyboardEvent);
         events.push('move');
       });
 
       draggable.on('end', (...args) => {
-        assert.equal(args.length, 1);
-        assert.equal(args[0]?.type, 'end');
+        expect(args.length).toBe(1);
+        expect(args[0]?.type).toBe('end');
         // @ts-expect-error - srcEvent is optional.
-        assert.equal(args[0]?.srcEvent, currentKeyboardEvent);
+        expect(args[0]?.srcEvent).toBe(currentKeyboardEvent);
         events.push('end');
       });
 
       draggable.on('destroy', (...args) => {
-        assert.equal(args.length, 0);
+        expect(args.length).toBe(0);
         events.push('destroy');
       });
 
@@ -65,7 +67,7 @@ export function events() {
       await waitNextFrame();
 
       // Make sure the events are called in the correct order.
-      assert.deepEqual(events, ['preparestart', 'start']);
+      expect(events).toStrictEqual(['preparestart', 'start']);
 
       // Reset events.
       events.length = 0;
@@ -77,7 +79,7 @@ export function events() {
       await waitNextFrame();
 
       // Make sure the events are called in the correct order.
-      assert.deepEqual(events, ['preparemove', 'move']);
+      expect(events).toStrictEqual(['preparemove', 'move']);
 
       // Reset events.
       events.length = 0;
@@ -87,7 +89,7 @@ export function events() {
       document.dispatchEvent(currentKeyboardEvent);
 
       // Make sure the events are called in the correct order.
-      assert.deepEqual(events, ['end']);
+      expect(events).toStrictEqual(['end']);
 
       // Reset events.
       events.length = 0;
@@ -96,11 +98,11 @@ export function events() {
       draggable.destroy();
 
       // Make sure the events are called in the correct order.
-      assert.deepEqual(events, ['destroy']);
+      expect(events).toStrictEqual(['destroy']);
 
       // Reset stuff.
       keyboardSensor.destroy();
       el.remove();
     });
   });
-}
+};

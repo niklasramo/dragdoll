@@ -1,6 +1,6 @@
-import type { EventListenerId } from 'eventti';
 import { Emitter } from 'eventti';
-import type { Draggable, DraggableDndGroup } from '../draggable/draggable.js';
+import type { AnyDraggable, DraggableDndGroup } from '../draggable/draggable.js';
+import type { SensorEventListenerId } from '../sensors/sensor.js';
 import type { Rect, Writeable } from '../types.js';
 
 export type DroppableId = symbol | string | number;
@@ -17,16 +17,16 @@ export interface DroppableEventCallbacks {
 
 export interface DroppableOptions {
   id?: DroppableId;
-  accept?: Set<DraggableDndGroup> | ((draggable: Draggable<any>) => boolean);
+  accept?: Set<DraggableDndGroup> | ((draggable: AnyDraggable) => boolean);
   data?: { [key: string]: any };
 }
 
 export class Droppable {
   readonly id: DroppableId;
   readonly element: HTMLElement | SVGSVGElement;
-  accept: Set<DraggableDndGroup> | ((draggable: Draggable<any>) => boolean);
-  data: { [key: string]: any };
   readonly isDestroyed: boolean;
+  accept: Set<DraggableDndGroup> | ((draggable: AnyDraggable) => boolean);
+  data: { [key: string]: any };
   protected _clientRect: Rect;
   protected _emitter: Emitter<{
     [K in keyof DroppableEventCallbacks]: DroppableEventCallbacks[K];
@@ -37,9 +37,9 @@ export class Droppable {
 
     this.id = id;
     this.element = element;
+    this.isDestroyed = false;
     this.accept = accept;
     this.data = data;
-    this.isDestroyed = false;
     this._clientRect = { x: 0, y: 0, width: 0, height: 0 };
     this._emitter = new Emitter();
 
@@ -49,12 +49,12 @@ export class Droppable {
   on<T extends keyof DroppableEventCallbacks>(
     type: T,
     listener: DroppableEventCallbacks[T],
-    listenerId?: EventListenerId,
-  ): EventListenerId {
+    listenerId?: SensorEventListenerId,
+  ): SensorEventListenerId {
     return this._emitter.on(type, listener, listenerId);
   }
 
-  off<T extends keyof DroppableEventCallbacks>(type: T, listenerId: EventListenerId): void {
+  off<T extends keyof DroppableEventCallbacks>(type: T, listenerId: SensorEventListenerId): void {
     this._emitter.off(type, listenerId);
   }
 

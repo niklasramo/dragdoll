@@ -1,2 +1,2 @@
-import { setTicker, ticker, tickerPhases } from "../ticker-YUln7vCi.js";
+import { n as ticker, r as tickerPhases, t as setTicker } from "../ticker-BfHXoQJo.js";
 export { setTicker, ticker, tickerPhases };

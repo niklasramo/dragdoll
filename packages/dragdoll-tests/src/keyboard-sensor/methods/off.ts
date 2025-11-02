@@ -1,10 +1,12 @@
-import { assert } from 'chai';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 
-export function methodOff() {
+export default () => {
   describe('off', () => {
+    defaultSetup();
+
     it('should remove an event listener based on id', () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
@@ -17,10 +19,10 @@ export function methodOff() {
       focusElement(el);
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
-      assert.equal(msg, 'b');
+      expect(msg).toBe('b');
 
       s.destroy();
       el.remove();
     });
   });
-}
+};

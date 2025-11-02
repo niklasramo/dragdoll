@@ -1,4 +1,4 @@
-import type { Draggable } from '../draggable/draggable.js';
+import type { AnyDraggable } from '../draggable/draggable.js';
 import type { Droppable } from '../droppable/droppable.js';
 import type { Rect } from '../types.js';
 import { createRect } from '../utils/create-rect.js';
@@ -30,7 +30,7 @@ const DROPPABLE_CLIP_ANCESTORS: (Element | Window)[] = [];
 const DRAGGABLE_CLIP_CHAIN: (Element | Window)[] = [];
 const DROPPABLE_CLIP_CHAIN: (Element | Window)[] = [];
 
-function computeDraggableClipAncestors(draggable: Draggable<any>) {
+function computeDraggableClipAncestors(draggable: AnyDraggable) {
   if (!DRAGGABLE_CLIP_ANCESTORS.length) {
     const dragContainer = draggable.drag?.items?.[0]?.dragContainer;
     if (dragContainer) {
@@ -72,7 +72,7 @@ export interface AdvancedCollisionData extends CollisionData {
 export class AdvancedCollisionDetector<
   T extends AdvancedCollisionData = AdvancedCollisionData,
 > extends CollisionDetector<T> {
-  protected _dragStates: Map<Draggable<any>, DragState>;
+  protected _dragStates: Map<AnyDraggable, DragState>;
   protected _visibilityLogic: 'relative' | 'absolute';
   protected _listenersAttached: boolean;
   protected _clearCache: () => void;
@@ -86,7 +86,7 @@ export class AdvancedCollisionDetector<
   }
 
   protected override _checkCollision(
-    draggable: Draggable<any>,
+    draggable: AnyDraggable,
     droppable: Droppable,
     collisionData: T,
   ) {
@@ -228,7 +228,7 @@ export class AdvancedCollisionDetector<
     return collisionData;
   }
 
-  protected override _sortCollisions(_draggable: Draggable<any>, collisions: T[]) {
+  protected override _sortCollisions(_draggable: AnyDraggable, collisions: T[]) {
     return collisions.sort((a, b) => {
       const diff = b.intersectionScore - a.intersectionScore;
       if (diff !== 0) return diff;
@@ -247,7 +247,7 @@ export class AdvancedCollisionDetector<
     return data;
   }
 
-  protected _getDragState(draggable: Draggable<any>) {
+  protected _getDragState(draggable: AnyDraggable) {
     let state = this._dragStates.get(draggable);
     if (state) return state;
 
@@ -274,13 +274,12 @@ export class AdvancedCollisionDetector<
     return state;
   }
 
-  // Create or get pool, making sure our drag state exists first.
-  override getCollisionDataPool(draggable: Draggable<any>) {
+  protected override _getCollisionDataArena(draggable: AnyDraggable) {
     this._getDragState(draggable);
-    return super.getCollisionDataPool(draggable);
+    return super._getCollisionDataArena(draggable);
   }
 
-  override removeCollisionDataPool(draggable: Draggable<any>) {
+  protected override _removeCollisionDataArena(draggable: AnyDraggable) {
     if (this._dragStates.delete(draggable)) {
       if (this._dndContext.drags.size <= 0) {
         if (this._listenersAttached) {
@@ -290,11 +289,11 @@ export class AdvancedCollisionDetector<
         }
       }
     }
-    super.removeCollisionDataPool(draggable);
+    super._removeCollisionDataArena(draggable);
   }
 
   override detectCollisions(
-    draggable: Draggable<any>,
+    draggable: AnyDraggable,
     targets: Map<Droppable['id'], Droppable>,
     collisions: T[],
   ) {
@@ -322,7 +321,7 @@ export class AdvancedCollisionDetector<
     cachedDraggableClipMaskRect = null;
   }
 
-  clearCache(draggable?: Draggable<any>) {
+  clearCache(draggable?: AnyDraggable) {
     if (draggable) {
       const state = this._dragStates.get(draggable);
       if (state) state.cacheDirty = true;

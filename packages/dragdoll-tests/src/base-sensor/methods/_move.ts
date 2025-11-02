@@ -1,22 +1,24 @@
-import { assert } from 'chai';
 import { BaseSensor } from 'dragdoll/sensors/base';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function methodProtectedMove() {
+export default () => {
   describe('_move', () => {
+    defaultSetup();
+
     it(`should update drag data to reflect the provided coordinates`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
       s['_move']({ type: 'move', x: 3, y: 4 });
-      assert.deepEqual(s.drag, { x: 3, y: 4 });
+      expect(s.drag).toStrictEqual({ x: 3, y: 4 });
       s.destroy();
     });
 
     it(`should not modify isDestroyed property`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
-      assert.equal(s.isDestroyed, false);
+      expect(s.isDestroyed).toBe(false);
       s['_move']({ type: 'move', x: 3, y: 4 });
-      assert.equal(s.isDestroyed, false);
+      expect(s.isDestroyed).toBe(false);
       s.destroy();
     });
 
@@ -25,14 +27,14 @@ export function methodProtectedMove() {
       const moveArgs = { type: 'move', x: 3, y: 4 } as const;
       let emitCount = 0;
       s.on('move', (data) => {
-        assert.deepEqual(s.drag, { x: data.x, y: data.y });
-        assert.equal(s.isDestroyed, false);
-        assert.deepEqual(data, moveArgs);
+        expect(s.drag).toStrictEqual({ x: data.x, y: data.y });
+        expect(s.isDestroyed).toBe(false);
+        expect(data).toStrictEqual(moveArgs);
         ++emitCount;
       });
       s['_start']({ type: 'start', x: 1, y: 2 });
       s['_move'](moveArgs);
-      assert.equal(emitCount, 1);
+      expect(emitCount).toBe(1);
       s.destroy();
     });
 
@@ -42,10 +44,10 @@ export function methodProtectedMove() {
       let emitCount = 0;
       s.on('move', () => void ++emitCount);
       s['_move']({ type: 'move', x: 3, y: 4 });
-      assert.deepEqual(s.drag, drag);
-      assert.equal(s.isDestroyed, isDestroyed);
-      assert.equal(emitCount, 0);
+      expect(s.drag).toStrictEqual(drag);
+      expect(s.isDestroyed).toBe(isDestroyed);
+      expect(emitCount).toBe(0);
       s.destroy();
     });
   });
-}
+};

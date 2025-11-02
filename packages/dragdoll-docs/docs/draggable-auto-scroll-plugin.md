@@ -33,20 +33,39 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
   }),
 );
 
-// Update settings later if need be.
+// Update settings later if needed.
 draggable.plugins.autoscroll.updateSettings({
-  axis: 'x',
-  threshold: 200,
+  targets: [
+    {
+      element: window,
+      axis: 'x',
+      threshold: 200,
+    },
+  ],
 });
 ```
 
+## Syntax
+
+```ts
+function autoScrollPlugin<S extends Sensor[], P extends DraggablePluginMap>(
+  options?: DraggableAutoScrollOptions<S>,
+): (draggable: Draggable<S, P>) => Draggable<S, P> & {
+  plugins: {
+    autoscroll: DraggableAutoScroll<S>;
+  };
+};
+```
+
+The `autoScrollPlugin` function is a plugin factory that creates a plugin for a [`Draggable`](/draggable) instance. It returns a function that can be used to register the plugin to a [`Draggable`](/draggable) instance.
+
 ## Usage
 
-Using the AutoScroll plugin very is simple:
+Using the AutoScroll plugin is very simple:
 
 1. Import and invoke the plugin with the [`options`](#settings) you wish.
-2. Provide the return value to Draggable instance's [`use`](/draggable#use) method.
-3. The plugin will get registered to Draggable instance as `"autoscroll"` (accessible via `draggable.plugins.autoscroll`).
+2. Provide the return value to [`Draggable`](/draggable) instance's [`use`](/draggable#use) method.
+3. The plugin will get registered to [`Draggable`](/draggable) instance as `"autoscroll"` (accessible via `draggable.plugins.autoscroll`).
 
 ```ts
 import { autoScrollPlugin } from 'dragdoll/draggable/plugins/auto-scroll';
@@ -75,10 +94,10 @@ draggable.plugins.autoscroll.updateSettings({
 ### targets
 
 ```ts
-type targets = AutoScrollTarget[] | ((draggable: Draggable) => AutoScrollItemTarget[]);
+type targets = AutoScrollItemTarget[] | ((draggable: Draggable) => AutoScrollItemTarget[]);
 
-type AutoScrollTarget = {
-  element: Window | HTMLElement;
+type AutoScrollItemTarget = {
+  element: Window | Element;
   axis?: 'x' | 'y' | 'xy';
   priority?: number;
   threshold?: number;
@@ -108,13 +127,13 @@ Define the autoscroll targets that should be scrolled during drag. This can eith
   - The axis or axes to autoscroll. Use `"x"` to autoscroll horizontally, `"y"` to autoscroll vertically or `"xy"` to autoscroll both horizontally and vertically.
   - Default: `"xy"`.
 - **`priority`**
-  - A dragged item can only scroll one element horizontally and one element vertically simultaneously. This is an artificial limit to fend off unnecesary complexity, and to avoid awkward situations. In the case where the dragged item overlaps multiple scrollable elements simultaneously and exceeds their scroll thresholds we pick the one that the dragged item overlaps most. However, that's not always the best choice. This is where priority comes in. Here you can manually control which element to prefer over another in these scenarios. The element with highest priority always wins the fight, in matches with equal priority we determine the winner by the amount of overlap.
+  - A dragged item can only scroll one element horizontally and one element vertically simultaneously. This is an artificial limit to fend off unnecessary complexity, and to avoid awkward situations. In the case where the dragged item overlaps multiple scrollable elements simultaneously and exceeds their scroll thresholds we pick the one that the dragged item overlaps most. However, that's not always the best choice. This is where priority comes in. Here you can manually control which element to prefer over another in these scenarios. The element with highest priority always wins the fight, in matches with equal priority we determine the winner by the amount of overlap.
   - Default: `0`.
 - **`threshold`**
   - Defines the distance (in pixels) from the edge of the target element when autoscrolling should start. If this value is `0` the scrolling will start when the dragged element reaches the target element's edge. Do note that the target element's edge is adjusted dynamically for the calculations in some scenarios, so this value is not always used as an absolute measure.
   - Default: `50`.
 - **`padding`**
-  - By default the dragged element needs to overlap the target element for autoscrolling to start/continue. However, sometimes you might want to start/continue autoscrolling even if the dragged element is outside the target element, and this option allows you to do just that. Here you can define additional **virtual** padding for the target element, which is added to the element's dimensions when considering if it overlaps the dragged element or not. One practical use case for this is when you want to scroll the window, you most likely want to have infinite (use `Infinity` as padding value) padding on all side for the window element.
+  - By default the dragged element needs to overlap the target element for autoscrolling to start/continue. However, sometimes you might want to start/continue autoscrolling even if the dragged element is outside the target element, and this option allows you to do just that. Here you can define additional **virtual** padding for the target element, which is added to the element's dimensions when considering if it overlaps the dragged element or not. One practical use case for this is when you want to scroll the window, you most likely want to have infinite (use `Infinity` as padding value) padding on all sides for the window element.
   - Negative padding is not allowed.
   - Default: `{ left: 0, right: 0, top: 0, bottom: 0 }`.
 - **`scrollPadding`**
@@ -122,7 +141,7 @@ Define the autoscroll targets that should be scrolled during drag. This can eith
   - Negative padding is not allowed.
   - Default: `{ left: 0, right: 0, top: 0, bottom: 0 }`.
 
-Defaults to `[]`.
+Default is `[]`.
 
 ### inertAreaSize
 
@@ -134,14 +153,14 @@ Defines the size of the minimum area in the center of the target element that wi
 
 The main reason an inert area is needed in first place is to balance the autoscrolling UX when having different sized target elements, and especially really small ones. Without this there would be a good chance that the smaller target elements would not have a neutral zone at all and would always autoscroll to some direction. However, if you completely want to disable this feature just set the value to `0`.
 
-Defaults to `0.2`.
+Default is `0.2`.
 
 ### speed
 
 ```ts
 type speed = number | SpeedCallback;
 
-type SpeedCallback = (scrollElement: Window | HTMLElement, scrollData: ScrollData) => number;
+type SpeedCallback = (scrollElement: Window | Element, scrollData: ScrollData) => number;
 
 type ScrollData = {
   direction: 'none' | 'left' | 'right' | 'up' | 'down';
@@ -189,12 +208,12 @@ type smoothStop = boolean;
 
 When a dragged element is moved out of the threshold area the autoscroll process is set to ending state. However, it's up to you to decide if the actual scrolling motion is stopped gradually or instantly. By default, when this is `false`, scrolling will stop immediately. If you set this to `true` scrolling will continue until speed drops to `0`. When this option is enabled you must handle decelerating the speed to `0` manually within speed function, so do not enable this option if you use a static speed value. The default speed function handles the deceleration automatically.
 
-Defaults to `false`.
+Default is `false`.
 
 ### getPosition
 
 ```ts
-type getPosition = (draggable: Draggable) => { x: number; y: number };
+type getPosition = (draggable: Draggable<S>) => { x: number; y: number };
 ```
 
 This function is used to get the relative position of the dragged element. Relative here means that the position does not have to be any actual position of the dragged element, just a position that reflects the element's movement during the drag. The returned coordinates are used only for detecting the element's current movement direction and nothing else.
@@ -204,9 +223,9 @@ By default the values of `x` and `y` properties of the first Draggable item (`dr
 ### getClientRect
 
 ```ts
-type getClientRect = (draggable: Draggable) => {
-  left: number;
-  top: number;
+type getClientRect = (draggable: Draggable<S>) => {
+  x: number;
+  y: number;
   width: number;
   height: number;
 };
@@ -222,24 +241,71 @@ Note that the DraggableDragItem has an [`updateSize`](/draggable-drag-item#updat
 
 ```ts
 type onStart = null | (
-  scrollElement: HTMLElement | Window,
+  scrollElement: Window | Element,
   scrollDirection: 'none' | 'left' | 'right' | 'up' | 'down';
 ) => void;
 ```
 
 A callback that will be called when an [autoscroll target](#targets) starts autoscrolling.
 
-Defaults to `null`.
+Default is `null`.
 
 ### onStop
 
 ```ts
 type onStop = null | (
-  scrollElement: HTMLElement | Window,
-  scrollDirection: 'left' | 'right' | 'up' | 'down';
+  scrollElement: Window | Element,
+  scrollDirection: 'none' | 'left' | 'right' | 'up' | 'down';
 ) => void;
 ```
 
 A callback that will be called when an [autoscroll target](#targets) stops autoscrolling.
 
-Defaults to `null`.
+Default is `null`.
+
+## Exports
+
+### DraggableAutoScroll
+
+```ts
+// Import
+import { DraggableAutoScroll } from 'dragdoll/draggable/plugins/auto-scroll';
+
+// Type
+class DraggableAutoScroll<S extends Sensor[] = Sensor[]> {
+  constructor(draggable: Draggable<S>, options: DraggableAutoScrollOptions<S> = {}) {}
+}
+```
+
+## Types
+
+### DraggableAutoScrollSettings
+
+```ts
+// Import
+import { DraggableAutoScrollSettings } from 'dragdoll/draggable/plugins/auto-scroll';
+
+// Interface
+interface DraggableAutoScrollSettings<S extends Sensor[]> {
+  targets: AutoScrollItemTarget[] | ((draggable: Draggable<S>) => AutoScrollItemTarget[]);
+  inertAreaSize: number;
+  speed: number | AutoScrollItemSpeedCallback;
+  smoothStop: boolean;
+  getPosition: ((draggable: Draggable<S>) => { x: number; y: number }) | null;
+  getClientRect:
+    | ((draggable: Draggable<S>) => { x: number; y: number; width: number; height: number })
+    | null;
+  onStart: AutoScrollItemEventCallback | null;
+  onStop: AutoScrollItemEventCallback | null;
+}
+```
+
+### DraggableAutoScrollOptions
+
+```ts
+// Import
+import { DraggableAutoScrollOptions } from 'dragdoll/draggable/plugins/auto-scroll';
+
+// Type
+type DraggableAutoScrollOptions<S extends Sensor[]> = Partial<DraggableAutoScrollSettings<S>>;
+```

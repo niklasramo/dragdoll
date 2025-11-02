@@ -29,15 +29,33 @@ const draggable = new Draggable([sensor], {
 });
 ```
 
-## Constructor
+## Class
 
 ```ts
-class KeyboardMotionSensor {
-  constructor(element: Element | null, options?: Partial<KeyboardMotionSensorSettings>) {}
+class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents>
+  extends BaseMotionSensor<E>
+  implements Sensor<E>
+{
+  constructor(element: Element | null, options: Partial<KeyboardMotionSensorSettings<E>> = {}) {}
 }
 ```
 
-The constuctor accepts two arguments: the element which should be focused to start the drag and an optional [`settings`](#settings) object, which you can also change later via [`updateSettings`](#updatesettings) method.
+The KeyboardMotionSensor class is a generic that extends the [`BaseMotionSensor`](/base-motion-sensor) class and implements the [`Sensor`](/sensor) interface.
+
+### Type Variables
+
+1. **E**
+   - The type of the events that the sensor will emit.
+   - Default: [`KeyboardMotionSensorEvents`](#keyboardsensormotionevents).
+
+### Constructor Parameters
+
+1. **element**
+   - The element which should be focused to start the drag.
+2. **options**
+   - An optional [`KeyboardMotionSensorSettings`](#keyboardsensorsettings) object, which you can also change later via [`updateSettings`](#updatesettings) method.
+   - You only need to provide the options you want to change, the rest will be left as default.
+   - Default: `{}`.
 
 ## Settings
 
@@ -46,7 +64,7 @@ The constuctor accepts two arguments: the element which should be focused to sta
 ```ts
 type startPredicate = (
   e: KeyboardEvent,
-  sensor: KeyboardMotionSensor,
+  sensor: KeyboardMotionSensor<E>,
 ) => { x: number; y: number } | null | undefined;
 ```
 
@@ -67,7 +85,7 @@ Default:
 ### computeSpeed
 
 ```ts
-type computeSpeed = (sensor: KeyboardMotionSensor) => number;
+type computeSpeed = (sensor: KeyboardMotionSensor<E>) => number;
 ```
 
 This function is called on every frame when drag is active. It should return the current speed of the drag movement.
@@ -138,7 +156,7 @@ type cancelOnBlur = boolean;
 
 If `true`, the drag will be canceled when the `element` is blurred.
 
-Defaults to `true`.
+Default is `true`.
 
 ### cancelOnVisibilityChange
 
@@ -148,7 +166,7 @@ type cancelOnVisibilityChange = boolean;
 
 If `true`, the drag will be canceled on document's visibility change (e.g. when the tab is hidden).
 
-Defaults to `true`.
+Default is `true`.
 
 ## Properties
 
@@ -166,13 +184,54 @@ Read-only.
 
 ## Methods
 
+### on
+
+```ts
+type on<T extends keyof E> = (
+  type: T,
+  listener: (e: E[T]) => void,
+  listenerId?: SensorEventListenerId,
+) => SensorEventListenerId;
+```
+
+Adds a listener to a sensor event. Returns a [listener id](/sensor#sensoreventlistenerid), which can be used to remove this specific listener. By default this will always be a symbol unless manually provided.
+
+Please check the [Events](#events) section for more information about the events and their payloads.
+
+**Example**
+
+```ts
+keyboardMotionSensor.on('start', (e) => {
+  console.log('start', e);
+});
+```
+
+### off
+
+```ts
+type off<T extends keyof E> = (type: T, listenerId: SensorEventListenerId) => void;
+```
+
+Removes a listener (based on [listener id](/sensor#sensoreventlistenerid)) from a sensor event.
+
+**Example**
+
+```ts
+const id = keyboardMotionSensor.on('start', (e) => console.log('start', e));
+keyboardMotionSensor.off('start', id);
+```
+
 ### updateSettings
 
 ```ts
-// Type
-type updateSettings = (options?: Partial<KeyboardMotionSensorSettings>) => void;
+type updateSettings = (options: Partial<KeyboardMotionSensorSettings<E>>) => void;
+```
 
-// Usage
+Updates the sensor's settings. Accepts a partial [`KeyboardMotionSensorSettings`](#keyboardsensorsettings) object as the first argument, only the options you provide will be updated. Check the [Settings](#settings) section for more information about the settings.
+
+**Example**
+
+```ts
 keyboardMotionSensor.updateSettings({
   startPredicate: () => {
     if (Math.random() > 0.5) {
@@ -182,4 +241,59 @@ keyboardMotionSensor.updateSettings({
 });
 ```
 
-Updates the the sensor's settings. Accepts [`settings`](#settings) object as the first argument, only the options you provide will be updated.
+## Events
+
+KeyboardMotionSensor emits the default base motion sensor events as described in the [BaseMotionSensor](/base-motion-sensor#events) documentation.
+
+## Exports
+
+Here's a list of additional exports that are available in the `dragdoll/sensors/keyboard-motion` package.
+
+### keyboardMotionSensorDefaults
+
+```ts
+// Import
+import { keyboardMotionSensorDefaults } from 'dragdoll/sensors/keyboard-motion';
+
+// Constant
+const keyboardMotionSensorDefaults: KeyboardMotionSensorSettings<any>;
+```
+
+## Types
+
+### KeyboardMotionSensorEvents
+
+```ts
+// Import
+import type { KeyboardMotionSensorEvents } from 'dragdoll/sensors/keyboard-motion';
+
+// Interface
+interface KeyboardMotionSensorEvents extends BaseMotionSensorEvents {}
+```
+
+### KeyboardMotionSensorSettings
+
+```ts
+// Import
+import type { KeyboardMotionSensorSettings } from 'dragdoll/sensors/keyboard-motion';
+
+// Interface
+interface KeyboardMotionSensorSettings<
+  E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents,
+> {
+  startKeys: string[];
+  moveLeftKeys: string[];
+  moveRightKeys: string[];
+  moveUpKeys: string[];
+  moveDownKeys: string[];
+  cancelKeys: string[];
+  endKeys: string[];
+  cancelOnBlur: boolean;
+  cancelOnVisibilityChange: boolean;
+  computeSpeed: (sensor: KeyboardMotionSensor<E>) => number;
+  startPredicate: (
+    e: KeyboardEvent,
+    sensor: KeyboardMotionSensor<E>,
+  ) => { x: number; y: number } | null | undefined;
+}
+```

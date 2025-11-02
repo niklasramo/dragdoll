@@ -1,17 +1,19 @@
-import { assert } from 'chai';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 
-export function methodOn() {
+export default () => {
   describe('on', () => {
+    defaultSetup();
+
     it('should return a unique symbol by default', () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
       const idA = s.on('start', () => {});
       const idB = s.on('start', () => {});
-      assert.equal(typeof idA, 'symbol');
-      assert.notEqual(idA, idB);
+      expect(typeof idA).toBe('symbol');
+      expect(idA).not.toBe(idB);
       el.remove();
       s.destroy();
     });
@@ -30,7 +32,7 @@ export function methodOn() {
       focusElement(el);
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
-      assert.equal(counter, 2);
+      expect(counter).toBe(2);
 
       el.remove();
       s.destroy();
@@ -48,7 +50,7 @@ export function methodOn() {
       focusElement(el);
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
-      assert.equal(msg, 'bc');
+      expect(msg).toBe('bc');
 
       el.remove();
       s.destroy();
@@ -59,25 +61,16 @@ export function methodOn() {
       const s = new KeyboardSensor(el);
 
       const idA = Symbol();
-      assert.equal(
-        s.on('start', () => {}, idA),
-        idA,
-      );
+      expect(s.on('start', () => {}, idA)).toBe(idA);
 
       const idB = 1;
-      assert.equal(
-        s.on('start', () => {}, idB),
-        idB,
-      );
+      expect(s.on('start', () => {}, idB)).toBe(idB);
 
       const idC = 'foo';
-      assert.equal(
-        s.on('start', () => {}, idC),
-        idC,
-      );
+      expect(s.on('start', () => {}, idC)).toBe(idC);
 
       el.remove();
       s.destroy();
     });
   });
-}
+};

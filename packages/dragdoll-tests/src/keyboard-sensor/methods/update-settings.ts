@@ -1,10 +1,12 @@
-import { assert } from 'chai';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function methodUpdateSettings() {
+export default () => {
   describe('updateSettings', () => {
-    it(`should update settings`, function () {
+    defaultSetup();
+
+    it(`should update settings`, () => {
       const initSettings = {
         moveDistance: 25,
         cancelOnBlur: false,
@@ -26,27 +28,27 @@ export function methodUpdateSettings() {
 
       const el = createTestElement();
       const s = new KeyboardSensor(el, initSettings);
-      assert.equal(s.moveDistance.x, initSettings.moveDistance);
-      assert.equal(s.moveDistance.y, initSettings.moveDistance);
-      assert.equal(s['_cancelOnBlur'], initSettings.cancelOnBlur);
-      assert.equal(s['_cancelOnVisibilityChange'], initSettings.cancelOnVisibilityChange);
-      assert.equal(s['_startPredicate'], initSettings.startPredicate);
-      assert.equal(s['_movePredicate'], initSettings.movePredicate);
-      assert.equal(s['_cancelPredicate'], initSettings.cancelPredicate);
-      assert.equal(s['_endPredicate'], initSettings.endPredicate);
+      expect(s.moveDistance.x).toBe(initSettings.moveDistance);
+      expect(s.moveDistance.y).toBe(initSettings.moveDistance);
+      expect(s['_cancelOnBlur']).toBe(initSettings.cancelOnBlur);
+      expect(s['_cancelOnVisibilityChange']).toBe(initSettings.cancelOnVisibilityChange);
+      expect(s['_startPredicate']).toBe(initSettings.startPredicate);
+      expect(s['_movePredicate']).toBe(initSettings.movePredicate);
+      expect(s['_cancelPredicate']).toBe(initSettings.cancelPredicate);
+      expect(s['_endPredicate']).toBe(initSettings.endPredicate);
 
       s.updateSettings(updatedSettings);
-      assert.equal(s.moveDistance.x, updatedSettings.moveDistance);
-      assert.equal(s.moveDistance.y, updatedSettings.moveDistance);
-      assert.equal(s['_cancelOnBlur'], updatedSettings.cancelOnBlur);
-      assert.equal(s['_cancelOnVisibilityChange'], updatedSettings.cancelOnVisibilityChange);
-      assert.equal(s['_startPredicate'], updatedSettings.startPredicate);
-      assert.equal(s['_movePredicate'], updatedSettings.movePredicate);
-      assert.equal(s['_cancelPredicate'], updatedSettings.cancelPredicate);
-      assert.equal(s['_endPredicate'], updatedSettings.endPredicate);
+      expect(s.moveDistance.x).toBe(updatedSettings.moveDistance);
+      expect(s.moveDistance.y).toBe(updatedSettings.moveDistance);
+      expect(s['_cancelOnBlur']).toBe(updatedSettings.cancelOnBlur);
+      expect(s['_cancelOnVisibilityChange']).toBe(updatedSettings.cancelOnVisibilityChange);
+      expect(s['_startPredicate']).toBe(updatedSettings.startPredicate);
+      expect(s['_movePredicate']).toBe(updatedSettings.movePredicate);
+      expect(s['_cancelPredicate']).toBe(updatedSettings.cancelPredicate);
+      expect(s['_endPredicate']).toBe(updatedSettings.endPredicate);
 
       s.destroy();
       el.remove();
     });
   });
-}
+};

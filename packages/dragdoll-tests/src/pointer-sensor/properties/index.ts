@@ -1,9 +1,9 @@
-import { propDrag } from './drag.js';
-import { propIsDestroyed } from './is-destroyed.js';
+import drag from './drag.js';
+import isDestroyed from './is-destroyed.js';
 
-export function properties() {
+export default () => {
   describe('properties', () => {
-    propDrag();
-    propIsDestroyed();
+    drag();
+    isDestroyed();
   });
-}
+};

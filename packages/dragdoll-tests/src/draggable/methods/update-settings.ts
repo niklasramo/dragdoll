@@ -1,10 +1,12 @@
-import { assert } from 'chai';
 import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function methodUpdateSettings() {
+export default () => {
   describe('updateSettings', () => {
+    defaultSetup();
+
     it('should update the container setting', () => {
       const el = createTestElement();
       const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
@@ -13,7 +15,7 @@ export function methodUpdateSettings() {
       const newContainer = createTestElement();
       draggable.updateSettings({ container: newContainer });
 
-      assert.equal(draggable.settings.container, newContainer);
+      expect(draggable.settings.container).toBe(newContainer);
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -29,7 +31,7 @@ export function methodUpdateSettings() {
       const newStartPredicate = () => false;
       draggable.updateSettings({ startPredicate: newStartPredicate });
 
-      assert.equal(draggable.settings.startPredicate, newStartPredicate);
+      expect(draggable.settings.startPredicate).toBe(newStartPredicate);
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -45,7 +47,7 @@ export function methodUpdateSettings() {
       const newElements = () => [elB];
       draggable.updateSettings({ elements: newElements });
 
-      assert.equal(draggable.settings.elements, newElements);
+      expect(draggable.settings.elements).toBe(newElements);
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -61,7 +63,7 @@ export function methodUpdateSettings() {
       const newFrozenStyles = () => ({ position: 'absolute' });
       draggable.updateSettings({ frozenStyles: newFrozenStyles });
 
-      assert.equal(draggable.settings.frozenStyles, newFrozenStyles);
+      expect(draggable.settings.frozenStyles).toBe(newFrozenStyles);
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -78,7 +80,7 @@ export function methodUpdateSettings() {
       ];
       draggable.updateSettings({ positionModifiers: newPositionModifiers });
 
-      assert.deepEqual(draggable.settings.positionModifiers, newPositionModifiers);
+      expect(draggable.settings.positionModifiers).toStrictEqual(newPositionModifiers);
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -93,7 +95,7 @@ export function methodUpdateSettings() {
       const newApplyPosition = () => {};
       draggable.updateSettings({ applyPosition: newApplyPosition });
 
-      assert.equal(draggable.settings.applyPosition, newApplyPosition);
+      expect(draggable.settings.applyPosition).toBe(newApplyPosition);
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -108,7 +110,7 @@ export function methodUpdateSettings() {
       const newOnPrepareStart = () => {};
       draggable.updateSettings({ onPrepareStart: newOnPrepareStart });
 
-      assert.equal(draggable.settings.onPrepareStart, newOnPrepareStart);
+      expect(draggable.settings.onPrepareStart).toBe(newOnPrepareStart);
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -123,7 +125,7 @@ export function methodUpdateSettings() {
       const newOnStart = () => {};
       draggable.updateSettings({ onStart: newOnStart });
 
-      assert.equal(draggable.settings.onStart, newOnStart);
+      expect(draggable.settings.onStart).toBe(newOnStart);
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -138,7 +140,7 @@ export function methodUpdateSettings() {
       const newOnPrepareMove = () => {};
       draggable.updateSettings({ onPrepareMove: newOnPrepareMove });
 
-      assert.equal(draggable.settings.onPrepareMove, newOnPrepareMove);
+      expect(draggable.settings.onPrepareMove).toBe(newOnPrepareMove);
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -153,7 +155,7 @@ export function methodUpdateSettings() {
       const newOnMove = () => {};
       draggable.updateSettings({ onMove: newOnMove });
 
-      assert.equal(draggable.settings.onMove, newOnMove);
+      expect(draggable.settings.onMove).toBe(newOnMove);
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -168,7 +170,7 @@ export function methodUpdateSettings() {
       const newOnEnd = () => {};
       draggable.updateSettings({ onEnd: newOnEnd });
 
-      assert.equal(draggable.settings.onEnd, newOnEnd);
+      expect(draggable.settings.onEnd).toBe(newOnEnd);
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -183,11 +185,11 @@ export function methodUpdateSettings() {
       const newOnDestroy = () => {};
       draggable.updateSettings({ onDestroy: newOnDestroy });
 
-      assert.equal(draggable.settings.onDestroy, newOnDestroy);
+      expect(draggable.settings.onDestroy).toBe(newOnDestroy);
 
       draggable.destroy();
       keyboardSensor.destroy();
       el.remove();
     });
   });
-}
+};

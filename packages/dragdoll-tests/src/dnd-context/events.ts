@@ -1,14 +1,16 @@
-import { assert } from 'chai';
 import { DndContext } from 'dragdoll/dnd-context';
 import { Draggable } from 'dragdoll/draggable';
 import { Droppable } from 'dragdoll/droppable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../utils/create-test-element.js';
+import { defaultSetup } from '../utils/default-setup.js';
 import { endDrag, move, startDrag } from '../utils/keyboard-helpers.js';
 import { waitNextFrame } from '../utils/wait-next-frame.js';
 
-export function events() {
+export default () => {
   describe('events', () => {
+    defaultSetup();
+
     // helpers imported from ../utils/keyboard-helpers
     it('should emit start and end events during drag lifecycle', async () => {
       const events: string[] = [];
@@ -28,18 +30,18 @@ export function events() {
       const dndContext = new DndContext();
 
       dndContext.on('start', (data) => {
-        assert.equal(data.draggable, draggable);
-        assert.instanceOf(data.targets, Map);
-        assert.equal(data.targets.size, 1);
-        assert.isTrue(data.targets.has(droppable.id));
+        expect(data.draggable).toBe(draggable);
+        expect(data.targets).toBeInstanceOf(Map);
+        expect(data.targets.size).toBe(1);
+        expect(data.targets.has(droppable.id)).toBe(true);
         events.push('start');
       });
 
       dndContext.on('end', (data) => {
-        assert.equal(data.draggable, draggable);
-        assert.instanceOf(data.targets, Map);
-        assert.equal(data.targets.size, 1);
-        assert.isTrue(data.targets.has(droppable.id));
+        expect(data.draggable).toBe(draggable);
+        expect(data.targets).toBeInstanceOf(Map);
+        expect(data.targets.size).toBe(1);
+        expect(data.targets.has(droppable.id)).toBe(true);
         events.push('end');
       });
 
@@ -48,12 +50,12 @@ export function events() {
 
       await startDrag(dragElement);
 
-      assert.deepEqual(events, ['start']);
+      expect(events).toEqual(['start']);
       events.length = 0;
 
       await endDrag();
 
-      assert.deepEqual(events, ['end']);
+      expect(events).toEqual(['end']);
 
       // Cleanup
       dndContext.destroy();
@@ -82,8 +84,8 @@ export function events() {
       const dndContext = new DndContext();
 
       dndContext.on('move', (data) => {
-        assert.equal(data.draggable, draggable);
-        assert.instanceOf(data.targets, Map);
+        expect(data.draggable).toBe(draggable);
+        expect(data.targets).toBeInstanceOf(Map);
         events.push('move');
       });
 
@@ -94,8 +96,8 @@ export function events() {
 
       await move('Right');
 
-      assert.equal(events.length, 1);
-      assert.equal(events[0], 'move');
+      expect(events.length).toBe(1);
+      expect(events[0]).toBe('move');
 
       await endDrag();
 
@@ -170,19 +172,19 @@ export function events() {
       await move('Right');
 
       // Should have enter event
-      assert.equal(events.length, 1);
-      assert.equal(events[0].type, 'enter');
-      assert.equal(events[0].collisions, 1);
-      assert.equal(events[0].addedContacts, 1);
+      expect(events.length).toBe(1);
+      expect(events[0].type).toBe('enter');
+      expect(events[0].collisions).toBe(1);
+      expect(events[0].addedContacts).toBe(1);
 
       // Move right again to leave droppable area
       await move('Right');
 
       // Should have leave event
-      assert.equal(events.length, 2);
-      assert.equal(events[1].type, 'leave');
-      assert.equal(events[1].collisions, 0);
-      assert.equal(events[1].removedContacts, 1);
+      expect(events.length).toBe(2);
+      expect(events[1].type).toBe('leave');
+      expect(events[1].collisions).toBe(0);
+      expect(events[1].removedContacts).toBe(1);
 
       await endDrag();
 
@@ -226,9 +228,9 @@ export function events() {
       const dndContext = new DndContext();
 
       dndContext.on('end', (data) => {
-        assert.equal(data.draggable, draggable);
-        assert.equal(data.collisions.length, 1);
-        assert.isTrue(data.collisions.some((c) => c.droppableId === droppable.id));
+        expect(data.draggable).toBe(draggable);
+        expect(data.collisions.length).toBe(1);
+        expect(data.collisions.some((c) => c.droppableId === droppable.id)).toBe(true);
         events.push('end');
       });
 
@@ -241,8 +243,8 @@ export function events() {
       // End dragging (should include collisions in end)
       await endDrag();
 
-      assert.equal(events.length, 1);
-      assert.equal(events[0], 'end');
+      expect(events.length).toBe(1);
+      expect(events[0]).toBe('end');
 
       // Cleanup
       dndContext.destroy();
@@ -276,16 +278,16 @@ export function events() {
       // Add draggable
       dndContext.addDraggables([draggable]);
 
-      assert.equal(events.length, 1);
-      assert.equal(events[0].type, 'addDraggables');
-      assert.equal(events[0].draggables.has(draggable), true);
+      expect(events.length).toBe(1);
+      expect(events[0].type).toBe('addDraggables');
+      expect(events[0].draggables.has(draggable)).toBe(true);
 
       // Remove draggable
       dndContext.removeDraggables([draggable]);
 
-      assert.equal(events.length, 2);
-      assert.equal(events[1].type, 'removeDraggables');
-      assert.equal(events[1].draggables.has(draggable), true);
+      expect(events.length).toBe(2);
+      expect(events[1].type).toBe('removeDraggables');
+      expect(events[1].draggables.has(draggable)).toBe(true);
 
       // Cleanup
       dndContext.destroy();
@@ -319,16 +321,16 @@ export function events() {
       // Add droppable
       dndContext.addDroppables([droppable]);
 
-      assert.equal(events.length, 1);
-      assert.equal(events[0].type, 'addDroppable');
-      assert.equal(events[0].droppable, droppable);
+      expect(events.length).toBe(1);
+      expect(events[0].type).toBe('addDroppable');
+      expect(events[0].droppable).toBe(droppable);
 
       // Remove droppable
       dndContext.removeDroppables([droppable]);
 
-      assert.equal(events.length, 2);
-      assert.equal(events[1].type, 'removeDroppable');
-      assert.equal(events[1].droppable, droppable);
+      expect(events.length).toBe(2);
+      expect(events[1].type).toBe('removeDroppable');
+      expect(events[1].droppable).toBe(droppable);
 
       // Cleanup
       dndContext.destroy();
@@ -349,8 +351,8 @@ export function events() {
       const dndContext = new DndContext();
 
       dndContext.on('end', (data) => {
-        assert.equal(data.draggable, draggable);
-        assert.isTrue(data.canceled);
+        expect(data.draggable).toBe(draggable);
+        expect(data.canceled).toBe(true);
         events.push('end');
       });
 
@@ -362,8 +364,8 @@ export function events() {
       // Cancel dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
 
-      assert.equal(events.length, 1);
-      assert.equal(events[0], 'end');
+      expect(events.length).toBe(1);
+      expect(events[0]).toBe('end');
 
       // Cleanup
       dndContext.destroy();
@@ -382,8 +384,8 @@ export function events() {
 
       dndContext.destroy();
 
-      assert.equal(events.length, 1);
-      assert.equal(events[0], 'destroy');
+      expect(events.length).toBe(1);
+      expect(events[0]).toBe('destroy');
     });
   });
 
@@ -415,9 +417,9 @@ export function events() {
       order.length = 0; // capture only transition events
       await move('Right');
 
-      assert.isTrue(order.includes('enter'));
+      expect(order.includes('enter')).toBe(true);
       if (order.includes('leave')) {
-        assert.isBelow(order.indexOf('leave'), order.indexOf('enter'));
+        expect(order.indexOf('leave')).toBeLessThan(order.indexOf('enter'));
       }
 
       ctx.destroy();
@@ -448,13 +450,13 @@ export function events() {
       ctx.on('enter', ({ collisions }) => {
         events.push('enter');
         gotEnter = true;
-        assert.isAtLeast(collisions.length, 1);
+        expect(collisions.length).toBeGreaterThanOrEqual(1);
       });
 
       ctx.on('end', ({ canceled, collisions }) => {
         events.push('end');
-        assert.isFalse(canceled);
-        assert.isAtLeast(collisions.length, 1);
+        expect(canceled).toBe(false);
+        expect(collisions.length).toBeGreaterThanOrEqual(1);
       });
 
       ctx.addDraggables([draggable]);
@@ -462,9 +464,9 @@ export function events() {
 
       await startDrag(dragEl);
       await waitNextFrame();
-      assert.isTrue(gotEnter);
+      expect(gotEnter).toBe(true);
       await endDrag();
-      assert.deepEqual(events, ['enter', 'end']);
+      expect(events).toEqual(['enter', 'end']);
 
       ctx.destroy();
       draggable.destroy();
@@ -495,14 +497,14 @@ export function events() {
       ctx.addDroppables([droppable]);
 
       await startDrag(dragEl);
-      assert.equal(events.length, 0);
+      expect(events.length).toBe(0);
 
       accepts = true;
       ctx.clearTargets(draggable);
       ctx.detectCollisions(draggable);
       await waitNextFrame();
 
-      assert.deepEqual(events, ['enter']);
+      expect(events).toEqual(['enter']);
 
       ctx.destroy();
       draggable.destroy();
@@ -544,8 +546,8 @@ export function events() {
       await waitNextFrame();
       await endDrag();
 
-      assert.deepEqual(events, ['enter', 'end']);
-      assert.isFalse(ctx.droppables.has(droppable.id));
+      expect(events).toStrictEqual(['enter', 'end']);
+      expect(ctx.droppables.has(droppable.id)).toBe(false);
 
       ctx.destroy();
       draggable.destroy();
@@ -583,7 +585,7 @@ export function events() {
 
       ctx.on('end', () => {
         const data = ctx.drags.get(draggable);
-        assert.isNotNull(data);
+        expect(data).not.toBeNull();
         seen.push({ phase: 'end', value: data!.data.counter });
       });
 
@@ -594,14 +596,8 @@ export function events() {
       await move('Right');
       await endDrag();
 
-      assert.deepEqual(
-        seen.map((s) => s.phase),
-        ['start', 'move', 'end'],
-      );
-      assert.deepEqual(
-        seen.map((s) => s.value),
-        [1, 2, 2],
-      );
+      expect(seen.map((s) => s.phase)).toStrictEqual(['start', 'move', 'end']);
+      expect(seen.map((s) => s.value)).toStrictEqual([1, 2, 2]);
 
       ctx.destroy();
       draggable.destroy();
@@ -611,4 +607,4 @@ export function events() {
       dropEl.remove();
     });
   });
-}
+};

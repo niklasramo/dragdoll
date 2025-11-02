@@ -1,12 +1,14 @@
-import { assert } from 'chai';
 import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
 
-export function methodStop() {
+export default () => {
   describe('stop', () => {
+    defaultSetup();
+
     it('should stop the drag after it has started', async () => {
       const el = createTestElement();
       const elRect = el.getBoundingClientRect();
@@ -15,7 +17,7 @@ export function methodStop() {
         elements: () => [el],
         onEnd: (drag) => {
           onEndCalled = true;
-          assert.equal(drag.isEnded, true);
+          expect(drag.isEnded).toBe(true);
         },
       });
       let endEventTriggered = false;
@@ -31,26 +33,22 @@ export function methodStop() {
       await waitNextFrame();
 
       // Verify that the drag started.
-      assert.notEqual(draggable.drag, null, 'Drag should have started');
+      expect(draggable.drag).not.toBe(null);
 
       // Stop dragging.
       draggable.stop();
 
       // Verify that the drag has stopped instantly.
-      assert.equal(draggable.drag, null, 'Drag should have stopped instantly');
+      expect(draggable.drag).toBe(null);
 
       // Verify that the end event is triggered.
-      assert.equal(endEventTriggered, true, 'end event should have been triggered');
+      expect(endEventTriggered).toBe(true);
 
       // Verify that the onEnd callback is called.
-      assert.equal(onEndCalled, true, 'onEnd callback should have been called');
+      expect(onEndCalled).toBe(true);
 
       // Verify that the element's bounding client rect did not change.
-      assert.deepEqual(
-        elRect,
-        el.getBoundingClientRect(),
-        "Element's bounding client rect should not change after stopping the drag",
-      );
+      expect(elRect).toStrictEqual(el.getBoundingClientRect());
 
       // Clean up.
       draggable.destroy();
@@ -66,7 +64,7 @@ export function methodStop() {
         elements: () => [el],
         onEnd: (drag) => {
           onEndCalled = true;
-          assert.equal(drag.isEnded, true);
+          expect(drag.isEnded).toBe(true);
         },
       });
       let endEventTriggered = false;
@@ -81,26 +79,22 @@ export function methodStop() {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Verify that the drag started.
-      assert.notEqual(draggable.drag, null, 'Drag should have started');
+      expect(draggable.drag).not.toBe(null);
 
       // Stop dragging.
       draggable.stop();
 
       // Verify that the drag has stopped instantly.
-      assert.equal(draggable.drag, null, 'Drag should have stopped instantly');
+      expect(draggable.drag).toBe(null);
 
       // Verify that the end event is triggered.
-      assert.equal(endEventTriggered, true, 'end event should have been triggered');
+      expect(endEventTriggered).toBe(true);
 
       // Verify that the onEnd callback is called.
-      assert.equal(onEndCalled, true, 'onEnd callback should have been called');
+      expect(onEndCalled).toBe(true);
 
       // Verify that the element's bounding client rect did not change.
-      assert.deepEqual(
-        elRect,
-        el.getBoundingClientRect(),
-        "Element's bounding client rect should not change after stopping the drag",
-      );
+      expect(elRect).toStrictEqual(el.getBoundingClientRect());
 
       // Clean up.
       draggable.destroy();
@@ -108,4 +102,4 @@ export function methodStop() {
       el.remove();
     });
   });
-}
+};

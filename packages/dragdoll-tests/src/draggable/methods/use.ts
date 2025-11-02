@@ -1,18 +1,20 @@
-import { assert } from 'chai';
 import { Draggable } from 'dragdoll/draggable';
 import { Sensor } from 'dragdoll/sensors';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function methodUse() {
+export default () => {
   describe('use', () => {
+    defaultSetup();
+
     it('should register a plugin', () => {
       const el = createTestElement();
       const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
       const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
 
-      function testPlugin<S extends Sensor[], E extends S[number]['_events_type']>() {
-        return (_draggable: Draggable<S, E>) => {
+      function testPlugin<S extends Sensor[]>() {
+        return (_draggable: Draggable<S>) => {
           // Create the plugin instance.
           const pluginInstance = {
             name: 'test',
@@ -34,12 +36,12 @@ export function methodUse() {
 
       const draggableWithPlugin = draggable.use(testPlugin());
 
-      assert.equal(draggableWithPlugin.plugins.test.name, 'test');
-      assert.equal(draggableWithPlugin.plugins.test.version, '1.0.0');
+      expect(draggableWithPlugin.plugins.test.name).toBe('test');
+      expect(draggableWithPlugin.plugins.test.version).toBe('1.0.0');
 
       draggable.destroy();
       keyboardSensor.destroy();
       el.remove();
     });
   });
-}
+};

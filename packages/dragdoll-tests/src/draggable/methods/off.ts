@@ -1,12 +1,14 @@
-import { assert } from 'chai';
 import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
 
-export function methodOff() {
+export default () => {
   describe('off', () => {
+    defaultSetup();
+
     it('should remove an event listener based on id', async () => {
       const el = createTestElement();
       const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
@@ -29,11 +31,11 @@ export function methodOff() {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
       await waitNextFrame();
 
-      assert.equal(result, 'b', 'Only the second event listener should have been triggered');
+      expect(result).toBe('b');
 
       draggable.destroy();
       keyboardSensor.destroy();
       el.remove();
     });
   });
-}
+};

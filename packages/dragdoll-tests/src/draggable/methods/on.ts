@@ -1,12 +1,14 @@
-import { assert } from 'chai';
 import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
 
-export function methodOn() {
+export default () => {
   describe('on', () => {
+    defaultSetup();
+
     it('should return a unique symbol by default', () => {
       const el = createTestElement();
       const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
@@ -14,8 +16,8 @@ export function methodOn() {
       const idA = draggable.on('start', () => {});
       const idB = draggable.on('start', () => {});
 
-      assert.equal(typeof idA, 'symbol');
-      assert.notEqual(idA, idB);
+      expect(typeof idA).toBe('symbol');
+      expect(idA).not.toBe(idB);
 
       keyboardSensor.destroy();
       draggable.destroy();
@@ -39,7 +41,7 @@ export function methodOn() {
 
       await waitNextFrame();
 
-      assert.equal(counter, 2);
+      expect(counter).toBe(2);
 
       keyboardSensor.destroy();
       draggable.destroy();
@@ -61,7 +63,7 @@ export function methodOn() {
 
       await waitNextFrame();
 
-      assert.equal(msg, 'bc');
+      expect(msg).toBe('bc');
 
       keyboardSensor.destroy();
       draggable.destroy();
@@ -74,26 +76,17 @@ export function methodOn() {
       const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
 
       const idA = Symbol();
-      assert.equal(
-        draggable.on('start', () => {}, idA),
-        idA,
-      );
+      expect(draggable.on('start', () => {}, idA)).toBe(idA);
 
       const idB = 1;
-      assert.equal(
-        draggable.on('start', () => {}, idB),
-        idB,
-      );
+      expect(draggable.on('start', () => {}, idB)).toBe(idB);
 
       const idC = 'foo';
-      assert.equal(
-        draggable.on('start', () => {}, idC),
-        idC,
-      );
+      expect(draggable.on('start', () => {}, idC)).toBe(idC);
 
       keyboardSensor.destroy();
       draggable.destroy();
       el.remove();
     });
   });
-}
+};

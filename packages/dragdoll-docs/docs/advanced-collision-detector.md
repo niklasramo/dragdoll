@@ -24,7 +24,7 @@ const dnd = new DndContext({
 });
 ```
 
-## Constructor
+## Class
 
 ```ts
 class AdvancedCollisionDetector<
@@ -34,32 +34,52 @@ class AdvancedCollisionDetector<
 }
 ```
 
-### Parameters
+### Type Variables
 
-- `dndContext`: The `DndContext` instance this detector belongs to.
-- `options.visibilityLogic` (optional): Controls how visibility is computed.
-  - `relative` (default): Computes visibility relative to the first common clip container (FCCC) between the draggable and droppable. Clip chains stop at the FCCC (the FCCC is not included as the final clipping mask).
-  - `absolute`: Computes absolute visibility of the draggable and droppable relative to the window (user perspective). Clip chains do not stop at the FCCC, they continue all the way to the window which is always included as the final clipping mask.
+1. **T**
+   - The type of the collision data.
+   - Defaults to [`AdvancedCollisionData`](#advancedcollisiondata).
+
+### Constructor Parameters
+
+1. **dndContext**
+   - The [`DndContext`](/dnd-context) instance this detector belongs to.
+2. **options**
+   - An optional configuration object with the following properties:
+     - **`visibilityLogic`**
+       - Controls how visibility is computed.
+       - Possible values:
+         - `'relative'`: Computes visibility relative to the first common clip container (FCCC) between the draggable and droppable. Clip chains stop at the FCCC (the FCCC is not included as the final clipping mask).
+         - `'absolute'`: Computes absolute visibility of the draggable and droppable relative to the window (user perspective). Clip chains do not stop at the FCCC, they continue all the way to the window which is always included as the final clipping mask.
+       - Default: `'relative'`.
 
 ## Methods
+
+This class inherits all methods from the [`CollisionDetector`](/collision-detector#methods) class in addition to the methods listed below.
 
 ### clearCache
 
 ```ts
-clearCache(
-  draggable?: Draggable<any>,
-): void
+type clearCache = (draggable?: AnyDraggable) => void;
 ```
 
 Clears the cache for a specific draggable or all draggables. This is automatically called when any element on the page is scrolled or when window is resized. You should call this if you move affected elements during a drag operation manually.
 
 If you provide a `draggable` argument, only the cache for that draggable will be cleared. Otherwise, all draggables' caches will be cleared.
 
-## AdvancedCollisionData Interface
+## Types
+
+### AdvancedCollisionData
 
 ```ts
+// Import
+import type { AdvancedCollisionData } from 'dragdoll/dnd-context/advanced-collision-detector';
+
+// Interface
 interface AdvancedCollisionData extends CollisionData {
-  draggableVisibleRect: Rect;
-  droppableVisibleRect: Rect;
+  // The draggable's visible rect.
+  draggableVisibleRect: { x: number; y: number; width: number; height: number };
+  // The droppable's visible rect.
+  droppableVisibleRect: { x: number; y: number; width: number; height: number };
 }
 ```

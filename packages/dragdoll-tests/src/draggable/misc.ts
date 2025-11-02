@@ -1,15 +1,17 @@
-import { assert } from 'chai';
 import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { PointerSensor } from 'dragdoll/sensors/pointer';
 import { createFakeDrag } from '../utils/create-fake-drag.js';
 import { createTestElement } from '../utils/create-test-element.js';
+import { defaultSetup } from '../utils/default-setup.js';
 import { focusElement } from '../utils/focus-element.js';
 import { roundNumber } from '../utils/round-number.js';
 import { waitNextFrame } from '../utils/wait-next-frame.js';
 
-export function misc() {
+export default () => {
   describe('misc', () => {
+    defaultSetup();
+
     it('should drag an element using the provided sensors', async () => {
       const el = createTestElement();
       const pointerSensor = new PointerSensor(el, { sourceEvents: 'mouse' });
@@ -18,8 +20,8 @@ export function misc() {
 
       // Make sure the element is at the top left corner.
       let rect = el.getBoundingClientRect();
-      assert.equal(rect.x, 0);
-      assert.equal(rect.y, 0);
+      expect(rect.x).toBe(0);
+      expect(rect.y).toBe(0);
 
       // Start dragging the element with keyboard.
       focusElement(el);
@@ -30,14 +32,14 @@ export function misc() {
 
       // Make sure the element has moved.
       rect = el.getBoundingClientRect();
-      assert.equal(rect.x, 1);
-      assert.equal(rect.y, 0);
+      expect(rect.x).toBe(1);
+      expect(rect.y).toBe(0);
 
       // Stop dragging the element with keyboard.
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Make sure the drag has stopped.
-      assert.equal(draggable.drag, null);
+      expect(draggable.drag).toBe(null);
 
       // Fake drag the element with mouse.
       await createFakeDrag(
@@ -56,12 +58,12 @@ export function misc() {
       await waitNextFrame();
 
       // Make sure the drag has stopped.
-      assert.equal(draggable.drag, null);
+      expect(draggable.drag).toBe(null);
 
       // Make sure the element has moved correctly.
       rect = el.getBoundingClientRect();
-      assert.equal(rect.x, 3);
-      assert.equal(rect.y, 2);
+      expect(rect.x).toBe(3);
+      expect(rect.y).toBe(2);
 
       // Reset stuff.
       draggable.destroy();
@@ -107,8 +109,10 @@ export function misc() {
 
       // Make sure the element has moved 1px, approximately.
       const endRect = el.getBoundingClientRect();
-      assert.equal(roundNumber(endRect.x - startRect.x, 3), 1, 'x');
-      assert.equal(roundNumber(endRect.y - startRect.y, 3), 1, 'y');
+      expect({
+        x: roundNumber(endRect.x - startRect.x, 3),
+        y: roundNumber(endRect.y - startRect.y, 3),
+      }).toStrictEqual({ x: 1, y: 1 });
 
       // Reset stuff.
       draggable.destroy();
@@ -168,8 +172,10 @@ export function misc() {
 
       // Make sure the element has moved 1px, approximately.
       const endRect = el.getBoundingClientRect();
-      assert.equal(roundNumber(endRect.x - startRect.x, 3), 1, 'x');
-      assert.equal(roundNumber(endRect.y - startRect.y, 3), 1, 'y');
+      expect({
+        x: roundNumber(endRect.x - startRect.x, 3),
+        y: roundNumber(endRect.y - startRect.y, 3),
+      }).toStrictEqual({ x: 1, y: 1 });
 
       // Reset stuff.
       draggable.destroy();
@@ -180,4 +186,4 @@ export function misc() {
       container3.remove();
     });
   });
-}
+};

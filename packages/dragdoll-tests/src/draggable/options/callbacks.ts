@@ -1,12 +1,14 @@
-import { assert } from 'chai';
 import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
 
-export function optionCallbacks() {
+export default () => {
   describe('callbacks', () => {
+    defaultSetup();
+
     it('should be called at the right time with the right arguments', async () => {
       const events: string[] = [];
       let currentKeyboardEvent: KeyboardEvent | null = null;
@@ -15,48 +17,48 @@ export function optionCallbacks() {
       const draggable = new Draggable([keyboardSensor], {
         elements: () => [el],
         onPrepareStart(...args) {
-          assert.equal(args.length, 2);
-          assert.equal(args[0], draggable.drag);
-          assert.equal(args[1], draggable);
-          assert.equal(args[0].startEvent.srcEvent, currentKeyboardEvent);
-          assert.equal(args[0].prevMoveEvent.srcEvent, currentKeyboardEvent);
-          assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
+          expect(args.length).toBe(2);
+          expect(args[0]).toBe(draggable.drag);
+          expect(args[1]).toBe(draggable);
+          expect(args[0].startEvent.srcEvent).toBe(currentKeyboardEvent);
+          expect(args[0].prevMoveEvent.srcEvent).toBe(currentKeyboardEvent);
+          expect(args[0].moveEvent.srcEvent).toBe(currentKeyboardEvent);
           events.push('onPrepareStart');
         },
         onStart(...args) {
-          assert.equal(args.length, 2);
-          assert.equal(args[0], draggable.drag);
-          assert.equal(args[1], draggable);
-          assert.equal(args[0].startEvent.srcEvent, currentKeyboardEvent);
-          assert.equal(args[0].prevMoveEvent.srcEvent, currentKeyboardEvent);
-          assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
+          expect(args.length).toBe(2);
+          expect(args[0]).toBe(draggable.drag);
+          expect(args[1]).toBe(draggable);
+          expect(args[0].startEvent.srcEvent).toBe(currentKeyboardEvent);
+          expect(args[0].prevMoveEvent.srcEvent).toBe(currentKeyboardEvent);
+          expect(args[0].moveEvent.srcEvent).toBe(currentKeyboardEvent);
           events.push('onStart');
         },
         onPrepareMove(...args) {
-          assert.equal(args.length, 2);
-          assert.equal(args[0], draggable.drag);
-          assert.equal(args[1], draggable);
-          assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
+          expect(args.length).toBe(2);
+          expect(args[0]).toBe(draggable.drag);
+          expect(args[1]).toBe(draggable);
+          expect(args[0].moveEvent.srcEvent).toBe(currentKeyboardEvent);
           events.push('onPrepareMove');
         },
         onMove(...args) {
-          assert.equal(args.length, 2);
-          assert.equal(args[0], draggable.drag);
-          assert.equal(args[1], draggable);
-          assert.equal(args[0].moveEvent.srcEvent, currentKeyboardEvent);
+          expect(args.length).toBe(2);
+          expect(args[0]).toBe(draggable.drag);
+          expect(args[1]).toBe(draggable);
+          expect(args[0].moveEvent.srcEvent).toBe(currentKeyboardEvent);
           events.push('onMove');
         },
         onEnd(...args) {
-          assert.equal(args.length, 2);
-          assert.equal(args[0], draggable.drag);
-          assert.equal(args[1], draggable);
+          expect(args.length).toBe(2);
+          expect(args[0]).toBe(draggable.drag);
+          expect(args[1]).toBe(draggable);
           // @ts-expect-error - srcEvent is optional.
-          assert.equal(args[0].endEvent?.srcEvent, currentKeyboardEvent);
+          expect(args[0].endEvent?.srcEvent).toBe(currentKeyboardEvent);
           events.push('onEnd');
         },
         onDestroy(...args) {
-          assert.equal(args.length, 1);
-          assert.equal(args[0], draggable);
+          expect(args.length).toBe(1);
+          expect(args[0]).toBe(draggable);
           events.push('onDestroy');
         },
       });
@@ -93,7 +95,7 @@ export function optionCallbacks() {
       await waitNextFrame();
 
       // Make sure the callbacks and events are called in the correct order.
-      assert.deepEqual(events, ['preparestart', 'onPrepareStart', 'start', 'onStart']);
+      expect(events).toStrictEqual(['preparestart', 'onPrepareStart', 'start', 'onStart']);
 
       // Reset events.
       events.length = 0;
@@ -105,7 +107,7 @@ export function optionCallbacks() {
       await waitNextFrame();
 
       // Make sure the callbacks and events are called in the correct order.
-      assert.deepEqual(events, ['preparemove', 'onPrepareMove', 'move', 'onMove']);
+      expect(events).toStrictEqual(['preparemove', 'onPrepareMove', 'move', 'onMove']);
 
       // Reset events.
       events.length = 0;
@@ -115,7 +117,7 @@ export function optionCallbacks() {
       document.dispatchEvent(currentKeyboardEvent);
 
       // Make sure the callbacks and events are called in the correct order.
-      assert.deepEqual(events, ['end', 'onEnd']);
+      expect(events).toStrictEqual(['end', 'onEnd']);
 
       // Reset events.
       events.length = 0;
@@ -124,11 +126,11 @@ export function optionCallbacks() {
       draggable.destroy();
 
       // Make sure the callbacks and events are called in the correct order.
-      assert.deepEqual(events, ['destroy', 'onDestroy']);
+      expect(events).toStrictEqual(['destroy', 'onDestroy']);
 
       // Reset stuff.
       keyboardSensor.destroy();
       el.remove();
     });
   });
-}
+};

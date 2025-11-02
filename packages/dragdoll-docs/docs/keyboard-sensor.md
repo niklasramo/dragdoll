@@ -28,15 +28,33 @@ const draggable = new Draggable([keyboardSensor], {
 });
 ```
 
-## Constructor
+## Class
 
 ```ts
-class KeyboardSensor {
-  constructor(element: Element | null, options?: KeyboardSensorSettings) {}
+export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvents>
+  extends BaseSensor<E>
+  implements Sensor<E>
+{
+  constructor(element: Element | null, options: Partial<KeyboardSensorSettings<E>> = {}) {}
 }
 ```
 
-The constuctor accepts two arguments: the element which should be focused to start the drag and an optional [`settings`](#settings) object, which you can also change later via [`updateSettings`](#updatesettings) method.
+The KeyboardSensor class is a generic that extends the [`BaseSensor`](/base-sensor) class and implements the [`Sensor`](/sensor) interface.
+
+### Type Variables
+
+1. **E**
+   - The type of the events that the sensor will emit.
+   - Default: [`KeyboardSensorEvents`](#keyboardsensorevents).
+
+### Constructor Parameters
+
+1. **element**
+   - The element which should be focused to start the drag.
+2. **options**
+   - An optional [`KeyboardSensorSettings`](#keyboardsensorsettings) object, which you can also change later via [`updateSettings`](#updatesettings) method.
+   - You only need to provide the options you want to change, the rest will be left as default.
+   - Default: `{}`.
 
 ## Settings
 
@@ -48,7 +66,7 @@ type moveDistance = number | { x: number; y: number };
 
 The number of pixels the `x` and/or `y` values are shifted per `"move"` event. You can define a single number to shift both `x` and `y` values by the same amount or an object to shift them by different amounts.
 
-Defaults to `25`.
+Default is `25`.
 
 ### cancelOnBlur
 
@@ -58,7 +76,7 @@ type cancelOnBlur = boolean;
 
 If `true`, the drag will be canceled when the `element` is blurred.
 
-Defaults to `true`.
+Default is `true`.
 
 ### cancelOnVisibilityChange
 
@@ -68,7 +86,7 @@ type cancelOnVisibilityChange = boolean;
 
 If `true`, the drag will be canceled on document's visibility change (e.g. when the tab is hidden).
 
-Defaults to `true`.
+Default is `true`.
 
 ### startPredicate
 
@@ -134,17 +152,56 @@ Read-only.
 type moveDistance = { x: number; y: number };
 ```
 
-The number of pixels the `x` and `y` values are be shifted per `"move"` event by default. Read-only.
+The number of pixels the `x` and `y` values are shifted per `"move"` event by default. Read-only.
 
 ## Methods
+
+### on
+
+```ts
+type on<T extends keyof E> = (
+  type: T,
+  listener: (e: E[T]) => void,
+  listenerId?: SensorEventListenerId,
+) => SensorEventListenerId;
+```
+
+Adds a listener to a sensor event. Returns a [listener id](/sensor#sensoreventlistenerid), which can be used to remove this specific listener. By default this will always be a symbol unless manually provided.
+
+**Example**
+
+```ts
+keyboardSensor.on('start', (e) => {
+  console.log('start', e);
+});
+```
+
+### off
+
+```ts
+type off<T extends keyof E> = (type: T, listenerId: SensorEventListenerId) => void;
+```
+
+Removes a listener (based on [listener id](/sensor#sensoreventlistenerid)) from a sensor event.
+
+**Example**
+
+```ts
+const id = keyboardSensor.on('start', (e) => console.log('start', e));
+keyboardSensor.off('start', id);
+```
 
 ### updateSettings
 
 ```ts
-// Type
-type updateSettings = (options?: Partial<KeyboardSensorSettings>) => void;
+type updateSettings = (options: Partial<KeyboardSensorSettings<E>>) => void;
+```
 
-// Usage
+Updates the sensor's settings. Accepts a partial [`KeyboardSensorSettings`](#keyboardsensorsettings) object as the first argument, only the options you provide will be updated. Check the [Settings](#settings) section for more information about the settings.
+
+**Example**
+
+```ts
 keyboardSensor.updateSettings({
   startPredicate: () => {
     if (Math.random() > 0.5) {
@@ -154,4 +211,173 @@ keyboardSensor.updateSettings({
 });
 ```
 
-Updates the the sensor's settings. Accepts [`settings`](#settings) object as the first argument, only the options you provide will be updated.
+## Events
+
+### start
+
+Emitted when the sensor starts dragging.
+
+Payload follows the [`KeyboardSensorStartEvent`](#keyboardsensorstartevent) interface.
+
+### move
+
+Emitted when the sensor is moved during the drag.
+
+Payload follows the [`KeyboardSensorMoveEvent`](#keyboardsensormoveevent) interface.
+
+### cancel
+
+Emitted when the drag is canceled.
+
+Payload follows the [`KeyboardSensorCancelEvent`](#keyboardsensorcancelevent) interface.
+
+### end
+
+Emitted when the drag ends without being canceled.
+
+Payload follows the [`KeyboardSensorEndEvent`](#keyboardsensorendevent) interface.
+
+### destroy
+
+Emitted when the sensor is destroyed.
+
+Payload follows the [`KeyboardSensorDestroyEvent`](#keyboardsensordestroyevent) interface.
+
+## Exports
+
+Here's a list of additional exports that are available in the `dragdoll/sensors/keyboard` package.
+
+### keyboardSensorDefaults
+
+```ts
+// Import
+import { keyboardSensorDefaults } from 'dragdoll/sensors/keyboard';
+
+// Constant
+const keyboardSensorDefaults: KeyboardSensorSettings<any>;
+```
+
+## Types
+
+### KeyboardSensorPredicate
+
+```ts
+// Import
+import type { KeyboardSensorPredicate } from 'dragdoll/sensors/keyboard';
+
+// Type
+type KeyboardSensorPredicate<E extends KeyboardSensorEvents = KeyboardSensorEvents> = (
+  e: KeyboardEvent,
+  sensor: KeyboardSensor<E>,
+) => { x: number; y: number } | null | undefined;
+```
+
+### KeyboardSensorSettings
+
+```ts
+// Import
+import type { KeyboardSensorSettings } from 'dragdoll/sensors/keyboard';
+
+// Interface
+interface KeyboardSensorSettings<E extends KeyboardSensorEvents = KeyboardSensorEvents> {
+  moveDistance: number | { x: number; y: number };
+  cancelOnBlur: boolean;
+  cancelOnVisibilityChange: boolean;
+  startPredicate: KeyboardSensorPredicate<E>;
+  movePredicate: KeyboardSensorPredicate<E>;
+  cancelPredicate: KeyboardSensorPredicate<E>;
+  endPredicate: KeyboardSensorPredicate<E>;
+}
+```
+
+### KeyboardSensorStartEvent
+
+```ts
+// Import
+import type { KeyboardSensorStartEvent } from 'dragdoll/sensors/keyboard';
+
+// Interface
+interface KeyboardSensorStartEvent {
+  type: 'start';
+  x: number;
+  y: number;
+  srcEvent: KeyboardEvent;
+}
+```
+
+### KeyboardSensorMoveEvent
+
+```ts
+// Import
+import type { KeyboardSensorMoveEvent } from 'dragdoll/sensors/keyboard';
+
+// Interface
+interface KeyboardSensorMoveEvent {
+  type: 'move';
+  x: number;
+  y: number;
+  srcEvent: KeyboardEvent;
+}
+```
+
+### KeyboardSensorCancelEvent
+
+```ts
+// Import
+import type { KeyboardSensorCancelEvent } from 'dragdoll/sensors/keyboard';
+
+// Interface
+interface KeyboardSensorCancelEvent {
+  type: 'cancel';
+  x: number;
+  y: number;
+  srcEvent?: KeyboardEvent;
+}
+```
+
+### KeyboardSensorEndEvent
+
+```ts
+// Import
+import type { KeyboardSensorEndEvent } from 'dragdoll/sensors/keyboard';
+
+// Interface
+interface KeyboardSensorEndEvent {
+  type: 'end';
+  x: number;
+  y: number;
+  srcEvent: KeyboardEvent;
+}
+```
+
+### KeyboardSensorDestroyEvent
+
+```ts
+// Import
+import type { KeyboardSensorDestroyEvent } from 'dragdoll/sensors/keyboard';
+
+// Interface
+interface KeyboardSensorDestroyEvent {
+  type: 'destroy';
+}
+```
+
+### KeyboardSensorEvents
+
+```ts
+// Import
+import type { KeyboardSensorEvents } from 'dragdoll/sensors/keyboard';
+
+// Interface
+interface KeyboardSensorEvents {
+  start: KeyboardSensorStartEvent;
+  move: KeyboardSensorMoveEvent;
+  cancel: KeyboardSensorCancelEvent;
+  end: KeyboardSensorEndEvent;
+  destroy: KeyboardSensorDestroyEvent;
+}
+```
+
+```
+
+```

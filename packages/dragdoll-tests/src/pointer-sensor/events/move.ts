@@ -1,11 +1,13 @@
-import { assert } from 'chai';
 import { PointerSensor, type PointerSensorMoveEvent } from 'dragdoll/sensors/pointer';
 import { createFakeDrag } from '../../utils/create-fake-drag.js';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function eventMove() {
+export default () => {
   describe('move', () => {
-    it(`should be triggered correctly on mousemove`, function () {
+    defaultSetup();
+
+    it(`should be triggered correctly on mousemove`, async () => {
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'mouse' });
       let moveEvent: PointerSensorMoveEvent | null = null;
@@ -15,11 +17,11 @@ export function eventMove() {
         if (moveEvent === null) {
           moveEvent = e;
         } else {
-          assert.fail('move event listener called twice');
+          expect(false).toBe(true);
         }
       });
 
-      createFakeDrag(
+      await createFakeDrag(
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
@@ -36,7 +38,7 @@ export function eventMove() {
         },
       );
 
-      assert.deepEqual(moveEvent, {
+      expect(moveEvent).toStrictEqual({
         type: 'move',
         srcEvent: sourceEvent,
         target: el,
@@ -50,7 +52,7 @@ export function eventMove() {
       el.remove();
     });
 
-    it(`should be triggered correctly on pointermove`, function () {
+    it(`should be triggered correctly on pointermove`, async () => {
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'pointer' });
       let moveEvent: PointerSensorMoveEvent | null = null;
@@ -60,11 +62,11 @@ export function eventMove() {
         if (moveEvent === null) {
           moveEvent = e;
         } else {
-          assert.fail('move event listener called twice');
+          expect(false).toBe(true);
         }
       });
 
-      createFakeDrag(
+      await createFakeDrag(
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
@@ -81,7 +83,7 @@ export function eventMove() {
         },
       );
 
-      assert.deepEqual(moveEvent, {
+      expect(moveEvent).toStrictEqual({
         type: 'move',
         srcEvent: sourceEvent,
         target: el,
@@ -95,7 +97,7 @@ export function eventMove() {
       el.remove();
     });
 
-    it(`should be triggered correctly on touchmove`, function () {
+    it(`should be triggered correctly on touchmove`, async () => {
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'touch' });
       let moveEvent: PointerSensorMoveEvent | null = null;
@@ -105,11 +107,11 @@ export function eventMove() {
         if (moveEvent === null) {
           moveEvent = e;
         } else {
-          assert.fail('start event listener called twice');
+          expect(false).toBe(true);
         }
       });
 
-      createFakeDrag(
+      await createFakeDrag(
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
@@ -126,7 +128,7 @@ export function eventMove() {
         },
       );
 
-      assert.deepEqual(moveEvent, {
+      expect(moveEvent).toStrictEqual({
         type: 'move',
         srcEvent: sourceEvent,
         target: el,
@@ -140,4 +142,4 @@ export function eventMove() {
       el.remove();
     });
   });
-}
+};

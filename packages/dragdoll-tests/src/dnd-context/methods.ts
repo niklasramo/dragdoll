@@ -1,15 +1,17 @@
-import { assert } from 'chai';
 import { DndContext } from 'dragdoll/dnd-context';
 import { Draggable } from 'dragdoll/draggable';
 import { Droppable } from 'dragdoll/droppable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../utils/create-test-element.js';
+import { defaultSetup } from '../utils/default-setup.js';
 import { focusElement } from '../utils/focus-element.js';
 import { startDrag } from '../utils/keyboard-helpers.js';
 import { waitNextFrame } from '../utils/wait-next-frame.js';
 
-export function methods() {
-  describe('public methods', () => {
+export default () => {
+  describe('methods', () => {
+    defaultSetup();
+
     it('on/off should add and remove listeners by id', async () => {
       const calls: string[] = [];
 
@@ -40,7 +42,7 @@ export function methods() {
 
       await startDrag(dragElement);
 
-      assert.deepEqual(calls, ['b']);
+      expect(calls).toStrictEqual(['b']);
 
       ctx.destroy();
       draggable.destroy();
@@ -88,7 +90,7 @@ export function methods() {
       ctx.detectCollisions(draggable);
       await waitNextFrame();
 
-      assert.isTrue(events.includes('collide'));
+      expect(events.includes('collide')).toBe(true);
 
       ctx.destroy();
       draggable.destroy();
@@ -142,7 +144,7 @@ export function methods() {
       await waitNextFrame();
 
       // We should observe collide for at least one, commonly both if overlapping
-      assert.isAtLeast(events.length, 1);
+      expect(events.length >= 1).toBe(true);
 
       ctx.destroy();
       dr1.destroy();
@@ -176,10 +178,10 @@ export function methods() {
       const after = droppable.getClientRect();
 
       // Validate updated values match the DOM
-      assert.equal(after.x, expected.x);
-      assert.equal(after.y, expected.y);
-      assert.equal(after.width, before.width);
-      assert.equal(after.height, before.height);
+      expect(after.x).toBe(expected.x);
+      expect(after.y).toBe(expected.y);
+      expect(after.width).toBe(before.width);
+      expect(after.height).toBe(before.height);
 
       ctx.destroy();
       droppable.destroy();
@@ -203,7 +205,7 @@ export function methods() {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
       await waitNextFrame();
 
-      assert.isFalse(ctx['_isMatch'](draggable, droppable));
+      expect(ctx['_isMatch'](draggable, droppable)).toBe(false);
 
       ctx.destroy();
       draggable.destroy();
@@ -223,10 +225,10 @@ export function methods() {
       const droppable = new Droppable(dropEl, { accept: () => false });
       const ctx = new DndContext();
 
-      assert.isFalse(ctx['_isMatch'](draggable, droppable));
+      expect(ctx['_isMatch'](draggable, droppable)).toBe(false);
 
       droppable.accept = () => true;
-      assert.isTrue(ctx['_isMatch'](draggable, droppable));
+      expect(ctx['_isMatch'](draggable, droppable)).toBe(true);
 
       ctx.destroy();
       draggable.destroy();
@@ -236,4 +238,4 @@ export function methods() {
       dropEl.remove();
     });
   });
-}
+};

@@ -1,14 +1,16 @@
-import { assert } from 'chai';
 import { BaseSensor } from 'dragdoll/sensors/base';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function methodOn() {
+export default () => {
   describe('on', () => {
+    defaultSetup();
+
     it('should return a unique symbol by default', () => {
       const s = new BaseSensor();
       const idA = s.on('start', () => {});
       const idB = s.on('start', () => {});
-      assert.equal(typeof idA, 'symbol');
-      assert.notEqual(idA, idB);
+      expect(typeof idA).toBe('symbol');
+      expect(idA).not.toBe(idB);
       s.destroy();
     });
 
@@ -21,7 +23,7 @@ export function methodOn() {
       s.on('start', listener);
       s.on('start', listener);
       s['_start']({ type: 'start', x: 1, y: 2 });
-      assert.equal(counter, 2);
+      expect(counter).toBe(2);
       s.destroy();
     });
 
@@ -32,7 +34,7 @@ export function methodOn() {
       s.on('start', () => void (msg += 'b'), 2);
       s.on('start', () => void (msg += 'c'), 1);
       s['_start']({ type: 'start', x: 1, y: 2 });
-      assert.equal(msg, 'bc');
+      expect(msg).toBe('bc');
       s.destroy();
     });
 
@@ -40,24 +42,15 @@ export function methodOn() {
       const s = new BaseSensor();
 
       const idA = Symbol();
-      assert.equal(
-        s.on('start', () => {}, idA),
-        idA,
-      );
+      expect(s.on('start', () => {}, idA)).toBe(idA);
 
       const idB = 1;
-      assert.equal(
-        s.on('start', () => {}, idB),
-        idB,
-      );
+      expect(s.on('start', () => {}, idB)).toBe(idB);
 
       const idC = 'foo';
-      assert.equal(
-        s.on('start', () => {}, idC),
-        idC,
-      );
+      expect(s.on('start', () => {}, idC)).toBe(idC);
 
       s.destroy();
     });
   });
-}
+};

@@ -15,10 +15,7 @@ function getAxisChange(cellSize: number, snapPosition: number, sensorPosition: n
   return 0;
 }
 
-export function createSnapModifier<S extends Sensor[], E extends S[number]['_events_type']>(
-  cellWidth: number,
-  cellHeight: number,
-) {
+export function createSnapModifier<S extends Sensor[]>(cellWidth: number, cellHeight: number) {
   return function snapModifier(change, { item }) {
     const snapState: { snapX: number; snapY: number; sensorX: number; sensorY: number } =
       item.data.__snap__ ||
@@ -46,5 +43,5 @@ export function createSnapModifier<S extends Sensor[], E extends S[number]['_eve
     change.y = changeY;
 
     return change;
-  } as DraggableModifier<S, E>;
+  } as DraggableModifier<S>;
 }

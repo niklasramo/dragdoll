@@ -1,9 +1,9 @@
-import type { EventListenerId } from 'eventti';
 import { Emitter } from 'eventti';
-import type { Draggable, DraggableId } from '../draggable/draggable.js';
+import type { AnyDraggable, DraggableId } from '../draggable/draggable.js';
 import { DraggableEventType } from '../draggable/draggable.js';
 import type { Droppable, DroppableId } from '../droppable/droppable.js';
 import { DroppableEventType } from '../droppable/droppable.js';
+import type { SensorEventListenerId } from '../sensors/sensor.js';
 import { SensorEventType } from '../sensors/sensor.js';
 import { ticker, tickerPhases } from '../singletons/ticker.js';
 import type { Writeable } from '../types.js';
@@ -53,29 +53,29 @@ export type DndContextEventType = (typeof DndContextEventType)[keyof typeof DndC
 
 export interface DndContextEventCallbacks<T extends CollisionData = CollisionData> {
   [DndContextEventType.Start]: (data: {
-    draggable: Draggable<any>;
+    draggable: AnyDraggable;
     targets: ReadonlyMap<DroppableId, Droppable>;
   }) => void;
   [DndContextEventType.Move]: (data: {
-    draggable: Draggable<any>;
+    draggable: AnyDraggable;
     targets: ReadonlyMap<DroppableId, Droppable>;
   }) => void;
   [DndContextEventType.Enter]: (data: {
-    draggable: Draggable<any>;
+    draggable: AnyDraggable;
     targets: ReadonlyMap<DroppableId, Droppable>;
     collisions: ReadonlyArray<T>;
     contacts: ReadonlySet<Droppable>;
     addedContacts: ReadonlySet<Droppable>;
   }) => void;
   [DndContextEventType.Leave]: (data: {
-    draggable: Draggable<any>;
+    draggable: AnyDraggable;
     targets: ReadonlyMap<DroppableId, Droppable>;
     collisions: ReadonlyArray<T>;
     contacts: ReadonlySet<Droppable>;
     removedContacts: ReadonlySet<Droppable>;
   }) => void;
   [DndContextEventType.Collide]: (data: {
-    draggable: Draggable<any>;
+    draggable: AnyDraggable;
     targets: ReadonlyMap<DroppableId, Droppable>;
     collisions: ReadonlyArray<T>;
     contacts: ReadonlySet<Droppable>;
@@ -85,22 +85,20 @@ export interface DndContextEventCallbacks<T extends CollisionData = CollisionDat
   }) => void;
   [DndContextEventType.End]: (data: {
     canceled: boolean;
-    draggable: Draggable<any>;
+    draggable: AnyDraggable;
     targets: ReadonlyMap<DroppableId, Droppable>;
     collisions: ReadonlyArray<T>;
     contacts: ReadonlySet<Droppable>;
   }) => void;
-  [DndContextEventType.AddDraggables]: (data: { draggables: ReadonlySet<Draggable<any>> }) => void;
-  [DndContextEventType.RemoveDraggables]: (data: {
-    draggables: ReadonlySet<Draggable<any>>;
-  }) => void;
+  [DndContextEventType.AddDraggables]: (data: { draggables: ReadonlySet<AnyDraggable> }) => void;
+  [DndContextEventType.RemoveDraggables]: (data: { draggables: ReadonlySet<AnyDraggable> }) => void;
   [DndContextEventType.AddDroppables]: (data: { droppables: ReadonlySet<Droppable> }) => void;
   [DndContextEventType.RemoveDroppables]: (data: { droppables: ReadonlySet<Droppable> }) => void;
   [DndContextEventType.Destroy]: () => void;
 }
 
 // Public drag data exposed to consumers.
-// Top-level is read-only; nested `data` object contents are mutable.
+// Top-level is read-only. Nested `data` object contents are mutable.
 export type DndContextDragData = Readonly<{
   isEnded: boolean;
   data: { [key: string]: any };
@@ -112,12 +110,12 @@ export interface DndContextOptions<T extends CollisionData = CollisionData> {
 
 export class DndContext<T extends CollisionData = CollisionData> {
   // Keep track of all added draggables and droppables.
-  readonly draggables: ReadonlyMap<DraggableId, Draggable<any>>;
+  readonly draggables: ReadonlyMap<DraggableId, AnyDraggable>;
   readonly droppables: ReadonlyMap<DroppableId, Droppable>;
   readonly isDestroyed: boolean;
 
   // Keep track of all active draggables and their drag data.
-  protected _drags: Map<Draggable<any>, DndContextInternalDragData<T>>;
+  protected _drags: Map<AnyDraggable, DndContextInternalDragData<T>>;
 
   // Used for all all event listeners and scroll ticker listener.
   protected _listenerId: symbol;
@@ -150,10 +148,10 @@ export class DndContext<T extends CollisionData = CollisionData> {
   }
 
   get drags() {
-    return this._drags as ReadonlyMap<Draggable<any>, DndContextDragData>;
+    return this._drags as ReadonlyMap<AnyDraggable, DndContextDragData>;
   }
 
-  protected _isMatch(draggable: Draggable<any>, droppable: Droppable) {
+  protected _isMatch(draggable: AnyDraggable, droppable: Droppable) {
     let isMatch = false;
 
     // If the droppable has an accept function, use it to determine the match.
@@ -180,16 +178,20 @@ export class DndContext<T extends CollisionData = CollisionData> {
       for (const group of smallerSet) {
         if (largerSet.has(group)) {
           isMatch = true;
+          break;
         }
       }
     }
 
-    // Make sure that none of the draggable's elements match the droppable's
-    // element.
+    // Make sure that none of the draggable's elements contain the droppable's
+    // element. If we allowed this the draggable would _probably_ be constantly
+    // colliding with this droppable, which is probably not what is wanted in
+    // most cases. If the user _really_ wants to allow this they can always
+    // override this method.
     if (isMatch && draggable.drag) {
       const items = draggable.drag.items;
       for (let i = 0; i < items.length; i++) {
-        if (items[i].element === droppable.element) {
+        if (items[i].element.contains(droppable.element)) {
           return false;
         }
       }
@@ -198,7 +200,7 @@ export class DndContext<T extends CollisionData = CollisionData> {
     return isMatch;
   }
 
-  protected _getTargets(draggable: Draggable<any>) {
+  protected _getTargets(draggable: AnyDraggable) {
     const drag = this._drags.get(draggable);
     if (drag?._targets) return drag._targets;
 
@@ -214,7 +216,7 @@ export class DndContext<T extends CollisionData = CollisionData> {
     return targets;
   }
 
-  protected _onDragPrepareStart(draggable: Draggable<any>) {
+  protected _onDragPrepareStart(draggable: AnyDraggable) {
     // Make sure the draggable is registered.
     if (!this.draggables.has(draggable.id)) return;
 
@@ -258,7 +260,7 @@ export class DndContext<T extends CollisionData = CollisionData> {
     }
   }
 
-  protected _onDragStart(draggable: Draggable<any>) {
+  protected _onDragStart(draggable: AnyDraggable) {
     // Make sure the draggable is being dragged.
     const drag = this._drags.get(draggable);
     if (!drag || drag.isEnded) return;
@@ -276,7 +278,7 @@ export class DndContext<T extends CollisionData = CollisionData> {
     this._emitCollisions(draggable);
   }
 
-  protected _onDragPrepareMove(draggable: Draggable<any>) {
+  protected _onDragPrepareMove(draggable: AnyDraggable) {
     // Make sure the draggable is being dragged.
     const drag = this._drags.get(draggable);
     if (!drag || drag.isEnded) return;
@@ -285,7 +287,7 @@ export class DndContext<T extends CollisionData = CollisionData> {
     this._computeCollisions(draggable);
   }
 
-  protected _onDragMove(draggable: Draggable<any>) {
+  protected _onDragMove(draggable: AnyDraggable) {
     // Make sure the draggable is being dragged.
     const drag = this._drags.get(draggable);
     if (!drag || drag.isEnded) return;
@@ -303,15 +305,15 @@ export class DndContext<T extends CollisionData = CollisionData> {
     this._emitCollisions(draggable);
   }
 
-  protected _onDragEnd(draggable: Draggable<any>) {
+  protected _onDragEnd(draggable: AnyDraggable) {
     this._stopDrag(draggable);
   }
 
-  protected _onDragCancel(draggable: Draggable<any>) {
+  protected _onDragCancel(draggable: AnyDraggable) {
     this._stopDrag(draggable, true);
   }
 
-  protected _onDraggableDestroy(draggable: Draggable<any>) {
+  protected _onDraggableDestroy(draggable: AnyDraggable) {
     this.removeDraggables([draggable]);
   }
 
@@ -332,26 +334,28 @@ export class DndContext<T extends CollisionData = CollisionData> {
   };
 
   // Returns true if the final cleanup was queued to a microtask.
-  protected _stopDrag(draggable: Draggable<any>, canceled = false): boolean {
+  protected _stopDrag(draggable: AnyDraggable, canceled = false) {
     // Make sure the draggable is being dragged.
     const drag = this._drags.get(draggable);
-    if (!drag || drag.isEnded) return false;
+    if (!drag || drag.isEnded) return;
+
+    // Throw an error if collisions are being emitted. This guards against user
+    // manually stopping dragging while collisions are being emitted, in one of
+    // the collision event callbacks. Doing that will result the end event
+    // being potentially emitted before all the collision event callbacks are
+    // executed, which is confusing behavior. We want to guarantee the end event
+    // to be the last event to be emitted in the dnd process.
+    if (drag._cd.phase === CollisionDetectionPhase.Emitting) {
+      throw new Error('Cannot stop dragging while collisions are being emitted.');
+    }
 
     // Mark the drag as ended.
     drag.isEnded = true;
 
-    // Check if the collisions are being emitted currently. This can happen if
-    // the user causes drag to end synchronously in any way during the collision
-    // emit phase.
-    const isEmittingCollisions = drag._cd.phase === CollisionDetectionPhase.Emitting;
-
-    // If the collisions are not being emitted currently, do a final collision
-    // detection pass before emitting the drop event to ensure we have the most
-    // up to date collisions data.
-    if (!isEmittingCollisions) {
-      this._computeCollisions(draggable, true);
-      this._emitCollisions(draggable, true);
-    }
+    // Do a final collision detection pass before emitting the drop event to
+    // ensure we have the most up to date collisions data.
+    this._computeCollisions(draggable, true);
+    this._emitCollisions(draggable, true);
 
     // Get the targets, collisions and colliding targets from the last collision
     // detection pass.
@@ -368,29 +372,11 @@ export class DndContext<T extends CollisionData = CollisionData> {
       });
     }
 
-    // Wait for the collisions to be emitted before finalizing the drag end.
-    // Also let's return true to indicate that the drag end was not finished
-    // synchronously.
-    if (isEmittingCollisions) {
-      window.queueMicrotask(() => {
-        this._finalizeStopDrag(draggable);
-      });
-      return true;
-    }
-
-    this._finalizeStopDrag(draggable);
-    return false;
-  }
-
-  protected _finalizeStopDrag(draggable: Draggable<any>) {
-    const drag = this._drags.get(draggable);
-    if (!drag || !drag.isEnded) return;
-
     // Remove the drag data.
     this._drags.delete(draggable);
 
     // Free up the collision data pool from the collision detector.
-    this._collisionDetector.removeCollisionDataPool(draggable);
+    this._collisionDetector['_removeCollisionDataArena'](draggable);
 
     // Clear the queued detect collisions callbacks.
     ticker.off(tickerPhases.read, drag._cd.tickerId);
@@ -403,7 +389,7 @@ export class DndContext<T extends CollisionData = CollisionData> {
     }
   }
 
-  protected _computeCollisions(draggable: Draggable<any>, force = false) {
+  protected _computeCollisions(draggable: AnyDraggable, force = false) {
     const drag = this._drags.get(draggable);
     if (!drag || (!force && drag.isEnded)) return;
 
@@ -437,7 +423,7 @@ export class DndContext<T extends CollisionData = CollisionData> {
     cd.phase = CollisionDetectionPhase.Computed;
   }
 
-  protected _emitCollisions(draggable: Draggable<any>, force = false) {
+  protected _emitCollisions(draggable: AnyDraggable, force = false) {
     const drag = this._drags.get(draggable);
     if (!drag || (!force && drag.isEnded)) return;
 
@@ -552,12 +538,15 @@ export class DndContext<T extends CollisionData = CollisionData> {
   on<K extends keyof DndContextEventCallbacks<T>>(
     type: K,
     listener: DndContextEventCallbacks<T>[K],
-    listenerId?: EventListenerId,
-  ): EventListenerId {
+    listenerId?: SensorEventListenerId,
+  ): SensorEventListenerId {
     return this._emitter.on(type, listener, listenerId);
   }
 
-  off<K extends keyof DndContextEventCallbacks<T>>(type: K, listenerId: EventListenerId): void {
+  off<K extends keyof DndContextEventCallbacks<T>>(
+    type: K,
+    listenerId: SensorEventListenerId,
+  ): void {
     this._emitter.off(type, listenerId);
   }
 
@@ -567,7 +556,7 @@ export class DndContext<T extends CollisionData = CollisionData> {
     }
   }
 
-  clearTargets(draggable?: Draggable<any>) {
+  clearTargets(draggable?: AnyDraggable) {
     if (draggable) {
       const drag = this._drags.get(draggable);
       if (drag) drag._targets = null;
@@ -578,7 +567,7 @@ export class DndContext<T extends CollisionData = CollisionData> {
     }
   }
 
-  detectCollisions(draggable?: Draggable<any>) {
+  detectCollisions(draggable?: AnyDraggable) {
     if (this.isDestroyed) return;
 
     if (draggable) {
@@ -595,17 +584,17 @@ export class DndContext<T extends CollisionData = CollisionData> {
     }
   }
 
-  addDraggables(draggables: Draggable<any>[] | Set<Draggable<any>>) {
+  addDraggables(draggables: AnyDraggable[] | Set<AnyDraggable>) {
     if (this.isDestroyed) return;
 
-    const addedDraggables = new Set<Draggable<any>>();
+    const addedDraggables = new Set<AnyDraggable>();
 
     for (const draggable of draggables) {
       if (this.draggables.has(draggable.id)) continue;
 
       addedDraggables.add(draggable);
 
-      (this.draggables as Map<DraggableId, Draggable<any>>).set(draggable.id, draggable);
+      (this.draggables as Map<DraggableId, AnyDraggable>).set(draggable.id, draggable);
 
       draggable.on(
         DraggableEventType.PrepareStart,
@@ -683,10 +672,10 @@ export class DndContext<T extends CollisionData = CollisionData> {
     }
   }
 
-  removeDraggables(draggables: Draggable<any>[] | Set<Draggable<any>>) {
+  removeDraggables(draggables: AnyDraggable[] | Set<AnyDraggable>) {
     if (this.isDestroyed) return;
 
-    const removedDraggables = new Set<Draggable<any>>();
+    const removedDraggables = new Set<AnyDraggable>();
 
     for (const draggable of draggables) {
       if (!this.draggables.has(draggable.id)) continue;
@@ -694,7 +683,7 @@ export class DndContext<T extends CollisionData = CollisionData> {
       removedDraggables.add(draggable);
 
       // Remove draggable.
-      (this.draggables as Map<DraggableId, Draggable<any>>).delete(draggable.id);
+      (this.draggables as Map<DraggableId, AnyDraggable>).delete(draggable.id);
 
       // Unbind the event listeners.
       draggable.off(DraggableEventType.PrepareStart, this._listenerId);
@@ -796,8 +785,18 @@ export class DndContext<T extends CollisionData = CollisionData> {
   }
 
   destroy() {
-    // Make sure the context is not destroyed yet.
+    // Return early if the context is already destroyed.
     if (this.isDestroyed) return;
+
+    // Throw an error if collisions are being emitted. If we allowed this we
+    // could not guarantee the correct order of events. We want the destroy
+    // event to be the last event to be emitted when destroying the context.
+    const drags = Array.from(this._drags.values());
+    if (drags.some((drag) => drag._cd.phase === CollisionDetectionPhase.Emitting)) {
+      throw new Error('Cannot destroy the DndContext while collisions are being emitted.');
+    }
+
+    // Mark the context as destroyed.
     (this as Writeable<typeof this>).isDestroyed = true;
 
     // Unbind all draggable event listeners.
@@ -831,7 +830,7 @@ export class DndContext<T extends CollisionData = CollisionData> {
     this._collisionDetector.destroy();
 
     // Clear the draggables and droppables.
-    (this.draggables as Map<DraggableId, Draggable<any>>).clear();
+    (this.draggables as Map<DraggableId, AnyDraggable>).clear();
     (this.droppables as Map<DroppableId, Droppable>).clear();
   }
 }

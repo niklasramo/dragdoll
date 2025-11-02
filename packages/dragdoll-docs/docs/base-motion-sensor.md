@@ -100,23 +100,34 @@ const draggable = new Draggable([customSensor], {
 });
 ```
 
+## Class
+
+```ts
+class BaseMotionSensor<E extends BaseMotionSensorEvents = BaseMotionSensorEvents>
+  extends BaseSensor<E>
+  implements Sensor<E>
+{
+  constructor() {}
+}
+```
+
+The BaseMotionSensor class is a generic that extends the [`BaseSensor`](/base-sensor) class and implements the [`Sensor`](/sensor) interface.
+
+### Type Variables
+
+1. **E**
+   - The type of the events that the sensor will emit.
+   - Default: [`BaseMotionSensorEvents`](#basesensormotionevents).
+
 ## Properties
 
 ### drag
 
 ```ts
-type drag = {
-  // Coordinates of the drag within the viewport.
-  readonly x: number;
-  readonly y: number;
-  // The latest DOMHighResTimeStamp.
-  readonly time: number;
-  // Current frame's delta time (in milliseconds).
-  readonly deltaTime: number;
-} | null;
+type drag = BaseMotionSensorDragData | null;
 ```
 
-Current drag data or `null` when drag is inactive. Read-only.
+Current drag data or `null` when drag is inactive. The drag data follows the [`BaseMotionSensorDragData`](#basesensormotiondragdata) interface. Read-only.
 
 ## Protected Properties
 
@@ -133,7 +144,7 @@ type _direction = { x: number; y: number };
 ### \_speed
 
 ```ts
-type speed = number;
+type _speed = number;
 ```
 
 The speed of the drag as pixels-per-second. You can manually modify this anytime you want.
@@ -143,50 +154,117 @@ The speed of the drag as pixels-per-second. You can manually modify this anytime
 ### on
 
 ```ts
-// Type
-type on = (
-  type: 'start' | 'move' | 'cancel' | 'end' | 'destroy' | 'tick',
-  listener: (
-    e:
-      | {
-          type: 'start' | 'move' | 'end' | 'cancel';
-          x: number;
-          y: number;
-        }
-      | {
-          type: 'tick';
-          time: number;
-          deltaTime: number;
-        }
-      | {
-          type: 'destroy';
-        },
-  ) => void,
-  listenerId?: ListenerId,
-) => ListenerId;
+type on<T extends keyof E> = (
+  type: T,
+  listener: (e: E[T]) => void,
+  listenerId?: SensorEventListenerId,
+) => SensorEventListenerId;
+```
 
-type ListenerId = null | string | number | symbol | Function | Object;
+Adds a listener to a sensor event. Returns a [listener id](/sensor#sensoreventlistenerid), which can be used to remove this specific listener. By default this will always be a symbol unless manually provided.
 
-// Usage
+Please check the [Events](#events) section for more information about the events and their payloads.
+
+**Example**
+
+```ts
 baseMotionSensor.on('start', (e) => {
   console.log('start', e);
 });
 ```
 
-Adds a listener to a sensor event. Returns a listener id, which can be used to remove this specific listener. By default this will always be a symbol unless manually provided.
-
 ### off
 
 ```ts
-// Type
-type off = (
-  type: 'start' | 'move' | 'cancel' | 'end' | 'destroy' | 'tick',
-  listenerId: null | string | number | symbol | Function | Object,
-) => void;
+type off<T extends keyof E> = (type: T, listenerId: SensorEventListenerId) => void;
+```
 
-// Usage
+Removes a listener (based on [listener id](/sensor#sensoreventlistenerid)) from a sensor event.
+
+**Example**
+
+```ts
 const id = baseMotionSensor.on('start', (e) => console.log('start', e));
 baseMotionSensor.off('start', id);
 ```
 
-Removes a listener (based on listener id) from a sensor event.
+## Events
+
+### start
+
+Emitted when the sensor starts dragging.
+
+Payload follows the [`SensorStartEvent`](/sensor#sensorstartevent) interface.
+
+### move
+
+Emitted when the sensor is moved during the drag.
+
+Payload follows the [`SensorMoveEvent`](/sensor#sensormoveevent) interface.
+
+### cancel
+
+Emitted when the drag is canceled.
+
+Payload follows the [`SensorCancelEvent`](/sensor#sensorcancelevent) interface.
+
+### end
+
+Emitted when the drag ends without being canceled.
+
+Payload follows the [`SensorEndEvent`](/sensor#sensorendevent) interface.
+
+### destroy
+
+Emitted when the sensor is destroyed.
+
+Payload follows the [`SensorDestroyEvent`](/sensor#sensordestroyevent) interface.
+
+### tick
+
+Emitted every frame when the sensor is dragging.
+
+Payload follows the [`BaseMotionSensorTickEvent`](#basesensortickevent) interface.
+
+## Types
+
+### BaseMotionSensorTickEvent
+
+```ts
+// Import
+import type { BaseMotionSensorTickEvent } from 'dragdoll/sensors/base-motion';
+
+// Interface
+interface BaseMotionSensorTickEvent {
+  type: 'tick';
+  time: number;
+  deltaTime: number;
+}
+```
+
+### BaseMotionSensorEvents
+
+```ts
+// Import
+import type { BaseMotionSensorEvents } from 'dragdoll/sensors/base-motion';
+
+// Interface
+interface BaseMotionSensorEvents extends SensorEvents {
+  tick: BaseMotionSensorTickEvent;
+}
+```
+
+### BaseMotionSensorDragData
+
+```ts
+// Import
+import type { BaseMotionSensorDragData } from 'dragdoll/sensors/base-motion';
+
+// Interface
+interface BaseMotionSensorDragData {
+  readonly x: number;
+  readonly y: number;
+  readonly time: number;
+  readonly deltaTime: number;
+}
+```

@@ -1,12 +1,14 @@
-import { assert } from 'chai';
 import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
 
-export function optionFrozenStyles() {
-  describe('frozenStyles', async () => {
+export default () => {
+  describe('frozenStyles', () => {
+    defaultSetup();
+
     it('should receive the correct arguments', async () => {
       let callCount = 0;
       const el = createTestElement();
@@ -15,11 +17,11 @@ export function optionFrozenStyles() {
         elements: () => [el],
         frozenStyles: (args) => {
           ++callCount;
-          assert.equal(Object.keys(args).length, 4);
-          assert.equal(args.draggable, draggable);
-          assert.equal(args.drag, draggable.drag);
-          assert.equal(args.item.element, el);
-          assert.deepEqual(args.style, window.getComputedStyle(el));
+          expect(Object.keys(args).length).toBe(4);
+          expect(args.draggable).toBe(draggable);
+          expect(args.drag).toBe(draggable.drag);
+          expect(args.item.element).toBe(el);
+          expect(args.style).toStrictEqual(window.getComputedStyle(el));
           return null;
         },
       });
@@ -31,7 +33,7 @@ export function optionFrozenStyles() {
       await waitNextFrame();
 
       // Make sure the callback has been called.
-      assert.equal(callCount, 1);
+      expect(callCount).toBe(1);
 
       // Move the element to the right.
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
@@ -39,13 +41,13 @@ export function optionFrozenStyles() {
       await waitNextFrame();
 
       // Make sure the callback is not called again.
-      assert.equal(callCount, 1);
+      expect(callCount).toBe(1);
 
       // End the drag.
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Make sure the callback is not called again.
-      assert.equal(callCount, 1);
+      expect(callCount).toBe(1);
 
       // Reset stuff.
       draggable.destroy();
@@ -86,24 +88,25 @@ export function optionFrozenStyles() {
       await waitNextFrame();
 
       // Make sure the styles have been frozen.
-      assert.equal(el.style.width, expectedFrozenStyles.width);
-      assert.equal(el.style.height, expectedFrozenStyles.height);
-      assert.equal(el.style.left, expectedFrozenStyles.left);
-      assert.equal(el.style.top, expectedFrozenStyles.top);
+      expect(el.style.width).toBe(expectedFrozenStyles.width);
+      expect(el.style.height).toBe(expectedFrozenStyles.height);
+      expect(el.style.left).toBe(expectedFrozenStyles.left);
+      expect(el.style.top).toBe(expectedFrozenStyles.top);
 
       // Drop the element.
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Make sure the styles are unfrozen (reverted back to original).
-      assert.equal(el.style.width, '10vw');
-      assert.equal(el.style.height, '10vh');
-      assert.equal(el.style.left, '10vw');
-      assert.equal(el.style.top, '10vh');
+      expect(el.style.width).toBe('10vw');
+      expect(el.style.height).toBe('10vh');
+      expect(el.style.left).toBe('10vw');
+      expect(el.style.top).toBe('10vh');
 
       // Reset stuff.
       draggable.destroy();
       keyboardSensor.destroy();
       el.remove();
+      container.remove();
     });
 
     it('should set the explicitly provided styles if object is provided', async () => {
@@ -131,24 +134,25 @@ export function optionFrozenStyles() {
       await waitNextFrame();
 
       // Make sure the styles have been frozen.
-      assert.equal(el.style.width, '10px');
-      assert.equal(el.style.height, '20px');
-      assert.equal(el.style.left, '30px');
-      assert.equal(el.style.top, '40px');
+      expect(el.style.width).toBe('10px');
+      expect(el.style.height).toBe('20px');
+      expect(el.style.left).toBe('30px');
+      expect(el.style.top).toBe('40px');
 
       // Drop the element.
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Make sure the styles are unfrozen (reverted back to original).
-      assert.equal(el.style.width, '10vw');
-      assert.equal(el.style.height, '10vh');
-      assert.equal(el.style.left, '10vw');
-      assert.equal(el.style.top, '10vh');
+      expect(el.style.width).toBe('10vw');
+      expect(el.style.height).toBe('10vh');
+      expect(el.style.left).toBe('10vw');
+      expect(el.style.top).toBe('10vh');
 
       // Reset stuff.
       draggable.destroy();
       keyboardSensor.destroy();
       el.remove();
+      container.remove();
     });
   });
-}
+};

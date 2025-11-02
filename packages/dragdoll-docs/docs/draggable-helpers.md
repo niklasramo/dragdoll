@@ -11,7 +11,7 @@ A collection of official helper functions for creating custom draggable logic.
 
 A custom start predicate for starting drag after a long press on touch devices. Assumes you are using [`PointerSensor`](/pointer-sensor) for the [`Draggable`](/draggable) instance.
 
-For `mouse` and `pen` events the predicate is resolved immediately. For `touch` events the predicate has special logic to start the drag after a long press, which's duration can be adjusted with `touchDelay` parameter. If scrolling is detected before the long press finishes, the drag will not start.
+For `mouse` and `pen` events the predicate is resolved immediately. For `touch` events the predicate has special logic to start the drag after a long press, whose duration can be adjusted with `touchDelay` parameter. If scrolling is detected before the long press finishes, the drag will not start.
 
 ### Examples
 
@@ -46,27 +46,31 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
 ### Syntax
 
 ```ts
-type DraggableStartPredicate = (data: {
-  draggable: Draggable;
-  sensor: Sensor;
-  event: SensorStartEvent | SensorMoveEvent;
+function createTouchDelayPredicate<
+  S extends (Sensor | PointerSensor)[] = (
+    | Sensor<SensorEvents>
+    | PointerSensor<PointerSensorEvents>
+  )[],
+>(options?: {
+  touchDelay?: number;
+  fallback?: Draggable<S>['settings']['startPredicate'];
+}): (data: {
+  draggable: Draggable<S, {}>;
+  sensor: S[number];
+  event: S[number]['_events_type']['start'] | S[number]['_events_type']['move'];
 }) => boolean | undefined;
-
-type createTouchDelayPredicate = (
-  touchDelay?: number,
-  fallback?: DraggableStartPredicate,
-) => DraggableStartPredicate;
 ```
 
 ### Parameters
 
-1. **touchDelay**
-   - The amount of time in milliseconds to wait before trying to start dragging after the user has touched the pointer sensor element (applies for touch events only). The point of this delay is to allow users to scroll normally if they don't intend to drag and start dragging only after long press, which is a common pattern in mobile applications.
-   - Default: `250`.
-
-2. **fallback**
-   - Fallback start predicate function that will be called for other sensors' events (e.g. keyboard sensor) if there are any.
-   - Default: `() => true`.
+1. **options**
+   - An optional configuration object with the following properties:
+     - **`touchDelay`**
+       - The amount of time in milliseconds to wait before trying to start dragging after the user has touched the pointer sensor element (applies for touch events only). The point of this delay is to allow users to scroll normally if they don't intend to drag and start dragging only after long press, which is a common pattern in mobile applications.
+       - Default is `250`.
+     - **`fallback`**
+       - Fallback start predicate function that will be called for other sensors' events (e.g. keyboard sensor) if there are any.
+       - Default is `() => true`.
 
 ### Returns
 

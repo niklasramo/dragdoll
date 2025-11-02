@@ -1,11 +1,13 @@
-import { assert } from 'chai';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 
-export function eventStart() {
+export default () => {
   describe('start', () => {
-    it(`should be triggered on drag start`, function () {
+    defaultSetup();
+
+    it(`should be triggered on drag start`, () => {
       const el = createTestElement({ left: '10px', top: '20px' });
       const s = new KeyboardSensor(el);
       const expectedEvent = {
@@ -18,17 +20,17 @@ export function eventStart() {
       let startEventCount = 0;
 
       s.on('start', (e) => {
-        assert.deepEqual(e, expectedEvent);
+        expect(e).toStrictEqual(expectedEvent);
         ++startEventCount;
       });
 
       focusElement(el);
       document.dispatchEvent(expectedEvent.srcEvent);
 
-      assert.equal(startEventCount, 1);
+      expect(startEventCount).toBe(1);
 
       el.remove();
       s.destroy();
     });
   });
-}
+};

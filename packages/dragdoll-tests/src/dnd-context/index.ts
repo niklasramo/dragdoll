@@ -1,13 +1,15 @@
-import { advancedCollisionDetection } from './advanced-collision-detection.js';
-import { collisionDetection } from './collision-detection.js';
-import { droppables } from './droppables.js';
-import { events } from './events.js';
-import { methods } from './methods.js';
+import advancedCollisionDetector from './advanced-collision-detector.js';
+import collisionDetector from './collision-detector.js';
+import droppable from './droppable.js';
+import events from './events.js';
+import methods from './methods.js';
 
-describe('DndContext', () => {
-  events();
-  collisionDetection();
-  advancedCollisionDetection();
-  droppables();
-  methods();
-});
+export default () => {
+  describe('DndContext', () => {
+    advancedCollisionDetector();
+    collisionDetector();
+    droppable();
+    events();
+    methods();
+  });
+};

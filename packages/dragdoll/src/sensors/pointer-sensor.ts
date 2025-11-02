@@ -1,4 +1,4 @@
-import type { EventListenerId, Events } from 'eventti';
+import type { Events } from 'eventti';
 import { Emitter } from 'eventti';
 import type { ListenerOptions, PointerType, Writeable } from '../types.js';
 import { getPointerEventData } from '../utils/get-pointer-event-data.js';
@@ -11,6 +11,7 @@ import type {
   SensorCancelEvent,
   SensorDestroyEvent,
   SensorEndEvent,
+  SensorEventListenerId,
   SensorMoveEvent,
   SensorStartEvent,
 } from './sensor.js';
@@ -409,15 +410,15 @@ export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
   on<T extends keyof E>(
     type: T,
     listener: (e: E[T]) => void,
-    listenerId?: EventListenerId,
-  ): EventListenerId {
+    listenerId?: SensorEventListenerId,
+  ): SensorEventListenerId {
     return this._emitter.on(type, listener, listenerId);
   }
 
   /**
    * Unbind a drag event listener.
    */
-  off<T extends keyof E>(type: T, listenerId: EventListenerId): void {
+  off<T extends keyof E>(type: T, listenerId: SensorEventListenerId): void {
     this._emitter.off(type, listenerId);
   }
 
