@@ -23,7 +23,7 @@ $ npm install dragdoll eventti tikki mezr
       "mezr/getRect": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getRect.js",
       "mezr/getDistance": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getDistance.js",
       "mezr/getOffsetContainer": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getOffsetContainer.js",
-      "dragdoll": "https://cdn.jsdelivr.net/npm/dragdoll@0.9.0/dist/index.js"
+      "dragdoll": "https://cdn.jsdelivr.net/npm/dragdoll@0.10.0/dist/index.js"
     }
   }
 </script>
