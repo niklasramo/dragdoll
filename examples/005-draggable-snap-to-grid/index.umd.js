@@ -199,7 +199,7 @@ var l$2 = class extends o$1 {
 };
 
 //#endregion
-//#region ../dragdoll/dist/ticker-CAFcKU20.js
+//#region ../dragdoll/dist/ticker-Bio34ZvT.js
 const n$4 = {
 	read: Symbol(),
 	write: Symbol()
@@ -257,7 +257,7 @@ function isDocumentElement(e$4) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/get-style-ZZHAkgcg.js
+//#region ../dragdoll/dist/get-style-CC2j8jdv.js
 const e$3 = /* @__PURE__ */ new WeakMap();
 function t$2(t$3) {
 	let n$5 = e$3.get(t$3)?.deref();
@@ -265,12 +265,12 @@ function t$2(t$3) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/constants-gNukEJzy.js
+//#region ../dragdoll/dist/constants-CMClRu_c.js
 const e$2 = typeof window < `u` && window.document !== void 0, t$1 = e$2 && `ontouchstart` in window, n$3 = e$2 && !!window.PointerEvent;
 e$2 && navigator.vendor && navigator.vendor.indexOf(`Apple`) > -1 && navigator.userAgent && navigator.userAgent.indexOf(`CriOS`) == -1 && navigator.userAgent.indexOf(`FxiOS`);
 
 //#endregion
-//#region ../dragdoll/dist/sensor-C-EBcfly.js
+//#region ../dragdoll/dist/sensor-Uwz8qy61.js
 const e = {
 	Start: `start`,
 	Move: `move`,
@@ -383,7 +383,7 @@ function getOffsetContainer(n$5, t$3 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-C1QBodX1.js
+//#region ../dragdoll/dist/draggable-BM9bdNuM.js
 function s$1(e$4, t$3) {
 	return e$4.isIdentity && t$3.isIdentity ? !0 : e$4.is2D && t$3.is2D ? e$4.a === t$3.a && e$4.b === t$3.b && e$4.c === t$3.c && e$4.d === t$3.d && e$4.e === t$3.e && e$4.f === t$3.f : e$4.m11 === t$3.m11 && e$4.m12 === t$3.m12 && e$4.m13 === t$3.m13 && e$4.m14 === t$3.m14 && e$4.m21 === t$3.m21 && e$4.m22 === t$3.m22 && e$4.m23 === t$3.m23 && e$4.m24 === t$3.m24 && e$4.m31 === t$3.m31 && e$4.m32 === t$3.m32 && e$4.m33 === t$3.m33 && e$4.m34 === t$3.m34 && e$4.m41 === t$3.m41 && e$4.m42 === t$3.m42 && e$4.m43 === t$3.m43 && e$4.m44 === t$3.m44;
 }
@@ -407,10 +407,10 @@ function d(e$4, t$3 = 0) {
 }
 var f = class {
 	constructor() {
-		this._cache = /* @__PURE__ */ new Map(), this._validation = /* @__PURE__ */ new Map();
+		this._cache = /* @__PURE__ */ new Map(), this._validation = /* @__PURE__ */ new Set();
 	}
 	set(e$4, t$3) {
-		this._cache.set(e$4, t$3), this._validation.set(e$4, void 0);
+		this._cache.set(e$4, t$3), this._validation.add(e$4);
 	}
 	get(e$4) {
 		return this._cache.get(e$4);
@@ -740,14 +740,14 @@ var B = class {
 	}
 	_prepareStart() {
 		let e$4 = this.drag;
-		e$4 && (this._startPhase = N.Prepare, e$4.items = (this.settings.elements({
+		!e$4 || this._startPhase !== N.Init || (this._startPhase = N.Prepare, e$4.items = (this.settings.elements({
 			draggable: this,
 			drag: e$4
 		}) || []).map((e$5) => new O(e$5, this)), this._applyModifiers(F.Start, 0, 0), this._emit(R.PrepareStart, e$4.startEvent), this.settings.onPrepareStart?.(e$4, this), this._startPhase = N.FinishPrepare);
 	}
 	_applyStart() {
 		let e$4 = this.drag;
-		if (e$4) {
+		if (!(!e$4 || this._startPhase !== N.FinishPrepare)) {
 			this._startPhase = N.Apply;
 			for (let t$3 of e$4.items) t$3.dragContainer !== t$3.elementContainer && l$1(t$3.dragContainer, t$3.element), t$3.frozenStyles && Object.assign(t$3.element.style, t$3.frozenStyles), this.settings.applyPosition({
 				phase: L.Start,
@@ -775,13 +775,13 @@ var B = class {
 	}
 	_prepareMove() {
 		let e$4 = this.drag;
-		if (!e$4) return;
+		if (!e$4 || e$4.isEnded) return;
 		let { moveEvent: t$3, prevMoveEvent: n$5 } = e$4;
 		t$3 !== n$5 && (this._applyModifiers(F.Move, t$3.x - n$5.x, t$3.y - n$5.y), this._emit(R.PrepareMove, t$3), !e$4.isEnded && (this.settings.onPrepareMove?.(e$4, this), !e$4.isEnded && (e$4.prevMoveEvent = t$3)));
 	}
 	_applyMove() {
 		let e$4 = this.drag;
-		if (e$4) {
+		if (!(!e$4 || e$4.isEnded)) {
 			for (let t$3 of e$4.items) t$3._moveDiff.x = 0, t$3._moveDiff.y = 0, this.settings.applyPosition({
 				phase: L.Move,
 				draggable: this,
@@ -793,7 +793,7 @@ var B = class {
 	}
 	_prepareAlign() {
 		let { drag: e$4 } = this;
-		if (e$4) for (let t$3 of e$4.items) {
+		if (!(!e$4 || e$4.isEnded)) for (let t$3 of e$4.items) {
 			let { x: e$5, y: n$5 } = t$3.element.getBoundingClientRect(), r$3 = t$3.clientRect.x - t$3._moveDiff.x - e$5;
 			t$3.alignmentOffset.x = t$3.alignmentOffset.x - t$3._alignDiff.x + r$3, t$3._alignDiff.x = r$3;
 			let i$1 = t$3.clientRect.y - t$3._moveDiff.y - n$5;
@@ -802,7 +802,7 @@ var B = class {
 	}
 	_applyAlign() {
 		let { drag: e$4 } = this;
-		if (e$4) for (let t$3 of e$4.items) t$3._alignDiff.x = 0, t$3._alignDiff.y = 0, this.settings.applyPosition({
+		if (!(!e$4 || e$4.isEnded)) for (let t$3 of e$4.items) t$3._alignDiff.x = 0, t$3._alignDiff.y = 0, this.settings.applyPosition({
 			phase: L.Align,
 			draggable: this,
 			drag: e$4,
@@ -847,7 +847,7 @@ var B = class {
 		let n$5 = this.drag;
 		if (!(!n$5 || n$5.isEnded)) {
 			if (this._startPhase === N.Prepare || this._startPhase === N.Apply) throw Error(`Cannot stop drag start process at this point`);
-			n$5.isEnded = !0, this._startPhase === N.Init && this._prepareStart(), this._startPhase === N.FinishPrepare && this._applyStart(), this._startPhase = N.None, r$1.off(n$4.read, this._startId), r$1.off(n$4.write, this._startId), r$1.off(n$4.read, this._moveId), r$1.off(n$4.write, this._moveId), r$1.off(n$4.read, this._alignId), r$1.off(n$4.write, this._alignId), window.removeEventListener(`scroll`, this._onScroll, k), this._applyModifiers(F.End, 0, 0);
+			n$5.isEnded = !0, this._prepareStart(), this._applyStart(), this._startPhase = N.None, r$1.off(n$4.read, this._startId), r$1.off(n$4.write, this._startId), r$1.off(n$4.read, this._moveId), r$1.off(n$4.write, this._moveId), r$1.off(n$4.read, this._alignId), r$1.off(n$4.write, this._alignId), window.removeEventListener(`scroll`, this._onScroll, k), this._applyModifiers(F.End, 0, 0);
 			for (let e$4 of n$5.items) {
 				if (e$4.elementContainer !== e$4.dragContainer && (l$1(e$4.elementContainer, e$4.element), e$4.alignmentOffset.x = 0, e$4.alignmentOffset.y = 0, e$4.containerOffset.x = 0, e$4.containerOffset.y = 0), e$4.unfrozenStyles) for (let t$3 in e$4.unfrozenStyles) e$4.element.style[t$3] = e$4.unfrozenStyles[t$3] || ``;
 				this.settings.applyPosition({
@@ -871,7 +871,7 @@ var B = class {
 		}
 	}
 	align(n$5 = !1) {
-		this.drag && (n$5 || this.settings.sensorProcessingMode === I.Immediate ? (this._prepareAlign(), this._applyAlign()) : (r$1.once(n$4.read, this._prepareAlign, this._alignId), r$1.once(n$4.write, this._applyAlign, this._alignId)));
+		!this.drag || this.drag.isEnded || (n$5 || this.settings.sensorProcessingMode === I.Immediate ? (this._prepareAlign(), this._applyAlign()) : (r$1.once(n$4.read, this._prepareAlign, this._alignId), r$1.once(n$4.write, this._applyAlign, this._alignId)));
 	}
 	getClientRect() {
 		let { drag: e$4, settings: t$3 } = this;
@@ -880,7 +880,7 @@ var B = class {
 			drag: e$4
 		}) || null;
 	}
-	updateSettings(e$4 = {}) {
+	updateSettings(e$4) {
 		this.settings = this._parseSettings(e$4, this.settings);
 	}
 	use(e$4) {
@@ -894,7 +894,7 @@ var B = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/pointer-sensor-CyG2cFYy.js
+//#region ../dragdoll/dist/pointer-sensor-BNmXr-6_.js
 function i(e$4, t$3) {
 	if (`pointerId` in e$4) return e$4.pointerId === t$3 ? e$4 : null;
 	if (`changedTouches` in e$4) {
@@ -1049,7 +1049,7 @@ var u = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/create-snap-modifier-D1nk7is-.js
+//#region ../dragdoll/dist/create-snap-modifier-BgWO4pEt.js
 function e$1(e$4, t$3) {
 	return Math.round(e$4 / t$3) * t$3;
 }
@@ -1076,7 +1076,7 @@ function n(e$4, n$5) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/base-sensor-6CQrwFkA.js
+//#region ../dragdoll/dist/base-sensor-CiXk6Egt.js
 var n$1 = class {
 	constructor() {
 		this.drag = null, this.isDestroyed = !1, this._emitter = new v();
@@ -1124,7 +1124,7 @@ var n$1 = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/keyboard-sensor-CJl8XkdN.js
+//#region ../dragdoll/dist/keyboard-sensor-BCehwsFy.js
 const n$2 = {
 	moveDistance: 25,
 	cancelOnBlur: !0,
@@ -1241,7 +1241,7 @@ var r = class extends n$1 {
 			return;
 		}
 	}
-	updateSettings(e$4 = {}) {
+	updateSettings(e$4) {
 		let { moveDistance: t$3, cancelOnBlur: n$5, cancelOnVisibilityChange: r$3, startPredicate: i$1, movePredicate: a$1, cancelPredicate: o$2, endPredicate: s$2 } = e$4;
 		t$3 !== void 0 && (typeof t$3 == `number` ? this.moveDistance.x = this.moveDistance.y = t$3 : (this.moveDistance.x = t$3.x, this.moveDistance.y = t$3.y)), n$5 !== void 0 && this._cancelOnBlur !== n$5 && (this._cancelOnBlur = n$5, n$5 ? this.element?.addEventListener(`blur`, this._blurCancelHandler) : this.element?.removeEventListener(`blur`, this._blurCancelHandler)), r$3 !== void 0 && this._cancelOnVisibilityChange !== r$3 && (this._cancelOnVisibilityChange = r$3, r$3 ? document.addEventListener(`visibilitychange`, this._internalCancel) : document.removeEventListener(`visibilitychange`, this._internalCancel)), i$1 && (this._startPredicate = i$1), a$1 && (this._movePredicate = a$1), o$2 && (this._cancelPredicate = o$2), s$2 && (this._endPredicate = s$2);
 	}

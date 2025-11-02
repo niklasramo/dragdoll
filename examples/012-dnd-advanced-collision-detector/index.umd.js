@@ -199,7 +199,7 @@ var l$5 = class extends o$3 {
 };
 
 //#endregion
-//#region ../dragdoll/dist/ticker-CAFcKU20.js
+//#region ../dragdoll/dist/ticker-Bio34ZvT.js
 const n$2 = {
 	read: Symbol(),
 	write: Symbol()
@@ -210,7 +210,7 @@ let r$1 = new l$5({
 });
 
 //#endregion
-//#region ../dragdoll/dist/create-full-rect-ABJfaR4O.js
+//#region ../dragdoll/dist/create-full-rect-Dd45f4o1.js
 function e$5(e$6, t$6 = {
 	width: 0,
 	height: 0,
@@ -225,7 +225,7 @@ function e$5(e$6, t$6 = {
 }
 
 //#endregion
-//#region ../dragdoll/dist/get-intersection-score-CvSlwByb.js
+//#region ../dragdoll/dist/get-intersection-score-YcxwkZs7.js
 function e$2(e$6, t$6, n$7 = {
 	width: 0,
 	height: 0,
@@ -436,7 +436,7 @@ function getRect(t$6, e$6) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/get-rect-BRzLuevJ.js
+//#region ../dragdoll/dist/get-rect-BPdgHRQD.js
 function t$4(...t$6) {
 	let { width: n$7, height: r$5, left: i$5, top: a$4 } = getRect(...t$6);
 	return {
@@ -480,8 +480,33 @@ function getDistance(e$6, t$6) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-DQA4hZ19.js
-var o$2 = class {
+//#region ../dragdoll/dist/auto-scroll-BzsvSJTw.js
+const o$2 = e$5(), s$5 = e$5();
+function c$5(e$6, t$6) {
+	return getDistance(e$5(e$6, o$2), e$5(t$6, s$5));
+}
+function l$4(e$6) {
+	return e$6 instanceof Window;
+}
+function u$4(e$6) {
+	return l$4(e$6) || e$6 === document.documentElement || e$6 === document.body ? window : e$6;
+}
+function d$2(e$6) {
+	return l$4(e$6) ? e$6.scrollX : e$6.scrollLeft;
+}
+function f$2(e$6) {
+	return l$4(e$6) && (e$6 = document.documentElement), e$6.scrollWidth - e$6.clientWidth;
+}
+function p$2(e$6) {
+	return l$4(e$6) ? e$6.scrollY : e$6.scrollTop;
+}
+function m$2(e$6) {
+	return l$4(e$6) && (e$6 = document.documentElement), e$6.scrollHeight - e$6.clientHeight;
+}
+function h$2(e$6, t$6) {
+	return !(e$6.x + e$6.width <= t$6.x || t$6.x + t$6.width <= e$6.x || e$6.y + e$6.height <= t$6.y || t$6.y + t$6.height <= e$6.y);
+}
+var g$2 = class {
 	constructor(e$6, { batchSize: t$6 = 100, minBatchCount: n$7 = 0, maxBatchCount: r$5 = 2 ** 53 - 1, initialBatchCount: i$5 = 0, shrinkThreshold: a$4 = 2, onRelease: o$4 } = {}) {
 		this._batchSize = Math.floor(Math.max(t$6, 1)), this._minSize = Math.floor(Math.max(n$7, 0)) * this._batchSize, this._maxSize = Math.floor(Math.min(Math.max(r$5 * this._batchSize, this._batchSize), 2 ** 53 - 1)), this._shrinkThreshold = Math.floor(Math.max(a$4, 1) * this._batchSize), this._data = Array(Math.floor(Math.max(Math.max(i$5, n$7) * this._batchSize, 0))), this._index = 0, this._getItem = e$6, this._onRelease = o$4;
 	}
@@ -503,31 +528,6 @@ var o$2 = class {
 		this._data.length = 0, this._index = 0;
 	}
 };
-const s$5 = e$5(), c$5 = e$5();
-function l$4(e$6, t$6) {
-	return getDistance(e$5(e$6, s$5), e$5(t$6, c$5));
-}
-function u$4(e$6) {
-	return e$6 instanceof Window;
-}
-function d$2(e$6) {
-	return u$4(e$6) || e$6 === document.documentElement || e$6 === document.body ? window : e$6;
-}
-function f$2(e$6) {
-	return u$4(e$6) ? e$6.scrollX : e$6.scrollLeft;
-}
-function p$2(e$6) {
-	return u$4(e$6) && (e$6 = document.documentElement), e$6.scrollWidth - e$6.clientWidth;
-}
-function m$2(e$6) {
-	return u$4(e$6) ? e$6.scrollY : e$6.scrollTop;
-}
-function h$2(e$6) {
-	return u$4(e$6) && (e$6 = document.documentElement), e$6.scrollHeight - e$6.clientHeight;
-}
-function g$2(e$6, t$6) {
-	return !(e$6.x + e$6.width <= t$6.x || t$6.x + t$6.width <= e$6.x || e$6.y + e$6.height <= t$6.y || t$6.y + t$6.height <= e$6.y);
-}
 const _$2 = {
 	width: 0,
 	height: 0,
@@ -603,7 +603,7 @@ var k$1 = class {
 		this.requestX === e$6 ? (this.requestX = null, e$6.action = null) : this.requestY === e$6 && (this.requestY = null, e$6.action = null);
 	}
 	computeScrollValues() {
-		this.element && (this.scrollLeft = this.requestX ? this.requestX.value : f$2(this.element), this.scrollTop = this.requestY ? this.requestY.value : m$2(this.element));
+		this.element && (this.scrollLeft = this.requestX ? this.requestX.value : d$2(this.element), this.scrollTop = this.requestY ? this.requestY.value : p$2(this.element));
 	}
 	scroll() {
 		this.element && (this.element.scrollTo ? this.element.scrollTo(this.scrollLeft, this.scrollTop) : (this.element.scrollLeft = this.scrollLeft, this.element.scrollTop = this.scrollTop));
@@ -619,7 +619,7 @@ var k$1 = class {
 		return b$1.forward & this.direction ? E$1(this.value, this.maxValue) : this.value <= 0;
 	}
 	computeCurrentScrollValue() {
-		return this.element ? this.value === this.value ? Math.max(0, Math.min(this.value, this.maxValue)) : y$2.x & this.direction ? f$2(this.element) : m$2(this.element) : 0;
+		return this.element ? this.value === this.value ? Math.max(0, Math.min(this.value, this.maxValue)) : y$2.x & this.direction ? d$2(this.element) : p$2(this.element) : 0;
 	}
 	computeNextScrollValue() {
 		let e$6 = this.speed * (this.deltaTime / 1e3), t$6 = b$1.forward & this.direction ? this.value + e$6 : this.value - e$6;
@@ -664,11 +664,11 @@ var N = class {
 		this.items = [], this.settings = { overlapCheckInterval: t$6 }, this._actions = [], this._isDestroyed = !1, this._isTicking = !1, this._tickTime = 0, this._tickDeltaTime = 0, this._requests = {
 			[y$2.x]: /* @__PURE__ */ new Map(),
 			[y$2.y]: /* @__PURE__ */ new Map()
-		}, this._itemData = /* @__PURE__ */ new Map(), this._requestPool = new o$2((e$7) => e$7 || new j$1(), {
+		}, this._itemData = /* @__PURE__ */ new Map(), this._requestPool = new g$2((e$7) => e$7 || new j$1(), {
 			initialBatchCount: 1,
 			minBatchCount: 1,
 			onRelease: (e$7) => e$7.reset()
-		}), this._actionPool = new o$2((e$7) => e$7 || new A$1(), {
+		}), this._actionPool = new g$2((e$7) => e$7 || new A$1(), {
 			batchSize: 10,
 			initialBatchCount: 1,
 			minBatchCount: 1,
@@ -701,27 +701,27 @@ var N = class {
 			t$6 && this._cancelItemScroll(e$6, y$2.x), n$7 && this._cancelItemScroll(e$6, y$2.y);
 			return;
 		}
-		let c$6 = this._itemData.get(e$6), u$6 = c$6?.directionX, v$4 = c$6?.directionY;
-		if (!u$6 && !v$4) {
+		let l$6 = this._itemData.get(e$6), g$3 = l$6?.directionX, v$4 = l$6?.directionY;
+		if (!g$3 && !v$4) {
 			t$6 && this._cancelItemScroll(e$6, y$2.x), n$7 && this._cancelItemScroll(e$6, y$2.y);
 			return;
 		}
 		let b$2 = null, x$2 = -Infinity, w$2 = 0, k$2 = -Infinity, A$2 = C$1.none, j$2 = 0, M$2 = 0, N$2 = null, P$1 = -Infinity, F$1 = 0, I$1 = -Infinity, L$1 = C$1.none, R$1 = 0, z$1 = 0, B$1 = 0;
 		for (; B$1 < o$4.length; B$1++) {
-			let e$7 = o$4[B$1], c$7 = typeof e$7.threshold == `number` ? e$7.threshold : 50, y$3 = !!(t$6 && u$6 && e$7.axis !== `y`), V = !!(n$7 && v$4 && e$7.axis !== `x`), H = e$7.priority || 0;
+			let e$7 = o$4[B$1], l$7 = typeof e$7.threshold == `number` ? e$7.threshold : 50, y$3 = !!(t$6 && g$3 && e$7.axis !== `y`), V = !!(n$7 && v$4 && e$7.axis !== `x`), H = e$7.priority || 0;
 			if ((!y$3 || H < x$2) && (!V || H < P$1)) continue;
-			let U = d$2(e$7.element || e$7), W = y$3 ? p$2(U) : -1, G = V ? h$2(U) : -1;
+			let U = u$4(e$7.element || e$7), W = y$3 ? f$2(U) : -1, G = V ? m$2(U) : -1;
 			if (W <= 0 && G <= 0) continue;
 			let K = t$4([U, `padding`], window), q = n$5(s$6, K) || -Infinity;
-			if (q === -Infinity) if (e$7.padding && g$2(s$6, T$1(K, e$7.padding, _$2))) q = -(l$4(s$6, K) || 0);
+			if (q === -Infinity) if (e$7.padding && h$2(s$6, T$1(K, e$7.padding, _$2))) q = -(c$5(s$6, K) || 0);
 			else continue;
 			if (y$3 && H >= x$2 && W > 0 && (H > x$2 || q > k$2)) {
-				let e$8 = 0, t$7 = C$1.none, n$8 = D$1(c$7, K.width), r$5 = O$1(n$8, a$4, s$6.width, K.width);
-				u$6 === C$1.right ? (e$8 = K.x + K.width + r$5 - (s$6.x + s$6.width), e$8 <= n$8 && !E$1(f$2(U), W) && (t$7 = C$1.right)) : u$6 === C$1.left && (e$8 = s$6.x - (K.x - r$5), e$8 <= n$8 && f$2(U) > 0 && (t$7 = C$1.left)), t$7 && (b$2 = U, x$2 = H, w$2 = n$8, k$2 = q, A$2 = t$7, j$2 = e$8, M$2 = W);
+				let e$8 = 0, t$7 = C$1.none, n$8 = D$1(l$7, K.width), r$5 = O$1(n$8, a$4, s$6.width, K.width);
+				g$3 === C$1.right ? (e$8 = K.x + K.width + r$5 - (s$6.x + s$6.width), e$8 <= n$8 && !E$1(d$2(U), W) && (t$7 = C$1.right)) : g$3 === C$1.left && (e$8 = s$6.x - (K.x - r$5), e$8 <= n$8 && d$2(U) > 0 && (t$7 = C$1.left)), t$7 && (b$2 = U, x$2 = H, w$2 = n$8, k$2 = q, A$2 = t$7, j$2 = e$8, M$2 = W);
 			}
 			if (V && H >= P$1 && G > 0 && (H > P$1 || q > I$1)) {
-				let e$8 = 0, t$7 = S$1.none, n$8 = D$1(c$7, K.height), r$5 = O$1(n$8, a$4, s$6.height, K.height);
-				v$4 === C$1.down ? (e$8 = K.y + K.height + r$5 - (s$6.y + s$6.height), e$8 <= n$8 && !E$1(m$2(U), G) && (t$7 = C$1.down)) : v$4 === C$1.up && (e$8 = s$6.y - (K.y - r$5), e$8 <= n$8 && m$2(U) > 0 && (t$7 = C$1.up)), t$7 && (N$2 = U, P$1 = H, F$1 = n$8, I$1 = q, L$1 = t$7, R$1 = e$8, z$1 = G);
+				let e$8 = 0, t$7 = S$1.none, n$8 = D$1(l$7, K.height), r$5 = O$1(n$8, a$4, s$6.height, K.height);
+				v$4 === C$1.down ? (e$8 = K.y + K.height + r$5 - (s$6.y + s$6.height), e$8 <= n$8 && !E$1(p$2(U), G) && (t$7 = C$1.down)) : v$4 === C$1.up && (e$8 = s$6.y - (K.y - r$5), e$8 <= n$8 && p$2(U) > 0 && (t$7 = C$1.up)), t$7 && (N$2 = U, P$1 = H, F$1 = n$8, I$1 = q, L$1 = t$7, R$1 = e$8, z$1 = G);
 			}
 		}
 		t$6 && (b$2 && A$2 ? this._requestItemScroll(e$6, y$2.x, b$2, A$2, w$2, j$2, M$2) : this._cancelItemScroll(e$6, y$2.x)), n$7 && (N$2 && L$1 ? this._requestItemScroll(e$6, y$2.y, N$2, L$1, F$1, R$1, z$1) : this._cancelItemScroll(e$6, y$2.y));
@@ -729,22 +729,22 @@ var N = class {
 	_updateScrollRequest(e$6) {
 		let { inertAreaSize: t$6, smoothStop: n$7, targets: a$4, clientRect: o$4 } = e$6.item, s$6 = null, c$6 = 0;
 		for (; c$6 < a$4.length; c$6++) {
-			let n$8 = a$4[c$6], l$6 = d$2(n$8.element || n$8);
+			let n$8 = a$4[c$6], l$6 = u$4(n$8.element || n$8);
 			if (l$6 !== e$6.element) continue;
-			let u$6 = !!(y$2.x & e$6.direction);
-			if (u$6) {
+			let g$3 = !!(y$2.x & e$6.direction);
+			if (g$3) {
 				if (n$8.axis === `y`) continue;
 			} else if (n$8.axis === `x`) continue;
-			let v$4 = u$6 ? p$2(l$6) : h$2(l$6);
+			let v$4 = g$3 ? f$2(l$6) : m$2(l$6);
 			if (v$4 <= 0) break;
 			let x$2 = t$4([l$6, `padding`], window);
 			if ((n$5(o$4, x$2) || -Infinity) === -Infinity) {
 				let e$7 = n$8.scrollPadding || n$8.padding;
-				if (!(e$7 && g$2(o$4, T$1(x$2, e$7, _$2)))) break;
+				if (!(e$7 && h$2(o$4, T$1(x$2, e$7, _$2)))) break;
 			}
-			let S$2 = D$1(typeof n$8.threshold == `number` ? n$8.threshold : 50, u$6 ? x$2.width : x$2.height), w$2 = O$1(S$2, t$6, u$6 ? o$4.width : o$4.height, u$6 ? x$2.width : x$2.height), k$2 = 0;
+			let S$2 = D$1(typeof n$8.threshold == `number` ? n$8.threshold : 50, g$3 ? x$2.width : x$2.height), w$2 = O$1(S$2, t$6, g$3 ? o$4.width : o$4.height, g$3 ? x$2.width : x$2.height), k$2 = 0;
 			if (k$2 = e$6.direction === C$1.left ? o$4.x - (x$2.x - w$2) : e$6.direction === C$1.right ? x$2.x + x$2.width + w$2 - (o$4.x + o$4.width) : e$6.direction === C$1.up ? o$4.y - (x$2.y - w$2) : x$2.y + x$2.height + w$2 - (o$4.y + o$4.height), k$2 > S$2) break;
-			let A$2 = u$6 ? f$2(l$6) : m$2(l$6);
+			let A$2 = g$3 ? d$2(l$6) : p$2(l$6);
 			if (s$6 = b$1.forward & e$6.direction ? E$1(A$2, v$4) : A$2 <= 0, s$6) break;
 			return e$6.maxValue = v$4, e$6.threshold = S$2, e$6.distance = k$2, e$6.isEnding = !1, !0;
 		}
@@ -826,7 +826,7 @@ var N = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/collision-detector-C_qir_i0.js
+//#region ../dragdoll/dist/collision-detector-BraY1xgc.js
 function n$6(e$6, t$6 = {
 	width: 0,
 	height: 0,
@@ -837,15 +837,16 @@ function n$6(e$6, t$6 = {
 }
 var r$3 = class {
 	constructor(e$6) {
-		this._items = [], this._index = 0, this._getItem = e$6;
+		this._items = [], this._index = 0, this._initItem = e$6;
 	}
-	get(...e$6) {
-		return this._index >= this._items.length ? this._items[this._index++] = this._getItem(void 0, ...e$6) : this._getItem(this._items[this._index++], ...e$6);
+	allocate(...e$6) {
+		let t$6 = this._index, n$7 = this._items, r$5 = this._initItem(n$7[t$6], ...e$6);
+		return n$7[t$6] = r$5, ++this._index, r$5;
 	}
-	resetPointer() {
+	reset() {
 		this._index = 0;
 	}
-	resetItems(e$6 = 0) {
+	truncate(e$6 = 0) {
 		let t$6 = Math.max(0, Math.min(e$6, this._items.length));
 		this._index = Math.min(this._index, t$6), this._items.length = t$6;
 	}
@@ -853,7 +854,7 @@ var r$3 = class {
 const i$4 = Symbol();
 var a$3 = class {
 	constructor(e$6) {
-		this._listenerId = Symbol(), this._dndContext = e$6, this._collisionDataPoolCache = [], this._collisionDataPoolMap = /* @__PURE__ */ new Map();
+		this._listenerId = Symbol(), this._dndContext = e$6, this._cdArenaPool = [], this._cdArenaMap = /* @__PURE__ */ new Map();
 	}
 	_checkCollision(r$5, i$5, a$4) {
 		let o$4 = r$5.getClientRect(), s$6 = i$5.getClientRect();
@@ -878,29 +879,29 @@ var a$3 = class {
 			intersectionScore: 0
 		};
 	}
-	getCollisionDataPool(e$6) {
-		let t$6 = this._collisionDataPoolMap.get(e$6);
-		return t$6 || (t$6 = this._collisionDataPoolCache.pop() || new r$3((e$7) => e$7 || this._createCollisionData()), this._collisionDataPoolMap.set(e$6, t$6)), t$6;
+	_getCollisionDataArena(e$6) {
+		let t$6 = this._cdArenaMap.get(e$6);
+		return t$6 || (t$6 = this._cdArenaPool.pop() || new r$3((e$7) => e$7 || this._createCollisionData()), this._cdArenaMap.set(e$6, t$6)), t$6;
 	}
-	removeCollisionDataPool(e$6) {
-		let t$6 = this._collisionDataPoolMap.get(e$6);
-		t$6 && (t$6.resetItems(20), t$6.resetPointer(), this._collisionDataPoolCache.push(t$6), this._collisionDataPoolMap.delete(e$6));
+	_removeCollisionDataArena(e$6) {
+		let t$6 = this._cdArenaMap.get(e$6);
+		t$6 && (t$6.truncate(20), t$6.reset(), this._cdArenaPool.push(t$6), this._cdArenaMap.delete(e$6));
 	}
 	detectCollisions(e$6, t$6, n$7) {
 		if (n$7.length = 0, !t$6.size) return;
-		let r$5 = this.getCollisionDataPool(e$6), i$5 = null, a$4 = t$6.values();
-		for (let t$7 of a$4) i$5 ||= r$5.get(), this._checkCollision(e$6, t$7, i$5) && (n$7.push(i$5), i$5 = null);
-		n$7.length > 1 && this._sortCollisions(e$6, n$7), r$5.resetPointer();
+		let r$5 = this._getCollisionDataArena(e$6), i$5 = null, a$4 = t$6.values();
+		for (let t$7 of a$4) i$5 ||= r$5.allocate(), this._checkCollision(e$6, t$7, i$5) && (n$7.push(i$5), i$5 = null);
+		n$7.length > 1 && this._sortCollisions(e$6, n$7), r$5.reset();
 	}
 	destroy() {
-		this._collisionDataPoolMap.forEach((e$6) => {
-			e$6.resetItems();
+		this._cdArenaMap.forEach((e$6) => {
+			e$6.truncate();
 		});
 	}
 };
 
 //#endregion
-//#region ../dragdoll/dist/get-style-ZZHAkgcg.js
+//#region ../dragdoll/dist/get-style-CC2j8jdv.js
 const e$4 = /* @__PURE__ */ new WeakMap();
 function t$3(t$6) {
 	let n$7 = e$4.get(t$6)?.deref();
@@ -908,13 +909,13 @@ function t$3(t$6) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/is-document-BQAkbLgN.js
+//#region ../dragdoll/dist/is-document-Bkve0NGU.js
 function e$3(e$6) {
 	return e$6 instanceof Document;
 }
 
 //#endregion
-//#region ../dragdoll/dist/advanced-collision-detector-BXyCbT9h.js
+//#region ../dragdoll/dist/advanced-collision-detector-Da5CqO32.js
 const s$4 = `visible`;
 function c$4(e$6, t$6, n$7 = []) {
 	let r$5 = t$6 ? e$6 : e$6?.parentNode;
@@ -940,30 +941,30 @@ function g$1(e$6) {
 function _$1(e$6) {
 	p$1.length || c$4(e$6.element, !1, p$1);
 }
-function v$2(t$6, r$5 = n$6()) {
-	n$6(t$6.length ? t$4([t$6[0], `padding`], window) : d$1, r$5);
+function v$2(t$6, i$5 = n$6()) {
+	n$6(t$6.length ? t$4([t$6[0], `padding`], window) : d$1, i$5);
 	for (let a$4 = 1; a$4 < t$6.length; a$4++) {
 		let o$4 = t$6[a$4];
-		if (!e$2(r$5, t$4([o$4, `padding`], window), r$5)) {
-			n$6(u$3, r$5);
+		if (!e$2(i$5, t$4([o$4, `padding`], window), i$5)) {
+			n$6(u$3, i$5);
 			break;
 		}
 	}
-	return r$5;
+	return i$5;
 }
 var y = class extends a$3 {
 	constructor(e$6, t$6) {
 		super(e$6), this._dragStates = /* @__PURE__ */ new Map(), this._visibilityLogic = t$6?.visibilityLogic || `relative`, this._listenersAttached = !1, this._clearCache = () => this.clearCache();
 	}
-	_checkCollision(n$7, r$5, a$4) {
+	_checkCollision(n$7, i$5, a$4) {
 		let o$4 = this._dragStates.get(n$7);
 		if (!o$4) return null;
-		let s$6 = n$7.getClientRect(), c$6 = r$5.getClientRect();
+		let s$6 = n$7.getClientRect(), c$6 = i$5.getClientRect();
 		if (!s$6 || !c$6) return null;
-		let u$6 = o$4.clipMaskKeyMap.get(r$5);
+		let u$6 = o$4.clipMaskKeyMap.get(i$5);
 		if (!u$6) {
 			let e$6 = this._visibilityLogic === `relative`;
-			if (p$1.length = 0, m$1.length = 0, h$1.length = 0, _$1(r$5), u$6 = p$1[0] || window, o$4.clipMaskKeyMap.set(r$5, u$6), !o$4.clipMaskMap.has(u$6)) {
+			if (p$1.length = 0, m$1.length = 0, h$1.length = 0, _$1(i$5), u$6 = p$1[0] || window, o$4.clipMaskKeyMap.set(i$5, u$6), !o$4.clipMaskMap.has(u$6)) {
 				if (g$1(n$7), e$6) {
 					let e$7 = window;
 					for (let t$7 of p$1) if (f$1.includes(t$7)) {
@@ -979,15 +980,15 @@ var y = class extends a$3 {
 						h$1.push(t$7);
 					}
 				} else m$1.push(...f$1), h$1.push(...p$1);
-				let t$6 = e$6 || !l$3 ? v$2(m$1) : n$6(l$3), r$6 = v$2(h$1);
-				!e$6 && !l$3 && (l$3 = t$6), o$4.clipMaskMap.set(u$6, [t$6, r$6]);
+				let t$6 = e$6 || !l$3 ? v$2(m$1) : n$6(l$3), i$6 = v$2(h$1);
+				!e$6 && !l$3 && (l$3 = t$6), o$4.clipMaskMap.set(u$6, [t$6, i$6]);
 			}
 			p$1.length = 0, m$1.length = 0, h$1.length = 0;
 		}
 		let [d$3, y$3] = o$4.clipMaskMap.get(u$6) || [];
 		if (!d$3 || !y$3 || !e$2(s$6, d$3, a$4.draggableVisibleRect) || !e$2(c$6, y$3, a$4.droppableVisibleRect) || !e$2(a$4.draggableVisibleRect, a$4.droppableVisibleRect, a$4.intersectionRect)) return null;
 		let b$2 = n$5(a$4.draggableVisibleRect, a$4.droppableVisibleRect, a$4.intersectionRect);
-		return b$2 <= 0 ? null : (a$4.droppableId = r$5.id, n$6(c$6, a$4.droppableRect), n$6(s$6, a$4.draggableRect), a$4.intersectionScore = b$2, a$4);
+		return b$2 <= 0 ? null : (a$4.droppableId = i$5.id, n$6(c$6, a$4.droppableRect), n$6(s$6, a$4.draggableRect), a$4.intersectionScore = b$2, a$4);
 	}
 	_sortCollisions(e$6, t$6) {
 		return t$6.sort((e$7, t$7) => {
@@ -1010,11 +1011,11 @@ var y = class extends a$3 {
 			passive: !0
 		}), window.addEventListener(`resize`, this._clearCache, { passive: !0 }), !0), t$6);
 	}
-	getCollisionDataPool(e$6) {
-		return this._getDragState(e$6), super.getCollisionDataPool(e$6);
+	_getCollisionDataArena(e$6) {
+		return this._getDragState(e$6), super._getCollisionDataArena(e$6);
 	}
-	removeCollisionDataPool(e$6) {
-		this._dragStates.delete(e$6) && this._dndContext.drags.size <= 0 && (this._listenersAttached &&= (window.removeEventListener(`scroll`, this._clearCache, { capture: !0 }), window.removeEventListener(`resize`, this._clearCache), !1)), super.removeCollisionDataPool(e$6);
+	_removeCollisionDataArena(e$6) {
+		this._dragStates.delete(e$6) && this._dndContext.drags.size <= 0 && (this._listenersAttached &&= (window.removeEventListener(`scroll`, this._clearCache, { capture: !0 }), window.removeEventListener(`resize`, this._clearCache), !1)), super._removeCollisionDataArena(e$6);
 	}
 	detectCollisions(e$6, t$6, n$7) {
 		f$1.length = 0, l$3 = null;
@@ -1032,12 +1033,12 @@ var y = class extends a$3 {
 };
 
 //#endregion
-//#region ../dragdoll/dist/constants-gNukEJzy.js
+//#region ../dragdoll/dist/constants-CMClRu_c.js
 const e$1 = typeof window < `u` && window.document !== void 0, t$1 = e$1 && `ontouchstart` in window, n$4 = e$1 && !!window.PointerEvent;
 e$1 && navigator.vendor && navigator.vendor.indexOf(`Apple`) > -1 && navigator.userAgent && navigator.userAgent.indexOf(`CriOS`) == -1 && navigator.userAgent.indexOf(`FxiOS`);
 
 //#endregion
-//#region ../dragdoll/dist/sensor-C-EBcfly.js
+//#region ../dragdoll/dist/sensor-Uwz8qy61.js
 const e = {
 	Start: `start`,
 	Move: `move`,
@@ -1150,7 +1151,7 @@ function getOffsetContainer(n$7, t$6 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-C1QBodX1.js
+//#region ../dragdoll/dist/draggable-BM9bdNuM.js
 function s$3(e$6, t$6) {
 	return e$6.isIdentity && t$6.isIdentity ? !0 : e$6.is2D && t$6.is2D ? e$6.a === t$6.a && e$6.b === t$6.b && e$6.c === t$6.c && e$6.d === t$6.d && e$6.e === t$6.e && e$6.f === t$6.f : e$6.m11 === t$6.m11 && e$6.m12 === t$6.m12 && e$6.m13 === t$6.m13 && e$6.m14 === t$6.m14 && e$6.m21 === t$6.m21 && e$6.m22 === t$6.m22 && e$6.m23 === t$6.m23 && e$6.m24 === t$6.m24 && e$6.m31 === t$6.m31 && e$6.m32 === t$6.m32 && e$6.m33 === t$6.m33 && e$6.m34 === t$6.m34 && e$6.m41 === t$6.m41 && e$6.m42 === t$6.m42 && e$6.m43 === t$6.m43 && e$6.m44 === t$6.m44;
 }
@@ -1174,10 +1175,10 @@ function d(e$6, t$6 = 0) {
 }
 var f = class {
 	constructor() {
-		this._cache = /* @__PURE__ */ new Map(), this._validation = /* @__PURE__ */ new Map();
+		this._cache = /* @__PURE__ */ new Map(), this._validation = /* @__PURE__ */ new Set();
 	}
 	set(e$6, t$6) {
-		this._cache.set(e$6, t$6), this._validation.set(e$6, void 0);
+		this._cache.set(e$6, t$6), this._validation.add(e$6);
 	}
 	get(e$6) {
 		return this._cache.get(e$6);
@@ -1507,14 +1508,14 @@ var B = class {
 	}
 	_prepareStart() {
 		let e$6 = this.drag;
-		e$6 && (this._startPhase = N$1.Prepare, e$6.items = (this.settings.elements({
+		!e$6 || this._startPhase !== N$1.Init || (this._startPhase = N$1.Prepare, e$6.items = (this.settings.elements({
 			draggable: this,
 			drag: e$6
 		}) || []).map((e$7) => new O(e$7, this)), this._applyModifiers(F.Start, 0, 0), this._emit(R.PrepareStart, e$6.startEvent), this.settings.onPrepareStart?.(e$6, this), this._startPhase = N$1.FinishPrepare);
 	}
 	_applyStart() {
 		let e$6 = this.drag;
-		if (e$6) {
+		if (!(!e$6 || this._startPhase !== N$1.FinishPrepare)) {
 			this._startPhase = N$1.Apply;
 			for (let t$6 of e$6.items) t$6.dragContainer !== t$6.elementContainer && l$2(t$6.dragContainer, t$6.element), t$6.frozenStyles && Object.assign(t$6.element.style, t$6.frozenStyles), this.settings.applyPosition({
 				phase: L.Start,
@@ -1542,13 +1543,13 @@ var B = class {
 	}
 	_prepareMove() {
 		let e$6 = this.drag;
-		if (!e$6) return;
+		if (!e$6 || e$6.isEnded) return;
 		let { moveEvent: t$6, prevMoveEvent: n$7 } = e$6;
 		t$6 !== n$7 && (this._applyModifiers(F.Move, t$6.x - n$7.x, t$6.y - n$7.y), this._emit(R.PrepareMove, t$6), !e$6.isEnded && (this.settings.onPrepareMove?.(e$6, this), !e$6.isEnded && (e$6.prevMoveEvent = t$6)));
 	}
 	_applyMove() {
 		let e$6 = this.drag;
-		if (e$6) {
+		if (!(!e$6 || e$6.isEnded)) {
 			for (let t$6 of e$6.items) t$6._moveDiff.x = 0, t$6._moveDiff.y = 0, this.settings.applyPosition({
 				phase: L.Move,
 				draggable: this,
@@ -1560,7 +1561,7 @@ var B = class {
 	}
 	_prepareAlign() {
 		let { drag: e$6 } = this;
-		if (e$6) for (let t$6 of e$6.items) {
+		if (!(!e$6 || e$6.isEnded)) for (let t$6 of e$6.items) {
 			let { x: e$7, y: n$7 } = t$6.element.getBoundingClientRect(), r$5 = t$6.clientRect.x - t$6._moveDiff.x - e$7;
 			t$6.alignmentOffset.x = t$6.alignmentOffset.x - t$6._alignDiff.x + r$5, t$6._alignDiff.x = r$5;
 			let i$5 = t$6.clientRect.y - t$6._moveDiff.y - n$7;
@@ -1569,7 +1570,7 @@ var B = class {
 	}
 	_applyAlign() {
 		let { drag: e$6 } = this;
-		if (e$6) for (let t$6 of e$6.items) t$6._alignDiff.x = 0, t$6._alignDiff.y = 0, this.settings.applyPosition({
+		if (!(!e$6 || e$6.isEnded)) for (let t$6 of e$6.items) t$6._alignDiff.x = 0, t$6._alignDiff.y = 0, this.settings.applyPosition({
 			phase: L.Align,
 			draggable: this,
 			drag: e$6,
@@ -1614,7 +1615,7 @@ var B = class {
 		let n$7 = this.drag;
 		if (!(!n$7 || n$7.isEnded)) {
 			if (this._startPhase === N$1.Prepare || this._startPhase === N$1.Apply) throw Error(`Cannot stop drag start process at this point`);
-			n$7.isEnded = !0, this._startPhase === N$1.Init && this._prepareStart(), this._startPhase === N$1.FinishPrepare && this._applyStart(), this._startPhase = N$1.None, r$1.off(n$2.read, this._startId), r$1.off(n$2.write, this._startId), r$1.off(n$2.read, this._moveId), r$1.off(n$2.write, this._moveId), r$1.off(n$2.read, this._alignId), r$1.off(n$2.write, this._alignId), window.removeEventListener(`scroll`, this._onScroll, k), this._applyModifiers(F.End, 0, 0);
+			n$7.isEnded = !0, this._prepareStart(), this._applyStart(), this._startPhase = N$1.None, r$1.off(n$2.read, this._startId), r$1.off(n$2.write, this._startId), r$1.off(n$2.read, this._moveId), r$1.off(n$2.write, this._moveId), r$1.off(n$2.read, this._alignId), r$1.off(n$2.write, this._alignId), window.removeEventListener(`scroll`, this._onScroll, k), this._applyModifiers(F.End, 0, 0);
 			for (let e$6 of n$7.items) {
 				if (e$6.elementContainer !== e$6.dragContainer && (l$2(e$6.elementContainer, e$6.element), e$6.alignmentOffset.x = 0, e$6.alignmentOffset.y = 0, e$6.containerOffset.x = 0, e$6.containerOffset.y = 0), e$6.unfrozenStyles) for (let t$6 in e$6.unfrozenStyles) e$6.element.style[t$6] = e$6.unfrozenStyles[t$6] || ``;
 				this.settings.applyPosition({
@@ -1638,7 +1639,7 @@ var B = class {
 		}
 	}
 	align(n$7 = !1) {
-		this.drag && (n$7 || this.settings.sensorProcessingMode === I.Immediate ? (this._prepareAlign(), this._applyAlign()) : (r$1.once(n$2.read, this._prepareAlign, this._alignId), r$1.once(n$2.write, this._applyAlign, this._alignId)));
+		!this.drag || this.drag.isEnded || (n$7 || this.settings.sensorProcessingMode === I.Immediate ? (this._prepareAlign(), this._applyAlign()) : (r$1.once(n$2.read, this._prepareAlign, this._alignId), r$1.once(n$2.write, this._applyAlign, this._alignId)));
 	}
 	getClientRect() {
 		let { drag: e$6, settings: t$6 } = this;
@@ -1647,7 +1648,7 @@ var B = class {
 			drag: e$6
 		}) || null;
 	}
-	updateSettings(e$6 = {}) {
+	updateSettings(e$6) {
 		this.settings = this._parseSettings(e$6, this.settings);
 	}
 	use(e$6) {
@@ -1661,12 +1662,12 @@ var B = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/droppable-BW9Ygu-q.js
+//#region ../dragdoll/dist/droppable-CJLSkRZ2.js
 const t$2 = { Destroy: `destroy` };
 var n = class {
 	constructor(t$6, n$7 = {}) {
 		let { id: r$5 = Symbol(), accept: i$5 = () => !0, data: a$4 = {} } = n$7;
-		this.id = r$5, this.element = t$6, this.accept = i$5, this.data = a$4, this.isDestroyed = !1, this._clientRect = {
+		this.id = r$5, this.element = t$6, this.isDestroyed = !1, this.accept = i$5, this.data = a$4, this._clientRect = {
 			x: 0,
 			y: 0,
 			width: 0,
@@ -1692,7 +1693,7 @@ var n = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/dnd-context-CuyeEdWl.js
+//#region ../dragdoll/dist/dnd-context-BWOOExer.js
 var s$2 = function(e$6) {
 	return e$6[e$6.Idle = 0] = `Idle`, e$6[e$6.Computing = 1] = `Computing`, e$6[e$6.Computed = 2] = `Computed`, e$6[e$6.Emitting = 3] = `Emitting`, e$6;
 }(s$2 || {});
@@ -1732,11 +1733,14 @@ var u = class {
 			let r$5 = e$6.settings.dndGroups, i$5 = t$6.accept;
 			if (!r$5 || r$5.size === 0 || i$5.size === 0) return !1;
 			let a$4 = i$5.size < r$5.size, o$4 = a$4 ? i$5 : r$5, s$6 = a$4 ? r$5 : i$5;
-			for (let e$7 of o$4) s$6.has(e$7) && (n$7 = !0);
+			for (let e$7 of o$4) if (s$6.has(e$7)) {
+				n$7 = !0;
+				break;
+			}
 		}
 		if (n$7 && e$6.drag) {
 			let n$8 = e$6.drag.items;
-			for (let e$7 = 0; e$7 < n$8.length; e$7++) if (n$8[e$7].element === t$6.element) return !1;
+			for (let e$7 = 0; e$7 < n$8.length; e$7++) if (n$8[e$7].element.contains(t$6.element)) return !1;
 		}
 		return n$7;
 	}
@@ -1803,26 +1807,19 @@ var u = class {
 	_onDraggableDestroy(e$6) {
 		this.removeDraggables([e$6]);
 	}
-	_stopDrag(e$6, t$6 = !1) {
-		let n$7 = this._drags.get(e$6);
-		if (!n$7 || n$7.isEnded) return !1;
-		n$7.isEnded = !0;
-		let r$5 = n$7._cd.phase === s$2.Emitting;
-		r$5 || (this._computeCollisions(e$6, !0), this._emitCollisions(e$6, !0));
-		let { targets: i$5, collisions: a$4, contacts: o$4 } = n$7._cd;
-		return this._emitter.listenerCount(l.End) && this._emitter.emit(l.End, {
-			canceled: t$6,
-			draggable: e$6,
-			targets: i$5,
-			collisions: a$4,
-			contacts: o$4
-		}), r$5 ? (window.queueMicrotask(() => {
-			this._finalizeStopDrag(e$6);
-		}), !0) : (this._finalizeStopDrag(e$6), !1);
-	}
-	_finalizeStopDrag(n$7) {
-		let r$5 = this._drags.get(n$7);
-		!r$5 || !r$5.isEnded || (this._drags.delete(n$7), this._collisionDetector.removeCollisionDataPool(n$7), r$1.off(n$2.read, r$5._cd.tickerId), r$1.off(n$2.write, r$5._cd.tickerId), this._drags.size || (r$1.off(n$2.read, this._listenerId), window.removeEventListener(`scroll`, this._onScroll, c$2)));
+	_stopDrag(n$7, r$5 = !1) {
+		let i$5 = this._drags.get(n$7);
+		if (!i$5 || i$5.isEnded) return;
+		if (i$5._cd.phase === s$2.Emitting) throw Error(`Cannot stop dragging while collisions are being emitted.`);
+		i$5.isEnded = !0, this._computeCollisions(n$7, !0), this._emitCollisions(n$7, !0);
+		let { targets: a$4, collisions: o$4, contacts: u$6 } = i$5._cd;
+		this._emitter.listenerCount(l.End) && this._emitter.emit(l.End, {
+			canceled: r$5,
+			draggable: n$7,
+			targets: a$4,
+			collisions: o$4,
+			contacts: u$6
+		}), this._drags.delete(n$7), this._collisionDetector._removeCollisionDataArena(n$7), r$1.off(n$2.read, i$5._cd.tickerId), r$1.off(n$2.write, i$5._cd.tickerId), this._drags.size || (r$1.off(n$2.read, this._listenerId), window.removeEventListener(`scroll`, this._onScroll, c$2));
 	}
 	_computeCollisions(e$6, t$6 = !1) {
 		let n$7 = this._drags.get(e$6);
@@ -1949,6 +1946,7 @@ var u = class {
 	}
 	destroy() {
 		if (this.isDestroyed) return;
+		if (Array.from(this._drags.values()).some((e$7) => e$7._cd.phase === s$2.Emitting)) throw Error(`Cannot destroy the DndContext while collisions are being emitted.`);
 		this.isDestroyed = !0, this.draggables.forEach((e$7) => {
 			e$7.off(R.PrepareStart, this._listenerId), e$7.off(R.Start, this._listenerId), e$7.off(R.PrepareMove, this._listenerId), e$7.off(R.Move, this._listenerId), e$7.off(R.End, this._listenerId), e$7.off(R.Destroy, this._listenerId);
 		}), this.droppables.forEach((e$7) => {
@@ -1961,7 +1959,7 @@ var u = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/pointer-sensor-CyG2cFYy.js
+//#region ../dragdoll/dist/pointer-sensor-BNmXr-6_.js
 function i$3(e$6, t$6) {
 	if (`pointerId` in e$6) return e$6.pointerId === t$6 ? e$6 : null;
 	if (`changedTouches` in e$6) {
@@ -2116,11 +2114,11 @@ var u$1 = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-BjLM0PHw.js
+//#region ../dragdoll/dist/auto-scroll-CYnpz5w3.js
 const t = new N();
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-plugin-KDmgXWVX.js
+//#region ../dragdoll/dist/auto-scroll-plugin-CgUl8sXM.js
 const r$2 = {
 	x: 0,
 	y: 0
@@ -2227,7 +2225,7 @@ function c(e$6) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/base-sensor-6CQrwFkA.js
+//#region ../dragdoll/dist/base-sensor-CiXk6Egt.js
 var n$3 = class {
 	constructor() {
 		this.drag = null, this.isDestroyed = !1, this._emitter = new v();
@@ -2275,7 +2273,7 @@ var n$3 = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/base-motion-sensor-DuT5ttYp.js
+//#region ../dragdoll/dist/base-motion-sensor-BxKMtkJL.js
 var i = class extends n$3 {
 	constructor() {
 		super(), this.drag = null, this._direction = {
@@ -2319,7 +2317,7 @@ var i = class extends n$3 {
 };
 
 //#endregion
-//#region ../dragdoll/dist/keyboard-motion-sensor-Cgfa6qtI.js
+//#region ../dragdoll/dist/keyboard-motion-sensor-B2HqNPGM.js
 const n$1 = [
 	`start`,
 	`cancel`,
@@ -2428,7 +2426,7 @@ var a = class extends i {
 			return;
 		}
 	}
-	updateSettings(e$6 = {}) {
+	updateSettings(e$6) {
 		let t$6 = !1, { cancelOnBlur: r$5, cancelOnVisibilityChange: i$5, startPredicate: a$4, computeSpeed: o$4 } = e$6;
 		if (r$5 !== void 0 && this._cancelOnBlur !== r$5 && (this._cancelOnBlur = r$5, r$5 ? this.element?.addEventListener(`blur`, this._blurCancelHandler) : this.element?.removeEventListener(`blur`, this._blurCancelHandler)), i$5 !== void 0 && this._cancelOnVisibilityChange !== i$5 && (this._cancelOnVisibilityChange = i$5, i$5 ? document.addEventListener(`visibilitychange`, this._internalCancel) : document.removeEventListener(`visibilitychange`, this._internalCancel)), a$4 !== void 0 && (this._startPredicate = a$4), o$4 !== void 0 && (this._computeSpeed = o$4), n$1.forEach((n$7, r$6) => {
 			let i$6 = `${n$7}Keys`, a$5 = e$6[i$6];
