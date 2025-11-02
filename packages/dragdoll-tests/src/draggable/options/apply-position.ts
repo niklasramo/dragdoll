@@ -1,12 +1,14 @@
-import { assert } from 'chai';
 import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
 
-export function optionApplyPosition() {
+export default () => {
   describe('applyPosition', () => {
+    defaultSetup();
+
     it('should receive the correct arguments', async () => {
       let callCount = 0;
       let expectedPhase = '';
@@ -16,11 +18,11 @@ export function optionApplyPosition() {
         elements: () => [el],
         applyPosition: (args) => {
           ++callCount;
-          assert.equal(Object.keys(args).length, 4);
-          assert.equal(args.draggable, draggable);
-          assert.equal(args.drag, draggable.drag);
-          assert.equal(args.item, draggable.drag?.items[0]);
-          assert.equal(args.phase, expectedPhase);
+          expect(Object.keys(args).length).toBe(4);
+          expect(args.draggable).toBe(draggable);
+          expect(args.drag).toBe(draggable.drag);
+          expect(args.item).toBe(draggable.drag?.items[0]);
+          expect(args.phase).toBe(expectedPhase);
         },
       });
 
@@ -31,7 +33,7 @@ export function optionApplyPosition() {
 
       await waitNextFrame();
 
-      assert.equal(callCount, 1);
+      expect(callCount).toBe(1);
 
       // Move the element to the right.
       expectedPhase = 'move';
@@ -39,14 +41,14 @@ export function optionApplyPosition() {
 
       await waitNextFrame();
 
-      assert.equal(callCount, 2);
+      expect(callCount).toBe(2);
 
       // End the drag.
       expectedPhase = 'end';
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Make sure the callback is not called again.
-      assert.equal(callCount, 3);
+      expect(callCount).toBe(3);
 
       // Reset stuff.
       draggable.destroy();
@@ -54,4 +56,4 @@ export function optionApplyPosition() {
       el.remove();
     });
   });
-}
+};

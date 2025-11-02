@@ -1,9 +1,11 @@
-import { assert } from 'chai';
 import { PointerSensor } from 'dragdoll/sensors/pointer';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function methodOff() {
+export default () => {
   describe('off', () => {
+    defaultSetup();
+
     it('should remove an event listener based on id', () => {
       const el = createTestElement();
       const s = new PointerSensor(el, { sourceEvents: 'mouse' });
@@ -23,10 +25,10 @@ export function methodOff() {
         }),
       );
 
-      assert.equal(msg, 'b');
+      expect(msg).toBe('b');
 
       s.destroy();
       el.remove();
     });
   });
-}
+};

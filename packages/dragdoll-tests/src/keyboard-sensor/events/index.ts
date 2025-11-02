@@ -1,15 +1,15 @@
-import { eventCancel } from './cancel.js';
-import { eventDestroy } from './destroy.js';
-import { eventEnd } from './end.js';
-import { eventMove } from './move.js';
-import { eventStart } from './start.js';
+import cancel from './cancel.js';
+import destroy from './destroy.js';
+import end from './end.js';
+import move from './move.js';
+import start from './start.js';
 
-export function events() {
+export default () => {
   describe('events', () => {
-    eventCancel();
-    eventDestroy();
-    eventEnd();
-    eventMove();
-    eventStart();
+    cancel();
+    destroy();
+    end();
+    move();
+    start();
   });
-}
+};

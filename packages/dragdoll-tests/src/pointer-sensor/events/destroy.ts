@@ -1,10 +1,12 @@
-import { assert } from 'chai';
 import { PointerSensor } from 'dragdoll/sensors/pointer';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function eventDestroy() {
+export default () => {
   describe('destroy', () => {
-    it(`should be triggered on destroy`, function () {
+    defaultSetup();
+
+    it(`should be triggered on destroy`, () => {
       const el = createTestElement();
       const s = new PointerSensor(el);
 
@@ -12,14 +14,14 @@ export function eventDestroy() {
 
       s.on('destroy', (e) => {
         ++destroyEventCount;
-        assert.deepEqual(e, { type: 'destroy' });
+        expect(e).toStrictEqual({ type: 'destroy' });
       });
 
       s.destroy();
 
-      assert.equal(destroyEventCount, 1);
+      expect(destroyEventCount).toBe(1);
 
       el.remove();
     });
   });
-}
+};

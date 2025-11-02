@@ -1,4 +1,3 @@
-import { assert } from 'chai';
 import { DndContext } from 'dragdoll/dnd-context';
 import {
   type AdvancedCollisionData,
@@ -8,11 +7,14 @@ import { Draggable } from 'dragdoll/draggable';
 import { Droppable } from 'dragdoll/droppable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../utils/create-test-element.js';
+import { defaultSetup } from '../utils/default-setup.js';
 import { focusElement } from '../utils/focus-element.js';
 import { waitNextFrame } from '../utils/wait-next-frame.js';
 
-export function advancedCollisionDetection() {
-  describe('advanced collision detection', () => {
+export default () => {
+  describe('AdvancedCollisionDetector', () => {
+    defaultSetup();
+
     describe('relative visibility logic', () => {
       it('should not clip if draggable and droppable are within the same clip container', async () => {
         // NB: Here we intentionally use negative coordinates to ensure that
@@ -67,18 +69,18 @@ export function advancedCollisionDetection() {
         await waitNextFrame();
 
         // Assert that a single collision was detected.
-        assert.equal(collisionEvents.length, 1);
-        assert.equal(collisionEvents[0].collisions.length, 1);
+        expect(collisionEvents.length).toBe(1);
+        expect(collisionEvents[0].collisions.length).toBe(1);
 
         // Assert that the visible rectangles are correct.
         const firstCollision = collisionEvents[0].collisions[0];
-        assert.deepEqual(firstCollision.draggableVisibleRect, {
+        expect(firstCollision.draggableVisibleRect).toStrictEqual({
           x: -100,
           y: -100,
           width: 100,
           height: 100,
         });
-        assert.deepEqual(firstCollision.droppableVisibleRect, {
+        expect(firstCollision.droppableVisibleRect).toStrictEqual({
           x: -100,
           y: -100,
           width: 100,
@@ -142,18 +144,18 @@ export function advancedCollisionDetection() {
         await waitNextFrame();
 
         // Assert that a single collision was detected.
-        assert.equal(collisionEvents.length, 1);
-        assert.equal(collisionEvents[0].collisions.length, 1);
+        expect(collisionEvents.length).toBe(1);
+        expect(collisionEvents[0].collisions.length).toBe(1);
 
         // Assert that the visible rectangles are correct.
         const firstCollision = collisionEvents[0].collisions[0];
-        assert.deepEqual(firstCollision.draggableVisibleRect, {
+        expect(firstCollision.draggableVisibleRect).toStrictEqual({
           x: 0,
           y: 0,
           width: 100,
           height: 100,
         });
-        assert.deepEqual(firstCollision.droppableVisibleRect, {
+        expect(firstCollision.droppableVisibleRect).toStrictEqual({
           x: 0,
           y: 0,
           width: 50,
@@ -221,18 +223,18 @@ export function advancedCollisionDetection() {
         await waitNextFrame();
 
         // Assert that a single collision was detected.
-        assert.equal(collisionEvents.length, 1);
-        assert.equal(collisionEvents[0].collisions.length, 1);
+        expect(collisionEvents.length).toBe(1);
+        expect(collisionEvents[0].collisions.length).toBe(1);
 
         // Assert that the visible rectangles are correct.
         const firstCollision = collisionEvents[0].collisions[0];
-        assert.deepEqual(firstCollision.draggableVisibleRect, {
+        expect(firstCollision.draggableVisibleRect).toStrictEqual({
           x: 0,
           y: 0,
           width: 50,
           height: 50,
         });
-        assert.deepEqual(firstCollision.droppableVisibleRect, {
+        expect(firstCollision.droppableVisibleRect).toStrictEqual({
           x: 0,
           y: 0,
           width: 50,
@@ -250,4 +252,4 @@ export function advancedCollisionDetection() {
       });
     });
   });
-}
+};

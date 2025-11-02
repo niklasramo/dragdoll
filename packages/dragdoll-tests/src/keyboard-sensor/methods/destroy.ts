@@ -1,10 +1,12 @@
-import { assert } from 'chai';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 
-export function methodDestroy() {
+export default () => {
   describe('destroy', () => {
+    defaultSetup();
+
     it('should allow destroying only once', () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
@@ -20,7 +22,7 @@ export function methodDestroy() {
       s.destroy();
 
       // There should be no events.
-      assert.deepEqual(events, []);
+      expect(events).toStrictEqual([]);
 
       // Delete the element
       el.remove();
@@ -36,9 +38,9 @@ export function methodDestroy() {
         s.on('move', (data) => void events.push(data.type));
         s.on('end', (data) => void events.push(data.type));
         s.on('cancel', (data) => {
-          assert.notEqual(s.drag, null);
-          assert.equal(s.isDestroyed, true);
-          assert.deepEqual(data, {
+          expect(s.drag).not.toBe(null);
+          expect(s.isDestroyed).toBe(true);
+          expect(data).toStrictEqual({
             type: 'cancel',
             x: s.drag!.x,
             y: s.drag!.y,
@@ -46,14 +48,14 @@ export function methodDestroy() {
           events.push(data.type);
         });
         s.on('destroy', (data) => {
-          assert.equal(s.drag, null);
-          assert.equal(s.isDestroyed, true);
-          assert.deepEqual(data, { type: 'destroy' });
+          expect(s.drag).toBe(null);
+          expect(s.isDestroyed).toBe(true);
+          expect(data).toStrictEqual({ type: 'destroy' });
           events.push(data.type);
         });
 
         // Make sure all listeners are set.
-        assert.equal(s['_emitter'].listenerCount(), 5);
+        expect(s['_emitter'].listenerCount()).toBe(5);
 
         // Start dragging
         focusElement(el);
@@ -66,16 +68,16 @@ export function methodDestroy() {
         el.remove();
 
         // Drag data should be reset.
-        assert.equal(s.drag, null);
+        expect(s.drag).toBe(null);
 
         // isDestroyed should be true.
-        assert.equal(s.isDestroyed, true);
+        expect(s.isDestroyed).toBe(true);
 
         // Only the "start", "cancel" and "destroy" events should be emitted.
-        assert.deepEqual(events, ['start', 'cancel', 'destroy']);
+        expect(events).toStrictEqual(['start', 'cancel', 'destroy']);
 
         // All listeners should be removed.
-        assert.equal(s['_emitter'].listenerCount(), 0);
+        expect(s['_emitter'].listenerCount()).toBe(0);
       });
     });
 
@@ -90,14 +92,14 @@ export function methodDestroy() {
         s.on('end', (data) => void events.push(data.type));
         s.on('cancel', (data) => void events.push(data.type));
         s.on('destroy', (data) => {
-          assert.equal(s.drag, null);
-          assert.equal(s.isDestroyed, true);
-          assert.deepEqual(data, { type: 'destroy' });
+          expect(s.drag).toBe(null);
+          expect(s.isDestroyed).toBe(true);
+          expect(data).toStrictEqual({ type: 'destroy' });
           events.push(data.type);
         });
 
         // Make sure all listeners are set.
-        assert.equal(s['_emitter'].listenerCount(), 5);
+        expect(s['_emitter'].listenerCount()).toBe(5);
 
         // Destroy the sensor
         s.destroy();
@@ -106,17 +108,17 @@ export function methodDestroy() {
         el.remove();
 
         // Drag data should be reset.
-        assert.equal(s.drag, null);
+        expect(s.drag).toBe(null);
 
         // isDestroyed should be true.
-        assert.equal(s.isDestroyed, true);
+        expect(s.isDestroyed).toBe(true);
 
         // Only the "destroy" event should be emitted.
-        assert.deepEqual(events, ['destroy']);
+        expect(events).toStrictEqual(['destroy']);
 
         // All listeners should be removed.
-        assert.equal(s['_emitter'].listenerCount(), 0);
+        expect(s['_emitter'].listenerCount()).toBe(0);
       });
     });
   });
-}
+};

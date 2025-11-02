@@ -1,15 +1,17 @@
-import { assert } from 'chai';
 import { DndContext } from 'dragdoll/dnd-context';
 import { Draggable } from 'dragdoll/draggable';
 import { Droppable } from 'dragdoll/droppable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../utils/create-test-element.js';
+import { defaultSetup } from '../utils/default-setup.js';
 import { focusElement } from '../utils/focus-element.js';
 import { endDrag, move, startDrag } from '../utils/keyboard-helpers.js';
 import { waitNextFrame } from '../utils/wait-next-frame.js';
 
-export function droppables() {
-  describe('droppables', () => {
+export default () => {
+  describe('Droppable', () => {
+    defaultSetup();
+
     // helpers imported from ../utils/keyboard-helpers
     it('should accept draggables based on group string array', async () => {
       const events: any[] = [];
@@ -55,9 +57,9 @@ export function droppables() {
       await waitNextFrame(); // Extra frame for collision detection
 
       // Should accept the draggable
-      assert.equal(events.length, 1);
-      assert.equal(events[0].type, 'enter');
-      assert.equal(events[0].targets, 1);
+      expect(events.length).toBe(1);
+      expect(events[0].type).toBe('enter');
+      expect(events[0].targets).toBe(1);
 
       // End dragging
       await endDrag();
@@ -111,7 +113,7 @@ export function droppables() {
       await startDrag(dragElement);
 
       // Should not accept the draggable
-      assert.equal(events.length, 0);
+      expect(events.length).toBe(0);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -174,9 +176,9 @@ export function droppables() {
       await waitNextFrame(); // Extra frame for collision detection
 
       // Should accept the draggable based on function
-      assert.equal(events.length, 1);
-      assert.equal(events[0].type, 'enter');
-      assert.equal(events[0].targets, 1);
+      expect(events.length).toBe(1);
+      expect(events[0].type).toBe('enter');
+      expect(events[0].targets).toBe(1);
 
       // End dragging
       await endDrag();
@@ -232,7 +234,7 @@ export function droppables() {
       await startDrag(dragElement);
 
       // Should not accept the draggable
-      assert.equal(events.length, 0);
+      expect(events.length).toBe(0);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -280,7 +282,7 @@ export function droppables() {
       await startDrag(element);
 
       // Should not accept itself as target
-      assert.equal(events.length, 0);
+      expect(events.length).toBe(0);
 
       // End dragging
       await endDrag();
@@ -305,11 +307,11 @@ export function droppables() {
       dndContext.addDroppables([droppable]);
 
       // Check initial data
-      assert.deepEqual(droppable.data, { custom: 'value', id: 123 });
+      expect(droppable.data).toStrictEqual({ custom: 'value', id: 123 });
 
       // Modify data
       droppable.data.newProp = 'added';
-      assert.equal(droppable.data.newProp, 'added');
+      expect(droppable.data.newProp).toBe('added');
 
       // Cleanup
       dndContext.destroy();
@@ -333,10 +335,10 @@ export function droppables() {
       dndContext.addDroppables([droppable]);
 
       const rect = droppable.getClientRect();
-      assert.equal(rect.x, 50);
-      assert.equal(rect.y, 75);
-      assert.equal(rect.width, 100);
-      assert.equal(rect.height, 150);
+      expect(rect.x).toBe(50);
+      expect(rect.y).toBe(75);
+      expect(rect.width).toBe(100);
+      expect(rect.height).toBe(150);
 
       // Update element position
       element.style.left = '100px';
@@ -346,10 +348,10 @@ export function droppables() {
       droppable.updateClientRect();
 
       const updatedRect = droppable.getClientRect();
-      assert.equal(updatedRect.x, 100);
-      assert.equal(updatedRect.y, 200);
-      assert.equal(updatedRect.width, 100);
-      assert.equal(updatedRect.height, 150);
+      expect(updatedRect.x).toBe(100);
+      expect(updatedRect.y).toBe(200);
+      expect(updatedRect.width).toBe(100);
+      expect(updatedRect.height).toBe(150);
 
       // Cleanup
       dndContext.destroy();
@@ -410,19 +412,19 @@ export function droppables() {
       await waitNextFrame();
       await waitNextFrame(); // Extra frame for collision detection
 
-      assert.equal(events.length, 1);
-      assert.equal(events[0].type, 'enter');
-      assert.equal(events[0].collisions, 1);
+      expect(events.length).toBe(1);
+      expect(events[0].type).toBe('enter');
+      expect(events[0].collisions).toBe(1);
 
       // Remove droppable during drag (auto-queued leave)
       dndContext.removeDroppables([droppable]);
       await waitNextFrame();
 
       // Should emit leave event automatically
-      assert.equal(events.length, 2);
-      assert.equal(events[1].type, 'leave');
-      assert.equal(events[1].collisions, 0);
-      assert.equal(events[1].removedContacts, 1);
+      expect(events.length).toBe(2);
+      expect(events[1].type).toBe('leave');
+      expect(events[1].collisions).toBe(0);
+      expect(events[1].removedContacts).toBe(1);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -457,12 +459,12 @@ export function droppables() {
       droppable.destroy();
 
       // Should emit removeDroppable event
-      assert.equal(destroyEvents.length, 1);
-      assert.equal(destroyEvents[0].type, 'removeDroppable');
-      assert.equal(destroyEvents[0].droppable, droppable);
+      expect(destroyEvents.length).toBe(1);
+      expect(destroyEvents[0].type).toBe('removeDroppable');
+      expect(destroyEvents[0].droppable).toBe(droppable);
 
       // Should not be in context anymore
-      assert.isFalse(dndContext.droppables.has(droppable.id));
+      expect(dndContext.droppables.has(droppable.id)).toBe(false);
 
       // Cleanup
       dndContext.destroy();
@@ -525,14 +527,14 @@ export function droppables() {
       await waitNextFrame(); // Extra frame for collision detection
 
       // Should have enter event followed by collide events
-      assert.isTrue(events.length >= 2);
-      assert.equal(events[0].type, 'enter');
+      expect(events.length >= 2).toBe(true);
+      expect(events[0].type).toBe('enter');
 
       // Collide is emitted also immediately after enter; that first collide may
       // have 0 persistedContacts. Ensure at least one collide has 1 persisted contact.
       const collideEvents = events.slice(1).filter((e) => e.type === 'collide');
-      assert.isAtLeast(collideEvents.length, 1);
-      assert.isTrue(collideEvents.some((e) => e.persistedContacts >= 1));
+      expect(collideEvents.length >= 1).toBe(true);
+      expect(collideEvents.some((e) => e.persistedContacts >= 1)).toBe(true);
 
       // End dragging
       await endDrag();
@@ -546,4 +548,4 @@ export function droppables() {
       dropElement.remove();
     });
   });
-}
+};

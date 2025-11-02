@@ -1,24 +1,26 @@
-import { assert } from 'chai';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function eventDestroy() {
+export default () => {
   describe('destroy', () => {
+    defaultSetup();
+
     it('should be triggered on destroy', () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
 
       let destroyEventCount = 0;
       s.on('destroy', (e) => {
-        assert.deepEqual(e, { type: 'destroy' });
+        expect(e).toStrictEqual({ type: 'destroy' });
         ++destroyEventCount;
       });
 
       s.destroy();
 
-      assert.equal(destroyEventCount, 1);
+      expect(destroyEventCount).toBe(1);
 
       el.remove();
     });
   });
-}
+};

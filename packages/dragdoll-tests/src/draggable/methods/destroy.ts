@@ -1,12 +1,14 @@
-import { assert } from 'chai';
 import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
 
-export function methodDestroy() {
+export default () => {
   describe('destroy', () => {
+    defaultSetup();
+
     it('should destroy the draggable instance', async () => {
       const el = createTestElement();
       const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
@@ -21,10 +23,10 @@ export function methodDestroy() {
       draggable.destroy();
 
       // draggable.isDestroyed should be true.
-      assert.equal(draggable.isDestroyed, true);
+      expect(draggable.isDestroyed).toBe(true);
 
       // Destroy event should be emitted once.
-      assert.equal(destroyEventCount, 1);
+      expect(destroyEventCount).toBe(1);
 
       // Try start dragging the element with keyboard.
       focusElement(el);
@@ -35,19 +37,19 @@ export function methodDestroy() {
 
       // Dragging should not work.
       const rect = el.getBoundingClientRect();
-      assert.equal(draggable.drag, null);
-      assert.equal(rect.x, 0);
-      assert.equal(rect.y, 0);
+      expect(draggable.drag).toBe(null);
+      expect(rect.x).toBe(0);
+      expect(rect.y).toBe(0);
 
       // Try destroy again.
       draggable.destroy();
 
       // Destroy event should not be emitted again.
-      assert.equal(destroyEventCount, 1);
+      expect(destroyEventCount).toBe(1);
 
       // Reset stuff.
       keyboardSensor.destroy();
       el.remove();
     });
   });
-}
+};

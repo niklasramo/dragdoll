@@ -1,8 +1,10 @@
-import { assert } from 'chai';
 import { BaseSensor } from 'dragdoll/sensors/base';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function methodOff() {
+export default () => {
   describe('off', () => {
+    defaultSetup();
+
     it('should remove an event listener based on id', () => {
       const s = new BaseSensor();
       let msg = '';
@@ -10,8 +12,8 @@ export function methodOff() {
       s.on('start', () => void (msg += 'b'));
       s.off('start', idA);
       s['_start']({ type: 'start', x: 1, y: 2 });
-      assert.equal(msg, 'b');
+      expect(msg).toBe('b');
       s.destroy();
     });
   });
-}
+};

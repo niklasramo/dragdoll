@@ -1,15 +1,15 @@
-import { methodCancel } from './cancel.js';
-import { methodDestroy } from './destroy.js';
-import { methodOff } from './off.js';
-import { methodOn } from './on.js';
-import { methodUpdateSettings } from './update-settings.js';
+import cancel from './cancel.js';
+import destroy from './destroy.js';
+import off from './off.js';
+import on from './on.js';
+import updateSettings from './update-settings.js';
 
-export function methods() {
+export default () => {
   describe('methods', () => {
-    methodCancel();
-    methodDestroy();
-    methodOff();
-    methodOn();
-    methodUpdateSettings();
+    cancel();
+    destroy();
+    off();
+    on();
+    updateSettings();
   });
-}
+};

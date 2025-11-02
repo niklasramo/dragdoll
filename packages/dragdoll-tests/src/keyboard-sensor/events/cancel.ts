@@ -1,10 +1,12 @@
-import { assert } from 'chai';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 
-export function eventCancel() {
+export default () => {
   describe('cancel', () => {
+    defaultSetup();
+
     it('should be triggered on drag cancel', () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
@@ -18,7 +20,7 @@ export function eventCancel() {
       let cancelEventCount = 0;
 
       s.on('cancel', (e) => {
-        assert.deepEqual(e, cancelEvent);
+        expect(e).toStrictEqual(cancelEvent);
         ++cancelEventCount;
       });
 
@@ -26,10 +28,10 @@ export function eventCancel() {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
       document.dispatchEvent(cancelEvent.srcEvent);
 
-      assert.equal(cancelEventCount, 1);
+      expect(cancelEventCount).toBe(1);
 
       el.remove();
       s.destroy();
     });
   });
-}
+};

@@ -1,22 +1,24 @@
-import { assert } from 'chai';
 import { BaseSensor } from 'dragdoll/sensors/base';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function methodProtectedEnd() {
+export default () => {
   describe('_end', () => {
+    defaultSetup();
+
     it(`should reset drag data`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
       s['_end']({ type: 'end', x: 5, y: 6 });
-      assert.equal(s.drag, null);
+      expect(s.drag).toBe(null);
       s.destroy();
     });
 
     it(`should not modify isDestroyed property`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
-      assert.equal(s.isDestroyed, false);
+      expect(s.isDestroyed).toBe(false);
       s['_end']({ type: 'end', x: 5, y: 6 });
-      assert.equal(s.isDestroyed, false);
+      expect(s.isDestroyed).toBe(false);
       s.destroy();
     });
 
@@ -25,14 +27,14 @@ export function methodProtectedEnd() {
       const endArgs = { type: 'end', x: 5, y: 6 } as const;
       let emitCount = 0;
       s.on('end', (data) => {
-        assert.deepEqual(s.drag, { x: data.x, y: data.y });
-        assert.equal(s.isDestroyed, false);
-        assert.deepEqual(data, endArgs);
+        expect(s.drag).toStrictEqual({ x: data.x, y: data.y });
+        expect(s.isDestroyed).toBe(false);
+        expect(data).toStrictEqual(endArgs);
         ++emitCount;
       });
       s['_start']({ type: 'start', x: 1, y: 2 });
       s['_end'](endArgs);
-      assert.equal(emitCount, 1);
+      expect(emitCount).toBe(1);
       s.destroy();
     });
 
@@ -42,10 +44,10 @@ export function methodProtectedEnd() {
       let emitCount = 0;
       s.on('end', () => void ++emitCount);
       s['_end']({ type: 'end', x: 3, y: 4 });
-      assert.deepEqual(s.drag, drag);
-      assert.equal(s.isDestroyed, isDestroyed);
-      assert.equal(emitCount, 0);
+      expect(s.drag).toStrictEqual(drag);
+      expect(s.isDestroyed).toBe(isDestroyed);
+      expect(emitCount).toBe(0);
       s.destroy();
     });
   });
-}
+};

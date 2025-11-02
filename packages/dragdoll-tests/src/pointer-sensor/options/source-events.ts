@@ -1,10 +1,12 @@
-import { assert } from 'chai';
 import { PointerSensor } from 'dragdoll/sensors/pointer';
 import { createFakeDrag } from '../../utils/create-fake-drag.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function optionSourceEvents() {
+export default () => {
   describe('sourceEvents', () => {
-    it('should listen to mouse/pointer/touch events when set to "mouse"/"pointer"/"touch"', function () {
+    defaultSetup();
+
+    it('should listen to mouse/pointer/touch events when set to "mouse"/"pointer"/"touch"', async () => {
       const mouseSensor = new PointerSensor(document.body, { sourceEvents: 'mouse' });
       const pointerSensor = new PointerSensor(document.body, { sourceEvents: 'pointer' });
       const touchSensor = new PointerSensor(document.body, { sourceEvents: 'touch' });
@@ -26,7 +28,7 @@ export function optionSourceEvents() {
       touchSensor.on('end', (e) => touchList.push(e.type));
 
       // Simulate mouse events...
-      createFakeDrag(
+      await createFakeDrag(
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
@@ -39,15 +41,15 @@ export function optionSourceEvents() {
       );
 
       // ...which should trigger only mouse sensor events.
-      assert.deepEqual(mouseList, ['start', 'move', 'end']);
-      assert.deepEqual(pointerList, []);
-      assert.deepEqual(touchList, []);
+      expect(mouseList).toStrictEqual(['start', 'move', 'end']);
+      expect(pointerList).toStrictEqual([]);
+      expect(touchList).toStrictEqual([]);
 
       // Reset mouse list.
       mouseList.length = 0;
 
       // Simulate pointer events...
-      createFakeDrag(
+      await createFakeDrag(
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
@@ -60,15 +62,15 @@ export function optionSourceEvents() {
       );
 
       // ...which should trigger only pointer sensor events.
-      assert.deepEqual(mouseList, []);
-      assert.deepEqual(pointerList, ['start', 'move', 'end']);
-      assert.deepEqual(touchList, []);
+      expect(mouseList).toStrictEqual([]);
+      expect(pointerList).toStrictEqual(['start', 'move', 'end']);
+      expect(touchList).toStrictEqual([]);
 
       // Reset pointer list.
       pointerList.length = 0;
 
       // Simulate touch events...
-      createFakeDrag(
+      await createFakeDrag(
         [
           { x: 1, y: 1 },
           { x: 2, y: 2 },
@@ -81,13 +83,13 @@ export function optionSourceEvents() {
       );
 
       // ...which should trigger only touch sensor events.
-      assert.deepEqual(mouseList, []);
-      assert.deepEqual(pointerList, []);
-      assert.deepEqual(touchList, ['start', 'move', 'end']);
+      expect(mouseList).toStrictEqual([]);
+      expect(pointerList).toStrictEqual([]);
+      expect(touchList).toStrictEqual(['start', 'move', 'end']);
 
       mouseSensor.destroy();
       pointerSensor.destroy();
       touchSensor.destroy();
     });
   });
-}
+};

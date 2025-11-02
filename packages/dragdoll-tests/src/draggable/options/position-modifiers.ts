@@ -1,12 +1,14 @@
-import { assert } from 'chai';
 import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
 
-export function optionPositionModifiers() {
+export default () => {
   describe('positionModifiers', () => {
+    defaultSetup();
+
     it('should modify the dragged element position', async () => {
       const phaseCounter = { start: 0, move: 0, end: 0 };
       const el = createTestElement();
@@ -15,9 +17,9 @@ export function optionPositionModifiers() {
         elements: () => [el],
         positionModifiers: [
           (position, args) => {
-            assert.equal(args.draggable, draggable);
-            assert.equal(args.drag, draggable.drag);
-            assert.equal(args.item, draggable.drag?.items[0]);
+            expect(args.draggable).toBe(draggable);
+            expect(args.drag).toBe(draggable.drag);
+            expect(args.item).toBe(draggable.drag?.items[0]);
             switch (args.phase) {
               case 'start': {
                 ++phaseCounter.start;
@@ -44,8 +46,8 @@ export function optionPositionModifiers() {
       });
 
       let rect = el.getBoundingClientRect();
-      assert.equal(rect.x, 0);
-      assert.equal(rect.y, 0);
+      expect(rect.x).toBe(0);
+      expect(rect.y).toBe(0);
 
       // Start dragging the element with keyboard.
       focusElement(el);
@@ -55,8 +57,8 @@ export function optionPositionModifiers() {
 
       // Make sure the start modifiers have been called.
       rect = el.getBoundingClientRect();
-      assert.equal(rect.x, 1);
-      assert.equal(rect.y, 1);
+      expect(rect.x).toBe(1);
+      expect(rect.y).toBe(1);
 
       // Move the element to the right.
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
@@ -65,8 +67,8 @@ export function optionPositionModifiers() {
 
       // Make sure the move modifiers have been called.
       rect = el.getBoundingClientRect();
-      assert.equal(rect.x, 4);
-      assert.equal(rect.y, 3);
+      expect(rect.x).toBe(4);
+      expect(rect.y).toBe(3);
 
       // Move the element down.
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
@@ -75,22 +77,22 @@ export function optionPositionModifiers() {
 
       // Make sure the move modifiers have been called.
       rect = el.getBoundingClientRect();
-      assert.equal(rect.x, 6);
-      assert.equal(rect.y, 6);
+      expect(rect.x).toBe(6);
+      expect(rect.y).toBe(6);
 
       // End the drag.
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Make sure the end modifiers have been called.
       rect = el.getBoundingClientRect();
-      assert.equal(rect.x, 9);
-      assert.equal(rect.y, 9);
+      expect(rect.x).toBe(9);
+      expect(rect.y).toBe(9);
 
       // Make sure each phase modifier has been called the correct number of
       // times.
-      assert.equal(phaseCounter.start, 1);
-      assert.equal(phaseCounter.move, 2);
-      assert.equal(phaseCounter.end, 1);
+      expect(phaseCounter.start).toBe(1);
+      expect(phaseCounter.move).toBe(2);
+      expect(phaseCounter.end).toBe(1);
 
       // Reset stuff.
       draggable.destroy();
@@ -98,4 +100,4 @@ export function optionPositionModifiers() {
       el.remove();
     });
   });
-}
+};

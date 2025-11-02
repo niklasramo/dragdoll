@@ -1,7 +1,9 @@
-import { methods } from './methods/index.js';
-import { properties } from './properties/index.js';
+import methods from './methods/index.js';
+import properties from './properties/index.js';
 
-describe('BaseSensor', () => {
-  methods();
-  properties();
-});
+export default () => {
+  describe('BaseSensor', () => {
+    methods();
+    properties();
+  });
+};

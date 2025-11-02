@@ -1,20 +1,22 @@
-import { assert } from 'chai';
 import { BaseSensor } from 'dragdoll/sensors/base';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function methodProtectedStart() {
+export default () => {
   describe('_start', () => {
+    defaultSetup();
+
     it(`should create drag data`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
-      assert.deepEqual(s.drag, { x: 1, y: 2 });
+      expect(s.drag).toStrictEqual({ x: 1, y: 2 });
       s.destroy();
     });
 
     it(`should not modify isDestroyed property`, () => {
       const s = new BaseSensor();
-      assert.equal(s.isDestroyed, false);
+      expect(s.isDestroyed).toBe(false);
       s['_start']({ type: 'start', x: 1, y: 2 });
-      assert.equal(s.isDestroyed, false);
+      expect(s.isDestroyed).toBe(false);
       s.destroy();
     });
 
@@ -23,13 +25,13 @@ export function methodProtectedStart() {
       const startArgs = { type: 'start', x: 1, y: 2 } as const;
       let emitCount = 0;
       s.on('start', (data) => {
-        assert.deepEqual(s.drag, { x: data.x, y: data.y });
-        assert.equal(s.isDestroyed, false);
-        assert.deepEqual(data, startArgs);
+        expect(s.drag).toStrictEqual({ x: data.x, y: data.y });
+        expect(s.isDestroyed).toBe(false);
+        expect(data).toStrictEqual(startArgs);
         ++emitCount;
       });
       s['_start'](startArgs);
-      assert.equal(emitCount, 1);
+      expect(emitCount).toBe(1);
       s.destroy();
     });
 
@@ -41,9 +43,9 @@ export function methodProtectedStart() {
       const isDestroyed = s.isDestroyed;
       const { drag } = s;
       s['_start']({ type: 'start', x: 3, y: 4 });
-      assert.deepEqual(s.drag, drag);
-      assert.equal(s.isDestroyed, isDestroyed);
-      assert.equal(emitCount, 1);
+      expect(s.drag).toStrictEqual(drag);
+      expect(s.isDestroyed).toBe(isDestroyed);
+      expect(emitCount).toBe(1);
       s.destroy();
     });
 
@@ -54,10 +56,10 @@ export function methodProtectedStart() {
       s.destroy();
       const { drag, isDestroyed } = s;
       s['_start']({ type: 'start', x: 3, y: 4 });
-      assert.deepEqual(s.drag, drag);
-      assert.equal(s.isDestroyed, isDestroyed);
-      assert.equal(emitCount, 0);
+      expect(s.drag).toStrictEqual(drag);
+      expect(s.isDestroyed).toBe(isDestroyed);
+      expect(emitCount).toBe(0);
       s.destroy();
     });
   });
-}
+};

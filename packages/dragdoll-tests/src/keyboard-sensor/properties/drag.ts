@@ -1,54 +1,56 @@
-import { assert } from 'chai';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 
-export function propDrag() {
+export default () => {
   describe('drag', () => {
-    it(`should be null on init`, function () {
+    defaultSetup();
+
+    it(`should be null on init`, () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
-      assert.equal(s.drag, null);
+      expect(s.drag).toBe(null);
       el.remove();
       s.destroy();
     });
 
-    it(`should be null after destroy method is called`, function () {
+    it(`should be null after destroy method is called`, () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
 
       focusElement(el);
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-      assert.notEqual(s.drag, null);
+      expect(s.drag).not.toBe(null);
 
       s.destroy();
-      assert.equal(s.drag, null);
+      expect(s.drag).toBe(null);
 
       el.remove();
     });
 
-    it(`should match the current drag position`, function () {
+    it(`should match the current drag position`, () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el, { moveDistance: 1 });
 
       focusElement(el);
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-      assert.deepEqual(s.drag, { x: 0, y: 0 });
+      expect(s.drag).toStrictEqual({ x: 0, y: 0 });
 
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-      assert.deepEqual(s.drag, { x: 1, y: 0 });
+      expect(s.drag).toStrictEqual({ x: 1, y: 0 });
 
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
-      assert.deepEqual(s.drag, { x: 1, y: 1 });
+      expect(s.drag).toStrictEqual({ x: 1, y: 1 });
 
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
-      assert.deepEqual(s.drag, { x: 0, y: 1 });
+      expect(s.drag).toStrictEqual({ x: 0, y: 1 });
 
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp' }));
-      assert.deepEqual(s.drag, { x: 0, y: 0 });
+      expect(s.drag).toStrictEqual({ x: 0, y: 0 });
 
       s.destroy();
       el.remove();
     });
   });
-}
+};

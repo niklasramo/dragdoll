@@ -1,21 +1,21 @@
-import { methodProtectedCancel } from './_cancel.js';
-import { methodProtectedEnd } from './_end.js';
-import { methodProtectedMove } from './_move.js';
-import { methodProtectedStart } from './_start.js';
-import { methodCancel } from './cancel.js';
-import { methodDestroy } from './destroy.js';
-import { methodOff } from './off.js';
-import { methodOn } from './on.js';
+import _cancel from './_cancel.js';
+import _end from './_end.js';
+import _move from './_move.js';
+import _start from './_start.js';
+import cancel from './cancel.js';
+import destroy from './destroy.js';
+import off from './off.js';
+import on from './on.js';
 
-export function methods() {
+export default () => {
   describe('methods', () => {
-    methodProtectedCancel();
-    methodProtectedEnd();
-    methodProtectedMove();
-    methodProtectedStart();
-    methodCancel();
-    methodDestroy();
-    methodOff();
-    methodOn();
+    _cancel();
+    _end();
+    _move();
+    _start();
+    cancel();
+    destroy();
+    off();
+    on();
   });
-}
+};

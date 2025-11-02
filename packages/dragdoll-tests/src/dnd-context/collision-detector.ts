@@ -1,4 +1,3 @@
-import { assert } from 'chai';
 import { DndContext } from 'dragdoll/dnd-context';
 import type { CollisionData } from 'dragdoll/dnd-context/collision-detector';
 import { CollisionDetector } from 'dragdoll/dnd-context/collision-detector';
@@ -6,11 +5,14 @@ import { Draggable } from 'dragdoll/draggable';
 import { Droppable } from 'dragdoll/droppable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../utils/create-test-element.js';
+import { defaultSetup } from '../utils/default-setup.js';
 import { focusElement } from '../utils/focus-element.js';
 import { waitNextFrame } from '../utils/wait-next-frame.js';
 
-export function collisionDetection() {
-  describe('collision detection', () => {
+export default () => {
+  describe('CollisionDetector', () => {
+    defaultSetup();
+
     it('should detect collisions when draggable overlaps droppable', async () => {
       const collisionEvents: any[] = [];
 
@@ -58,16 +60,16 @@ export function collisionDetection() {
       await waitNextFrame();
 
       // Should detect collision on start
-      assert.equal(collisionEvents.length, 1);
-      assert.equal(collisionEvents[0].type, 'enter');
-      assert.equal(collisionEvents[0].collisions.length, 1);
-      assert.equal(collisionEvents[0].collisions[0].droppableId, droppable.id);
+      expect(collisionEvents.length).toBe(1);
+      expect(collisionEvents[0].type).toBe('enter');
+      expect(collisionEvents[0].collisions.length).toBe(1);
+      expect(collisionEvents[0].collisions[0].droppableId).toBe(droppable.id);
 
       const collisionData = collisionEvents[0].collisions[0];
-      assert.isDefined(collisionData);
-      assert.equal(collisionData.droppableId, droppable.id);
-      assert.isNumber(collisionData.intersectionScore);
-      assert.isTrue(collisionData.intersectionScore > 0);
+      expect(typeof collisionData).toBe('object');
+      expect(collisionData.droppableId).toBe(droppable.id);
+      expect(typeof collisionData.intersectionScore).toBe('number');
+      expect(collisionData.intersectionScore > 0).toBe(true);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -128,7 +130,7 @@ export function collisionDetection() {
       await waitNextFrame();
 
       // Should not detect any collisions
-      assert.equal(collisionEvents.length, 0);
+      expect(collisionEvents.length).toBe(0);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -199,11 +201,11 @@ export function collisionDetection() {
       await waitNextFrame();
 
       // Should have enter and leave events
-      assert.equal(collisionEvents.length, 2);
-      assert.equal(collisionEvents[0].type, 'enter');
-      assert.equal(collisionEvents[0].collisions, 1);
-      assert.equal(collisionEvents[1].type, 'leave');
-      assert.equal(collisionEvents[1].collisions, 0);
+      expect(collisionEvents.length).toBe(2);
+      expect(collisionEvents[0].type).toBe('enter');
+      expect(collisionEvents[0].collisions).toBe(1);
+      expect(collisionEvents[1].type).toBe('leave');
+      expect(collisionEvents[1].collisions).toBe(0);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -284,11 +286,11 @@ export function collisionDetection() {
       await waitNextFrame();
 
       // Should enter droppable1
-      assert.equal(collisionEvents.length, 1);
-      assert.equal(collisionEvents[0].type, 'enter');
-      assert.equal(collisionEvents[0].collisions.length, 1);
-      assert.isTrue(
-        collisionEvents[0].collisions.some((c: any) => c.droppableId === droppable1.id),
+      expect(collisionEvents.length).toBe(1);
+      expect(collisionEvents[0].type).toBe('enter');
+      expect(collisionEvents[0].collisions.length).toBe(1);
+      expect(collisionEvents[0].collisions.some((c: any) => c.droppableId === droppable1.id)).toBe(
+        true,
       );
 
       // Move right to transition from droppable1 to droppable2
@@ -297,7 +299,7 @@ export function collisionDetection() {
       await waitNextFrame();
 
       // Should have leave and enter events
-      assert.isTrue(collisionEvents.length >= 2);
+      expect(collisionEvents.length >= 2).toBe(true);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -358,7 +360,7 @@ export function collisionDetection() {
       await waitNextFrame();
 
       // Should not detect collision due to accept criteria
-      assert.equal(collisionEvents.length, 0);
+      expect(collisionEvents.length).toBe(0);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -446,9 +448,9 @@ export function collisionDetection() {
       await waitNextFrame();
 
       // Custom collision detector should have been called
-      assert.isTrue(customDetectorCalled);
-      assert.equal(customCollisionEvents.length, 1);
-      assert.equal(customCollisionEvents[0].customProp, 'test-value');
+      expect(customDetectorCalled).toBe(true);
+      expect(customCollisionEvents.length).toBe(1);
+      expect(customCollisionEvents[0].customProp).toBe('test-value');
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -511,9 +513,9 @@ export function collisionDetection() {
 
       // Client rect should be updated (even if values are the same, the update should happen)
       const updatedRect = droppable.getClientRect();
-      assert.isObject(updatedRect);
-      assert.equal(updatedRect.x, initialRect.x);
-      assert.equal(updatedRect.y, initialRect.y);
+      expect(typeof updatedRect).toBe('object');
+      expect(updatedRect.x).toBe(initialRect.x);
+      expect(updatedRect.y).toBe(initialRect.y);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -575,14 +577,14 @@ export function collisionDetection() {
       await new Promise((resolve) => setTimeout(resolve, 50));
 
       // Check collision data properties
-      assert.isObject(collisionData);
-      assert.equal(collisionData.droppableId, droppable.id);
-      assert.isNumber(collisionData.droppableRect.x);
-      assert.isNumber(collisionData.droppableRect.y);
-      assert.isNumber(collisionData.droppableRect.width);
-      assert.isNumber(collisionData.droppableRect.height);
-      assert.isNumber(collisionData.intersectionScore);
-      assert.isTrue(collisionData.intersectionScore > 0);
+      expect(typeof collisionData).toBe('object');
+      expect(collisionData.droppableId).toBe(droppable.id);
+      expect(typeof collisionData.droppableRect.x).toBe('number');
+      expect(typeof collisionData.droppableRect.y).toBe('number');
+      expect(typeof collisionData.droppableRect.width).toBe('number');
+      expect(typeof collisionData.droppableRect.height).toBe('number');
+      expect(typeof collisionData.intersectionScore).toBe('number');
+      expect(collisionData.intersectionScore > 0).toBe(true);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -598,4 +600,4 @@ export function collisionDetection() {
       dropElement.remove();
     });
   });
-}
+};

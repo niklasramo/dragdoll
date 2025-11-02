@@ -1,13 +1,15 @@
-import { assert } from 'chai';
 import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { roundNumber } from '../../utils/round-number.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
 
-export function optionContainer() {
+export default () => {
   describe('container', () => {
+    defaultSetup();
+
     it('should define the drag container', async () => {
       const container = createTestElement();
       const el = createTestElement();
@@ -20,24 +22,24 @@ export function optionContainer() {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Make sure the drag started.
-      assert.notEqual(draggable.drag, null);
+      expect(draggable.drag).not.toBe(null);
 
       await waitNextFrame();
 
       // Make sure the element has been moved within the container.
-      assert.ok(container.contains(el));
+      expect(container.contains(el)).toBe(true);
 
       // Make sure the element's current parent is the container.
-      assert.equal(el.parentElement, container);
+      expect(el.parentElement).toBe(container);
 
       // End the drag.
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Make sure the drag has stopped.
-      assert.equal(draggable.drag, null);
+      expect(draggable.drag).toBe(null);
 
       // Make sure the element was moved back to it's original container.
-      assert.equal(el.parentNode, originalContainer);
+      expect(el.parentNode).toBe(originalContainer);
 
       // Reset stuff.
       draggable.destroy();
@@ -51,7 +53,7 @@ export function optionContainer() {
       const elPositions = ['fixed', 'absolute'];
       for (const containerPosition of containerPositions) {
         for (const elPosition of elPositions) {
-          const assertMsg = `element ${elPosition} - container ${containerPosition}`;
+          // const assertMsg = `element ${elPosition} - container ${containerPosition}`;
           const container = createTestElement({
             position: containerPosition,
             left: '0px',
@@ -76,8 +78,10 @@ export function optionContainer() {
           // Make sure the element and container are not at the same position.
           const containerRect = container.getBoundingClientRect();
           const elRect = el.getBoundingClientRect();
-          assert.notEqual(elRect.x, containerRect.x, '1: ' + assertMsg);
-          assert.notEqual(elRect.y, containerRect.y, '2: ' + assertMsg);
+          // console.log(`1: ${assertMsg}`);
+          expect(elRect.x).not.toBe(containerRect.x);
+          // console.log(`2: ${assertMsg}`);
+          expect(elRect.y).not.toBe(containerRect.y);
 
           // Start dragging the element with keyboard.
           focusElement(el);
@@ -86,12 +90,15 @@ export function optionContainer() {
           await waitNextFrame();
 
           // Make sure the element has been moved within the container.
-          assert.ok(container.contains(el), '3: ' + assertMsg);
+          // console.log(`3: ${assertMsg}`)
+          expect(container.contains(el)).toBe(true);
 
           // Make sure the element's client position has not changed.
           let rect = el.getBoundingClientRect();
-          assert.equal(rect.x, elRect.x, '4: ' + assertMsg);
-          assert.equal(rect.y, elRect.y, '5: ' + assertMsg);
+          // console.log(`4: ${assertMsg}`);
+          expect(rect.x).toBe(elRect.x);
+          // console.log(`5: ${assertMsg}`);
+          expect(rect.y).toBe(elRect.y);
 
           // Move the element to the right.
           document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
@@ -100,8 +107,10 @@ export function optionContainer() {
 
           // Make sure the element has moved.
           rect = el.getBoundingClientRect();
-          assert.equal(rect.x, elRect.x + 1, '6: ' + assertMsg);
-          assert.equal(rect.y, elRect.y, '7: ' + assertMsg);
+          // console.log(`6: ${assertMsg}`);
+          expect(rect.x).toBe(elRect.x + 1);
+          // console.log(`7: ${assertMsg}`);
+          expect(rect.y).toBe(elRect.y);
 
           // End the drag.
           document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -109,9 +118,12 @@ export function optionContainer() {
           // Make sure the element was moved back to it's original container
           // and client position is correct.
           rect = el.getBoundingClientRect();
-          assert.equal(rect.x, elRect.x + 1, '9: ' + assertMsg);
-          assert.equal(rect.y, elRect.y, '10: ' + assertMsg);
-          assert.equal(el.parentNode, originalContainer, '11: ' + assertMsg);
+          // console.log(`8: ${assertMsg}`);
+          expect(rect.x).toBe(elRect.x + 1);
+          // console.log(`9: ${assertMsg}`);
+          expect(rect.y).toBe(elRect.y);
+          // console.log(`10: ${assertMsg}`);
+          expect(el.parentNode).toBe(originalContainer);
 
           // Reset stuff.
           draggable.destroy();
@@ -194,8 +206,10 @@ export function optionContainer() {
 
       // Make sure the element has moved 1px, approximately.
       const moveRect = el.getBoundingClientRect();
-      assert.equal(roundNumber(moveRect.x - startRect.x, 3), 1, 'x');
-      assert.equal(roundNumber(moveRect.y - startRect.y, 3), 1, 'y');
+      expect({
+        x: roundNumber(moveRect.x - startRect.x, 3),
+        y: roundNumber(moveRect.y - startRect.y, 3),
+      }).toStrictEqual({ x: 1, y: 1 });
 
       // Drop the element.
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -204,19 +218,23 @@ export function optionContainer() {
       // element is dropped (and moved back to the original container), the
       // element should maintain it's client position.
       const endRect = el.getBoundingClientRect();
-      assert.equal(roundNumber(endRect.x - startRect.x, 3), 1, 'x');
-      assert.equal(roundNumber(endRect.y - startRect.y, 3), 1, 'y');
+      expect({
+        x: roundNumber(endRect.x - startRect.x, 3),
+        y: roundNumber(endRect.y - startRect.y, 3),
+      }).toStrictEqual({ x: 1, y: 1 });
 
       // Reset stuff.
       draggable.destroy();
       keyboardSensor.destroy();
       el.remove();
-      container1.remove();
-      container2.remove();
       container3.remove();
-      dragContainer1.remove();
-      dragContainer2.remove();
+      container2.remove();
+      container1.remove();
       dragContainer3.remove();
+      dragContainer2.remove();
+      dragContainer1.remove();
+      scrollContent.remove();
+      scrollContainer.remove();
     });
   });
-}
+};

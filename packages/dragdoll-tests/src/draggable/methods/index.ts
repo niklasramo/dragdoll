@@ -1,19 +1,19 @@
-import { methodAlign } from './align.js';
-import { methodDestroy } from './destroy.js';
-import { methodOff } from './off.js';
-import { methodOn } from './on.js';
-import { methodStop } from './stop.js';
-import { methodUpdateSettings } from './update-settings.js';
-import { methodUse } from './use.js';
+import align from './align.js';
+import destroy from './destroy.js';
+import off from './off.js';
+import on from './on.js';
+import stop from './stop.js';
+import updateSettings from './update-settings.js';
+import use from './use.js';
 
-export function methods() {
+export default () => {
   describe('methods', () => {
-    methodAlign();
-    methodDestroy();
-    methodOff();
-    methodOn();
-    methodStop();
-    methodUpdateSettings();
-    methodUse();
+    align();
+    destroy();
+    off();
+    on();
+    stop();
+    updateSettings();
+    use();
   });
-}
+};

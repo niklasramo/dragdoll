@@ -1,10 +1,12 @@
-import { assert } from 'chai';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 import { focusElement } from '../../utils/focus-element.js';
 
-export function eventMove() {
+export default () => {
   describe('move', () => {
+    defaultSetup();
+
     it('should be triggered on drag move', () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el, { moveDistance: 1 });
@@ -13,7 +15,7 @@ export function eventMove() {
       let moveEventCount = 0;
 
       s.on('move', (e) => {
-        assert.deepEqual(e, expectedEvent);
+        expect(e).toStrictEqual(expectedEvent);
         ++moveEventCount;
         return;
       });
@@ -53,10 +55,10 @@ export function eventMove() {
       };
       document.dispatchEvent(expectedEvent.srcEvent);
 
-      assert.equal(moveEventCount, 4);
+      expect(moveEventCount).toBe(4);
 
       el.remove();
       s.destroy();
     });
   });
-}
+};

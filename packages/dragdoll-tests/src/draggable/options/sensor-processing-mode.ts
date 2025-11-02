@@ -1,18 +1,20 @@
-import { assert } from 'chai';
 import { Draggable } from 'dragdoll/draggable';
 import { BaseSensor } from 'dragdoll/sensors/base';
 import { createTestElement } from '../../utils/create-test-element.js';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-class SyncSensor extends BaseSensor {
-  run(x0 = 0, y0 = 0, x1 = 10, y1 = 10) {
-    this._start({ type: 'start', x: x0, y: y0 });
-    this._move({ type: 'move', x: x1, y: y1 });
-    this._end({ type: 'end', x: x1, y: y1 });
-  }
-}
-
-export function optionSensorProcessingMode() {
+export default () => {
   describe('sensorProcessingMode', () => {
+    defaultSetup();
+
+    class SyncSensor extends BaseSensor {
+      run(x0 = 0, y0 = 0, x1 = 10, y1 = 10) {
+        this._start({ type: 'start', x: x0, y: y0 });
+        this._move({ type: 'move', x: x1, y: y1 });
+        this._end({ type: 'end', x: x1, y: y1 });
+      }
+    }
+
     it('sampled: preparestart, start, end', () => {
       const el = createTestElement();
       const sensor = new SyncSensor();
@@ -30,7 +32,7 @@ export function optionSensorProcessingMode() {
 
       sensor.run();
 
-      assert.deepEqual(events, ['preparestart', 'start', 'end']);
+      expect(events).toStrictEqual(['preparestart', 'start', 'end']);
 
       draggable.destroy();
       sensor.destroy();
@@ -54,11 +56,11 @@ export function optionSensorProcessingMode() {
 
       sensor.run();
 
-      assert.deepEqual(events, ['preparestart', 'start', 'preparemove', 'move', 'end']);
+      expect(events).toStrictEqual(['preparestart', 'start', 'preparemove', 'move', 'end']);
 
       draggable.destroy();
       sensor.destroy();
       el.remove();
     });
   });
-}
+};

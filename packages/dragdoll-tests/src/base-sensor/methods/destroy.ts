@@ -1,8 +1,10 @@
-import { assert } from 'chai';
 import { BaseSensor } from 'dragdoll/sensors/base';
+import { defaultSetup } from '../../utils/default-setup.js';
 
-export function methodDestroy() {
+export default () => {
   describe('destroy', () => {
+    defaultSetup();
+
     it(`should (if drag is active):
        1. set isDestroyed property to true
        2. emit "cancel" event with the current x/y coordinates
@@ -15,9 +17,9 @@ export function methodDestroy() {
       s.on('cancel', () => void msgs.push('cancel'));
       s.on('destroy', () => void msgs.push('destroy'));
       s.destroy();
-      assert.equal(s.isDestroyed, true);
-      assert.equal(s.drag, null);
-      assert.deepEqual(msgs, ['cancel', 'destroy']);
+      expect(s.isDestroyed).toBe(true);
+      expect(s.drag).toBe(null);
+      expect(msgs).toStrictEqual(['cancel', 'destroy']);
     });
 
     it(`should (if drag is not active):
@@ -29,9 +31,9 @@ export function methodDestroy() {
       s.on('cancel', () => void msgs.push('cancel'));
       s.on('destroy', () => void msgs.push('destroy'));
       s.destroy();
-      assert.equal(s.isDestroyed, true);
-      assert.equal(s.drag, null);
-      assert.deepEqual(msgs, ['destroy']);
+      expect(s.isDestroyed).toBe(true);
+      expect(s.drag).toBe(null);
+      expect(msgs).toStrictEqual(['destroy']);
     });
 
     it(`should not do anything if the sensor is already destroyed`, () => {
@@ -39,8 +41,8 @@ export function methodDestroy() {
       s.destroy();
       const { drag, isDestroyed } = s;
       s.destroy();
-      assert.deepEqual(s.drag, drag);
-      assert.equal(s.isDestroyed, isDestroyed);
+      expect(s.drag).toStrictEqual(drag);
+      expect(s.isDestroyed).toBe(isDestroyed);
     });
   });
-}
+};
