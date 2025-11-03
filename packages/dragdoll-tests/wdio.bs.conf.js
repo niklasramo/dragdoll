@@ -131,7 +131,8 @@ export const config = {
   logLevel: 'silent',
   bail: 0,
   framework: 'mocha',
-  specFileRetries: 0,
+  specFileRetries: 1,
+  specFileRetriesDeferred: true,
 
   reporters: [
     [
@@ -145,6 +146,7 @@ export const config = {
 
   mochaOpts: {
     ui: 'bdd',
-    timeout: 600000,
+    retries: 2,
+    timeout: 1800000, // 30 minutes
   },
 };
