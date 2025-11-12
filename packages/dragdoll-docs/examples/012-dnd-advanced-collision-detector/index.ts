@@ -3,8 +3,8 @@ import {
   AdvancedCollisionDetector,
   AnyDraggable,
   autoScrollPlugin,
-  DndContext,
-  DndContextEventType,
+  DndObserver,
+  DndObserverEventType,
   Draggable,
   Droppable,
   KeyboardMotionSensor,
@@ -20,8 +20,8 @@ const scrollContainers = [...document.querySelectorAll('.scroll-list')] as HTMLE
 const draggableElements = [...document.querySelectorAll('.draggable')] as HTMLElement[];
 const droppableElements = [...document.querySelectorAll('.droppable')] as HTMLElement[];
 
-// Initialize DndContext.
-const dndContext = new DndContext<AdvancedCollisionData>({
+// Initialize DndObserver.
+const dndObserver = new DndObserver<AdvancedCollisionData>({
   collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx),
 });
 
@@ -71,12 +71,12 @@ for (const draggableElement of draggableElements) {
   draggables.push(draggable);
 }
 
-// Add droppables and draggables to the context.
-dndContext.addDroppables(droppables);
-dndContext.addDraggables(draggables);
+// Add droppables and draggables to the dnd observer.
+dndObserver.addDroppables(droppables);
+dndObserver.addDraggables(draggables);
 
 // On draggable collision with droppables.
-dndContext.on(DndContextEventType.Collide, ({ draggable, contacts }) => {
+dndObserver.on(DndObserverEventType.Collide, ({ draggable, contacts }) => {
   // Get the draggable element.
   const draggableElement = draggable.drag?.items[0].element as HTMLElement | null;
   if (!draggableElement) return;
@@ -115,7 +115,7 @@ dndContext.on(DndContextEventType.Collide, ({ draggable, contacts }) => {
 });
 
 // On drag end.
-dndContext.on(DndContextEventType.End, ({ draggable, canceled }) => {
+dndObserver.on(DndObserverEventType.End, ({ draggable, canceled }) => {
   const draggableElement = draggable.drag?.items[0].element as HTMLElement | null;
   if (!draggableElement) return;
 

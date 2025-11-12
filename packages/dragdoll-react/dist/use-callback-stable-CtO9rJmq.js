@@ -1,0 +1,2 @@
+import{useRef as e}from"react";function t(e,t){if(e===t)return!0;if(e.length!==t.length)return!1;for(let n=0;n<e.length;n++)if(!Object.is(e[n],t[n]))return!1;return!0}function n(n,r){let i=e(null),a=i.current||{deps:r,value:n()};return i.current?t(r,a.deps)||(a.deps=r,a.value=n()):i.current=a,a.value}function r(e,t){return n(()=>e,t)}export{n,r as t};
+//# sourceMappingURL=use-callback-stable-CtO9rJmq.js.map

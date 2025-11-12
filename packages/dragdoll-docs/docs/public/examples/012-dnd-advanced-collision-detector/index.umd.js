@@ -480,7 +480,7 @@ function getDistance(e$6, t$6) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-BzsvSJTw.js
+//#region ../dragdoll/dist/auto-scroll-uAZMypL4.js
 const o$2 = e$5(), s$5 = e$5();
 function c$5(e$6, t$6) {
 	return getDistance(e$5(e$6, o$2), e$5(t$6, s$5));
@@ -507,6 +507,14 @@ function h$2(e$6, t$6) {
 	return !(e$6.x + e$6.width <= t$6.x || t$6.x + t$6.width <= e$6.x || e$6.y + e$6.height <= t$6.y || t$6.y + t$6.height <= e$6.y);
 }
 var g$2 = class {
+	_batchSize;
+	_maxSize;
+	_minSize;
+	_shrinkThreshold;
+	_data;
+	_index;
+	_getItem;
+	_onRelease;
 	constructor(e$6, { batchSize: t$6 = 100, minBatchCount: n$7 = 0, maxBatchCount: r$5 = 2 ** 53 - 1, initialBatchCount: i$5 = 0, shrinkThreshold: a$4 = 2, onRelease: o$4 } = {}) {
 		this._batchSize = Math.floor(Math.max(t$6, 1)), this._minSize = Math.floor(Math.max(n$7, 0)) * this._batchSize, this._maxSize = Math.floor(Math.min(Math.max(r$5 * this._batchSize, this._batchSize), 2 ** 53 - 1)), this._shrinkThreshold = Math.floor(Math.max(a$4, 1) * this._batchSize), this._data = Array(Math.floor(Math.max(Math.max(i$5, n$7) * this._batchSize, 0))), this._index = 0, this._getItem = e$6, this._onRelease = o$4;
 	}
@@ -586,10 +594,20 @@ function O$1(e$6, t$6, n$7, r$5) {
 	return Math.max(0, n$7 + e$6 * 2 + r$5 * t$6 - r$5) / 2;
 }
 var k$1 = class {
+	positionX;
+	positionY;
+	directionX;
+	directionY;
+	overlapCheckRequestTime;
 	constructor() {
 		this.positionX = 0, this.positionY = 0, this.directionX = C$1.none, this.directionY = C$1.none, this.overlapCheckRequestTime = 0;
 	}
 }, A$1 = class {
+	element;
+	requestX;
+	requestY;
+	scrollLeft;
+	scrollTop;
 	constructor() {
 		this.element = null, this.requestX = null, this.requestY = null, this.scrollLeft = 0, this.scrollTop = 0;
 	}
@@ -609,6 +627,19 @@ var k$1 = class {
 		this.element && (this.element.scrollTo ? this.element.scrollTo(this.scrollLeft, this.scrollTop) : (this.element.scrollLeft = this.scrollLeft, this.element.scrollTop = this.scrollTop));
 	}
 }, j$1 = class {
+	item;
+	element;
+	isActive;
+	isEnding;
+	direction;
+	value;
+	maxValue;
+	threshold;
+	distance;
+	deltaTime;
+	speed;
+	duration;
+	action;
 	constructor() {
 		this.item = null, this.element = null, this.isActive = !1, this.isEnding = !1, this.direction = 0, this.value = NaN, this.maxValue = 0, this.threshold = 0, this.distance = 0, this.deltaTime = 0, this.speed = 0, this.duration = 0, this.action = null;
 	}
@@ -659,6 +690,17 @@ function M(e$6 = 500, t$6 = .5, n$7 = .25) {
 	};
 }
 var N = class {
+	items;
+	settings;
+	_isDestroyed;
+	_isTicking;
+	_tickTime;
+	_tickDeltaTime;
+	_itemData;
+	_actions;
+	_requests;
+	_requestPool;
+	_actionPool;
 	constructor(e$6 = {}) {
 		let { overlapCheckInterval: t$6 = 150 } = e$6;
 		this.items = [], this.settings = { overlapCheckInterval: t$6 }, this._actions = [], this._isDestroyed = !1, this._isTicking = !1, this._tickTime = 0, this._tickDeltaTime = 0, this._requests = {
@@ -826,7 +868,7 @@ var N = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/collision-detector-BraY1xgc.js
+//#region ../dragdoll/dist/collision-detector-DevU0v1G.js
 function n$6(e$6, t$6 = {
 	width: 0,
 	height: 0,
@@ -836,6 +878,9 @@ function n$6(e$6, t$6 = {
 	return e$6 && (t$6.width = e$6.width, t$6.height = e$6.height, t$6.x = e$6.x, t$6.y = e$6.y), t$6;
 }
 var r$3 = class {
+	_items;
+	_index;
+	_initItem;
 	constructor(e$6) {
 		this._items = [], this._index = 0, this._initItem = e$6;
 	}
@@ -853,8 +898,12 @@ var r$3 = class {
 };
 const i$4 = Symbol();
 var a$3 = class {
+	_listenerId;
+	_dndObserver;
+	_cdArenaPool;
+	_cdArenaMap;
 	constructor(e$6) {
-		this._listenerId = Symbol(), this._dndContext = e$6, this._cdArenaPool = [], this._cdArenaMap = /* @__PURE__ */ new Map();
+		this._listenerId = Symbol(), this._dndObserver = e$6, this._cdArenaPool = [], this._cdArenaMap = /* @__PURE__ */ new Map();
 	}
 	_checkCollision(r$5, i$5, a$4) {
 		let o$4 = r$5.getClientRect(), s$6 = i$5.getClientRect();
@@ -915,7 +964,7 @@ function e$3(e$6) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/advanced-collision-detector-Da5CqO32.js
+//#region ../dragdoll/dist/advanced-collision-detector-BRgmG7a-.js
 const s$4 = `visible`;
 function c$4(e$6, t$6, n$7 = []) {
 	let r$5 = t$6 ? e$6 : e$6?.parentNode;
@@ -953,6 +1002,10 @@ function v$2(t$6, i$5 = n$6()) {
 	return i$5;
 }
 var y = class extends a$3 {
+	_dragStates;
+	_visibilityLogic;
+	_listenersAttached;
+	_clearCache;
 	constructor(e$6, t$6) {
 		super(e$6), this._dragStates = /* @__PURE__ */ new Map(), this._visibilityLogic = t$6?.visibilityLogic || `relative`, this._listenersAttached = !1, this._clearCache = () => this.clearCache();
 	}
@@ -1015,7 +1068,7 @@ var y = class extends a$3 {
 		return this._getDragState(e$6), super._getCollisionDataArena(e$6);
 	}
 	_removeCollisionDataArena(e$6) {
-		this._dragStates.delete(e$6) && this._dndContext.drags.size <= 0 && (this._listenersAttached &&= (window.removeEventListener(`scroll`, this._clearCache, { capture: !0 }), window.removeEventListener(`resize`, this._clearCache), !1)), super._removeCollisionDataArena(e$6);
+		this._dragStates.delete(e$6) && this._dndObserver.drags.size <= 0 && (this._listenersAttached &&= (window.removeEventListener(`scroll`, this._clearCache, { capture: !0 }), window.removeEventListener(`resize`, this._clearCache), !1)), super._removeCollisionDataArena(e$6);
 	}
 	detectCollisions(e$6, t$6, n$7) {
 		f$1.length = 0, l$3 = null;
@@ -1151,7 +1204,7 @@ function getOffsetContainer(n$7, t$6 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-BM9bdNuM.js
+//#region ../dragdoll/dist/draggable-oKZ1M89x.js
 function s$3(e$6, t$6) {
 	return e$6.isIdentity && t$6.isIdentity ? !0 : e$6.is2D && t$6.is2D ? e$6.a === t$6.a && e$6.b === t$6.b && e$6.c === t$6.c && e$6.d === t$6.d && e$6.e === t$6.e && e$6.f === t$6.f : e$6.m11 === t$6.m11 && e$6.m12 === t$6.m12 && e$6.m13 === t$6.m13 && e$6.m14 === t$6.m14 && e$6.m21 === t$6.m21 && e$6.m22 === t$6.m22 && e$6.m23 === t$6.m23 && e$6.m24 === t$6.m24 && e$6.m31 === t$6.m31 && e$6.m32 === t$6.m32 && e$6.m33 === t$6.m33 && e$6.m34 === t$6.m34 && e$6.m41 === t$6.m41 && e$6.m42 === t$6.m42 && e$6.m43 === t$6.m43 && e$6.m44 === t$6.m44;
 }
@@ -1174,6 +1227,8 @@ function d(e$6, t$6 = 0) {
 	return Math.round((e$6 + 2 ** -52) * n$7) / n$7;
 }
 var f = class {
+	_cache;
+	_validation;
 	constructor() {
 		this._cache = /* @__PURE__ */ new Map(), this._validation = /* @__PURE__ */ new Set();
 	}
@@ -1199,6 +1254,15 @@ var f = class {
 		this._cache.clear(), this._validation.clear();
 	}
 }, p = class {
+	sensor;
+	startEvent;
+	prevMoveEvent;
+	moveEvent;
+	endEvent;
+	items;
+	isEnded;
+	_matrixCache;
+	_clientOffsetCache;
 	constructor(e$6, t$6) {
 		this.sensor = e$6, this.startEvent = t$6, this.prevMoveEvent = t$6, this.moveEvent = t$6, this.endEvent = null, this.items = [], this.isEnded = !1, this._matrixCache = new f(), this._clientOffsetCache = new f();
 	}
@@ -1297,6 +1361,25 @@ function E(e$6, t$6 = new DOMMatrix()) {
 }
 const D = e$1 ? h() : null;
 var O = class {
+	data;
+	element;
+	elementContainer;
+	elementOffsetContainer;
+	dragContainer;
+	dragOffsetContainer;
+	elementTransformOrigin;
+	elementTransformMatrix;
+	elementOffsetMatrix;
+	frozenStyles;
+	unfrozenStyles;
+	clientRect;
+	position;
+	containerOffset;
+	alignmentOffset;
+	_moveDiff;
+	_alignDiff;
+	_matrixCache;
+	_clientOffsetCache;
 	constructor(e$6, t$6) {
 		if (!e$6.isConnected) throw Error(`Element is not connected`);
 		let { drag: r$5 } = t$6;
@@ -1443,6 +1526,18 @@ const F = {
 	dndGroups: /* @__PURE__ */ new Set()
 };
 var B = class {
+	id;
+	sensors;
+	settings;
+	plugins;
+	drag;
+	isDestroyed;
+	_sensorData;
+	_emitter;
+	_startPhase;
+	_startId;
+	_moveId;
+	_alignId;
 	constructor(e$6, t$6 = {}) {
 		let { id: n$7 = Symbol(),...r$5 } = t$6;
 		this.id = n$7, this.sensors = e$6, this.settings = this._parseSettings(r$5), this.plugins = {}, this.drag = null, this.isDestroyed = !1, this._sensorData = /* @__PURE__ */ new Map(), this._emitter = new v(), this._startPhase = N$1.None, this._startId = Symbol(), this._moveId = Symbol(), this._alignId = Symbol(), this._onMove = this._onMove.bind(this), this._onScroll = this._onScroll.bind(this), this._onEnd = this._onEnd.bind(this), this._prepareStart = this._prepareStart.bind(this), this._applyStart = this._applyStart.bind(this), this._prepareMove = this._prepareMove.bind(this), this._applyMove = this._applyMove.bind(this), this._prepareAlign = this._prepareAlign.bind(this), this._applyAlign = this._applyAlign.bind(this), this.sensors.forEach((e$7) => {
@@ -1662,9 +1757,16 @@ var B = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/droppable-CJLSkRZ2.js
+//#region ../dragdoll/dist/droppable-Cz3L0fgq.js
 const t$2 = { Destroy: `destroy` };
 var n = class {
+	id;
+	element;
+	isDestroyed;
+	accept;
+	data;
+	_clientRect;
+	_emitter;
 	constructor(t$6, n$7 = {}) {
 		let { id: r$5 = Symbol(), accept: i$5 = () => !0, data: a$4 = {} } = n$7;
 		this.id = r$5, this.element = t$6, this.isDestroyed = !1, this.accept = i$5, this.data = a$4, this._clientRect = {
@@ -1693,7 +1795,7 @@ var n = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/dnd-context-BWOOExer.js
+//#region ../dragdoll/dist/dnd-observer-iQeg3pV4.js
 var s$2 = function(e$6) {
 	return e$6[e$6.Idle = 0] = `Idle`, e$6[e$6.Computing = 1] = `Computing`, e$6[e$6.Computed = 2] = `Computed`, e$6[e$6.Emitting = 3] = `Emitting`, e$6;
 }(s$2 || {});
@@ -1714,14 +1816,16 @@ const c$2 = {
 	Destroy: `destroy`
 };
 var u = class {
-	constructor(r$5 = {}) {
-		this._onScroll = () => {
-			this._drags.size !== 0 && (r$1.once(n$2.read, () => {
-				this.updateDroppableClientRects();
-			}, this._listenerId), this.detectCollisions());
-		};
-		let { collisionDetector: i$5 } = r$5;
-		this.draggables = /* @__PURE__ */ new Map(), this.droppables = /* @__PURE__ */ new Map(), this.isDestroyed = !1, this._drags = /* @__PURE__ */ new Map(), this._listenerId = Symbol(), this._emitter = new v(), this._onScroll = this._onScroll.bind(this), this._collisionDetector = i$5 ? i$5(this) : new a$3(this);
+	draggables;
+	droppables;
+	isDestroyed;
+	_drags;
+	_listenerId;
+	_collisionDetector;
+	_emitter;
+	constructor(e$6 = {}) {
+		let { collisionDetector: t$6 } = e$6;
+		this.draggables = /* @__PURE__ */ new Map(), this.droppables = /* @__PURE__ */ new Map(), this.isDestroyed = !1, this._drags = /* @__PURE__ */ new Map(), this._listenerId = Symbol(), this._emitter = new v(), this._onScroll = this._onScroll.bind(this), this._collisionDetector = t$6 ? t$6(this) : new a$3(this);
 	}
 	get drags() {
 		return this._drags;
@@ -1807,6 +1911,11 @@ var u = class {
 	_onDraggableDestroy(e$6) {
 		this.removeDraggables([e$6]);
 	}
+	_onScroll = () => {
+		this._drags.size !== 0 && (r$1.once(n$2.read, () => {
+			this.updateDroppableClientRects();
+		}, this._listenerId), this.detectCollisions());
+	};
 	_stopDrag(n$7, r$5 = !1) {
 		let i$5 = this._drags.get(n$7);
 		if (!i$5 || i$5.isEnded) return;
@@ -1946,7 +2055,7 @@ var u = class {
 	}
 	destroy() {
 		if (this.isDestroyed) return;
-		if (Array.from(this._drags.values()).some((e$7) => e$7._cd.phase === s$2.Emitting)) throw Error(`Cannot destroy the DndContext while collisions are being emitted.`);
+		if (Array.from(this._drags.values()).some((e$7) => e$7._cd.phase === s$2.Emitting)) throw Error(`Cannot destroy the DndObserver while collisions are being emitted.`);
 		this.isDestroyed = !0, this.draggables.forEach((e$7) => {
 			e$7.off(R.PrepareStart, this._listenerId), e$7.off(R.Start, this._listenerId), e$7.off(R.PrepareMove, this._listenerId), e$7.off(R.Move, this._listenerId), e$7.off(R.End, this._listenerId), e$7.off(R.Destroy, this._listenerId);
 		}), this.droppables.forEach((e$7) => {
@@ -1959,7 +2068,7 @@ var u = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/pointer-sensor-BNmXr-6_.js
+//#region ../dragdoll/dist/pointer-sensor-D3DHn381.js
 function i$3(e$6, t$6) {
 	if (`pointerId` in e$6) return e$6.pointerId === t$6 ? e$6 : null;
 	if (`changedTouches` in e$6) {
@@ -2006,6 +2115,14 @@ const l$1 = {
 	}
 };
 var u$1 = class {
+	element;
+	drag;
+	isDestroyed;
+	_startPredicate;
+	_listenerOptions;
+	_sourceEvents;
+	_areWindowListenersBound;
+	_emitter;
 	constructor(e$6, t$6 = {}) {
 		let { listenerOptions: n$7 = {}, sourceEvents: i$5 = `auto`, startPredicate: a$4 = (e$7) => !(`button` in e$7 && e$7.button > 0) } = t$6;
 		this.element = e$6, this.drag = null, this.isDestroyed = !1, this._areWindowListenersBound = !1, this._startPredicate = a$4, this._listenerOptions = s$1(n$7), this._sourceEvents = c$1(i$5), this._emitter = new v(), this._onStart = this._onStart.bind(this), this._onMove = this._onMove.bind(this), this._onCancel = this._onCancel.bind(this), this._onEnd = this._onEnd.bind(this), e$6.addEventListener(l$1[this._sourceEvents].start, this._onStart, this._listenerOptions);
@@ -2114,11 +2231,11 @@ var u$1 = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-CYnpz5w3.js
+//#region ../dragdoll/dist/auto-scroll-Bx5lxGCK.js
 const t = new N();
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-plugin-CgUl8sXM.js
+//#region ../dragdoll/dist/auto-scroll-plugin-Coj8s496.js
 const r$2 = {
 	x: 0,
 	y: 0
@@ -2151,6 +2268,10 @@ function a$1() {
 	};
 }
 var o = class {
+	_draggableAutoScroll;
+	_draggable;
+	_position;
+	_clientRect;
 	constructor(e$6, t$6) {
 		this._draggableAutoScroll = e$6, this._draggable = t$6, this._position = {
 			x: 0,
@@ -2193,6 +2314,10 @@ var o = class {
 		return this._getSettings().onStop;
 	}
 }, s = class {
+	name;
+	version;
+	settings;
+	_autoScrollProxy;
 	constructor(e$6, r$5 = {}) {
 		this.name = `autoscroll`, this.version = `0.0.3`, this.settings = this._parseSettings(r$5), this._autoScrollProxy = null, e$6.on(R.Start, () => {
 			this._autoScrollProxy || (this._autoScrollProxy = new o(this, e$6), t.addItem(this._autoScrollProxy));
@@ -2225,8 +2350,11 @@ function c(e$6) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/base-sensor-CiXk6Egt.js
+//#region ../dragdoll/dist/base-sensor-DVrttP21.js
 var n$3 = class {
+	drag;
+	isDestroyed;
+	_emitter;
 	constructor() {
 		this.drag = null, this.isDestroyed = !1, this._emitter = new v();
 	}
@@ -2273,8 +2401,11 @@ var n$3 = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/base-motion-sensor-BxKMtkJL.js
+//#region ../dragdoll/dist/base-motion-sensor-QRxjT_GX.js
 var i = class extends n$3 {
+	drag;
+	_direction;
+	_speed;
 	constructor() {
 		super(), this.drag = null, this._direction = {
 			x: 0,
@@ -2317,7 +2448,7 @@ var i = class extends n$3 {
 };
 
 //#endregion
-//#region ../dragdoll/dist/keyboard-motion-sensor-B2HqNPGM.js
+//#region ../dragdoll/dist/keyboard-motion-sensor-BsMzohjd.js
 const n$1 = [
 	`start`,
 	`cancel`,
@@ -2359,6 +2490,20 @@ const i$1 = {
 	}
 };
 var a = class extends i {
+	element;
+	_moveKeys;
+	_moveKeyTimestamps;
+	_startKeys;
+	_moveLeftKeys;
+	_moveRightKeys;
+	_moveUpKeys;
+	_moveDownKeys;
+	_cancelKeys;
+	_endKeys;
+	_cancelOnBlur;
+	_cancelOnVisibilityChange;
+	_computeSpeed;
+	_startPredicate;
 	constructor(e$6, t$6 = {}) {
 		super();
 		let { startPredicate: n$7 = i$1.startPredicate, computeSpeed: r$5 = i$1.computeSpeed, cancelOnVisibilityChange: a$4 = i$1.cancelOnVisibilityChange, cancelOnBlur: o$4 = i$1.cancelOnBlur, startKeys: s$6 = i$1.startKeys, moveLeftKeys: c$6 = i$1.moveLeftKeys, moveRightKeys: l$6 = i$1.moveRightKeys, moveUpKeys: u$6 = i$1.moveUpKeys, moveDownKeys: d$3 = i$1.moveDownKeys, cancelKeys: f$3 = i$1.cancelKeys, endKeys: p$3 = i$1.endKeys } = t$6;
@@ -2452,7 +2597,7 @@ const bestMatchMap = /* @__PURE__ */ new Map();
 const scrollContainers = [...document.querySelectorAll(".scroll-list")];
 const draggableElements = [...document.querySelectorAll(".draggable")];
 const droppableElements = [...document.querySelectorAll(".droppable")];
-const dndContext = new u({ collisionDetector: (ctx) => new y(ctx) });
+const dndObserver = new u({ collisionDetector: (ctx) => new y(ctx) });
 const droppables = [];
 for (const droppableElement of droppableElements) {
 	const droppable = new n(droppableElement);
@@ -2481,9 +2626,9 @@ for (const draggableElement of draggableElements) {
 	})) }));
 	draggables.push(draggable);
 }
-dndContext.addDroppables(droppables);
-dndContext.addDraggables(draggables);
-dndContext.on(l.Collide, ({ draggable, contacts }) => {
+dndObserver.addDroppables(droppables);
+dndObserver.addDraggables(draggables);
+dndObserver.on(l.Collide, ({ draggable, contacts }) => {
 	const draggableElement = draggable.drag?.items[0].element;
 	if (!draggableElement) return;
 	const draggableId = draggableElement.getAttribute("data-id") || "";
@@ -2504,7 +2649,7 @@ dndContext.on(l.Collide, ({ draggable, contacts }) => {
 		bestMatchMap.set(draggable, nextBestMatch);
 	}
 });
-dndContext.on(l.End, ({ draggable, canceled }) => {
+dndObserver.on(l.End, ({ draggable, canceled }) => {
 	const draggableElement = draggable.drag?.items[0].element;
 	if (!draggableElement) return;
 	const bestMatch = bestMatchMap.get(draggable);

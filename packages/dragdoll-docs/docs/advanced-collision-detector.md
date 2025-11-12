@@ -1,4 +1,4 @@
-[DndContext](/dnd-context) → [CollisionDetector](/collision-detector)
+[DndObserver](/dnd-observer) → [CollisionDetector](/collision-detector)
 
 # AdvancedCollisionDetector
 
@@ -7,19 +7,19 @@ The `AdvancedCollisionDetector` extends the base [`CollisionDetector`](/collisio
 ## Example
 
 ```ts
-import { DndContext } from 'dragdoll/dnd-context';
-import { AdvancedCollisionDetector } from 'dragdoll/dnd-context/advanced-collision-detector';
+import { DndObserver } from 'dragdoll/dnd-observer';
+import { AdvancedCollisionDetector } from 'dragdoll/dnd-observer/advanced-collision-detector';
 
 // By default, uses relative visibility logic (relative to the first common clip
 // container (FCCC) between the draggable and droppable).
-const dnd = new DndContext({
+const dnd = new DndObserver({
   collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx),
 });
 ```
 
 ```ts
 // You can also use absolute visibility (relative to the user/window).
-const dnd = new DndContext({
+const dnd = new DndObserver({
   collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx, { visibilityLogic: 'absolute' }),
 });
 ```
@@ -30,7 +30,10 @@ const dnd = new DndContext({
 class AdvancedCollisionDetector<
   T extends AdvancedCollisionData = AdvancedCollisionData,
 > extends CollisionDetector<T> {
-  constructor(dndContext: DndContext<T>, options?: { visibilityLogic: 'relative' | 'absolute' }) {}
+  constructor(
+    dndObserver: DndObserver<T>,
+    options?: { visibilityLogic: 'relative' | 'absolute' },
+  ) {}
 }
 ```
 
@@ -42,8 +45,8 @@ class AdvancedCollisionDetector<
 
 ### Constructor Parameters
 
-1. **dndContext**
-   - The [`DndContext`](/dnd-context) instance this detector belongs to.
+1. **dndObserver**
+   - The [`DndObserver`](/dnd-observer) instance this detector belongs to.
 2. **options**
    - An optional configuration object with the following properties:
      - **`visibilityLogic`**
@@ -73,7 +76,7 @@ If you provide a `draggable` argument, only the cache for that draggable will be
 
 ```ts
 // Import
-import type { AdvancedCollisionData } from 'dragdoll/dnd-context/advanced-collision-detector';
+import type { AdvancedCollisionData } from 'dragdoll/dnd-observer/advanced-collision-detector';
 
 // Interface
 interface AdvancedCollisionData extends CollisionData {

@@ -1,0 +1,2 @@
+import{t as e}from"./use-isomorphic-layout-effect-D2LtpjJM.js";import{t}from"./are-configs-equal-Cv4ZY5_I.js";import{useRef as n}from"react";import{autoScrollPlugin as r}from"dragdoll";function i(i,a){let o=n(a);o.current=a;let s=n(a);return e(()=>{i&&(i.plugins.autoscroll||(i.use(r(o.current)),s.current=o.current))},[i]),e(()=>{let e=i?.plugins.autoscroll;e&&(t(s.current,a)||e.updateSettings(e._parseSettings(a)),s.current=a)},[i,a]),i}export{i as t};
+//# sourceMappingURL=use-draggable-auto-scroll-Bfc-BIux.js.map

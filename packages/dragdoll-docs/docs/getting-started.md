@@ -1,18 +1,31 @@
 # Getting Started
 
+`dragdoll` is distributed as ES modules via subpath exports. Each module has its own entry point so you can import only what you need. That being said, _everything_ is also exported via the root `dragdoll` module to provide a bit better developer experience.
+
 ## Install
 
-DragDoll is distributed as ES modules with subpath imports. Each module has its own entry point so you can import only what you need. That being said, _everything_ is additionally exported via the root `dragdoll` module to provide a bit better developer experience.
-
-There are three dependencies, [Eventti](https://github.com/niklasramo/eventti), [Tikki](https://github.com/niklasramo/tikki) and [Mezr](https://github.com/niklasramo/mezr), all of which are lightweight and performant libraries. Eventti is used for emitting all the events, Tikki is used for managing the animation loop when necessary and a few utilities from Mezr are used for calculating tricky DOM bits.
-
-### Node
-
 ```bash
-$ npm install dragdoll eventti tikki mezr
+npm install dragdoll
 ```
 
-### Browser
+With peer dependencies:
+
+```bash
+npm install dragdoll eventti tikki mezr
+```
+
+## Peer Dependencies
+
+- [`eventti`](https://github.com/niklasramo/eventti) (^4.0.3)
+  - Used for emitting all the events.
+- [`tikki`](https://github.com/niklasramo/tikki) (^3.0.2)
+  - Used for batching DOM operations when necessary (reads and writes).
+- [`mezr`](https://github.com/niklasramo/mezr) (^v1.1.0)
+  - Used for calculating tricky DOM bits.
+
+## CDN Setup
+
+It's possible to use `dragdoll` via CDN by adding an `importmap` to your HTML file. This is useful if you don't want to use a package manager or if you want to use `dragdoll` in a non-bundled environment.
 
 ```html
 <script type="importmap">
@@ -23,7 +36,7 @@ $ npm install dragdoll eventti tikki mezr
       "mezr/getRect": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getRect.js",
       "mezr/getDistance": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getDistance.js",
       "mezr/getOffsetContainer": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getOffsetContainer.js",
-      "dragdoll": "https://cdn.jsdelivr.net/npm/dragdoll@0.10.0/dist/index.js"
+      "dragdoll": "https://cdn.jsdelivr.net/npm/dragdoll@0.11.0/dist/index.js"
     }
   }
 </script>

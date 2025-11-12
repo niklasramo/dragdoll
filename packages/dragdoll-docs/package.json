@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "vitepress build docs",
-    "build:examples": "node ./scripts/build-examples.mjs",
+    "build:examples": "node ./scripts/build-examples.mjs && node ./scripts/build-react-examples.mjs",
     "dev": "vitepress dev docs --host",
     "prettier:check": "prettier --check --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,html,css,yml,yaml}\"",
     "prettier:write": "prettier --write --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,html,css,yml,yaml}\"",

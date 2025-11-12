@@ -1,6 +1,8 @@
-import pkg from 'dragdoll/package.json' assert { type: 'json' };
+import pkg from 'dragdoll/package.json' with { type: 'json' };
+import pkgReact from 'dragdoll-react/package.json' with { type: 'json' };
 
 const { version } = pkg;
+const { version: versionReact } = pkgReact;
 
 export default {
   base: '/dragdoll/',
@@ -18,7 +20,8 @@ export default {
     siteTitle: '',
     nav: nav(),
     sidebar: {
-      '/': sidebarGuide(),
+      '/': sidebarMain(),
+      '/react/': sidebarReact(),
     },
     outline: [2, 3],
     editLink: {
@@ -37,7 +40,7 @@ export default {
     ],
     footer: {
       message: 'DragDoll is released under the MIT License.',
-      copyright: 'Copyright © 2022-present Niklas Rämö',
+      copyright: 'Copyright © 2022-2025 Niklas Rämö',
     },
     search: {
       provider: 'local',
@@ -63,29 +66,15 @@ export default {
 
 function nav() {
   return [
-    {
-      text: `v${version}`,
-      items: [
-        {
-          text: 'Releases',
-          link: 'https://github.com/niklasramo/dragdoll/releases',
-        },
-        {
-          text: 'Contributing',
-          link: 'https://github.com/niklasramo/dragdoll/blob/master/CONTRIBUTING.md',
-        },
-        {
-          text: 'License',
-          link: 'https://github.com/niklasramo/dragdoll/blob/master/LICENSE.md',
-        },
-      ],
-    },
+    { text: 'Core', link: '/', activeMatch: '^(?!/react/).*', ariaLabel: 'Core documentation' },
+    { text: 'React', link: '/react', activeMatch: '^/react/', ariaLabel: 'React documentation' },
   ];
 }
 
-function sidebarGuide() {
+function sidebarMain() {
   return [
     {
+      text: `Core v${version}`,
       collapsible: false,
       items: [
         { text: 'Introduction', link: '/' },
@@ -142,19 +131,83 @@ function sidebarGuide() {
       ],
     },
     {
-      text: 'Drag and Drop',
+      text: 'Droppable',
+      collapsible: false,
+      items: [{ text: 'Droppable', link: '/droppable' }],
+    },
+    {
+      text: 'DndObserver',
       collapsible: false,
       items: [
         {
-          text: 'DndContext',
-          link: '/dnd-context',
+          text: 'DndObserver',
+          link: '/dnd-observer',
           collapsible: false,
           items: [
             { text: 'CollisionDetector', link: '/collision-detector' },
             { text: 'AdvancedCollisionDetector', link: '/advanced-collision-detector' },
           ],
         },
-        { text: 'Droppable', link: '/droppable' },
+      ],
+    },
+    {
+      text: 'Links',
+      collapsible: false,
+      items: [
+        { text: 'Releases', link: 'https://github.com/niklasramo/dragdoll/releases' },
+        {
+          text: 'Contributing',
+          link: 'https://github.com/niklasramo/dragdoll/blob/master/CONTRIBUTING.md',
+        },
+        { text: 'License', link: 'https://github.com/niklasramo/dragdoll/blob/master/LICENSE.md' },
+      ],
+    },
+  ];
+}
+
+function sidebarReact() {
+  return [
+    {
+      text: `React v${versionReact}`,
+      collapsible: false,
+      items: [
+        { text: 'Introduction', link: '/react/' },
+        { text: 'Getting Started', link: '/react/getting-started' },
+        { text: 'Examples', link: '/react/examples' },
+      ],
+    },
+    {
+      text: 'Sensors',
+      collapsible: false,
+      items: [
+        { text: 'useKeyboardSensor', link: '/react/use-keyboard-sensor' },
+        { text: 'useKeyboardMotionSensor', link: '/react/use-keyboard-motion-sensor' },
+        { text: 'usePointerSensor', link: '/react/use-pointer-sensor' },
+      ],
+    },
+    {
+      text: 'Draggable',
+      collapsible: false,
+      items: [
+        { text: 'useDraggable', link: '/react/use-draggable' },
+        { text: 'useDraggableCallback', link: '/react/use-draggable-callback' },
+        { text: 'useDraggableDrag', link: '/react/use-draggable-drag' },
+        { text: 'useDraggableAutoScroll', link: '/react/use-draggable-auto-scroll' },
+      ],
+    },
+    {
+      text: 'Droppable',
+      collapsible: false,
+      items: [{ text: 'useDroppable', link: '/react/use-droppable' }],
+    },
+    {
+      text: 'DndObserver',
+      collapsible: false,
+      items: [
+        { text: 'DndObserverContext', link: '/react/dnd-observer-context' },
+        { text: 'useDndObserver', link: '/react/use-dnd-observer' },
+        { text: 'useDndObserverContext', link: '/react/use-dnd-observer-context' },
+        { text: 'useDndObserverCallback', link: '/react/use-dnd-observer-callback' },
       ],
     },
   ];

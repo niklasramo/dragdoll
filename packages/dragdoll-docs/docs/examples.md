@@ -1983,9 +1983,9 @@ body {
 
 :::
 
-## DndContext - Basic
+## DndObserver - Basic
 
-A basic example of using DndContext with Draggable and Droppable elements. Here we highlight the dropzone element that overlaps most with the dragged element.
+A basic example of using DndObserver with Draggable and Droppable elements. Here we highlight the dropzone element that overlaps most with the dragged element.
 
 <div class="example"><iframe src="/dragdoll/examples/011-dnd-basic/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/011-dnd-basic/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
@@ -1993,8 +1993,8 @@ A basic example of using DndContext with Draggable and Droppable elements. Here 
 
 ```ts [index.ts]
 import {
-  DndContext,
-  DndContextEventType,
+  DndObserver,
+  DndObserverEventType,
   Draggable,
   Droppable,
   KeyboardMotionSensor,
@@ -2003,8 +2003,8 @@ import {
 
 let zIndex = 0;
 
-// Initialize context and get elements
-const dndContext = new DndContext();
+// Initialize dnd observer and get elements
+const dndObserver = new DndObserver();
 const draggableElements = [...document.querySelectorAll('.draggable')] as HTMLElement[];
 const droppableElements = [...document.querySelectorAll('.droppable')] as HTMLElement[];
 
@@ -2013,7 +2013,7 @@ droppableElements.forEach((element) => {
   const droppable = new Droppable(element);
   droppable.data.overIds = new Set<number>();
   droppable.data.droppedIds = new Set<number>();
-  dndContext.addDroppables([droppable]);
+  dndObserver.addDroppables([droppable]);
 });
 
 // Create draggables
@@ -2029,7 +2029,7 @@ draggableElements.forEach((element) => {
       element.classList.remove('dragging');
     },
   });
-  dndContext.addDraggables([draggable]);
+  dndObserver.addDraggables([draggable]);
 });
 
 // DnD logic
@@ -2037,7 +2037,7 @@ draggableElements.forEach((element) => {
 // On drag start loop through all target droppables and remove the draggable id
 // from the dropped ids set. If the dropped ids set is empty, remove the
 // "draggable-dropped" class from the droppable element.
-dndContext.on(DndContextEventType.Start, (data) => {
+dndObserver.on(DndObserverEventType.Start, (data) => {
   const { draggable, targets } = data;
   targets.forEach((droppable) => {
     droppable.data.droppedIds.delete(draggable.id);
@@ -2049,7 +2049,7 @@ dndContext.on(DndContextEventType.Start, (data) => {
 
 // On each collision change, keep track of the overIds set for each droppable
 // and update the "draggable-over" class based on the over ids set.
-dndContext.on(DndContextEventType.Collide, (data) => {
+dndObserver.on(DndObserverEventType.Collide, (data) => {
   const { draggable, contacts, removedContacts } = data;
 
   // Remove the draggable id from the droppables that stopped colliding and
@@ -2080,7 +2080,7 @@ dndContext.on(DndContextEventType.Collide, (data) => {
   }
 });
 
-dndContext.on(DndContextEventType.End, (data) => {
+dndObserver.on(DndObserverEventType.End, (data) => {
   const { draggable, contacts } = data;
 
   // For the first colliding droppable (best match), add the draggable id to the
@@ -2104,10 +2104,10 @@ dndContext.on(DndContextEventType.End, (data) => {
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>DndContext - Basic</title>
+    <title>DndObserver - Basic</title>
     <meta
       name="description"
-      content="A basic example of using DndContext with Draggable and Droppable elements. Here we highlight the dropzone element that overlaps most with the dragged element."
+      content="A basic example of using DndObserver with Draggable and Droppable elements. Here we highlight the dropzone element that overlaps most with the dragged element."
     />
     <meta
       name="viewport"
@@ -2321,7 +2321,7 @@ body {
 
 :::
 
-## DndContext - Advanced Collision Detector
+## DndObserver - Advanced Collision Detector
 
 Advanced collision detection with scrollable droppable lists. Here we can see how the advanced collision detector respects the visibility of the droppables. Only the visible parts of the droppables (as seen from the perspective of the draggable) are considered for collisions.
 
@@ -2335,8 +2335,8 @@ import {
   AdvancedCollisionDetector,
   AnyDraggable,
   autoScrollPlugin,
-  DndContext,
-  DndContextEventType,
+  DndObserver,
+  DndObserverEventType,
   Draggable,
   Droppable,
   KeyboardMotionSensor,
@@ -2352,8 +2352,8 @@ const scrollContainers = [...document.querySelectorAll('.scroll-list')] as HTMLE
 const draggableElements = [...document.querySelectorAll('.draggable')] as HTMLElement[];
 const droppableElements = [...document.querySelectorAll('.droppable')] as HTMLElement[];
 
-// Initialize DndContext.
-const dndContext = new DndContext<AdvancedCollisionData>({
+// Initialize DndObserver.
+const dndObserver = new DndObserver<AdvancedCollisionData>({
   collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx),
 });
 
@@ -2403,12 +2403,12 @@ for (const draggableElement of draggableElements) {
   draggables.push(draggable);
 }
 
-// Add droppables and draggables to the context.
-dndContext.addDroppables(droppables);
-dndContext.addDraggables(draggables);
+// Add droppables and draggables to the dnd observer.
+dndObserver.addDroppables(droppables);
+dndObserver.addDraggables(draggables);
 
 // On draggable collision with droppables.
-dndContext.on(DndContextEventType.Collide, ({ draggable, contacts }) => {
+dndObserver.on(DndObserverEventType.Collide, ({ draggable, contacts }) => {
   // Get the draggable element.
   const draggableElement = draggable.drag?.items[0].element as HTMLElement | null;
   if (!draggableElement) return;
@@ -2447,7 +2447,7 @@ dndContext.on(DndContextEventType.Collide, ({ draggable, contacts }) => {
 });
 
 // On drag end.
-dndContext.on(DndContextEventType.End, ({ draggable, canceled }) => {
+dndObserver.on(DndObserverEventType.End, ({ draggable, canceled }) => {
   const draggableElement = draggable.drag?.items[0].element as HTMLElement | null;
   if (!draggableElement) return;
 
@@ -2502,7 +2502,7 @@ dndContext.on(DndContextEventType.End, ({ draggable, canceled }) => {
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>DndContext - Advanced Collision Detector</title>
+    <title>DndObserver - Advanced Collision Detector</title>
     <meta
       name="description"
       content="Advanced collision detection with scrollable droppable lists. Here we can see how the advanced collision detector respects the visibility of the droppables. Only the visible parts of the droppables (as seen from the perspective of the draggable) are considered for collisions."

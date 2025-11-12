@@ -59,3 +59,5 @@ export abstract class Sensor<E extends SensorEvents = SensorEvents> {
   abstract cancel(): void;
   abstract destroy(): void;
 }
+
+export type SensorsEventsType<S extends Sensor[]> = S[number]['_events_type'];

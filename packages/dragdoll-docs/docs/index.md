@@ -6,7 +6,7 @@ At its core, DragDoll is built on the concept of [_sensors_](/sensor), which are
 
 To actually move elements around, DragDoll provides the [`Draggable`](/draggable) class. This class acts as an orchestrator for any number of sensors and moves DOM elements based on the drag events emitted by the provided sensors. The [`Draggable`](/draggable) class features a simple and functional API that allows you to control the drag process explicitly from start to finish.
 
-For complete drag and drop experiences, DragDoll also provides [`DndContext`](/dnd-context) and [`Droppable`](/droppable) classes, which handle collision detection between draggable elements and drop targets. Together, these three classes create a powerful foundation for building sophisticated drag and drop interfaces.
+For complete drag and drop experiences, DragDoll also provides [`DndObserver`](/dnd-observer) and [`Droppable`](/droppable) classes, which handle collision detection between draggable elements and drop targets. Together, these three classes create a powerful foundation for building sophisticated drag and drop interfaces.
 
 ## Features
 

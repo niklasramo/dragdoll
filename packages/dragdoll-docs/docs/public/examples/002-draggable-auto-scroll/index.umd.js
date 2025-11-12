@@ -480,7 +480,7 @@ function getDistance(e$5, t$5) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-BzsvSJTw.js
+//#region ../dragdoll/dist/auto-scroll-uAZMypL4.js
 const o$2 = e$3(), s$3 = e$3();
 function c$3(e$5, t$5) {
 	return getDistance(e$3(e$5, o$2), e$3(t$5, s$3));
@@ -507,6 +507,14 @@ function h$1(e$5, t$5) {
 	return !(e$5.x + e$5.width <= t$5.x || t$5.x + t$5.width <= e$5.x || e$5.y + e$5.height <= t$5.y || t$5.y + t$5.height <= e$5.y);
 }
 var g$1 = class {
+	_batchSize;
+	_maxSize;
+	_minSize;
+	_shrinkThreshold;
+	_data;
+	_index;
+	_getItem;
+	_onRelease;
 	constructor(e$5, { batchSize: t$5 = 100, minBatchCount: n$5 = 0, maxBatchCount: r$4 = 2 ** 53 - 1, initialBatchCount: i$4 = 0, shrinkThreshold: a$3 = 2, onRelease: o$4 } = {}) {
 		this._batchSize = Math.floor(Math.max(t$5, 1)), this._minSize = Math.floor(Math.max(n$5, 0)) * this._batchSize, this._maxSize = Math.floor(Math.min(Math.max(r$4 * this._batchSize, this._batchSize), 2 ** 53 - 1)), this._shrinkThreshold = Math.floor(Math.max(a$3, 1) * this._batchSize), this._data = Array(Math.floor(Math.max(Math.max(i$4, n$5) * this._batchSize, 0))), this._index = 0, this._getItem = e$5, this._onRelease = o$4;
 	}
@@ -586,10 +594,20 @@ function O$1(e$5, t$5, n$5, r$4) {
 	return Math.max(0, n$5 + e$5 * 2 + r$4 * t$5 - r$4) / 2;
 }
 var k$1 = class {
+	positionX;
+	positionY;
+	directionX;
+	directionY;
+	overlapCheckRequestTime;
 	constructor() {
 		this.positionX = 0, this.positionY = 0, this.directionX = C$1.none, this.directionY = C$1.none, this.overlapCheckRequestTime = 0;
 	}
 }, A$1 = class {
+	element;
+	requestX;
+	requestY;
+	scrollLeft;
+	scrollTop;
 	constructor() {
 		this.element = null, this.requestX = null, this.requestY = null, this.scrollLeft = 0, this.scrollTop = 0;
 	}
@@ -609,6 +627,19 @@ var k$1 = class {
 		this.element && (this.element.scrollTo ? this.element.scrollTo(this.scrollLeft, this.scrollTop) : (this.element.scrollLeft = this.scrollLeft, this.element.scrollTop = this.scrollTop));
 	}
 }, j$1 = class {
+	item;
+	element;
+	isActive;
+	isEnding;
+	direction;
+	value;
+	maxValue;
+	threshold;
+	distance;
+	deltaTime;
+	speed;
+	duration;
+	action;
 	constructor() {
 		this.item = null, this.element = null, this.isActive = !1, this.isEnding = !1, this.direction = 0, this.value = NaN, this.maxValue = 0, this.threshold = 0, this.distance = 0, this.deltaTime = 0, this.speed = 0, this.duration = 0, this.action = null;
 	}
@@ -659,6 +690,17 @@ function M(e$5 = 500, t$5 = .5, n$5 = .25) {
 	};
 }
 var N = class {
+	items;
+	settings;
+	_isDestroyed;
+	_isTicking;
+	_tickTime;
+	_tickDeltaTime;
+	_itemData;
+	_actions;
+	_requests;
+	_requestPool;
+	_actionPool;
 	constructor(e$5 = {}) {
 		let { overlapCheckInterval: t$5 = 150 } = e$5;
 		this.items = [], this.settings = { overlapCheckInterval: t$5 }, this._actions = [], this._isDestroyed = !1, this._isTicking = !1, this._tickTime = 0, this._tickDeltaTime = 0, this._requests = {
@@ -952,7 +994,7 @@ function getOffsetContainer(n$5, t$5 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-BM9bdNuM.js
+//#region ../dragdoll/dist/draggable-oKZ1M89x.js
 function s$2(e$5, t$5) {
 	return e$5.isIdentity && t$5.isIdentity ? !0 : e$5.is2D && t$5.is2D ? e$5.a === t$5.a && e$5.b === t$5.b && e$5.c === t$5.c && e$5.d === t$5.d && e$5.e === t$5.e && e$5.f === t$5.f : e$5.m11 === t$5.m11 && e$5.m12 === t$5.m12 && e$5.m13 === t$5.m13 && e$5.m14 === t$5.m14 && e$5.m21 === t$5.m21 && e$5.m22 === t$5.m22 && e$5.m23 === t$5.m23 && e$5.m24 === t$5.m24 && e$5.m31 === t$5.m31 && e$5.m32 === t$5.m32 && e$5.m33 === t$5.m33 && e$5.m34 === t$5.m34 && e$5.m41 === t$5.m41 && e$5.m42 === t$5.m42 && e$5.m43 === t$5.m43 && e$5.m44 === t$5.m44;
 }
@@ -975,6 +1017,8 @@ function d(e$5, t$5 = 0) {
 	return Math.round((e$5 + 2 ** -52) * n$5) / n$5;
 }
 var f = class {
+	_cache;
+	_validation;
 	constructor() {
 		this._cache = /* @__PURE__ */ new Map(), this._validation = /* @__PURE__ */ new Set();
 	}
@@ -1000,6 +1044,15 @@ var f = class {
 		this._cache.clear(), this._validation.clear();
 	}
 }, p = class {
+	sensor;
+	startEvent;
+	prevMoveEvent;
+	moveEvent;
+	endEvent;
+	items;
+	isEnded;
+	_matrixCache;
+	_clientOffsetCache;
 	constructor(e$5, t$5) {
 		this.sensor = e$5, this.startEvent = t$5, this.prevMoveEvent = t$5, this.moveEvent = t$5, this.endEvent = null, this.items = [], this.isEnded = !1, this._matrixCache = new f(), this._clientOffsetCache = new f();
 	}
@@ -1098,6 +1151,25 @@ function E(e$5, t$5 = new DOMMatrix()) {
 }
 const D = e$1 ? h() : null;
 var O = class {
+	data;
+	element;
+	elementContainer;
+	elementOffsetContainer;
+	dragContainer;
+	dragOffsetContainer;
+	elementTransformOrigin;
+	elementTransformMatrix;
+	elementOffsetMatrix;
+	frozenStyles;
+	unfrozenStyles;
+	clientRect;
+	position;
+	containerOffset;
+	alignmentOffset;
+	_moveDiff;
+	_alignDiff;
+	_matrixCache;
+	_clientOffsetCache;
 	constructor(e$5, t$5) {
 		if (!e$5.isConnected) throw Error(`Element is not connected`);
 		let { drag: r$4 } = t$5;
@@ -1244,6 +1316,18 @@ const F = {
 	dndGroups: /* @__PURE__ */ new Set()
 };
 var B = class {
+	id;
+	sensors;
+	settings;
+	plugins;
+	drag;
+	isDestroyed;
+	_sensorData;
+	_emitter;
+	_startPhase;
+	_startId;
+	_moveId;
+	_alignId;
 	constructor(e$5, t$5 = {}) {
 		let { id: n$5 = Symbol(),...r$4 } = t$5;
 		this.id = n$5, this.sensors = e$5, this.settings = this._parseSettings(r$4), this.plugins = {}, this.drag = null, this.isDestroyed = !1, this._sensorData = /* @__PURE__ */ new Map(), this._emitter = new v(), this._startPhase = N$1.None, this._startId = Symbol(), this._moveId = Symbol(), this._alignId = Symbol(), this._onMove = this._onMove.bind(this), this._onScroll = this._onScroll.bind(this), this._onEnd = this._onEnd.bind(this), this._prepareStart = this._prepareStart.bind(this), this._applyStart = this._applyStart.bind(this), this._prepareMove = this._prepareMove.bind(this), this._applyMove = this._applyMove.bind(this), this._prepareAlign = this._prepareAlign.bind(this), this._applyAlign = this._applyAlign.bind(this), this.sensors.forEach((e$6) => {
@@ -1463,7 +1547,7 @@ var B = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/pointer-sensor-BNmXr-6_.js
+//#region ../dragdoll/dist/pointer-sensor-D3DHn381.js
 function i$3(e$5, t$5) {
 	if (`pointerId` in e$5) return e$5.pointerId === t$5 ? e$5 : null;
 	if (`changedTouches` in e$5) {
@@ -1510,6 +1594,14 @@ const l = {
 	}
 };
 var u = class {
+	element;
+	drag;
+	isDestroyed;
+	_startPredicate;
+	_listenerOptions;
+	_sourceEvents;
+	_areWindowListenersBound;
+	_emitter;
 	constructor(e$5, t$5 = {}) {
 		let { listenerOptions: n$5 = {}, sourceEvents: i$4 = `auto`, startPredicate: a$3 = (e$6) => !(`button` in e$6 && e$6.button > 0) } = t$5;
 		this.element = e$5, this.drag = null, this.isDestroyed = !1, this._areWindowListenersBound = !1, this._startPredicate = a$3, this._listenerOptions = s$1(n$5), this._sourceEvents = c$1(i$4), this._emitter = new v(), this._onStart = this._onStart.bind(this), this._onMove = this._onMove.bind(this), this._onCancel = this._onCancel.bind(this), this._onEnd = this._onEnd.bind(this), e$5.addEventListener(l[this._sourceEvents].start, this._onStart, this._listenerOptions);
@@ -1618,11 +1710,11 @@ var u = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-CYnpz5w3.js
+//#region ../dragdoll/dist/auto-scroll-Bx5lxGCK.js
 const t = new N();
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-plugin-CgUl8sXM.js
+//#region ../dragdoll/dist/auto-scroll-plugin-Coj8s496.js
 const r$2 = {
 	x: 0,
 	y: 0
@@ -1655,6 +1747,10 @@ function a$1() {
 	};
 }
 var o = class {
+	_draggableAutoScroll;
+	_draggable;
+	_position;
+	_clientRect;
 	constructor(e$5, t$5) {
 		this._draggableAutoScroll = e$5, this._draggable = t$5, this._position = {
 			x: 0,
@@ -1697,6 +1793,10 @@ var o = class {
 		return this._getSettings().onStop;
 	}
 }, s = class {
+	name;
+	version;
+	settings;
+	_autoScrollProxy;
 	constructor(e$5, r$4 = {}) {
 		this.name = `autoscroll`, this.version = `0.0.3`, this.settings = this._parseSettings(r$4), this._autoScrollProxy = null, e$5.on(R.Start, () => {
 			this._autoScrollProxy || (this._autoScrollProxy = new o(this, e$5), t.addItem(this._autoScrollProxy));
@@ -1729,8 +1829,11 @@ function c(e$5) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/base-sensor-CiXk6Egt.js
+//#region ../dragdoll/dist/base-sensor-DVrttP21.js
 var n$2 = class {
+	drag;
+	isDestroyed;
+	_emitter;
 	constructor() {
 		this.drag = null, this.isDestroyed = !1, this._emitter = new v();
 	}
@@ -1777,8 +1880,11 @@ var n$2 = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/base-motion-sensor-BxKMtkJL.js
+//#region ../dragdoll/dist/base-motion-sensor-QRxjT_GX.js
 var i = class extends n$2 {
+	drag;
+	_direction;
+	_speed;
 	constructor() {
 		super(), this.drag = null, this._direction = {
 			x: 0,
@@ -1821,7 +1927,7 @@ var i = class extends n$2 {
 };
 
 //#endregion
-//#region ../dragdoll/dist/keyboard-motion-sensor-B2HqNPGM.js
+//#region ../dragdoll/dist/keyboard-motion-sensor-BsMzohjd.js
 const n = [
 	`start`,
 	`cancel`,
@@ -1863,6 +1969,20 @@ const i$1 = {
 	}
 };
 var a = class extends i {
+	element;
+	_moveKeys;
+	_moveKeyTimestamps;
+	_startKeys;
+	_moveLeftKeys;
+	_moveRightKeys;
+	_moveUpKeys;
+	_moveDownKeys;
+	_cancelKeys;
+	_endKeys;
+	_cancelOnBlur;
+	_cancelOnVisibilityChange;
+	_computeSpeed;
+	_startPredicate;
 	constructor(e$5, t$5 = {}) {
 		super();
 		let { startPredicate: n$5 = i$1.startPredicate, computeSpeed: r$4 = i$1.computeSpeed, cancelOnVisibilityChange: a$3 = i$1.cancelOnVisibilityChange, cancelOnBlur: o$4 = i$1.cancelOnBlur, startKeys: s$4 = i$1.startKeys, moveLeftKeys: c$4 = i$1.moveLeftKeys, moveRightKeys: l$4 = i$1.moveRightKeys, moveUpKeys: u$4 = i$1.moveUpKeys, moveDownKeys: d$2 = i$1.moveDownKeys, cancelKeys: f$2 = i$1.cancelKeys, endKeys: p$2 = i$1.endKeys } = t$5;

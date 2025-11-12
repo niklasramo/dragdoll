@@ -1,6 +1,6 @@
 import {
-  DndContext,
-  DndContextEventType,
+  DndObserver,
+  DndObserverEventType,
   Draggable,
   Droppable,
   KeyboardMotionSensor,
@@ -9,8 +9,8 @@ import {
 
 let zIndex = 0;
 
-// Initialize context and get elements
-const dndContext = new DndContext();
+// Initialize dnd observer and get elements
+const dndObserver = new DndObserver();
 const draggableElements = [...document.querySelectorAll('.draggable')] as HTMLElement[];
 const droppableElements = [...document.querySelectorAll('.droppable')] as HTMLElement[];
 
@@ -19,7 +19,7 @@ droppableElements.forEach((element) => {
   const droppable = new Droppable(element);
   droppable.data.overIds = new Set<number>();
   droppable.data.droppedIds = new Set<number>();
-  dndContext.addDroppables([droppable]);
+  dndObserver.addDroppables([droppable]);
 });
 
 // Create draggables
@@ -35,7 +35,7 @@ draggableElements.forEach((element) => {
       element.classList.remove('dragging');
     },
   });
-  dndContext.addDraggables([draggable]);
+  dndObserver.addDraggables([draggable]);
 });
 
 // DnD logic
@@ -43,7 +43,7 @@ draggableElements.forEach((element) => {
 // On drag start loop through all target droppables and remove the draggable id
 // from the dropped ids set. If the dropped ids set is empty, remove the
 // "draggable-dropped" class from the droppable element.
-dndContext.on(DndContextEventType.Start, (data) => {
+dndObserver.on(DndObserverEventType.Start, (data) => {
   const { draggable, targets } = data;
   targets.forEach((droppable) => {
     droppable.data.droppedIds.delete(draggable.id);
@@ -55,7 +55,7 @@ dndContext.on(DndContextEventType.Start, (data) => {
 
 // On each collision change, keep track of the overIds set for each droppable
 // and update the "draggable-over" class based on the over ids set.
-dndContext.on(DndContextEventType.Collide, (data) => {
+dndObserver.on(DndObserverEventType.Collide, (data) => {
   const { draggable, contacts, removedContacts } = data;
 
   // Remove the draggable id from the droppables that stopped colliding and
@@ -86,7 +86,7 @@ dndContext.on(DndContextEventType.Collide, (data) => {
   }
 });
 
-dndContext.on(DndContextEventType.End, (data) => {
+dndObserver.on(DndObserverEventType.End, (data) => {
   const { draggable, contacts } = data;
 
   // For the first colliding droppable (best match), add the draggable id to the

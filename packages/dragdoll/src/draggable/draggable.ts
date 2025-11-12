@@ -1,6 +1,11 @@
 import { Emitter } from 'eventti';
 import { IS_BROWSER } from '../constants.js';
-import type { Sensor, SensorEventListenerId, SensorEvents } from '../sensors/sensor.js';
+import type {
+  Sensor,
+  SensorEventListenerId,
+  SensorEvents,
+  SensorsEventsType,
+} from '../sensors/sensor.js';
 import { SensorEventType } from '../sensors/sensor.js';
 import { ticker, tickerPhases } from '../singletons/ticker.js';
 import type { CSSProperties, Point, Rect, Writeable } from '../types.js';
@@ -34,9 +39,6 @@ enum DraggableStartPredicateState {
   Resolved = 1,
   Rejected = 2,
 }
-
-// Internal type for inferring the events type from the sensor type.
-type E<S extends Sensor[]> = S[number]['_events_type'];
 
 export type AnyDraggable = Draggable<any, any>;
 
@@ -90,7 +92,7 @@ export interface DraggableSettings<S extends Sensor[]> {
   startPredicate: (data: {
     draggable: Draggable<S>;
     sensor: S[number];
-    event: E<S>['start'] | E<S>['move'];
+    event: SensorsEventsType<S>['start'] | SensorsEventsType<S>['move'];
   }) => boolean | undefined;
   elements: (data: {
     draggable: Draggable<S>;
@@ -123,6 +125,10 @@ export interface DraggableSettings<S extends Sensor[]> {
   onDestroy?: (draggable: Draggable<S>) => void;
 }
 
+export interface DraggableOptions<S extends Sensor[]> extends Partial<DraggableSettings<S>> {
+  id?: DraggableId;
+}
+
 export interface DraggablePlugin {
   name: string;
   version: string;
@@ -149,6 +155,11 @@ export interface DraggableEventCallbacks<E extends SensorEvents> {
   [DraggableEventType.End]: (event: E['end'] | E['cancel'] | E['destroy'] | null) => void;
   [DraggableEventType.Destroy]: () => void;
 }
+
+export type DraggableEventCallback<
+  S extends Sensor[],
+  T extends keyof DraggableEventCallbacks<SensorsEventsType<S>>,
+> = DraggableEventCallbacks<SensorsEventsType<S>>[T];
 
 export const DraggableDefaultSettings: DraggableSettings<any> = {
   container: null,
@@ -258,20 +269,22 @@ export class Draggable<
     S[number],
     {
       predicateState: DraggableStartPredicateState;
-      predicateEvent: E<S>['start'] | E<S>['move'] | null;
+      predicateEvent: SensorsEventsType<S>['start'] | SensorsEventsType<S>['move'] | null;
       onMove: (e: Parameters<Draggable<S, P>['_onMove']>[0]) => void;
       onEnd: (e: Parameters<Draggable<S, P>['_onEnd']>[0]) => void;
     }
   >;
   protected _emitter: Emitter<{
-    [K in keyof DraggableEventCallbacks<E<S>>]: DraggableEventCallbacks<E<S>>[K];
+    [K in keyof DraggableEventCallbacks<SensorsEventsType<S>>]: DraggableEventCallbacks<
+      SensorsEventsType<S>
+    >[K];
   }>;
   protected _startPhase: DragStartPhase;
   protected _startId: symbol;
   protected _moveId: symbol;
   protected _alignId: symbol;
 
-  constructor(sensors: S, options: Partial<DraggableSettings<S>> & { id?: DraggableId } = {}) {
+  constructor(sensors: S, options: DraggableOptions<S> = {}) {
     const { id = Symbol(), ...restOptions } = options;
     this.id = id;
     this.sensors = sensors;
@@ -356,14 +369,17 @@ export class Draggable<
     };
   }
 
-  protected _emit<K extends keyof DraggableEventCallbacks<E<S>>>(
+  protected _emit<K extends keyof DraggableEventCallbacks<SensorsEventsType<S>>>(
     type: K,
-    ...e: Parameters<DraggableEventCallbacks<E<S>>[K]>
+    ...e: Parameters<DraggableEventCallbacks<SensorsEventsType<S>>[K]>
   ) {
     this._emitter.emit(type, ...e);
   }
 
-  protected _onMove(e: E<S>['start'] | E<S>['move'], sensor: S[number]) {
+  protected _onMove(
+    e: SensorsEventsType<S>['start'] | SensorsEventsType<S>['move'],
+    sensor: S[number],
+  ) {
     const sensorData = this._sensorData.get(sensor);
     if (!sensorData) return;
 
@@ -409,7 +425,13 @@ export class Draggable<
     this.align();
   }
 
-  protected _onEnd(e: E<S>['end'] | E<S>['cancel'] | E<S>['destroy'], sensor: S[number]) {
+  protected _onEnd(
+    e:
+      | SensorsEventsType<S>['end']
+      | SensorsEventsType<S>['cancel']
+      | SensorsEventsType<S>['destroy'],
+    sensor: S[number],
+  ) {
     const sensorData = this._sensorData.get(sensor);
     if (!sensorData) return;
 
@@ -560,7 +582,7 @@ export class Draggable<
     );
 
     // Emit preparemove event.
-    this._emit(DraggableEventType.PrepareMove, moveEvent as E<S>['move']);
+    this._emit(DraggableEventType.PrepareMove, moveEvent as SensorsEventsType<S>['move']);
 
     // Make sure that the drag is still active.
     if (drag.isEnded) return;
@@ -593,7 +615,7 @@ export class Draggable<
     }
 
     // Emit move event.
-    this._emit(DraggableEventType.Move, drag.moveEvent as E<S>['move']);
+    this._emit(DraggableEventType.Move, drag.moveEvent as SensorsEventsType<S>['move']);
 
     // Make sure that the drag is still active.
     if (drag.isEnded) return;
@@ -671,22 +693,25 @@ export class Draggable<
     }
   }
 
-  on<T extends keyof DraggableEventCallbacks<E<S>>>(
+  on<T extends keyof DraggableEventCallbacks<SensorsEventsType<S>>>(
     type: T,
-    listener: DraggableEventCallbacks<E<S>>[T],
+    listener: DraggableEventCallbacks<SensorsEventsType<S>>[T],
     listenerId?: SensorEventListenerId,
   ): SensorEventListenerId {
     return this._emitter.on(type, listener, listenerId);
   }
 
-  off<T extends keyof DraggableEventCallbacks<E<S>>>(
+  off<T extends keyof DraggableEventCallbacks<SensorsEventsType<S>>>(
     type: T,
     listenerId: SensorEventListenerId,
   ): void {
     this._emitter.off(type, listenerId);
   }
 
-  resolveStartPredicate(sensor: S[number], e?: E<S>['start'] | E<S>['move']) {
+  resolveStartPredicate(
+    sensor: S[number],
+    e?: SensorsEventsType<S>['start'] | SensorsEventsType<S>['move'],
+  ) {
     const sensorData = this._sensorData.get(sensor);
     if (!sensorData) return;
 

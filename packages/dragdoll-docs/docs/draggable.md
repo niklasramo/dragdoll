@@ -21,7 +21,7 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
 
 ```ts
 class Draggable<S extends Sensor[] = Sensor[], P extends DraggablePluginMap = {}> {
-  constructor(sensors: S, options: Partial<DraggableSettings<S>> & { id?: DraggableId } = {}) {}
+  constructor(sensors: S, options: DraggableOptions<S> = {}) {}
 }
 ```
 
@@ -41,8 +41,8 @@ class Draggable<S extends Sensor[] = Sensor[], P extends DraggablePluginMap = {}
 1. **sensors**
    - An array of [sensors](/sensor) that the Draggable will use as inputs for moving the provided elements around. The sensors are required and can't be changed after instantiation.
 2. **options**
-   - An optional [`DraggableSettings`](#settings) object, which you can also change later via [`updateSettings`](#updatesettings) method. You only need to provide the options you want to change, the rest will be left as default.
-   - You can also provide an `id` (a unique identifier for the draggable), which will be assigned as the draggable's [`id`](#id) property and cannot be changed after instantiation. Default is a unique symbol.
+   - An optional [`DraggableOptions`](#draggableoptions) object. The provided options (except for `id`) will be merged with the default options and the result will be used as the draggable's [`settings`](#settings) property.
+   - The `id` option is special as it's not part of the `settings` object unlike all the other options. It's a unique identifier for the draggable that is assigned as the draggable's [`id`](#id) property and _should not_ be changed after instantiation. Default is a unique symbol.
    - Default: `{}`.
 
 ## Settings
@@ -52,7 +52,7 @@ Here you can find a more in-depth explanation about the [`DraggableSettings`](#d
 ### container
 
 ```ts
-type container = DraggableSettings['container'];
+type container = Element | null;
 ```
 
 The element the dragged elements should be appended to for the duration of the drag. If set to `null` the element's current parent element is used.
@@ -66,7 +66,11 @@ When using a custom container, the dragged element must be either `absolute` or 
 ### startPredicate
 
 ```ts
-type startPredicate = DraggableSettings['startPredicate'];
+type startPredicate = (data: {
+  draggable: Draggable<S>;
+  sensor: S[number];
+  event: SensorsEventsType<S>['start'] | SensorsEventsType<S>['move'];
+}) => boolean | undefined;
 ```
 
 A function that determines if drag should start or not. An important thing to note is that each sensor attached to the draggable has their own start predicate state. So if you reject the predicate for sensorA then sensorB can still keep trying to resolve its start predicate. However, once any sensor's start predicate is resolved the other sensors' start predicates are automatically rejected.
@@ -82,7 +86,10 @@ Default is `() => true`.
 ### elements
 
 ```ts
-type elements = DraggableSettings['elements'];
+type elements = (data: {
+  draggable: Draggable<S>;
+  drag: DraggableDrag<S>;
+}) => (HTMLElement | SVGSVGElement)[] | null;
 ```
 
 A function that should return all the elements you want to move during the drag.
@@ -92,7 +99,12 @@ Default is `() => null`.
 ### frozenStyles
 
 ```ts
-type frozenStyles = DraggableSettings['frozenStyles'];
+type frozenStyles = (data: {
+  draggable: Draggable<S>;
+  drag: DraggableDrag<S>;
+  item: DraggableDragItem<S>;
+  style: CSSStyleDeclaration;
+}) => CSSProperties | (keyof CSSProperties)[] | null;
 ```
 
 A function that should return an array of CSS properties that should be frozen during the drag. By "frozen" we mean that the current computed value of the property is stored and applied to the element's inline styles during the drag. This is usually only needed if you have a drag container and the dragged element has percentage based values for some of its properties. The frozen properties are automatically unfrozen (restored to the original values) when drag ends.
@@ -104,7 +116,12 @@ By default nothing is frozen.
 ### applyPosition
 
 ```ts
-type applyPosition = DraggableSettings['applyPosition'];
+type applyPosition = (data: {
+  draggable: Draggable<S>;
+  drag: DraggableDrag<S>;
+  item: DraggableDragItem<S>;
+  phase: DraggableApplyPositionPhase;
+}) => void;
 ```
 
 A function that should apply the current [`position`](/draggable-drag-item#position) to a dragged [`element`](/draggable-drag-item#element).
@@ -123,7 +140,10 @@ Also note that the `phase` argument is provided to the function to help you dete
 ### computeClientRect
 
 ```ts
-type computeClientRect = DraggableSettings['computeClientRect'];
+type computeClientRect = (data: {
+  draggable: Draggable<S>;
+  drag: DraggableDrag<S>;
+}) => Readonly<Rect> | null;
 ```
 
 A function that should return the current bounding client rectangle of the draggable during drag operations. This rectangle is used for collision detection, auto-scrolling, and other features that need to know the draggable's current bounds.
@@ -166,7 +186,7 @@ draggable.on('move', () => {
 ### positionModifiers
 
 ```ts
-type positionModifiers = DraggableSettings['positionModifiers'];
+type positionModifiers = DraggableModifier<S>[];
 ```
 
 An array of position modifier functions that should return the position change of a dragged element. Checkout the [Draggable Modifiers](/draggable-modifiers) page for detailed information.
@@ -174,7 +194,7 @@ An array of position modifier functions that should return the position change o
 ### sensorProcessingMode
 
 ```ts
-type sensorProcessingMode = DraggableSettings['sensorProcessingMode'];
+type sensorProcessingMode = DraggableSensorProcessingMode;
 ```
 
 Defines how the sensor events should be processed.
@@ -187,10 +207,10 @@ Default is `'sampled'`.
 ### dndGroups
 
 ```ts
-type dndGroups = DraggableSettings['dndGroups'];
+type dndGroups = Set<DraggableDndGroup>;
 ```
 
-A set of [`DraggableDndGroup`](#draggabledndgroup) identifiers used by [`DndContext`](/dnd-context) when matching a `Draggable` to [`Droppable`](/droppable).
+A set of [`DraggableDndGroup`](#draggabledndgroup) identifiers used by [`DndObserver`](/dnd-observer) when matching a `Draggable` to [`Droppable`](/droppable).
 
 If a `Droppable` includes any of these identifiers in its [`accept`](/droppable#accept) set, the `Draggable` will be matched to the `Droppable` and there will be collision detection enabled between the two.
 
@@ -199,7 +219,7 @@ Default is an empty set.
 ### onPrepareStart
 
 ```ts
-type onPrepareStart = DraggableSettings['onPrepareStart'];
+type onPrepareStart = (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
 ```
 
 A callback that is called at the end of drag start preparation phase. In this phase the draggable item instances are created and the initial position is computed. All the required DOM reading (for drag start) is also done in this phase.
@@ -209,7 +229,7 @@ This callback is called immediately after any `preparestart` events that are add
 ### onStart
 
 ```ts
-type onStart = DraggableSettings['onStart'];
+type onStart = (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
 ```
 
 A callback that is called at the end of drag start phase. This phase handles applying the initial positions to the dragged elements, setting up the frozen styles and any other initial setup that require writing to the DOM.
@@ -219,7 +239,7 @@ This callback is called immediately after any `start` events that are added via 
 ### onPrepareMove
 
 ```ts
-type onPrepareMove = DraggableSettings['onPrepareMove'];
+type onPrepareMove = (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
 ```
 
 A callback that is called at the end of drag move preparation phase. This phase handles computing the new position of the dragged elements based on the sensor data.
@@ -229,7 +249,7 @@ This callback is called immediately after any `preparemove` events that are adde
 ### onMove
 
 ```ts
-type onMove = DraggableSettings['onMove'];
+type onMove = (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
 ```
 
 A callback that is called at the end of drag move phase. This phase applies the new positions to the dragged elements.
@@ -239,7 +259,7 @@ This callback is called immediately after any `move` events that are added via [
 ### onEnd
 
 ```ts
-type onEnd = DraggableSettings['onEnd'];
+type onEnd = (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
 ```
 
 A callback that is called at the very end of drag process after all the required cleanup has been done. You will still have access to the drag data when this callback is called, but it will be removed from the draggable instance right after this callback.
@@ -249,7 +269,7 @@ This callback is called immediately after any `end` events that are added via [`
 ### onDestroy
 
 ```ts
-type onDestroy = DraggableSettings['onDestroy'];
+type onDestroy = (draggable: Draggable<S>) => void;
 ```
 
 A callback that is called when the draggable is destroyed via [`destroy`](#destroy) method. This is the last callback that is called before the draggable instance is completely disposed. If there is an active drag when the draggable is destroyed, the [`onEnd`](#onend) callback will be called before this callback.
@@ -311,9 +331,9 @@ Is the Draggable instance destroyed or not?
 ### on
 
 ```ts
-type on<T extends keyof DraggableEventCallbacks<S[number]['_events_type']>> = (
+type on<T extends keyof DraggableEventCallbacks<SensorsEventsType<S>>> = (
   type: T,
-  listener: DraggableEventCallbacks<S[number]['_events_type']>[T],
+  listener: DraggableEventCallbacks<SensorsEventsType<S>>[T],
   listenerId?: SensorEventListenerId,
 ) => SensorEventListenerId;
 
@@ -330,7 +350,7 @@ Please check the [Events](#events) section for more information about the events
 ### off
 
 ```ts
-type off<T extends keyof DraggableEventCallbacks<S[number]['_events_type']>> = (
+type off<T extends keyof DraggableEventCallbacks<SensorsEventsType<S>>> = (
   type: T,
   listenerId: SensorEventListenerId,
 ) => void;
@@ -690,12 +710,12 @@ type DraggableModifier<S extends Sensor[]> = (
 import type { DraggableSettings } from 'dragdoll/draggable';
 
 // Interface
-interface DraggableSettings<S extends Sensor[]> {
+export interface DraggableSettings<S extends Sensor[]> {
   container: HTMLElement | null;
   startPredicate: (data: {
     draggable: Draggable<S>;
     sensor: S[number];
-    event: S[number]['_events_type']['start'] | S[number]['_events_type']['move'];
+    event: SensorsEventsType<S>['start'] | SensorsEventsType<S>['move'];
   }) => boolean | undefined;
   elements: (data: {
     draggable: Draggable<S>;
@@ -717,7 +737,7 @@ interface DraggableSettings<S extends Sensor[]> {
   computeClientRect?: (data: {
     draggable: Draggable<S>;
     drag: DraggableDrag<S>;
-  }) => Readonly<{ x: number; y: number; width: number; height: number }> | null;
+  }) => Readonly<Rect> | null;
   sensorProcessingMode?: DraggableSensorProcessingMode;
   dndGroups?: Set<DraggableDndGroup>;
   onPrepareStart?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
@@ -726,6 +746,18 @@ interface DraggableSettings<S extends Sensor[]> {
   onMove?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
   onEnd?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
   onDestroy?: (draggable: Draggable<S>) => void;
+}
+```
+
+### DraggableOptions
+
+```ts
+// Import
+import type { DraggableOptions } from 'dragdoll/draggable';
+
+// Interface
+export interface DraggableOptions<S extends Sensor[]> extends Partial<DraggableSettings<S>> {
+  id?: DraggableId;
 }
 ```
 
@@ -777,4 +809,17 @@ interface DraggableEventCallbacks<E extends SensorEvents> {
   [DraggableEventType.End]: (event: E['end'] | E['cancel'] | E['destroy'] | null) => void;
   [DraggableEventType.Destroy]: () => void;
 }
+```
+
+### DraggableEventCallback
+
+```ts
+// Import
+import type { DraggableEventCallback } from 'dragdoll/draggable';
+
+// Type
+type DraggableEventCallback<
+  S extends Sensor[],
+  T extends keyof DraggableEventCallbacks<SensorsEventsType<S>>,
+> = DraggableEventCallbacks<SensorsEventsType<S>>[T];
 ```

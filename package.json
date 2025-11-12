@@ -5,13 +5,12 @@
   "type": "module",
   "workspaces": [
     "packages/dragdoll",
-    "packages/dragdoll-docs",
     "packages/dragdoll-react",
-    "packages/dragdoll-react-docs",
+    "packages/dragdoll-docs",
     "packages/dragdoll-tests"
   ],
   "scripts": {
-    "build": "npm run format && npm run build --workspace=dragdoll && npm run build:examples --workspace=dragdoll-docs && npm run format",
+    "build": "npm run format && npm run build --workspace=dragdoll --workspace=dragdoll-react && npm run build:examples --workspace=dragdoll-docs && npm run format",
     "docs:build": "npm run build --workspace=dragdoll-docs",
     "docs:dev": "npm run dev --workspace=dragdoll-docs",
     "docs:serve": "npm run serve --workspace=dragdoll-docs",
@@ -26,6 +25,8 @@
     "ts:check": "tsc && npm run ts:check --workspaces --if-present"
   },
   "devDependencies": {
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
     "@wdio/browser-runner": "9.20.0",
     "@wdio/browserstack-service": "9.20.0",
     "@wdio/cli": "9.20.0",
@@ -39,6 +40,8 @@
     "jsdom": "27.1.0",
     "mezr": "1.1.0",
     "prettier": "3.6.2",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
     "rimraf": "6.1.0",
     "rolldown": "1.0.0-beta.45",
     "tikki": "3.0.2",

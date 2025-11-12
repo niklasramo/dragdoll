@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Draggable - Auto Scroll</title>
+    <meta
+      name="description"
+      content="This example demonstrates quite a lot of things. We use a drag container and freeze `left` and `top` values before we move the dragged element into the drag container. The draggable element has percentage based left and top values, which would not be correct when the element is moved to the drag container, which has different dimensions. Lastly we use the auto scroll plugin and configure it to scroll the viewport on y-axis when the dragged element is close to its edges. Note that we also set auto scroll target's `padding.top` and `padding.bottom` to `Infinity` to allow the scrolling to continue even if you drag the element past the edges."
+    />
+    <meta
+      name="viewport"
+      content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <script src="index.umd.js"></script>
+  </body>
+</html>

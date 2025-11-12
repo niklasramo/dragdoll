@@ -1,1 +1,1 @@
-import"../sensor-Uwz8qy61.js";import"../base-sensor-CiXk6Egt.js";import{n as e,t}from"../keyboard-sensor-BCehwsFy.js";export{t as KeyboardSensor,e as keyboardSensorDefaults};
+import"../sensor-Uwz8qy61.js";import"../base-sensor-DVrttP21.js";import{n as e,t}from"../keyboard-sensor-BgWlO82H.js";export{t as KeyboardSensor,e as keyboardSensorDefaults};
