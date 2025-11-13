@@ -1,8 +1,8 @@
-import { DndContext } from 'dragdoll/dnd-context';
+import { DndObserver } from 'dragdoll/dnd-observer';
 import {
   type AdvancedCollisionData,
   AdvancedCollisionDetector,
-} from 'dragdoll/dnd-context/advanced-collision-detector';
+} from 'dragdoll/dnd-observer/advanced-collision-detector';
 import { Draggable } from 'dragdoll/draggable';
 import { Droppable } from 'dragdoll/droppable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
@@ -53,13 +53,13 @@ export default () => {
           dndGroups: new Set(['g']),
         });
         const droppable = new Droppable(droppableElement, { accept: new Set(['g']) });
-        const dndContext = new DndContext<AdvancedCollisionData>({
+        const dndObserver = new DndObserver<AdvancedCollisionData>({
           collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx),
         });
 
-        dndContext.addDraggables([draggable]);
-        dndContext.addDroppables([droppable]);
-        dndContext.on('collide', (data) => {
+        dndObserver.addDraggables([draggable]);
+        dndObserver.addDroppables([droppable]);
+        dndObserver.on('collide', (data) => {
           collisionEvents.push({ type: 'enter', collisions: data.collisions });
         });
 
@@ -88,7 +88,7 @@ export default () => {
         });
 
         // Cleanup.
-        dndContext.destroy();
+        dndObserver.destroy();
         draggable.destroy();
         droppable.destroy();
         keyboard.destroy();
@@ -128,13 +128,13 @@ export default () => {
           dndGroups: new Set(['g']),
         });
         const droppable = new Droppable(droppableElement, { accept: new Set(['g']) });
-        const dndContext = new DndContext<AdvancedCollisionData>({
+        const dndObserver = new DndObserver<AdvancedCollisionData>({
           collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx),
         });
 
-        dndContext.addDraggables([draggable]);
-        dndContext.addDroppables([droppable]);
-        dndContext.on('collide', (data) => {
+        dndObserver.addDraggables([draggable]);
+        dndObserver.addDroppables([droppable]);
+        dndObserver.on('collide', (data) => {
           collisionEvents.push({ type: 'enter', collisions: data.collisions });
         });
 
@@ -163,7 +163,7 @@ export default () => {
         });
 
         // Cleanup.
-        dndContext.destroy();
+        dndObserver.destroy();
         draggable.destroy();
         droppable.destroy();
         keyboard.destroy();
@@ -206,14 +206,14 @@ export default () => {
           dndGroups: new Set(['g']),
         });
         const droppable = new Droppable(droppableElement, { accept: new Set(['g']) });
-        const dndContext = new DndContext<AdvancedCollisionData>({
+        const dndObserver = new DndObserver<AdvancedCollisionData>({
           collisionDetector: (ctx) =>
             new AdvancedCollisionDetector(ctx, { visibilityLogic: 'absolute' }),
         });
 
-        dndContext.addDraggables([draggable]);
-        dndContext.addDroppables([droppable]);
-        dndContext.on('collide', (data) => {
+        dndObserver.addDraggables([draggable]);
+        dndObserver.addDroppables([droppable]);
+        dndObserver.on('collide', (data) => {
           collisionEvents.push({ type: 'enter', collisions: data.collisions });
         });
 
@@ -242,7 +242,7 @@ export default () => {
         });
 
         // Cleanup.
-        dndContext.destroy();
+        dndObserver.destroy();
         draggable.destroy();
         droppable.destroy();
         keyboard.destroy();

@@ -24,8 +24,8 @@ npm install dragdoll-react dragdoll eventti tikki mezr react react-dom
   - Used for batching DOM operations when necessary (reads and writes).
 - [`mezr`](https://github.com/niklasramo/mezr) (^v1.1.0)
   - Used for calculating tricky DOM bits.
-- [`react`](https://github.com/facebook/react) (^19.0.0)
-- [`react-dom`](https://github.com/facebook/react) (^19.0.0)
+- [`react`](https://github.com/facebook/react) (>=18.0.0)
+- [`react-dom`](https://github.com/facebook/react) (>=18.0.0)
 
 ## Basic Usage
 

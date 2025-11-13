@@ -1,13 +1,15 @@
 # useDndObserver
 
-A React hook that creates a [DndObserver](/dnd-observer) instance for handling drag and drop collision detection.
+A React hook that creates and returns a [`DndObserver`](/dnd-observer) instance for observing collisions between `Draggable` and `Droppable` instances.
+
+The observer is automatically destroyed when the component unmounts.
 
 ## Usage
 
 ```tsx
 import { DndObserverContext, useDndObserver } from 'dragdoll-react';
 
-function MyComponent() {
+function App() {
   const dndObserver = useDndObserver({
     onEnter: ({ draggable, droppable }) => {
       console.log('Draggable entered droppable');
@@ -28,246 +30,187 @@ function MyComponent() {
 ## Signature
 
 ```ts
-function useDndObserver<T extends CollisionData = CollisionData>({
-  collisionDetector,
-  onStart,
-  onMove,
-  onEnter,
-  onLeave,
-  onCollide,
-  onEnd,
-  onAddDraggables,
-  onRemoveDraggables,
-  onAddDroppables,
-  onRemoveDroppables,
-  onDestroy,
-}?: UseDndObserverOptions<T>): DndObserver<T> | null;
+function useDndObserver<T extends CollisionData = CollisionData>(
+  settings?: UseDndObserverOptions<T>,
+): DndObserver<T> | null;
 ```
 
 ## Parameters
 
-### options
+### settings
 
-- Type: `UseDndObserverOptions<T>`
-- Optional
+```ts
+type settings = UseDndObserverSettings<T>;
+```
 
-Configuration options for the DndObserver.
+Configuration settings for the `DndObserver`.
 
 #### collisionDetector
 
-Custom collision detector function. See [CollisionDetector](/collision-detector) in the vanilla docs.
+```ts
+type collisionDetector = CollisionDetector<T>;
+```
 
-#### Event Callbacks
+A factory function that receives the `DndObserver` instance and returns a [`CollisionDetector`](/collision-detector). By default, if `undefined`, a default `CollisionDetector` will be created.
 
-All event callbacks are optional. See [DndObserver events](/dnd-observer.html#events) for the full list and payloads.
+> [!IMPORTANT]  
+> Make sure to memoize the collision detector factory function as the `DndObserver` will be recreated whenever this setting changes.
+
+See the [CollisionDetector](/collision-detector) docs for subclassing examples.
+
+- Optional.
+- Default is `undefined`.
+
+#### onStart
+
+```ts
+type onStart = (event: DndObserverStartEvent<T>) => void;
+```
+
+A callback function that is called when a draggable starts being dragged.
+
+- Optional.
+- Default is `undefined`.
+
+#### onMove
+
+```ts
+type onMove = (event: DndObserverMoveEvent<T>) => void;
+```
+
+A callback function that is called when a draggable is moved.
+
+- Optional.
+- Default is `undefined`.
+
+#### onEnter
+
+```ts
+type onEnter = (event: DndObserverEnterEvent<T>) => void;
+```
+
+A callback function that is called when a draggable enters a droppable.
+
+- Optional.
+- Default is `undefined`.
+
+#### onLeave
+
+```ts
+type onLeave = (event: DndObserverLeaveEvent<T>) => void;
+```
+
+A callback function that is called when a draggable leaves a droppable.
+
+- Optional.
+- Default is `undefined`.
+
+#### onCollide
+
+```ts
+type onCollide = (event: DndObserverCollideEvent<T>) => void;
+```
+
+A callback function that is called when a draggable collides with a droppable.
+
+- Optional.
+- Default is `undefined`.
+
+#### onEnd
+
+```ts
+type onEnd = (event: DndObserverEndEvent<T>) => void;
+```
+
+A callback function that is called when a draggable stops being dragged.
+
+- Optional.
+- Default is `undefined`.
+
+#### onAddDraggables
+
+```ts
+type onAddDraggables = (event: DndObserverAddDraggablesEvent<T>) => void;
+```
+
+A callback function that is called when a draggable is added to the observer.
+
+- Optional.
+- Default is `undefined`.
+
+#### onRemoveDraggables
+
+```ts
+type onRemoveDraggables = (event: DndObserverRemoveDraggablesEvent<T>) => void;
+```
+
+A callback function that is called when a draggable is removed from the observer.
+
+- Optional.
+- Default is `undefined`.
+
+#### onAddDroppables
+
+```ts
+type onAddDroppables = (event: DndObserverAddDroppablesEvent<T>) => void;
+```
+
+A callback function that is called when a droppable is added to the observer.
+
+- Optional.
+- Default is `undefined`.
+
+#### onRemoveDroppables
+
+```ts
+type onRemoveDroppables = (event: DndObserverRemoveDroppablesEvent<T>) => void;
+```
+
+A callback function that is called when a droppable is removed from the observer.
+
+- Optional.
+- Default is `undefined`.
+
+#### onDestroy
+
+```ts
+type onDestroy = (event: DndObserverDestroyEvent<T>) => void;
+```
+
+A callback function that is called when the observer is destroyed.
+
+- Optional.
+- Default is `undefined`.
 
 ## Return Value
 
-Returns the [DndObserver](/dnd-observer) instance or `null` if not yet initialized.
-
-## Examples
-
-### Basic Usage
-
-```tsx
-import { DndObserverContext, useDndObserver } from 'dragdoll-react';
-
-function App() {
-  const dndObserver = useDndObserver();
-
-  return (
-    <DndObserverContext.Provider value={dndObserver}>
-      <DraggableItem />
-      <DropZone />
-    </DndObserverContext.Provider>
-  );
-}
+```ts
+type returnValue = DndObserver<T> | null;
 ```
 
-### With Event Handlers
-
-```tsx
-import { DndObserverContext, useDndObserver } from 'dragdoll-react';
-
-function App() {
-  const dndObserver = useDndObserver({
-    onStart: ({ draggable }) => {
-      console.log('Drag started');
-    },
-    onEnter: ({ draggable, droppable }) => {
-      console.log('Entered:', droppable.data.name);
-    },
-    onLeave: ({ draggable, droppable }) => {
-      console.log('Left:', droppable.data.name);
-    },
-    onEnd: ({ draggable, droppable }) => {
-      if (droppable) {
-        console.log('Dropped on:', droppable.data.name);
-      }
-    },
-  });
-
-  return (
-    <DndObserverContext.Provider value={dndObserver}>
-      <DraggableItem />
-      <DropZone />
-    </DndObserverContext.Provider>
-  );
-}
-```
-
-### With State Updates
-
-```tsx
-import { DndObserverContext, useDndObserver } from 'dragdoll-react';
-import { useState } from 'react';
-
-function App() {
-  const [currentDroppable, setCurrentDroppable] = useState<string | null>(null);
-  const [droppedOn, setDroppedOn] = useState<string | null>(null);
-
-  const dndObserver = useDndObserver({
-    onEnter: ({ droppable }) => {
-      setCurrentDroppable(droppable.data.name);
-    },
-    onLeave: () => {
-      setCurrentDroppable(null);
-    },
-    onEnd: ({ droppable }) => {
-      if (droppable) {
-        setDroppedOn(droppable.data.name);
-      }
-      setCurrentDroppable(null);
-    },
-  });
-
-  return (
-    <DndObserverContext.Provider value={dndObserver}>
-      <div>
-        {currentDroppable && <p>Over: {currentDroppable}</p>}
-        {droppedOn && <p>Dropped on: {droppedOn}</p>}
-      </div>
-      <DraggableItem />
-      <DropZone />
-    </DndObserverContext.Provider>
-  );
-}
-```
-
-### With Custom Collision Detector
-
-```tsx
-import { AdvancedCollisionDetector } from 'dragdoll';
-import { DndObserverContext, useDndObserver } from 'dragdoll-react';
-
-function App() {
-  const dndObserver = useDndObserver({
-    collisionDetector: new AdvancedCollisionDetector({
-      getScore: ({ rect1, rect2 }) => {
-        // Custom collision scoring logic
-        return getIntersectionArea(rect1, rect2);
-      },
-    }),
-  });
-
-  return (
-    <DndObserverContext.Provider value={dndObserver}>
-      <DraggableItem />
-      <DropZone />
-    </DndObserverContext.Provider>
-  );
-}
-```
-
-### Multiple Observers
-
-```tsx
-import { DndObserverContext, useDndObserver } from 'dragdoll-react';
-
-function App() {
-  const observer1 = useDndObserver({
-    onEnter: ({ droppable }) => {
-      console.log('Observer 1: Entered', droppable.data.name);
-    },
-  });
-
-  const observer2 = useDndObserver({
-    onEnter: ({ droppable }) => {
-      console.log('Observer 2: Entered', droppable.data.name);
-    },
-  });
-
-  return (
-    <>
-      <DndObserverContext.Provider value={observer1}>
-        <div className="group-1">
-          <DraggableItem />
-          <DropZone />
-        </div>
-      </DndObserverContext.Provider>
-
-      <DndObserverContext.Provider value={observer2}>
-        <div className="group-2">
-          <DraggableItem />
-          <DropZone />
-        </div>
-      </DndObserverContext.Provider>
-    </>
-  );
-}
-```
-
-### With Collision Data
-
-```tsx
-import { DndObserverContext, useDndObserver } from 'dragdoll-react';
-import { useState } from 'react';
-
-function App() {
-  const [collisions, setCollisions] = useState<string[]>([]);
-
-  const dndObserver = useDndObserver({
-    onCollide: ({ draggable, droppable, collision }) => {
-      // Collision object contains detailed collision data
-      console.log('Collision score:', collision.score);
-    },
-    onEnter: ({ droppable }) => {
-      setCollisions((prev) => [...prev, droppable.data.name]);
-    },
-    onLeave: ({ droppable }) => {
-      setCollisions((prev) => prev.filter((name) => name !== droppable.data.name));
-    },
-  });
-
-  return (
-    <DndObserverContext.Provider value={dndObserver}>
-      <div>
-        <h3>Currently colliding with:</h3>
-        <ul>
-          {collisions.map((name) => (
-            <li key={name}>{name}</li>
-          ))}
-        </ul>
-      </div>
-      <DraggableItem />
-      <DropZone />
-    </DndObserverContext.Provider>
-  );
-}
-```
-
-## Notes
-
-- The observer is automatically destroyed when the component unmounts
-- If `collisionDetector` changes, the observer is recreated
-- Event callbacks can be updated dynamically without recreating the observer
-- The observer automatically manages draggable and droppable registration when using `useDraggable` and `useDroppable` with context
-- The observer is `null` only during the initial render
-
-## Events
-
-See [DndObserver events](/dnd-observer.html#events) for the complete list of events, payloads, and timing semantics.
+Returns the [`DndObserver`](/dnd-observer) instance or `null` if not yet initialized.
 
 ## Types
 
-For detailed type information, see [DndObserver types](/dnd-observer.html#types) in the vanilla docs.
+### UseDndObserverSettings
+
+```ts
+// Import
+import type { UseDndObserverSettings } from 'dragdoll-react';
+
+// Interface
+interface UseDndObserverSettings<T extends CollisionData = CollisionData> {
+  collisionDetector?: DndObserverOptions<T>['collisionDetector'];
+  onStart?: DndObserverEventCallbacks<T>['start'];
+  onMove?: DndObserverEventCallbacks<T>['move'];
+  onEnter?: DndObserverEventCallbacks<T>['enter'];
+  onLeave?: DndObserverEventCallbacks<T>['leave'];
+  onCollide?: DndObserverEventCallbacks<T>['collide'];
+  onEnd?: DndObserverEventCallbacks<T>['end'];
+  onAddDraggables?: DndObserverEventCallbacks<T>['addDraggables'];
+  onRemoveDraggables?: DndObserverEventCallbacks<T>['removeDraggables'];
+  onAddDroppables?: DndObserverEventCallbacks<T>['addDroppables'];
+  onRemoveDroppables?: DndObserverEventCallbacks<T>['removeDroppables'];
+  onDestroy?: DndObserverEventCallbacks<T>['destroy'];
+}
+```

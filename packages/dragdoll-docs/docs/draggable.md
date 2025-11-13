@@ -94,6 +94,15 @@ type elements = (data: {
 
 A function that should return all the elements you want to move during the drag.
 
+> [!IMPORTANT]
+> This is the single most important setting to define! Unless you explicitly provide a function that returns an array of element(s), no elements will be moved during the drag, but the drag operation will still be carried out.
+
+There are a few use cases where you might not want to move any elements during the drag:
+
+1. You trigger auto-scrolling via the [`autoScrollPlugin`](/draggable-auto-scroll-plugin) without moving any elements.
+
+2. You can define a _virtual_ box for the draggable using the [`computeClientRect`](#computeclientrect) setting without moving any elements. This might be handy if you want to use collision detection without moving any elements.
+
 Default is `() => null`.
 
 ### frozenStyles

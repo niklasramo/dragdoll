@@ -1,4 +1,4 @@
-import { DndContext } from 'dragdoll/dnd-context';
+import { DndObserver } from 'dragdoll/dnd-observer';
 import { Draggable } from 'dragdoll/draggable';
 import { Droppable } from 'dragdoll/droppable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
@@ -40,14 +40,14 @@ export default () => {
         accept: new Set(['valid-group', 'another-group']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('enter', (data) => {
+      dndObserver.on('enter', (data) => {
         events.push({ type: 'enter', targets: data.targets.size });
       });
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       // Start dragging
       await startDrag(dragElement);
@@ -65,7 +65,7 @@ export default () => {
       await endDrag();
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       keyboardSensor.destroy();
@@ -100,14 +100,14 @@ export default () => {
         accept: new Set(['valid-group', 'another-group']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('enter', () => {
+      dndObserver.on('enter', () => {
         events.push({ type: 'enter' });
       });
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       // Start dragging
       await startDrag(dragElement);
@@ -119,7 +119,7 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       keyboardSensor.destroy();
@@ -156,14 +156,14 @@ export default () => {
         },
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('enter', (data) => {
+      dndObserver.on('enter', (data) => {
         events.push({ type: 'enter', targets: data.targets.size });
       });
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       // Start dragging
       focusElement(dragElement);
@@ -184,7 +184,7 @@ export default () => {
       await endDrag();
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       keyboardSensor.destroy();
@@ -221,14 +221,14 @@ export default () => {
         },
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('enter', () => {
+      dndObserver.on('enter', () => {
         events.push({ type: 'enter' });
       });
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       // Start dragging
       await startDrag(dragElement);
@@ -240,7 +240,7 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       keyboardSensor.destroy();
@@ -269,14 +269,14 @@ export default () => {
         accept: new Set(['test']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('enter', () => {
+      dndObserver.on('enter', () => {
         events.push({ type: 'enter' });
       });
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       // Start dragging
       await startDrag(element);
@@ -288,7 +288,7 @@ export default () => {
       await endDrag();
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       keyboardSensor.destroy();
@@ -303,8 +303,8 @@ export default () => {
         data: { custom: 'value', id: 123 },
       });
 
-      const dndContext = new DndContext();
-      dndContext.addDroppables([droppable]);
+      const dndObserver = new DndObserver();
+      dndObserver.addDroppables([droppable]);
 
       // Check initial data
       expect(droppable.data).toStrictEqual({ custom: 'value', id: 123 });
@@ -314,7 +314,7 @@ export default () => {
       expect(droppable.data.newProp).toBe('added');
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       droppable.destroy();
       element.remove();
     });
@@ -331,8 +331,8 @@ export default () => {
         accept: new Set(['test']),
       });
 
-      const dndContext = new DndContext();
-      dndContext.addDroppables([droppable]);
+      const dndObserver = new DndObserver();
+      dndObserver.addDroppables([droppable]);
 
       const rect = droppable.getClientRect();
       expect(rect.x).toBe(50);
@@ -354,7 +354,7 @@ export default () => {
       expect(updatedRect.height).toBe(150);
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       droppable.destroy();
       element.remove();
     });
@@ -386,13 +386,13 @@ export default () => {
         accept: new Set(['test']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('enter', (data) => {
+      dndObserver.on('enter', (data) => {
         events.push({ type: 'enter', collisions: data.collisions.length });
       });
 
-      dndContext.on('leave', (data) => {
+      dndObserver.on('leave', (data) => {
         events.push({
           type: 'leave',
           collisions: data.collisions.length,
@@ -400,8 +400,8 @@ export default () => {
         });
       });
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       // Start dragging
       await startDrag(dragElement);
@@ -417,7 +417,7 @@ export default () => {
       expect(events[0].collisions).toBe(1);
 
       // Remove droppable during drag (auto-queued leave)
-      dndContext.removeDroppables([droppable]);
+      dndObserver.removeDroppables([droppable]);
       await waitNextFrame();
 
       // Should emit leave event automatically
@@ -430,7 +430,7 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       keyboardSensor.destroy();
@@ -446,14 +446,14 @@ export default () => {
         accept: new Set(['test']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('removeDroppables', (data) => {
+      dndObserver.on('removeDroppables', (data) => {
         const removed = Array.from(data.droppables);
         destroyEvents.push({ type: 'removeDroppable', droppable: removed[0] });
       });
 
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDroppables([droppable]);
 
       // Destroy droppable
       droppable.destroy();
@@ -464,10 +464,10 @@ export default () => {
       expect(destroyEvents[0].droppable).toBe(droppable);
 
       // Should not be in context anymore
-      expect(dndContext.droppables.has(droppable.id)).toBe(false);
+      expect(dndObserver.droppables.has(droppable.id)).toBe(false);
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       element.remove();
     });
 
@@ -498,21 +498,21 @@ export default () => {
         accept: new Set(['test']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('enter', () => {
+      dndObserver.on('enter', () => {
         events.push({ type: 'enter' });
       });
 
-      dndContext.on('collide', (data) => {
+      dndObserver.on('collide', (data) => {
         events.push({
           type: 'collide',
           persistedContacts: data.persistedContacts.size,
         });
       });
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       // Start dragging
       focusElement(dragElement);
@@ -540,7 +540,7 @@ export default () => {
       await endDrag();
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       keyboardSensor.destroy();

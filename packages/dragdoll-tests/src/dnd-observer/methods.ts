@@ -1,4 +1,4 @@
-import { DndContext } from 'dragdoll/dnd-context';
+import { DndObserver } from 'dragdoll/dnd-observer';
 import { Draggable } from 'dragdoll/draggable';
 import { Droppable } from 'dragdoll/droppable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
@@ -29,22 +29,22 @@ export default () => {
         dndGroups: new Set(['g']),
       });
       const droppable = new Droppable(dropElement, { accept: new Set(['g']) });
-      const ctx = new DndContext();
+      const dndObserver = new DndObserver();
 
-      ctx.addDraggables([draggable]);
-      ctx.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
-      const id1 = ctx.on('start', () => calls.push('a'));
-      ctx.on('start', () => calls.push('b'));
+      const id1 = dndObserver.on('start', () => calls.push('a'));
+      dndObserver.on('start', () => calls.push('b'));
 
       // Remove the first listener
-      ctx.off('start', id1);
+      dndObserver.off('start', id1);
 
       await startDrag(dragElement);
 
       expect(calls).toStrictEqual(['b']);
 
-      ctx.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       sensor.destroy();
@@ -74,12 +74,12 @@ export default () => {
         dndGroups: new Set(['g']),
       });
       const droppable = new Droppable(dropElement, { accept: new Set(['g']) });
-      const ctx = new DndContext();
+      const dndObserver = new DndObserver();
 
-      ctx.on('collide', () => events.push('collide'));
+      dndObserver.on('collide', () => events.push('collide'));
 
-      ctx.addDraggables([draggable]);
-      ctx.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       // Start drag without moving; explicitly trigger detection for this draggable
       focusElement(dragElement);
@@ -87,12 +87,12 @@ export default () => {
       await waitNextFrame();
       events.length = 0; // ignore initial events
 
-      ctx.detectCollisions(draggable);
+      dndObserver.detectCollisions(draggable);
       await waitNextFrame();
 
       expect(events.includes('collide')).toBe(true);
 
-      ctx.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       sensor.destroy();
@@ -124,12 +124,12 @@ export default () => {
       const dr2 = new Draggable([s2], { elements: () => [dragEl2], dndGroups: new Set(['g']) });
       const dp1 = new Droppable(dropEl1, { accept: new Set(['g']) });
       const dp2 = new Droppable(dropEl2, { accept: new Set(['g']) });
-      const ctx = new DndContext();
+      const dndObserver = new DndObserver();
 
-      ctx.on('collide', ({ draggable }) => events.push({ d: draggable }));
+      dndObserver.on('collide', ({ draggable }) => events.push({ d: draggable }));
 
-      ctx.addDraggables([dr1, dr2]);
-      ctx.addDroppables([dp1, dp2]);
+      dndObserver.addDraggables([dr1, dr2]);
+      dndObserver.addDroppables([dp1, dp2]);
 
       // Start both drags
       focusElement(dragEl1);
@@ -140,13 +140,13 @@ export default () => {
       events.length = 0; // ignore initial events
 
       // Call without args: should schedule detection for both active drags
-      ctx.detectCollisions();
+      dndObserver.detectCollisions();
       await waitNextFrame();
 
       // We should observe collide for at least one, commonly both if overlapping
       expect(events.length >= 1).toBe(true);
 
-      ctx.destroy();
+      dndObserver.destroy();
       dr1.destroy();
       dr2.destroy();
       dp1.destroy();
@@ -161,8 +161,8 @@ export default () => {
     it('updateDroppableClientRects should refresh cached rects', async () => {
       const el = createTestElement({ left: '0px', top: '0px', width: '50px', height: '50px' });
       const droppable = new Droppable(el, { accept: new Set(['x']) });
-      const ctx = new DndContext();
-      ctx.addDroppables([droppable]);
+      const dndObserver = new DndObserver();
+      dndObserver.addDroppables([droppable]);
 
       // Read initial rect
       const before = droppable.getClientRect();
@@ -174,7 +174,7 @@ export default () => {
       // Let layout apply and then refresh cached rects
       await waitNextFrame();
       const expected = el.getBoundingClientRect();
-      ctx.updateDroppableClientRects();
+      dndObserver.updateDroppableClientRects();
       const after = droppable.getClientRect();
 
       // Validate updated values match the DOM
@@ -183,7 +183,7 @@ export default () => {
       expect(after.width).toBe(before.width);
       expect(after.height).toBe(before.height);
 
-      ctx.destroy();
+      dndObserver.destroy();
       droppable.destroy();
       el.remove();
     });
@@ -198,16 +198,16 @@ export default () => {
         dndGroups: new Set(['g']),
       });
       const droppable = new Droppable(el, { accept: new Set(['g']) });
-      const ctx = new DndContext();
+      const dndObserver = new DndObserver();
 
       // When not dragging, isMatch may be true; start drag so internal items exist
       focusElement(el);
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
       await waitNextFrame();
 
-      expect(ctx['_isMatch'](draggable, droppable)).toBe(false);
+      expect(dndObserver['_isMatch'](draggable, droppable)).toBe(false);
 
-      ctx.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       sensor.destroy();
@@ -223,14 +223,14 @@ export default () => {
         dndGroups: new Set(['g']),
       });
       const droppable = new Droppable(dropEl, { accept: () => false });
-      const ctx = new DndContext();
+      const dndObserver = new DndObserver();
 
-      expect(ctx['_isMatch'](draggable, droppable)).toBe(false);
+      expect(dndObserver['_isMatch'](draggable, droppable)).toBe(false);
 
       droppable.accept = () => true;
-      expect(ctx['_isMatch'](draggable, droppable)).toBe(true);
+      expect(dndObserver['_isMatch'](draggable, droppable)).toBe(true);
 
-      ctx.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       sensor.destroy();

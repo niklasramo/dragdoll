@@ -1,6 +1,8 @@
 # useDndObserverCallback
 
-A React hook for attaching event listeners to a [DndObserver](/dnd-observer) instance.
+A React hook for attaching an event listener to a [`DndObserver`](/dnd-observer) instance.
+
+The closest [`DndObserverContext`](/react/dnd-observer-context) will be used automatically to find the observer instance to attach the listener to. If no observer is found in context, the observer instance can be passed explicitly as the third argument.
 
 ## Usage
 
@@ -8,9 +10,13 @@ A React hook for attaching event listeners to a [DndObserver](/dnd-observer) ins
 import { DndObserverContext, useDndObserver, useDndObserverCallback } from 'dragdoll-react';
 import { DndObserverEventType } from 'dragdoll';
 
-function MyComponent() {
+function App() {
   const dndObserver = useDndObserver();
 
+  // The closest dnd context from DndObserverContext will be used automatically.
+  // However, if there is no dnd observer found from the closest
+  // DndObserverContext, you can pass the observer instance explicitly as the
+  // third argument (as is done in this example).
   useDndObserverCallback(
     DndObserverEventType.Enter,
     ({ draggable, droppable }) => {
@@ -19,6 +25,8 @@ function MyComponent() {
     dndObserver,
   );
 
+  // You don't have to memoize the callback, it's handled internally in a stable
+  // and performant way.
   useDndObserverCallback(
     DndObserverEventType.Leave,
     ({ draggable, droppable }) => {
@@ -29,9 +37,22 @@ function MyComponent() {
 
   return (
     <DndObserverContext.Provider value={dndObserver}>
-      {/* Your components */}
+      <FooComponent />
+      {/* Your other components */}
     </DndObserverContext.Provider>
   );
+}
+
+function FooComponent() {
+  // The closest dnd context from DndObserverContext will be used automatically.
+  useDndObserverCallback(DndObserverEventType.Start, ({ draggable, droppable }) => {
+    console.log('Started:', draggable.data.name);
+  });
+  useDndObserverCallback(DndObserverEventType.End, ({ draggable, droppable }) => {
+    console.log('Ended:', draggable.data.name);
+  });
+
+  return <div>Foo component</div>;
 }
 ```
 
@@ -52,317 +73,35 @@ function useDndObserverCallback<
 
 ### eventType
 
-The event type to listen for. See [DndObserver events](/dnd-observer.html#events) for the available event names and payloads.
+```ts
+type eventType = keyof DndObserverEventCallbacks<T>;
+```
+
+The event type to listen for. See `DndObserver` [events](/dnd-observer.html#events) for the available event names and payloads.
+
+- Required.
 
 ### callback
 
-- Type: `DndObserverEventCallbacks<T>[K] | undefined`
-- Optional
+```ts
+type callback = DndObserverEventCallback<T, K> | undefined;
+```
 
 The callback function to call when the event occurs. If `undefined`, no listener is attached.
 
+> [!IMPORTANT]  
+> The callback does not have to be memoized, you can pass a new function every time. Internally, the hook will store the latest callback in a ref and bind a proxy callback to the event listener, which in turn will call the latest callback.
+
+- Optional.
+- Default is `undefined`.
+
 ### dndObserver
 
-- Type: `DndObserver<T> | null | undefined`
-- Optional
-
-The [DndObserver](https://niklasramo.github.io/dragdoll/dnd-observer) instance to attach the listener to. If `undefined`, uses the observer from [DndObserverContext](/react/dnd-observer-context). Can be `null` if not yet initialized.
-
-## Return Value
-
-This hook doesn't return anything.
-
-## Examples
-
-### Basic Event Listening
-
-```tsx
-import { DndObserverContext, useDndObserver, useDndObserverCallback } from 'dragdoll-react';
-
-function App() {
-  const dndObserver = useDndObserver();
-
-  useDndObserverCallback(
-    'enter',
-    ({ droppable }) => {
-      console.log('Entered:', droppable.data.name);
-    },
-    dndObserver,
-  );
-
-  return (
-    <DndObserverContext.Provider value={dndObserver}>
-      <DraggableItem />
-      <DropZone />
-    </DndObserverContext.Provider>
-  );
-}
+```ts
+type dndObserver = DndObserver<T> | null | undefined;
 ```
 
-### Multiple Events
+The [`DndObserver`](/dnd-observer) instance to attach the listener to. If `undefined`, uses the observer from the closest [`DndObserverContext`](/react/dnd-observer-context). Can be `null` if not yet initialized. The automatic context lookup will be used only if this is `undefined`.
 
-```tsx
-import { DndObserverContext, useDndObserver, useDndObserverCallback } from 'dragdoll-react';
-
-function App() {
-  const dndObserver = useDndObserver();
-
-  useDndObserverCallback(
-    'start',
-    ({ draggable }) => {
-      console.log('Drag started');
-    },
-    dndObserver,
-  );
-
-  useDndObserverCallback(
-    'move',
-    ({ draggable }) => {
-      console.log('Draggable moved');
-    },
-    dndObserver,
-  );
-
-  useDndObserverCallback(
-    'enter',
-    ({ droppable }) => {
-      console.log('Entered:', droppable.data.name);
-    },
-    dndObserver,
-  );
-
-  useDndObserverCallback(
-    'leave',
-    ({ droppable }) => {
-      console.log('Left:', droppable.data.name);
-    },
-    dndObserver,
-  );
-
-  useDndObserverCallback(
-    'end',
-    ({ droppable }) => {
-      if (droppable) {
-        console.log('Dropped on:', droppable.data.name);
-      }
-    },
-    dndObserver,
-  );
-
-  return (
-    <DndObserverContext.Provider value={dndObserver}>
-      <DraggableItem />
-      <DropZone />
-    </DndObserverContext.Provider>
-  );
-}
-```
-
-### Using Context Observer
-
-```tsx
-import { DndObserverContext, useDndObserver, useDndObserverCallback } from 'dragdoll-react';
-
-function EventLogger() {
-  // Uses observer from DndObserverContext
-  useDndObserverCallback('enter', ({ droppable }) => {
-    console.log('Entered:', droppable.data.name);
-  });
-
-  useDndObserverCallback('leave', ({ droppable }) => {
-    console.log('Left:', droppable.data.name);
-  });
-
-  return null;
-}
-
-function App() {
-  const dndObserver = useDndObserver();
-
-  return (
-    <DndObserverContext.Provider value={dndObserver}>
-      <EventLogger />
-      <DraggableItem />
-      <DropZone />
-    </DndObserverContext.Provider>
-  );
-}
-```
-
-### With State Updates
-
-```tsx
-import { useState } from 'react';
-import { DndObserverContext, useDndObserver, useDndObserverCallback } from 'dragdoll-react';
-
-function App() {
-  const [currentDroppable, setCurrentDroppable] = useState<string | null>(null);
-  const dndObserver = useDndObserver();
-
-  useDndObserverCallback(
-    'enter',
-    ({ droppable }) => {
-      setCurrentDroppable(droppable.data.name);
-    },
-    dndObserver,
-  );
-
-  useDndObserverCallback(
-    'leave',
-    () => {
-      setCurrentDroppable(null);
-    },
-    dndObserver,
-  );
-
-  return (
-    <DndObserverContext.Provider value={dndObserver}>
-      <div>{currentDroppable && <p>Over: {currentDroppable}</p>}</div>
-      <DraggableItem />
-      <DropZone />
-    </DndObserverContext.Provider>
-  );
-}
-```
-
-### Using Event Type Constants
-
-```tsx
-import { DndObserverEventType } from 'dragdoll';
-import { DndObserverContext, useDndObserver, useDndObserverCallback } from 'dragdoll-react';
-
-function App() {
-  const dndObserver = useDndObserver();
-
-  useDndObserverCallback(
-    DndObserverEventType.Enter,
-    ({ droppable }) => {
-      console.log('Entered');
-    },
-    dndObserver,
-  );
-
-  useDndObserverCallback(
-    DndObserverEventType.Leave,
-    ({ droppable }) => {
-      console.log('Left');
-    },
-    dndObserver,
-  );
-
-  useDndObserverCallback(
-    DndObserverEventType.End,
-    ({ droppable }) => {
-      console.log('Ended');
-    },
-    dndObserver,
-  );
-
-  return (
-    <DndObserverContext.Provider value={dndObserver}>
-      <DraggableItem />
-      <DropZone />
-    </DndObserverContext.Provider>
-  );
-}
-```
-
-### Collision Data Access
-
-```tsx
-import { DndObserverContext, useDndObserver, useDndObserverCallback } from 'dragdoll-react';
-
-function App() {
-  const dndObserver = useDndObserver();
-
-  useDndObserverCallback(
-    'collide',
-    ({ draggable, droppable, collision }) => {
-      console.log('Collision score:', collision.score);
-      console.log('Collision rect:', collision.rect);
-    },
-    dndObserver,
-  );
-
-  return (
-    <DndObserverContext.Provider value={dndObserver}>
-      <DraggableItem />
-      <DropZone />
-    </DndObserverContext.Provider>
-  );
-}
-```
-
-### Conditional Logic
-
-```tsx
-import { useState } from 'react';
-import { DndObserverContext, useDndObserver, useDndObserverCallback } from 'dragdoll-react';
-
-function App() {
-  const [isAccepting, setIsAccepting] = useState(true);
-  const dndObserver = useDndObserver();
-
-  useDndObserverCallback(
-    'enter',
-    ({ droppable }) => {
-      if (isAccepting) {
-        console.log('Accepted:', droppable.data.name);
-      }
-    },
-    dndObserver,
-  );
-
-  return (
-    <DndObserverContext.Provider value={dndObserver}>
-      <button onClick={() => setIsAccepting(!isAccepting)}>
-        Toggle Accept: {isAccepting ? 'ON' : 'OFF'}
-      </button>
-      <DraggableItem />
-      <DropZone />
-    </DndObserverContext.Provider>
-  );
-}
-```
-
-## Notes
-
-- The listener is automatically cleaned up when the component unmounts or when dependencies change
-- If `dndObserver` is `null` or `undefined`, no listener is attached
-- If `callback` is `undefined`, no listener is attached
-- The callback is automatically removed and re-added when it changes
-- Each call to this hook adds a separate listener
-- If no observer is provided, the hook uses the observer from [DndObserverContext](/react/dnd-observer-context)
-
-## Comparison with useDndObserver Callbacks
-
-You can also pass callbacks via the [useDndObserver](/react/use-dnd-observer) options:
-
-```tsx
-// Using useDndObserverCallback
-useDndObserverCallback(
-  'enter',
-  ({ droppable }) => {
-    console.log('Entered', droppable.data.name);
-  },
-  dndObserver,
-);
-
-// Using useDndObserver callbacks
-useDndObserver({
-  onEnter: ({ droppable }) => {
-    console.log('Entered', droppable.data.name);
-  },
-});
-```
-
-The main differences:
-
-- `useDndObserverCallback` is more flexible for dynamic listeners
-- `useDndObserver` callbacks are set during observer creation
-- `useDndObserverCallback` allows adding listeners from child components
-- Both approaches can be used together
-
-## Types
-
-For detailed type information, see the [DndObserver events](/dnd-observer.html#events) in the vanilla docs.
+- Optional.
+- Default is `undefined`.

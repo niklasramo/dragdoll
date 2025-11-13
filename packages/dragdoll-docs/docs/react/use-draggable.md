@@ -18,6 +18,11 @@ function DraggableBox() {
         const areStarsAligned = Math.random() > 0.5;
         return areStarsAligned;
       },
+      // NB: If you don't define the elements setting, no elements will be
+      // moved during the drag. This is the single most important setting to
+      // define! It's optional, because technically there are a few use cases
+      // where you might not want to move any elements during the drag, but
+      // trigger e.g. auto-scrolling only.
       elements: () => (elementRef.current ? [elementRef.current] : []),
     }),
     [],
@@ -145,7 +150,7 @@ A function that should return all the elements you want to move during the drag.
 
 This pattern lends itself pretty handy in React as you can use refs within the function and dynamically get the current values of all the refs of elements you want to drag around.
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > The core [`Draggable`](/draggable) class will modify the elements' inline transform styles. So it's important that you don't modify the elements' inline transform styles via React during the drag.
 
 Check the [`elements`](/draggable#elements) core docs for more info.

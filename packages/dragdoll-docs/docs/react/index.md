@@ -16,8 +16,4 @@ DragDoll React is a thin and performant React (18+) wrapper for the [DragDoll](/
 
 ## Caveats
 
-Being a wrapper over a vanilla JS library often comes with a few caveats, and such is the case with this wrapper also.
-
-The [`container`](/draggable#container) option of the [`Draggable`](/draggable) class is not fully supported because it will make the core library move DOM nodes under a different node for the duration of the drag. React has it's own [portal API](https://react.dev/reference/react-dom/createPortal) for doing moving DOM nodes around, which is very hard to support in a wrapper library. It would require a full React specific rewrite of the Draggable class to support the `container` option fully, and even then it would _probably_ be a bit finicky.
-
-However, all is not lost. The `container` option can be used to an extent. You can for example create a clone of the dragged element (outside React) and provide the clone as the dragged element for the [`useDraggable`](/react/use-draggable) hook. As for the `container`, you can use any element that is outside React's control (e.g. `document.body`) or even a React controlled element if you know for sure React won't be touching it during the drag.
+Being a wrapper over a vanilla JS library often comes with a few caveats, and such is the case with this wrapper also. The [`container`](/draggable#container) option of the [`Draggable`](/draggable) class is only _partially_ supported because it will make the core library move DOM nodes under a different node for the duration of the drag. React has it's own API ([`createPortal`](https://react.dev/reference/react-dom/createPortal)) for moving DOM nodes around, which is very tricky to support in a wrapper library. Read more about this in the [`useDraggable`](/react/use-draggable#container) docs.

@@ -1,4 +1,4 @@
-import { DndContext } from 'dragdoll/dnd-context';
+import { DndObserver } from 'dragdoll/dnd-observer';
 import { Draggable } from 'dragdoll/draggable';
 import { Droppable } from 'dragdoll/droppable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
@@ -27,9 +27,9 @@ export default () => {
         accept: new Set(['test']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('start', (data) => {
+      dndObserver.on('start', (data) => {
         expect(data.draggable).toBe(draggable);
         expect(data.targets).toBeInstanceOf(Map);
         expect(data.targets.size).toBe(1);
@@ -37,7 +37,7 @@ export default () => {
         events.push('start');
       });
 
-      dndContext.on('end', (data) => {
+      dndObserver.on('end', (data) => {
         expect(data.draggable).toBe(draggable);
         expect(data.targets).toBeInstanceOf(Map);
         expect(data.targets.size).toBe(1);
@@ -45,8 +45,8 @@ export default () => {
         events.push('end');
       });
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       await startDrag(dragElement);
 
@@ -58,7 +58,7 @@ export default () => {
       expect(events).toEqual(['end']);
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       keyboardSensor.destroy();
@@ -81,16 +81,16 @@ export default () => {
         accept: new Set(['test']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('move', (data) => {
+      dndObserver.on('move', (data) => {
         expect(data.draggable).toBe(draggable);
         expect(data.targets).toBeInstanceOf(Map);
         events.push('move');
       });
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       await startDrag(dragElement);
 
@@ -102,7 +102,7 @@ export default () => {
       await endDrag();
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       keyboardSensor.destroy();
@@ -144,9 +144,9 @@ export default () => {
         accept: new Set(['test']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('enter', (data) => {
+      dndObserver.on('enter', (data) => {
         events.push({
           type: 'enter',
           collisions: data.collisions.length,
@@ -154,7 +154,7 @@ export default () => {
         });
       });
 
-      dndContext.on('leave', (data) => {
+      dndObserver.on('leave', (data) => {
         events.push({
           type: 'leave',
           collisions: data.collisions.length,
@@ -162,8 +162,8 @@ export default () => {
         });
       });
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       // Start dragging (no collision initially)
       await startDrag(dragElement);
@@ -189,7 +189,7 @@ export default () => {
       await endDrag();
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       keyboardSensor.destroy();
@@ -225,17 +225,17 @@ export default () => {
         accept: new Set(['test']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('end', (data) => {
+      dndObserver.on('end', (data) => {
         expect(data.draggable).toBe(draggable);
         expect(data.collisions.length).toBe(1);
         expect(data.collisions.some((c) => c.droppableId === droppable.id)).toBe(true);
         events.push('end');
       });
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       // Start dragging (should be overlapping)
       await startDrag(dragElement);
@@ -247,7 +247,7 @@ export default () => {
       expect(events[0]).toBe('end');
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       keyboardSensor.destroy();
@@ -265,32 +265,32 @@ export default () => {
         dndGroups: new Set(['test']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('addDraggables', (data) => {
+      dndObserver.on('addDraggables', (data) => {
         events.push({ type: 'addDraggables', draggables: data.draggables });
       });
 
-      dndContext.on('removeDraggables', (data) => {
+      dndObserver.on('removeDraggables', (data) => {
         events.push({ type: 'removeDraggables', draggables: data.draggables });
       });
 
       // Add draggable
-      dndContext.addDraggables([draggable]);
+      dndObserver.addDraggables([draggable]);
 
       expect(events.length).toBe(1);
       expect(events[0].type).toBe('addDraggables');
       expect(events[0].draggables.has(draggable)).toBe(true);
 
       // Remove draggable
-      dndContext.removeDraggables([draggable]);
+      dndObserver.removeDraggables([draggable]);
 
       expect(events.length).toBe(2);
       expect(events[1].type).toBe('removeDraggables');
       expect(events[1].draggables.has(draggable)).toBe(true);
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       keyboardSensor.destroy();
       dragElement.remove();
@@ -304,36 +304,36 @@ export default () => {
         accept: new Set(['test']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('addDroppables', (data) => {
+      dndObserver.on('addDroppables', (data) => {
         data.droppables.forEach((droppable) => {
           events.push({ type: 'addDroppable', droppable });
         });
       });
 
-      dndContext.on('removeDroppables', (data) => {
+      dndObserver.on('removeDroppables', (data) => {
         data.droppables.forEach((droppable) => {
           events.push({ type: 'removeDroppable', droppable });
         });
       });
 
       // Add droppable
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDroppables([droppable]);
 
       expect(events.length).toBe(1);
       expect(events[0].type).toBe('addDroppable');
       expect(events[0].droppable).toBe(droppable);
 
       // Remove droppable
-      dndContext.removeDroppables([droppable]);
+      dndObserver.removeDroppables([droppable]);
 
       expect(events.length).toBe(2);
       expect(events[1].type).toBe('removeDroppable');
       expect(events[1].droppable).toBe(droppable);
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       droppable.destroy();
       dropElement.remove();
     });
@@ -348,15 +348,15 @@ export default () => {
         dndGroups: new Set(['test']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('end', (data) => {
+      dndObserver.on('end', (data) => {
         expect(data.draggable).toBe(draggable);
         expect(data.canceled).toBe(true);
         events.push('end');
       });
 
-      dndContext.addDraggables([draggable]);
+      dndObserver.addDraggables([draggable]);
 
       // Start dragging
       await startDrag(dragElement);
@@ -368,7 +368,7 @@ export default () => {
       expect(events[0]).toBe('end');
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       keyboardSensor.destroy();
       dragElement.remove();
@@ -376,13 +376,13 @@ export default () => {
 
     it('should emit destroy event when context is destroyed', () => {
       const events: string[] = [];
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('destroy', () => {
+      dndObserver.on('destroy', () => {
         events.push('destroy');
       });
 
-      dndContext.destroy();
+      dndObserver.destroy();
 
       expect(events.length).toBe(1);
       expect(events[0]).toBe('destroy');
@@ -404,7 +404,7 @@ export default () => {
       });
       const droppableA = new Droppable(dropA, { accept: new Set(['g']) });
       const droppableB = new Droppable(dropB, { accept: new Set(['g']) });
-      const ctx = new DndContext();
+      const ctx = new DndObserver();
 
       ctx.on('leave', () => order.push('leave'));
       ctx.on('enter', () => order.push('enter'));
@@ -444,7 +444,7 @@ export default () => {
         dndGroups: new Set(['g']),
       });
       const droppable = new Droppable(dropEl, { accept: new Set(['g']) });
-      const ctx = new DndContext();
+      const ctx = new DndObserver();
 
       let gotEnter = false;
       ctx.on('enter', ({ collisions }) => {
@@ -489,7 +489,7 @@ export default () => {
         dndGroups: new Set(['g']),
       });
       const droppable = new Droppable(dropEl, { accept: () => accepts });
-      const ctx = new DndContext();
+      const ctx = new DndObserver();
 
       ctx.on('enter', () => events.push('enter'));
 
@@ -526,7 +526,7 @@ export default () => {
         dndGroups: new Set(['g']),
       });
       const droppable = new Droppable(dropEl, { accept: new Set(['g']) });
-      const ctx = new DndContext();
+      const ctx = new DndObserver();
 
       let shouldRemove = false;
       ctx.on('enter', () => {
@@ -569,7 +569,7 @@ export default () => {
         dndGroups: new Set(['g']),
       });
       const droppable = new Droppable(dropEl, { accept: new Set(['g']) });
-      const ctx = new DndContext();
+      const ctx = new DndObserver();
 
       ctx.on('start', () => {
         const data = ctx.drags.get(draggable)!;

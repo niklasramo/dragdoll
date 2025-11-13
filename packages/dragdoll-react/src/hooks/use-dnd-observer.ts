@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useDndObserverCallback } from './use-dnd-observer-callback.js';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';
 
-export interface UseDndObserverOptions<T extends CollisionData = CollisionData> {
+export interface UseDndObserverSettings<T extends CollisionData = CollisionData> {
   collisionDetector?: DndObserverOptions<T>['collisionDetector'];
   onStart?: DndObserverEventCallbacks<T>['start'];
   onMove?: DndObserverEventCallbacks<T>['move'];
@@ -32,7 +32,7 @@ export function useDndObserver<T extends CollisionData = CollisionData>({
   onAddDroppables,
   onRemoveDroppables,
   onDestroy,
-}: UseDndObserverOptions<T> = {}) {
+}: UseDndObserverSettings<T> = {}) {
   const [dndObserver, setDndObserver] = useState<DndObserver<T> | null>(null);
 
   // Recreate the instance when the collision detector changes.

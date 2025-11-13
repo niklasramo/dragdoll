@@ -5,7 +5,7 @@ import events from './events.js';
 import methods from './methods.js';
 
 export default () => {
-  describe('DndContext', () => {
+  describe('DndObserver', () => {
     advancedCollisionDetector();
     collisionDetector();
     droppable();

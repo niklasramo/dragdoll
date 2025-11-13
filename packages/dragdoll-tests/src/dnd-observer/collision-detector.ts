@@ -1,6 +1,6 @@
-import { DndContext } from 'dragdoll/dnd-context';
-import type { CollisionData } from 'dragdoll/dnd-context/collision-detector';
-import { CollisionDetector } from 'dragdoll/dnd-context/collision-detector';
+import { DndObserver } from 'dragdoll/dnd-observer';
+import type { CollisionData } from 'dragdoll/dnd-observer/collision-detector';
+import { CollisionDetector } from 'dragdoll/dnd-observer/collision-detector';
 import { Draggable } from 'dragdoll/draggable';
 import { Droppable } from 'dragdoll/droppable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
@@ -41,17 +41,17 @@ export default () => {
         accept: new Set(['test']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('enter', (data) => {
+      dndObserver.on('enter', (data) => {
         collisionEvents.push({
           type: 'enter',
           collisions: data.collisions,
         });
       });
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       // Start dragging (elements should be overlapping)
       focusElement(dragElement);
@@ -75,7 +75,7 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       keyboardSensor.destroy();
@@ -111,17 +111,17 @@ export default () => {
         accept: new Set(['test']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('enter', (data) => {
+      dndObserver.on('enter', (data) => {
         collisionEvents.push({
           type: 'enter',
           collisions: data.collisions,
         });
       });
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       // Start dragging (elements should not be overlapping)
       focusElement(dragElement);
@@ -136,7 +136,7 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       keyboardSensor.destroy();
@@ -171,18 +171,18 @@ export default () => {
         accept: new Set(['test']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('enter', (data) => {
+      dndObserver.on('enter', (data) => {
         collisionEvents.push({ type: 'enter', collisions: data.collisions.length });
       });
 
-      dndContext.on('leave', (data) => {
+      dndObserver.on('leave', (data) => {
         collisionEvents.push({ type: 'leave', collisions: data.collisions.length });
       });
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       // Start dragging (no collision initially)
       focusElement(dragElement);
@@ -211,7 +211,7 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       keyboardSensor.destroy();
@@ -260,24 +260,24 @@ export default () => {
         accept: new Set(['test']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('enter', (data) => {
+      dndObserver.on('enter', (data) => {
         collisionEvents.push({
           type: 'enter',
           collisions: [...data.collisions],
         });
       });
 
-      dndContext.on('leave', (data) => {
+      dndObserver.on('leave', (data) => {
         collisionEvents.push({
           type: 'leave',
           collisions: [...data.collisions],
         });
       });
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable1, droppable2]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable1, droppable2]);
 
       // Start dragging (should collide with droppable1)
       focusElement(dragElement);
@@ -305,7 +305,7 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable1.destroy();
       droppable2.destroy();
@@ -343,14 +343,14 @@ export default () => {
         accept: new Set(['other-group']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('enter', () => {
+      dndObserver.on('enter', () => {
         collisionEvents.push({ type: 'enter' });
       });
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       // Start dragging (elements overlap but droppable doesn't accept this
       // group)
@@ -366,7 +366,7 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       keyboardSensor.destroy();
@@ -426,11 +426,11 @@ export default () => {
         }
       }
 
-      const dndContext = new DndContext<CustomCollisionData>({
+      const dndObserver = new DndObserver<CustomCollisionData>({
         collisionDetector: (ctx) => new TestDetector(ctx),
       });
 
-      dndContext.on('enter', (data) => {
+      dndObserver.on('enter', (data) => {
         const collision = data.collisions[0];
         customCollisionEvents.push({
           type: 'enter',
@@ -438,8 +438,8 @@ export default () => {
         });
       });
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       // Start dragging
       focusElement(dragElement);
@@ -456,7 +456,7 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       keyboardSensor.destroy();
@@ -489,10 +489,10 @@ export default () => {
         accept: new Set(['test']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       // Get initial client rect
       const initialRect = droppable.getClientRect();
@@ -523,7 +523,7 @@ export default () => {
       await waitNextFrame(); // Wait for cleanup
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       keyboardSensor.destroy();
@@ -558,14 +558,14 @@ export default () => {
         accept: new Set(['test']),
       });
 
-      const dndContext = new DndContext();
+      const dndObserver = new DndObserver();
 
-      dndContext.on('enter', (data) => {
+      dndObserver.on('enter', (data) => {
         collisionData = data.collisions.find((c) => c.droppableId === droppable.id) || null;
       });
 
-      dndContext.addDraggables([draggable]);
-      dndContext.addDroppables([droppable]);
+      dndObserver.addDraggables([draggable]);
+      dndObserver.addDroppables([droppable]);
 
       // Start dragging
       focusElement(dragElement);
@@ -592,7 +592,7 @@ export default () => {
       await waitNextFrame(); // Wait for cleanup
 
       // Cleanup
-      dndContext.destroy();
+      dndObserver.destroy();
       draggable.destroy();
       droppable.destroy();
       keyboardSensor.destroy();

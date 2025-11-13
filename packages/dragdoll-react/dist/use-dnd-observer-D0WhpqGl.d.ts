@@ -1,7 +1,7 @@
 import { CollisionData, DndObserver, DndObserverEventCallbacks, DndObserverOptions } from "dragdoll";
 
 //#region src/hooks/use-dnd-observer.d.ts
-interface UseDndObserverOptions<T extends CollisionData = CollisionData> {
+interface UseDndObserverSettings<T extends CollisionData = CollisionData> {
   collisionDetector?: DndObserverOptions<T>['collisionDetector'];
   onStart?: DndObserverEventCallbacks<T>['start'];
   onMove?: DndObserverEventCallbacks<T>['move'];
@@ -28,7 +28,7 @@ declare function useDndObserver<T extends CollisionData = CollisionData>({
   onAddDroppables,
   onRemoveDroppables,
   onDestroy
-}?: UseDndObserverOptions<T>): DndObserver<T> | null;
+}?: UseDndObserverSettings<T>): DndObserver<T> | null;
 //#endregion
-export { useDndObserver as n, UseDndObserverOptions as t };
-//# sourceMappingURL=use-dnd-observer-DMe4HL6w.d.ts.map
+export { useDndObserver as n, UseDndObserverSettings as t };
+//# sourceMappingURL=use-dnd-observer-D0WhpqGl.d.ts.map
