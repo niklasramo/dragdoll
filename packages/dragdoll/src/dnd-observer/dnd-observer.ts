@@ -1,5 +1,5 @@
 import { Emitter } from 'eventti';
-import type { AnyDraggable, DraggableId } from '../draggable/draggable.js';
+import type { AnyDraggable, Draggable, DraggableId } from '../draggable/draggable.js';
 import { DraggableEventType } from '../draggable/draggable.js';
 import type { Droppable, DroppableId } from '../droppable/droppable.js';
 import { DroppableEventType } from '../droppable/droppable.js';
@@ -591,7 +591,7 @@ export class DndObserver<T extends CollisionData = CollisionData> {
 
     const addedDraggables = new Set<AnyDraggable>();
 
-    for (const draggable of draggables) {
+    for (const draggable of draggables as Set<Draggable>) {
       if (this.draggables.has(draggable.id)) continue;
 
       addedDraggables.add(draggable);
@@ -632,10 +632,13 @@ export class DndObserver<T extends CollisionData = CollisionData> {
 
       draggable.on(
         DraggableEventType.End,
-        (e) => {
-          if (e?.type === SensorEventType.End) {
+        (drag) => {
+          // If the end event's type is "end", call the end callback.
+          if (drag.endEvent?.type === SensorEventType.End) {
             this._onDragEnd(draggable);
-          } else if (e?.type === SensorEventType.Cancel) {
+          }
+          // In other cases, call the cancel callback.
+          else {
             this._onDragCancel(draggable);
           }
         },

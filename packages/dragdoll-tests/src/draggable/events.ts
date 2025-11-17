@@ -19,38 +19,37 @@ export default () => {
       });
 
       draggable.on('preparestart', (...args) => {
-        expect(args.length).toBe(1);
-        expect(args[0].type).toBe('start');
-        expect(args[0].srcEvent).toBe(currentKeyboardEvent);
+        expect(args.length).toBe(2);
+        expect(args[0]).toBe(draggable.drag);
+        expect(args[1]).toBe(draggable);
         events.push('preparestart');
       });
 
       draggable.on('start', (...args) => {
-        expect(args.length).toBe(1);
-        expect(args[0].type).toBe('start');
-        expect(args[0].srcEvent).toBe(currentKeyboardEvent);
+        expect(args.length).toBe(2);
+        expect(args[0]).toBe(draggable.drag);
+        expect(args[1]).toBe(draggable);
         events.push('start');
       });
 
       draggable.on('preparemove', (...args) => {
-        expect(args.length).toBe(1);
-        expect(args[0].type).toBe('move');
-        expect(args[0].srcEvent).toBe(currentKeyboardEvent);
+        expect(args.length).toBe(2);
+        expect(args[0]).toBe(draggable.drag);
+        expect(args[1]).toBe(draggable);
         events.push('preparemove');
       });
 
       draggable.on('move', (...args) => {
-        expect(args.length).toBe(1);
-        expect(args[0].type).toBe('move');
-        expect(args[0].srcEvent).toBe(currentKeyboardEvent);
+        expect(args.length).toBe(2);
+        expect(args[0]).toBe(draggable.drag);
+        expect(args[1]).toBe(draggable);
         events.push('move');
       });
 
       draggable.on('end', (...args) => {
-        expect(args.length).toBe(1);
-        expect(args[0]?.type).toBe('end');
-        // @ts-expect-error - srcEvent is optional.
-        expect(args[0]?.srcEvent).toBe(currentKeyboardEvent);
+        expect(args.length).toBe(2);
+        expect(args[0]).toBe(draggable.drag);
+        expect(args[1]).toBe(draggable);
         events.push('end');
       });
 

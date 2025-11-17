@@ -1900,7 +1900,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll/dist/draggable-CUeOOVDR.js
+  //#region ../dragdoll/dist/draggable-BbMg6mSD.js
   function s$4(e$10, t$13) {
     return e$10.isIdentity && t$13.isIdentity
       ? !0
@@ -2578,7 +2578,7 @@
           }) || []
         ).map((e$11) => new O(e$11, this))),
         this._applyModifiers(F.Start, 0, 0),
-        this._emit(R.PrepareStart, e$10.startEvent),
+        this._emit(R.PrepareStart, e$10, this),
         this.settings.onPrepareStart?.(e$10, this),
         (this._startPhase = N$1.FinishPrepare));
     }
@@ -2615,7 +2615,7 @@
             });
         }
         (window.addEventListener(`scroll`, this._onScroll, k),
-          this._emit(R.Start, e$10.startEvent),
+          this._emit(R.Start, e$10, this),
           this.settings.onStart?.(e$10, this),
           (this._startPhase = N$1.FinishApply));
       }
@@ -2626,7 +2626,7 @@
       let { moveEvent: t$13, prevMoveEvent: n$15 } = e$10;
       t$13 !== n$15 &&
         (this._applyModifiers(F.Move, t$13.x - n$15.x, t$13.y - n$15.y),
-        this._emit(R.PrepareMove, t$13),
+        this._emit(R.PrepareMove, e$10, this),
         !e$10.isEnded &&
           (this.settings.onPrepareMove?.(e$10, this),
           !e$10.isEnded && (e$10.prevMoveEvent = t$13)));
@@ -2643,7 +2643,7 @@
               drag: e$10,
               item: t$13,
             }));
-        (this._emit(R.Move, e$10.moveEvent), !e$10.isEnded && this.settings.onMove?.(e$10, this));
+        (this._emit(R.Move, e$10, this), !e$10.isEnded && this.settings.onMove?.(e$10, this));
       }
     }
     _prepareAlign() {
@@ -2773,7 +2773,7 @@
               drag: n$15,
               item: e$10,
             });
-        (this._emit(R.End, n$15.endEvent), this.settings.onEnd?.(n$15, this), (this.drag = null));
+        (this._emit(R.End, n$15, this), this.settings.onEnd?.(n$15, this), (this.drag = null));
       }
     }
     align(n$15 = !1) {
@@ -2870,7 +2870,7 @@
   };
 
   //#endregion
-  //#region ../dragdoll/dist/dnd-observer-DAFD4Pcu.js
+  //#region ../dragdoll/dist/dnd-observer-PhWGBHaN.js
   var s$3 = (function (e$10) {
     return (
       (e$10[(e$10.Idle = 0)] = `Idle`),
@@ -3191,9 +3191,7 @@
           n$15.on(
             R.End,
             (e$11) => {
-              e$11?.type === e$4.End
-                ? this._onDragEnd(n$15)
-                : e$11?.type === e$4.Cancel && this._onDragCancel(n$15);
+              e$11.endEvent?.type === e$4.End ? this._onDragEnd(n$15) : this._onDragCancel(n$15);
             },
             this._listenerId,
           ),
@@ -3521,7 +3519,7 @@
   const t$7 = new N();
 
   //#endregion
-  //#region ../dragdoll/dist/auto-scroll-plugin-CzQex1ax.js
+  //#region ../dragdoll/dist/auto-scroll-plugin-Bqs6w1zt.js
   const r$7 = {
       x: 0,
       y: 0,
@@ -5256,7 +5254,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-dnd-observer-C2wDVvQa.js
+  //#region ../dragdoll-react/dist/use-dnd-observer-B2HZwsIC.js
   function a({
     collisionDetector: a$7,
     onStart: o$7,
@@ -5359,7 +5357,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-B_WlZ0op.js
+  //#region ../dragdoll-react/dist/use-draggable-CMs2hFH6.js
   function c(c$7, l$6) {
     let u$6 = n$1(() => c$7.filter((e$10) => !!e$10), [...c$7]),
       { id: d$3, dndObserver: f$3, ...p$3 } = l$6 || {},
@@ -5434,7 +5432,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-auto-scroll-Bfc-BIux.js
+  //#region ../dragdoll-react/dist/use-draggable-auto-scroll-BAAmpSao.js
   function i(i$9, a$7) {
     let o$7 = (0, import_react.useRef)(a$7);
     o$7.current = a$7;
@@ -5469,7 +5467,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-drag-cqJKOXjJ.js
+  //#region ../dragdoll-react/dist/use-draggable-drag-BekXfPYq.js
   function r(r$10, i$9 = !1) {
     let [a$7, o$7] = (0, import_react.useState)(r$10?.drag || null),
       s$7 = (0, import_react.useState)(void 0)[1];
@@ -5488,7 +5486,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-droppable-Bfgenc05.js
+  //#region ../dragdoll-react/dist/use-droppable-B1RDSPLw.js
   function s({ id: s$7, accept: c$7, data: l$6, element: u$6, dndObserver: d$3 } = {}) {
     let f$3 = n$2(),
       p$3 = d$3 === void 0 ? f$3 : d$3,
@@ -5557,7 +5555,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-keyboard-motion-sensor-B0wbimu8.js
+  //#region ../dragdoll-react/dist/use-keyboard-motion-sensor-BtTbO_79.js
   function o(o$7 = {}, s$7) {
     let [c$7, l$6] = (0, import_react.useState)(null),
       u$6 = (0, import_react.useRef)(c$7),
@@ -5595,7 +5593,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-pointer-sensor-_yqecFSk.js
+  //#region ../dragdoll-react/dist/use-pointer-sensor-BIU5uieJ.js
   function o$1(o$7 = {}, s$7) {
     let [c$7, l$6] = (0, import_react.useState)(null),
       u$6 = (0, import_react.useRef)(c$7),

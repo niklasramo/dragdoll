@@ -1,5 +1,6 @@
-import type { DndObserver, DroppableOptions } from 'dragdoll';
-import { Droppable as DroppableCore } from 'dragdoll';
+import type { DndObserver } from 'dragdoll/dnd-observer';
+import type { DroppableOptions } from 'dragdoll/droppable';
+import { Droppable as DroppableCore } from 'dragdoll/droppable';
 import { useRef, useState } from 'react';
 import { useCallbackStable } from './use-callback-stable.js';
 import { useDndObserverContext } from './use-dnd-observer-context.js';

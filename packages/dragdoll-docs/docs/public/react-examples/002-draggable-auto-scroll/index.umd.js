@@ -1263,7 +1263,7 @@
 
   //#endregion
   //#region ../dragdoll-react/dist/use-dnd-observer-context-BL_LF-TG.js
-  function n$5() {
+  function n$10() {
     return (0, import_react.useContext)(t$10);
   }
 
@@ -1521,43 +1521,14 @@
 
   //#endregion
   //#region ../dragdoll/dist/ticker-Bio34ZvT.js
-  const n$7 = {
+  const n$4 = {
     read: Symbol(),
     write: Symbol(),
   };
   let r$5 = new l$3({
-    phases: [n$7.read, n$7.write],
+    phases: [n$4.read, n$4.write],
     requestFrame: typeof window < `u` ? u$3() : () => () => {},
   });
-
-  //#endregion
-  //#region ../dragdoll/dist/create-full-rect-Dd45f4o1.js
-  function e$5(
-    e$9,
-    t$12 = {
-      width: 0,
-      height: 0,
-      x: 0,
-      y: 0,
-      left: 0,
-      top: 0,
-      right: 0,
-      bottom: 0,
-    },
-  ) {
-    return (
-      e$9 &&
-        ((t$12.width = e$9.width),
-        (t$12.height = e$9.height),
-        (t$12.x = e$9.x),
-        (t$12.y = e$9.y),
-        (t$12.left = e$9.x),
-        (t$12.top = e$9.y),
-        (t$12.right = e$9.x + e$9.width),
-        (t$12.bottom = e$9.y + e$9.height)),
-      t$12
-    );
-  }
 
   //#endregion
   //#region ../dragdoll/dist/get-intersection-score-YcxwkZs7.js
@@ -1586,12 +1557,59 @@
     x: 0,
     y: 0,
   };
-  function n$10(n$11, r$8, i$7) {
+  function n$9(n$11, r$8, i$7) {
     if (((i$7 ||= e$6(n$11, r$8, t$8)), !i$7)) return 0;
     let a$4 = i$7.width * i$7.height;
     return a$4
       ? (a$4 / (Math.min(n$11.width, r$8.width) * Math.min(n$11.height, r$8.height))) * 100
       : 0;
+  }
+
+  //#endregion
+  //#region ../dragdoll/dist/get-style-CC2j8jdv.js
+  const e$5 = /* @__PURE__ */ new WeakMap();
+  function t$7(t$12) {
+    let n$11 = e$5.get(t$12)?.deref();
+    return (
+      n$11 || ((n$11 = window.getComputedStyle(t$12, null)), e$5.set(t$12, new WeakRef(n$11))),
+      n$11
+    );
+  }
+
+  //#endregion
+  //#region ../dragdoll/dist/constants-CMClRu_c.js
+  const e$4 = typeof window < `u` && window.document !== void 0,
+    t = e$4 && `ontouchstart` in window,
+    n$2 = e$4 && !!window.PointerEvent;
+  e$4 &&
+    navigator.vendor &&
+    navigator.vendor.indexOf(`Apple`) > -1 &&
+    navigator.userAgent &&
+    navigator.userAgent.indexOf(`CriOS`) == -1 &&
+    navigator.userAgent.indexOf(`FxiOS`);
+
+  //#endregion
+  //#region ../dragdoll/dist/sensor-Uwz8qy61.js
+  const e = {
+    Start: `start`,
+    Move: `move`,
+    Cancel: `cancel`,
+    End: `end`,
+    Destroy: `destroy`,
+  };
+
+  //#endregion
+  //#region ../../node_modules/mezr/dist/esm/utils/getStyle.js
+  const STYLE_DECLARATION_CACHE = /* @__PURE__ */ new WeakMap();
+  function getStyle(e$9, t$12) {
+    if (t$12) return window.getComputedStyle(e$9, t$12);
+    let C$2 = STYLE_DECLARATION_CACHE.get(e$9)?.deref();
+    return (
+      C$2 ||
+        ((C$2 = window.getComputedStyle(e$9, null)),
+        STYLE_DECLARATION_CACHE.set(e$9, new WeakRef(C$2))),
+      C$2
+    );
   }
 
   //#endregion
@@ -1629,29 +1647,1233 @@
   })();
 
   //#endregion
+  //#region ../../node_modules/mezr/dist/esm/utils/isBlockElement.js
+  function isBlockElement(e$9) {
+    switch (getStyle(e$9).display) {
+      case 'none':
+        return null;
+      case 'inline':
+      case 'contents':
+        return !1;
+      default:
+        return !0;
+    }
+  }
+
+  //#endregion
+  //#region ../../node_modules/mezr/dist/esm/utils/isContainingBlockForFixedElement.js
+  function isContainingBlockForFixedElement(n$11) {
+    const t$12 = getStyle(n$11);
+    if (!IS_SAFARI) {
+      const { filter: n$12 } = t$12;
+      if (n$12 && 'none' !== n$12) return !0;
+      const { backdropFilter: e$10 } = t$12;
+      if (e$10 && 'none' !== e$10) return !0;
+      const { willChange: i$8 } = t$12;
+      if (i$8 && (i$8.indexOf('filter') > -1 || i$8.indexOf('backdrop-filter') > -1)) return !0;
+    }
+    const e$9 = isBlockElement(n$11);
+    if (!e$9) return e$9;
+    const { transform: i$7 } = t$12;
+    if (i$7 && 'none' !== i$7) return !0;
+    const { perspective: r$8 } = t$12;
+    if (r$8 && 'none' !== r$8) return !0;
+    const { contentVisibility: o$7 } = t$12;
+    if (o$7 && 'auto' === o$7) return !0;
+    const { contain: f$2 } = t$12;
+    if (
+      f$2 &&
+      ('strict' === f$2 ||
+        'content' === f$2 ||
+        f$2.indexOf('paint') > -1 ||
+        f$2.indexOf('layout') > -1)
+    )
+      return !0;
+    const { willChange: c$5 } = t$12;
+    return (
+      !(
+        !c$5 ||
+        !(
+          c$5.indexOf('transform') > -1 ||
+          c$5.indexOf('perspective') > -1 ||
+          c$5.indexOf('contain') > -1
+        )
+      ) || !!(IS_SAFARI && c$5 && c$5.indexOf('filter') > -1)
+    );
+  }
+
+  //#endregion
+  //#region ../../node_modules/mezr/dist/esm/utils/isContainingBlockForAbsoluteElement.js
+  function isContainingBlockForAbsoluteElement(t$12) {
+    return 'static' !== getStyle(t$12).position || isContainingBlockForFixedElement(t$12);
+  }
+
+  //#endregion
+  //#region ../../node_modules/mezr/dist/esm/utils/isDocumentElement.js
+  function isDocumentElement(e$9) {
+    return e$9 instanceof HTMLHtmlElement;
+  }
+
+  //#endregion
+  //#region ../../node_modules/mezr/dist/esm/getContainingBlock.js
+  function getContainingBlock(e$9, t$12 = {}) {
+    if (isDocumentElement(e$9)) return e$9.ownerDocument.defaultView;
+    const n$11 = t$12.position || getStyle(e$9).position,
+      { skipDisplayNone: i$7, container: o$7 } = t$12;
+    switch (n$11) {
+      case 'static':
+      case 'relative':
+      case 'sticky':
+      case '-webkit-sticky': {
+        let t$13 = o$7 || e$9.parentElement;
+        for (; t$13; ) {
+          const e$10 = isBlockElement(t$13);
+          if (e$10) return t$13;
+          if (null === e$10 && !i$7) return null;
+          t$13 = t$13.parentElement;
+        }
+        return e$9.ownerDocument.documentElement;
+      }
+      case 'absolute':
+      case 'fixed': {
+        const t$13 = 'fixed' === n$11;
+        let l$4 = o$7 || e$9.parentElement;
+        for (; l$4; ) {
+          const e$10 = t$13
+            ? isContainingBlockForFixedElement(l$4)
+            : isContainingBlockForAbsoluteElement(l$4);
+          if (!0 === e$10) return l$4;
+          if (null === e$10 && !i$7) return null;
+          l$4 = l$4.parentElement;
+        }
+        return e$9.ownerDocument.defaultView;
+      }
+      default:
+        return null;
+    }
+  }
+
+  //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/isWindow.js
   function isWindow(n$11) {
     return n$11 instanceof Window;
   }
 
   //#endregion
-  //#region ../../node_modules/mezr/dist/esm/utils/isDocument.js
-  function isDocument(n$11) {
-    return n$11 instanceof Document;
+  //#region ../../node_modules/mezr/dist/esm/getOffsetContainer.js
+  function getOffsetContainer(n$11, t$12 = {}) {
+    const { display: o$7 } = getStyle(n$11);
+    if ('none' === o$7 || 'contents' === o$7) return null;
+    const e$9 = t$12.position || getStyle(n$11).position,
+      { skipDisplayNone: s$4, container: r$8 } = t$12;
+    switch (e$9) {
+      case 'relative':
+        return n$11;
+      case 'fixed':
+        return getContainingBlock(n$11, {
+          container: r$8,
+          position: e$9,
+          skipDisplayNone: s$4,
+        });
+      case 'absolute': {
+        const t$13 = getContainingBlock(n$11, {
+          container: r$8,
+          position: e$9,
+          skipDisplayNone: s$4,
+        });
+        return isWindow(t$13) ? n$11.ownerDocument : t$13;
+      }
+      default:
+        return null;
+    }
   }
 
   //#endregion
-  //#region ../../node_modules/mezr/dist/esm/utils/getStyle.js
-  const STYLE_DECLARATION_CACHE = /* @__PURE__ */ new WeakMap();
-  function getStyle(e$9, t$12) {
-    if (t$12) return window.getComputedStyle(e$9, t$12);
-    let C$2 = STYLE_DECLARATION_CACHE.get(e$9)?.deref();
+  //#region ../dragdoll/dist/draggable-BbMg6mSD.js
+  function s$3(e$9, t$12) {
+    return e$9.isIdentity && t$12.isIdentity
+      ? !0
+      : e$9.is2D && t$12.is2D
+        ? e$9.a === t$12.a &&
+          e$9.b === t$12.b &&
+          e$9.c === t$12.c &&
+          e$9.d === t$12.d &&
+          e$9.e === t$12.e &&
+          e$9.f === t$12.f
+        : e$9.m11 === t$12.m11 &&
+          e$9.m12 === t$12.m12 &&
+          e$9.m13 === t$12.m13 &&
+          e$9.m14 === t$12.m14 &&
+          e$9.m21 === t$12.m21 &&
+          e$9.m22 === t$12.m22 &&
+          e$9.m23 === t$12.m23 &&
+          e$9.m24 === t$12.m24 &&
+          e$9.m31 === t$12.m31 &&
+          e$9.m32 === t$12.m32 &&
+          e$9.m33 === t$12.m33 &&
+          e$9.m34 === t$12.m34 &&
+          e$9.m41 === t$12.m41 &&
+          e$9.m42 === t$12.m42 &&
+          e$9.m43 === t$12.m43 &&
+          e$9.m44 === t$12.m44;
+  }
+  function c$4(e$9) {
     return (
-      C$2 ||
-        ((C$2 = window.getComputedStyle(e$9, null)),
-        STYLE_DECLARATION_CACHE.set(e$9, new WeakRef(C$2))),
-      C$2
+      e$9.m11 !== 1 ||
+      e$9.m12 !== 0 ||
+      e$9.m13 !== 0 ||
+      e$9.m14 !== 0 ||
+      e$9.m21 !== 0 ||
+      e$9.m22 !== 1 ||
+      e$9.m23 !== 0 ||
+      e$9.m24 !== 0 ||
+      e$9.m31 !== 0 ||
+      e$9.m32 !== 0 ||
+      e$9.m33 !== 1 ||
+      e$9.m34 !== 0 ||
+      e$9.m43 !== 0 ||
+      e$9.m44 !== 1
     );
+  }
+  function l$2(e$9, t$12, n$11 = null) {
+    if (`moveBefore` in e$9 && e$9.isConnected === t$12.isConnected)
+      try {
+        e$9.moveBefore(t$12, n$11);
+        return;
+      } catch {}
+    let r$8 = document.activeElement,
+      i$7 = t$12.contains(r$8);
+    (e$9.insertBefore(t$12, n$11),
+      i$7 &&
+        document.activeElement !== r$8 &&
+        r$8 instanceof HTMLElement &&
+        r$8.focus({ preventScroll: !0 }));
+  }
+  function u$2(e$9) {
+    return e$9.setMatrixValue(`scale(1, 1)`);
+  }
+  function d$1(e$9, t$12 = 0) {
+    let n$11 = 10 ** t$12;
+    return Math.round((e$9 + 2 ** -52) * n$11) / n$11;
+  }
+  var f$1 = class {
+      _cache;
+      _validation;
+      constructor() {
+        ((this._cache = /* @__PURE__ */ new Map()), (this._validation = /* @__PURE__ */ new Set()));
+      }
+      set(e$9, t$12) {
+        (this._cache.set(e$9, t$12), this._validation.add(e$9));
+      }
+      get(e$9) {
+        return this._cache.get(e$9);
+      }
+      has(e$9) {
+        return this._cache.has(e$9);
+      }
+      delete(e$9) {
+        (this._cache.delete(e$9), this._validation.delete(e$9));
+      }
+      isValid(e$9) {
+        return this._validation.has(e$9);
+      }
+      invalidate(e$9) {
+        e$9 === void 0 ? this._validation.clear() : this._validation.delete(e$9);
+      }
+      clear() {
+        (this._cache.clear(), this._validation.clear());
+      }
+    },
+    p$1 = class {
+      sensor;
+      startEvent;
+      prevMoveEvent;
+      moveEvent;
+      endEvent;
+      items;
+      isEnded;
+      _matrixCache;
+      _clientOffsetCache;
+      constructor(e$9, t$12) {
+        ((this.sensor = e$9),
+          (this.startEvent = t$12),
+          (this.prevMoveEvent = t$12),
+          (this.moveEvent = t$12),
+          (this.endEvent = null),
+          (this.items = []),
+          (this.isEnded = !1),
+          (this._matrixCache = new f$1()),
+          (this._clientOffsetCache = new f$1()));
+      }
+    };
+  function m$1(e$9, t$12, n$11 = !1) {
+    let { style: r$8 } = e$9;
+    for (let e$10 in t$12) r$8.setProperty(e$10, t$12[e$10], n$11 ? `important` : ``);
+  }
+  function h$1() {
+    let e$9 = document.createElement(`div`);
+    return (
+      e$9.classList.add(`dragdoll-measure`),
+      m$1(
+        e$9,
+        {
+          display: `block`,
+          position: `absolute`,
+          inset: `0px`,
+          padding: `0px`,
+          margin: `0px`,
+          border: `none`,
+          opacity: `0`,
+          transform: `none`,
+          'transform-origin': `0 0`,
+          transition: `none`,
+          animation: `none`,
+          'pointer-events': `none`,
+        },
+        !0,
+      ),
+      e$9
+    );
+  }
+  function g$1(
+    e$9,
+    t$12 = {
+      x: 0,
+      y: 0,
+    },
+  ) {
+    if (((t$12.x = 0), (t$12.y = 0), e$9 instanceof Window)) return t$12;
+    if (e$9 instanceof Document)
+      return ((t$12.x = window.scrollX * -1), (t$12.y = window.scrollY * -1), t$12);
+    let { x: r$8, y: i$7 } = e$9.getBoundingClientRect(),
+      a$4 = t$7(e$9);
+    return (
+      (t$12.x = r$8 + (parseFloat(a$4.borderLeftWidth) || 0)),
+      (t$12.y = i$7 + (parseFloat(a$4.borderTopWidth) || 0)),
+      t$12
+    );
+  }
+  function _$1(e$9) {
+    let t$12 = t$7(e$9),
+      r$8 = parseFloat(t$12.height) || 0;
+    return t$12.boxSizing === `border-box`
+      ? r$8
+      : ((r$8 += parseFloat(t$12.borderTopWidth) || 0),
+        (r$8 += parseFloat(t$12.borderBottomWidth) || 0),
+        (r$8 += parseFloat(t$12.paddingTop) || 0),
+        (r$8 += parseFloat(t$12.paddingBottom) || 0),
+        e$9 instanceof HTMLElement && (r$8 += e$9.offsetHeight - e$9.clientHeight),
+        r$8);
+  }
+  function v$2(e$9) {
+    let t$12 = t$7(e$9),
+      r$8 = parseFloat(t$12.width) || 0;
+    return t$12.boxSizing === `border-box`
+      ? r$8
+      : ((r$8 += parseFloat(t$12.borderLeftWidth) || 0),
+        (r$8 += parseFloat(t$12.borderRightWidth) || 0),
+        (r$8 += parseFloat(t$12.paddingLeft) || 0),
+        (r$8 += parseFloat(t$12.paddingRight) || 0),
+        e$9 instanceof HTMLElement && (r$8 += e$9.offsetWidth - e$9.clientWidth),
+        r$8);
+  }
+  function y$1(e$9, t$12 = !1) {
+    let { translate: r$8, rotate: i$7, scale: a$4, transform: o$7 } = t$7(e$9),
+      s$4 = ``;
+    if (r$8 && r$8 !== `none`) {
+      let [t$13 = `0px`, n$11 = `0px`, i$8] = r$8.split(` `);
+      (t$13.includes(`%`) && (t$13 = `${(parseFloat(t$13) / 100) * v$2(e$9)}px`),
+        n$11.includes(`%`) && (n$11 = `${(parseFloat(n$11) / 100) * _$1(e$9)}px`),
+        i$8
+          ? (s$4 += `translate3d(${t$13},${n$11},${i$8})`)
+          : (s$4 += `translate(${t$13},${n$11})`));
+    }
+    if (i$7 && i$7 !== `none`) {
+      let e$10 = i$7.split(` `);
+      e$10.length > 1
+        ? (s$4 += `rotate3d(${e$10.join(`,`)})`)
+        : (s$4 += `rotate(${e$10.join(`,`)})`);
+    }
+    if (a$4 && a$4 !== `none`) {
+      let e$10 = a$4.split(` `);
+      e$10.length === 3
+        ? (s$4 += `scale3d(${e$10.join(`,`)})`)
+        : (s$4 += `scale(${e$10.join(`,`)})`);
+    }
+    return (!t$12 && o$7 && o$7 !== `none` && (s$4 += o$7), s$4);
+  }
+  function b$1(e$9) {
+    return typeof e$9 == `object` && !!e$9 && `x` in e$9 && `y` in e$9;
+  }
+  const x$1 = {
+      x: 0,
+      y: 0,
+    },
+    S$1 = {
+      x: 0,
+      y: 0,
+    };
+  function C$1(
+    e$9,
+    t$12,
+    n$11 = {
+      x: 0,
+      y: 0,
+    },
+  ) {
+    let r$8 = b$1(e$9) ? e$9 : g$1(e$9, x$1),
+      i$7 = b$1(t$12) ? t$12 : g$1(t$12, S$1);
+    return ((n$11.x = i$7.x - r$8.x), (n$11.y = i$7.y - r$8.y), n$11);
+  }
+  function w$1(e$9) {
+    let t$12 = e$9.split(` `),
+      n$11 = ``,
+      r$8 = ``,
+      i$7 = ``;
+    return (
+      t$12.length === 1
+        ? (n$11 = r$8 = t$12[0])
+        : t$12.length === 2
+          ? ([n$11, r$8] = t$12)
+          : ([n$11, r$8, i$7] = t$12),
+      {
+        x: parseFloat(n$11) || 0,
+        y: parseFloat(r$8) || 0,
+        z: parseFloat(i$7) || 0,
+      }
+    );
+  }
+  const T$1 = e$4 ? new DOMMatrix() : null;
+  function E$1(e$9, t$12 = new DOMMatrix()) {
+    let r$8 = e$9;
+    for (u$2(t$12); r$8; ) {
+      let e$10 = y$1(r$8);
+      if (e$10 && (T$1.setMatrixValue(e$10), !T$1.isIdentity)) {
+        let { transformOrigin: e$11 } = t$7(r$8),
+          { x: i$7, y: a$4, z: o$7 } = w$1(e$11);
+        (o$7 === 0
+          ? T$1.setMatrixValue(
+              `translate(${i$7}px,${a$4}px) ${T$1} translate(${i$7 * -1}px,${a$4 * -1}px)`,
+            )
+          : T$1.setMatrixValue(
+              `translate3d(${i$7}px,${a$4}px,${o$7}px) ${T$1} translate3d(${i$7 * -1}px,${a$4 * -1}px,${o$7 * -1}px)`,
+            ),
+          t$12.preMultiplySelf(T$1));
+      }
+      r$8 = r$8.parentElement;
+    }
+    return t$12;
+  }
+  const D$1 = e$4 ? h$1() : null;
+  var O$1 = class {
+    data;
+    element;
+    elementContainer;
+    elementOffsetContainer;
+    dragContainer;
+    dragOffsetContainer;
+    elementTransformOrigin;
+    elementTransformMatrix;
+    elementOffsetMatrix;
+    frozenStyles;
+    unfrozenStyles;
+    clientRect;
+    position;
+    containerOffset;
+    alignmentOffset;
+    _moveDiff;
+    _alignDiff;
+    _matrixCache;
+    _clientOffsetCache;
+    constructor(e$9, t$12) {
+      if (!e$9.isConnected) throw Error(`Element is not connected`);
+      let { drag: r$8 } = t$12;
+      if (!r$8) throw Error(`Drag is not defined`);
+      let i$7 = t$7(e$9),
+        a$4 = e$9.getBoundingClientRect(),
+        s$4 = y$1(e$9, !0);
+      ((this.data = {}),
+        (this.element = e$9),
+        (this.elementTransformOrigin = w$1(i$7.transformOrigin)),
+        (this.elementTransformMatrix = new DOMMatrix().setMatrixValue(s$4 + i$7.transform)),
+        (this.elementOffsetMatrix = new DOMMatrix(s$4).invertSelf()),
+        (this.frozenStyles = null),
+        (this.unfrozenStyles = null),
+        (this.position = {
+          x: 0,
+          y: 0,
+        }),
+        (this.containerOffset = {
+          x: 0,
+          y: 0,
+        }),
+        (this.alignmentOffset = {
+          x: 0,
+          y: 0,
+        }),
+        (this._moveDiff = {
+          x: 0,
+          y: 0,
+        }),
+        (this._alignDiff = {
+          x: 0,
+          y: 0,
+        }),
+        (this._matrixCache = r$8._matrixCache),
+        (this._clientOffsetCache = r$8._clientOffsetCache));
+      let c$5 = e$9.parentElement;
+      if (!c$5) throw Error(`Dragged element does not have a parent element.`);
+      this.elementContainer = c$5;
+      let l$4 = t$12.settings.container,
+        u$4 =
+          (typeof l$4 == `function`
+            ? l$4({
+                draggable: t$12,
+                drag: r$8,
+                element: e$9,
+              })
+            : l$4) || c$5;
+      if (((this.dragContainer = u$4), c$5 !== u$4)) {
+        let { position: e$10 } = i$7;
+        if (e$10 !== `fixed` && e$10 !== `absolute`)
+          throw Error(
+            `Dragged element has "${e$10}" position, but only "fixed" or "absolute" are allowed when using a custom drag container.`,
+          );
+      }
+      let d$2 = getOffsetContainer(e$9) || e$9;
+      ((this.elementOffsetContainer = d$2),
+        (this.dragOffsetContainer =
+          u$4 === c$5 ? d$2 : getOffsetContainer(e$9, { container: u$4 })));
+      {
+        let { width: e$10, height: t$13, x: n$11, y: r$9 } = a$4;
+        this.clientRect = {
+          width: e$10,
+          height: t$13,
+          x: n$11,
+          y: r$9,
+        };
+      }
+      (this._updateContainerMatrices(), this._updateContainerOffset());
+      let f$2 = t$12.settings.frozenStyles({
+        draggable: t$12,
+        drag: r$8,
+        item: this,
+        style: i$7,
+      });
+      if (Array.isArray(f$2))
+        if (f$2.length) {
+          let e$10 = {};
+          for (let t$13 of f$2) e$10[t$13] = i$7[t$13];
+          this.frozenStyles = e$10;
+        } else this.frozenStyles = null;
+      else this.frozenStyles = f$2;
+      if (this.frozenStyles) {
+        let t$13 = {};
+        for (let n$11 in this.frozenStyles) t$13[n$11] = e$9.style[n$11];
+        this.unfrozenStyles = t$13;
+      }
+    }
+    _updateContainerMatrices() {
+      [this.elementContainer, this.dragContainer].forEach((e$9) => {
+        if (!this._matrixCache.isValid(e$9)) {
+          let t$12 = this._matrixCache.get(e$9) || [new DOMMatrix(), new DOMMatrix()],
+            [n$11, r$8] = t$12;
+          (E$1(e$9, n$11),
+            r$8.setMatrixValue(n$11.toString()).invertSelf(),
+            this._matrixCache.set(e$9, t$12));
+        }
+      });
+    }
+    _updateContainerOffset() {
+      let {
+        elementOffsetContainer: e$9,
+        elementContainer: t$12,
+        dragOffsetContainer: n$11,
+        dragContainer: r$8,
+        containerOffset: i$7,
+        _clientOffsetCache: a$4,
+        _matrixCache: o$7,
+      } = this;
+      if (e$9 !== n$11) {
+        let [s$4, l$4] = [
+          [r$8, n$11],
+          [t$12, e$9],
+        ].map(([e$10, t$13]) => {
+          let n$12 = a$4.get(t$13) || {
+            x: 0,
+            y: 0,
+          };
+          if (!a$4.isValid(t$13)) {
+            let r$9 = o$7.get(e$10);
+            t$13 instanceof HTMLElement && r$9 && !r$9[0].isIdentity
+              ? c$4(r$9[0])
+                ? (D$1.style.setProperty(`transform`, r$9[1].toString(), `important`),
+                  t$13.append(D$1),
+                  g$1(D$1, n$12),
+                  D$1.remove())
+                : (g$1(t$13, n$12), (n$12.x -= r$9[0].m41), (n$12.y -= r$9[0].m42))
+              : g$1(t$13, n$12);
+          }
+          return (a$4.set(t$13, n$12), n$12);
+        });
+        C$1(s$4, l$4, i$7);
+      } else ((i$7.x = 0), (i$7.y = 0));
+    }
+    getContainerMatrix() {
+      return this._matrixCache.get(this.elementContainer);
+    }
+    getDragContainerMatrix() {
+      return this._matrixCache.get(this.dragContainer);
+    }
+    updateSize(e$9) {
+      if (e$9) ((this.clientRect.width = e$9.width), (this.clientRect.height = e$9.height));
+      else {
+        let { width: e$10, height: t$12 } = this.element.getBoundingClientRect();
+        ((this.clientRect.width = e$10), (this.clientRect.height = t$12));
+      }
+    }
+  };
+  const k$1 = {
+      capture: !0,
+      passive: !0,
+    },
+    A$1 = {
+      x: 0,
+      y: 0,
+    },
+    j$1 = e$4 ? new DOMMatrix() : null,
+    M$1 = e$4 ? new DOMMatrix() : null;
+  var N$1 = (function (e$9) {
+      return (
+        (e$9[(e$9.None = 0)] = `None`),
+        (e$9[(e$9.Init = 1)] = `Init`),
+        (e$9[(e$9.Prepare = 2)] = `Prepare`),
+        (e$9[(e$9.FinishPrepare = 3)] = `FinishPrepare`),
+        (e$9[(e$9.Apply = 4)] = `Apply`),
+        (e$9[(e$9.FinishApply = 5)] = `FinishApply`),
+        e$9
+      );
+    })(N$1 || {}),
+    P = (function (e$9) {
+      return (
+        (e$9[(e$9.Pending = 0)] = `Pending`),
+        (e$9[(e$9.Resolved = 1)] = `Resolved`),
+        (e$9[(e$9.Rejected = 2)] = `Rejected`),
+        e$9
+      );
+    })(P || {});
+  const F = {
+      Start: `start`,
+      Move: `move`,
+      End: `end`,
+    },
+    I = {
+      Immediate: `immediate`,
+      Sampled: `sampled`,
+    },
+    L = {
+      Start: `start`,
+      StartAlign: `start-align`,
+      Move: `move`,
+      Align: `align`,
+      End: `end`,
+      EndAlign: `end-align`,
+    },
+    R = {
+      PrepareStart: `preparestart`,
+      Start: `start`,
+      PrepareMove: `preparemove`,
+      Move: `move`,
+      End: `end`,
+      Destroy: `destroy`,
+    },
+    z = {
+      container: null,
+      startPredicate: () => !0,
+      elements: () => null,
+      frozenStyles: () => null,
+      applyPosition: ({ item: e$9, phase: t$12 }) => {
+        let n$11 = t$12 === L.End || t$12 === L.EndAlign,
+          [r$8, i$7] = e$9.getContainerMatrix(),
+          [a$4, o$7] = e$9.getDragContainerMatrix(),
+          {
+            position: s$4,
+            alignmentOffset: c$5,
+            containerOffset: l$4,
+            elementTransformMatrix: d$2,
+            elementTransformOrigin: f$2,
+            elementOffsetMatrix: p$2,
+          } = e$9,
+          { x: m$2, y: h$2, z: g$2 } = f$2,
+          _$3 = !d$2.isIdentity && (m$2 !== 0 || h$2 !== 0 || g$2 !== 0),
+          v$3 = s$4.x + c$5.x + l$4.x,
+          y$2 = s$4.y + c$5.y + l$4.y;
+        (u$2(j$1),
+          _$3 && (g$2 === 0 ? j$1.translateSelf(-m$2, -h$2) : j$1.translateSelf(-m$2, -h$2, -g$2)),
+          n$11 ? i$7.isIdentity || j$1.multiplySelf(i$7) : o$7.isIdentity || j$1.multiplySelf(o$7),
+          u$2(M$1).translateSelf(v$3, y$2),
+          j$1.multiplySelf(M$1),
+          r$8.isIdentity || j$1.multiplySelf(r$8),
+          _$3 && (u$2(M$1).translateSelf(m$2, h$2, g$2), j$1.multiplySelf(M$1)),
+          d$2.isIdentity || j$1.multiplySelf(d$2),
+          p$2.isIdentity || j$1.preMultiplySelf(p$2),
+          (e$9.element.style.transform = `${j$1}`));
+      },
+      computeClientRect: ({ drag: e$9 }) => e$9.items[0].clientRect || null,
+      positionModifiers: [],
+      sensorProcessingMode: I.Sampled,
+      dndGroups: /* @__PURE__ */ new Set(),
+    };
+  var B = class {
+    id;
+    sensors;
+    settings;
+    plugins;
+    drag;
+    isDestroyed;
+    _sensorData;
+    _emitter;
+    _startPhase;
+    _startId;
+    _moveId;
+    _alignId;
+    constructor(e$9, t$12 = {}) {
+      let { id: n$11 = Symbol(), ...r$8 } = t$12;
+      ((this.id = n$11),
+        (this.sensors = e$9),
+        (this.settings = this._parseSettings(r$8)),
+        (this.plugins = {}),
+        (this.drag = null),
+        (this.isDestroyed = !1),
+        (this._sensorData = /* @__PURE__ */ new Map()),
+        (this._emitter = new v()),
+        (this._startPhase = N$1.None),
+        (this._startId = Symbol()),
+        (this._moveId = Symbol()),
+        (this._alignId = Symbol()),
+        (this._onMove = this._onMove.bind(this)),
+        (this._onScroll = this._onScroll.bind(this)),
+        (this._onEnd = this._onEnd.bind(this)),
+        (this._prepareStart = this._prepareStart.bind(this)),
+        (this._applyStart = this._applyStart.bind(this)),
+        (this._prepareMove = this._prepareMove.bind(this)),
+        (this._applyMove = this._applyMove.bind(this)),
+        (this._prepareAlign = this._prepareAlign.bind(this)),
+        (this._applyAlign = this._applyAlign.bind(this)),
+        this.sensors.forEach((e$10) => {
+          this._sensorData.set(e$10, {
+            predicateState: P.Pending,
+            predicateEvent: null,
+            onMove: (t$14) => this._onMove(t$14, e$10),
+            onEnd: (t$14) => this._onEnd(t$14, e$10),
+          });
+          let { onMove: t$13, onEnd: n$12 } = this._sensorData.get(e$10);
+          (e$10.on(e.Start, t$13, t$13),
+            e$10.on(e.Move, t$13, t$13),
+            e$10.on(e.Cancel, n$12, n$12),
+            e$10.on(e.End, n$12, n$12),
+            e$10.on(e.Destroy, n$12, n$12));
+        }));
+    }
+    _parseSettings(e$9, t$12 = z) {
+      let {
+        container: n$11 = t$12.container,
+        startPredicate: r$8 = t$12.startPredicate,
+        elements: i$7 = t$12.elements,
+        frozenStyles: a$4 = t$12.frozenStyles,
+        positionModifiers: o$7 = t$12.positionModifiers,
+        applyPosition: s$4 = t$12.applyPosition,
+        computeClientRect: c$5 = t$12.computeClientRect,
+        sensorProcessingMode: l$4 = t$12.sensorProcessingMode,
+        dndGroups: u$4 = t$12.dndGroups,
+        onPrepareStart: d$2 = t$12.onPrepareStart,
+        onStart: f$2 = t$12.onStart,
+        onPrepareMove: p$2 = t$12.onPrepareMove,
+        onMove: m$2 = t$12.onMove,
+        onEnd: h$2 = t$12.onEnd,
+        onDestroy: g$2 = t$12.onDestroy,
+      } = e$9 || {};
+      return {
+        container: n$11,
+        startPredicate: r$8,
+        elements: i$7,
+        frozenStyles: a$4,
+        positionModifiers: o$7,
+        applyPosition: s$4,
+        computeClientRect: c$5,
+        sensorProcessingMode: l$4,
+        dndGroups: u$4,
+        onPrepareStart: d$2,
+        onStart: f$2,
+        onPrepareMove: p$2,
+        onMove: m$2,
+        onEnd: h$2,
+        onDestroy: g$2,
+      };
+    }
+    _emit(e$9, ...t$12) {
+      this._emitter.emit(e$9, ...t$12);
+    }
+    _onMove(n$11, r$8) {
+      let i$7 = this._sensorData.get(r$8);
+      if (i$7)
+        switch (i$7.predicateState) {
+          case P.Pending: {
+            i$7.predicateEvent = n$11;
+            let e$9 = this.settings.startPredicate({
+              draggable: this,
+              sensor: r$8,
+              event: n$11,
+            });
+            e$9 === !0
+              ? this.resolveStartPredicate(r$8)
+              : e$9 === !1 && this.rejectStartPredicate(r$8);
+            break;
+          }
+          case P.Resolved:
+            this.drag &&
+              ((this.drag.moveEvent = n$11),
+              this.settings.sensorProcessingMode === I.Immediate
+                ? (this._prepareMove(), this._applyMove())
+                : (r$5.once(n$4.read, this._prepareMove, this._moveId),
+                  r$5.once(n$4.write, this._applyMove, this._moveId)));
+            break;
+        }
+    }
+    _onScroll() {
+      this.align();
+    }
+    _onEnd(e$9, t$12) {
+      let n$11 = this._sensorData.get(t$12);
+      n$11 &&
+        (this.drag
+          ? n$11.predicateState === P.Resolved &&
+            ((this.drag.endEvent = e$9),
+            this._sensorData.forEach((e$10) => {
+              ((e$10.predicateState = P.Pending), (e$10.predicateEvent = null));
+            }),
+            this.stop())
+          : ((n$11.predicateState = P.Pending), (n$11.predicateEvent = null)));
+    }
+    _prepareStart() {
+      let e$9 = this.drag;
+      !e$9 ||
+        this._startPhase !== N$1.Init ||
+        ((this._startPhase = N$1.Prepare),
+        (e$9.items = (
+          this.settings.elements({
+            draggable: this,
+            drag: e$9,
+          }) || []
+        ).map((e$10) => new O$1(e$10, this))),
+        this._applyModifiers(F.Start, 0, 0),
+        this._emit(R.PrepareStart, e$9, this),
+        this.settings.onPrepareStart?.(e$9, this),
+        (this._startPhase = N$1.FinishPrepare));
+    }
+    _applyStart() {
+      let e$9 = this.drag;
+      if (!(!e$9 || this._startPhase !== N$1.FinishPrepare)) {
+        this._startPhase = N$1.Apply;
+        for (let t$12 of e$9.items)
+          (t$12.dragContainer !== t$12.elementContainer && l$2(t$12.dragContainer, t$12.element),
+            t$12.frozenStyles && Object.assign(t$12.element.style, t$12.frozenStyles),
+            this.settings.applyPosition({
+              phase: L.Start,
+              draggable: this,
+              drag: e$9,
+              item: t$12,
+            }));
+        for (let t$12 of e$9.items) {
+          let e$10 = t$12.getContainerMatrix()[0],
+            n$11 = t$12.getDragContainerMatrix()[0];
+          if (s$3(e$10, n$11) || (!c$4(e$10) && !c$4(n$11))) continue;
+          let r$8 = t$12.element.getBoundingClientRect(),
+            { alignmentOffset: i$7 } = t$12;
+          ((i$7.x += d$1(t$12.clientRect.x - r$8.x, 3)),
+            (i$7.y += d$1(t$12.clientRect.y - r$8.y, 3)));
+        }
+        for (let t$12 of e$9.items) {
+          let { alignmentOffset: n$11 } = t$12;
+          (n$11.x !== 0 || n$11.y !== 0) &&
+            this.settings.applyPosition({
+              phase: L.StartAlign,
+              draggable: this,
+              drag: e$9,
+              item: t$12,
+            });
+        }
+        (window.addEventListener(`scroll`, this._onScroll, k$1),
+          this._emit(R.Start, e$9, this),
+          this.settings.onStart?.(e$9, this),
+          (this._startPhase = N$1.FinishApply));
+      }
+    }
+    _prepareMove() {
+      let e$9 = this.drag;
+      if (!e$9 || e$9.isEnded) return;
+      let { moveEvent: t$12, prevMoveEvent: n$11 } = e$9;
+      t$12 !== n$11 &&
+        (this._applyModifiers(F.Move, t$12.x - n$11.x, t$12.y - n$11.y),
+        this._emit(R.PrepareMove, e$9, this),
+        !e$9.isEnded &&
+          (this.settings.onPrepareMove?.(e$9, this), !e$9.isEnded && (e$9.prevMoveEvent = t$12)));
+    }
+    _applyMove() {
+      let e$9 = this.drag;
+      if (!(!e$9 || e$9.isEnded)) {
+        for (let t$12 of e$9.items)
+          ((t$12._moveDiff.x = 0),
+            (t$12._moveDiff.y = 0),
+            this.settings.applyPosition({
+              phase: L.Move,
+              draggable: this,
+              drag: e$9,
+              item: t$12,
+            }));
+        (this._emit(R.Move, e$9, this), !e$9.isEnded && this.settings.onMove?.(e$9, this));
+      }
+    }
+    _prepareAlign() {
+      let { drag: e$9 } = this;
+      if (!(!e$9 || e$9.isEnded))
+        for (let t$12 of e$9.items) {
+          let { x: e$10, y: n$11 } = t$12.element.getBoundingClientRect(),
+            r$8 = t$12.clientRect.x - t$12._moveDiff.x - e$10;
+          ((t$12.alignmentOffset.x = t$12.alignmentOffset.x - t$12._alignDiff.x + r$8),
+            (t$12._alignDiff.x = r$8));
+          let i$7 = t$12.clientRect.y - t$12._moveDiff.y - n$11;
+          ((t$12.alignmentOffset.y = t$12.alignmentOffset.y - t$12._alignDiff.y + i$7),
+            (t$12._alignDiff.y = i$7));
+        }
+    }
+    _applyAlign() {
+      let { drag: e$9 } = this;
+      if (!(!e$9 || e$9.isEnded))
+        for (let t$12 of e$9.items)
+          ((t$12._alignDiff.x = 0),
+            (t$12._alignDiff.y = 0),
+            this.settings.applyPosition({
+              phase: L.Align,
+              draggable: this,
+              drag: e$9,
+              item: t$12,
+            }));
+    }
+    _applyModifiers(e$9, t$12, n$11) {
+      let { drag: r$8 } = this;
+      if (!r$8) return;
+      let { positionModifiers: i$7 } = this.settings;
+      for (let a$4 of r$8.items) {
+        let o$7 = A$1;
+        ((o$7.x = t$12), (o$7.y = n$11));
+        for (let t$13 of i$7)
+          o$7 = t$13(o$7, {
+            draggable: this,
+            drag: r$8,
+            item: a$4,
+            phase: e$9,
+          });
+        ((a$4.position.x += o$7.x),
+          (a$4.position.y += o$7.y),
+          (a$4.clientRect.x += o$7.x),
+          (a$4.clientRect.y += o$7.y),
+          e$9 === `move` && ((a$4._moveDiff.x += o$7.x), (a$4._moveDiff.y += o$7.y)));
+      }
+    }
+    on(e$9, t$12, n$11) {
+      return this._emitter.on(e$9, t$12, n$11);
+    }
+    off(e$9, t$12) {
+      this._emitter.off(e$9, t$12);
+    }
+    resolveStartPredicate(n$11, r$8) {
+      let i$7 = this._sensorData.get(n$11);
+      if (!i$7) return;
+      let a$4 = r$8 || i$7.predicateEvent;
+      i$7.predicateState === P.Pending &&
+        a$4 &&
+        ((this._startPhase = N$1.Init),
+        (i$7.predicateState = P.Resolved),
+        (i$7.predicateEvent = null),
+        (this.drag = new p$1(n$11, a$4)),
+        this._sensorData.forEach((e$9, t$12) => {
+          t$12 !== n$11 && ((e$9.predicateState = P.Rejected), (e$9.predicateEvent = null));
+        }),
+        this.settings.sensorProcessingMode === I.Immediate
+          ? (this._prepareStart(), this._applyStart())
+          : (r$5.once(n$4.read, this._prepareStart, this._startId),
+            r$5.once(n$4.write, this._applyStart, this._startId)));
+    }
+    rejectStartPredicate(e$9) {
+      let t$12 = this._sensorData.get(e$9);
+      t$12?.predicateState === P.Pending &&
+        ((t$12.predicateState = P.Rejected), (t$12.predicateEvent = null));
+    }
+    stop() {
+      let n$11 = this.drag;
+      if (!(!n$11 || n$11.isEnded)) {
+        if (this._startPhase === N$1.Prepare || this._startPhase === N$1.Apply)
+          throw Error(`Cannot stop drag start process at this point`);
+        ((n$11.isEnded = !0),
+          this._prepareStart(),
+          this._applyStart(),
+          (this._startPhase = N$1.None),
+          r$5.off(n$4.read, this._startId),
+          r$5.off(n$4.write, this._startId),
+          r$5.off(n$4.read, this._moveId),
+          r$5.off(n$4.write, this._moveId),
+          r$5.off(n$4.read, this._alignId),
+          r$5.off(n$4.write, this._alignId),
+          window.removeEventListener(`scroll`, this._onScroll, k$1),
+          this._applyModifiers(F.End, 0, 0));
+        for (let e$9 of n$11.items) {
+          if (
+            (e$9.elementContainer !== e$9.dragContainer &&
+              (l$2(e$9.elementContainer, e$9.element),
+              (e$9.alignmentOffset.x = 0),
+              (e$9.alignmentOffset.y = 0),
+              (e$9.containerOffset.x = 0),
+              (e$9.containerOffset.y = 0)),
+            e$9.unfrozenStyles)
+          )
+            for (let t$12 in e$9.unfrozenStyles)
+              e$9.element.style[t$12] = e$9.unfrozenStyles[t$12] || ``;
+          this.settings.applyPosition({
+            phase: L.End,
+            draggable: this,
+            drag: n$11,
+            item: e$9,
+          });
+        }
+        for (let e$9 of n$11.items)
+          if (e$9.elementContainer !== e$9.dragContainer) {
+            let t$12 = e$9.element.getBoundingClientRect();
+            ((e$9.alignmentOffset.x = d$1(e$9.clientRect.x - t$12.x, 3)),
+              (e$9.alignmentOffset.y = d$1(e$9.clientRect.y - t$12.y, 3)));
+          }
+        for (let e$9 of n$11.items)
+          e$9.elementContainer !== e$9.dragContainer &&
+            (e$9.alignmentOffset.x !== 0 || e$9.alignmentOffset.y !== 0) &&
+            this.settings.applyPosition({
+              phase: L.EndAlign,
+              draggable: this,
+              drag: n$11,
+              item: e$9,
+            });
+        (this._emit(R.End, n$11, this), this.settings.onEnd?.(n$11, this), (this.drag = null));
+      }
+    }
+    align(n$11 = !1) {
+      !this.drag ||
+        this.drag.isEnded ||
+        (n$11 || this.settings.sensorProcessingMode === I.Immediate
+          ? (this._prepareAlign(), this._applyAlign())
+          : (r$5.once(n$4.read, this._prepareAlign, this._alignId),
+            r$5.once(n$4.write, this._applyAlign, this._alignId)));
+    }
+    getClientRect() {
+      let { drag: e$9, settings: t$12 } = this;
+      return (
+        (e$9 &&
+          t$12.computeClientRect?.({
+            draggable: this,
+            drag: e$9,
+          })) ||
+        null
+      );
+    }
+    updateSettings(e$9) {
+      this.settings = this._parseSettings(e$9, this.settings);
+    }
+    use(e$9) {
+      return e$9(this);
+    }
+    destroy() {
+      this.isDestroyed ||
+        ((this.isDestroyed = !0),
+        this.stop(),
+        this._sensorData.forEach(({ onMove: e$9, onEnd: t$12 }, n$11) => {
+          (n$11.off(e.Start, e$9),
+            n$11.off(e.Move, e$9),
+            n$11.off(e.Cancel, t$12),
+            n$11.off(e.End, t$12),
+            n$11.off(e.Destroy, t$12));
+        }),
+        this._sensorData.clear(),
+        this._emit(R.Destroy),
+        this.settings.onDestroy?.(this),
+        this._emitter.off());
+    }
+  };
+
+  //#endregion
+  //#region ../dragdoll-react/dist/are-configs-equal-Cv4ZY5_I.js
+  const e$3 = Object.prototype.hasOwnProperty,
+    t$6 = (e$9) => {
+      if (typeof e$9 != `object` || !e$9) return !1;
+      let t$12 = Object.getPrototypeOf(e$9);
+      return t$12 === Object.prototype || t$12 === null;
+    };
+  function n$7(r$8, i$7) {
+    if (Object.is(r$8, i$7)) return !0;
+    if (r$8 === null || i$7 === null || typeof r$8 != `object` || typeof i$7 != `object`) return !1;
+    let a$4 = Array.isArray(r$8),
+      o$7 = Array.isArray(i$7);
+    if (a$4 || o$7) {
+      if (!a$4 || !o$7) return !1;
+      let e$9 = r$8.length;
+      if (e$9 !== i$7.length) return !1;
+      for (let t$12 = 0; t$12 < e$9; t$12++) if (!n$7(r$8[t$12], i$7[t$12])) return !1;
+      return !0;
+    }
+    let s$4 = r$8 instanceof Set,
+      c$5 = i$7 instanceof Set;
+    if (s$4 || c$5) return !s$4 || !c$5 || r$8.size !== i$7.size ? !1 : r$8.isSubsetOf(i$7);
+    if (!t$6(r$8) || !t$6(i$7)) return !1;
+    let l$4 = Object.keys(r$8),
+      u$4 = Object.keys(i$7);
+    if (l$4.length !== u$4.length) return !1;
+    for (let t$12 = 0; t$12 < l$4.length; t$12++) {
+      let a$5 = l$4[t$12];
+      if (!e$3.call(i$7, a$5) || !n$7(r$8[a$5], i$7[a$5])) return !1;
+    }
+    return !0;
+  }
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-callback-stable-CtO9rJmq.js
+  function t$5(e$9, t$12) {
+    if (e$9 === t$12) return !0;
+    if (e$9.length !== t$12.length) return !1;
+    for (let n$11 = 0; n$11 < e$9.length; n$11++) if (!Object.is(e$9[n$11], t$12[n$11])) return !1;
+    return !0;
+  }
+  function n$1(n$11, r$8) {
+    let i$7 = (0, import_react.useRef)(null),
+      a$4 = i$7.current || {
+        deps: r$8,
+        value: n$11(),
+      };
+    return (
+      i$7.current
+        ? t$5(r$8, a$4.deps) || ((a$4.deps = r$8), (a$4.value = n$11()))
+        : (i$7.current = a$4),
+      a$4.value
+    );
+  }
+  function r$1(e$9, t$12) {
+    return n$1(() => e$9, t$12);
+  }
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-draggable-CMs2hFH6.js
+  function c(c$5, l$4) {
+    let u$4 = n$1(() => c$5.filter((e$9) => !!e$9), [...c$5]),
+      { id: d$2, dndObserver: f$2, ...p$2 } = l$4 || {},
+      m$2 = n$10(),
+      h$2 = f$2 === void 0 ? m$2 : f$2,
+      [g$2, _$3] = (0, import_react.useState)(null),
+      v$3 = (0, import_react.useRef)(null),
+      y$2 = (0, import_react.useRef)(u$4);
+    y$2.current = u$4;
+    let b$2 = (0, import_react.useRef)(d$2),
+      x$2 = (0, import_react.useRef)(l$4),
+      S$2 = (0, import_react.useRef)(h$2),
+      C$2 = (0, import_react.useRef)(d$2);
+    C$2.current = d$2;
+    let w$2 = (0, import_react.useRef)(h$2);
+    w$2.current = h$2;
+    let T$2 = (0, import_react.useRef)(p$2);
+    T$2.current = p$2;
+    let E$3 = r$1(() => {
+        let e$9 = v$3.current;
+        e$9 && (e$9.destroy(), (v$3.current = null), _$3(null));
+      }, []),
+      D$2 = r$1(() => {
+        E$3();
+        let e$9 = y$2.current;
+        if (e$9.length === 0) return;
+        let t$12 = C$2.current,
+          n$11 = w$2.current,
+          r$8 = new B(e$9, {
+            id: t$12,
+            ...(T$2.current || {}),
+          });
+        (n$11?.addDraggables([r$8]),
+          (v$3.current = r$8),
+          (b$2.current = t$12),
+          (x$2.current = T$2.current),
+          (S$2.current = n$11),
+          _$3(r$8));
+      }, [E$3]);
+    return (
+      n(() => {
+        if (!u$4.length) {
+          E$3();
+          return;
+        }
+        let e$9 = v$3.current;
+        if (!e$9) {
+          D$2();
+          return;
+        }
+        (u$4.length !== e$9.sensors.length || u$4.some((t$12) => !e$9.sensors.includes(t$12))) &&
+          D$2();
+      }, [u$4, D$2, E$3]),
+      n(() => {
+        v$3.current && b$2.current !== d$2 && D$2();
+      }, [d$2, D$2]),
+      n(() => {
+        let e$9 = S$2.current;
+        if (e$9 === h$2) return;
+        let t$12 = v$3.current;
+        (t$12 && (e$9?.removeDraggables([t$12]), h$2?.addDraggables([t$12])), (S$2.current = h$2));
+      }, [h$2]),
+      n(() => {
+        let e$9 = v$3.current;
+        e$9 &&
+          (n$7(x$2.current, p$2) || e$9.updateSettings(e$9._parseSettings(p$2)),
+          (x$2.current = p$2));
+      }, [p$2]),
+      n(() => E$3, [E$3]),
+      g$2
+    );
+  }
+
+  //#endregion
+  //#region ../dragdoll/dist/create-full-rect-Dd45f4o1.js
+  function e$1(
+    e$9,
+    t$12 = {
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      left: 0,
+      top: 0,
+      right: 0,
+      bottom: 0,
+    },
+  ) {
+    return (
+      e$9 &&
+        ((t$12.width = e$9.width),
+        (t$12.height = e$9.height),
+        (t$12.x = e$9.x),
+        (t$12.y = e$9.y),
+        (t$12.left = e$9.x),
+        (t$12.top = e$9.y),
+        (t$12.right = e$9.x + e$9.width),
+        (t$12.bottom = e$9.y + e$9.height)),
+      t$12
+    );
+  }
+
+  //#endregion
+  //#region ../../node_modules/mezr/dist/esm/utils/isDocument.js
+  function isDocument(n$11) {
+    return n$11 instanceof Document;
   }
 
   //#endregion
@@ -1712,12 +2934,6 @@
   //#region ../../node_modules/mezr/dist/esm/utils/getDocumentWidth.js
   function getDocumentWidth({ documentElement: t$12 }) {
     return Math.max(t$12.scrollWidth, t$12.clientWidth, t$12.getBoundingClientRect().width);
-  }
-
-  //#endregion
-  //#region ../../node_modules/mezr/dist/esm/utils/isDocumentElement.js
-  function isDocumentElement(e$9) {
-    return e$9 instanceof HTMLHtmlElement;
   }
 
   //#endregion
@@ -1880,7 +3096,7 @@
 
   //#endregion
   //#region ../dragdoll/dist/get-rect-BPdgHRQD.js
-  function t$7(...t$12) {
+  function t$4(...t$12) {
     let { width: n$11, height: r$8, left: i$7, top: a$4 } = getRect(...t$12);
     return {
       width: n$11,
@@ -1946,30 +3162,30 @@
 
   //#endregion
   //#region ../dragdoll/dist/auto-scroll-uAZMypL4.js
-  const o$5 = e$5(),
-    s$3 = e$5();
-  function c$4(e$9, t$12) {
-    return getDistance(e$5(e$9, o$5), e$5(t$12, s$3));
+  const o$4 = e$1(),
+    s$2 = e$1();
+  function c$3(e$9, t$12) {
+    return getDistance(e$1(e$9, o$4), e$1(t$12, s$2));
   }
-  function l$2(e$9) {
+  function l$1(e$9) {
     return e$9 instanceof Window;
   }
-  function u$2(e$9) {
-    return l$2(e$9) || e$9 === document.documentElement || e$9 === document.body ? window : e$9;
+  function u$1(e$9) {
+    return l$1(e$9) || e$9 === document.documentElement || e$9 === document.body ? window : e$9;
   }
-  function d$1(e$9) {
-    return l$2(e$9) ? e$9.scrollX : e$9.scrollLeft;
+  function d(e$9) {
+    return l$1(e$9) ? e$9.scrollX : e$9.scrollLeft;
   }
-  function f$1(e$9) {
-    return (l$2(e$9) && (e$9 = document.documentElement), e$9.scrollWidth - e$9.clientWidth);
+  function f(e$9) {
+    return (l$1(e$9) && (e$9 = document.documentElement), e$9.scrollWidth - e$9.clientWidth);
   }
-  function p$1(e$9) {
-    return l$2(e$9) ? e$9.scrollY : e$9.scrollTop;
+  function p(e$9) {
+    return l$1(e$9) ? e$9.scrollY : e$9.scrollTop;
   }
-  function m$1(e$9) {
-    return (l$2(e$9) && (e$9 = document.documentElement), e$9.scrollHeight - e$9.clientHeight);
+  function m(e$9) {
+    return (l$1(e$9) && (e$9 = document.documentElement), e$9.scrollHeight - e$9.clientHeight);
   }
-  function h$1(e$9, t$12) {
+  function h(e$9, t$12) {
     return !(
       e$9.x + e$9.width <= t$12.x ||
       t$12.x + t$12.width <= e$9.x ||
@@ -1977,7 +3193,7 @@
       t$12.y + t$12.height <= e$9.y
     );
   }
-  var g$1 = class {
+  var g = class {
     _batchSize;
     _maxSize;
     _minSize;
@@ -2032,13 +3248,13 @@
       ((this._data.length = 0), (this._index = 0));
     }
   };
-  const _$1 = {
+  const _ = {
       width: 0,
       height: 0,
       x: 0,
       y: 0,
     },
-    v$2 = {
+    v$1 = {
       direction: `none`,
       threshold: 0,
       distance: 0,
@@ -2049,46 +3265,46 @@
       deltaTime: 0,
       isEnding: !1,
     },
-    y$1 = {
+    y = {
       x: 1,
       y: 2,
     },
-    b$1 = {
+    b = {
       forward: 4,
       reverse: 8,
     },
-    x$1 = {
+    x = {
       none: 0,
-      left: y$1.x | b$1.reverse,
-      right: y$1.x | b$1.forward,
+      left: y.x | b.reverse,
+      right: y.x | b.forward,
     },
-    S$1 = {
+    S = {
       none: 0,
-      up: y$1.y | b$1.reverse,
-      down: y$1.y | b$1.forward,
+      up: y.y | b.reverse,
+      down: y.y | b.forward,
     },
-    C$1 = {
-      ...x$1,
-      ...S$1,
+    C = {
+      ...x,
+      ...S,
     };
-  function w$1(e$9) {
+  function w(e$9) {
     switch (e$9) {
-      case x$1.none:
-      case S$1.none:
+      case x.none:
+      case S.none:
         return `none`;
-      case x$1.left:
+      case x.left:
         return `left`;
-      case x$1.right:
+      case x.right:
         return `right`;
-      case S$1.up:
+      case S.up:
         return `up`;
-      case S$1.down:
+      case S.down:
         return `down`;
       default:
         throw Error(`Unknown direction value: ${e$9}`);
     }
   }
-  function T$1(e$9, t$12, n$11) {
+  function T(e$9, t$12, n$11) {
     let { left: r$8 = 0, right: i$7 = 0, top: a$4 = 0, bottom: o$7 = 0 } = t$12;
     return (
       (r$8 = Math.max(0, r$8)),
@@ -2102,16 +3318,16 @@
       n$11
     );
   }
-  function E$1(e$9, t$12) {
+  function E(e$9, t$12) {
     return Math.ceil(e$9) >= Math.floor(t$12);
   }
-  function D$1(e$9, t$12) {
+  function D(e$9, t$12) {
     return Math.min(t$12 / 2, e$9);
   }
-  function O$1(e$9, t$12, n$11, r$8) {
+  function O(e$9, t$12, n$11, r$8) {
     return Math.max(0, n$11 + e$9 * 2 + r$8 * t$12 - r$8) / 2;
   }
-  var k$1 = class {
+  var k = class {
       positionX;
       positionY;
       directionX;
@@ -2120,12 +3336,12 @@
       constructor() {
         ((this.positionX = 0),
           (this.positionY = 0),
-          (this.directionX = C$1.none),
-          (this.directionY = C$1.none),
+          (this.directionX = C.none),
+          (this.directionY = C.none),
           (this.overlapCheckRequestTime = 0));
       }
     },
-    A$1 = class {
+    A = class {
       element;
       requestX;
       requestY;
@@ -2148,7 +3364,7 @@
           (this.scrollTop = 0));
       }
       addRequest(e$9) {
-        (y$1.x & e$9.direction
+        (y.x & e$9.direction
           ? (this.requestX && this.removeRequest(this.requestX), (this.requestX = e$9))
           : (this.requestY && this.removeRequest(this.requestY), (this.requestY = e$9)),
           (e$9.action = this));
@@ -2160,8 +3376,8 @@
       }
       computeScrollValues() {
         this.element &&
-          ((this.scrollLeft = this.requestX ? this.requestX.value : d$1(this.element)),
-          (this.scrollTop = this.requestY ? this.requestY.value : p$1(this.element)));
+          ((this.scrollLeft = this.requestX ? this.requestX.value : d(this.element)),
+          (this.scrollTop = this.requestY ? this.requestY.value : p(this.element)));
       }
       scroll() {
         this.element &&
@@ -2171,7 +3387,7 @@
               (this.element.scrollTop = this.scrollTop)));
       }
     },
-    j$1 = class {
+    j = class {
       item;
       element;
       isActive;
@@ -2217,36 +3433,36 @@
           (this.action = null));
       }
       hasReachedEnd() {
-        return b$1.forward & this.direction ? E$1(this.value, this.maxValue) : this.value <= 0;
+        return b.forward & this.direction ? E(this.value, this.maxValue) : this.value <= 0;
       }
       computeCurrentScrollValue() {
         return this.element
           ? this.value === this.value
             ? Math.max(0, Math.min(this.value, this.maxValue))
-            : y$1.x & this.direction
-              ? d$1(this.element)
-              : p$1(this.element)
+            : y.x & this.direction
+              ? d(this.element)
+              : p(this.element)
           : 0;
       }
       computeNextScrollValue() {
         let e$9 = this.speed * (this.deltaTime / 1e3),
-          t$12 = b$1.forward & this.direction ? this.value + e$9 : this.value - e$9;
+          t$12 = b.forward & this.direction ? this.value + e$9 : this.value - e$9;
         return Math.max(0, Math.min(t$12, this.maxValue));
       }
       computeSpeed() {
         if (!this.item || !this.element) return 0;
         let { speed: e$9 } = this.item;
         return typeof e$9 == `function`
-          ? ((v$2.direction = w$1(this.direction)),
-            (v$2.threshold = this.threshold),
-            (v$2.distance = this.distance),
-            (v$2.value = this.value),
-            (v$2.maxValue = this.maxValue),
-            (v$2.duration = this.duration),
-            (v$2.speed = this.speed),
-            (v$2.deltaTime = this.deltaTime),
-            (v$2.isEnding = this.isEnding),
-            e$9(this.element, v$2))
+          ? ((v$1.direction = w(this.direction)),
+            (v$1.threshold = this.threshold),
+            (v$1.distance = this.distance),
+            (v$1.value = this.value),
+            (v$1.maxValue = this.maxValue),
+            (v$1.duration = this.duration),
+            (v$1.speed = this.speed),
+            (v$1.deltaTime = this.deltaTime),
+            (v$1.isEnding = this.isEnding),
+            e$9(this.element, v$1))
           : e$9;
       }
       tick(e$9) {
@@ -2263,12 +3479,12 @@
       onStart() {
         if (!this.item || !this.element) return;
         let { onStart: e$9 } = this.item;
-        typeof e$9 == `function` && e$9(this.element, w$1(this.direction));
+        typeof e$9 == `function` && e$9(this.element, w(this.direction));
       }
       onStop() {
         if (!this.item || !this.element) return;
         let { onStop: e$9 } = this.item;
-        typeof e$9 == `function` && e$9(this.element, w$1(this.direction));
+        typeof e$9 == `function` && e$9(this.element, w(this.direction));
       }
     };
   function M(e$9 = 500, t$12 = 0.5, n$11 = 0.25) {
@@ -2311,16 +3527,16 @@
         (this._tickTime = 0),
         (this._tickDeltaTime = 0),
         (this._requests = {
-          [y$1.x]: /* @__PURE__ */ new Map(),
-          [y$1.y]: /* @__PURE__ */ new Map(),
+          [y.x]: /* @__PURE__ */ new Map(),
+          [y.y]: /* @__PURE__ */ new Map(),
         }),
         (this._itemData = /* @__PURE__ */ new Map()),
-        (this._requestPool = new g$1((e$10) => e$10 || new j$1(), {
+        (this._requestPool = new g((e$10) => e$10 || new j(), {
           initialBatchCount: 1,
           minBatchCount: 1,
           onRelease: (e$10) => e$10.reset(),
         })),
-        (this._actionPool = new g$1((e$10) => e$10 || new A$1(), {
+        (this._actionPool = new g((e$10) => e$10 || new A(), {
           batchSize: 10,
           initialBatchCount: 1,
           minBatchCount: 1,
@@ -2345,16 +3561,16 @@
     _startTicking() {
       this._isTicking ||
         ((this._isTicking = !0),
-        r$5.on(n$7.read, this._frameRead, this._frameRead),
-        r$5.on(n$7.write, this._frameWrite, this._frameWrite));
+        r$5.on(n$4.read, this._frameRead, this._frameRead),
+        r$5.on(n$4.write, this._frameWrite, this._frameWrite));
     }
     _stopTicking() {
       this._isTicking &&
         ((this._isTicking = !1),
         (this._tickTime = 0),
         (this._tickDeltaTime = 0),
-        r$5.off(n$7.read, this._frameRead),
-        r$5.off(n$7.write, this._frameWrite));
+        r$5.off(n$4.read, this._frameRead),
+        r$5.off(n$4.write, this._frameWrite));
     }
     _requestItemScroll(e$9, t$12, n$11, r$8, i$7, a$4, o$7) {
       let s$4 = this._requests[t$12],
@@ -2380,28 +3596,28 @@
     _checkItemOverlap(e$9, t$12, n$11) {
       let { inertAreaSize: a$4, targets: o$7, clientRect: s$4 } = e$9;
       if (!o$7.length) {
-        (t$12 && this._cancelItemScroll(e$9, y$1.x), n$11 && this._cancelItemScroll(e$9, y$1.y));
+        (t$12 && this._cancelItemScroll(e$9, y.x), n$11 && this._cancelItemScroll(e$9, y.y));
         return;
       }
       let l$4 = this._itemData.get(e$9),
         g$2 = l$4?.directionX,
         v$3 = l$4?.directionY;
       if (!g$2 && !v$3) {
-        (t$12 && this._cancelItemScroll(e$9, y$1.x), n$11 && this._cancelItemScroll(e$9, y$1.y));
+        (t$12 && this._cancelItemScroll(e$9, y.x), n$11 && this._cancelItemScroll(e$9, y.y));
         return;
       }
       let b$2 = null,
         x$2 = -Infinity,
         w$2 = 0,
         k$2 = -Infinity,
-        A$2 = C$1.none,
+        A$2 = C.none,
         j$2 = 0,
         M$2 = 0,
         N$2 = null,
         P$1 = -Infinity,
         F$1 = 0,
         I$1 = -Infinity,
-        L$1 = C$1.none,
+        L$1 = C.none,
         R$1 = 0,
         z$1 = 0,
         B$1 = 0;
@@ -2412,25 +3628,25 @@
           V = !!(n$11 && v$3 && e$10.axis !== `x`),
           H = e$10.priority || 0;
         if ((!y$2 || H < x$2) && (!V || H < P$1)) continue;
-        let U = u$2(e$10.element || e$10),
-          W = y$2 ? f$1(U) : -1,
-          G = V ? m$1(U) : -1;
+        let U = u$1(e$10.element || e$10),
+          W = y$2 ? f(U) : -1,
+          G = V ? m(U) : -1;
         if (W <= 0 && G <= 0) continue;
-        let K = t$7([U, `padding`], window),
-          q = n$10(s$4, K) || -Infinity;
+        let K = t$4([U, `padding`], window),
+          q = n$9(s$4, K) || -Infinity;
         if (q === -Infinity)
-          if (e$10.padding && h$1(s$4, T$1(K, e$10.padding, _$1))) q = -(c$4(s$4, K) || 0);
+          if (e$10.padding && h(s$4, T(K, e$10.padding, _))) q = -(c$3(s$4, K) || 0);
           else continue;
         if (y$2 && H >= x$2 && W > 0 && (H > x$2 || q > k$2)) {
           let e$11 = 0,
-            t$13 = C$1.none,
-            n$12 = D$1(l$5, K.width),
-            r$8 = O$1(n$12, a$4, s$4.width, K.width);
-          (g$2 === C$1.right
+            t$13 = C.none,
+            n$12 = D(l$5, K.width),
+            r$8 = O(n$12, a$4, s$4.width, K.width);
+          (g$2 === C.right
             ? ((e$11 = K.x + K.width + r$8 - (s$4.x + s$4.width)),
-              e$11 <= n$12 && !E$1(d$1(U), W) && (t$13 = C$1.right))
-            : g$2 === C$1.left &&
-              ((e$11 = s$4.x - (K.x - r$8)), e$11 <= n$12 && d$1(U) > 0 && (t$13 = C$1.left)),
+              e$11 <= n$12 && !E(d(U), W) && (t$13 = C.right))
+            : g$2 === C.left &&
+              ((e$11 = s$4.x - (K.x - r$8)), e$11 <= n$12 && d(U) > 0 && (t$13 = C.left)),
             t$13 &&
               ((b$2 = U),
               (x$2 = H),
@@ -2442,14 +3658,14 @@
         }
         if (V && H >= P$1 && G > 0 && (H > P$1 || q > I$1)) {
           let e$11 = 0,
-            t$13 = S$1.none,
-            n$12 = D$1(l$5, K.height),
-            r$8 = O$1(n$12, a$4, s$4.height, K.height);
-          (v$3 === C$1.down
+            t$13 = S.none,
+            n$12 = D(l$5, K.height),
+            r$8 = O(n$12, a$4, s$4.height, K.height);
+          (v$3 === C.down
             ? ((e$11 = K.y + K.height + r$8 - (s$4.y + s$4.height)),
-              e$11 <= n$12 && !E$1(p$1(U), G) && (t$13 = C$1.down))
-            : v$3 === C$1.up &&
-              ((e$11 = s$4.y - (K.y - r$8)), e$11 <= n$12 && p$1(U) > 0 && (t$13 = C$1.up)),
+              e$11 <= n$12 && !E(p(U), G) && (t$13 = C.down))
+            : v$3 === C.up &&
+              ((e$11 = s$4.y - (K.y - r$8)), e$11 <= n$12 && p(U) > 0 && (t$13 = C.up)),
             t$13 &&
               ((N$2 = U),
               (P$1 = H),
@@ -2462,12 +3678,12 @@
       }
       (t$12 &&
         (b$2 && A$2
-          ? this._requestItemScroll(e$9, y$1.x, b$2, A$2, w$2, j$2, M$2)
-          : this._cancelItemScroll(e$9, y$1.x)),
+          ? this._requestItemScroll(e$9, y.x, b$2, A$2, w$2, j$2, M$2)
+          : this._cancelItemScroll(e$9, y.x)),
         n$11 &&
           (N$2 && L$1
-            ? this._requestItemScroll(e$9, y$1.y, N$2, L$1, F$1, R$1, z$1)
-            : this._cancelItemScroll(e$9, y$1.y)));
+            ? this._requestItemScroll(e$9, y.y, N$2, L$1, F$1, R$1, z$1)
+            : this._cancelItemScroll(e$9, y.y)));
     }
     _updateScrollRequest(e$9) {
       let { inertAreaSize: t$12, smoothStop: n$11, targets: a$4, clientRect: o$7 } = e$9.item,
@@ -2475,39 +3691,39 @@
         c$5 = 0;
       for (; c$5 < a$4.length; c$5++) {
         let n$12 = a$4[c$5],
-          l$4 = u$2(n$12.element || n$12);
+          l$4 = u$1(n$12.element || n$12);
         if (l$4 !== e$9.element) continue;
-        let g$2 = !!(y$1.x & e$9.direction);
+        let g$2 = !!(y.x & e$9.direction);
         if (g$2) {
           if (n$12.axis === `y`) continue;
         } else if (n$12.axis === `x`) continue;
-        let v$3 = g$2 ? f$1(l$4) : m$1(l$4);
+        let v$3 = g$2 ? f(l$4) : m(l$4);
         if (v$3 <= 0) break;
-        let x$2 = t$7([l$4, `padding`], window);
-        if ((n$10(o$7, x$2) || -Infinity) === -Infinity) {
+        let x$2 = t$4([l$4, `padding`], window);
+        if ((n$9(o$7, x$2) || -Infinity) === -Infinity) {
           let e$10 = n$12.scrollPadding || n$12.padding;
-          if (!(e$10 && h$1(o$7, T$1(x$2, e$10, _$1)))) break;
+          if (!(e$10 && h(o$7, T(x$2, e$10, _)))) break;
         }
-        let S$2 = D$1(
+        let S$2 = D(
             typeof n$12.threshold == `number` ? n$12.threshold : 50,
             g$2 ? x$2.width : x$2.height,
           ),
-          w$2 = O$1(S$2, t$12, g$2 ? o$7.width : o$7.height, g$2 ? x$2.width : x$2.height),
+          w$2 = O(S$2, t$12, g$2 ? o$7.width : o$7.height, g$2 ? x$2.width : x$2.height),
           k$2 = 0;
         if (
           ((k$2 =
-            e$9.direction === C$1.left
+            e$9.direction === C.left
               ? o$7.x - (x$2.x - w$2)
-              : e$9.direction === C$1.right
+              : e$9.direction === C.right
                 ? x$2.x + x$2.width + w$2 - (o$7.x + o$7.width)
-                : e$9.direction === C$1.up
+                : e$9.direction === C.up
                   ? o$7.y - (x$2.y - w$2)
                   : x$2.y + x$2.height + w$2 - (o$7.y + o$7.height)),
           k$2 > S$2)
         )
           break;
-        let A$2 = g$2 ? d$1(l$4) : p$1(l$4);
-        if (((s$4 = b$1.forward & e$9.direction ? E$1(A$2, v$3) : A$2 <= 0), s$4)) break;
+        let A$2 = g$2 ? d(l$4) : p(l$4);
+        if (((s$4 = b.forward & e$9.direction ? E(A$2, v$3) : A$2 <= 0), s$4)) break;
         return (
           (e$9.maxValue = v$3),
           (e$9.threshold = S$2),
@@ -2531,8 +3747,8 @@
           a$4 = n$11.positionX,
           o$7 = n$11.positionY;
         (r$8 === a$4 && i$7 === o$7) ||
-          ((n$11.directionX = r$8 > a$4 ? C$1.right : r$8 < a$4 ? C$1.left : n$11.directionX),
-          (n$11.directionY = i$7 > o$7 ? C$1.down : i$7 < o$7 ? C$1.up : n$11.directionY),
+          ((n$11.directionX = r$8 > a$4 ? C.right : r$8 < a$4 ? C.left : n$11.directionX),
+          (n$11.directionY = i$7 > o$7 ? C.down : i$7 < o$7 ? C.up : n$11.directionY),
           (n$11.positionX = r$8),
           (n$11.positionY = i$7),
           n$11.overlapCheckRequestTime === 0 && (n$11.overlapCheckRequestTime = this._tickTime));
@@ -2540,8 +3756,8 @@
     }
     _updateRequests() {
       let e$9 = this.items,
-        t$12 = this._requests[y$1.x],
-        n$11 = this._requests[y$1.y],
+        t$12 = this._requests[y.x],
+        n$11 = this._requests[y.y],
         r$8 = 0;
       for (; r$8 < e$9.length; r$8++) {
         let i$7 = e$9[r$8],
@@ -2553,18 +3769,18 @@
         l$4 &&
           l$4.isActive &&
           ((c$5 = !this._updateScrollRequest(l$4)),
-          c$5 && ((s$4 = !0), this._cancelItemScroll(i$7, y$1.x)));
+          c$5 && ((s$4 = !0), this._cancelItemScroll(i$7, y.x)));
         let u$4 = !0,
           d$2 = n$11.get(i$7);
         (d$2 &&
           d$2.isActive &&
           ((u$4 = !this._updateScrollRequest(d$2)),
-          u$4 && ((s$4 = !0), this._cancelItemScroll(i$7, y$1.y))),
+          u$4 && ((s$4 = !0), this._cancelItemScroll(i$7, y.y))),
           s$4 && ((a$4.overlapCheckRequestTime = 0), this._checkItemOverlap(i$7, c$5, u$4)));
       }
     }
     _requestAction(e$9, t$12) {
-      let n$11 = t$12 === y$1.x,
+      let n$11 = t$12 === y.x,
         r$8 = null,
         i$7 = 0;
       for (; i$7 < this._actions.length; i$7++) {
@@ -2588,9 +3804,9 @@
       let e$9 = 0;
       for (e$9 = 0; e$9 < this.items.length; e$9++) {
         let t$12 = this.items[e$9],
-          n$11 = this._requests[y$1.x].get(t$12),
-          r$8 = this._requests[y$1.y].get(t$12);
-        (n$11 && this._requestAction(n$11, y$1.x), r$8 && this._requestAction(r$8, y$1.y));
+          n$11 = this._requests[y.x].get(t$12),
+          r$8 = this._requests[y.y].get(t$12);
+        (n$11 && this._requestAction(n$11, y.x), r$8 && this._requestAction(r$8, y.y));
       }
       for (e$9 = 0; e$9 < this._actions.length; e$9++) this._actions[e$9].computeScrollValues();
     }
@@ -2604,11 +3820,11 @@
     addItem(e$9) {
       if (this._isDestroyed || this._itemData.has(e$9)) return;
       let { x: t$12, y: n$11 } = e$9.position,
-        r$8 = new k$1();
+        r$8 = new k();
       ((r$8.positionX = t$12),
         (r$8.positionY = n$11),
-        (r$8.directionX = C$1.none),
-        (r$8.directionY = C$1.none),
+        (r$8.directionX = C.none),
+        (r$8.directionY = C.none),
         (r$8.overlapCheckRequestTime = this._tickTime),
         this._itemData.set(e$9, r$8),
         this.items.push(e$9),
@@ -2618,10 +3834,10 @@
       if (this._isDestroyed) return;
       let t$12 = this.items.indexOf(e$9);
       t$12 !== -1 &&
-        (this._requests[y$1.x].get(e$9) &&
-          (this._cancelItemScroll(e$9, y$1.x), this._requests[y$1.x].delete(e$9)),
-        this._requests[y$1.y].get(e$9) &&
-          (this._cancelItemScroll(e$9, y$1.y), this._requests[y$1.y].delete(e$9)),
+        (this._requests[y.x].get(e$9) &&
+          (this._cancelItemScroll(e$9, y.x), this._requests[y.x].delete(e$9)),
+        this._requests[y.y].get(e$9) &&
+          (this._cancelItemScroll(e$9, y.y), this._requests[y.y].delete(e$9)),
         this._itemData.delete(e$9),
         this.items.splice(t$12, 1),
         this._isTicking && !this.items.length && this._stopTicking());
@@ -2630,10 +3846,10 @@
       return this._isDestroyed;
     }
     isItemScrollingX(e$9) {
-      return !!this._requests[y$1.x].get(e$9)?.isActive;
+      return !!this._requests[y.x].get(e$9)?.isActive;
     }
     isItemScrollingY(e$9) {
-      return !!this._requests[y$1.y].get(e$9)?.isActive;
+      return !!this._requests[y.y].get(e$9)?.isActive;
     }
     isItemScrolling(e$9) {
       return this.isItemScrollingX(e$9) || this.isItemScrollingY(e$9);
@@ -2653,1318 +3869,16 @@
   };
 
   //#endregion
-  //#region ../dragdoll/dist/get-style-CC2j8jdv.js
-  const e$4 = /* @__PURE__ */ new WeakMap();
-  function t$6(t$12) {
-    let n$11 = e$4.get(t$12)?.deref();
-    return (
-      n$11 || ((n$11 = window.getComputedStyle(t$12, null)), e$4.set(t$12, new WeakRef(n$11))),
-      n$11
-    );
-  }
-
-  //#endregion
-  //#region ../dragdoll/dist/constants-CMClRu_c.js
-  const e$3 = typeof window < `u` && window.document !== void 0,
-    t$5 = e$3 && `ontouchstart` in window,
-    n$9 = e$3 && !!window.PointerEvent;
-  e$3 &&
-    navigator.vendor &&
-    navigator.vendor.indexOf(`Apple`) > -1 &&
-    navigator.userAgent &&
-    navigator.userAgent.indexOf(`CriOS`) == -1 &&
-    navigator.userAgent.indexOf(`FxiOS`);
-
-  //#endregion
-  //#region ../dragdoll/dist/sensor-Uwz8qy61.js
-  const e$2 = {
-    Start: `start`,
-    Move: `move`,
-    Cancel: `cancel`,
-    End: `end`,
-    Destroy: `destroy`,
-  };
-
-  //#endregion
-  //#region ../../node_modules/mezr/dist/esm/utils/isBlockElement.js
-  function isBlockElement(e$9) {
-    switch (getStyle(e$9).display) {
-      case 'none':
-        return null;
-      case 'inline':
-      case 'contents':
-        return !1;
-      default:
-        return !0;
-    }
-  }
-
-  //#endregion
-  //#region ../../node_modules/mezr/dist/esm/utils/isContainingBlockForFixedElement.js
-  function isContainingBlockForFixedElement(n$11) {
-    const t$12 = getStyle(n$11);
-    if (!IS_SAFARI) {
-      const { filter: n$12 } = t$12;
-      if (n$12 && 'none' !== n$12) return !0;
-      const { backdropFilter: e$10 } = t$12;
-      if (e$10 && 'none' !== e$10) return !0;
-      const { willChange: i$8 } = t$12;
-      if (i$8 && (i$8.indexOf('filter') > -1 || i$8.indexOf('backdrop-filter') > -1)) return !0;
-    }
-    const e$9 = isBlockElement(n$11);
-    if (!e$9) return e$9;
-    const { transform: i$7 } = t$12;
-    if (i$7 && 'none' !== i$7) return !0;
-    const { perspective: r$8 } = t$12;
-    if (r$8 && 'none' !== r$8) return !0;
-    const { contentVisibility: o$7 } = t$12;
-    if (o$7 && 'auto' === o$7) return !0;
-    const { contain: f$2 } = t$12;
-    if (
-      f$2 &&
-      ('strict' === f$2 ||
-        'content' === f$2 ||
-        f$2.indexOf('paint') > -1 ||
-        f$2.indexOf('layout') > -1)
-    )
-      return !0;
-    const { willChange: c$5 } = t$12;
-    return (
-      !(
-        !c$5 ||
-        !(
-          c$5.indexOf('transform') > -1 ||
-          c$5.indexOf('perspective') > -1 ||
-          c$5.indexOf('contain') > -1
-        )
-      ) || !!(IS_SAFARI && c$5 && c$5.indexOf('filter') > -1)
-    );
-  }
-
-  //#endregion
-  //#region ../../node_modules/mezr/dist/esm/utils/isContainingBlockForAbsoluteElement.js
-  function isContainingBlockForAbsoluteElement(t$12) {
-    return 'static' !== getStyle(t$12).position || isContainingBlockForFixedElement(t$12);
-  }
-
-  //#endregion
-  //#region ../../node_modules/mezr/dist/esm/getContainingBlock.js
-  function getContainingBlock(e$9, t$12 = {}) {
-    if (isDocumentElement(e$9)) return e$9.ownerDocument.defaultView;
-    const n$11 = t$12.position || getStyle(e$9).position,
-      { skipDisplayNone: i$7, container: o$7 } = t$12;
-    switch (n$11) {
-      case 'static':
-      case 'relative':
-      case 'sticky':
-      case '-webkit-sticky': {
-        let t$13 = o$7 || e$9.parentElement;
-        for (; t$13; ) {
-          const e$10 = isBlockElement(t$13);
-          if (e$10) return t$13;
-          if (null === e$10 && !i$7) return null;
-          t$13 = t$13.parentElement;
-        }
-        return e$9.ownerDocument.documentElement;
-      }
-      case 'absolute':
-      case 'fixed': {
-        const t$13 = 'fixed' === n$11;
-        let l$4 = o$7 || e$9.parentElement;
-        for (; l$4; ) {
-          const e$10 = t$13
-            ? isContainingBlockForFixedElement(l$4)
-            : isContainingBlockForAbsoluteElement(l$4);
-          if (!0 === e$10) return l$4;
-          if (null === e$10 && !i$7) return null;
-          l$4 = l$4.parentElement;
-        }
-        return e$9.ownerDocument.defaultView;
-      }
-      default:
-        return null;
-    }
-  }
-
-  //#endregion
-  //#region ../../node_modules/mezr/dist/esm/getOffsetContainer.js
-  function getOffsetContainer(n$11, t$12 = {}) {
-    const { display: o$7 } = getStyle(n$11);
-    if ('none' === o$7 || 'contents' === o$7) return null;
-    const e$9 = t$12.position || getStyle(n$11).position,
-      { skipDisplayNone: s$4, container: r$8 } = t$12;
-    switch (e$9) {
-      case 'relative':
-        return n$11;
-      case 'fixed':
-        return getContainingBlock(n$11, {
-          container: r$8,
-          position: e$9,
-          skipDisplayNone: s$4,
-        });
-      case 'absolute': {
-        const t$13 = getContainingBlock(n$11, {
-          container: r$8,
-          position: e$9,
-          skipDisplayNone: s$4,
-        });
-        return isWindow(t$13) ? n$11.ownerDocument : t$13;
-      }
-      default:
-        return null;
-    }
-  }
-
-  //#endregion
-  //#region ../dragdoll/dist/draggable-CUeOOVDR.js
-  function s$2(e$9, t$12) {
-    return e$9.isIdentity && t$12.isIdentity
-      ? !0
-      : e$9.is2D && t$12.is2D
-        ? e$9.a === t$12.a &&
-          e$9.b === t$12.b &&
-          e$9.c === t$12.c &&
-          e$9.d === t$12.d &&
-          e$9.e === t$12.e &&
-          e$9.f === t$12.f
-        : e$9.m11 === t$12.m11 &&
-          e$9.m12 === t$12.m12 &&
-          e$9.m13 === t$12.m13 &&
-          e$9.m14 === t$12.m14 &&
-          e$9.m21 === t$12.m21 &&
-          e$9.m22 === t$12.m22 &&
-          e$9.m23 === t$12.m23 &&
-          e$9.m24 === t$12.m24 &&
-          e$9.m31 === t$12.m31 &&
-          e$9.m32 === t$12.m32 &&
-          e$9.m33 === t$12.m33 &&
-          e$9.m34 === t$12.m34 &&
-          e$9.m41 === t$12.m41 &&
-          e$9.m42 === t$12.m42 &&
-          e$9.m43 === t$12.m43 &&
-          e$9.m44 === t$12.m44;
-  }
-  function c$3(e$9) {
-    return (
-      e$9.m11 !== 1 ||
-      e$9.m12 !== 0 ||
-      e$9.m13 !== 0 ||
-      e$9.m14 !== 0 ||
-      e$9.m21 !== 0 ||
-      e$9.m22 !== 1 ||
-      e$9.m23 !== 0 ||
-      e$9.m24 !== 0 ||
-      e$9.m31 !== 0 ||
-      e$9.m32 !== 0 ||
-      e$9.m33 !== 1 ||
-      e$9.m34 !== 0 ||
-      e$9.m43 !== 0 ||
-      e$9.m44 !== 1
-    );
-  }
-  function l$1(e$9, t$12, n$11 = null) {
-    if (`moveBefore` in e$9 && e$9.isConnected === t$12.isConnected)
-      try {
-        e$9.moveBefore(t$12, n$11);
-        return;
-      } catch {}
-    let r$8 = document.activeElement,
-      i$7 = t$12.contains(r$8);
-    (e$9.insertBefore(t$12, n$11),
-      i$7 &&
-        document.activeElement !== r$8 &&
-        r$8 instanceof HTMLElement &&
-        r$8.focus({ preventScroll: !0 }));
-  }
-  function u$1(e$9) {
-    return e$9.setMatrixValue(`scale(1, 1)`);
-  }
-  function d(e$9, t$12 = 0) {
-    let n$11 = 10 ** t$12;
-    return Math.round((e$9 + 2 ** -52) * n$11) / n$11;
-  }
-  var f = class {
-      _cache;
-      _validation;
-      constructor() {
-        ((this._cache = /* @__PURE__ */ new Map()), (this._validation = /* @__PURE__ */ new Set()));
-      }
-      set(e$9, t$12) {
-        (this._cache.set(e$9, t$12), this._validation.add(e$9));
-      }
-      get(e$9) {
-        return this._cache.get(e$9);
-      }
-      has(e$9) {
-        return this._cache.has(e$9);
-      }
-      delete(e$9) {
-        (this._cache.delete(e$9), this._validation.delete(e$9));
-      }
-      isValid(e$9) {
-        return this._validation.has(e$9);
-      }
-      invalidate(e$9) {
-        e$9 === void 0 ? this._validation.clear() : this._validation.delete(e$9);
-      }
-      clear() {
-        (this._cache.clear(), this._validation.clear());
-      }
-    },
-    p = class {
-      sensor;
-      startEvent;
-      prevMoveEvent;
-      moveEvent;
-      endEvent;
-      items;
-      isEnded;
-      _matrixCache;
-      _clientOffsetCache;
-      constructor(e$9, t$12) {
-        ((this.sensor = e$9),
-          (this.startEvent = t$12),
-          (this.prevMoveEvent = t$12),
-          (this.moveEvent = t$12),
-          (this.endEvent = null),
-          (this.items = []),
-          (this.isEnded = !1),
-          (this._matrixCache = new f()),
-          (this._clientOffsetCache = new f()));
-      }
-    };
-  function m(e$9, t$12, n$11 = !1) {
-    let { style: r$8 } = e$9;
-    for (let e$10 in t$12) r$8.setProperty(e$10, t$12[e$10], n$11 ? `important` : ``);
-  }
-  function h() {
-    let e$9 = document.createElement(`div`);
-    return (
-      e$9.classList.add(`dragdoll-measure`),
-      m(
-        e$9,
-        {
-          display: `block`,
-          position: `absolute`,
-          inset: `0px`,
-          padding: `0px`,
-          margin: `0px`,
-          border: `none`,
-          opacity: `0`,
-          transform: `none`,
-          'transform-origin': `0 0`,
-          transition: `none`,
-          animation: `none`,
-          'pointer-events': `none`,
-        },
-        !0,
-      ),
-      e$9
-    );
-  }
-  function g(
-    e$9,
-    t$12 = {
-      x: 0,
-      y: 0,
-    },
-  ) {
-    if (((t$12.x = 0), (t$12.y = 0), e$9 instanceof Window)) return t$12;
-    if (e$9 instanceof Document)
-      return ((t$12.x = window.scrollX * -1), (t$12.y = window.scrollY * -1), t$12);
-    let { x: r$8, y: i$7 } = e$9.getBoundingClientRect(),
-      a$4 = t$6(e$9);
-    return (
-      (t$12.x = r$8 + (parseFloat(a$4.borderLeftWidth) || 0)),
-      (t$12.y = i$7 + (parseFloat(a$4.borderTopWidth) || 0)),
-      t$12
-    );
-  }
-  function _(e$9) {
-    let t$12 = t$6(e$9),
-      r$8 = parseFloat(t$12.height) || 0;
-    return t$12.boxSizing === `border-box`
-      ? r$8
-      : ((r$8 += parseFloat(t$12.borderTopWidth) || 0),
-        (r$8 += parseFloat(t$12.borderBottomWidth) || 0),
-        (r$8 += parseFloat(t$12.paddingTop) || 0),
-        (r$8 += parseFloat(t$12.paddingBottom) || 0),
-        e$9 instanceof HTMLElement && (r$8 += e$9.offsetHeight - e$9.clientHeight),
-        r$8);
-  }
-  function v$1(e$9) {
-    let t$12 = t$6(e$9),
-      r$8 = parseFloat(t$12.width) || 0;
-    return t$12.boxSizing === `border-box`
-      ? r$8
-      : ((r$8 += parseFloat(t$12.borderLeftWidth) || 0),
-        (r$8 += parseFloat(t$12.borderRightWidth) || 0),
-        (r$8 += parseFloat(t$12.paddingLeft) || 0),
-        (r$8 += parseFloat(t$12.paddingRight) || 0),
-        e$9 instanceof HTMLElement && (r$8 += e$9.offsetWidth - e$9.clientWidth),
-        r$8);
-  }
-  function y(e$9, t$12 = !1) {
-    let { translate: r$8, rotate: i$7, scale: a$4, transform: o$7 } = t$6(e$9),
-      s$4 = ``;
-    if (r$8 && r$8 !== `none`) {
-      let [t$13 = `0px`, n$11 = `0px`, i$8] = r$8.split(` `);
-      (t$13.includes(`%`) && (t$13 = `${(parseFloat(t$13) / 100) * v$1(e$9)}px`),
-        n$11.includes(`%`) && (n$11 = `${(parseFloat(n$11) / 100) * _(e$9)}px`),
-        i$8
-          ? (s$4 += `translate3d(${t$13},${n$11},${i$8})`)
-          : (s$4 += `translate(${t$13},${n$11})`));
-    }
-    if (i$7 && i$7 !== `none`) {
-      let e$10 = i$7.split(` `);
-      e$10.length > 1
-        ? (s$4 += `rotate3d(${e$10.join(`,`)})`)
-        : (s$4 += `rotate(${e$10.join(`,`)})`);
-    }
-    if (a$4 && a$4 !== `none`) {
-      let e$10 = a$4.split(` `);
-      e$10.length === 3
-        ? (s$4 += `scale3d(${e$10.join(`,`)})`)
-        : (s$4 += `scale(${e$10.join(`,`)})`);
-    }
-    return (!t$12 && o$7 && o$7 !== `none` && (s$4 += o$7), s$4);
-  }
-  function b(e$9) {
-    return typeof e$9 == `object` && !!e$9 && `x` in e$9 && `y` in e$9;
-  }
-  const x = {
-      x: 0,
-      y: 0,
-    },
-    S = {
-      x: 0,
-      y: 0,
-    };
-  function C(
-    e$9,
-    t$12,
-    n$11 = {
-      x: 0,
-      y: 0,
-    },
-  ) {
-    let r$8 = b(e$9) ? e$9 : g(e$9, x),
-      i$7 = b(t$12) ? t$12 : g(t$12, S);
-    return ((n$11.x = i$7.x - r$8.x), (n$11.y = i$7.y - r$8.y), n$11);
-  }
-  function w(e$9) {
-    let t$12 = e$9.split(` `),
-      n$11 = ``,
-      r$8 = ``,
-      i$7 = ``;
-    return (
-      t$12.length === 1
-        ? (n$11 = r$8 = t$12[0])
-        : t$12.length === 2
-          ? ([n$11, r$8] = t$12)
-          : ([n$11, r$8, i$7] = t$12),
-      {
-        x: parseFloat(n$11) || 0,
-        y: parseFloat(r$8) || 0,
-        z: parseFloat(i$7) || 0,
-      }
-    );
-  }
-  const T = e$3 ? new DOMMatrix() : null;
-  function E(e$9, t$12 = new DOMMatrix()) {
-    let r$8 = e$9;
-    for (u$1(t$12); r$8; ) {
-      let e$10 = y(r$8);
-      if (e$10 && (T.setMatrixValue(e$10), !T.isIdentity)) {
-        let { transformOrigin: e$11 } = t$6(r$8),
-          { x: i$7, y: a$4, z: o$7 } = w(e$11);
-        (o$7 === 0
-          ? T.setMatrixValue(
-              `translate(${i$7}px,${a$4}px) ${T} translate(${i$7 * -1}px,${a$4 * -1}px)`,
-            )
-          : T.setMatrixValue(
-              `translate3d(${i$7}px,${a$4}px,${o$7}px) ${T} translate3d(${i$7 * -1}px,${a$4 * -1}px,${o$7 * -1}px)`,
-            ),
-          t$12.preMultiplySelf(T));
-      }
-      r$8 = r$8.parentElement;
-    }
-    return t$12;
-  }
-  const D = e$3 ? h() : null;
-  var O = class {
-    data;
-    element;
-    elementContainer;
-    elementOffsetContainer;
-    dragContainer;
-    dragOffsetContainer;
-    elementTransformOrigin;
-    elementTransformMatrix;
-    elementOffsetMatrix;
-    frozenStyles;
-    unfrozenStyles;
-    clientRect;
-    position;
-    containerOffset;
-    alignmentOffset;
-    _moveDiff;
-    _alignDiff;
-    _matrixCache;
-    _clientOffsetCache;
-    constructor(e$9, t$12) {
-      if (!e$9.isConnected) throw Error(`Element is not connected`);
-      let { drag: r$8 } = t$12;
-      if (!r$8) throw Error(`Drag is not defined`);
-      let i$7 = t$6(e$9),
-        a$4 = e$9.getBoundingClientRect(),
-        s$4 = y(e$9, !0);
-      ((this.data = {}),
-        (this.element = e$9),
-        (this.elementTransformOrigin = w(i$7.transformOrigin)),
-        (this.elementTransformMatrix = new DOMMatrix().setMatrixValue(s$4 + i$7.transform)),
-        (this.elementOffsetMatrix = new DOMMatrix(s$4).invertSelf()),
-        (this.frozenStyles = null),
-        (this.unfrozenStyles = null),
-        (this.position = {
-          x: 0,
-          y: 0,
-        }),
-        (this.containerOffset = {
-          x: 0,
-          y: 0,
-        }),
-        (this.alignmentOffset = {
-          x: 0,
-          y: 0,
-        }),
-        (this._moveDiff = {
-          x: 0,
-          y: 0,
-        }),
-        (this._alignDiff = {
-          x: 0,
-          y: 0,
-        }),
-        (this._matrixCache = r$8._matrixCache),
-        (this._clientOffsetCache = r$8._clientOffsetCache));
-      let c$5 = e$9.parentElement;
-      if (!c$5) throw Error(`Dragged element does not have a parent element.`);
-      this.elementContainer = c$5;
-      let l$4 = t$12.settings.container,
-        u$4 =
-          (typeof l$4 == `function`
-            ? l$4({
-                draggable: t$12,
-                drag: r$8,
-                element: e$9,
-              })
-            : l$4) || c$5;
-      if (((this.dragContainer = u$4), c$5 !== u$4)) {
-        let { position: e$10 } = i$7;
-        if (e$10 !== `fixed` && e$10 !== `absolute`)
-          throw Error(
-            `Dragged element has "${e$10}" position, but only "fixed" or "absolute" are allowed when using a custom drag container.`,
-          );
-      }
-      let d$2 = getOffsetContainer(e$9) || e$9;
-      ((this.elementOffsetContainer = d$2),
-        (this.dragOffsetContainer =
-          u$4 === c$5 ? d$2 : getOffsetContainer(e$9, { container: u$4 })));
-      {
-        let { width: e$10, height: t$13, x: n$11, y: r$9 } = a$4;
-        this.clientRect = {
-          width: e$10,
-          height: t$13,
-          x: n$11,
-          y: r$9,
-        };
-      }
-      (this._updateContainerMatrices(), this._updateContainerOffset());
-      let f$2 = t$12.settings.frozenStyles({
-        draggable: t$12,
-        drag: r$8,
-        item: this,
-        style: i$7,
-      });
-      if (Array.isArray(f$2))
-        if (f$2.length) {
-          let e$10 = {};
-          for (let t$13 of f$2) e$10[t$13] = i$7[t$13];
-          this.frozenStyles = e$10;
-        } else this.frozenStyles = null;
-      else this.frozenStyles = f$2;
-      if (this.frozenStyles) {
-        let t$13 = {};
-        for (let n$11 in this.frozenStyles) t$13[n$11] = e$9.style[n$11];
-        this.unfrozenStyles = t$13;
-      }
-    }
-    _updateContainerMatrices() {
-      [this.elementContainer, this.dragContainer].forEach((e$9) => {
-        if (!this._matrixCache.isValid(e$9)) {
-          let t$12 = this._matrixCache.get(e$9) || [new DOMMatrix(), new DOMMatrix()],
-            [n$11, r$8] = t$12;
-          (E(e$9, n$11),
-            r$8.setMatrixValue(n$11.toString()).invertSelf(),
-            this._matrixCache.set(e$9, t$12));
-        }
-      });
-    }
-    _updateContainerOffset() {
-      let {
-        elementOffsetContainer: e$9,
-        elementContainer: t$12,
-        dragOffsetContainer: n$11,
-        dragContainer: r$8,
-        containerOffset: i$7,
-        _clientOffsetCache: a$4,
-        _matrixCache: o$7,
-      } = this;
-      if (e$9 !== n$11) {
-        let [s$4, l$4] = [
-          [r$8, n$11],
-          [t$12, e$9],
-        ].map(([e$10, t$13]) => {
-          let n$12 = a$4.get(t$13) || {
-            x: 0,
-            y: 0,
-          };
-          if (!a$4.isValid(t$13)) {
-            let r$9 = o$7.get(e$10);
-            t$13 instanceof HTMLElement && r$9 && !r$9[0].isIdentity
-              ? c$3(r$9[0])
-                ? (D.style.setProperty(`transform`, r$9[1].toString(), `important`),
-                  t$13.append(D),
-                  g(D, n$12),
-                  D.remove())
-                : (g(t$13, n$12), (n$12.x -= r$9[0].m41), (n$12.y -= r$9[0].m42))
-              : g(t$13, n$12);
-          }
-          return (a$4.set(t$13, n$12), n$12);
-        });
-        C(s$4, l$4, i$7);
-      } else ((i$7.x = 0), (i$7.y = 0));
-    }
-    getContainerMatrix() {
-      return this._matrixCache.get(this.elementContainer);
-    }
-    getDragContainerMatrix() {
-      return this._matrixCache.get(this.dragContainer);
-    }
-    updateSize(e$9) {
-      if (e$9) ((this.clientRect.width = e$9.width), (this.clientRect.height = e$9.height));
-      else {
-        let { width: e$10, height: t$12 } = this.element.getBoundingClientRect();
-        ((this.clientRect.width = e$10), (this.clientRect.height = t$12));
-      }
-    }
-  };
-  const k = {
-      capture: !0,
-      passive: !0,
-    },
-    A = {
-      x: 0,
-      y: 0,
-    },
-    j = e$3 ? new DOMMatrix() : null,
-    M$1 = e$3 ? new DOMMatrix() : null;
-  var N$1 = (function (e$9) {
-      return (
-        (e$9[(e$9.None = 0)] = `None`),
-        (e$9[(e$9.Init = 1)] = `Init`),
-        (e$9[(e$9.Prepare = 2)] = `Prepare`),
-        (e$9[(e$9.FinishPrepare = 3)] = `FinishPrepare`),
-        (e$9[(e$9.Apply = 4)] = `Apply`),
-        (e$9[(e$9.FinishApply = 5)] = `FinishApply`),
-        e$9
-      );
-    })(N$1 || {}),
-    P = (function (e$9) {
-      return (
-        (e$9[(e$9.Pending = 0)] = `Pending`),
-        (e$9[(e$9.Resolved = 1)] = `Resolved`),
-        (e$9[(e$9.Rejected = 2)] = `Rejected`),
-        e$9
-      );
-    })(P || {});
-  const F = {
-      Start: `start`,
-      Move: `move`,
-      End: `end`,
-    },
-    I = {
-      Immediate: `immediate`,
-      Sampled: `sampled`,
-    },
-    L = {
-      Start: `start`,
-      StartAlign: `start-align`,
-      Move: `move`,
-      Align: `align`,
-      End: `end`,
-      EndAlign: `end-align`,
-    },
-    R = {
-      PrepareStart: `preparestart`,
-      Start: `start`,
-      PrepareMove: `preparemove`,
-      Move: `move`,
-      End: `end`,
-      Destroy: `destroy`,
-    },
-    z = {
-      container: null,
-      startPredicate: () => !0,
-      elements: () => null,
-      frozenStyles: () => null,
-      applyPosition: ({ item: e$9, phase: t$12 }) => {
-        let n$11 = t$12 === L.End || t$12 === L.EndAlign,
-          [r$8, i$7] = e$9.getContainerMatrix(),
-          [a$4, o$7] = e$9.getDragContainerMatrix(),
-          {
-            position: s$4,
-            alignmentOffset: c$5,
-            containerOffset: l$4,
-            elementTransformMatrix: d$2,
-            elementTransformOrigin: f$2,
-            elementOffsetMatrix: p$2,
-          } = e$9,
-          { x: m$2, y: h$2, z: g$2 } = f$2,
-          _$3 = !d$2.isIdentity && (m$2 !== 0 || h$2 !== 0 || g$2 !== 0),
-          v$3 = s$4.x + c$5.x + l$4.x,
-          y$2 = s$4.y + c$5.y + l$4.y;
-        (u$1(j),
-          _$3 && (g$2 === 0 ? j.translateSelf(-m$2, -h$2) : j.translateSelf(-m$2, -h$2, -g$2)),
-          n$11 ? i$7.isIdentity || j.multiplySelf(i$7) : o$7.isIdentity || j.multiplySelf(o$7),
-          u$1(M$1).translateSelf(v$3, y$2),
-          j.multiplySelf(M$1),
-          r$8.isIdentity || j.multiplySelf(r$8),
-          _$3 && (u$1(M$1).translateSelf(m$2, h$2, g$2), j.multiplySelf(M$1)),
-          d$2.isIdentity || j.multiplySelf(d$2),
-          p$2.isIdentity || j.preMultiplySelf(p$2),
-          (e$9.element.style.transform = `${j}`));
-      },
-      computeClientRect: ({ drag: e$9 }) => e$9.items[0].clientRect || null,
-      positionModifiers: [],
-      sensorProcessingMode: I.Sampled,
-      dndGroups: /* @__PURE__ */ new Set(),
-    };
-  var B = class {
-    id;
-    sensors;
-    settings;
-    plugins;
-    drag;
-    isDestroyed;
-    _sensorData;
-    _emitter;
-    _startPhase;
-    _startId;
-    _moveId;
-    _alignId;
-    constructor(e$9, t$12 = {}) {
-      let { id: n$11 = Symbol(), ...r$8 } = t$12;
-      ((this.id = n$11),
-        (this.sensors = e$9),
-        (this.settings = this._parseSettings(r$8)),
-        (this.plugins = {}),
-        (this.drag = null),
-        (this.isDestroyed = !1),
-        (this._sensorData = /* @__PURE__ */ new Map()),
-        (this._emitter = new v()),
-        (this._startPhase = N$1.None),
-        (this._startId = Symbol()),
-        (this._moveId = Symbol()),
-        (this._alignId = Symbol()),
-        (this._onMove = this._onMove.bind(this)),
-        (this._onScroll = this._onScroll.bind(this)),
-        (this._onEnd = this._onEnd.bind(this)),
-        (this._prepareStart = this._prepareStart.bind(this)),
-        (this._applyStart = this._applyStart.bind(this)),
-        (this._prepareMove = this._prepareMove.bind(this)),
-        (this._applyMove = this._applyMove.bind(this)),
-        (this._prepareAlign = this._prepareAlign.bind(this)),
-        (this._applyAlign = this._applyAlign.bind(this)),
-        this.sensors.forEach((e$10) => {
-          this._sensorData.set(e$10, {
-            predicateState: P.Pending,
-            predicateEvent: null,
-            onMove: (t$14) => this._onMove(t$14, e$10),
-            onEnd: (t$14) => this._onEnd(t$14, e$10),
-          });
-          let { onMove: t$13, onEnd: n$12 } = this._sensorData.get(e$10);
-          (e$10.on(e$2.Start, t$13, t$13),
-            e$10.on(e$2.Move, t$13, t$13),
-            e$10.on(e$2.Cancel, n$12, n$12),
-            e$10.on(e$2.End, n$12, n$12),
-            e$10.on(e$2.Destroy, n$12, n$12));
-        }));
-    }
-    _parseSettings(e$9, t$12 = z) {
-      let {
-        container: n$11 = t$12.container,
-        startPredicate: r$8 = t$12.startPredicate,
-        elements: i$7 = t$12.elements,
-        frozenStyles: a$4 = t$12.frozenStyles,
-        positionModifiers: o$7 = t$12.positionModifiers,
-        applyPosition: s$4 = t$12.applyPosition,
-        computeClientRect: c$5 = t$12.computeClientRect,
-        sensorProcessingMode: l$4 = t$12.sensorProcessingMode,
-        dndGroups: u$4 = t$12.dndGroups,
-        onPrepareStart: d$2 = t$12.onPrepareStart,
-        onStart: f$2 = t$12.onStart,
-        onPrepareMove: p$2 = t$12.onPrepareMove,
-        onMove: m$2 = t$12.onMove,
-        onEnd: h$2 = t$12.onEnd,
-        onDestroy: g$2 = t$12.onDestroy,
-      } = e$9 || {};
-      return {
-        container: n$11,
-        startPredicate: r$8,
-        elements: i$7,
-        frozenStyles: a$4,
-        positionModifiers: o$7,
-        applyPosition: s$4,
-        computeClientRect: c$5,
-        sensorProcessingMode: l$4,
-        dndGroups: u$4,
-        onPrepareStart: d$2,
-        onStart: f$2,
-        onPrepareMove: p$2,
-        onMove: m$2,
-        onEnd: h$2,
-        onDestroy: g$2,
-      };
-    }
-    _emit(e$9, ...t$12) {
-      this._emitter.emit(e$9, ...t$12);
-    }
-    _onMove(n$11, r$8) {
-      let i$7 = this._sensorData.get(r$8);
-      if (i$7)
-        switch (i$7.predicateState) {
-          case P.Pending: {
-            i$7.predicateEvent = n$11;
-            let e$9 = this.settings.startPredicate({
-              draggable: this,
-              sensor: r$8,
-              event: n$11,
-            });
-            e$9 === !0
-              ? this.resolveStartPredicate(r$8)
-              : e$9 === !1 && this.rejectStartPredicate(r$8);
-            break;
-          }
-          case P.Resolved:
-            this.drag &&
-              ((this.drag.moveEvent = n$11),
-              this.settings.sensorProcessingMode === I.Immediate
-                ? (this._prepareMove(), this._applyMove())
-                : (r$5.once(n$7.read, this._prepareMove, this._moveId),
-                  r$5.once(n$7.write, this._applyMove, this._moveId)));
-            break;
-        }
-    }
-    _onScroll() {
-      this.align();
-    }
-    _onEnd(e$9, t$12) {
-      let n$11 = this._sensorData.get(t$12);
-      n$11 &&
-        (this.drag
-          ? n$11.predicateState === P.Resolved &&
-            ((this.drag.endEvent = e$9),
-            this._sensorData.forEach((e$10) => {
-              ((e$10.predicateState = P.Pending), (e$10.predicateEvent = null));
-            }),
-            this.stop())
-          : ((n$11.predicateState = P.Pending), (n$11.predicateEvent = null)));
-    }
-    _prepareStart() {
-      let e$9 = this.drag;
-      !e$9 ||
-        this._startPhase !== N$1.Init ||
-        ((this._startPhase = N$1.Prepare),
-        (e$9.items = (
-          this.settings.elements({
-            draggable: this,
-            drag: e$9,
-          }) || []
-        ).map((e$10) => new O(e$10, this))),
-        this._applyModifiers(F.Start, 0, 0),
-        this._emit(R.PrepareStart, e$9.startEvent),
-        this.settings.onPrepareStart?.(e$9, this),
-        (this._startPhase = N$1.FinishPrepare));
-    }
-    _applyStart() {
-      let e$9 = this.drag;
-      if (!(!e$9 || this._startPhase !== N$1.FinishPrepare)) {
-        this._startPhase = N$1.Apply;
-        for (let t$12 of e$9.items)
-          (t$12.dragContainer !== t$12.elementContainer && l$1(t$12.dragContainer, t$12.element),
-            t$12.frozenStyles && Object.assign(t$12.element.style, t$12.frozenStyles),
-            this.settings.applyPosition({
-              phase: L.Start,
-              draggable: this,
-              drag: e$9,
-              item: t$12,
-            }));
-        for (let t$12 of e$9.items) {
-          let e$10 = t$12.getContainerMatrix()[0],
-            n$11 = t$12.getDragContainerMatrix()[0];
-          if (s$2(e$10, n$11) || (!c$3(e$10) && !c$3(n$11))) continue;
-          let r$8 = t$12.element.getBoundingClientRect(),
-            { alignmentOffset: i$7 } = t$12;
-          ((i$7.x += d(t$12.clientRect.x - r$8.x, 3)), (i$7.y += d(t$12.clientRect.y - r$8.y, 3)));
-        }
-        for (let t$12 of e$9.items) {
-          let { alignmentOffset: n$11 } = t$12;
-          (n$11.x !== 0 || n$11.y !== 0) &&
-            this.settings.applyPosition({
-              phase: L.StartAlign,
-              draggable: this,
-              drag: e$9,
-              item: t$12,
-            });
-        }
-        (window.addEventListener(`scroll`, this._onScroll, k),
-          this._emit(R.Start, e$9.startEvent),
-          this.settings.onStart?.(e$9, this),
-          (this._startPhase = N$1.FinishApply));
-      }
-    }
-    _prepareMove() {
-      let e$9 = this.drag;
-      if (!e$9 || e$9.isEnded) return;
-      let { moveEvent: t$12, prevMoveEvent: n$11 } = e$9;
-      t$12 !== n$11 &&
-        (this._applyModifiers(F.Move, t$12.x - n$11.x, t$12.y - n$11.y),
-        this._emit(R.PrepareMove, t$12),
-        !e$9.isEnded &&
-          (this.settings.onPrepareMove?.(e$9, this), !e$9.isEnded && (e$9.prevMoveEvent = t$12)));
-    }
-    _applyMove() {
-      let e$9 = this.drag;
-      if (!(!e$9 || e$9.isEnded)) {
-        for (let t$12 of e$9.items)
-          ((t$12._moveDiff.x = 0),
-            (t$12._moveDiff.y = 0),
-            this.settings.applyPosition({
-              phase: L.Move,
-              draggable: this,
-              drag: e$9,
-              item: t$12,
-            }));
-        (this._emit(R.Move, e$9.moveEvent), !e$9.isEnded && this.settings.onMove?.(e$9, this));
-      }
-    }
-    _prepareAlign() {
-      let { drag: e$9 } = this;
-      if (!(!e$9 || e$9.isEnded))
-        for (let t$12 of e$9.items) {
-          let { x: e$10, y: n$11 } = t$12.element.getBoundingClientRect(),
-            r$8 = t$12.clientRect.x - t$12._moveDiff.x - e$10;
-          ((t$12.alignmentOffset.x = t$12.alignmentOffset.x - t$12._alignDiff.x + r$8),
-            (t$12._alignDiff.x = r$8));
-          let i$7 = t$12.clientRect.y - t$12._moveDiff.y - n$11;
-          ((t$12.alignmentOffset.y = t$12.alignmentOffset.y - t$12._alignDiff.y + i$7),
-            (t$12._alignDiff.y = i$7));
-        }
-    }
-    _applyAlign() {
-      let { drag: e$9 } = this;
-      if (!(!e$9 || e$9.isEnded))
-        for (let t$12 of e$9.items)
-          ((t$12._alignDiff.x = 0),
-            (t$12._alignDiff.y = 0),
-            this.settings.applyPosition({
-              phase: L.Align,
-              draggable: this,
-              drag: e$9,
-              item: t$12,
-            }));
-    }
-    _applyModifiers(e$9, t$12, n$11) {
-      let { drag: r$8 } = this;
-      if (!r$8) return;
-      let { positionModifiers: i$7 } = this.settings;
-      for (let a$4 of r$8.items) {
-        let o$7 = A;
-        ((o$7.x = t$12), (o$7.y = n$11));
-        for (let t$13 of i$7)
-          o$7 = t$13(o$7, {
-            draggable: this,
-            drag: r$8,
-            item: a$4,
-            phase: e$9,
-          });
-        ((a$4.position.x += o$7.x),
-          (a$4.position.y += o$7.y),
-          (a$4.clientRect.x += o$7.x),
-          (a$4.clientRect.y += o$7.y),
-          e$9 === `move` && ((a$4._moveDiff.x += o$7.x), (a$4._moveDiff.y += o$7.y)));
-      }
-    }
-    on(e$9, t$12, n$11) {
-      return this._emitter.on(e$9, t$12, n$11);
-    }
-    off(e$9, t$12) {
-      this._emitter.off(e$9, t$12);
-    }
-    resolveStartPredicate(n$11, r$8) {
-      let i$7 = this._sensorData.get(n$11);
-      if (!i$7) return;
-      let a$4 = r$8 || i$7.predicateEvent;
-      i$7.predicateState === P.Pending &&
-        a$4 &&
-        ((this._startPhase = N$1.Init),
-        (i$7.predicateState = P.Resolved),
-        (i$7.predicateEvent = null),
-        (this.drag = new p(n$11, a$4)),
-        this._sensorData.forEach((e$9, t$12) => {
-          t$12 !== n$11 && ((e$9.predicateState = P.Rejected), (e$9.predicateEvent = null));
-        }),
-        this.settings.sensorProcessingMode === I.Immediate
-          ? (this._prepareStart(), this._applyStart())
-          : (r$5.once(n$7.read, this._prepareStart, this._startId),
-            r$5.once(n$7.write, this._applyStart, this._startId)));
-    }
-    rejectStartPredicate(e$9) {
-      let t$12 = this._sensorData.get(e$9);
-      t$12?.predicateState === P.Pending &&
-        ((t$12.predicateState = P.Rejected), (t$12.predicateEvent = null));
-    }
-    stop() {
-      let n$11 = this.drag;
-      if (!(!n$11 || n$11.isEnded)) {
-        if (this._startPhase === N$1.Prepare || this._startPhase === N$1.Apply)
-          throw Error(`Cannot stop drag start process at this point`);
-        ((n$11.isEnded = !0),
-          this._prepareStart(),
-          this._applyStart(),
-          (this._startPhase = N$1.None),
-          r$5.off(n$7.read, this._startId),
-          r$5.off(n$7.write, this._startId),
-          r$5.off(n$7.read, this._moveId),
-          r$5.off(n$7.write, this._moveId),
-          r$5.off(n$7.read, this._alignId),
-          r$5.off(n$7.write, this._alignId),
-          window.removeEventListener(`scroll`, this._onScroll, k),
-          this._applyModifiers(F.End, 0, 0));
-        for (let e$9 of n$11.items) {
-          if (
-            (e$9.elementContainer !== e$9.dragContainer &&
-              (l$1(e$9.elementContainer, e$9.element),
-              (e$9.alignmentOffset.x = 0),
-              (e$9.alignmentOffset.y = 0),
-              (e$9.containerOffset.x = 0),
-              (e$9.containerOffset.y = 0)),
-            e$9.unfrozenStyles)
-          )
-            for (let t$12 in e$9.unfrozenStyles)
-              e$9.element.style[t$12] = e$9.unfrozenStyles[t$12] || ``;
-          this.settings.applyPosition({
-            phase: L.End,
-            draggable: this,
-            drag: n$11,
-            item: e$9,
-          });
-        }
-        for (let e$9 of n$11.items)
-          if (e$9.elementContainer !== e$9.dragContainer) {
-            let t$12 = e$9.element.getBoundingClientRect();
-            ((e$9.alignmentOffset.x = d(e$9.clientRect.x - t$12.x, 3)),
-              (e$9.alignmentOffset.y = d(e$9.clientRect.y - t$12.y, 3)));
-          }
-        for (let e$9 of n$11.items)
-          e$9.elementContainer !== e$9.dragContainer &&
-            (e$9.alignmentOffset.x !== 0 || e$9.alignmentOffset.y !== 0) &&
-            this.settings.applyPosition({
-              phase: L.EndAlign,
-              draggable: this,
-              drag: n$11,
-              item: e$9,
-            });
-        (this._emit(R.End, n$11.endEvent), this.settings.onEnd?.(n$11, this), (this.drag = null));
-      }
-    }
-    align(n$11 = !1) {
-      !this.drag ||
-        this.drag.isEnded ||
-        (n$11 || this.settings.sensorProcessingMode === I.Immediate
-          ? (this._prepareAlign(), this._applyAlign())
-          : (r$5.once(n$7.read, this._prepareAlign, this._alignId),
-            r$5.once(n$7.write, this._applyAlign, this._alignId)));
-    }
-    getClientRect() {
-      let { drag: e$9, settings: t$12 } = this;
-      return (
-        (e$9 &&
-          t$12.computeClientRect?.({
-            draggable: this,
-            drag: e$9,
-          })) ||
-        null
-      );
-    }
-    updateSettings(e$9) {
-      this.settings = this._parseSettings(e$9, this.settings);
-    }
-    use(e$9) {
-      return e$9(this);
-    }
-    destroy() {
-      this.isDestroyed ||
-        ((this.isDestroyed = !0),
-        this.stop(),
-        this._sensorData.forEach(({ onMove: e$9, onEnd: t$12 }, n$11) => {
-          (n$11.off(e$2.Start, e$9),
-            n$11.off(e$2.Move, e$9),
-            n$11.off(e$2.Cancel, t$12),
-            n$11.off(e$2.End, t$12),
-            n$11.off(e$2.Destroy, t$12));
-        }),
-        this._sensorData.clear(),
-        this._emit(R.Destroy),
-        this.settings.onDestroy?.(this),
-        this._emitter.off());
-    }
-  };
-
-  //#endregion
-  //#region ../dragdoll/dist/pointer-sensor-D3DHn381.js
-  function i$6(e$9, t$12) {
-    if (`pointerId` in e$9) return e$9.pointerId === t$12 ? e$9 : null;
-    if (`changedTouches` in e$9) {
-      let n$11 = 0;
-      for (; n$11 < e$9.changedTouches.length; n$11++)
-        if (e$9.changedTouches[n$11].identifier === t$12) return e$9.changedTouches[n$11];
-      return null;
-    }
-    return e$9;
-  }
-  function a$3(e$9) {
-    return `pointerId` in e$9
-      ? e$9.pointerId
-      : `changedTouches` in e$9
-        ? e$9.changedTouches[0]
-          ? e$9.changedTouches[0].identifier
-          : null
-        : -1;
-  }
-  function o$4(e$9) {
-    return `pointerType` in e$9 ? e$9.pointerType : `touches` in e$9 ? `touch` : `mouse`;
-  }
-  function s$1(e$9 = {}) {
-    let { capture: t$12 = !0, passive: n$11 = !0 } = e$9;
-    return {
-      capture: t$12,
-      passive: n$11,
-    };
-  }
-  function c$2(n$11) {
-    return n$11 === `auto` || n$11 === void 0 ? (n$9 ? `pointer` : t$5 ? `touch` : `mouse`) : n$11;
-  }
-  const l = {
-    pointer: {
-      start: `pointerdown`,
-      move: `pointermove`,
-      cancel: `pointercancel`,
-      end: `pointerup`,
-    },
-    touch: {
-      start: `touchstart`,
-      move: `touchmove`,
-      cancel: `touchcancel`,
-      end: `touchend`,
-    },
-    mouse: {
-      start: `mousedown`,
-      move: `mousemove`,
-      cancel: ``,
-      end: `mouseup`,
-    },
-  };
-  var u = class {
-    element;
-    drag;
-    isDestroyed;
-    _startPredicate;
-    _listenerOptions;
-    _sourceEvents;
-    _areWindowListenersBound;
-    _emitter;
-    constructor(e$9, t$12 = {}) {
-      let {
-        listenerOptions: n$11 = {},
-        sourceEvents: i$7 = `auto`,
-        startPredicate: a$4 = (e$10) => !(`button` in e$10 && e$10.button > 0),
-      } = t$12;
-      ((this.element = e$9),
-        (this.drag = null),
-        (this.isDestroyed = !1),
-        (this._areWindowListenersBound = !1),
-        (this._startPredicate = a$4),
-        (this._listenerOptions = s$1(n$11)),
-        (this._sourceEvents = c$2(i$7)),
-        (this._emitter = new v()),
-        (this._onStart = this._onStart.bind(this)),
-        (this._onMove = this._onMove.bind(this)),
-        (this._onCancel = this._onCancel.bind(this)),
-        (this._onEnd = this._onEnd.bind(this)),
-        e$9.addEventListener(l[this._sourceEvents].start, this._onStart, this._listenerOptions));
-    }
-    _getTrackedPointerEventData(e$9) {
-      return this.drag ? i$6(e$9, this.drag.pointerId) : null;
-    }
-    _onStart(e$9) {
-      if (this.isDestroyed || this.drag || !this._startPredicate(e$9)) return;
-      let t$12 = a$3(e$9);
-      if (t$12 === null) return;
-      let r$8 = i$6(e$9, t$12);
-      if (r$8 === null) return;
-      let s$4 = {
-        pointerId: t$12,
-        pointerType: o$4(e$9),
-        x: r$8.clientX,
-        y: r$8.clientY,
-      };
-      this.drag = s$4;
-      let c$5 = {
-        ...s$4,
-        type: e$2.Start,
-        srcEvent: e$9,
-        target: r$8.target,
-      };
-      (this._emitter.emit(c$5.type, c$5), this.drag && this._bindWindowListeners());
-    }
-    _onMove(e$9) {
-      if (!this.drag) return;
-      let t$12 = this._getTrackedPointerEventData(e$9);
-      if (!t$12) return;
-      ((this.drag.x = t$12.clientX), (this.drag.y = t$12.clientY));
-      let r$8 = {
-        type: e$2.Move,
-        srcEvent: e$9,
-        target: t$12.target,
-        ...this.drag,
-      };
-      this._emitter.emit(r$8.type, r$8);
-    }
-    _onCancel(e$9) {
-      if (!this.drag) return;
-      let t$12 = this._getTrackedPointerEventData(e$9);
-      if (!t$12) return;
-      ((this.drag.x = t$12.clientX), (this.drag.y = t$12.clientY));
-      let r$8 = {
-        type: e$2.Cancel,
-        srcEvent: e$9,
-        target: t$12.target,
-        ...this.drag,
-      };
-      (this._emitter.emit(r$8.type, r$8), this._resetDrag());
-    }
-    _onEnd(e$9) {
-      if (!this.drag) return;
-      let t$12 = this._getTrackedPointerEventData(e$9);
-      if (!t$12) return;
-      ((this.drag.x = t$12.clientX), (this.drag.y = t$12.clientY));
-      let r$8 = {
-        type: e$2.End,
-        srcEvent: e$9,
-        target: t$12.target,
-        ...this.drag,
-      };
-      (this._emitter.emit(r$8.type, r$8), this._resetDrag());
-    }
-    _bindWindowListeners() {
-      if (this._areWindowListenersBound) return;
-      let { move: e$9, end: t$12, cancel: n$11 } = l[this._sourceEvents];
-      (window.addEventListener(e$9, this._onMove, this._listenerOptions),
-        window.addEventListener(t$12, this._onEnd, this._listenerOptions),
-        n$11 && window.addEventListener(n$11, this._onCancel, this._listenerOptions),
-        (this._areWindowListenersBound = !0));
-    }
-    _unbindWindowListeners() {
-      if (this._areWindowListenersBound) {
-        let { move: e$9, end: t$12, cancel: n$11 } = l[this._sourceEvents];
-        (window.removeEventListener(e$9, this._onMove, this._listenerOptions),
-          window.removeEventListener(t$12, this._onEnd, this._listenerOptions),
-          n$11 && window.removeEventListener(n$11, this._onCancel, this._listenerOptions),
-          (this._areWindowListenersBound = !1));
-      }
-    }
-    _resetDrag() {
-      ((this.drag = null), this._unbindWindowListeners());
-    }
-    cancel() {
-      if (!this.drag) return;
-      let e$9 = {
-        type: e$2.Cancel,
-        srcEvent: null,
-        target: null,
-        ...this.drag,
-      };
-      (this._emitter.emit(e$9.type, e$9), this._resetDrag());
-    }
-    updateSettings(e$9) {
-      if (this.isDestroyed) return;
-      let { listenerOptions: t$12, sourceEvents: n$11, startPredicate: r$8 } = e$9,
-        i$7 = c$2(n$11),
-        a$4 = s$1(t$12);
-      (r$8 && this._startPredicate !== r$8 && (this._startPredicate = r$8),
-        ((t$12 &&
-          (this._listenerOptions.capture !== a$4.capture ||
-            this._listenerOptions.passive === a$4.passive)) ||
-          (n$11 && this._sourceEvents !== i$7)) &&
-          (this.element.removeEventListener(
-            l[this._sourceEvents].start,
-            this._onStart,
-            this._listenerOptions,
-          ),
-          this._unbindWindowListeners(),
-          this.cancel(),
-          n$11 && (this._sourceEvents = i$7),
-          t$12 && a$4 && (this._listenerOptions = a$4),
-          this.element.addEventListener(
-            l[this._sourceEvents].start,
-            this._onStart,
-            this._listenerOptions,
-          )));
-    }
-    on(e$9, t$12, n$11) {
-      return this._emitter.on(e$9, t$12, n$11);
-    }
-    off(e$9, t$12) {
-      this._emitter.off(e$9, t$12);
-    }
-    destroy() {
-      this.isDestroyed ||
-        ((this.isDestroyed = !0),
-        this.cancel(),
-        this._emitter.emit(e$2.Destroy, { type: e$2.Destroy }),
-        this._emitter.off(),
-        this.element.removeEventListener(
-          l[this._sourceEvents].start,
-          this._onStart,
-          this._listenerOptions,
-        ));
-    }
-  };
-
-  //#endregion
   //#region ../dragdoll/dist/auto-scroll-Bx5lxGCK.js
-  const t$4 = new N();
+  const t$3 = new N();
 
   //#endregion
-  //#region ../dragdoll/dist/auto-scroll-plugin-CzQex1ax.js
+  //#region ../dragdoll/dist/auto-scroll-plugin-Bqs6w1zt.js
   const r$6 = {
       x: 0,
       y: 0,
     },
-    i$5 = {
+    i$6 = {
       width: 0,
       height: 0,
       x: 0,
@@ -3989,11 +3903,11 @@
         if (n$11) return n$11;
         let r$8 = t$12 && (t$12.moveEvent || t$12.startEvent);
         return (
-          (i$5.width = r$8 ? 50 : 0),
-          (i$5.height = r$8 ? 50 : 0),
-          (i$5.x = r$8 ? r$8.x - 25 : 0),
-          (i$5.y = r$8 ? r$8.y - 25 : 0),
-          i$5
+          (i$6.width = r$8 ? 50 : 0),
+          (i$6.height = r$8 ? 50 : 0),
+          (i$6.x = r$8 ? r$8.x - 25 : 0),
+          (i$6.y = r$8 ? r$8.y - 25 : 0),
+          i$6
         );
       },
       onStart: null,
@@ -4062,7 +3976,7 @@
         return this._getSettings().onStop;
       }
     },
-    s = class {
+    s$1 = class {
       name;
       version;
       settings;
@@ -4074,10 +3988,10 @@
           (this._autoScrollProxy = null),
           e$9.on(R.Start, () => {
             this._autoScrollProxy ||
-              ((this._autoScrollProxy = new o$3(this, e$9)), t$4.addItem(this._autoScrollProxy));
+              ((this._autoScrollProxy = new o$3(this, e$9)), t$3.addItem(this._autoScrollProxy));
           }),
           e$9.on(R.End, () => {
-            this._autoScrollProxy &&= (t$4.removeItem(this._autoScrollProxy), null);
+            this._autoScrollProxy &&= (t$3.removeItem(this._autoScrollProxy), null);
           }));
       }
       _parseSettings(e$9, t$12 = a$2()) {
@@ -4106,17 +4020,71 @@
         this.settings = this._parseSettings(e$9, this.settings);
       }
     };
-  function c$1(e$9) {
+  function c$2(e$9) {
     return (t$12) => {
-      let n$11 = new s(t$12, e$9),
+      let n$11 = new s$1(t$12, e$9),
         r$8 = t$12;
       return ((r$8.plugins[n$11.name] = n$11), r$8);
     };
   }
 
   //#endregion
+  //#region ../dragdoll-react/dist/use-draggable-auto-scroll-BAAmpSao.js
+  function i(i$7, a$4) {
+    let o$7 = (0, import_react.useRef)(a$4);
+    o$7.current = a$4;
+    let s$4 = (0, import_react.useRef)(a$4);
+    return (
+      n(() => {
+        i$7 && (i$7.plugins.autoscroll || (i$7.use(c$2(o$7.current)), (s$4.current = o$7.current)));
+      }, [i$7]),
+      n(() => {
+        let e$9 = i$7?.plugins.autoscroll;
+        e$9 &&
+          (n$7(s$4.current, a$4) || e$9.updateSettings(e$9._parseSettings(a$4)),
+          (s$4.current = a$4));
+      }, [i$7, a$4]),
+      i$7
+    );
+  }
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-draggable-callback-Cd1g8lnj.js
+  function n$6(n$11, r$8, i$7) {
+    let a$4 = !!i$7,
+      o$7 = (0, import_react.useRef)(i$7);
+    ((o$7.current = i$7),
+      n(() => {
+        if (!n$11 || !a$4) return;
+        let e$9 = n$11.on(r$8, (...e$10) => {
+          o$7.current?.(...e$10);
+        });
+        return () => void n$11.off(r$8, e$9);
+      }, [n$11, r$8, a$4]));
+  }
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-draggable-drag-BekXfPYq.js
+  function r(r$8, i$7 = !1) {
+    let [a$4, o$7] = (0, import_react.useState)(r$8?.drag || null),
+      s$4 = (0, import_react.useState)(void 0)[1];
+    return (
+      n$6(r$8, R.Start, () => {
+        o$7(r$8?.drag || null);
+      }),
+      n$6(r$8, R.Move, () => {
+        i$7 && a$4 && s$4(Symbol());
+      }),
+      n$6(r$8, R.End, () => {
+        o$7(null);
+      }),
+      a$4
+    );
+  }
+
+  //#endregion
   //#region ../dragdoll/dist/base-sensor-DVrttP21.js
-  var n$8 = class {
+  var n$5 = class {
     drag;
     isDestroyed;
     _emitter;
@@ -4138,18 +4106,18 @@
     _start(t$12) {
       this.isDestroyed ||
         this.drag ||
-        ((this.drag = this._createDragData(t$12)), this._emitter.emit(e$2.Start, t$12));
+        ((this.drag = this._createDragData(t$12)), this._emitter.emit(e.Start, t$12));
     }
     _move(t$12) {
-      this.drag && (this._updateDragData(t$12), this._emitter.emit(e$2.Move, t$12));
+      this.drag && (this._updateDragData(t$12), this._emitter.emit(e.Move, t$12));
     }
     _end(t$12) {
       this.drag &&
-        (this._updateDragData(t$12), this._emitter.emit(e$2.End, t$12), this._resetDragData());
+        (this._updateDragData(t$12), this._emitter.emit(e.End, t$12), this._resetDragData());
     }
     _cancel(t$12) {
       this.drag &&
-        (this._updateDragData(t$12), this._emitter.emit(e$2.Cancel, t$12), this._resetDragData());
+        (this._updateDragData(t$12), this._emitter.emit(e.Cancel, t$12), this._resetDragData());
     }
     on(e$9, t$12, n$11) {
       return this._emitter.on(e$9, t$12, n$11);
@@ -4160,7 +4128,7 @@
     cancel() {
       this.drag &&
         this._cancel({
-          type: e$2.Cancel,
+          type: e.Cancel,
           x: this.drag.x,
           y: this.drag.y,
         });
@@ -4169,14 +4137,14 @@
       this.isDestroyed ||
         ((this.isDestroyed = !0),
         this.cancel(),
-        this._emitter.emit(e$2.Destroy, { type: e$2.Destroy }),
+        this._emitter.emit(e.Destroy, { type: e.Destroy }),
         this._emitter.off());
     }
   };
 
   //#endregion
   //#region ../dragdoll/dist/base-motion-sensor-QRxjT_GX.js
-  var i$3 = class extends n$8 {
+  var i$4 = class extends n$5 {
     drag;
     _direction;
     _speed;
@@ -4200,13 +4168,13 @@
     _start(n$11) {
       this.isDestroyed ||
         this.drag ||
-        (super._start(n$11), r$5.on(n$7.read, this._tick, this._tick));
+        (super._start(n$11), r$5.on(n$4.read, this._tick, this._tick));
     }
     _end(n$11) {
-      this.drag && (r$5.off(n$7.read, this._tick), super._end(n$11));
+      this.drag && (r$5.off(n$4.read, this._tick), super._end(n$11));
     }
     _cancel(n$11) {
-      this.drag && (r$5.off(n$7.read, this._tick), super._cancel(n$11));
+      this.drag && (r$5.off(n$4.read, this._tick), super._cancel(n$11));
     }
     _tick(e$9) {
       if (this.drag)
@@ -4223,7 +4191,7 @@
             a$4 = this._direction.y * r$8;
           (i$7 || a$4) &&
             this._move({
-              type: e$2.Move,
+              type: e.Move,
               x: this.drag.x + i$7,
               y: this.drag.y + a$4,
             });
@@ -4233,7 +4201,7 @@
 
   //#endregion
   //#region ../dragdoll/dist/keyboard-motion-sensor-BsMzohjd.js
-  const n$6 = [`start`, `cancel`, `end`, `moveLeft`, `moveRight`, `moveUp`, `moveDown`];
+  const n$3 = [`start`, `cancel`, `end`, `moveLeft`, `moveRight`, `moveUp`, `moveDown`];
   function r$4(e$9, t$12) {
     if (!e$9.size || !t$12.size) return Infinity;
     let n$11 = Infinity;
@@ -4243,7 +4211,7 @@
     }
     return n$11;
   }
-  const i$4 = {
+  const i$5 = {
     startKeys: [` `, `Enter`],
     moveLeftKeys: [`ArrowLeft`],
     moveRightKeys: [`ArrowRight`],
@@ -4265,7 +4233,7 @@
       return null;
     },
   };
-  var a = class extends i$3 {
+  var a$1 = class extends i$4 {
     element;
     _moveKeys;
     _moveKeyTimestamps;
@@ -4283,17 +4251,17 @@
     constructor(e$9, t$12 = {}) {
       super();
       let {
-        startPredicate: n$11 = i$4.startPredicate,
-        computeSpeed: r$8 = i$4.computeSpeed,
-        cancelOnVisibilityChange: a$4 = i$4.cancelOnVisibilityChange,
-        cancelOnBlur: o$7 = i$4.cancelOnBlur,
-        startKeys: s$4 = i$4.startKeys,
-        moveLeftKeys: c$5 = i$4.moveLeftKeys,
-        moveRightKeys: l$4 = i$4.moveRightKeys,
-        moveUpKeys: u$4 = i$4.moveUpKeys,
-        moveDownKeys: d$2 = i$4.moveDownKeys,
-        cancelKeys: f$2 = i$4.cancelKeys,
-        endKeys: p$2 = i$4.endKeys,
+        startPredicate: n$11 = i$5.startPredicate,
+        computeSpeed: r$8 = i$5.computeSpeed,
+        cancelOnVisibilityChange: a$4 = i$5.cancelOnVisibilityChange,
+        cancelOnBlur: o$7 = i$5.cancelOnBlur,
+        startKeys: s$4 = i$5.startKeys,
+        moveLeftKeys: c$5 = i$5.moveLeftKeys,
+        moveRightKeys: l$4 = i$5.moveRightKeys,
+        moveUpKeys: u$4 = i$5.moveUpKeys,
+        moveDownKeys: d$2 = i$5.moveDownKeys,
+        cancelKeys: f$2 = i$5.cancelKeys,
+        endKeys: p$2 = i$5.endKeys,
       } = t$12;
       ((this.element = e$9),
         (this._startKeys = new Set(s$4)),
@@ -4369,7 +4337,7 @@
           n$11 &&
             (t$12.preventDefault(),
             this._start({
-              type: e$2.Start,
+              type: e.Start,
               x: n$11.x,
               y: n$11.y,
             }));
@@ -4383,7 +4351,7 @@
       if (this._endKeys.has(t$12.key)) {
         (t$12.preventDefault(),
           this._end({
-            type: e$2.End,
+            type: e.End,
             x: this.drag.x,
             y: this.drag.y,
           }));
@@ -4419,7 +4387,7 @@
             : document.removeEventListener(`visibilitychange`, this._internalCancel)),
         a$4 !== void 0 && (this._startPredicate = a$4),
         o$7 !== void 0 && (this._computeSpeed = o$7),
-        n$6.forEach((n$11, r$9) => {
+        n$3.forEach((n$11, r$9) => {
           let i$8 = `${n$11}Keys`,
             a$5 = e$9[i$8];
           a$5 !== void 0 && ((this[`_${i$8}`] = new Set(a$5)), r$9 >= 3 && (t$12 = !0));
@@ -4451,202 +4419,14 @@
   };
 
   //#endregion
-  //#region ../dragdoll-react/dist/are-configs-equal-Cv4ZY5_I.js
-  const e$1 = Object.prototype.hasOwnProperty,
-    t$3 = (e$9) => {
-      if (typeof e$9 != `object` || !e$9) return !1;
-      let t$12 = Object.getPrototypeOf(e$9);
-      return t$12 === Object.prototype || t$12 === null;
-    };
-  function n$3(r$8, i$7) {
-    if (Object.is(r$8, i$7)) return !0;
-    if (r$8 === null || i$7 === null || typeof r$8 != `object` || typeof i$7 != `object`) return !1;
-    let a$4 = Array.isArray(r$8),
-      o$7 = Array.isArray(i$7);
-    if (a$4 || o$7) {
-      if (!a$4 || !o$7) return !1;
-      let e$9 = r$8.length;
-      if (e$9 !== i$7.length) return !1;
-      for (let t$12 = 0; t$12 < e$9; t$12++) if (!n$3(r$8[t$12], i$7[t$12])) return !1;
-      return !0;
-    }
-    let s$4 = r$8 instanceof Set,
-      c$5 = i$7 instanceof Set;
-    if (s$4 || c$5) return !s$4 || !c$5 || r$8.size !== i$7.size ? !1 : r$8.isSubsetOf(i$7);
-    if (!t$3(r$8) || !t$3(i$7)) return !1;
-    let l$4 = Object.keys(r$8),
-      u$4 = Object.keys(i$7);
-    if (l$4.length !== u$4.length) return !1;
-    for (let t$12 = 0; t$12 < l$4.length; t$12++) {
-      let a$5 = l$4[t$12];
-      if (!e$1.call(i$7, a$5) || !n$3(r$8[a$5], i$7[a$5])) return !1;
-    }
-    return !0;
-  }
-
-  //#endregion
-  //#region ../dragdoll-react/dist/use-callback-stable-CtO9rJmq.js
-  function t$2(e$9, t$12) {
-    if (e$9 === t$12) return !0;
-    if (e$9.length !== t$12.length) return !1;
-    for (let n$11 = 0; n$11 < e$9.length; n$11++) if (!Object.is(e$9[n$11], t$12[n$11])) return !1;
-    return !0;
-  }
-  function n$1(n$11, r$8) {
-    let i$7 = (0, import_react.useRef)(null),
-      a$4 = i$7.current || {
-        deps: r$8,
-        value: n$11(),
-      };
-    return (
-      i$7.current
-        ? t$2(r$8, a$4.deps) || ((a$4.deps = r$8), (a$4.value = n$11()))
-        : (i$7.current = a$4),
-      a$4.value
-    );
-  }
-  function r$1(e$9, t$12) {
-    return n$1(() => e$9, t$12);
-  }
-
-  //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-B_WlZ0op.js
-  function c(c$5, l$4) {
-    let u$4 = n$1(() => c$5.filter((e$9) => !!e$9), [...c$5]),
-      { id: d$2, dndObserver: f$2, ...p$2 } = l$4 || {},
-      m$2 = n$5(),
-      h$2 = f$2 === void 0 ? m$2 : f$2,
-      [g$2, _$3] = (0, import_react.useState)(null),
-      v$3 = (0, import_react.useRef)(null),
-      y$2 = (0, import_react.useRef)(u$4);
-    y$2.current = u$4;
-    let b$2 = (0, import_react.useRef)(d$2),
-      x$2 = (0, import_react.useRef)(l$4),
-      S$2 = (0, import_react.useRef)(h$2),
-      C$2 = (0, import_react.useRef)(d$2);
-    C$2.current = d$2;
-    let w$2 = (0, import_react.useRef)(h$2);
-    w$2.current = h$2;
-    let T$2 = (0, import_react.useRef)(p$2);
-    T$2.current = p$2;
-    let E$3 = r$1(() => {
-        let e$9 = v$3.current;
-        e$9 && (e$9.destroy(), (v$3.current = null), _$3(null));
-      }, []),
-      D$2 = r$1(() => {
-        E$3();
-        let e$9 = y$2.current;
-        if (e$9.length === 0) return;
-        let t$12 = C$2.current,
-          n$11 = w$2.current,
-          r$8 = new B(e$9, {
-            id: t$12,
-            ...(T$2.current || {}),
-          });
-        (n$11?.addDraggables([r$8]),
-          (v$3.current = r$8),
-          (b$2.current = t$12),
-          (x$2.current = T$2.current),
-          (S$2.current = n$11),
-          _$3(r$8));
-      }, [E$3]);
-    return (
-      n(() => {
-        if (!u$4.length) {
-          E$3();
-          return;
-        }
-        let e$9 = v$3.current;
-        if (!e$9) {
-          D$2();
-          return;
-        }
-        (u$4.length !== e$9.sensors.length || u$4.some((t$12) => !e$9.sensors.includes(t$12))) &&
-          D$2();
-      }, [u$4, D$2, E$3]),
-      n(() => {
-        v$3.current && b$2.current !== d$2 && D$2();
-      }, [d$2, D$2]),
-      n(() => {
-        let e$9 = S$2.current;
-        if (e$9 === h$2) return;
-        let t$12 = v$3.current;
-        (t$12 && (e$9?.removeDraggables([t$12]), h$2?.addDraggables([t$12])), (S$2.current = h$2));
-      }, [h$2]),
-      n(() => {
-        let e$9 = v$3.current;
-        e$9 &&
-          (n$3(x$2.current, p$2) || e$9.updateSettings(e$9._parseSettings(p$2)),
-          (x$2.current = p$2));
-      }, [p$2]),
-      n(() => E$3, [E$3]),
-      g$2
-    );
-  }
-
-  //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-auto-scroll-Bfc-BIux.js
-  function i(i$7, a$4) {
-    let o$7 = (0, import_react.useRef)(a$4);
-    o$7.current = a$4;
-    let s$4 = (0, import_react.useRef)(a$4);
-    return (
-      n(() => {
-        i$7 && (i$7.plugins.autoscroll || (i$7.use(c$1(o$7.current)), (s$4.current = o$7.current)));
-      }, [i$7]),
-      n(() => {
-        let e$9 = i$7?.plugins.autoscroll;
-        e$9 &&
-          (n$3(s$4.current, a$4) || e$9.updateSettings(e$9._parseSettings(a$4)),
-          (s$4.current = a$4));
-      }, [i$7, a$4]),
-      i$7
-    );
-  }
-
-  //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-callback-Cd1g8lnj.js
-  function n$2(n$11, r$8, i$7) {
-    let a$4 = !!i$7,
-      o$7 = (0, import_react.useRef)(i$7);
-    ((o$7.current = i$7),
-      n(() => {
-        if (!n$11 || !a$4) return;
-        let e$9 = n$11.on(r$8, (...e$10) => {
-          o$7.current?.(...e$10);
-        });
-        return () => void n$11.off(r$8, e$9);
-      }, [n$11, r$8, a$4]));
-  }
-
-  //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-drag-cqJKOXjJ.js
-  function r(r$8, i$7 = !1) {
-    let [a$4, o$7] = (0, import_react.useState)(r$8?.drag || null),
-      s$4 = (0, import_react.useState)(void 0)[1];
-    return (
-      n$2(r$8, R.Start, () => {
-        o$7(r$8?.drag || null);
-      }),
-      n$2(r$8, R.Move, () => {
-        i$7 && a$4 && s$4(Symbol());
-      }),
-      n$2(r$8, R.End, () => {
-        o$7(null);
-      }),
-      a$4
-    );
-  }
-
-  //#endregion
-  //#region ../dragdoll-react/dist/use-keyboard-motion-sensor-B0wbimu8.js
+  //#region ../dragdoll-react/dist/use-keyboard-motion-sensor-BtTbO_79.js
   function o(o$7 = {}, s$4) {
     let [c$5, l$4] = (0, import_react.useState)(null),
       u$4 = (0, import_react.useRef)(c$5),
       d$2 = (0, import_react.useRef)(o$7),
       f$2 = r$1((e$9) => {
         u$4.current?.destroy();
-        let t$12 = new a(e$9, d$2.current);
+        let t$12 = new a$1(e$9, d$2.current);
         ((u$4.current = t$12), l$4(t$12));
       }, []),
       p$2 = r$1(() => {
@@ -4677,7 +4457,228 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-pointer-sensor-_yqecFSk.js
+  //#region ../dragdoll/dist/pointer-sensor-D3DHn381.js
+  function i$2(e$9, t$12) {
+    if (`pointerId` in e$9) return e$9.pointerId === t$12 ? e$9 : null;
+    if (`changedTouches` in e$9) {
+      let n$11 = 0;
+      for (; n$11 < e$9.changedTouches.length; n$11++)
+        if (e$9.changedTouches[n$11].identifier === t$12) return e$9.changedTouches[n$11];
+      return null;
+    }
+    return e$9;
+  }
+  function a(e$9) {
+    return `pointerId` in e$9
+      ? e$9.pointerId
+      : `changedTouches` in e$9
+        ? e$9.changedTouches[0]
+          ? e$9.changedTouches[0].identifier
+          : null
+        : -1;
+  }
+  function o$2(e$9) {
+    return `pointerType` in e$9 ? e$9.pointerType : `touches` in e$9 ? `touch` : `mouse`;
+  }
+  function s(e$9 = {}) {
+    let { capture: t$12 = !0, passive: n$11 = !0 } = e$9;
+    return {
+      capture: t$12,
+      passive: n$11,
+    };
+  }
+  function c$1(n$11) {
+    return n$11 === `auto` || n$11 === void 0 ? (n$2 ? `pointer` : t ? `touch` : `mouse`) : n$11;
+  }
+  const l = {
+    pointer: {
+      start: `pointerdown`,
+      move: `pointermove`,
+      cancel: `pointercancel`,
+      end: `pointerup`,
+    },
+    touch: {
+      start: `touchstart`,
+      move: `touchmove`,
+      cancel: `touchcancel`,
+      end: `touchend`,
+    },
+    mouse: {
+      start: `mousedown`,
+      move: `mousemove`,
+      cancel: ``,
+      end: `mouseup`,
+    },
+  };
+  var u = class {
+    element;
+    drag;
+    isDestroyed;
+    _startPredicate;
+    _listenerOptions;
+    _sourceEvents;
+    _areWindowListenersBound;
+    _emitter;
+    constructor(e$9, t$12 = {}) {
+      let {
+        listenerOptions: n$11 = {},
+        sourceEvents: i$7 = `auto`,
+        startPredicate: a$4 = (e$10) => !(`button` in e$10 && e$10.button > 0),
+      } = t$12;
+      ((this.element = e$9),
+        (this.drag = null),
+        (this.isDestroyed = !1),
+        (this._areWindowListenersBound = !1),
+        (this._startPredicate = a$4),
+        (this._listenerOptions = s(n$11)),
+        (this._sourceEvents = c$1(i$7)),
+        (this._emitter = new v()),
+        (this._onStart = this._onStart.bind(this)),
+        (this._onMove = this._onMove.bind(this)),
+        (this._onCancel = this._onCancel.bind(this)),
+        (this._onEnd = this._onEnd.bind(this)),
+        e$9.addEventListener(l[this._sourceEvents].start, this._onStart, this._listenerOptions));
+    }
+    _getTrackedPointerEventData(e$9) {
+      return this.drag ? i$2(e$9, this.drag.pointerId) : null;
+    }
+    _onStart(e$9) {
+      if (this.isDestroyed || this.drag || !this._startPredicate(e$9)) return;
+      let t$12 = a(e$9);
+      if (t$12 === null) return;
+      let r$8 = i$2(e$9, t$12);
+      if (r$8 === null) return;
+      let s$4 = {
+        pointerId: t$12,
+        pointerType: o$2(e$9),
+        x: r$8.clientX,
+        y: r$8.clientY,
+      };
+      this.drag = s$4;
+      let c$5 = {
+        ...s$4,
+        type: e.Start,
+        srcEvent: e$9,
+        target: r$8.target,
+      };
+      (this._emitter.emit(c$5.type, c$5), this.drag && this._bindWindowListeners());
+    }
+    _onMove(e$9) {
+      if (!this.drag) return;
+      let t$12 = this._getTrackedPointerEventData(e$9);
+      if (!t$12) return;
+      ((this.drag.x = t$12.clientX), (this.drag.y = t$12.clientY));
+      let r$8 = {
+        type: e.Move,
+        srcEvent: e$9,
+        target: t$12.target,
+        ...this.drag,
+      };
+      this._emitter.emit(r$8.type, r$8);
+    }
+    _onCancel(e$9) {
+      if (!this.drag) return;
+      let t$12 = this._getTrackedPointerEventData(e$9);
+      if (!t$12) return;
+      ((this.drag.x = t$12.clientX), (this.drag.y = t$12.clientY));
+      let r$8 = {
+        type: e.Cancel,
+        srcEvent: e$9,
+        target: t$12.target,
+        ...this.drag,
+      };
+      (this._emitter.emit(r$8.type, r$8), this._resetDrag());
+    }
+    _onEnd(e$9) {
+      if (!this.drag) return;
+      let t$12 = this._getTrackedPointerEventData(e$9);
+      if (!t$12) return;
+      ((this.drag.x = t$12.clientX), (this.drag.y = t$12.clientY));
+      let r$8 = {
+        type: e.End,
+        srcEvent: e$9,
+        target: t$12.target,
+        ...this.drag,
+      };
+      (this._emitter.emit(r$8.type, r$8), this._resetDrag());
+    }
+    _bindWindowListeners() {
+      if (this._areWindowListenersBound) return;
+      let { move: e$9, end: t$12, cancel: n$11 } = l[this._sourceEvents];
+      (window.addEventListener(e$9, this._onMove, this._listenerOptions),
+        window.addEventListener(t$12, this._onEnd, this._listenerOptions),
+        n$11 && window.addEventListener(n$11, this._onCancel, this._listenerOptions),
+        (this._areWindowListenersBound = !0));
+    }
+    _unbindWindowListeners() {
+      if (this._areWindowListenersBound) {
+        let { move: e$9, end: t$12, cancel: n$11 } = l[this._sourceEvents];
+        (window.removeEventListener(e$9, this._onMove, this._listenerOptions),
+          window.removeEventListener(t$12, this._onEnd, this._listenerOptions),
+          n$11 && window.removeEventListener(n$11, this._onCancel, this._listenerOptions),
+          (this._areWindowListenersBound = !1));
+      }
+    }
+    _resetDrag() {
+      ((this.drag = null), this._unbindWindowListeners());
+    }
+    cancel() {
+      if (!this.drag) return;
+      let e$9 = {
+        type: e.Cancel,
+        srcEvent: null,
+        target: null,
+        ...this.drag,
+      };
+      (this._emitter.emit(e$9.type, e$9), this._resetDrag());
+    }
+    updateSettings(e$9) {
+      if (this.isDestroyed) return;
+      let { listenerOptions: t$12, sourceEvents: n$11, startPredicate: r$8 } = e$9,
+        i$7 = c$1(n$11),
+        a$4 = s(t$12);
+      (r$8 && this._startPredicate !== r$8 && (this._startPredicate = r$8),
+        ((t$12 &&
+          (this._listenerOptions.capture !== a$4.capture ||
+            this._listenerOptions.passive === a$4.passive)) ||
+          (n$11 && this._sourceEvents !== i$7)) &&
+          (this.element.removeEventListener(
+            l[this._sourceEvents].start,
+            this._onStart,
+            this._listenerOptions,
+          ),
+          this._unbindWindowListeners(),
+          this.cancel(),
+          n$11 && (this._sourceEvents = i$7),
+          t$12 && a$4 && (this._listenerOptions = a$4),
+          this.element.addEventListener(
+            l[this._sourceEvents].start,
+            this._onStart,
+            this._listenerOptions,
+          )));
+    }
+    on(e$9, t$12, n$11) {
+      return this._emitter.on(e$9, t$12, n$11);
+    }
+    off(e$9, t$12) {
+      this._emitter.off(e$9, t$12);
+    }
+    destroy() {
+      this.isDestroyed ||
+        ((this.isDestroyed = !0),
+        this.cancel(),
+        this._emitter.emit(e.Destroy, { type: e.Destroy }),
+        this._emitter.off(),
+        this.element.removeEventListener(
+          l[this._sourceEvents].start,
+          this._onStart,
+          this._listenerOptions,
+        ));
+    }
+  };
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-pointer-sensor-BIU5uieJ.js
   function o$1(o$7 = {}, s$4) {
     let [c$5, l$4] = (0, import_react.useState)(null),
       u$4 = (0, import_react.useRef)(c$5),

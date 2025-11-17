@@ -1263,7 +1263,7 @@
 
   //#endregion
   //#region ../dragdoll-react/dist/use-dnd-observer-context-BL_LF-TG.js
-  function n$2() {
+  function n$6() {
     return (0, import_react.useContext)(t);
   }
 
@@ -1273,8 +1273,8 @@
 
   //#endregion
   //#region ../dragdoll-react/dist/use-dnd-observer-callback-Cdrmp7fA.js
-  function r$4(r$9, i$7, a$6) {
-    let o$5 = n$2(),
+  function r$6(r$9, i$7, a$6) {
+    let o$5 = n$6(),
       s$4 = a$6 === void 0 ? o$5 : a$6,
       c$4 = !!i$7,
       l$4 = (0, import_react.useRef)(i$7);
@@ -1538,12 +1538,12 @@
 
   //#endregion
   //#region ../dragdoll/dist/ticker-Bio34ZvT.js
-  const n$8 = {
+  const n$4 = {
     read: Symbol(),
     write: Symbol(),
   };
-  let r$6 = new l$3({
-    phases: [n$8.read, n$8.write],
+  let r$5 = new l$3({
+    phases: [n$4.read, n$4.write],
     requestFrame: typeof window < `u` ? u$3() : () => () => {},
   });
 
@@ -1580,65 +1580,6 @@
     return a$6
       ? (a$6 / (Math.min(n$14.width, r$9.width) * Math.min(n$14.height, r$9.height))) * 100
       : 0;
-  }
-
-  //#endregion
-  //#region ../../node_modules/mezr/dist/esm/utils/constants.js
-  const IS_BROWSER = 'undefined' != typeof window && void 0 !== window.document;
-  const IS_SAFARI = !!(
-    IS_BROWSER &&
-    navigator.vendor &&
-    navigator.vendor.indexOf('Apple') > -1 &&
-    navigator.userAgent &&
-    -1 == navigator.userAgent.indexOf('CriOS') &&
-    -1 == navigator.userAgent.indexOf('FxiOS')
-  );
-  const BOX_EDGE = {
-    content: 'content',
-    padding: 'padding',
-    scrollbar: 'scrollbar',
-    border: 'border',
-    margin: 'margin',
-  };
-  const INCLUDE_WINDOW_SCROLLBAR = {
-    [BOX_EDGE.content]: !1,
-    [BOX_EDGE.padding]: !1,
-    [BOX_EDGE.scrollbar]: !0,
-    [BOX_EDGE.border]: !0,
-    [BOX_EDGE.margin]: !0,
-  };
-  const IS_CHROMIUM = (() => {
-    try {
-      return window.navigator.userAgentData.brands.some(({ brand: n$14 }) => 'Chromium' === n$14);
-    } catch (n$14) {
-      return !1;
-    }
-  })();
-
-  //#endregion
-  //#region ../../node_modules/mezr/dist/esm/utils/isWindow.js
-  function isWindow(n$14) {
-    return n$14 instanceof Window;
-  }
-
-  //#endregion
-  //#region ../../node_modules/mezr/dist/esm/utils/getStyle.js
-  const STYLE_DECLARATION_CACHE = /* @__PURE__ */ new WeakMap();
-  function getStyle(e$8, t$11) {
-    if (t$11) return window.getComputedStyle(e$8, t$11);
-    let C$1 = STYLE_DECLARATION_CACHE.get(e$8)?.deref();
-    return (
-      C$1 ||
-        ((C$1 = window.getComputedStyle(e$8, null)),
-        STYLE_DECLARATION_CACHE.set(e$8, new WeakRef(C$1))),
-      C$1
-    );
-  }
-
-  //#endregion
-  //#region ../../node_modules/mezr/dist/esm/utils/isDocumentElement.js
-  function isDocumentElement(e$8) {
-    return e$8 instanceof HTMLHtmlElement;
   }
 
   //#endregion
@@ -1772,8 +1713,8 @@
   //#endregion
   //#region ../dragdoll/dist/constants-CMClRu_c.js
   const e$3 = typeof window < `u` && window.document !== void 0,
-    t$5 = e$3 && `ontouchstart` in window,
-    n$10 = e$3 && !!window.PointerEvent;
+    t$1 = e$3 && `ontouchstart` in window,
+    n$2 = e$3 && !!window.PointerEvent;
   e$3 &&
     navigator.vendor &&
     navigator.vendor.indexOf(`Apple`) > -1 &&
@@ -1783,13 +1724,60 @@
 
   //#endregion
   //#region ../dragdoll/dist/sensor-Uwz8qy61.js
-  const e$2 = {
+  const e = {
     Start: `start`,
     Move: `move`,
     Cancel: `cancel`,
     End: `end`,
     Destroy: `destroy`,
   };
+
+  //#endregion
+  //#region ../../node_modules/mezr/dist/esm/utils/getStyle.js
+  const STYLE_DECLARATION_CACHE = /* @__PURE__ */ new WeakMap();
+  function getStyle(e$8, t$11) {
+    if (t$11) return window.getComputedStyle(e$8, t$11);
+    let C$1 = STYLE_DECLARATION_CACHE.get(e$8)?.deref();
+    return (
+      C$1 ||
+        ((C$1 = window.getComputedStyle(e$8, null)),
+        STYLE_DECLARATION_CACHE.set(e$8, new WeakRef(C$1))),
+      C$1
+    );
+  }
+
+  //#endregion
+  //#region ../../node_modules/mezr/dist/esm/utils/constants.js
+  const IS_BROWSER = 'undefined' != typeof window && void 0 !== window.document;
+  const IS_SAFARI = !!(
+    IS_BROWSER &&
+    navigator.vendor &&
+    navigator.vendor.indexOf('Apple') > -1 &&
+    navigator.userAgent &&
+    -1 == navigator.userAgent.indexOf('CriOS') &&
+    -1 == navigator.userAgent.indexOf('FxiOS')
+  );
+  const BOX_EDGE = {
+    content: 'content',
+    padding: 'padding',
+    scrollbar: 'scrollbar',
+    border: 'border',
+    margin: 'margin',
+  };
+  const INCLUDE_WINDOW_SCROLLBAR = {
+    [BOX_EDGE.content]: !1,
+    [BOX_EDGE.padding]: !1,
+    [BOX_EDGE.scrollbar]: !0,
+    [BOX_EDGE.border]: !0,
+    [BOX_EDGE.margin]: !0,
+  };
+  const IS_CHROMIUM = (() => {
+    try {
+      return window.navigator.userAgentData.brands.some(({ brand: n$14 }) => 'Chromium' === n$14);
+    } catch (n$14) {
+      return !1;
+    }
+  })();
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/isBlockElement.js
@@ -1854,6 +1842,12 @@
   }
 
   //#endregion
+  //#region ../../node_modules/mezr/dist/esm/utils/isDocumentElement.js
+  function isDocumentElement(e$8) {
+    return e$8 instanceof HTMLHtmlElement;
+  }
+
+  //#endregion
   //#region ../../node_modules/mezr/dist/esm/getContainingBlock.js
   function getContainingBlock(e$8, t$11 = {}) {
     if (isDocumentElement(e$8)) return e$8.ownerDocument.defaultView;
@@ -1893,6 +1887,12 @@
   }
 
   //#endregion
+  //#region ../../node_modules/mezr/dist/esm/utils/isWindow.js
+  function isWindow(n$14) {
+    return n$14 instanceof Window;
+  }
+
+  //#endregion
   //#region ../../node_modules/mezr/dist/esm/getOffsetContainer.js
   function getOffsetContainer(n$14, t$11 = {}) {
     const { display: o$5 } = getStyle(n$14);
@@ -1922,7 +1922,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll/dist/draggable-CUeOOVDR.js
+  //#region ../dragdoll/dist/draggable-BbMg6mSD.js
   function s$3(e$8, t$11) {
     return e$8.isIdentity && t$11.isIdentity
       ? !0
@@ -2497,11 +2497,11 @@
             onEnd: (t$13) => this._onEnd(t$13, e$9),
           });
           let { onMove: t$12, onEnd: n$15 } = this._sensorData.get(e$9);
-          (e$9.on(e$2.Start, t$12, t$12),
-            e$9.on(e$2.Move, t$12, t$12),
-            e$9.on(e$2.Cancel, n$15, n$15),
-            e$9.on(e$2.End, n$15, n$15),
-            e$9.on(e$2.Destroy, n$15, n$15));
+          (e$9.on(e.Start, t$12, t$12),
+            e$9.on(e.Move, t$12, t$12),
+            e$9.on(e.Cancel, n$15, n$15),
+            e$9.on(e.End, n$15, n$15),
+            e$9.on(e.Destroy, n$15, n$15));
         }));
     }
     _parseSettings(e$8, t$11 = z) {
@@ -2564,8 +2564,8 @@
               ((this.drag.moveEvent = n$14),
               this.settings.sensorProcessingMode === I.Immediate
                 ? (this._prepareMove(), this._applyMove())
-                : (r$6.once(n$8.read, this._prepareMove, this._moveId),
-                  r$6.once(n$8.write, this._applyMove, this._moveId)));
+                : (r$5.once(n$4.read, this._prepareMove, this._moveId),
+                  r$5.once(n$4.write, this._applyMove, this._moveId)));
             break;
         }
     }
@@ -2596,7 +2596,7 @@
           }) || []
         ).map((e$9) => new O(e$9, this))),
         this._applyModifiers(F.Start, 0, 0),
-        this._emit(R.PrepareStart, e$8.startEvent),
+        this._emit(R.PrepareStart, e$8, this),
         this.settings.onPrepareStart?.(e$8, this),
         (this._startPhase = N.FinishPrepare));
     }
@@ -2632,7 +2632,7 @@
             });
         }
         (window.addEventListener(`scroll`, this._onScroll, k),
-          this._emit(R.Start, e$8.startEvent),
+          this._emit(R.Start, e$8, this),
           this.settings.onStart?.(e$8, this),
           (this._startPhase = N.FinishApply));
       }
@@ -2643,7 +2643,7 @@
       let { moveEvent: t$11, prevMoveEvent: n$14 } = e$8;
       t$11 !== n$14 &&
         (this._applyModifiers(F.Move, t$11.x - n$14.x, t$11.y - n$14.y),
-        this._emit(R.PrepareMove, t$11),
+        this._emit(R.PrepareMove, e$8, this),
         !e$8.isEnded &&
           (this.settings.onPrepareMove?.(e$8, this), !e$8.isEnded && (e$8.prevMoveEvent = t$11)));
     }
@@ -2659,7 +2659,7 @@
               drag: e$8,
               item: t$11,
             }));
-        (this._emit(R.Move, e$8.moveEvent), !e$8.isEnded && this.settings.onMove?.(e$8, this));
+        (this._emit(R.Move, e$8, this), !e$8.isEnded && this.settings.onMove?.(e$8, this));
       }
     }
     _prepareAlign() {
@@ -2730,8 +2730,8 @@
         }),
         this.settings.sensorProcessingMode === I.Immediate
           ? (this._prepareStart(), this._applyStart())
-          : (r$6.once(n$8.read, this._prepareStart, this._startId),
-            r$6.once(n$8.write, this._applyStart, this._startId)));
+          : (r$5.once(n$4.read, this._prepareStart, this._startId),
+            r$5.once(n$4.write, this._applyStart, this._startId)));
     }
     rejectStartPredicate(e$8) {
       let t$11 = this._sensorData.get(e$8);
@@ -2747,12 +2747,12 @@
           this._prepareStart(),
           this._applyStart(),
           (this._startPhase = N.None),
-          r$6.off(n$8.read, this._startId),
-          r$6.off(n$8.write, this._startId),
-          r$6.off(n$8.read, this._moveId),
-          r$6.off(n$8.write, this._moveId),
-          r$6.off(n$8.read, this._alignId),
-          r$6.off(n$8.write, this._alignId),
+          r$5.off(n$4.read, this._startId),
+          r$5.off(n$4.write, this._startId),
+          r$5.off(n$4.read, this._moveId),
+          r$5.off(n$4.write, this._moveId),
+          r$5.off(n$4.read, this._alignId),
+          r$5.off(n$4.write, this._alignId),
           window.removeEventListener(`scroll`, this._onScroll, k),
           this._applyModifiers(F.End, 0, 0));
         for (let e$8 of n$14.items) {
@@ -2789,7 +2789,7 @@
               drag: n$14,
               item: e$8,
             });
-        (this._emit(R.End, n$14.endEvent), this.settings.onEnd?.(n$14, this), (this.drag = null));
+        (this._emit(R.End, n$14, this), this.settings.onEnd?.(n$14, this), (this.drag = null));
       }
     }
     align(n$14 = !1) {
@@ -2797,8 +2797,8 @@
         this.drag.isEnded ||
         (n$14 || this.settings.sensorProcessingMode === I.Immediate
           ? (this._prepareAlign(), this._applyAlign())
-          : (r$6.once(n$8.read, this._prepareAlign, this._alignId),
-            r$6.once(n$8.write, this._applyAlign, this._alignId)));
+          : (r$5.once(n$4.read, this._prepareAlign, this._alignId),
+            r$5.once(n$4.write, this._applyAlign, this._alignId)));
     }
     getClientRect() {
       let { drag: e$8, settings: t$11 } = this;
@@ -2822,11 +2822,11 @@
         ((this.isDestroyed = !0),
         this.stop(),
         this._sensorData.forEach(({ onMove: e$8, onEnd: t$11 }, n$14) => {
-          (n$14.off(e$2.Start, e$8),
-            n$14.off(e$2.Move, e$8),
-            n$14.off(e$2.Cancel, t$11),
-            n$14.off(e$2.End, t$11),
-            n$14.off(e$2.Destroy, t$11));
+          (n$14.off(e.Start, e$8),
+            n$14.off(e.Move, e$8),
+            n$14.off(e.Cancel, t$11),
+            n$14.off(e.End, t$11),
+            n$14.off(e.Destroy, t$11));
         }),
         this._sensorData.clear(),
         this._emit(R.Destroy),
@@ -2838,7 +2838,7 @@
   //#endregion
   //#region ../dragdoll/dist/droppable-Cz3L0fgq.js
   const t$6 = { Destroy: `destroy` };
-  var n$3 = class {
+  var n$7 = class {
     id;
     element;
     isDestroyed;
@@ -2886,7 +2886,7 @@
   };
 
   //#endregion
-  //#region ../dragdoll/dist/dnd-observer-DAFD4Pcu.js
+  //#region ../dragdoll/dist/dnd-observer-PhWGBHaN.js
   var s$2 = (function (e$8) {
     return (
       (e$8[(e$8.Idle = 0)] = `Idle`),
@@ -2900,7 +2900,7 @@
       capture: !0,
       passive: !0,
     },
-    l = {
+    l$1 = {
       Start: `start`,
       Move: `move`,
       Enter: `enter`,
@@ -2991,9 +2991,9 @@
     _onDragStart(e$8) {
       let t$11 = this._drags.get(e$8);
       if (!(!t$11 || t$11.isEnded)) {
-        if (this._emitter.listenerCount(l.Start)) {
+        if (this._emitter.listenerCount(l$1.Start)) {
           let t$12 = this._getTargets(e$8);
-          this._emitter.emit(l.Start, {
+          this._emitter.emit(l$1.Start, {
             draggable: e$8,
             targets: t$12,
           });
@@ -3008,9 +3008,9 @@
     _onDragMove(e$8) {
       let t$11 = this._drags.get(e$8);
       if (!(!t$11 || t$11.isEnded)) {
-        if (this._emitter.listenerCount(l.Move)) {
+        if (this._emitter.listenerCount(l$1.Move)) {
           let t$12 = this._getTargets(e$8);
-          this._emitter.emit(l.Move, {
+          this._emitter.emit(l$1.Move, {
             draggable: e$8,
             targets: t$12,
           });
@@ -3029,8 +3029,8 @@
     }
     _onScroll = () => {
       this._drags.size !== 0 &&
-        (r$6.once(
-          n$8.read,
+        (r$5.once(
+          n$4.read,
           () => {
             this.updateDroppableClientRects();
           },
@@ -3045,8 +3045,8 @@
         throw Error(`Cannot stop dragging while collisions are being emitted.`);
       ((i$7.isEnded = !0), this._computeCollisions(n$14, !0), this._emitCollisions(n$14, !0));
       let { targets: a$6, collisions: o$5, contacts: u$4 } = i$7._cd;
-      (this._emitter.listenerCount(l.End) &&
-        this._emitter.emit(l.End, {
+      (this._emitter.listenerCount(l$1.End) &&
+        this._emitter.emit(l$1.End, {
           canceled: r$9,
           draggable: n$14,
           targets: a$6,
@@ -3055,10 +3055,10 @@
         }),
         this._drags.delete(n$14),
         this._collisionDetector._removeCollisionDataArena(n$14),
-        r$6.off(n$8.read, i$7._cd.tickerId),
-        r$6.off(n$8.write, i$7._cd.tickerId),
+        r$5.off(n$4.read, i$7._cd.tickerId),
+        r$5.off(n$4.write, i$7._cd.tickerId),
         this._drags.size ||
-          (r$6.off(n$8.read, this._listenerId),
+          (r$5.off(n$4.read, this._listenerId),
           window.removeEventListener(`scroll`, this._onScroll, c$2)));
     }
     _computeCollisions(e$8, t$11 = !1) {
@@ -3108,8 +3108,8 @@
         t$12 && (f$1.add(t$12), d$1.has(t$12) ? (u$4.add(t$12), d$1.delete(t$12)) : c$4.add(t$12));
       }
       (d$1.size &&
-        i$7.listenerCount(l.Leave) &&
-        i$7.emit(l.Leave, {
+        i$7.listenerCount(l$1.Leave) &&
+        i$7.emit(l$1.Leave, {
           draggable: e$8,
           targets: o$5,
           collisions: a$6,
@@ -3117,17 +3117,17 @@
           removedContacts: p$1,
         }),
         c$4.size &&
-          i$7.listenerCount(l.Enter) &&
-          i$7.emit(l.Enter, {
+          i$7.listenerCount(l$1.Enter) &&
+          i$7.emit(l$1.Enter, {
             draggable: e$8,
             targets: o$5,
             collisions: a$6,
             contacts: f$1,
             addedContacts: c$4,
           }),
-        i$7.listenerCount(l.Collide) &&
+        i$7.listenerCount(l$1.Collide) &&
           (f$1.size || p$1.size) &&
-          i$7.emit(l.Collide, {
+          i$7.emit(l$1.Collide, {
             draggable: e$8,
             targets: o$5,
             collisions: a$6,
@@ -3161,13 +3161,13 @@
         if (n$14) {
           let r$9 = this._drags.get(n$14);
           if (!r$9 || r$9.isEnded) return;
-          (r$6.once(n$8.read, () => this._computeCollisions(n$14), r$9._cd.tickerId),
-            r$6.once(n$8.write, () => this._emitCollisions(n$14), r$9._cd.tickerId));
+          (r$5.once(n$4.read, () => this._computeCollisions(n$14), r$9._cd.tickerId),
+            r$5.once(n$4.write, () => this._emitCollisions(n$14), r$9._cd.tickerId));
         } else
           for (let [n$15, r$9] of this._drags)
             r$9.isEnded ||
-              (r$6.once(n$8.read, () => this._computeCollisions(n$15), r$9._cd.tickerId),
-              r$6.once(n$8.write, () => this._emitCollisions(n$15), r$9._cd.tickerId));
+              (r$5.once(n$4.read, () => this._computeCollisions(n$15), r$9._cd.tickerId),
+              r$5.once(n$4.write, () => this._emitCollisions(n$15), r$9._cd.tickerId));
     }
     addDraggables(e$8) {
       if (this.isDestroyed) return;
@@ -3207,9 +3207,7 @@
           n$14.on(
             R.End,
             (e$9) => {
-              e$9?.type === e$2.End
-                ? this._onDragEnd(n$14)
-                : e$9?.type === e$2.Cancel && this._onDragCancel(n$14);
+              e$9.endEvent?.type === e.End ? this._onDragEnd(n$14) : this._onDragCancel(n$14);
             },
             this._listenerId,
           ),
@@ -3221,8 +3219,8 @@
             this._listenerId,
           ));
       if (t$11.size) {
-        this._emitter.listenerCount(l.AddDraggables) &&
-          this._emitter.emit(l.AddDraggables, { draggables: t$11 });
+        this._emitter.listenerCount(l$1.AddDraggables) &&
+          this._emitter.emit(l$1.AddDraggables, { draggables: t$11 });
         for (let e$9 of t$11)
           if (!this.isDestroyed && e$9.drag && !e$9.drag.isEnded) {
             let t$12 = e$9._startPhase;
@@ -3244,8 +3242,8 @@
           n$14.off(R.End, this._listenerId),
           n$14.off(R.Destroy, this._listenerId));
       for (let e$9 of t$11) this._stopDrag(e$9, !0);
-      this._emitter.listenerCount(l.RemoveDraggables) &&
-        this._emitter.emit(l.RemoveDraggables, { draggables: t$11 });
+      this._emitter.listenerCount(l$1.RemoveDraggables) &&
+        this._emitter.emit(l$1.RemoveDraggables, { draggables: t$11 });
     }
     addDroppables(e$8) {
       if (this.isDestroyed) return;
@@ -3267,8 +3265,8 @@
               (e$9.set(n$14.id, n$14), this.detectCollisions(t$12));
           }));
       t$11.size &&
-        this._emitter.listenerCount(l.AddDroppables) &&
-        this._emitter.emit(l.AddDroppables, { droppables: t$11 });
+        this._emitter.listenerCount(l$1.AddDroppables) &&
+        this._emitter.emit(l$1.AddDroppables, { droppables: t$11 });
     }
     removeDroppables(e$8) {
       if (this.isDestroyed) return;
@@ -3282,8 +3280,8 @@
             e$9 && e$9.has(n$14.id) && (e$9.delete(n$14.id), this.detectCollisions(t$12));
           }));
       t$11.size &&
-        this._emitter.listenerCount(l.RemoveDroppables) &&
-        this._emitter.emit(l.RemoveDroppables, { droppables: t$11 });
+        this._emitter.listenerCount(l$1.RemoveDroppables) &&
+        this._emitter.emit(l$1.RemoveDroppables, { droppables: t$11 });
     }
     destroy() {
       if (this.isDestroyed) return;
@@ -3303,7 +3301,7 @@
         }));
       let e$8 = this._drags.keys();
       for (let t$11 of e$8) this._stopDrag(t$11, !0);
-      (this._emitter.emit(l.Destroy),
+      (this._emitter.emit(l$1.Destroy),
         this._emitter.off(),
         this._collisionDetector.destroy(),
         this.draggables.clear(),
@@ -3312,229 +3310,287 @@
   };
 
   //#endregion
-  //#region ../dragdoll/dist/pointer-sensor-D3DHn381.js
-  function i$5(e$8, t$11) {
-    if (`pointerId` in e$8) return e$8.pointerId === t$11 ? e$8 : null;
-    if (`changedTouches` in e$8) {
-      let n$14 = 0;
-      for (; n$14 < e$8.changedTouches.length; n$14++)
-        if (e$8.changedTouches[n$14].identifier === t$11) return e$8.changedTouches[n$14];
-      return null;
-    }
-    return e$8;
+  //#region ../dragdoll-react/dist/use-dnd-observer-B2HZwsIC.js
+  function a({
+    collisionDetector: a$6,
+    onStart: o$5,
+    onMove: s$4,
+    onEnter: c$4,
+    onLeave: l$4,
+    onCollide: u$4,
+    onEnd: d$1,
+    onAddDraggables: f$1,
+    onRemoveDraggables: p$1,
+    onAddDroppables: m$1,
+    onRemoveDroppables: h$1,
+    onDestroy: g$1,
+  } = {}) {
+    let [_$2, v$2] = (0, import_react.useState)(null);
+    return (
+      n(() => {
+        let e$8 = new u$1({ collisionDetector: a$6 });
+        return (
+          v$2(e$8),
+          () => {
+            (e$8.destroy(), v$2(null));
+          }
+        );
+      }, [a$6]),
+      r$6(l$1.Start, o$5, _$2),
+      r$6(l$1.Move, s$4, _$2),
+      r$6(l$1.Enter, c$4, _$2),
+      r$6(l$1.Leave, l$4, _$2),
+      r$6(l$1.Collide, u$4, _$2),
+      r$6(l$1.End, d$1, _$2),
+      r$6(l$1.AddDraggables, f$1, _$2),
+      r$6(l$1.RemoveDraggables, p$1, _$2),
+      r$6(l$1.AddDroppables, m$1, _$2),
+      r$6(l$1.RemoveDroppables, h$1, _$2),
+      r$6(l$1.Destroy, g$1, _$2),
+      _$2
+    );
   }
-  function a$4(e$8) {
-    return `pointerId` in e$8
-      ? e$8.pointerId
-      : `changedTouches` in e$8
-        ? e$8.changedTouches[0]
-          ? e$8.changedTouches[0].identifier
-          : null
-        : -1;
-  }
-  function o$3(e$8) {
-    return `pointerType` in e$8 ? e$8.pointerType : `touches` in e$8 ? `touch` : `mouse`;
-  }
-  function s$1(e$8 = {}) {
-    let { capture: t$11 = !0, passive: n$14 = !0 } = e$8;
-    return {
-      capture: t$11,
-      passive: n$14,
+
+  //#endregion
+  //#region ../dragdoll-react/dist/are-configs-equal-Cv4ZY5_I.js
+  const e$2 = Object.prototype.hasOwnProperty,
+    t$5 = (e$8) => {
+      if (typeof e$8 != `object` || !e$8) return !1;
+      let t$11 = Object.getPrototypeOf(e$8);
+      return t$11 === Object.prototype || t$11 === null;
     };
+  function n$9(r$9, i$7) {
+    if (Object.is(r$9, i$7)) return !0;
+    if (r$9 === null || i$7 === null || typeof r$9 != `object` || typeof i$7 != `object`) return !1;
+    let a$6 = Array.isArray(r$9),
+      o$5 = Array.isArray(i$7);
+    if (a$6 || o$5) {
+      if (!a$6 || !o$5) return !1;
+      let e$8 = r$9.length;
+      if (e$8 !== i$7.length) return !1;
+      for (let t$11 = 0; t$11 < e$8; t$11++) if (!n$9(r$9[t$11], i$7[t$11])) return !1;
+      return !0;
+    }
+    let s$4 = r$9 instanceof Set,
+      c$4 = i$7 instanceof Set;
+    if (s$4 || c$4) return !s$4 || !c$4 || r$9.size !== i$7.size ? !1 : r$9.isSubsetOf(i$7);
+    if (!t$5(r$9) || !t$5(i$7)) return !1;
+    let l$4 = Object.keys(r$9),
+      u$4 = Object.keys(i$7);
+    if (l$4.length !== u$4.length) return !1;
+    for (let t$11 = 0; t$11 < l$4.length; t$11++) {
+      let a$7 = l$4[t$11];
+      if (!e$2.call(i$7, a$7) || !n$9(r$9[a$7], i$7[a$7])) return !1;
+    }
+    return !0;
   }
-  function c$1(n$14) {
-    return n$14 === `auto` || n$14 === void 0 ? (n$10 ? `pointer` : t$5 ? `touch` : `mouse`) : n$14;
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-callback-stable-CtO9rJmq.js
+  function t$4(e$8, t$11) {
+    if (e$8 === t$11) return !0;
+    if (e$8.length !== t$11.length) return !1;
+    for (let n$14 = 0; n$14 < e$8.length; n$14++) if (!Object.is(e$8[n$14], t$11[n$14])) return !1;
+    return !0;
   }
-  const l$1 = {
-    pointer: {
-      start: `pointerdown`,
-      move: `pointermove`,
-      cancel: `pointercancel`,
-      end: `pointerup`,
-    },
-    touch: {
-      start: `touchstart`,
-      move: `touchmove`,
-      cancel: `touchcancel`,
-      end: `touchend`,
-    },
-    mouse: {
-      start: `mousedown`,
-      move: `mousemove`,
-      cancel: ``,
-      end: `mouseup`,
-    },
-  };
-  var u = class {
-    element;
-    drag;
-    isDestroyed;
-    _startPredicate;
-    _listenerOptions;
-    _sourceEvents;
-    _areWindowListenersBound;
-    _emitter;
-    constructor(e$8, t$11 = {}) {
-      let {
-        listenerOptions: n$14 = {},
-        sourceEvents: i$7 = `auto`,
-        startPredicate: a$6 = (e$9) => !(`button` in e$9 && e$9.button > 0),
-      } = t$11;
-      ((this.element = e$8),
-        (this.drag = null),
-        (this.isDestroyed = !1),
-        (this._areWindowListenersBound = !1),
-        (this._startPredicate = a$6),
-        (this._listenerOptions = s$1(n$14)),
-        (this._sourceEvents = c$1(i$7)),
-        (this._emitter = new v()),
-        (this._onStart = this._onStart.bind(this)),
-        (this._onMove = this._onMove.bind(this)),
-        (this._onCancel = this._onCancel.bind(this)),
-        (this._onEnd = this._onEnd.bind(this)),
-        e$8.addEventListener(l$1[this._sourceEvents].start, this._onStart, this._listenerOptions));
-    }
-    _getTrackedPointerEventData(e$8) {
-      return this.drag ? i$5(e$8, this.drag.pointerId) : null;
-    }
-    _onStart(e$8) {
-      if (this.isDestroyed || this.drag || !this._startPredicate(e$8)) return;
-      let t$11 = a$4(e$8);
-      if (t$11 === null) return;
-      let r$9 = i$5(e$8, t$11);
-      if (r$9 === null) return;
-      let s$4 = {
-        pointerId: t$11,
-        pointerType: o$3(e$8),
-        x: r$9.clientX,
-        y: r$9.clientY,
+  function n$1(n$14, r$9) {
+    let i$7 = (0, import_react.useRef)(null),
+      a$6 = i$7.current || {
+        deps: r$9,
+        value: n$14(),
       };
-      this.drag = s$4;
-      let c$4 = {
-        ...s$4,
-        type: e$2.Start,
-        srcEvent: e$8,
-        target: r$9.target,
-      };
-      (this._emitter.emit(c$4.type, c$4), this.drag && this._bindWindowListeners());
-    }
-    _onMove(e$8) {
-      if (!this.drag) return;
-      let t$11 = this._getTrackedPointerEventData(e$8);
-      if (!t$11) return;
-      ((this.drag.x = t$11.clientX), (this.drag.y = t$11.clientY));
-      let r$9 = {
-        type: e$2.Move,
-        srcEvent: e$8,
-        target: t$11.target,
-        ...this.drag,
-      };
-      this._emitter.emit(r$9.type, r$9);
-    }
-    _onCancel(e$8) {
-      if (!this.drag) return;
-      let t$11 = this._getTrackedPointerEventData(e$8);
-      if (!t$11) return;
-      ((this.drag.x = t$11.clientX), (this.drag.y = t$11.clientY));
-      let r$9 = {
-        type: e$2.Cancel,
-        srcEvent: e$8,
-        target: t$11.target,
-        ...this.drag,
-      };
-      (this._emitter.emit(r$9.type, r$9), this._resetDrag());
-    }
-    _onEnd(e$8) {
-      if (!this.drag) return;
-      let t$11 = this._getTrackedPointerEventData(e$8);
-      if (!t$11) return;
-      ((this.drag.x = t$11.clientX), (this.drag.y = t$11.clientY));
-      let r$9 = {
-        type: e$2.End,
-        srcEvent: e$8,
-        target: t$11.target,
-        ...this.drag,
-      };
-      (this._emitter.emit(r$9.type, r$9), this._resetDrag());
-    }
-    _bindWindowListeners() {
-      if (this._areWindowListenersBound) return;
-      let { move: e$8, end: t$11, cancel: n$14 } = l$1[this._sourceEvents];
-      (window.addEventListener(e$8, this._onMove, this._listenerOptions),
-        window.addEventListener(t$11, this._onEnd, this._listenerOptions),
-        n$14 && window.addEventListener(n$14, this._onCancel, this._listenerOptions),
-        (this._areWindowListenersBound = !0));
-    }
-    _unbindWindowListeners() {
-      if (this._areWindowListenersBound) {
-        let { move: e$8, end: t$11, cancel: n$14 } = l$1[this._sourceEvents];
-        (window.removeEventListener(e$8, this._onMove, this._listenerOptions),
-          window.removeEventListener(t$11, this._onEnd, this._listenerOptions),
-          n$14 && window.removeEventListener(n$14, this._onCancel, this._listenerOptions),
-          (this._areWindowListenersBound = !1));
-      }
-    }
-    _resetDrag() {
-      ((this.drag = null), this._unbindWindowListeners());
-    }
-    cancel() {
-      if (!this.drag) return;
-      let e$8 = {
-        type: e$2.Cancel,
-        srcEvent: null,
-        target: null,
-        ...this.drag,
-      };
-      (this._emitter.emit(e$8.type, e$8), this._resetDrag());
-    }
-    updateSettings(e$8) {
-      if (this.isDestroyed) return;
-      let { listenerOptions: t$11, sourceEvents: n$14, startPredicate: r$9 } = e$8,
-        i$7 = c$1(n$14),
-        a$6 = s$1(t$11);
-      (r$9 && this._startPredicate !== r$9 && (this._startPredicate = r$9),
-        ((t$11 &&
-          (this._listenerOptions.capture !== a$6.capture ||
-            this._listenerOptions.passive === a$6.passive)) ||
-          (n$14 && this._sourceEvents !== i$7)) &&
-          (this.element.removeEventListener(
-            l$1[this._sourceEvents].start,
-            this._onStart,
-            this._listenerOptions,
-          ),
-          this._unbindWindowListeners(),
-          this.cancel(),
-          n$14 && (this._sourceEvents = i$7),
-          t$11 && a$6 && (this._listenerOptions = a$6),
-          this.element.addEventListener(
-            l$1[this._sourceEvents].start,
-            this._onStart,
-            this._listenerOptions,
-          )));
-    }
-    on(e$8, t$11, n$14) {
-      return this._emitter.on(e$8, t$11, n$14);
-    }
-    off(e$8, t$11) {
-      this._emitter.off(e$8, t$11);
-    }
-    destroy() {
-      this.isDestroyed ||
-        ((this.isDestroyed = !0),
-        this.cancel(),
-        this._emitter.emit(e$2.Destroy, { type: e$2.Destroy }),
-        this._emitter.off(),
-        this.element.removeEventListener(
-          l$1[this._sourceEvents].start,
-          this._onStart,
-          this._listenerOptions,
-        ));
-    }
-  };
+    return (
+      i$7.current
+        ? t$4(r$9, a$6.deps) || ((a$6.deps = r$9), (a$6.value = n$14()))
+        : (i$7.current = a$6),
+      a$6.value
+    );
+  }
+  function r$1(e$8, t$11) {
+    return n$1(() => e$8, t$11);
+  }
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-draggable-CMs2hFH6.js
+  function c(c$4, l$4) {
+    let u$4 = n$1(() => c$4.filter((e$8) => !!e$8), [...c$4]),
+      { id: d$1, dndObserver: f$1, ...p$1 } = l$4 || {},
+      m$1 = n$6(),
+      h$1 = f$1 === void 0 ? m$1 : f$1,
+      [g$1, _$2] = (0, import_react.useState)(null),
+      v$2 = (0, import_react.useRef)(null),
+      y$1 = (0, import_react.useRef)(u$4);
+    y$1.current = u$4;
+    let b$1 = (0, import_react.useRef)(d$1),
+      x$1 = (0, import_react.useRef)(l$4),
+      S$1 = (0, import_react.useRef)(h$1),
+      C$1 = (0, import_react.useRef)(d$1);
+    C$1.current = d$1;
+    let w$1 = (0, import_react.useRef)(h$1);
+    w$1.current = h$1;
+    let T$1 = (0, import_react.useRef)(p$1);
+    T$1.current = p$1;
+    let E$2 = r$1(() => {
+        let e$8 = v$2.current;
+        e$8 && (e$8.destroy(), (v$2.current = null), _$2(null));
+      }, []),
+      D$1 = r$1(() => {
+        E$2();
+        let e$8 = y$1.current;
+        if (e$8.length === 0) return;
+        let t$11 = C$1.current,
+          n$14 = w$1.current,
+          r$9 = new B(e$8, {
+            id: t$11,
+            ...(T$1.current || {}),
+          });
+        (n$14?.addDraggables([r$9]),
+          (v$2.current = r$9),
+          (b$1.current = t$11),
+          (x$1.current = T$1.current),
+          (S$1.current = n$14),
+          _$2(r$9));
+      }, [E$2]);
+    return (
+      n(() => {
+        if (!u$4.length) {
+          E$2();
+          return;
+        }
+        let e$8 = v$2.current;
+        if (!e$8) {
+          D$1();
+          return;
+        }
+        (u$4.length !== e$8.sensors.length || u$4.some((t$11) => !e$8.sensors.includes(t$11))) &&
+          D$1();
+      }, [u$4, D$1, E$2]),
+      n(() => {
+        v$2.current && b$1.current !== d$1 && D$1();
+      }, [d$1, D$1]),
+      n(() => {
+        let e$8 = S$1.current;
+        if (e$8 === h$1) return;
+        let t$11 = v$2.current;
+        (t$11 && (e$8?.removeDraggables([t$11]), h$1?.addDraggables([t$11])), (S$1.current = h$1));
+      }, [h$1]),
+      n(() => {
+        let e$8 = v$2.current;
+        e$8 &&
+          (n$9(x$1.current, p$1) || e$8.updateSettings(e$8._parseSettings(p$1)),
+          (x$1.current = p$1));
+      }, [p$1]),
+      n(() => E$2, [E$2]),
+      g$1
+    );
+  }
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-draggable-callback-Cd1g8lnj.js
+  function n$8(n$14, r$9, i$7) {
+    let a$6 = !!i$7,
+      o$5 = (0, import_react.useRef)(i$7);
+    ((o$5.current = i$7),
+      n(() => {
+        if (!n$14 || !a$6) return;
+        let e$8 = n$14.on(r$9, (...e$9) => {
+          o$5.current?.(...e$9);
+        });
+        return () => void n$14.off(r$9, e$8);
+      }, [n$14, r$9, a$6]));
+  }
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-draggable-drag-BekXfPYq.js
+  function r(r$9, i$7 = !1) {
+    let [a$6, o$5] = (0, import_react.useState)(r$9?.drag || null),
+      s$4 = (0, import_react.useState)(void 0)[1];
+    return (
+      n$8(r$9, R.Start, () => {
+        o$5(r$9?.drag || null);
+      }),
+      n$8(r$9, R.Move, () => {
+        i$7 && a$6 && s$4(Symbol());
+      }),
+      n$8(r$9, R.End, () => {
+        o$5(null);
+      }),
+      a$6
+    );
+  }
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-droppable-B1RDSPLw.js
+  function s({ id: s$4, accept: c$4, data: l$4, element: u$4, dndObserver: d$1 } = {}) {
+    let f$1 = n$6(),
+      p$1 = d$1 === void 0 ? f$1 : d$1,
+      [m$1, h$1] = (0, import_react.useState)(null),
+      g$1 = (0, import_react.useRef)(null),
+      _$2 = (0, import_react.useRef)({
+        id: s$4,
+        accept: c$4,
+        data: l$4,
+      });
+    ((_$2.current.id = s$4), (_$2.current.accept = c$4), (_$2.current.data = l$4));
+    let v$2 = (0, import_react.useRef)(s$4),
+      y$1 = (0, import_react.useRef)(p$1);
+    y$1.current = p$1;
+    let b$1 = (0, import_react.useRef)(p$1),
+      x$1 = r$1(() => {
+        let e$8 = g$1.current;
+        e$8 && (e$8.destroy(), (g$1.current = null), h$1(null));
+      }, []),
+      S$1 = r$1(
+        (e$8) => {
+          x$1();
+          let t$11 = y$1.current,
+            n$14 = new n$7(e$8, _$2.current);
+          ((g$1.current = n$14), (v$2.current = _$2.current.id), (b$1.current = t$11), h$1(n$14));
+        },
+        [x$1],
+      ),
+      C$1 = r$1(
+        (e$8) => {
+          if (u$4 !== void 0) return;
+          if (e$8 === null) {
+            x$1();
+            return;
+          }
+          let t$11 = g$1.current;
+          (!t$11 || t$11.element !== e$8) && S$1(e$8);
+        },
+        [u$4, S$1, x$1],
+      );
+    return (
+      n(() => {
+        if (u$4 !== void 0) return (S$1(u$4), x$1);
+      }, [u$4, S$1, x$1]),
+      n(() => {
+        let e$8 = g$1.current;
+        e$8 && v$2.current !== s$4 && S$1(e$8.element);
+      }, [s$4, S$1]),
+      n(() => {
+        let e$8 = b$1.current;
+        if (e$8 === p$1) return;
+        let t$11 = g$1.current;
+        (t$11 && (e$8?.removeDroppables([t$11]), p$1?.addDroppables([t$11])), (b$1.current = p$1));
+      }, [p$1]),
+      n(() => {
+        let e$8 = g$1.current;
+        e$8 && (e$8.accept = c$4 || (() => !0));
+      }, [c$4]),
+      n(() => {
+        let e$8 = g$1.current;
+        e$8 && (e$8.data = l$4 || {});
+      }, [l$4]),
+      n(() => x$1, [x$1]),
+      n$1(() => [m$1, C$1], [m$1, C$1])
+    );
+  }
 
   //#endregion
   //#region ../dragdoll/dist/base-sensor-DVrttP21.js
-  var n$9 = class {
+  var n$5 = class {
     drag;
     isDestroyed;
     _emitter;
@@ -3556,18 +3612,18 @@
     _start(t$11) {
       this.isDestroyed ||
         this.drag ||
-        ((this.drag = this._createDragData(t$11)), this._emitter.emit(e$2.Start, t$11));
+        ((this.drag = this._createDragData(t$11)), this._emitter.emit(e.Start, t$11));
     }
     _move(t$11) {
-      this.drag && (this._updateDragData(t$11), this._emitter.emit(e$2.Move, t$11));
+      this.drag && (this._updateDragData(t$11), this._emitter.emit(e.Move, t$11));
     }
     _end(t$11) {
       this.drag &&
-        (this._updateDragData(t$11), this._emitter.emit(e$2.End, t$11), this._resetDragData());
+        (this._updateDragData(t$11), this._emitter.emit(e.End, t$11), this._resetDragData());
     }
     _cancel(t$11) {
       this.drag &&
-        (this._updateDragData(t$11), this._emitter.emit(e$2.Cancel, t$11), this._resetDragData());
+        (this._updateDragData(t$11), this._emitter.emit(e.Cancel, t$11), this._resetDragData());
     }
     on(e$8, t$11, n$14) {
       return this._emitter.on(e$8, t$11, n$14);
@@ -3578,7 +3634,7 @@
     cancel() {
       this.drag &&
         this._cancel({
-          type: e$2.Cancel,
+          type: e.Cancel,
           x: this.drag.x,
           y: this.drag.y,
         });
@@ -3587,14 +3643,14 @@
       this.isDestroyed ||
         ((this.isDestroyed = !0),
         this.cancel(),
-        this._emitter.emit(e$2.Destroy, { type: e$2.Destroy }),
+        this._emitter.emit(e.Destroy, { type: e.Destroy }),
         this._emitter.off());
     }
   };
 
   //#endregion
   //#region ../dragdoll/dist/base-motion-sensor-QRxjT_GX.js
-  var i$3 = class extends n$9 {
+  var i$3 = class extends n$5 {
     drag;
     _direction;
     _speed;
@@ -3618,13 +3674,13 @@
     _start(n$14) {
       this.isDestroyed ||
         this.drag ||
-        (super._start(n$14), r$6.on(n$8.read, this._tick, this._tick));
+        (super._start(n$14), r$5.on(n$4.read, this._tick, this._tick));
     }
     _end(n$14) {
-      this.drag && (r$6.off(n$8.read, this._tick), super._end(n$14));
+      this.drag && (r$5.off(n$4.read, this._tick), super._end(n$14));
     }
     _cancel(n$14) {
-      this.drag && (r$6.off(n$8.read, this._tick), super._cancel(n$14));
+      this.drag && (r$5.off(n$4.read, this._tick), super._cancel(n$14));
     }
     _tick(e$8) {
       if (this.drag)
@@ -3641,7 +3697,7 @@
             a$6 = this._direction.y * r$9;
           (i$7 || a$6) &&
             this._move({
-              type: e$2.Move,
+              type: e.Move,
               x: this.drag.x + i$7,
               y: this.drag.y + a$6,
             });
@@ -3651,8 +3707,8 @@
 
   //#endregion
   //#region ../dragdoll/dist/keyboard-motion-sensor-BsMzohjd.js
-  const n$7 = [`start`, `cancel`, `end`, `moveLeft`, `moveRight`, `moveUp`, `moveDown`];
-  function r$5(e$8, t$11) {
+  const n$3 = [`start`, `cancel`, `end`, `moveLeft`, `moveRight`, `moveUp`, `moveDown`];
+  function r$4(e$8, t$11) {
     if (!e$8.size || !t$11.size) return Infinity;
     let n$14 = Infinity;
     for (let r$9 of e$8) {
@@ -3683,7 +3739,7 @@
       return null;
     },
   };
-  var a$1 = class extends i$3 {
+  var a$2 = class extends i$3 {
     element;
     _moveKeys;
     _moveKeyTimestamps;
@@ -3761,10 +3817,10 @@
       });
     }
     _updateDirection() {
-      let e$8 = r$5(this._moveLeftKeys, this._moveKeyTimestamps),
-        t$11 = r$5(this._moveRightKeys, this._moveKeyTimestamps),
-        n$14 = r$5(this._moveUpKeys, this._moveKeyTimestamps),
-        i$7 = r$5(this._moveDownKeys, this._moveKeyTimestamps),
+      let e$8 = r$4(this._moveLeftKeys, this._moveKeyTimestamps),
+        t$11 = r$4(this._moveRightKeys, this._moveKeyTimestamps),
+        n$14 = r$4(this._moveUpKeys, this._moveKeyTimestamps),
+        i$7 = r$4(this._moveDownKeys, this._moveKeyTimestamps),
         a$6 = e$8 === t$11 ? 0 : e$8 < t$11 ? -1 : 1,
         o$5 = n$14 === i$7 ? 0 : n$14 < i$7 ? -1 : 1;
       if (!(a$6 === 0 || o$5 === 0)) {
@@ -3787,7 +3843,7 @@
           n$14 &&
             (t$11.preventDefault(),
             this._start({
-              type: e$2.Start,
+              type: e.Start,
               x: n$14.x,
               y: n$14.y,
             }));
@@ -3801,7 +3857,7 @@
       if (this._endKeys.has(t$11.key)) {
         (t$11.preventDefault(),
           this._end({
-            type: e$2.End,
+            type: e.End,
             x: this.drag.x,
             y: this.drag.y,
           }));
@@ -3837,7 +3893,7 @@
             : document.removeEventListener(`visibilitychange`, this._internalCancel)),
         a$6 !== void 0 && (this._startPredicate = a$6),
         o$5 !== void 0 && (this._computeSpeed = o$5),
-        n$7.forEach((n$14, r$10) => {
+        n$3.forEach((n$14, r$10) => {
           let i$8 = `${n$14}Keys`,
             a$7 = e$8[i$8];
           a$7 !== void 0 && ((this[`_${i$8}`] = new Set(a$7)), r$10 >= 3 && (t$11 = !0));
@@ -3869,293 +3925,14 @@
   };
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-dnd-observer-C2wDVvQa.js
-  function a({
-    collisionDetector: a$6,
-    onStart: o$5,
-    onMove: s$4,
-    onEnter: c$4,
-    onLeave: l$4,
-    onCollide: u$4,
-    onEnd: d$1,
-    onAddDraggables: f$1,
-    onRemoveDraggables: p$1,
-    onAddDroppables: m$1,
-    onRemoveDroppables: h$1,
-    onDestroy: g$1,
-  } = {}) {
-    let [_$2, v$2] = (0, import_react.useState)(null);
-    return (
-      n(() => {
-        let e$8 = new u$1({ collisionDetector: a$6 });
-        return (
-          v$2(e$8),
-          () => {
-            (e$8.destroy(), v$2(null));
-          }
-        );
-      }, [a$6]),
-      r$4(l.Start, o$5, _$2),
-      r$4(l.Move, s$4, _$2),
-      r$4(l.Enter, c$4, _$2),
-      r$4(l.Leave, l$4, _$2),
-      r$4(l.Collide, u$4, _$2),
-      r$4(l.End, d$1, _$2),
-      r$4(l.AddDraggables, f$1, _$2),
-      r$4(l.RemoveDraggables, p$1, _$2),
-      r$4(l.AddDroppables, m$1, _$2),
-      r$4(l.RemoveDroppables, h$1, _$2),
-      r$4(l.Destroy, g$1, _$2),
-      _$2
-    );
-  }
-
-  //#endregion
-  //#region ../dragdoll-react/dist/are-configs-equal-Cv4ZY5_I.js
-  const e$1 = Object.prototype.hasOwnProperty,
-    t$4 = (e$8) => {
-      if (typeof e$8 != `object` || !e$8) return !1;
-      let t$11 = Object.getPrototypeOf(e$8);
-      return t$11 === Object.prototype || t$11 === null;
-    };
-  function n$5(r$9, i$7) {
-    if (Object.is(r$9, i$7)) return !0;
-    if (r$9 === null || i$7 === null || typeof r$9 != `object` || typeof i$7 != `object`) return !1;
-    let a$6 = Array.isArray(r$9),
-      o$5 = Array.isArray(i$7);
-    if (a$6 || o$5) {
-      if (!a$6 || !o$5) return !1;
-      let e$8 = r$9.length;
-      if (e$8 !== i$7.length) return !1;
-      for (let t$11 = 0; t$11 < e$8; t$11++) if (!n$5(r$9[t$11], i$7[t$11])) return !1;
-      return !0;
-    }
-    let s$4 = r$9 instanceof Set,
-      c$4 = i$7 instanceof Set;
-    if (s$4 || c$4) return !s$4 || !c$4 || r$9.size !== i$7.size ? !1 : r$9.isSubsetOf(i$7);
-    if (!t$4(r$9) || !t$4(i$7)) return !1;
-    let l$4 = Object.keys(r$9),
-      u$4 = Object.keys(i$7);
-    if (l$4.length !== u$4.length) return !1;
-    for (let t$11 = 0; t$11 < l$4.length; t$11++) {
-      let a$7 = l$4[t$11];
-      if (!e$1.call(i$7, a$7) || !n$5(r$9[a$7], i$7[a$7])) return !1;
-    }
-    return !0;
-  }
-
-  //#endregion
-  //#region ../dragdoll-react/dist/use-callback-stable-CtO9rJmq.js
-  function t$3(e$8, t$11) {
-    if (e$8 === t$11) return !0;
-    if (e$8.length !== t$11.length) return !1;
-    for (let n$14 = 0; n$14 < e$8.length; n$14++) if (!Object.is(e$8[n$14], t$11[n$14])) return !1;
-    return !0;
-  }
-  function n$1(n$14, r$9) {
-    let i$7 = (0, import_react.useRef)(null),
-      a$6 = i$7.current || {
-        deps: r$9,
-        value: n$14(),
-      };
-    return (
-      i$7.current
-        ? t$3(r$9, a$6.deps) || ((a$6.deps = r$9), (a$6.value = n$14()))
-        : (i$7.current = a$6),
-      a$6.value
-    );
-  }
-  function r$1(e$8, t$11) {
-    return n$1(() => e$8, t$11);
-  }
-
-  //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-B_WlZ0op.js
-  function c(c$4, l$4) {
-    let u$4 = n$1(() => c$4.filter((e$8) => !!e$8), [...c$4]),
-      { id: d$1, dndObserver: f$1, ...p$1 } = l$4 || {},
-      m$1 = n$2(),
-      h$1 = f$1 === void 0 ? m$1 : f$1,
-      [g$1, _$2] = (0, import_react.useState)(null),
-      v$2 = (0, import_react.useRef)(null),
-      y$1 = (0, import_react.useRef)(u$4);
-    y$1.current = u$4;
-    let b$1 = (0, import_react.useRef)(d$1),
-      x$1 = (0, import_react.useRef)(l$4),
-      S$1 = (0, import_react.useRef)(h$1),
-      C$1 = (0, import_react.useRef)(d$1);
-    C$1.current = d$1;
-    let w$1 = (0, import_react.useRef)(h$1);
-    w$1.current = h$1;
-    let T$1 = (0, import_react.useRef)(p$1);
-    T$1.current = p$1;
-    let E$2 = r$1(() => {
-        let e$8 = v$2.current;
-        e$8 && (e$8.destroy(), (v$2.current = null), _$2(null));
-      }, []),
-      D$1 = r$1(() => {
-        E$2();
-        let e$8 = y$1.current;
-        if (e$8.length === 0) return;
-        let t$11 = C$1.current,
-          n$14 = w$1.current,
-          r$9 = new B(e$8, {
-            id: t$11,
-            ...(T$1.current || {}),
-          });
-        (n$14?.addDraggables([r$9]),
-          (v$2.current = r$9),
-          (b$1.current = t$11),
-          (x$1.current = T$1.current),
-          (S$1.current = n$14),
-          _$2(r$9));
-      }, [E$2]);
-    return (
-      n(() => {
-        if (!u$4.length) {
-          E$2();
-          return;
-        }
-        let e$8 = v$2.current;
-        if (!e$8) {
-          D$1();
-          return;
-        }
-        (u$4.length !== e$8.sensors.length || u$4.some((t$11) => !e$8.sensors.includes(t$11))) &&
-          D$1();
-      }, [u$4, D$1, E$2]),
-      n(() => {
-        v$2.current && b$1.current !== d$1 && D$1();
-      }, [d$1, D$1]),
-      n(() => {
-        let e$8 = S$1.current;
-        if (e$8 === h$1) return;
-        let t$11 = v$2.current;
-        (t$11 && (e$8?.removeDraggables([t$11]), h$1?.addDraggables([t$11])), (S$1.current = h$1));
-      }, [h$1]),
-      n(() => {
-        let e$8 = v$2.current;
-        e$8 &&
-          (n$5(x$1.current, p$1) || e$8.updateSettings(e$8._parseSettings(p$1)),
-          (x$1.current = p$1));
-      }, [p$1]),
-      n(() => E$2, [E$2]),
-      g$1
-    );
-  }
-
-  //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-callback-Cd1g8lnj.js
-  function n$4(n$14, r$9, i$7) {
-    let a$6 = !!i$7,
-      o$5 = (0, import_react.useRef)(i$7);
-    ((o$5.current = i$7),
-      n(() => {
-        if (!n$14 || !a$6) return;
-        let e$8 = n$14.on(r$9, (...e$9) => {
-          o$5.current?.(...e$9);
-        });
-        return () => void n$14.off(r$9, e$8);
-      }, [n$14, r$9, a$6]));
-  }
-
-  //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-drag-cqJKOXjJ.js
-  function r(r$9, i$7 = !1) {
-    let [a$6, o$5] = (0, import_react.useState)(r$9?.drag || null),
-      s$4 = (0, import_react.useState)(void 0)[1];
-    return (
-      n$4(r$9, R.Start, () => {
-        o$5(r$9?.drag || null);
-      }),
-      n$4(r$9, R.Move, () => {
-        i$7 && a$6 && s$4(Symbol());
-      }),
-      n$4(r$9, R.End, () => {
-        o$5(null);
-      }),
-      a$6
-    );
-  }
-
-  //#endregion
-  //#region ../dragdoll-react/dist/use-droppable-Bfgenc05.js
-  function s({ id: s$4, accept: c$4, data: l$4, element: u$4, dndObserver: d$1 } = {}) {
-    let f$1 = n$2(),
-      p$1 = d$1 === void 0 ? f$1 : d$1,
-      [m$1, h$1] = (0, import_react.useState)(null),
-      g$1 = (0, import_react.useRef)(null),
-      _$2 = (0, import_react.useRef)({
-        id: s$4,
-        accept: c$4,
-        data: l$4,
-      });
-    ((_$2.current.id = s$4), (_$2.current.accept = c$4), (_$2.current.data = l$4));
-    let v$2 = (0, import_react.useRef)(s$4),
-      y$1 = (0, import_react.useRef)(p$1);
-    y$1.current = p$1;
-    let b$1 = (0, import_react.useRef)(p$1),
-      x$1 = r$1(() => {
-        let e$8 = g$1.current;
-        e$8 && (e$8.destroy(), (g$1.current = null), h$1(null));
-      }, []),
-      S$1 = r$1(
-        (e$8) => {
-          x$1();
-          let t$11 = y$1.current,
-            n$14 = new n$3(e$8, _$2.current);
-          ((g$1.current = n$14), (v$2.current = _$2.current.id), (b$1.current = t$11), h$1(n$14));
-        },
-        [x$1],
-      ),
-      C$1 = r$1(
-        (e$8) => {
-          if (u$4 !== void 0) return;
-          if (e$8 === null) {
-            x$1();
-            return;
-          }
-          let t$11 = g$1.current;
-          (!t$11 || t$11.element !== e$8) && S$1(e$8);
-        },
-        [u$4, S$1, x$1],
-      );
-    return (
-      n(() => {
-        if (u$4 !== void 0) return (S$1(u$4), x$1);
-      }, [u$4, S$1, x$1]),
-      n(() => {
-        let e$8 = g$1.current;
-        e$8 && v$2.current !== s$4 && S$1(e$8.element);
-      }, [s$4, S$1]),
-      n(() => {
-        let e$8 = b$1.current;
-        if (e$8 === p$1) return;
-        let t$11 = g$1.current;
-        (t$11 && (e$8?.removeDroppables([t$11]), p$1?.addDroppables([t$11])), (b$1.current = p$1));
-      }, [p$1]),
-      n(() => {
-        let e$8 = g$1.current;
-        e$8 && (e$8.accept = c$4 || (() => !0));
-      }, [c$4]),
-      n(() => {
-        let e$8 = g$1.current;
-        e$8 && (e$8.data = l$4 || {});
-      }, [l$4]),
-      n(() => x$1, [x$1]),
-      n$1(() => [m$1, C$1], [m$1, C$1])
-    );
-  }
-
-  //#endregion
-  //#region ../dragdoll-react/dist/use-keyboard-motion-sensor-B0wbimu8.js
+  //#region ../dragdoll-react/dist/use-keyboard-motion-sensor-BtTbO_79.js
   function o(o$5 = {}, s$4) {
     let [c$4, l$4] = (0, import_react.useState)(null),
       u$4 = (0, import_react.useRef)(c$4),
       d$1 = (0, import_react.useRef)(o$5),
       f$1 = r$1((e$8) => {
         u$4.current?.destroy();
-        let t$11 = new a$1(e$8, d$1.current);
+        let t$11 = new a$2(e$8, d$1.current);
         ((u$4.current = t$11), l$4(t$11));
       }, []),
       p$1 = r$1(() => {
@@ -4186,7 +3963,228 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-pointer-sensor-_yqecFSk.js
+  //#region ../dragdoll/dist/pointer-sensor-D3DHn381.js
+  function i$1(e$8, t$11) {
+    if (`pointerId` in e$8) return e$8.pointerId === t$11 ? e$8 : null;
+    if (`changedTouches` in e$8) {
+      let n$14 = 0;
+      for (; n$14 < e$8.changedTouches.length; n$14++)
+        if (e$8.changedTouches[n$14].identifier === t$11) return e$8.changedTouches[n$14];
+      return null;
+    }
+    return e$8;
+  }
+  function a$1(e$8) {
+    return `pointerId` in e$8
+      ? e$8.pointerId
+      : `changedTouches` in e$8
+        ? e$8.changedTouches[0]
+          ? e$8.changedTouches[0].identifier
+          : null
+        : -1;
+  }
+  function o$2(e$8) {
+    return `pointerType` in e$8 ? e$8.pointerType : `touches` in e$8 ? `touch` : `mouse`;
+  }
+  function s$1(e$8 = {}) {
+    let { capture: t$11 = !0, passive: n$14 = !0 } = e$8;
+    return {
+      capture: t$11,
+      passive: n$14,
+    };
+  }
+  function c$1(n$14) {
+    return n$14 === `auto` || n$14 === void 0 ? (n$2 ? `pointer` : t$1 ? `touch` : `mouse`) : n$14;
+  }
+  const l = {
+    pointer: {
+      start: `pointerdown`,
+      move: `pointermove`,
+      cancel: `pointercancel`,
+      end: `pointerup`,
+    },
+    touch: {
+      start: `touchstart`,
+      move: `touchmove`,
+      cancel: `touchcancel`,
+      end: `touchend`,
+    },
+    mouse: {
+      start: `mousedown`,
+      move: `mousemove`,
+      cancel: ``,
+      end: `mouseup`,
+    },
+  };
+  var u = class {
+    element;
+    drag;
+    isDestroyed;
+    _startPredicate;
+    _listenerOptions;
+    _sourceEvents;
+    _areWindowListenersBound;
+    _emitter;
+    constructor(e$8, t$11 = {}) {
+      let {
+        listenerOptions: n$14 = {},
+        sourceEvents: i$7 = `auto`,
+        startPredicate: a$6 = (e$9) => !(`button` in e$9 && e$9.button > 0),
+      } = t$11;
+      ((this.element = e$8),
+        (this.drag = null),
+        (this.isDestroyed = !1),
+        (this._areWindowListenersBound = !1),
+        (this._startPredicate = a$6),
+        (this._listenerOptions = s$1(n$14)),
+        (this._sourceEvents = c$1(i$7)),
+        (this._emitter = new v()),
+        (this._onStart = this._onStart.bind(this)),
+        (this._onMove = this._onMove.bind(this)),
+        (this._onCancel = this._onCancel.bind(this)),
+        (this._onEnd = this._onEnd.bind(this)),
+        e$8.addEventListener(l[this._sourceEvents].start, this._onStart, this._listenerOptions));
+    }
+    _getTrackedPointerEventData(e$8) {
+      return this.drag ? i$1(e$8, this.drag.pointerId) : null;
+    }
+    _onStart(e$8) {
+      if (this.isDestroyed || this.drag || !this._startPredicate(e$8)) return;
+      let t$11 = a$1(e$8);
+      if (t$11 === null) return;
+      let r$9 = i$1(e$8, t$11);
+      if (r$9 === null) return;
+      let s$4 = {
+        pointerId: t$11,
+        pointerType: o$2(e$8),
+        x: r$9.clientX,
+        y: r$9.clientY,
+      };
+      this.drag = s$4;
+      let c$4 = {
+        ...s$4,
+        type: e.Start,
+        srcEvent: e$8,
+        target: r$9.target,
+      };
+      (this._emitter.emit(c$4.type, c$4), this.drag && this._bindWindowListeners());
+    }
+    _onMove(e$8) {
+      if (!this.drag) return;
+      let t$11 = this._getTrackedPointerEventData(e$8);
+      if (!t$11) return;
+      ((this.drag.x = t$11.clientX), (this.drag.y = t$11.clientY));
+      let r$9 = {
+        type: e.Move,
+        srcEvent: e$8,
+        target: t$11.target,
+        ...this.drag,
+      };
+      this._emitter.emit(r$9.type, r$9);
+    }
+    _onCancel(e$8) {
+      if (!this.drag) return;
+      let t$11 = this._getTrackedPointerEventData(e$8);
+      if (!t$11) return;
+      ((this.drag.x = t$11.clientX), (this.drag.y = t$11.clientY));
+      let r$9 = {
+        type: e.Cancel,
+        srcEvent: e$8,
+        target: t$11.target,
+        ...this.drag,
+      };
+      (this._emitter.emit(r$9.type, r$9), this._resetDrag());
+    }
+    _onEnd(e$8) {
+      if (!this.drag) return;
+      let t$11 = this._getTrackedPointerEventData(e$8);
+      if (!t$11) return;
+      ((this.drag.x = t$11.clientX), (this.drag.y = t$11.clientY));
+      let r$9 = {
+        type: e.End,
+        srcEvent: e$8,
+        target: t$11.target,
+        ...this.drag,
+      };
+      (this._emitter.emit(r$9.type, r$9), this._resetDrag());
+    }
+    _bindWindowListeners() {
+      if (this._areWindowListenersBound) return;
+      let { move: e$8, end: t$11, cancel: n$14 } = l[this._sourceEvents];
+      (window.addEventListener(e$8, this._onMove, this._listenerOptions),
+        window.addEventListener(t$11, this._onEnd, this._listenerOptions),
+        n$14 && window.addEventListener(n$14, this._onCancel, this._listenerOptions),
+        (this._areWindowListenersBound = !0));
+    }
+    _unbindWindowListeners() {
+      if (this._areWindowListenersBound) {
+        let { move: e$8, end: t$11, cancel: n$14 } = l[this._sourceEvents];
+        (window.removeEventListener(e$8, this._onMove, this._listenerOptions),
+          window.removeEventListener(t$11, this._onEnd, this._listenerOptions),
+          n$14 && window.removeEventListener(n$14, this._onCancel, this._listenerOptions),
+          (this._areWindowListenersBound = !1));
+      }
+    }
+    _resetDrag() {
+      ((this.drag = null), this._unbindWindowListeners());
+    }
+    cancel() {
+      if (!this.drag) return;
+      let e$8 = {
+        type: e.Cancel,
+        srcEvent: null,
+        target: null,
+        ...this.drag,
+      };
+      (this._emitter.emit(e$8.type, e$8), this._resetDrag());
+    }
+    updateSettings(e$8) {
+      if (this.isDestroyed) return;
+      let { listenerOptions: t$11, sourceEvents: n$14, startPredicate: r$9 } = e$8,
+        i$7 = c$1(n$14),
+        a$6 = s$1(t$11);
+      (r$9 && this._startPredicate !== r$9 && (this._startPredicate = r$9),
+        ((t$11 &&
+          (this._listenerOptions.capture !== a$6.capture ||
+            this._listenerOptions.passive === a$6.passive)) ||
+          (n$14 && this._sourceEvents !== i$7)) &&
+          (this.element.removeEventListener(
+            l[this._sourceEvents].start,
+            this._onStart,
+            this._listenerOptions,
+          ),
+          this._unbindWindowListeners(),
+          this.cancel(),
+          n$14 && (this._sourceEvents = i$7),
+          t$11 && a$6 && (this._listenerOptions = a$6),
+          this.element.addEventListener(
+            l[this._sourceEvents].start,
+            this._onStart,
+            this._listenerOptions,
+          )));
+    }
+    on(e$8, t$11, n$14) {
+      return this._emitter.on(e$8, t$11, n$14);
+    }
+    off(e$8, t$11) {
+      this._emitter.off(e$8, t$11);
+    }
+    destroy() {
+      this.isDestroyed ||
+        ((this.isDestroyed = !0),
+        this.cancel(),
+        this._emitter.emit(e.Destroy, { type: e.Destroy }),
+        this._emitter.off(),
+        this.element.removeEventListener(
+          l[this._sourceEvents].start,
+          this._onStart,
+          this._listenerOptions,
+        ));
+    }
+  };
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-pointer-sensor-BIU5uieJ.js
   function o$1(o$5 = {}, s$4) {
     let [c$4, l$4] = (0, import_react.useState)(null),
       u$4 = (0, import_react.useRef)(c$4),

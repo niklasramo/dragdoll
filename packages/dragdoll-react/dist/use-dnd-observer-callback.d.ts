@@ -1,2 +1,2 @@
-import { t as useDndObserverCallback } from "./use-dnd-observer-callback-k0BulFFz.js";
+import { t as useDndObserverCallback } from "./use-dnd-observer-callback-A5-tWFB5.js";
 export { useDndObserverCallback };

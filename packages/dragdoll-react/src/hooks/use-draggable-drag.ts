@@ -1,5 +1,5 @@
-import type { Sensor } from 'dragdoll';
-import { Draggable, DraggableDrag, DraggableEventType } from 'dragdoll';
+import { Draggable, DraggableDrag, DraggableEventType } from 'dragdoll/draggable';
+import type { Sensor } from 'dragdoll/sensors';
 import { useState } from 'react';
 import { useDraggableCallback } from './use-draggable-callback.js';
 

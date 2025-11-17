@@ -28,14 +28,14 @@ function DraggableBox() {
 
   // Note that you don't have to memoize the callback, it's handled internally
   // in a stable and performant way.
-  useDraggableCallback(draggable, DraggableEventType.Start, (event) => {
-    console.log('Drag started', event);
+  useDraggableCallback(draggable, DraggableEventType.Start, (drag, draggable) => {
+    console.log('Drag started', drag, draggable);
   });
-  useDraggableCallback(draggable, DraggableEventType.Move, (event) => {
-    console.log('Drag moved', event);
+  useDraggableCallback(draggable, DraggableEventType.Move, (drag, draggable) => {
+    console.log('Drag moved', drag, draggable);
   });
-  useDraggableCallback(draggable, DraggableEventType.End, (event) => {
-    console.log('Drag ended', event);
+  useDraggableCallback(draggable, DraggableEventType.End, (drag, draggable) => {
+    console.log('Drag ended', drag, draggable);
   });
 
   return (
@@ -54,9 +54,7 @@ function DraggableBox() {
 ```ts
 function useDraggableCallback<
   S extends Sensor[] = Sensor[],
-  K extends keyof DraggableEventCallbacks<SensorsEventsType<S>> = keyof DraggableEventCallbacks<
-    SensorsEventsType<S>
-  >,
+  K extends keyof DraggableEventCallbacks<S> = keyof DraggableEventCallbacks<S>,
 >(draggable: Draggable<S> | null, eventType: K, callback?: DraggableEventCallback<S, K>): void;
 ```
 
@@ -75,7 +73,7 @@ The [`Draggable`](/draggable) instance to attach the listener to. Can be `null` 
 ### eventType
 
 ```ts
-type eventType = keyof DraggableEventCallbacks<SensorsEventsType<S>>;
+type eventType = keyof DraggableEventCallbacks<S>;
 ```
 
 The event type to listen for. See [Draggable events](/draggable.html#events) for the available event names.

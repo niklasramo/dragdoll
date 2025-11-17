@@ -1,1 +1,1 @@
-import"./use-isomorphic-layout-effect-D2LtpjJM.js";import"./use-callback-stable-CtO9rJmq.js";import{t as e}from"./use-keyboard-motion-sensor-B0wbimu8.js";export{e as useKeyboardMotionSensor};
+import"./use-isomorphic-layout-effect-D2LtpjJM.js";import"./use-callback-stable-CtO9rJmq.js";import{t as e}from"./use-keyboard-motion-sensor-BtTbO_79.js";export{e as useKeyboardMotionSensor};

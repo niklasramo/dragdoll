@@ -1,5 +1,5 @@
-import type { KeyboardSensorEvents, KeyboardSensorSettings } from 'dragdoll';
-import { KeyboardSensor } from 'dragdoll';
+import type { KeyboardSensorEvents, KeyboardSensorSettings } from 'dragdoll/sensors/keyboard';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { useRef, useState } from 'react';
 import { useCallbackStable } from './use-callback-stable.js';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';

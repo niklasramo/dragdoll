@@ -1,5 +1,5 @@
-import type { CollisionData } from 'dragdoll';
-import { DndObserver, DndObserverEventCallbacks } from 'dragdoll';
+import { DndObserver, DndObserverEventCallbacks } from 'dragdoll/dnd-observer';
+import type { CollisionData } from 'dragdoll/dnd-observer/collision-detector';
 import { useRef } from 'react';
 import { useDndObserverContext } from './use-dnd-observer-context.js';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';

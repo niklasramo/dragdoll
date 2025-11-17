@@ -1,5 +1,7 @@
-import type { Draggable, DraggableAutoScrollOptions, DraggablePluginMap, Sensor } from 'dragdoll';
-import { autoScrollPlugin } from 'dragdoll';
+import type { Draggable, DraggablePluginMap } from 'dragdoll/draggable';
+import type { DraggableAutoScrollOptions } from 'dragdoll/draggable/plugins/auto-scroll';
+import { autoScrollPlugin } from 'dragdoll/draggable/plugins/auto-scroll';
+import type { Sensor } from 'dragdoll/sensors';
 import { useRef } from 'react';
 import { areConfigsEqual } from '../utils/are-configs-equal.js';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';

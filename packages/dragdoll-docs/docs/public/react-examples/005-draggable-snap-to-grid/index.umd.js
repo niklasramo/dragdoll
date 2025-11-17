@@ -527,7 +527,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll/dist/draggable-CUeOOVDR.js
+  //#region ../dragdoll/dist/draggable-BbMg6mSD.js
   function s$1(e$8, t$10) {
     return e$8.isIdentity && t$10.isIdentity
       ? !0
@@ -1201,7 +1201,7 @@
           }) || []
         ).map((e$9) => new O(e$9, this))),
         this._applyModifiers(F.Start, 0, 0),
-        this._emit(R.PrepareStart, e$8.startEvent),
+        this._emit(R.PrepareStart, e$8, this),
         this.settings.onPrepareStart?.(e$8, this),
         (this._startPhase = N.FinishPrepare));
     }
@@ -1237,7 +1237,7 @@
             });
         }
         (window.addEventListener(`scroll`, this._onScroll, k),
-          this._emit(R.Start, e$8.startEvent),
+          this._emit(R.Start, e$8, this),
           this.settings.onStart?.(e$8, this),
           (this._startPhase = N.FinishApply));
       }
@@ -1248,7 +1248,7 @@
       let { moveEvent: t$10, prevMoveEvent: n$10 } = e$8;
       t$10 !== n$10 &&
         (this._applyModifiers(F.Move, t$10.x - n$10.x, t$10.y - n$10.y),
-        this._emit(R.PrepareMove, t$10),
+        this._emit(R.PrepareMove, e$8, this),
         !e$8.isEnded &&
           (this.settings.onPrepareMove?.(e$8, this), !e$8.isEnded && (e$8.prevMoveEvent = t$10)));
     }
@@ -1264,7 +1264,7 @@
               drag: e$8,
               item: t$10,
             }));
-        (this._emit(R.Move, e$8.moveEvent), !e$8.isEnded && this.settings.onMove?.(e$8, this));
+        (this._emit(R.Move, e$8, this), !e$8.isEnded && this.settings.onMove?.(e$8, this));
       }
     }
     _prepareAlign() {
@@ -1394,7 +1394,7 @@
               drag: n$10,
               item: e$8,
             });
-        (this._emit(R.End, n$10.endEvent), this.settings.onEnd?.(n$10, this), (this.drag = null));
+        (this._emit(R.End, n$10, this), this.settings.onEnd?.(n$10, this), (this.drag = null));
       }
     }
     align(n$10 = !1) {
@@ -3243,7 +3243,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-B_WlZ0op.js
+  //#region ../dragdoll-react/dist/use-draggable-CMs2hFH6.js
   function c(c$3, l$3) {
     let u$3 = n$2(() => c$3.filter((e$8) => !!e$8), [...c$3]),
       { id: d$1, dndObserver: f$1, ...p$1 } = l$3 || {},
@@ -3333,7 +3333,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-drag-cqJKOXjJ.js
+  //#region ../dragdoll-react/dist/use-draggable-drag-BekXfPYq.js
   function r(r$7, i$3 = !1) {
     let [a$2, o$5] = (0, import_react.useState)(r$7?.drag || null),
       s$2 = (0, import_react.useState)(void 0)[1];
@@ -3352,7 +3352,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-keyboard-sensor-CEuoAT1c.js
+  //#region ../dragdoll-react/dist/use-keyboard-sensor-DWCsRP10.js
   function o(o$5 = {}, s$2) {
     let [c$3, l$3] = (0, import_react.useState)(null),
       u$3 = (0, import_react.useRef)(c$3),
@@ -3390,7 +3390,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-pointer-sensor-_yqecFSk.js
+  //#region ../dragdoll-react/dist/use-pointer-sensor-BIU5uieJ.js
   function o$1(o$5 = {}, s$2) {
     let [c$3, l$3] = (0, import_react.useState)(null),
       u$3 = (0, import_react.useRef)(c$3),

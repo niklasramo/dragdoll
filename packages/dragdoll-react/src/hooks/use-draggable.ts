@@ -1,5 +1,7 @@
-import type { DndObserver, DraggableOptions, Sensor } from 'dragdoll';
-import { Draggable } from 'dragdoll';
+import type { DndObserver } from 'dragdoll/dnd-observer';
+import type { DraggableOptions } from 'dragdoll/draggable';
+import { Draggable } from 'dragdoll/draggable';
+import type { Sensor } from 'dragdoll/sensors';
 import { useRef, useState } from 'react';
 import { areConfigsEqual } from '../utils/are-configs-equal.js';
 import { useCallbackStable } from './use-callback-stable.js';

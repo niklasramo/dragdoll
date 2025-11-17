@@ -349,9 +349,9 @@ Is the Draggable instance destroyed or not?
 ### on
 
 ```ts
-type on<T extends keyof DraggableEventCallbacks<SensorsEventsType<S>>> = (
+type on<T extends keyof DraggableEventCallbacks<S>> = (
   type: T,
-  listener: DraggableEventCallbacks<SensorsEventsType<S>>[T],
+  listener: DraggableEventCallbacks<S>[T],
   listenerId?: SensorEventListenerId,
 ) => SensorEventListenerId;
 
@@ -368,7 +368,7 @@ Please check the [Events](#events) section for more information about the events
 ### off
 
 ```ts
-type off<T extends keyof DraggableEventCallbacks<SensorsEventsType<S>>> = (
+type off<T extends keyof DraggableEventCallbacks<S>> = (
   type: T,
   listenerId: SensorEventListenerId,
 ) => void;
@@ -485,7 +485,7 @@ The listener functions receive the sensor event that triggered the Draggable eve
 ### preparestart
 
 ```ts
-type preparestart = DraggableEventCallbacks['preparestart'];
+type preparestart = (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
 ```
 
 Emitted at the end of the drag start preparation phase, just before the [`onPrepareStart`](#onpreparestart) callback is called.
@@ -494,13 +494,16 @@ The start preparation phase is called during the read phase of the ticker and is
 
 **Parameters:**
 
-1. **`event`**
-   — Sensor event that resolved the start predicate (`'start'` or `'move'`).
+1. **`drag`**
+   — The drag data.
+   - You can read the [`drag.startEvent`](/draggable-drag#startevent) from the drag data, which is the sensor event that started the drag.
+2. **`draggable`**
+   — The draggable instance.
 
 ### start
 
 ```ts
-type start = DraggableEventCallbacks['start'];
+type start = (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
 ```
 
 Emitted at the end of the drag start apply phase, just before the [`onStart`](#onstart) callback is called.
@@ -509,13 +512,16 @@ The start apply phase is called during the write phase of the ticker and is inte
 
 **Parameters:**
 
-1. **`event`**
-   — Sensor event that initiated the drag (`'start'` or `'move'`).
+1. **`drag`**
+   — The drag data.
+   - You can read the [`drag.startEvent`](/draggable-drag#startevent) from the drag data, which is the sensor event that started the drag.
+2. **`draggable`**
+   — The draggable instance.
 
 ### preparemove
 
 ```ts
-type preparemove = DraggableEventCallbacks['preparemove'];
+type preparemove = (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
 ```
 
 Emitted at the end of the drag move preparation phase, just before the [`onPrepareMove`](#onpreparemove) callback is called.
@@ -524,13 +530,16 @@ The move preparation phase is called during the read phase of the ticker and is 
 
 **Parameters:**
 
-1. **`event`**
-   — Sensor `move` event.
+1. **`drag`**
+   — The drag data.
+   - You can read the [`drag.moveEvent`](/draggable-drag#moveevent) from the drag data, which is the sensor event that caused this event to be emitted.
+2. **`draggable`**
+   — The draggable instance.
 
 ### move
 
 ```ts
-type move = DraggableEventCallbacks['move'];
+type move = (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
 ```
 
 Emitted at the end of the drag move apply phase, just before the [`onMove`](#onmove) callback is called.
@@ -539,13 +548,16 @@ The move apply phase is called during the write phase of the ticker and is inten
 
 **Parameters:**
 
-1. **`event`**
-   — Sensor `move` event.
+1. **`drag`**
+   — The drag data.
+   - You can read the [`drag.moveEvent`](/draggable-drag#moveevent) from the drag data, which is the sensor event that caused this event to be emitted.
+2. **`draggable`**
+   — The draggable instance.
 
 ### end
 
 ```ts
-type end = DraggableEventCallbacks['end'];
+type end = (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
 ```
 
 Emitted at the end of the drag end procedure, just before the [`onEnd`](#onend) callback is called.
@@ -554,17 +566,20 @@ The end procedure is called synchronously after the drag ends and is intended fo
 
 **Parameters:**
 
-1. **`event`**
-   — Sensor `end`, `cancel` or `destroy` event.
-   - The only time the `event` argument will be `null` is if the drag was stopped programmatically using [`stop`](#stop) method without a sensor event.
+1. **`drag`**
+   — The drag data.
+   - You can read the [`drag.endEvent`](/draggable-drag#endevent) from the drag data, which is the sensor event that caused this event to be emitted.
+   - The `drag.endEvent` will be `null` if the drag was stopped programmatically using [`stop`](#stop) method without a sensor event.
+2. **`draggable`**
+   — The draggable instance.
 
 ### destroy
 
 ```ts
-type destroy = DraggableEventCallbacks['destroy'];
+type destroy = () => void;
 ```
 
-Emitted when the Draggable instance is destroyed via [`destroy`](#destroy) method. The listener function receives no parameters.
+Emitted when the Draggable instance is destroyed via [`destroy`](#destroy) method.
 
 ## Exports
 
@@ -826,12 +841,12 @@ type DraggableEventType = 'preparestart' | 'start' | 'preparemove' | 'move' | 'e
 import type { DraggableEventCallbacks } from 'dragdoll/draggable';
 
 // Interface
-interface DraggableEventCallbacks<E extends SensorEvents> {
-  [DraggableEventType.PrepareStart]: (event: E['start'] | E['move']) => void;
-  [DraggableEventType.Start]: (event: E['start'] | E['move']) => void;
-  [DraggableEventType.PrepareMove]: (event: E['move']) => void;
-  [DraggableEventType.Move]: (event: E['move']) => void;
-  [DraggableEventType.End]: (event: E['end'] | E['cancel'] | E['destroy'] | null) => void;
+interface DraggableEventCallbacks<S extends Sensor[]> {
+  [DraggableEventType.PrepareStart]: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
+  [DraggableEventType.Start]: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
+  [DraggableEventType.PrepareMove]: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
+  [DraggableEventType.Move]: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
+  [DraggableEventType.End]: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
   [DraggableEventType.Destroy]: () => void;
 }
 ```
@@ -844,7 +859,7 @@ import type { DraggableEventCallback } from 'dragdoll/draggable';
 
 // Type
 type DraggableEventCallback<
-  S extends Sensor[],
-  T extends keyof DraggableEventCallbacks<SensorsEventsType<S>>,
-> = DraggableEventCallbacks<SensorsEventsType<S>>[T];
+  S extends Sensor[] = Sensor[],
+  K extends keyof DraggableEventCallbacks<S> = keyof DraggableEventCallbacks<S>,
+> = DraggableEventCallbacks<S>[K];
 ```

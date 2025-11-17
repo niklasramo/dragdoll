@@ -1,4 +1,5 @@
-import type { CollisionData, DndObserver } from 'dragdoll';
+import type { DndObserver } from 'dragdoll/dnd-observer';
+import type { CollisionData } from 'dragdoll/dnd-observer/collision-detector';
 import { useContext } from 'react';
 import { DndObserverContext } from '../contexts/dnd-observer-context.js';
 

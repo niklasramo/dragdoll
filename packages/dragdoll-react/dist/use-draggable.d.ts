@@ -1,2 +1,2 @@
-import { n as useDraggable, t as UseDraggableSettings } from "./use-draggable-CjljwVR2.js";
+import { n as useDraggable, t as UseDraggableSettings } from "./use-draggable-BJB26Zie.js";
 export { UseDraggableSettings, useDraggable };

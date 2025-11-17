@@ -1,5 +1,5 @@
-import type { PointerSensorEvents, PointerSensorSettings } from 'dragdoll';
-import { PointerSensor } from 'dragdoll';
+import type { PointerSensorEvents, PointerSensorSettings } from 'dragdoll/sensors/pointer';
+import { PointerSensor } from 'dragdoll/sensors/pointer';
 import { useRef, useState } from 'react';
 import { useCallbackStable } from './use-callback-stable.js';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';

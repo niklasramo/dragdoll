@@ -1,2 +1,2 @@
-import { t as DndObserverContext } from "./dnd-observer-context-Bj87cvsc.js";
+import { t as DndObserverContext } from "./dnd-observer-context-DgXQhc5k.js";
 export { DndObserverContext };

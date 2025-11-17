@@ -994,7 +994,7 @@ function getOffsetContainer(n$5, t$5 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-CUeOOVDR.js
+//#region ../dragdoll/dist/draggable-BbMg6mSD.js
 function s$2(e$5, t$5) {
 	return e$5.isIdentity && t$5.isIdentity ? !0 : e$5.is2D && t$5.is2D ? e$5.a === t$5.a && e$5.b === t$5.b && e$5.c === t$5.c && e$5.d === t$5.d && e$5.e === t$5.e && e$5.f === t$5.f : e$5.m11 === t$5.m11 && e$5.m12 === t$5.m12 && e$5.m13 === t$5.m13 && e$5.m14 === t$5.m14 && e$5.m21 === t$5.m21 && e$5.m22 === t$5.m22 && e$5.m23 === t$5.m23 && e$5.m24 === t$5.m24 && e$5.m31 === t$5.m31 && e$5.m32 === t$5.m32 && e$5.m33 === t$5.m33 && e$5.m34 === t$5.m34 && e$5.m41 === t$5.m41 && e$5.m42 === t$5.m42 && e$5.m43 === t$5.m43 && e$5.m44 === t$5.m44;
 }
@@ -1400,7 +1400,7 @@ var B = class {
 		!e$5 || this._startPhase !== N$1.Init || (this._startPhase = N$1.Prepare, e$5.items = (this.settings.elements({
 			draggable: this,
 			drag: e$5
-		}) || []).map((e$6) => new O(e$6, this)), this._applyModifiers(F.Start, 0, 0), this._emit(R.PrepareStart, e$5.startEvent), this.settings.onPrepareStart?.(e$5, this), this._startPhase = N$1.FinishPrepare);
+		}) || []).map((e$6) => new O(e$6, this)), this._applyModifiers(F.Start, 0, 0), this._emit(R.PrepareStart, e$5, this), this.settings.onPrepareStart?.(e$5, this), this._startPhase = N$1.FinishPrepare);
 	}
 	_applyStart() {
 		let e$5 = this.drag;
@@ -1427,14 +1427,14 @@ var B = class {
 					item: t$5
 				});
 			}
-			window.addEventListener(`scroll`, this._onScroll, k), this._emit(R.Start, e$5.startEvent), this.settings.onStart?.(e$5, this), this._startPhase = N$1.FinishApply;
+			window.addEventListener(`scroll`, this._onScroll, k), this._emit(R.Start, e$5, this), this.settings.onStart?.(e$5, this), this._startPhase = N$1.FinishApply;
 		}
 	}
 	_prepareMove() {
 		let e$5 = this.drag;
 		if (!e$5 || e$5.isEnded) return;
 		let { moveEvent: t$5, prevMoveEvent: n$5 } = e$5;
-		t$5 !== n$5 && (this._applyModifiers(F.Move, t$5.x - n$5.x, t$5.y - n$5.y), this._emit(R.PrepareMove, t$5), !e$5.isEnded && (this.settings.onPrepareMove?.(e$5, this), !e$5.isEnded && (e$5.prevMoveEvent = t$5)));
+		t$5 !== n$5 && (this._applyModifiers(F.Move, t$5.x - n$5.x, t$5.y - n$5.y), this._emit(R.PrepareMove, e$5, this), !e$5.isEnded && (this.settings.onPrepareMove?.(e$5, this), !e$5.isEnded && (e$5.prevMoveEvent = t$5)));
 	}
 	_applyMove() {
 		let e$5 = this.drag;
@@ -1445,7 +1445,7 @@ var B = class {
 				drag: e$5,
 				item: t$5
 			});
-			this._emit(R.Move, e$5.moveEvent), !e$5.isEnded && this.settings.onMove?.(e$5, this);
+			this._emit(R.Move, e$5, this), !e$5.isEnded && this.settings.onMove?.(e$5, this);
 		}
 	}
 	_prepareAlign() {
@@ -1524,7 +1524,7 @@ var B = class {
 				drag: n$5,
 				item: e$5
 			});
-			this._emit(R.End, n$5.endEvent), this.settings.onEnd?.(n$5, this), this.drag = null;
+			this._emit(R.End, n$5, this), this.settings.onEnd?.(n$5, this), this.drag = null;
 		}
 	}
 	align(n$5 = !1) {
@@ -1718,7 +1718,7 @@ var u = class {
 const t = new N();
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-plugin-CzQex1ax.js
+//#region ../dragdoll/dist/auto-scroll-plugin-Bqs6w1zt.js
 const r$2 = {
 	x: 0,
 	y: 0
