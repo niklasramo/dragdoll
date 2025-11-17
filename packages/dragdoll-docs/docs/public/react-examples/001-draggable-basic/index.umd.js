@@ -1749,7 +1749,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll/dist/draggable-oKZ1M89x.js
+  //#region ../dragdoll/dist/draggable-CUeOOVDR.js
   function s$1(e$7, t$9) {
     return e$7.isIdentity && t$9.isIdentity
       ? !0
@@ -2078,18 +2078,26 @@
       let c$3 = e$7.parentElement;
       if (!c$3) throw Error(`Dragged element does not have a parent element.`);
       this.elementContainer = c$3;
-      let l$3 = t$9.settings.container || c$3;
-      if (((this.dragContainer = l$3), c$3 !== l$3)) {
+      let l$3 = t$9.settings.container,
+        u$3 =
+          (typeof l$3 == `function`
+            ? l$3({
+                draggable: t$9,
+                drag: r$7,
+                element: e$7,
+              })
+            : l$3) || c$3;
+      if (((this.dragContainer = u$3), c$3 !== u$3)) {
         let { position: e$8 } = i$5;
         if (e$8 !== `fixed` && e$8 !== `absolute`)
           throw Error(
             `Dragged element has "${e$8}" position, but only "fixed" or "absolute" are allowed when using a custom drag container.`,
           );
       }
-      let u$3 = getOffsetContainer(e$7) || e$7;
-      ((this.elementOffsetContainer = u$3),
+      let d$1 = getOffsetContainer(e$7) || e$7;
+      ((this.elementOffsetContainer = d$1),
         (this.dragOffsetContainer =
-          l$3 === c$3 ? u$3 : getOffsetContainer(e$7, { container: l$3 })));
+          u$3 === c$3 ? d$1 : getOffsetContainer(e$7, { container: u$3 })));
       {
         let { width: e$8, height: t$10, x: n$9, y: r$8 } = a$3;
         this.clientRect = {
@@ -2100,19 +2108,19 @@
         };
       }
       (this._updateContainerMatrices(), this._updateContainerOffset());
-      let d$1 = t$9.settings.frozenStyles({
+      let f$1 = t$9.settings.frozenStyles({
         draggable: t$9,
         drag: r$7,
         item: this,
         style: i$5,
       });
-      if (Array.isArray(d$1))
-        if (d$1.length) {
+      if (Array.isArray(f$1))
+        if (f$1.length) {
           let e$8 = {};
-          for (let t$10 of d$1) e$8[t$10] = i$5[t$10];
+          for (let t$10 of f$1) e$8[t$10] = i$5[t$10];
           this.frozenStyles = e$8;
         } else this.frozenStyles = null;
-      else this.frozenStyles = d$1;
+      else this.frozenStyles = f$1;
       if (this.frozenStyles) {
         let t$10 = {};
         for (let n$9 in this.frozenStyles) t$10[n$9] = e$7.style[n$9];
@@ -29936,7 +29944,7 @@
   //#region react-examples/001-draggable-basic/index.tsx
   var import_client = /* @__PURE__ */ __toESM(require_client());
   var import_jsx_runtime = /* @__PURE__ */ __toESM(require_jsx_runtime());
-  function DraggableCard({ zIndexRef }) {
+  const DraggableCardMemo = (0, import_react.memo)(function DraggableCard({ zIndexRef }) {
     const elementRef = (0, import_react.useRef)(null);
     const [zIndex, setZIndex] = (0, import_react.useState)(1);
     const [pointerSensor, setPointerSensorRef] = o$1();
@@ -29971,11 +29979,11 @@
         }),
       }),
     });
-  }
+  });
   function App() {
     const zIndexRef = (0, import_react.useRef)(1);
     return [1, 2, 3, 4].map((id) =>
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DraggableCard, { zIndexRef }, id),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DraggableCardMemo, { zIndexRef }, id),
     );
   }
   const rootElement = document.getElementById('root');

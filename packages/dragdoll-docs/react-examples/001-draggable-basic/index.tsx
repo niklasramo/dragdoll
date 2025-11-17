@@ -4,10 +4,14 @@ import {
   useKeyboardMotionSensor,
   usePointerSensor,
 } from 'dragdoll-react';
-import { RefObject, StrictMode, useCallback, useMemo, useRef, useState } from 'react';
+import { memo, RefObject, StrictMode, useCallback, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
-function DraggableCard({ zIndexRef }: { zIndexRef: RefObject<number> }) {
+const DraggableCardMemo = memo(function DraggableCard({
+  zIndexRef,
+}: {
+  zIndexRef: RefObject<number>;
+}) {
   const elementRef = useRef<HTMLDivElement>(null);
   const [zIndex, setZIndex] = useState(1);
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
@@ -44,11 +48,11 @@ function DraggableCard({ zIndexRef }: { zIndexRef: RefObject<number> }) {
       </svg>
     </div>
   );
-}
+});
 
 function App() {
   const zIndexRef = useRef(1);
-  return [1, 2, 3, 4].map((id) => <DraggableCard key={id} zIndexRef={zIndexRef} />);
+  return [1, 2, 3, 4].map((id) => <DraggableCardMemo key={id} zIndexRef={zIndexRef} />);
 }
 
 const rootElement = document.getElementById('root');

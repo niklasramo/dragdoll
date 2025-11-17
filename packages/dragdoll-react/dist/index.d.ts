@@ -2,7 +2,7 @@ import { t as DndObserverContext } from "./dnd-observer-context-Bj87cvsc.js";
 import { t as useDndObserverCallback } from "./use-dnd-observer-callback-k0BulFFz.js";
 import { t as useDndObserverContext } from "./use-dnd-observer-context-DKisqIti.js";
 import { n as useDndObserver, t as UseDndObserverSettings } from "./use-dnd-observer-D0WhpqGl.js";
-import { t as useDraggableAutoScroll } from "./use-draggable-auto-scroll-CPmfswTT.js";
+import { n as useDraggableAutoScroll, t as UseDraggableAutoScrollSettings } from "./use-draggable-auto-scroll-CZIQfvvK.js";
 import { t as useDraggableCallback } from "./use-draggable-callback-Cbh2rDfm.js";
 import { t as useDraggableDrag } from "./use-draggable-drag-CTJ8UFLV.js";
 import { n as useDraggable, t as UseDraggableSettings } from "./use-draggable-CjljwVR2.js";
@@ -10,4 +10,4 @@ import { n as useDroppable, t as UseDroppableSettings } from "./use-droppable-Di
 import { t as useKeyboardMotionSensor } from "./use-keyboard-motion-sensor-BM1jjLX1.js";
 import { t as useKeyboardSensor } from "./use-keyboard-sensor-Dku3KqzK.js";
 import { t as usePointerSensor } from "./use-pointer-sensor-BRtgXtwd.js";
-export { DndObserverContext, UseDndObserverSettings, UseDraggableSettings, UseDroppableSettings, useDndObserver, useDndObserverCallback, useDndObserverContext, useDraggable, useDraggableAutoScroll, useDraggableCallback, useDraggableDrag, useDroppable, useKeyboardMotionSensor, useKeyboardSensor, usePointerSensor };
+export { DndObserverContext, UseDndObserverSettings, UseDraggableAutoScrollSettings, UseDraggableSettings, UseDroppableSettings, useDndObserver, useDndObserverCallback, useDndObserverContext, useDraggable, useDraggableAutoScroll, useDraggableCallback, useDraggableDrag, useDroppable, useKeyboardMotionSensor, useKeyboardSensor, usePointerSensor };

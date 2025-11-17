@@ -17,11 +17,15 @@
     };
   var __copyProps = (to, from, except, desc) => {
     if ((from && typeof from === 'object') || typeof from === 'function')
-      for (var keys = __getOwnPropNames(from), i$5 = 0, n$7 = keys.length, key; i$5 < n$7; i$5++) {
-        key = keys[i$5];
+      for (
+        var keys = __getOwnPropNames(from), i$7 = 0, n$11 = keys.length, key;
+        i$7 < n$11;
+        i$7++
+      ) {
+        key = keys[i$7];
         if (!__hasOwnProp.call(to, key) && key !== except)
           __defProp(to, key, {
-            get: ((k$3) => from[k$3]).bind(null, key),
+            get: ((k$2) => from[k$2]).bind(null, key),
             enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable,
           });
       }
@@ -99,7 +103,7 @@
           try {
             testStringCoercion(value);
             var JSCompiler_inline_result = !1;
-          } catch (e$6) {
+          } catch (e$9) {
             JSCompiler_inline_result = !0;
           }
           if (JSCompiler_inline_result) {
@@ -169,7 +173,7 @@
                 type = type._init;
                 try {
                   return getComponentNameFromType(type(innerType));
-                } catch (x$3) {}
+                } catch (x$2) {}
             }
           return null;
         }
@@ -180,7 +184,7 @@
           try {
             var name = getComponentNameFromType(type);
             return name ? '<' + name + '>' : '<...>';
-          } catch (x$3) {
+          } catch (x$2) {
             return '<...>';
           }
         }
@@ -416,25 +420,25 @@
           invokeCallback = 0;
           childKey = '' === nameSoFar ? '.' : nameSoFar + ':';
           if (isArrayImpl(children))
-            for (var i$5 = 0; i$5 < children.length; i$5++)
-              ((nameSoFar = children[i$5]),
-                (type = childKey + getElementKey(nameSoFar, i$5)),
+            for (var i$7 = 0; i$7 < children.length; i$7++)
+              ((nameSoFar = children[i$7]),
+                (type = childKey + getElementKey(nameSoFar, i$7)),
                 (invokeCallback += mapIntoArray(nameSoFar, array, escapedPrefix, type, callback)));
-          else if (((i$5 = getIteratorFn(children)), 'function' === typeof i$5))
+          else if (((i$7 = getIteratorFn(children)), 'function' === typeof i$7))
             for (
-              i$5 === children.entries &&
+              i$7 === children.entries &&
                 (didWarnAboutMaps ||
                   console.warn(
                     'Using Maps as children is not supported. Use an array of keyed ReactElements instead.',
                   ),
                 (didWarnAboutMaps = !0)),
-                children = i$5.call(children),
-                i$5 = 0;
+                children = i$7.call(children),
+                i$7 = 0;
               !(nameSoFar = children.next()).done;
 
             )
               ((nameSoFar = nameSoFar.value),
-                (type = childKey + getElementKey(nameSoFar, i$5++)),
+                (type = childKey + getElementKey(nameSoFar, i$7++)),
                 (invokeCallback += mapIntoArray(nameSoFar, array, escapedPrefix, type, callback)));
           else if ('object' === type) {
             if ('function' === typeof children.then)
@@ -587,17 +591,17 @@
         function flushActQueue(queue) {
           if (!isFlushing) {
             isFlushing = !0;
-            var i$5 = 0;
+            var i$7 = 0;
             try {
-              for (; i$5 < queue.length; i$5++) {
-                var callback = queue[i$5];
+              for (; i$7 < queue.length; i$7++) {
+                var callback = queue[i$7];
                 do {
                   ReactSharedInternals.didUsePromise = !1;
                   var continuation = callback(!1);
                   if (null !== continuation) {
                     if (ReactSharedInternals.didUsePromise) {
-                      queue[i$5] = callback;
-                      queue.splice(0, i$5);
+                      queue[i$7] = callback;
+                      queue.splice(0, i$7);
                       return;
                     }
                     callback = continuation;
@@ -606,7 +610,7 @@
               }
               queue.length = 0;
             } catch (error) {
-              (queue.splice(0, i$5 + 1), ReactSharedInternals.thrownErrors.push(error));
+              (queue.splice(0, i$7 + 1), ReactSharedInternals.thrownErrors.push(error));
             } finally {
               isFlushing = !1;
             }
@@ -770,11 +774,11 @@
             );
           },
           count: function (children) {
-            var n$7 = 0;
+            var n$11 = 0;
             mapChildren(children, function () {
-              n$7++;
+              n$11++;
             });
-            return n$7;
+            return n$11;
           },
           toArray: function (children) {
             return (
@@ -939,8 +943,8 @@
           if (1 === propName) props.children = children;
           else if (1 < propName) {
             JSCompiler_inline_result = Array(propName);
-            for (var i$5 = 0; i$5 < propName; i$5++)
-              JSCompiler_inline_result[i$5] = arguments[i$5 + 2];
+            for (var i$7 = 0; i$7 < propName; i$7++)
+              JSCompiler_inline_result[i$7] = arguments[i$7 + 2];
             props.children = JSCompiler_inline_result;
           }
           props = ReactElement(
@@ -973,8 +977,8 @@
           return defaultValue;
         };
         exports.createElement = function (type, config, children) {
-          for (var i$5 = 2; i$5 < arguments.length; i$5++) validateChildKeys(arguments[i$5]);
-          i$5 = {};
+          for (var i$7 = 2; i$7 < arguments.length; i$7++) validateChildKeys(arguments[i$7]);
+          i$7 = {};
           var key = null;
           if (null != config)
             for (propName in (didWarnAboutOldJSXRuntime ||
@@ -990,28 +994,28 @@
                 'key' !== propName &&
                 '__self' !== propName &&
                 '__source' !== propName &&
-                (i$5[propName] = config[propName]);
+                (i$7[propName] = config[propName]);
           var childrenLength = arguments.length - 2;
-          if (1 === childrenLength) i$5.children = children;
+          if (1 === childrenLength) i$7.children = children;
           else if (1 < childrenLength) {
             for (var childArray = Array(childrenLength), _i = 0; _i < childrenLength; _i++)
               childArray[_i] = arguments[_i + 2];
             Object.freeze && Object.freeze(childArray);
-            i$5.children = childArray;
+            i$7.children = childArray;
           }
           if (type && type.defaultProps)
             for (propName in ((childrenLength = type.defaultProps), childrenLength))
-              void 0 === i$5[propName] && (i$5[propName] = childrenLength[propName]);
+              void 0 === i$7[propName] && (i$7[propName] = childrenLength[propName]);
           key &&
             defineKeyPropWarningGetter(
-              i$5,
+              i$7,
               'function' === typeof type ? type.displayName || type.name || 'Unknown' : type,
             );
           var propName = 1e4 > ReactSharedInternals.recentlyCreatedOwnerStacks++;
           return ReactElement(
             type,
             key,
-            i$5,
+            i$7,
             getOwner(),
             propName ? Error('react-stack-top-frame') : unknownOwnerDebugStack,
             propName ? createTask(getTaskName(type)) : unknownOwnerDebugTask,
@@ -1253,106 +1257,121 @@
   });
 
   //#endregion
+  //#region ../dragdoll-react/dist/dnd-observer-context-DpsKiq2G.js
+  var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
+  const t$10 = (0, import_react.createContext)(null);
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-dnd-observer-context-BL_LF-TG.js
+  function n$5() {
+    return (0, import_react.useContext)(t$10);
+  }
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-isomorphic-layout-effect-D2LtpjJM.js
+  const n = typeof window > `u` ? import_react.useEffect : import_react.useLayoutEffect;
+
+  //#endregion
   //#region ../../node_modules/eventti/dist/index.js
-  var E$3 = {
+  var E$2 = {
       ADD: 'add',
       UPDATE: 'update',
       IGNORE: 'ignore',
       THROW: 'throw',
     },
-    r$5,
-    v$1 = class {
-      constructor(t$7 = {}) {
-        ((this.dedupe = t$7.dedupe || E$3.ADD),
-          (this.getId = t$7.getId || (() => Symbol())),
+    r$7,
+    v = class {
+      constructor(t$12 = {}) {
+        ((this.dedupe = t$12.dedupe || E$2.ADD),
+          (this.getId = t$12.getId || (() => Symbol())),
           (this._events = /* @__PURE__ */ new Map()));
       }
-      _getListeners(t$7) {
-        let n$7 = this._events.get(t$7);
-        return n$7 ? n$7.l || (n$7.l = [...n$7.m.values()]) : null;
+      _getListeners(t$12) {
+        let n$11 = this._events.get(t$12);
+        return n$11 ? n$11.l || (n$11.l = [...n$11.m.values()]) : null;
       }
-      on(t$7, n$7, e$6) {
-        let i$5 = this._events,
-          s$5 = i$5.get(t$7);
-        s$5 ||
-          ((s$5 = {
+      on(t$12, n$11, e$9) {
+        let i$7 = this._events,
+          s$4 = i$7.get(t$12);
+        s$4 ||
+          ((s$4 = {
             m: /* @__PURE__ */ new Map(),
             l: null,
           }),
-          i$5.set(t$7, s$5));
-        let o$5 = s$5.m;
-        if (((e$6 = e$6 === r$5 ? this.getId(n$7) : e$6), o$5.has(e$6)))
+          i$7.set(t$12, s$4));
+        let o$7 = s$4.m;
+        if (((e$9 = e$9 === r$7 ? this.getId(n$11) : e$9), o$7.has(e$9)))
           switch (this.dedupe) {
-            case E$3.THROW:
+            case E$2.THROW:
               throw new Error('Eventti: duplicate listener id!');
-            case E$3.IGNORE:
-              return e$6;
-            case E$3.UPDATE:
-              s$5.l = null;
+            case E$2.IGNORE:
+              return e$9;
+            case E$2.UPDATE:
+              s$4.l = null;
               break;
             default:
-              (o$5.delete(e$6), (s$5.l = null));
+              (o$7.delete(e$9), (s$4.l = null));
           }
-        return (o$5.set(e$6, n$7), s$5.l?.push(n$7), e$6);
+        return (o$7.set(e$9, n$11), s$4.l?.push(n$11), e$9);
       }
-      once(t$7, n$7, e$6) {
-        let i$5 = 0;
+      once(t$12, n$11, e$9) {
+        let i$7 = 0;
         return (
-          (e$6 = e$6 === r$5 ? this.getId(n$7) : e$6),
+          (e$9 = e$9 === r$7 ? this.getId(n$11) : e$9),
           this.on(
-            t$7,
-            (...s$5) => {
-              i$5 || ((i$5 = 1), this.off(t$7, e$6), n$7(...s$5));
+            t$12,
+            (...s$4) => {
+              i$7 || ((i$7 = 1), this.off(t$12, e$9), n$11(...s$4));
             },
-            e$6,
+            e$9,
           )
         );
       }
-      off(t$7, n$7) {
-        if (t$7 === r$5) {
+      off(t$12, n$11) {
+        if (t$12 === r$7) {
           this._events.clear();
           return;
         }
-        if (n$7 === r$5) {
-          this._events.delete(t$7);
+        if (n$11 === r$7) {
+          this._events.delete(t$12);
           return;
         }
-        let e$6 = this._events.get(t$7);
-        e$6?.m.delete(n$7) && ((e$6.l = null), e$6.m.size || this._events.delete(t$7));
+        let e$9 = this._events.get(t$12);
+        e$9?.m.delete(n$11) && ((e$9.l = null), e$9.m.size || this._events.delete(t$12));
       }
-      emit(t$7, ...n$7) {
-        let e$6 = this._getListeners(t$7);
-        if (e$6) {
-          let i$5 = e$6.length,
-            s$5 = 0;
-          if (n$7.length) for (; s$5 < i$5; s$5++) e$6[s$5](...n$7);
-          else for (; s$5 < i$5; s$5++) e$6[s$5]();
+      emit(t$12, ...n$11) {
+        let e$9 = this._getListeners(t$12);
+        if (e$9) {
+          let i$7 = e$9.length,
+            s$4 = 0;
+          if (n$11.length) for (; s$4 < i$7; s$4++) e$9[s$4](...n$11);
+          else for (; s$4 < i$7; s$4++) e$9[s$4]();
         }
       }
-      listenerCount(t$7) {
-        if (t$7 === r$5) {
-          let n$7 = 0;
+      listenerCount(t$12) {
+        if (t$12 === r$7) {
+          let n$11 = 0;
           return (
-            this._events.forEach((e$6) => {
-              n$7 += e$6.m.size;
+            this._events.forEach((e$9) => {
+              n$11 += e$9.m.size;
             }),
-            n$7
+            n$11
           );
         }
-        return this._events.get(t$7)?.m.size || 0;
+        return this._events.get(t$12)?.m.size || 0;
       }
     };
 
   //#endregion
   //#region ../../node_modules/tikki/dist/index.js
-  var _$2 = E$3,
-    o$4 = class {
-      constructor(e$6 = {}) {
-        let { phases: t$7 = [], dedupe: r$6, getId: s$5 } = e$6;
-        ((this._phases = t$7),
-          (this._emitter = new v$1({
-            getId: s$5,
-            dedupe: r$6,
+  var _$2 = E$2,
+    o$6 = class {
+      constructor(e$9 = {}) {
+        let { phases: t$12 = [], dedupe: r$8, getId: s$4 } = e$9;
+        ((this._phases = t$12),
+          (this._emitter = new v({
+            getId: s$4,
+            dedupe: r$8,
           })),
           (this._queue = []),
           (this.tick = this.tick.bind(this)),
@@ -1361,116 +1380,116 @@
       get phases() {
         return this._phases;
       }
-      set phases(e$6) {
-        this._phases = e$6;
+      set phases(e$9) {
+        this._phases = e$9;
       }
       get dedupe() {
         return this._emitter.dedupe;
       }
-      set dedupe(e$6) {
-        this._emitter.dedupe = e$6;
+      set dedupe(e$9) {
+        this._emitter.dedupe = e$9;
       }
       get getId() {
         return this._emitter.getId;
       }
-      set getId(e$6) {
-        this._emitter.getId = e$6;
+      set getId(e$9) {
+        this._emitter.getId = e$9;
       }
-      tick(...e$6) {
-        (this._assertEmptyQueue(), this._fillQueue(), this._processQueue(...e$6));
+      tick(...e$9) {
+        (this._assertEmptyQueue(), this._fillQueue(), this._processQueue(...e$9));
       }
-      on(e$6, t$7, r$6) {
-        return this._emitter.on(e$6, t$7, r$6);
+      on(e$9, t$12, r$8) {
+        return this._emitter.on(e$9, t$12, r$8);
       }
-      once(e$6, t$7, r$6) {
-        return this._emitter.once(e$6, t$7, r$6);
+      once(e$9, t$12, r$8) {
+        return this._emitter.once(e$9, t$12, r$8);
       }
-      off(e$6, t$7) {
-        return this._emitter.off(e$6, t$7);
+      off(e$9, t$12) {
+        return this._emitter.off(e$9, t$12);
       }
-      count(e$6) {
-        return this._emitter.listenerCount(e$6);
+      count(e$9) {
+        return this._emitter.listenerCount(e$9);
       }
       _assertEmptyQueue() {
         if (this._queue.length)
           throw new Error("Ticker: Can't tick before the previous tick has finished!");
       }
       _fillQueue() {
-        let e$6 = this._queue,
-          t$7 = this._phases,
-          r$6 = this._getListeners,
-          s$5 = 0,
-          a$4 = t$7.length,
-          n$7;
-        for (; s$5 < a$4; s$5++) ((n$7 = r$6(t$7[s$5])), n$7 && e$6.push(n$7));
-        return e$6;
+        let e$9 = this._queue,
+          t$12 = this._phases,
+          r$8 = this._getListeners,
+          s$4 = 0,
+          a$4 = t$12.length,
+          n$11;
+        for (; s$4 < a$4; s$4++) ((n$11 = r$8(t$12[s$4])), n$11 && e$9.push(n$11));
+        return e$9;
       }
-      _processQueue(...e$6) {
-        let t$7 = this._queue,
-          r$6 = t$7.length;
-        if (!r$6) return;
-        let s$5 = 0,
+      _processQueue(...e$9) {
+        let t$12 = this._queue,
+          r$8 = t$12.length;
+        if (!r$8) return;
+        let s$4 = 0,
           a$4 = 0,
-          n$7,
+          n$11,
           c$5;
-        for (; s$5 < r$6; s$5++)
-          for (n$7 = t$7[s$5], a$4 = 0, c$5 = n$7.length; a$4 < c$5; a$4++) n$7[a$4](...e$6);
-        t$7.length = 0;
+        for (; s$4 < r$8; s$4++)
+          for (n$11 = t$12[s$4], a$4 = 0, c$5 = n$11.length; a$4 < c$5; a$4++) n$11[a$4](...e$9);
+        t$12.length = 0;
       }
     };
-  function u$4(i$5 = 60) {
+  function u$3(i$7 = 60) {
     if (typeof requestAnimationFrame == 'function' && typeof cancelAnimationFrame == 'function')
-      return (e$6) => {
-        let t$7 = requestAnimationFrame(e$6);
-        return () => cancelAnimationFrame(t$7);
+      return (e$9) => {
+        let t$12 = requestAnimationFrame(e$9);
+        return () => cancelAnimationFrame(t$12);
       };
     {
-      let e$6 = 1e3 / i$5,
-        t$7 = typeof performance > 'u' ? () => Date.now() : () => performance.now();
-      return (r$6) => {
-        let s$5 = setTimeout(() => r$6(t$7()), e$6);
-        return () => clearTimeout(s$5);
+      let e$9 = 1e3 / i$7,
+        t$12 = typeof performance > 'u' ? () => Date.now() : () => performance.now();
+      return (r$8) => {
+        let s$4 = setTimeout(() => r$8(t$12()), e$9);
+        return () => clearTimeout(s$4);
       };
     }
   }
-  var l$4 = class extends o$4 {
-    constructor(e$6 = {}) {
-      let { paused: t$7 = !1, onDemand: r$6 = !1, requestFrame: s$5 = u$4(), ...a$4 } = e$6;
+  var l$3 = class extends o$6 {
+    constructor(e$9 = {}) {
+      let { paused: t$12 = !1, onDemand: r$8 = !1, requestFrame: s$4 = u$3(), ...a$4 } = e$9;
       (super(a$4),
-        (this._paused = t$7),
-        (this._onDemand = r$6),
-        (this._requestFrame = s$5),
+        (this._paused = t$12),
+        (this._onDemand = r$8),
+        (this._requestFrame = s$4),
         (this._cancelFrame = null),
         (this._empty = !0),
-        !t$7 && !r$6 && this._request());
+        !t$12 && !r$8 && this._request());
     }
     get phases() {
       return this._phases;
     }
-    set phases(e$6) {
-      ((this._phases = e$6),
-        e$6.length ? ((this._empty = !1), this._request()) : (this._empty = !0));
+    set phases(e$9) {
+      ((this._phases = e$9),
+        e$9.length ? ((this._empty = !1), this._request()) : (this._empty = !0));
     }
     get paused() {
       return this._paused;
     }
-    set paused(e$6) {
-      ((this._paused = e$6), e$6 ? this._cancel() : this._request());
+    set paused(e$9) {
+      ((this._paused = e$9), e$9 ? this._cancel() : this._request());
     }
     get onDemand() {
       return this._onDemand;
     }
-    set onDemand(e$6) {
-      ((this._onDemand = e$6), e$6 || this._request());
+    set onDemand(e$9) {
+      ((this._onDemand = e$9), e$9 || this._request());
     }
     get requestFrame() {
       return this._requestFrame;
     }
-    set requestFrame(e$6) {
-      this._requestFrame !== e$6 &&
-        ((this._requestFrame = e$6), this._cancelFrame && (this._cancel(), this._request()));
+    set requestFrame(e$9) {
+      this._requestFrame !== e$9 &&
+        ((this._requestFrame = e$9), this._cancelFrame && (this._cancel(), this._request()));
     }
-    tick(...e$6) {
+    tick(...e$9) {
       if (
         (this._assertEmptyQueue(),
         (this._cancelFrame = null),
@@ -1481,16 +1500,16 @@
           this._empty = !0;
           return;
         }
-        (this._onDemand && this._request(), this._processQueue(...e$6));
+        (this._onDemand && this._request(), this._processQueue(...e$9));
       }
     }
-    on(e$6, t$7, r$6) {
-      let s$5 = super.on(e$6, t$7, r$6);
-      return ((this._empty = !1), this._request(), s$5);
+    on(e$9, t$12, r$8) {
+      let s$4 = super.on(e$9, t$12, r$8);
+      return ((this._empty = !1), this._request(), s$4);
     }
-    once(e$6, t$7, r$6) {
-      let s$5 = super.once(e$6, t$7, r$6);
-      return ((this._empty = !1), this._request(), s$5);
+    once(e$9, t$12, r$8) {
+      let s$4 = super.once(e$9, t$12, r$8);
+      return ((this._empty = !1), this._request(), s$4);
     }
     _request() {
       this._paused || this._cancelFrame || (this._cancelFrame = this._requestFrame(this.tick));
@@ -1502,20 +1521,20 @@
 
   //#endregion
   //#region ../dragdoll/dist/ticker-Bio34ZvT.js
-  const n$3 = {
+  const n$7 = {
     read: Symbol(),
     write: Symbol(),
   };
-  let r$3 = new l$4({
-    phases: [n$3.read, n$3.write],
-    requestFrame: typeof window < `u` ? u$4() : () => () => {},
+  let r$5 = new l$3({
+    phases: [n$7.read, n$7.write],
+    requestFrame: typeof window < `u` ? u$3() : () => () => {},
   });
 
   //#endregion
   //#region ../dragdoll/dist/create-full-rect-Dd45f4o1.js
-  function e$4(
-    e$6,
-    t$7 = {
+  function e$5(
+    e$9,
+    t$12 = {
       width: 0,
       height: 0,
       x: 0,
@@ -1527,51 +1546,51 @@
     },
   ) {
     return (
-      e$6 &&
-        ((t$7.width = e$6.width),
-        (t$7.height = e$6.height),
-        (t$7.x = e$6.x),
-        (t$7.y = e$6.y),
-        (t$7.left = e$6.x),
-        (t$7.top = e$6.y),
-        (t$7.right = e$6.x + e$6.width),
-        (t$7.bottom = e$6.y + e$6.height)),
-      t$7
+      e$9 &&
+        ((t$12.width = e$9.width),
+        (t$12.height = e$9.height),
+        (t$12.x = e$9.x),
+        (t$12.y = e$9.y),
+        (t$12.left = e$9.x),
+        (t$12.top = e$9.y),
+        (t$12.right = e$9.x + e$9.width),
+        (t$12.bottom = e$9.y + e$9.height)),
+      t$12
     );
   }
 
   //#endregion
   //#region ../dragdoll/dist/get-intersection-score-YcxwkZs7.js
-  function e$5(
-    e$6,
-    t$7,
-    n$7 = {
+  function e$6(
+    e$9,
+    t$12,
+    n$11 = {
       width: 0,
       height: 0,
       x: 0,
       y: 0,
     },
   ) {
-    let r$6 = Math.max(e$6.x, t$7.x),
-      i$5 = Math.min(e$6.x + e$6.width, t$7.x + t$7.width);
-    if (i$5 <= r$6) return null;
-    let a$4 = Math.max(e$6.y, t$7.y),
-      o$5 = Math.min(e$6.y + e$6.height, t$7.y + t$7.height);
-    return o$5 <= a$4
+    let r$8 = Math.max(e$9.x, t$12.x),
+      i$7 = Math.min(e$9.x + e$9.width, t$12.x + t$12.width);
+    if (i$7 <= r$8) return null;
+    let a$4 = Math.max(e$9.y, t$12.y),
+      o$7 = Math.min(e$9.y + e$9.height, t$12.y + t$12.height);
+    return o$7 <= a$4
       ? null
-      : ((n$7.x = r$6), (n$7.y = a$4), (n$7.width = i$5 - r$6), (n$7.height = o$5 - a$4), n$7);
+      : ((n$11.x = r$8), (n$11.y = a$4), (n$11.width = i$7 - r$8), (n$11.height = o$7 - a$4), n$11);
   }
-  const t$6 = {
+  const t$8 = {
     width: 0,
     height: 0,
     x: 0,
     y: 0,
   };
-  function n$6(n$7, r$6, i$5) {
-    if (((i$5 ||= e$5(n$7, r$6, t$6)), !i$5)) return 0;
-    let a$4 = i$5.width * i$5.height;
+  function n$10(n$11, r$8, i$7) {
+    if (((i$7 ||= e$6(n$11, r$8, t$8)), !i$7)) return 0;
+    let a$4 = i$7.width * i$7.height;
     return a$4
-      ? (a$4 / (Math.min(n$7.width, r$6.width) * Math.min(n$7.height, r$6.height))) * 100
+      ? (a$4 / (Math.min(n$11.width, r$8.width) * Math.min(n$11.height, r$8.height))) * 100
       : 0;
   }
 
@@ -1603,35 +1622,35 @@
   const SCROLLABLE_OVERFLOWS = new Set(['auto', 'scroll']);
   const IS_CHROMIUM = (() => {
     try {
-      return window.navigator.userAgentData.brands.some(({ brand: n$7 }) => 'Chromium' === n$7);
-    } catch (n$7) {
+      return window.navigator.userAgentData.brands.some(({ brand: n$11 }) => 'Chromium' === n$11);
+    } catch (n$11) {
       return !1;
     }
   })();
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/isWindow.js
-  function isWindow(n$7) {
-    return n$7 instanceof Window;
+  function isWindow(n$11) {
+    return n$11 instanceof Window;
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/isDocument.js
-  function isDocument(n$7) {
-    return n$7 instanceof Document;
+  function isDocument(n$11) {
+    return n$11 instanceof Document;
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/getStyle.js
   const STYLE_DECLARATION_CACHE = /* @__PURE__ */ new WeakMap();
-  function getStyle(e$6, t$7) {
-    if (t$7) return window.getComputedStyle(e$6, t$7);
-    let C$3 = STYLE_DECLARATION_CACHE.get(e$6)?.deref();
+  function getStyle(e$9, t$12) {
+    if (t$12) return window.getComputedStyle(e$9, t$12);
+    let C$2 = STYLE_DECLARATION_CACHE.get(e$9)?.deref();
     return (
-      C$3 ||
-        ((C$3 = window.getComputedStyle(e$6, null)),
-        STYLE_DECLARATION_CACHE.set(e$6, new WeakRef(C$3))),
-      C$3
+      C$2 ||
+        ((C$2 = window.getComputedStyle(e$9, null)),
+        STYLE_DECLARATION_CACHE.set(e$9, new WeakRef(C$2))),
+      C$2
     );
   }
 
@@ -1641,12 +1660,12 @@
   let testStyleElement = null,
     testParentElement = null,
     testChildElement = null;
-  function getSubpixelScrollbarSize(t$7, e$6) {
-    const n$7 = t$7.split('.');
-    let l$5 = SUBPIXEL_OFFSET.get(n$7[1]);
-    if (void 0 === l$5) {
+  function getSubpixelScrollbarSize(t$12, e$9) {
+    const n$11 = t$12.split('.');
+    let l$4 = SUBPIXEL_OFFSET.get(n$11[1]);
+    if (void 0 === l$4) {
       (testStyleElement || (testStyleElement = document.createElement('style')),
-        (testStyleElement.innerHTML = `\n      #mezr-scrollbar-test::-webkit-scrollbar {\n        width: ${t$7} !important;\n      }\n    `),
+        (testStyleElement.innerHTML = `\n      #mezr-scrollbar-test::-webkit-scrollbar {\n        width: ${t$12} !important;\n      }\n    `),
         (testParentElement && testChildElement) ||
           ((testParentElement = document.createElement('div')),
           (testChildElement = document.createElement('div')),
@@ -1658,303 +1677,304 @@
             '\n        all: unset !important;\n        position: absolute !important;\n        inset: 0 !important;\n      ')),
         document.body.appendChild(testStyleElement),
         document.body.appendChild(testParentElement));
-      ((l$5 =
+      ((l$4 =
         testParentElement.getBoundingClientRect().width -
         testChildElement.getBoundingClientRect().width -
-        e$6),
-        SUBPIXEL_OFFSET.set(n$7[1], l$5),
+        e$9),
+        SUBPIXEL_OFFSET.set(n$11[1], l$4),
         document.body.removeChild(testParentElement),
         document.body.removeChild(testStyleElement));
     }
-    return e$6 + l$5;
+    return e$9 + l$4;
   }
-  function getPreciseScrollbarSize(t$7, e$6, n$7) {
-    if (n$7 <= 0) return 0;
+  function getPreciseScrollbarSize(t$12, e$9, n$11) {
+    if (n$11 <= 0) return 0;
     if (IS_CHROMIUM) {
-      const n$8 = getStyle(t$7, '::-webkit-scrollbar'),
-        l$5 = 'x' === e$6 ? n$8.height : n$8.width,
-        i$5 = parseFloat(l$5);
-      if (!Number.isNaN(i$5) && !Number.isInteger(i$5)) return getSubpixelScrollbarSize(l$5, i$5);
+      const n$12 = getStyle(t$12, '::-webkit-scrollbar'),
+        l$4 = 'x' === e$9 ? n$12.height : n$12.width,
+        i$7 = parseFloat(l$4);
+      if (!Number.isNaN(i$7) && !Number.isInteger(i$7)) return getSubpixelScrollbarSize(l$4, i$7);
     }
-    return n$7;
+    return n$11;
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/getWindowWidth.js
-  function getWindowWidth(e$6, r$6 = !1) {
-    if (r$6) return e$6.innerWidth;
-    const { innerWidth: t$7, document: i$5 } = e$6,
-      { documentElement: n$7 } = i$5,
-      { clientWidth: c$5 } = n$7;
-    return t$7 - getPreciseScrollbarSize(n$7, 'y', t$7 - c$5);
+  function getWindowWidth(e$9, r$8 = !1) {
+    if (r$8) return e$9.innerWidth;
+    const { innerWidth: t$12, document: i$7 } = e$9,
+      { documentElement: n$11 } = i$7,
+      { clientWidth: c$5 } = n$11;
+    return t$12 - getPreciseScrollbarSize(n$11, 'y', t$12 - c$5);
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/getDocumentWidth.js
-  function getDocumentWidth({ documentElement: t$7 }) {
-    return Math.max(t$7.scrollWidth, t$7.clientWidth, t$7.getBoundingClientRect().width);
+  function getDocumentWidth({ documentElement: t$12 }) {
+    return Math.max(t$12.scrollWidth, t$12.clientWidth, t$12.getBoundingClientRect().width);
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/isDocumentElement.js
-  function isDocumentElement(e$6) {
-    return e$6 instanceof HTMLHtmlElement;
+  function isDocumentElement(e$9) {
+    return e$9 instanceof HTMLHtmlElement;
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/getElementWidth.js
-  function getElementWidth(t$7, e$6 = BOX_EDGE.border) {
-    let { width: r$6 } = t$7.getBoundingClientRect();
-    if (e$6 === BOX_EDGE.border) return r$6;
-    const o$5 = getStyle(t$7);
-    return e$6 === BOX_EDGE.margin
-      ? ((r$6 += Math.max(0, parseFloat(o$5.marginLeft) || 0)),
-        (r$6 += Math.max(0, parseFloat(o$5.marginRight) || 0)),
-        r$6)
-      : ((r$6 -= parseFloat(o$5.borderLeftWidth) || 0),
-        (r$6 -= parseFloat(o$5.borderRightWidth) || 0),
-        e$6 === BOX_EDGE.scrollbar
-          ? r$6
-          : (!isDocumentElement(t$7) &&
-              SCROLLABLE_OVERFLOWS.has(o$5.overflowY) &&
-              (r$6 -= getPreciseScrollbarSize(t$7, 'y', Math.round(r$6) - t$7.clientWidth)),
-            e$6 === BOX_EDGE.padding ||
-              ((r$6 -= parseFloat(o$5.paddingLeft) || 0),
-              (r$6 -= parseFloat(o$5.paddingRight) || 0)),
-            r$6));
+  function getElementWidth(t$12, e$9 = BOX_EDGE.border) {
+    let { width: r$8 } = t$12.getBoundingClientRect();
+    if (e$9 === BOX_EDGE.border) return r$8;
+    const o$7 = getStyle(t$12);
+    return e$9 === BOX_EDGE.margin
+      ? ((r$8 += Math.max(0, parseFloat(o$7.marginLeft) || 0)),
+        (r$8 += Math.max(0, parseFloat(o$7.marginRight) || 0)),
+        r$8)
+      : ((r$8 -= parseFloat(o$7.borderLeftWidth) || 0),
+        (r$8 -= parseFloat(o$7.borderRightWidth) || 0),
+        e$9 === BOX_EDGE.scrollbar
+          ? r$8
+          : (!isDocumentElement(t$12) &&
+              SCROLLABLE_OVERFLOWS.has(o$7.overflowY) &&
+              (r$8 -= getPreciseScrollbarSize(t$12, 'y', Math.round(r$8) - t$12.clientWidth)),
+            e$9 === BOX_EDGE.padding ||
+              ((r$8 -= parseFloat(o$7.paddingLeft) || 0),
+              (r$8 -= parseFloat(o$7.paddingRight) || 0)),
+            r$8));
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/getWidth.js
-  function getWidth(t$7, i$5 = BOX_EDGE.border) {
-    return isWindow(t$7)
-      ? getWindowWidth(t$7, INCLUDE_WINDOW_SCROLLBAR[i$5])
-      : isDocument(t$7)
-        ? getDocumentWidth(t$7)
-        : getElementWidth(t$7, i$5);
+  function getWidth(t$12, i$7 = BOX_EDGE.border) {
+    return isWindow(t$12)
+      ? getWindowWidth(t$12, INCLUDE_WINDOW_SCROLLBAR[i$7])
+      : isDocument(t$12)
+        ? getDocumentWidth(t$12)
+        : getElementWidth(t$12, i$7);
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/getWindowHeight.js
-  function getWindowHeight(e$6, r$6 = !1) {
-    if (r$6) return e$6.innerHeight;
-    const { innerHeight: t$7, document: i$5 } = e$6,
-      { documentElement: n$7 } = i$5,
-      { clientHeight: c$5 } = n$7;
-    return t$7 - getPreciseScrollbarSize(n$7, 'x', t$7 - c$5);
+  function getWindowHeight(e$9, r$8 = !1) {
+    if (r$8) return e$9.innerHeight;
+    const { innerHeight: t$12, document: i$7 } = e$9,
+      { documentElement: n$11 } = i$7,
+      { clientHeight: c$5 } = n$11;
+    return t$12 - getPreciseScrollbarSize(n$11, 'x', t$12 - c$5);
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/getDocumentHeight.js
-  function getDocumentHeight({ documentElement: t$7 }) {
-    return Math.max(t$7.scrollHeight, t$7.clientHeight, t$7.getBoundingClientRect().height);
+  function getDocumentHeight({ documentElement: t$12 }) {
+    return Math.max(t$12.scrollHeight, t$12.clientHeight, t$12.getBoundingClientRect().height);
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/getElementHeight.js
-  function getElementHeight(t$7, e$6 = BOX_EDGE.border) {
-    let { height: r$6 } = t$7.getBoundingClientRect();
-    if (e$6 === BOX_EDGE.border) return r$6;
-    const o$5 = getStyle(t$7);
-    return e$6 === BOX_EDGE.margin
-      ? ((r$6 += Math.max(0, parseFloat(o$5.marginTop) || 0)),
-        (r$6 += Math.max(0, parseFloat(o$5.marginBottom) || 0)),
-        r$6)
-      : ((r$6 -= parseFloat(o$5.borderTopWidth) || 0),
-        (r$6 -= parseFloat(o$5.borderBottomWidth) || 0),
-        e$6 === BOX_EDGE.scrollbar
-          ? r$6
-          : (!isDocumentElement(t$7) &&
-              SCROLLABLE_OVERFLOWS.has(o$5.overflowX) &&
-              (r$6 -= getPreciseScrollbarSize(t$7, 'x', Math.round(r$6) - t$7.clientHeight)),
-            e$6 === BOX_EDGE.padding ||
-              ((r$6 -= parseFloat(o$5.paddingTop) || 0),
-              (r$6 -= parseFloat(o$5.paddingBottom) || 0)),
-            r$6));
+  function getElementHeight(t$12, e$9 = BOX_EDGE.border) {
+    let { height: r$8 } = t$12.getBoundingClientRect();
+    if (e$9 === BOX_EDGE.border) return r$8;
+    const o$7 = getStyle(t$12);
+    return e$9 === BOX_EDGE.margin
+      ? ((r$8 += Math.max(0, parseFloat(o$7.marginTop) || 0)),
+        (r$8 += Math.max(0, parseFloat(o$7.marginBottom) || 0)),
+        r$8)
+      : ((r$8 -= parseFloat(o$7.borderTopWidth) || 0),
+        (r$8 -= parseFloat(o$7.borderBottomWidth) || 0),
+        e$9 === BOX_EDGE.scrollbar
+          ? r$8
+          : (!isDocumentElement(t$12) &&
+              SCROLLABLE_OVERFLOWS.has(o$7.overflowX) &&
+              (r$8 -= getPreciseScrollbarSize(t$12, 'x', Math.round(r$8) - t$12.clientHeight)),
+            e$9 === BOX_EDGE.padding ||
+              ((r$8 -= parseFloat(o$7.paddingTop) || 0),
+              (r$8 -= parseFloat(o$7.paddingBottom) || 0)),
+            r$8));
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/getHeight.js
-  function getHeight(t$7, e$6 = BOX_EDGE.border) {
-    return isWindow(t$7)
-      ? getWindowHeight(t$7, INCLUDE_WINDOW_SCROLLBAR[e$6])
-      : isDocument(t$7)
-        ? getDocumentHeight(t$7)
-        : getElementHeight(t$7, e$6);
+  function getHeight(t$12, e$9 = BOX_EDGE.border) {
+    return isWindow(t$12)
+      ? getWindowHeight(t$12, INCLUDE_WINDOW_SCROLLBAR[e$9])
+      : isDocument(t$12)
+        ? getDocumentHeight(t$12)
+        : getElementHeight(t$12, e$9);
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/isRectObject.js
-  function isRectObject(t$7) {
-    return t$7?.constructor === Object;
+  function isRectObject(t$12) {
+    return t$12?.constructor === Object;
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/getOffsetFromDocument.js
-  function getOffsetFromDocument(t$7, o$5 = BOX_EDGE.border) {
-    const e$6 = {
+  function getOffsetFromDocument(t$12, o$7 = BOX_EDGE.border) {
+    const e$9 = {
       left: 0,
       top: 0,
     };
-    if (isDocument(t$7)) return e$6;
-    if (isWindow(t$7)) return ((e$6.left += t$7.scrollX || 0), (e$6.top += t$7.scrollY || 0), e$6);
-    const r$6 = t$7.ownerDocument.defaultView;
-    r$6 && ((e$6.left += r$6.scrollX || 0), (e$6.top += r$6.scrollY || 0));
-    const n$7 = t$7.getBoundingClientRect();
-    if (((e$6.left += n$7.left), (e$6.top += n$7.top), o$5 === BOX_EDGE.border)) return e$6;
-    const l$5 = getStyle(t$7);
-    return o$5 === BOX_EDGE.margin
-      ? ((e$6.left -= Math.max(0, parseFloat(l$5.marginLeft) || 0)),
-        (e$6.top -= Math.max(0, parseFloat(l$5.marginTop) || 0)),
-        e$6)
-      : ((e$6.left += parseFloat(l$5.borderLeftWidth) || 0),
-        (e$6.top += parseFloat(l$5.borderTopWidth) || 0),
-        o$5 === BOX_EDGE.scrollbar ||
-          o$5 === BOX_EDGE.padding ||
-          ((e$6.left += parseFloat(l$5.paddingLeft) || 0),
-          (e$6.top += parseFloat(l$5.paddingTop) || 0)),
-        e$6);
+    if (isDocument(t$12)) return e$9;
+    if (isWindow(t$12))
+      return ((e$9.left += t$12.scrollX || 0), (e$9.top += t$12.scrollY || 0), e$9);
+    const r$8 = t$12.ownerDocument.defaultView;
+    r$8 && ((e$9.left += r$8.scrollX || 0), (e$9.top += r$8.scrollY || 0));
+    const n$11 = t$12.getBoundingClientRect();
+    if (((e$9.left += n$11.left), (e$9.top += n$11.top), o$7 === BOX_EDGE.border)) return e$9;
+    const l$4 = getStyle(t$12);
+    return o$7 === BOX_EDGE.margin
+      ? ((e$9.left -= Math.max(0, parseFloat(l$4.marginLeft) || 0)),
+        (e$9.top -= Math.max(0, parseFloat(l$4.marginTop) || 0)),
+        e$9)
+      : ((e$9.left += parseFloat(l$4.borderLeftWidth) || 0),
+        (e$9.top += parseFloat(l$4.borderTopWidth) || 0),
+        o$7 === BOX_EDGE.scrollbar ||
+          o$7 === BOX_EDGE.padding ||
+          ((e$9.left += parseFloat(l$4.paddingLeft) || 0),
+          (e$9.top += parseFloat(l$4.paddingTop) || 0)),
+        e$9);
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/getOffset.js
-  function getOffset(t$7, e$6) {
-    const o$5 = isRectObject(t$7)
+  function getOffset(t$12, e$9) {
+    const o$7 = isRectObject(t$12)
       ? {
-          left: t$7.left,
-          top: t$7.top,
+          left: t$12.left,
+          top: t$12.top,
         }
-      : Array.isArray(t$7)
-        ? getOffsetFromDocument(...t$7)
-        : getOffsetFromDocument(t$7);
-    if (e$6 && !isDocument(e$6)) {
-      const t$8 = isRectObject(e$6)
-        ? e$6
-        : Array.isArray(e$6)
-          ? getOffsetFromDocument(e$6[0], e$6[1])
-          : getOffsetFromDocument(e$6);
-      ((o$5.left -= t$8.left), (o$5.top -= t$8.top));
+      : Array.isArray(t$12)
+        ? getOffsetFromDocument(...t$12)
+        : getOffsetFromDocument(t$12);
+    if (e$9 && !isDocument(e$9)) {
+      const t$13 = isRectObject(e$9)
+        ? e$9
+        : Array.isArray(e$9)
+          ? getOffsetFromDocument(e$9[0], e$9[1])
+          : getOffsetFromDocument(e$9);
+      ((o$7.left -= t$13.left), (o$7.top -= t$13.top));
     }
-    return o$5;
+    return o$7;
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/getRect.js
-  function getRect(t$7, e$6) {
-    let i$5 = 0,
+  function getRect(t$12, e$9) {
+    let i$7 = 0,
       g$2 = 0;
-    isRectObject(t$7)
-      ? ((i$5 = t$7.width), (g$2 = t$7.height))
-      : Array.isArray(t$7)
-        ? ((i$5 = getWidth(...t$7)), (g$2 = getHeight(...t$7)))
-        : ((i$5 = getWidth(t$7)), (g$2 = getHeight(t$7)));
-    const r$6 = getOffset(t$7, e$6);
+    isRectObject(t$12)
+      ? ((i$7 = t$12.width), (g$2 = t$12.height))
+      : Array.isArray(t$12)
+        ? ((i$7 = getWidth(...t$12)), (g$2 = getHeight(...t$12)))
+        : ((i$7 = getWidth(t$12)), (g$2 = getHeight(t$12)));
+    const r$8 = getOffset(t$12, e$9);
     return {
-      width: i$5,
+      width: i$7,
       height: g$2,
-      ...r$6,
-      right: r$6.left + i$5,
-      bottom: r$6.top + g$2,
+      ...r$8,
+      right: r$8.left + i$7,
+      bottom: r$8.top + g$2,
     };
   }
 
   //#endregion
   //#region ../dragdoll/dist/get-rect-BPdgHRQD.js
-  function t$5(...t$7) {
-    let { width: n$7, height: r$6, left: i$5, top: a$4 } = getRect(...t$7);
+  function t$7(...t$12) {
+    let { width: n$11, height: r$8, left: i$7, top: a$4 } = getRect(...t$12);
     return {
-      width: n$7,
-      height: r$6,
-      x: i$5,
+      width: n$11,
+      height: r$8,
+      x: i$7,
       y: a$4,
     };
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/isIntersecting.js
-  function isIntersecting(t$7, e$6) {
+  function isIntersecting(t$12, e$9) {
     return !(
-      t$7.left + t$7.width <= e$6.left ||
-      e$6.left + e$6.width <= t$7.left ||
-      t$7.top + t$7.height <= e$6.top ||
-      e$6.top + e$6.height <= t$7.top
+      t$12.left + t$12.width <= e$9.left ||
+      e$9.left + e$9.width <= t$12.left ||
+      t$12.top + t$12.height <= e$9.top ||
+      e$9.top + e$9.height <= t$12.top
     );
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/getDistanceBetweenPoints.js
-  function getDistanceBetweenPoints(t$7, e$6, n$7, o$5) {
-    return Math.sqrt(Math.pow(n$7 - t$7, 2) + Math.pow(o$5 - e$6, 2));
+  function getDistanceBetweenPoints(t$12, e$9, n$11, o$7) {
+    return Math.sqrt(Math.pow(n$11 - t$12, 2) + Math.pow(o$7 - e$9, 2));
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/getDistanceBetweenRects.js
-  function getDistanceBetweenRects(t$7, e$6) {
-    if (isIntersecting(t$7, e$6)) return null;
-    const n$7 = t$7.left + t$7.width,
-      i$5 = t$7.top + t$7.height,
-      o$5 = e$6.left + e$6.width,
-      s$5 = e$6.top + e$6.height;
-    return n$7 <= e$6.left
-      ? i$5 <= e$6.top
-        ? getDistanceBetweenPoints(n$7, i$5, e$6.left, e$6.top)
-        : t$7.top >= s$5
-          ? getDistanceBetweenPoints(n$7, t$7.top, e$6.left, s$5)
-          : e$6.left - n$7
-      : t$7.left >= o$5
-        ? i$5 <= e$6.top
-          ? getDistanceBetweenPoints(t$7.left, i$5, o$5, e$6.top)
-          : t$7.top >= s$5
-            ? getDistanceBetweenPoints(t$7.left, t$7.top, o$5, s$5)
-            : t$7.left - o$5
-        : i$5 <= e$6.top
-          ? e$6.top - i$5
-          : t$7.top - s$5;
+  function getDistanceBetweenRects(t$12, e$9) {
+    if (isIntersecting(t$12, e$9)) return null;
+    const n$11 = t$12.left + t$12.width,
+      i$7 = t$12.top + t$12.height,
+      o$7 = e$9.left + e$9.width,
+      s$4 = e$9.top + e$9.height;
+    return n$11 <= e$9.left
+      ? i$7 <= e$9.top
+        ? getDistanceBetweenPoints(n$11, i$7, e$9.left, e$9.top)
+        : t$12.top >= s$4
+          ? getDistanceBetweenPoints(n$11, t$12.top, e$9.left, s$4)
+          : e$9.left - n$11
+      : t$12.left >= o$7
+        ? i$7 <= e$9.top
+          ? getDistanceBetweenPoints(t$12.left, i$7, o$7, e$9.top)
+          : t$12.top >= s$4
+            ? getDistanceBetweenPoints(t$12.left, t$12.top, o$7, s$4)
+            : t$12.left - o$7
+        : i$7 <= e$9.top
+          ? e$9.top - i$7
+          : t$12.top - s$4;
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/getNormalizedRect.js
-  function getNormalizedRect(t$7) {
-    return isRectObject(t$7) ? t$7 : getRect(t$7);
+  function getNormalizedRect(t$12) {
+    return isRectObject(t$12) ? t$12 : getRect(t$12);
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/getDistance.js
-  function getDistance(e$6, t$7) {
-    return getDistanceBetweenRects(getNormalizedRect(e$6), getNormalizedRect(t$7));
+  function getDistance(e$9, t$12) {
+    return getDistanceBetweenRects(getNormalizedRect(e$9), getNormalizedRect(t$12));
   }
 
   //#endregion
   //#region ../dragdoll/dist/auto-scroll-uAZMypL4.js
-  const o$3 = e$4(),
-    s$4 = e$4();
-  function c$4(e$6, t$7) {
-    return getDistance(e$4(e$6, o$3), e$4(t$7, s$4));
+  const o$5 = e$5(),
+    s$3 = e$5();
+  function c$4(e$9, t$12) {
+    return getDistance(e$5(e$9, o$5), e$5(t$12, s$3));
   }
-  function l$3(e$6) {
-    return e$6 instanceof Window;
+  function l$2(e$9) {
+    return e$9 instanceof Window;
   }
-  function u$3(e$6) {
-    return l$3(e$6) || e$6 === document.documentElement || e$6 === document.body ? window : e$6;
+  function u$2(e$9) {
+    return l$2(e$9) || e$9 === document.documentElement || e$9 === document.body ? window : e$9;
   }
-  function d$1(e$6) {
-    return l$3(e$6) ? e$6.scrollX : e$6.scrollLeft;
+  function d$1(e$9) {
+    return l$2(e$9) ? e$9.scrollX : e$9.scrollLeft;
   }
-  function f$1(e$6) {
-    return (l$3(e$6) && (e$6 = document.documentElement), e$6.scrollWidth - e$6.clientWidth);
+  function f$1(e$9) {
+    return (l$2(e$9) && (e$9 = document.documentElement), e$9.scrollWidth - e$9.clientWidth);
   }
-  function p$1(e$6) {
-    return l$3(e$6) ? e$6.scrollY : e$6.scrollTop;
+  function p$1(e$9) {
+    return l$2(e$9) ? e$9.scrollY : e$9.scrollTop;
   }
-  function m$1(e$6) {
-    return (l$3(e$6) && (e$6 = document.documentElement), e$6.scrollHeight - e$6.clientHeight);
+  function m$1(e$9) {
+    return (l$2(e$9) && (e$9 = document.documentElement), e$9.scrollHeight - e$9.clientHeight);
   }
-  function h$1(e$6, t$7) {
+  function h$1(e$9, t$12) {
     return !(
-      e$6.x + e$6.width <= t$7.x ||
-      t$7.x + t$7.width <= e$6.x ||
-      e$6.y + e$6.height <= t$7.y ||
-      t$7.y + t$7.height <= e$6.y
+      e$9.x + e$9.width <= t$12.x ||
+      t$12.x + t$12.width <= e$9.x ||
+      e$9.y + e$9.height <= t$12.y ||
+      t$12.y + t$12.height <= e$9.y
     );
   }
   var g$1 = class {
@@ -1967,45 +1987,45 @@
     _getItem;
     _onRelease;
     constructor(
-      e$6,
+      e$9,
       {
-        batchSize: t$7 = 100,
-        minBatchCount: n$7 = 0,
-        maxBatchCount: r$6 = 2 ** 53 - 1,
-        initialBatchCount: i$5 = 0,
+        batchSize: t$12 = 100,
+        minBatchCount: n$11 = 0,
+        maxBatchCount: r$8 = 2 ** 53 - 1,
+        initialBatchCount: i$7 = 0,
         shrinkThreshold: a$4 = 2,
-        onRelease: o$5,
+        onRelease: o$7,
       } = {},
     ) {
-      ((this._batchSize = Math.floor(Math.max(t$7, 1))),
-        (this._minSize = Math.floor(Math.max(n$7, 0)) * this._batchSize),
+      ((this._batchSize = Math.floor(Math.max(t$12, 1))),
+        (this._minSize = Math.floor(Math.max(n$11, 0)) * this._batchSize),
         (this._maxSize = Math.floor(
-          Math.min(Math.max(r$6 * this._batchSize, this._batchSize), 2 ** 53 - 1),
+          Math.min(Math.max(r$8 * this._batchSize, this._batchSize), 2 ** 53 - 1),
         )),
         (this._shrinkThreshold = Math.floor(Math.max(a$4, 1) * this._batchSize)),
-        (this._data = Array(Math.floor(Math.max(Math.max(i$5, n$7) * this._batchSize, 0)))),
+        (this._data = Array(Math.floor(Math.max(Math.max(i$7, n$11) * this._batchSize, 0)))),
         (this._index = 0),
-        (this._getItem = e$6),
-        (this._onRelease = o$5));
+        (this._getItem = e$9),
+        (this._onRelease = o$7));
     }
-    get(...e$6) {
-      if (this._index > 0) return this._getItem(this._data[--this._index], ...e$6);
+    get(...e$9) {
+      if (this._index > 0) return this._getItem(this._data[--this._index], ...e$9);
       if (this._index === 0) {
-        let e$7 = this._data.length,
-          t$7 = Math.min(this._batchSize, this._maxSize - e$7);
-        t$7 > 0 && (this._data.length = e$7 + t$7);
+        let e$10 = this._data.length,
+          t$12 = Math.min(this._batchSize, this._maxSize - e$10);
+        t$12 > 0 && (this._data.length = e$10 + t$12);
       }
-      return this._getItem(void 0, ...e$6);
+      return this._getItem(void 0, ...e$9);
     }
-    release(e$6) {
+    release(e$9) {
       if (
         this._index < this._maxSize &&
-        (this._onRelease && this._onRelease(e$6),
-        (this._data[this._index++] = e$6),
+        (this._onRelease && this._onRelease(e$9),
+        (this._data[this._index++] = e$9),
         this._index >= this._shrinkThreshold)
       ) {
-        let e$7 = this._data.length - this._batchSize;
-        e$7 >= this._minSize && ((this._data.length = e$7), (this._index -= this._batchSize));
+        let e$10 = this._data.length - this._batchSize;
+        e$10 >= this._minSize && ((this._data.length = e$10), (this._index -= this._batchSize));
       }
     }
     destroy() {
@@ -2018,7 +2038,7 @@
       x: 0,
       y: 0,
     },
-    v$3 = {
+    v$2 = {
       direction: `none`,
       threshold: 0,
       distance: 0,
@@ -2029,69 +2049,69 @@
       deltaTime: 0,
       isEnding: !1,
     },
-    y$2 = {
+    y$1 = {
       x: 1,
       y: 2,
     },
-    b$2 = {
+    b$1 = {
       forward: 4,
       reverse: 8,
     },
-    x$2 = {
+    x$1 = {
       none: 0,
-      left: y$2.x | b$2.reverse,
-      right: y$2.x | b$2.forward,
+      left: y$1.x | b$1.reverse,
+      right: y$1.x | b$1.forward,
     },
-    S$2 = {
+    S$1 = {
       none: 0,
-      up: y$2.y | b$2.reverse,
-      down: y$2.y | b$2.forward,
+      up: y$1.y | b$1.reverse,
+      down: y$1.y | b$1.forward,
     },
-    C$2 = {
-      ...x$2,
-      ...S$2,
+    C$1 = {
+      ...x$1,
+      ...S$1,
     };
-  function w$2(e$6) {
-    switch (e$6) {
-      case x$2.none:
-      case S$2.none:
+  function w$1(e$9) {
+    switch (e$9) {
+      case x$1.none:
+      case S$1.none:
         return `none`;
-      case x$2.left:
+      case x$1.left:
         return `left`;
-      case x$2.right:
+      case x$1.right:
         return `right`;
-      case S$2.up:
+      case S$1.up:
         return `up`;
-      case S$2.down:
+      case S$1.down:
         return `down`;
       default:
-        throw Error(`Unknown direction value: ${e$6}`);
+        throw Error(`Unknown direction value: ${e$9}`);
     }
   }
-  function T$2(e$6, t$7, n$7) {
-    let { left: r$6 = 0, right: i$5 = 0, top: a$4 = 0, bottom: o$5 = 0 } = t$7;
+  function T$1(e$9, t$12, n$11) {
+    let { left: r$8 = 0, right: i$7 = 0, top: a$4 = 0, bottom: o$7 = 0 } = t$12;
     return (
-      (r$6 = Math.max(0, r$6)),
-      (i$5 = Math.max(0, i$5)),
+      (r$8 = Math.max(0, r$8)),
+      (i$7 = Math.max(0, i$7)),
       (a$4 = Math.max(0, a$4)),
-      (o$5 = Math.max(0, o$5)),
-      (n$7.width = e$6.width + r$6 + i$5),
-      (n$7.height = e$6.height + a$4 + o$5),
-      (n$7.x = e$6.x - r$6),
-      (n$7.y = e$6.y - a$4),
-      n$7
+      (o$7 = Math.max(0, o$7)),
+      (n$11.width = e$9.width + r$8 + i$7),
+      (n$11.height = e$9.height + a$4 + o$7),
+      (n$11.x = e$9.x - r$8),
+      (n$11.y = e$9.y - a$4),
+      n$11
     );
   }
-  function E$2(e$6, t$7) {
-    return Math.ceil(e$6) >= Math.floor(t$7);
+  function E$1(e$9, t$12) {
+    return Math.ceil(e$9) >= Math.floor(t$12);
   }
-  function D$2(e$6, t$7) {
-    return Math.min(t$7 / 2, e$6);
+  function D$1(e$9, t$12) {
+    return Math.min(t$12 / 2, e$9);
   }
-  function O$2(e$6, t$7, n$7, r$6) {
-    return Math.max(0, n$7 + e$6 * 2 + r$6 * t$7 - r$6) / 2;
+  function O$1(e$9, t$12, n$11, r$8) {
+    return Math.max(0, n$11 + e$9 * 2 + r$8 * t$12 - r$8) / 2;
   }
-  var k$2 = class {
+  var k$1 = class {
       positionX;
       positionY;
       directionX;
@@ -2100,12 +2120,12 @@
       constructor() {
         ((this.positionX = 0),
           (this.positionY = 0),
-          (this.directionX = C$2.none),
-          (this.directionY = C$2.none),
+          (this.directionX = C$1.none),
+          (this.directionY = C$1.none),
           (this.overlapCheckRequestTime = 0));
       }
     },
-    A$2 = class {
+    A$1 = class {
       element;
       requestX;
       requestY;
@@ -2127,16 +2147,16 @@
           (this.scrollLeft = 0),
           (this.scrollTop = 0));
       }
-      addRequest(e$6) {
-        (y$2.x & e$6.direction
-          ? (this.requestX && this.removeRequest(this.requestX), (this.requestX = e$6))
-          : (this.requestY && this.removeRequest(this.requestY), (this.requestY = e$6)),
-          (e$6.action = this));
+      addRequest(e$9) {
+        (y$1.x & e$9.direction
+          ? (this.requestX && this.removeRequest(this.requestX), (this.requestX = e$9))
+          : (this.requestY && this.removeRequest(this.requestY), (this.requestY = e$9)),
+          (e$9.action = this));
       }
-      removeRequest(e$6) {
-        this.requestX === e$6
-          ? ((this.requestX = null), (e$6.action = null))
-          : this.requestY === e$6 && ((this.requestY = null), (e$6.action = null));
+      removeRequest(e$9) {
+        this.requestX === e$9
+          ? ((this.requestX = null), (e$9.action = null))
+          : this.requestY === e$9 && ((this.requestY = null), (e$9.action = null));
       }
       computeScrollValues() {
         this.element &&
@@ -2197,79 +2217,79 @@
           (this.action = null));
       }
       hasReachedEnd() {
-        return b$2.forward & this.direction ? E$2(this.value, this.maxValue) : this.value <= 0;
+        return b$1.forward & this.direction ? E$1(this.value, this.maxValue) : this.value <= 0;
       }
       computeCurrentScrollValue() {
         return this.element
           ? this.value === this.value
             ? Math.max(0, Math.min(this.value, this.maxValue))
-            : y$2.x & this.direction
+            : y$1.x & this.direction
               ? d$1(this.element)
               : p$1(this.element)
           : 0;
       }
       computeNextScrollValue() {
-        let e$6 = this.speed * (this.deltaTime / 1e3),
-          t$7 = b$2.forward & this.direction ? this.value + e$6 : this.value - e$6;
-        return Math.max(0, Math.min(t$7, this.maxValue));
+        let e$9 = this.speed * (this.deltaTime / 1e3),
+          t$12 = b$1.forward & this.direction ? this.value + e$9 : this.value - e$9;
+        return Math.max(0, Math.min(t$12, this.maxValue));
       }
       computeSpeed() {
         if (!this.item || !this.element) return 0;
-        let { speed: e$6 } = this.item;
-        return typeof e$6 == `function`
-          ? ((v$3.direction = w$2(this.direction)),
-            (v$3.threshold = this.threshold),
-            (v$3.distance = this.distance),
-            (v$3.value = this.value),
-            (v$3.maxValue = this.maxValue),
-            (v$3.duration = this.duration),
-            (v$3.speed = this.speed),
-            (v$3.deltaTime = this.deltaTime),
-            (v$3.isEnding = this.isEnding),
-            e$6(this.element, v$3))
-          : e$6;
+        let { speed: e$9 } = this.item;
+        return typeof e$9 == `function`
+          ? ((v$2.direction = w$1(this.direction)),
+            (v$2.threshold = this.threshold),
+            (v$2.distance = this.distance),
+            (v$2.value = this.value),
+            (v$2.maxValue = this.maxValue),
+            (v$2.duration = this.duration),
+            (v$2.speed = this.speed),
+            (v$2.deltaTime = this.deltaTime),
+            (v$2.isEnding = this.isEnding),
+            e$9(this.element, v$2))
+          : e$9;
       }
-      tick(e$6) {
+      tick(e$9) {
         return (
           this.isActive || ((this.isActive = !0), this.onStart()),
-          (this.deltaTime = e$6),
+          (this.deltaTime = e$9),
           (this.value = this.computeCurrentScrollValue()),
           (this.speed = this.computeSpeed()),
           (this.value = this.computeNextScrollValue()),
-          (this.duration += e$6),
+          (this.duration += e$9),
           this.value
         );
       }
       onStart() {
         if (!this.item || !this.element) return;
-        let { onStart: e$6 } = this.item;
-        typeof e$6 == `function` && e$6(this.element, w$2(this.direction));
+        let { onStart: e$9 } = this.item;
+        typeof e$9 == `function` && e$9(this.element, w$1(this.direction));
       }
       onStop() {
         if (!this.item || !this.element) return;
-        let { onStop: e$6 } = this.item;
-        typeof e$6 == `function` && e$6(this.element, w$2(this.direction));
+        let { onStop: e$9 } = this.item;
+        typeof e$9 == `function` && e$9(this.element, w$1(this.direction));
       }
     };
-  function M$1(e$6 = 500, t$7 = 0.5, n$7 = 0.25) {
-    let r$6 = e$6 * (t$7 > 0 ? 1 / t$7 : Infinity),
-      i$5 = e$6 * (n$7 > 0 ? 1 / n$7 : Infinity);
-    return function (t$8, n$8) {
+  function M(e$9 = 500, t$12 = 0.5, n$11 = 0.25) {
+    let r$8 = e$9 * (t$12 > 0 ? 1 / t$12 : Infinity),
+      i$7 = e$9 * (n$11 > 0 ? 1 / n$11 : Infinity);
+    return function (t$13, n$12) {
       let a$4 = 0;
-      if (!n$8.isEnding)
-        if (n$8.threshold > 0) {
-          let t$9 = n$8.threshold - Math.max(0, n$8.distance);
-          a$4 = (e$6 / n$8.threshold) * t$9;
-        } else a$4 = e$6;
-      let o$5 = n$8.speed;
-      if (o$5 === a$4) return a$4;
-      let s$5 = a$4;
-      return o$5 < a$4
-        ? ((s$5 = o$5 + r$6 * (n$8.deltaTime / 1e3)), Math.min(a$4, s$5))
-        : ((s$5 = o$5 - i$5 * (n$8.deltaTime / 1e3)), Math.max(a$4, s$5));
+      if (!n$12.isEnding)
+        if (n$12.threshold > 0) {
+          let t$14 = n$12.threshold - Math.max(0, n$12.distance);
+          a$4 = (e$9 / n$12.threshold) * t$14;
+        } else a$4 = e$9;
+      let o$7 = n$12.speed;
+      if (o$7 === a$4) return a$4;
+      let s$4 = a$4;
+      return o$7 < a$4
+        ? ((s$4 = o$7 + r$8 * (n$12.deltaTime / 1e3)), Math.min(a$4, s$4))
+        : ((s$4 = o$7 - i$7 * (n$12.deltaTime / 1e3)), Math.max(a$4, s$4));
     };
   }
-  var N$1 = class {
+  var N = class {
     items;
     settings;
     _isDestroyed;
@@ -2281,43 +2301,43 @@
     _requests;
     _requestPool;
     _actionPool;
-    constructor(e$6 = {}) {
-      let { overlapCheckInterval: t$7 = 150 } = e$6;
+    constructor(e$9 = {}) {
+      let { overlapCheckInterval: t$12 = 150 } = e$9;
       ((this.items = []),
-        (this.settings = { overlapCheckInterval: t$7 }),
+        (this.settings = { overlapCheckInterval: t$12 }),
         (this._actions = []),
         (this._isDestroyed = !1),
         (this._isTicking = !1),
         (this._tickTime = 0),
         (this._tickDeltaTime = 0),
         (this._requests = {
-          [y$2.x]: /* @__PURE__ */ new Map(),
-          [y$2.y]: /* @__PURE__ */ new Map(),
+          [y$1.x]: /* @__PURE__ */ new Map(),
+          [y$1.y]: /* @__PURE__ */ new Map(),
         }),
         (this._itemData = /* @__PURE__ */ new Map()),
-        (this._requestPool = new g$1((e$7) => e$7 || new j$1(), {
+        (this._requestPool = new g$1((e$10) => e$10 || new j$1(), {
           initialBatchCount: 1,
           minBatchCount: 1,
-          onRelease: (e$7) => e$7.reset(),
+          onRelease: (e$10) => e$10.reset(),
         })),
-        (this._actionPool = new g$1((e$7) => e$7 || new A$2(), {
+        (this._actionPool = new g$1((e$10) => e$10 || new A$1(), {
           batchSize: 10,
           initialBatchCount: 1,
           minBatchCount: 1,
-          onRelease: (e$7) => e$7.reset(),
+          onRelease: (e$10) => e$10.reset(),
         })),
         (this._frameRead = this._frameRead.bind(this)),
         (this._frameWrite = this._frameWrite.bind(this)));
     }
-    _frameRead(e$6) {
+    _frameRead(e$9) {
       this._isDestroyed ||
-        (e$6 && this._tickTime
-          ? ((this._tickDeltaTime = e$6 - this._tickTime),
-            (this._tickTime = e$6),
+        (e$9 && this._tickTime
+          ? ((this._tickDeltaTime = e$9 - this._tickTime),
+            (this._tickTime = e$9),
             this._updateItems(),
             this._updateRequests(),
             this._updateActions())
-          : ((this._tickTime = e$6), (this._tickDeltaTime = 0)));
+          : ((this._tickTime = e$9), (this._tickDeltaTime = 0)));
     }
     _frameWrite() {
       this._isDestroyed || this._applyActions();
@@ -2325,306 +2345,306 @@
     _startTicking() {
       this._isTicking ||
         ((this._isTicking = !0),
-        r$3.on(n$3.read, this._frameRead, this._frameRead),
-        r$3.on(n$3.write, this._frameWrite, this._frameWrite));
+        r$5.on(n$7.read, this._frameRead, this._frameRead),
+        r$5.on(n$7.write, this._frameWrite, this._frameWrite));
     }
     _stopTicking() {
       this._isTicking &&
         ((this._isTicking = !1),
         (this._tickTime = 0),
         (this._tickDeltaTime = 0),
-        r$3.off(n$3.read, this._frameRead),
-        r$3.off(n$3.write, this._frameWrite));
+        r$5.off(n$7.read, this._frameRead),
+        r$5.off(n$7.write, this._frameWrite));
     }
-    _requestItemScroll(e$6, t$7, n$7, r$6, i$5, a$4, o$5) {
-      let s$5 = this._requests[t$7],
-        c$5 = s$5.get(e$6);
+    _requestItemScroll(e$9, t$12, n$11, r$8, i$7, a$4, o$7) {
+      let s$4 = this._requests[t$12],
+        c$5 = s$4.get(e$9);
       (c$5
-        ? (c$5.element !== n$7 || c$5.direction !== r$6) && c$5.reset()
-        : ((c$5 = this._requestPool.get()), s$5.set(e$6, c$5)),
-        (c$5.item = e$6),
-        (c$5.element = n$7),
-        (c$5.direction = r$6),
-        (c$5.threshold = i$5),
+        ? (c$5.element !== n$11 || c$5.direction !== r$8) && c$5.reset()
+        : ((c$5 = this._requestPool.get()), s$4.set(e$9, c$5)),
+        (c$5.item = e$9),
+        (c$5.element = n$11),
+        (c$5.direction = r$8),
+        (c$5.threshold = i$7),
         (c$5.distance = a$4),
-        (c$5.maxValue = o$5));
+        (c$5.maxValue = o$7));
     }
-    _cancelItemScroll(e$6, t$7) {
-      let n$7 = this._requests[t$7],
-        r$6 = n$7.get(e$6);
-      r$6 &&
-        (r$6.action && r$6.action.removeRequest(r$6),
-        this._requestPool.release(r$6),
-        n$7.delete(e$6));
+    _cancelItemScroll(e$9, t$12) {
+      let n$11 = this._requests[t$12],
+        r$8 = n$11.get(e$9);
+      r$8 &&
+        (r$8.action && r$8.action.removeRequest(r$8),
+        this._requestPool.release(r$8),
+        n$11.delete(e$9));
     }
-    _checkItemOverlap(e$6, t$7, n$7) {
-      let { inertAreaSize: a$4, targets: o$5, clientRect: s$5 } = e$6;
-      if (!o$5.length) {
-        (t$7 && this._cancelItemScroll(e$6, y$2.x), n$7 && this._cancelItemScroll(e$6, y$2.y));
+    _checkItemOverlap(e$9, t$12, n$11) {
+      let { inertAreaSize: a$4, targets: o$7, clientRect: s$4 } = e$9;
+      if (!o$7.length) {
+        (t$12 && this._cancelItemScroll(e$9, y$1.x), n$11 && this._cancelItemScroll(e$9, y$1.y));
         return;
       }
-      let l$5 = this._itemData.get(e$6),
-        g$2 = l$5?.directionX,
-        v$4 = l$5?.directionY;
-      if (!g$2 && !v$4) {
-        (t$7 && this._cancelItemScroll(e$6, y$2.x), n$7 && this._cancelItemScroll(e$6, y$2.y));
+      let l$4 = this._itemData.get(e$9),
+        g$2 = l$4?.directionX,
+        v$3 = l$4?.directionY;
+      if (!g$2 && !v$3) {
+        (t$12 && this._cancelItemScroll(e$9, y$1.x), n$11 && this._cancelItemScroll(e$9, y$1.y));
         return;
       }
-      let b$3 = null,
-        x$3 = -Infinity,
-        w$3 = 0,
-        k$3 = -Infinity,
-        A$3 = C$2.none,
+      let b$2 = null,
+        x$2 = -Infinity,
+        w$2 = 0,
+        k$2 = -Infinity,
+        A$2 = C$1.none,
         j$2 = 0,
-        M$3 = 0,
-        N$3 = null,
+        M$2 = 0,
+        N$2 = null,
         P$1 = -Infinity,
         F$1 = 0,
         I$1 = -Infinity,
-        L$2 = C$2.none,
+        L$1 = C$1.none,
         R$1 = 0,
         z$1 = 0,
-        B$2 = 0;
-      for (; B$2 < o$5.length; B$2++) {
-        let e$7 = o$5[B$2],
-          l$6 = typeof e$7.threshold == `number` ? e$7.threshold : 50,
-          y$3 = !!(t$7 && g$2 && e$7.axis !== `y`),
-          V = !!(n$7 && v$4 && e$7.axis !== `x`),
-          H$1 = e$7.priority || 0;
-        if ((!y$3 || H$1 < x$3) && (!V || H$1 < P$1)) continue;
-        let U = u$3(e$7.element || e$7),
-          W = y$3 ? f$1(U) : -1,
+        B$1 = 0;
+      for (; B$1 < o$7.length; B$1++) {
+        let e$10 = o$7[B$1],
+          l$5 = typeof e$10.threshold == `number` ? e$10.threshold : 50,
+          y$2 = !!(t$12 && g$2 && e$10.axis !== `y`),
+          V = !!(n$11 && v$3 && e$10.axis !== `x`),
+          H = e$10.priority || 0;
+        if ((!y$2 || H < x$2) && (!V || H < P$1)) continue;
+        let U = u$2(e$10.element || e$10),
+          W = y$2 ? f$1(U) : -1,
           G = V ? m$1(U) : -1;
         if (W <= 0 && G <= 0) continue;
-        let K = t$5([U, `padding`], window),
-          q = n$6(s$5, K) || -Infinity;
+        let K = t$7([U, `padding`], window),
+          q = n$10(s$4, K) || -Infinity;
         if (q === -Infinity)
-          if (e$7.padding && h$1(s$5, T$2(K, e$7.padding, _$1))) q = -(c$4(s$5, K) || 0);
+          if (e$10.padding && h$1(s$4, T$1(K, e$10.padding, _$1))) q = -(c$4(s$4, K) || 0);
           else continue;
-        if (y$3 && H$1 >= x$3 && W > 0 && (H$1 > x$3 || q > k$3)) {
-          let e$8 = 0,
-            t$8 = C$2.none,
-            n$8 = D$2(l$6, K.width),
-            r$6 = O$2(n$8, a$4, s$5.width, K.width);
-          (g$2 === C$2.right
-            ? ((e$8 = K.x + K.width + r$6 - (s$5.x + s$5.width)),
-              e$8 <= n$8 && !E$2(d$1(U), W) && (t$8 = C$2.right))
-            : g$2 === C$2.left &&
-              ((e$8 = s$5.x - (K.x - r$6)), e$8 <= n$8 && d$1(U) > 0 && (t$8 = C$2.left)),
-            t$8 &&
-              ((b$3 = U),
-              (x$3 = H$1),
-              (w$3 = n$8),
-              (k$3 = q),
-              (A$3 = t$8),
-              (j$2 = e$8),
-              (M$3 = W)));
+        if (y$2 && H >= x$2 && W > 0 && (H > x$2 || q > k$2)) {
+          let e$11 = 0,
+            t$13 = C$1.none,
+            n$12 = D$1(l$5, K.width),
+            r$8 = O$1(n$12, a$4, s$4.width, K.width);
+          (g$2 === C$1.right
+            ? ((e$11 = K.x + K.width + r$8 - (s$4.x + s$4.width)),
+              e$11 <= n$12 && !E$1(d$1(U), W) && (t$13 = C$1.right))
+            : g$2 === C$1.left &&
+              ((e$11 = s$4.x - (K.x - r$8)), e$11 <= n$12 && d$1(U) > 0 && (t$13 = C$1.left)),
+            t$13 &&
+              ((b$2 = U),
+              (x$2 = H),
+              (w$2 = n$12),
+              (k$2 = q),
+              (A$2 = t$13),
+              (j$2 = e$11),
+              (M$2 = W)));
         }
-        if (V && H$1 >= P$1 && G > 0 && (H$1 > P$1 || q > I$1)) {
-          let e$8 = 0,
-            t$8 = S$2.none,
-            n$8 = D$2(l$6, K.height),
-            r$6 = O$2(n$8, a$4, s$5.height, K.height);
-          (v$4 === C$2.down
-            ? ((e$8 = K.y + K.height + r$6 - (s$5.y + s$5.height)),
-              e$8 <= n$8 && !E$2(p$1(U), G) && (t$8 = C$2.down))
-            : v$4 === C$2.up &&
-              ((e$8 = s$5.y - (K.y - r$6)), e$8 <= n$8 && p$1(U) > 0 && (t$8 = C$2.up)),
-            t$8 &&
-              ((N$3 = U),
-              (P$1 = H$1),
-              (F$1 = n$8),
+        if (V && H >= P$1 && G > 0 && (H > P$1 || q > I$1)) {
+          let e$11 = 0,
+            t$13 = S$1.none,
+            n$12 = D$1(l$5, K.height),
+            r$8 = O$1(n$12, a$4, s$4.height, K.height);
+          (v$3 === C$1.down
+            ? ((e$11 = K.y + K.height + r$8 - (s$4.y + s$4.height)),
+              e$11 <= n$12 && !E$1(p$1(U), G) && (t$13 = C$1.down))
+            : v$3 === C$1.up &&
+              ((e$11 = s$4.y - (K.y - r$8)), e$11 <= n$12 && p$1(U) > 0 && (t$13 = C$1.up)),
+            t$13 &&
+              ((N$2 = U),
+              (P$1 = H),
+              (F$1 = n$12),
               (I$1 = q),
-              (L$2 = t$8),
-              (R$1 = e$8),
+              (L$1 = t$13),
+              (R$1 = e$11),
               (z$1 = G)));
         }
       }
-      (t$7 &&
-        (b$3 && A$3
-          ? this._requestItemScroll(e$6, y$2.x, b$3, A$3, w$3, j$2, M$3)
-          : this._cancelItemScroll(e$6, y$2.x)),
-        n$7 &&
-          (N$3 && L$2
-            ? this._requestItemScroll(e$6, y$2.y, N$3, L$2, F$1, R$1, z$1)
-            : this._cancelItemScroll(e$6, y$2.y)));
+      (t$12 &&
+        (b$2 && A$2
+          ? this._requestItemScroll(e$9, y$1.x, b$2, A$2, w$2, j$2, M$2)
+          : this._cancelItemScroll(e$9, y$1.x)),
+        n$11 &&
+          (N$2 && L$1
+            ? this._requestItemScroll(e$9, y$1.y, N$2, L$1, F$1, R$1, z$1)
+            : this._cancelItemScroll(e$9, y$1.y)));
     }
-    _updateScrollRequest(e$6) {
-      let { inertAreaSize: t$7, smoothStop: n$7, targets: a$4, clientRect: o$5 } = e$6.item,
-        s$5 = null,
+    _updateScrollRequest(e$9) {
+      let { inertAreaSize: t$12, smoothStop: n$11, targets: a$4, clientRect: o$7 } = e$9.item,
+        s$4 = null,
         c$5 = 0;
       for (; c$5 < a$4.length; c$5++) {
-        let n$8 = a$4[c$5],
-          l$5 = u$3(n$8.element || n$8);
-        if (l$5 !== e$6.element) continue;
-        let g$2 = !!(y$2.x & e$6.direction);
+        let n$12 = a$4[c$5],
+          l$4 = u$2(n$12.element || n$12);
+        if (l$4 !== e$9.element) continue;
+        let g$2 = !!(y$1.x & e$9.direction);
         if (g$2) {
-          if (n$8.axis === `y`) continue;
-        } else if (n$8.axis === `x`) continue;
-        let v$4 = g$2 ? f$1(l$5) : m$1(l$5);
-        if (v$4 <= 0) break;
-        let x$3 = t$5([l$5, `padding`], window);
-        if ((n$6(o$5, x$3) || -Infinity) === -Infinity) {
-          let e$7 = n$8.scrollPadding || n$8.padding;
-          if (!(e$7 && h$1(o$5, T$2(x$3, e$7, _$1)))) break;
+          if (n$12.axis === `y`) continue;
+        } else if (n$12.axis === `x`) continue;
+        let v$3 = g$2 ? f$1(l$4) : m$1(l$4);
+        if (v$3 <= 0) break;
+        let x$2 = t$7([l$4, `padding`], window);
+        if ((n$10(o$7, x$2) || -Infinity) === -Infinity) {
+          let e$10 = n$12.scrollPadding || n$12.padding;
+          if (!(e$10 && h$1(o$7, T$1(x$2, e$10, _$1)))) break;
         }
-        let S$3 = D$2(
-            typeof n$8.threshold == `number` ? n$8.threshold : 50,
-            g$2 ? x$3.width : x$3.height,
+        let S$2 = D$1(
+            typeof n$12.threshold == `number` ? n$12.threshold : 50,
+            g$2 ? x$2.width : x$2.height,
           ),
-          w$3 = O$2(S$3, t$7, g$2 ? o$5.width : o$5.height, g$2 ? x$3.width : x$3.height),
-          k$3 = 0;
+          w$2 = O$1(S$2, t$12, g$2 ? o$7.width : o$7.height, g$2 ? x$2.width : x$2.height),
+          k$2 = 0;
         if (
-          ((k$3 =
-            e$6.direction === C$2.left
-              ? o$5.x - (x$3.x - w$3)
-              : e$6.direction === C$2.right
-                ? x$3.x + x$3.width + w$3 - (o$5.x + o$5.width)
-                : e$6.direction === C$2.up
-                  ? o$5.y - (x$3.y - w$3)
-                  : x$3.y + x$3.height + w$3 - (o$5.y + o$5.height)),
-          k$3 > S$3)
+          ((k$2 =
+            e$9.direction === C$1.left
+              ? o$7.x - (x$2.x - w$2)
+              : e$9.direction === C$1.right
+                ? x$2.x + x$2.width + w$2 - (o$7.x + o$7.width)
+                : e$9.direction === C$1.up
+                  ? o$7.y - (x$2.y - w$2)
+                  : x$2.y + x$2.height + w$2 - (o$7.y + o$7.height)),
+          k$2 > S$2)
         )
           break;
-        let A$3 = g$2 ? d$1(l$5) : p$1(l$5);
-        if (((s$5 = b$2.forward & e$6.direction ? E$2(A$3, v$4) : A$3 <= 0), s$5)) break;
+        let A$2 = g$2 ? d$1(l$4) : p$1(l$4);
+        if (((s$4 = b$1.forward & e$9.direction ? E$1(A$2, v$3) : A$2 <= 0), s$4)) break;
         return (
-          (e$6.maxValue = v$4),
-          (e$6.threshold = S$3),
-          (e$6.distance = k$3),
-          (e$6.isEnding = !1),
+          (e$9.maxValue = v$3),
+          (e$9.threshold = S$2),
+          (e$9.distance = k$2),
+          (e$9.isEnding = !1),
           !0
         );
       }
       return (
-        n$7 === !0 && e$6.speed > 0
-          ? (s$5 === null && (s$5 = e$6.hasReachedEnd()), (e$6.isEnding = !s$5))
-          : (e$6.isEnding = !1),
-        e$6.isEnding
+        n$11 === !0 && e$9.speed > 0
+          ? (s$4 === null && (s$4 = e$9.hasReachedEnd()), (e$9.isEnding = !s$4))
+          : (e$9.isEnding = !1),
+        e$9.isEnding
       );
     }
     _updateItems() {
-      for (let e$6 = 0; e$6 < this.items.length; e$6++) {
-        let t$7 = this.items[e$6],
-          n$7 = this._itemData.get(t$7),
-          { x: r$6, y: i$5 } = t$7.position,
-          a$4 = n$7.positionX,
-          o$5 = n$7.positionY;
-        (r$6 === a$4 && i$5 === o$5) ||
-          ((n$7.directionX = r$6 > a$4 ? C$2.right : r$6 < a$4 ? C$2.left : n$7.directionX),
-          (n$7.directionY = i$5 > o$5 ? C$2.down : i$5 < o$5 ? C$2.up : n$7.directionY),
-          (n$7.positionX = r$6),
-          (n$7.positionY = i$5),
-          n$7.overlapCheckRequestTime === 0 && (n$7.overlapCheckRequestTime = this._tickTime));
+      for (let e$9 = 0; e$9 < this.items.length; e$9++) {
+        let t$12 = this.items[e$9],
+          n$11 = this._itemData.get(t$12),
+          { x: r$8, y: i$7 } = t$12.position,
+          a$4 = n$11.positionX,
+          o$7 = n$11.positionY;
+        (r$8 === a$4 && i$7 === o$7) ||
+          ((n$11.directionX = r$8 > a$4 ? C$1.right : r$8 < a$4 ? C$1.left : n$11.directionX),
+          (n$11.directionY = i$7 > o$7 ? C$1.down : i$7 < o$7 ? C$1.up : n$11.directionY),
+          (n$11.positionX = r$8),
+          (n$11.positionY = i$7),
+          n$11.overlapCheckRequestTime === 0 && (n$11.overlapCheckRequestTime = this._tickTime));
       }
     }
     _updateRequests() {
-      let e$6 = this.items,
-        t$7 = this._requests[y$2.x],
-        n$7 = this._requests[y$2.y],
-        r$6 = 0;
-      for (; r$6 < e$6.length; r$6++) {
-        let i$5 = e$6[r$6],
-          a$4 = this._itemData.get(i$5),
-          o$5 = a$4.overlapCheckRequestTime,
-          s$5 = o$5 > 0 && this._tickTime - o$5 > this.settings.overlapCheckInterval,
+      let e$9 = this.items,
+        t$12 = this._requests[y$1.x],
+        n$11 = this._requests[y$1.y],
+        r$8 = 0;
+      for (; r$8 < e$9.length; r$8++) {
+        let i$7 = e$9[r$8],
+          a$4 = this._itemData.get(i$7),
+          o$7 = a$4.overlapCheckRequestTime,
+          s$4 = o$7 > 0 && this._tickTime - o$7 > this.settings.overlapCheckInterval,
           c$5 = !0,
-          l$5 = t$7.get(i$5);
-        l$5 &&
-          l$5.isActive &&
-          ((c$5 = !this._updateScrollRequest(l$5)),
-          c$5 && ((s$5 = !0), this._cancelItemScroll(i$5, y$2.x)));
-        let u$5 = !0,
-          d$2 = n$7.get(i$5);
+          l$4 = t$12.get(i$7);
+        l$4 &&
+          l$4.isActive &&
+          ((c$5 = !this._updateScrollRequest(l$4)),
+          c$5 && ((s$4 = !0), this._cancelItemScroll(i$7, y$1.x)));
+        let u$4 = !0,
+          d$2 = n$11.get(i$7);
         (d$2 &&
           d$2.isActive &&
-          ((u$5 = !this._updateScrollRequest(d$2)),
-          u$5 && ((s$5 = !0), this._cancelItemScroll(i$5, y$2.y))),
-          s$5 && ((a$4.overlapCheckRequestTime = 0), this._checkItemOverlap(i$5, c$5, u$5)));
+          ((u$4 = !this._updateScrollRequest(d$2)),
+          u$4 && ((s$4 = !0), this._cancelItemScroll(i$7, y$1.y))),
+          s$4 && ((a$4.overlapCheckRequestTime = 0), this._checkItemOverlap(i$7, c$5, u$4)));
       }
     }
-    _requestAction(e$6, t$7) {
-      let n$7 = t$7 === y$2.x,
-        r$6 = null,
-        i$5 = 0;
-      for (; i$5 < this._actions.length; i$5++) {
-        if (((r$6 = this._actions[i$5]), e$6.element !== r$6.element)) {
-          r$6 = null;
+    _requestAction(e$9, t$12) {
+      let n$11 = t$12 === y$1.x,
+        r$8 = null,
+        i$7 = 0;
+      for (; i$7 < this._actions.length; i$7++) {
+        if (((r$8 = this._actions[i$7]), e$9.element !== r$8.element)) {
+          r$8 = null;
           continue;
         }
-        if (n$7 ? r$6.requestX : r$6.requestY) {
-          this._cancelItemScroll(e$6.item, t$7);
+        if (n$11 ? r$8.requestX : r$8.requestY) {
+          this._cancelItemScroll(e$9.item, t$12);
           return;
         }
         break;
       }
-      ((r$6 ||= this._actionPool.get()),
-        (r$6.element = e$6.element),
-        r$6.addRequest(e$6),
-        e$6.tick(this._tickDeltaTime),
-        this._actions.push(r$6));
+      ((r$8 ||= this._actionPool.get()),
+        (r$8.element = e$9.element),
+        r$8.addRequest(e$9),
+        e$9.tick(this._tickDeltaTime),
+        this._actions.push(r$8));
     }
     _updateActions() {
-      let e$6 = 0;
-      for (e$6 = 0; e$6 < this.items.length; e$6++) {
-        let t$7 = this.items[e$6],
-          n$7 = this._requests[y$2.x].get(t$7),
-          r$6 = this._requests[y$2.y].get(t$7);
-        (n$7 && this._requestAction(n$7, y$2.x), r$6 && this._requestAction(r$6, y$2.y));
+      let e$9 = 0;
+      for (e$9 = 0; e$9 < this.items.length; e$9++) {
+        let t$12 = this.items[e$9],
+          n$11 = this._requests[y$1.x].get(t$12),
+          r$8 = this._requests[y$1.y].get(t$12);
+        (n$11 && this._requestAction(n$11, y$1.x), r$8 && this._requestAction(r$8, y$1.y));
       }
-      for (e$6 = 0; e$6 < this._actions.length; e$6++) this._actions[e$6].computeScrollValues();
+      for (e$9 = 0; e$9 < this._actions.length; e$9++) this._actions[e$9].computeScrollValues();
     }
     _applyActions() {
       if (!this._actions.length) return;
-      let e$6 = 0;
-      for (e$6 = 0; e$6 < this._actions.length; e$6++)
-        (this._actions[e$6].scroll(), this._actionPool.release(this._actions[e$6]));
+      let e$9 = 0;
+      for (e$9 = 0; e$9 < this._actions.length; e$9++)
+        (this._actions[e$9].scroll(), this._actionPool.release(this._actions[e$9]));
       this._actions.length = 0;
     }
-    addItem(e$6) {
-      if (this._isDestroyed || this._itemData.has(e$6)) return;
-      let { x: t$7, y: n$7 } = e$6.position,
-        r$6 = new k$2();
-      ((r$6.positionX = t$7),
-        (r$6.positionY = n$7),
-        (r$6.directionX = C$2.none),
-        (r$6.directionY = C$2.none),
-        (r$6.overlapCheckRequestTime = this._tickTime),
-        this._itemData.set(e$6, r$6),
-        this.items.push(e$6),
+    addItem(e$9) {
+      if (this._isDestroyed || this._itemData.has(e$9)) return;
+      let { x: t$12, y: n$11 } = e$9.position,
+        r$8 = new k$1();
+      ((r$8.positionX = t$12),
+        (r$8.positionY = n$11),
+        (r$8.directionX = C$1.none),
+        (r$8.directionY = C$1.none),
+        (r$8.overlapCheckRequestTime = this._tickTime),
+        this._itemData.set(e$9, r$8),
+        this.items.push(e$9),
         this._isTicking || this._startTicking());
     }
-    removeItem(e$6) {
+    removeItem(e$9) {
       if (this._isDestroyed) return;
-      let t$7 = this.items.indexOf(e$6);
-      t$7 !== -1 &&
-        (this._requests[y$2.x].get(e$6) &&
-          (this._cancelItemScroll(e$6, y$2.x), this._requests[y$2.x].delete(e$6)),
-        this._requests[y$2.y].get(e$6) &&
-          (this._cancelItemScroll(e$6, y$2.y), this._requests[y$2.y].delete(e$6)),
-        this._itemData.delete(e$6),
-        this.items.splice(t$7, 1),
+      let t$12 = this.items.indexOf(e$9);
+      t$12 !== -1 &&
+        (this._requests[y$1.x].get(e$9) &&
+          (this._cancelItemScroll(e$9, y$1.x), this._requests[y$1.x].delete(e$9)),
+        this._requests[y$1.y].get(e$9) &&
+          (this._cancelItemScroll(e$9, y$1.y), this._requests[y$1.y].delete(e$9)),
+        this._itemData.delete(e$9),
+        this.items.splice(t$12, 1),
         this._isTicking && !this.items.length && this._stopTicking());
     }
     isDestroyed() {
       return this._isDestroyed;
     }
-    isItemScrollingX(e$6) {
-      return !!this._requests[y$2.x].get(e$6)?.isActive;
+    isItemScrollingX(e$9) {
+      return !!this._requests[y$1.x].get(e$9)?.isActive;
     }
-    isItemScrollingY(e$6) {
-      return !!this._requests[y$2.y].get(e$6)?.isActive;
+    isItemScrollingY(e$9) {
+      return !!this._requests[y$1.y].get(e$9)?.isActive;
     }
-    isItemScrolling(e$6) {
-      return this.isItemScrollingX(e$6) || this.isItemScrollingY(e$6);
+    isItemScrolling(e$9) {
+      return this.isItemScrollingX(e$9) || this.isItemScrollingY(e$9);
     }
-    updateSettings(e$6 = {}) {
-      let { overlapCheckInterval: t$7 = this.settings.overlapCheckInterval } = e$6;
-      this.settings.overlapCheckInterval = t$7;
+    updateSettings(e$9 = {}) {
+      let { overlapCheckInterval: t$12 = this.settings.overlapCheckInterval } = e$9;
+      this.settings.overlapCheckInterval = t$12;
     }
     destroy() {
       this._isDestroyed ||=
-        (this.items.forEach((e$6) => this.removeItem(e$6)),
+        (this.items.forEach((e$9) => this.removeItem(e$9)),
         this._requestPool.destroy(),
         this._actionPool.destroy(),
         (this._actions.length = 0),
@@ -2634,21 +2654,21 @@
 
   //#endregion
   //#region ../dragdoll/dist/get-style-CC2j8jdv.js
-  const e$3 = /* @__PURE__ */ new WeakMap();
-  function t$4(t$7) {
-    let n$7 = e$3.get(t$7)?.deref();
+  const e$4 = /* @__PURE__ */ new WeakMap();
+  function t$6(t$12) {
+    let n$11 = e$4.get(t$12)?.deref();
     return (
-      n$7 || ((n$7 = window.getComputedStyle(t$7, null)), e$3.set(t$7, new WeakRef(n$7))),
-      n$7
+      n$11 || ((n$11 = window.getComputedStyle(t$12, null)), e$4.set(t$12, new WeakRef(n$11))),
+      n$11
     );
   }
 
   //#endregion
   //#region ../dragdoll/dist/constants-CMClRu_c.js
-  const e$2 = typeof window < `u` && window.document !== void 0,
-    t$2 = e$2 && `ontouchstart` in window,
-    n$5 = e$2 && !!window.PointerEvent;
-  e$2 &&
+  const e$3 = typeof window < `u` && window.document !== void 0,
+    t$5 = e$3 && `ontouchstart` in window,
+    n$9 = e$3 && !!window.PointerEvent;
+  e$3 &&
     navigator.vendor &&
     navigator.vendor.indexOf(`Apple`) > -1 &&
     navigator.userAgent &&
@@ -2657,7 +2677,7 @@
 
   //#endregion
   //#region ../dragdoll/dist/sensor-Uwz8qy61.js
-  const e$1 = {
+  const e$2 = {
     Start: `start`,
     Move: `move`,
     Cancel: `cancel`,
@@ -2667,8 +2687,8 @@
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/isBlockElement.js
-  function isBlockElement(e$6) {
-    switch (getStyle(e$6).display) {
+  function isBlockElement(e$9) {
+    switch (getStyle(e$9).display) {
       case 'none':
         return null;
       case 'inline':
@@ -2681,25 +2701,25 @@
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/isContainingBlockForFixedElement.js
-  function isContainingBlockForFixedElement(n$7) {
-    const t$7 = getStyle(n$7);
+  function isContainingBlockForFixedElement(n$11) {
+    const t$12 = getStyle(n$11);
     if (!IS_SAFARI) {
-      const { filter: n$8 } = t$7;
-      if (n$8 && 'none' !== n$8) return !0;
-      const { backdropFilter: e$7 } = t$7;
-      if (e$7 && 'none' !== e$7) return !0;
-      const { willChange: i$6 } = t$7;
-      if (i$6 && (i$6.indexOf('filter') > -1 || i$6.indexOf('backdrop-filter') > -1)) return !0;
+      const { filter: n$12 } = t$12;
+      if (n$12 && 'none' !== n$12) return !0;
+      const { backdropFilter: e$10 } = t$12;
+      if (e$10 && 'none' !== e$10) return !0;
+      const { willChange: i$8 } = t$12;
+      if (i$8 && (i$8.indexOf('filter') > -1 || i$8.indexOf('backdrop-filter') > -1)) return !0;
     }
-    const e$6 = isBlockElement(n$7);
-    if (!e$6) return e$6;
-    const { transform: i$5 } = t$7;
-    if (i$5 && 'none' !== i$5) return !0;
-    const { perspective: r$6 } = t$7;
-    if (r$6 && 'none' !== r$6) return !0;
-    const { contentVisibility: o$5 } = t$7;
-    if (o$5 && 'auto' === o$5) return !0;
-    const { contain: f$2 } = t$7;
+    const e$9 = isBlockElement(n$11);
+    if (!e$9) return e$9;
+    const { transform: i$7 } = t$12;
+    if (i$7 && 'none' !== i$7) return !0;
+    const { perspective: r$8 } = t$12;
+    if (r$8 && 'none' !== r$8) return !0;
+    const { contentVisibility: o$7 } = t$12;
+    if (o$7 && 'auto' === o$7) return !0;
+    const { contain: f$2 } = t$12;
     if (
       f$2 &&
       ('strict' === f$2 ||
@@ -2708,7 +2728,7 @@
         f$2.indexOf('layout') > -1)
     )
       return !0;
-    const { willChange: c$5 } = t$7;
+    const { willChange: c$5 } = t$12;
     return (
       !(
         !c$5 ||
@@ -2723,43 +2743,43 @@
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/isContainingBlockForAbsoluteElement.js
-  function isContainingBlockForAbsoluteElement(t$7) {
-    return 'static' !== getStyle(t$7).position || isContainingBlockForFixedElement(t$7);
+  function isContainingBlockForAbsoluteElement(t$12) {
+    return 'static' !== getStyle(t$12).position || isContainingBlockForFixedElement(t$12);
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/getContainingBlock.js
-  function getContainingBlock(e$6, t$7 = {}) {
-    if (isDocumentElement(e$6)) return e$6.ownerDocument.defaultView;
-    const n$7 = t$7.position || getStyle(e$6).position,
-      { skipDisplayNone: i$5, container: o$5 } = t$7;
-    switch (n$7) {
+  function getContainingBlock(e$9, t$12 = {}) {
+    if (isDocumentElement(e$9)) return e$9.ownerDocument.defaultView;
+    const n$11 = t$12.position || getStyle(e$9).position,
+      { skipDisplayNone: i$7, container: o$7 } = t$12;
+    switch (n$11) {
       case 'static':
       case 'relative':
       case 'sticky':
       case '-webkit-sticky': {
-        let t$8 = o$5 || e$6.parentElement;
-        for (; t$8; ) {
-          const e$7 = isBlockElement(t$8);
-          if (e$7) return t$8;
-          if (null === e$7 && !i$5) return null;
-          t$8 = t$8.parentElement;
+        let t$13 = o$7 || e$9.parentElement;
+        for (; t$13; ) {
+          const e$10 = isBlockElement(t$13);
+          if (e$10) return t$13;
+          if (null === e$10 && !i$7) return null;
+          t$13 = t$13.parentElement;
         }
-        return e$6.ownerDocument.documentElement;
+        return e$9.ownerDocument.documentElement;
       }
       case 'absolute':
       case 'fixed': {
-        const t$8 = 'fixed' === n$7;
-        let l$5 = o$5 || e$6.parentElement;
-        for (; l$5; ) {
-          const e$7 = t$8
-            ? isContainingBlockForFixedElement(l$5)
-            : isContainingBlockForAbsoluteElement(l$5);
-          if (!0 === e$7) return l$5;
-          if (null === e$7 && !i$5) return null;
-          l$5 = l$5.parentElement;
+        const t$13 = 'fixed' === n$11;
+        let l$4 = o$7 || e$9.parentElement;
+        for (; l$4; ) {
+          const e$10 = t$13
+            ? isContainingBlockForFixedElement(l$4)
+            : isContainingBlockForAbsoluteElement(l$4);
+          if (!0 === e$10) return l$4;
+          if (null === e$10 && !i$7) return null;
+          l$4 = l$4.parentElement;
         }
-        return e$6.ownerDocument.defaultView;
+        return e$9.ownerDocument.defaultView;
       }
       default:
         return null;
@@ -2768,27 +2788,27 @@
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/getOffsetContainer.js
-  function getOffsetContainer(n$7, t$7 = {}) {
-    const { display: o$5 } = getStyle(n$7);
-    if ('none' === o$5 || 'contents' === o$5) return null;
-    const e$6 = t$7.position || getStyle(n$7).position,
-      { skipDisplayNone: s$5, container: r$6 } = t$7;
-    switch (e$6) {
+  function getOffsetContainer(n$11, t$12 = {}) {
+    const { display: o$7 } = getStyle(n$11);
+    if ('none' === o$7 || 'contents' === o$7) return null;
+    const e$9 = t$12.position || getStyle(n$11).position,
+      { skipDisplayNone: s$4, container: r$8 } = t$12;
+    switch (e$9) {
       case 'relative':
-        return n$7;
+        return n$11;
       case 'fixed':
-        return getContainingBlock(n$7, {
-          container: r$6,
-          position: e$6,
-          skipDisplayNone: s$5,
+        return getContainingBlock(n$11, {
+          container: r$8,
+          position: e$9,
+          skipDisplayNone: s$4,
         });
       case 'absolute': {
-        const t$8 = getContainingBlock(n$7, {
-          container: r$6,
-          position: e$6,
-          skipDisplayNone: s$5,
+        const t$13 = getContainingBlock(n$11, {
+          container: r$8,
+          position: e$9,
+          skipDisplayNone: s$4,
         });
-        return isWindow(t$8) ? n$7.ownerDocument : t$8;
+        return isWindow(t$13) ? n$11.ownerDocument : t$13;
       }
       default:
         return null;
@@ -2796,72 +2816,72 @@
   }
 
   //#endregion
-  //#region ../dragdoll/dist/draggable-oKZ1M89x.js
-  function s$3(e$6, t$7) {
-    return e$6.isIdentity && t$7.isIdentity
+  //#region ../dragdoll/dist/draggable-CUeOOVDR.js
+  function s$2(e$9, t$12) {
+    return e$9.isIdentity && t$12.isIdentity
       ? !0
-      : e$6.is2D && t$7.is2D
-        ? e$6.a === t$7.a &&
-          e$6.b === t$7.b &&
-          e$6.c === t$7.c &&
-          e$6.d === t$7.d &&
-          e$6.e === t$7.e &&
-          e$6.f === t$7.f
-        : e$6.m11 === t$7.m11 &&
-          e$6.m12 === t$7.m12 &&
-          e$6.m13 === t$7.m13 &&
-          e$6.m14 === t$7.m14 &&
-          e$6.m21 === t$7.m21 &&
-          e$6.m22 === t$7.m22 &&
-          e$6.m23 === t$7.m23 &&
-          e$6.m24 === t$7.m24 &&
-          e$6.m31 === t$7.m31 &&
-          e$6.m32 === t$7.m32 &&
-          e$6.m33 === t$7.m33 &&
-          e$6.m34 === t$7.m34 &&
-          e$6.m41 === t$7.m41 &&
-          e$6.m42 === t$7.m42 &&
-          e$6.m43 === t$7.m43 &&
-          e$6.m44 === t$7.m44;
+      : e$9.is2D && t$12.is2D
+        ? e$9.a === t$12.a &&
+          e$9.b === t$12.b &&
+          e$9.c === t$12.c &&
+          e$9.d === t$12.d &&
+          e$9.e === t$12.e &&
+          e$9.f === t$12.f
+        : e$9.m11 === t$12.m11 &&
+          e$9.m12 === t$12.m12 &&
+          e$9.m13 === t$12.m13 &&
+          e$9.m14 === t$12.m14 &&
+          e$9.m21 === t$12.m21 &&
+          e$9.m22 === t$12.m22 &&
+          e$9.m23 === t$12.m23 &&
+          e$9.m24 === t$12.m24 &&
+          e$9.m31 === t$12.m31 &&
+          e$9.m32 === t$12.m32 &&
+          e$9.m33 === t$12.m33 &&
+          e$9.m34 === t$12.m34 &&
+          e$9.m41 === t$12.m41 &&
+          e$9.m42 === t$12.m42 &&
+          e$9.m43 === t$12.m43 &&
+          e$9.m44 === t$12.m44;
   }
-  function c$3(e$6) {
+  function c$3(e$9) {
     return (
-      e$6.m11 !== 1 ||
-      e$6.m12 !== 0 ||
-      e$6.m13 !== 0 ||
-      e$6.m14 !== 0 ||
-      e$6.m21 !== 0 ||
-      e$6.m22 !== 1 ||
-      e$6.m23 !== 0 ||
-      e$6.m24 !== 0 ||
-      e$6.m31 !== 0 ||
-      e$6.m32 !== 0 ||
-      e$6.m33 !== 1 ||
-      e$6.m34 !== 0 ||
-      e$6.m43 !== 0 ||
-      e$6.m44 !== 1
+      e$9.m11 !== 1 ||
+      e$9.m12 !== 0 ||
+      e$9.m13 !== 0 ||
+      e$9.m14 !== 0 ||
+      e$9.m21 !== 0 ||
+      e$9.m22 !== 1 ||
+      e$9.m23 !== 0 ||
+      e$9.m24 !== 0 ||
+      e$9.m31 !== 0 ||
+      e$9.m32 !== 0 ||
+      e$9.m33 !== 1 ||
+      e$9.m34 !== 0 ||
+      e$9.m43 !== 0 ||
+      e$9.m44 !== 1
     );
   }
-  function l$2(e$6, t$7, n$7 = null) {
-    if (`moveBefore` in e$6 && e$6.isConnected === t$7.isConnected)
+  function l$1(e$9, t$12, n$11 = null) {
+    if (`moveBefore` in e$9 && e$9.isConnected === t$12.isConnected)
       try {
-        e$6.moveBefore(t$7, n$7);
+        e$9.moveBefore(t$12, n$11);
         return;
       } catch {}
-    let r$6 = document.activeElement,
-      i$5 = t$7.contains(r$6);
-    (e$6.insertBefore(t$7, n$7),
-      i$5 &&
-        document.activeElement !== r$6 &&
-        r$6 instanceof HTMLElement &&
-        r$6.focus({ preventScroll: !0 }));
+    let r$8 = document.activeElement,
+      i$7 = t$12.contains(r$8);
+    (e$9.insertBefore(t$12, n$11),
+      i$7 &&
+        document.activeElement !== r$8 &&
+        r$8 instanceof HTMLElement &&
+        r$8.focus({ preventScroll: !0 }));
   }
-  function u$2(e$6) {
-    return e$6.setMatrixValue(`scale(1, 1)`);
+  function u$1(e$9) {
+    return e$9.setMatrixValue(`scale(1, 1)`);
   }
-  function d(e$6, t$7 = 0) {
-    let n$7 = 10 ** t$7;
-    return Math.round((e$6 + 2 ** -52) * n$7) / n$7;
+  function d(e$9, t$12 = 0) {
+    let n$11 = 10 ** t$12;
+    return Math.round((e$9 + 2 ** -52) * n$11) / n$11;
   }
   var f = class {
       _cache;
@@ -2869,23 +2889,23 @@
       constructor() {
         ((this._cache = /* @__PURE__ */ new Map()), (this._validation = /* @__PURE__ */ new Set()));
       }
-      set(e$6, t$7) {
-        (this._cache.set(e$6, t$7), this._validation.add(e$6));
+      set(e$9, t$12) {
+        (this._cache.set(e$9, t$12), this._validation.add(e$9));
       }
-      get(e$6) {
-        return this._cache.get(e$6);
+      get(e$9) {
+        return this._cache.get(e$9);
       }
-      has(e$6) {
-        return this._cache.has(e$6);
+      has(e$9) {
+        return this._cache.has(e$9);
       }
-      delete(e$6) {
-        (this._cache.delete(e$6), this._validation.delete(e$6));
+      delete(e$9) {
+        (this._cache.delete(e$9), this._validation.delete(e$9));
       }
-      isValid(e$6) {
-        return this._validation.has(e$6);
+      isValid(e$9) {
+        return this._validation.has(e$9);
       }
-      invalidate(e$6) {
-        e$6 === void 0 ? this._validation.clear() : this._validation.delete(e$6);
+      invalidate(e$9) {
+        e$9 === void 0 ? this._validation.clear() : this._validation.delete(e$9);
       }
       clear() {
         (this._cache.clear(), this._validation.clear());
@@ -2901,11 +2921,11 @@
       isEnded;
       _matrixCache;
       _clientOffsetCache;
-      constructor(e$6, t$7) {
-        ((this.sensor = e$6),
-          (this.startEvent = t$7),
-          (this.prevMoveEvent = t$7),
-          (this.moveEvent = t$7),
+      constructor(e$9, t$12) {
+        ((this.sensor = e$9),
+          (this.startEvent = t$12),
+          (this.prevMoveEvent = t$12),
+          (this.moveEvent = t$12),
           (this.endEvent = null),
           (this.items = []),
           (this.isEnded = !1),
@@ -2913,16 +2933,16 @@
           (this._clientOffsetCache = new f()));
       }
     };
-  function m(e$6, t$7, n$7 = !1) {
-    let { style: r$6 } = e$6;
-    for (let e$7 in t$7) r$6.setProperty(e$7, t$7[e$7], n$7 ? `important` : ``);
+  function m(e$9, t$12, n$11 = !1) {
+    let { style: r$8 } = e$9;
+    for (let e$10 in t$12) r$8.setProperty(e$10, t$12[e$10], n$11 ? `important` : ``);
   }
   function h() {
-    let e$6 = document.createElement(`div`);
+    let e$9 = document.createElement(`div`);
     return (
-      e$6.classList.add(`dragdoll-measure`),
+      e$9.classList.add(`dragdoll-measure`),
       m(
-        e$6,
+        e$9,
         {
           display: `block`,
           position: `absolute`,
@@ -2939,134 +2959,140 @@
         },
         !0,
       ),
-      e$6
+      e$9
     );
   }
   function g(
-    e$6,
-    t$7 = {
+    e$9,
+    t$12 = {
       x: 0,
       y: 0,
     },
   ) {
-    if (((t$7.x = 0), (t$7.y = 0), e$6 instanceof Window)) return t$7;
-    if (e$6 instanceof Document)
-      return ((t$7.x = window.scrollX * -1), (t$7.y = window.scrollY * -1), t$7);
-    let { x: r$6, y: i$5 } = e$6.getBoundingClientRect(),
-      a$4 = t$4(e$6);
+    if (((t$12.x = 0), (t$12.y = 0), e$9 instanceof Window)) return t$12;
+    if (e$9 instanceof Document)
+      return ((t$12.x = window.scrollX * -1), (t$12.y = window.scrollY * -1), t$12);
+    let { x: r$8, y: i$7 } = e$9.getBoundingClientRect(),
+      a$4 = t$6(e$9);
     return (
-      (t$7.x = r$6 + (parseFloat(a$4.borderLeftWidth) || 0)),
-      (t$7.y = i$5 + (parseFloat(a$4.borderTopWidth) || 0)),
-      t$7
+      (t$12.x = r$8 + (parseFloat(a$4.borderLeftWidth) || 0)),
+      (t$12.y = i$7 + (parseFloat(a$4.borderTopWidth) || 0)),
+      t$12
     );
   }
-  function _(e$6) {
-    let t$7 = t$4(e$6),
-      r$6 = parseFloat(t$7.height) || 0;
-    return t$7.boxSizing === `border-box`
-      ? r$6
-      : ((r$6 += parseFloat(t$7.borderTopWidth) || 0),
-        (r$6 += parseFloat(t$7.borderBottomWidth) || 0),
-        (r$6 += parseFloat(t$7.paddingTop) || 0),
-        (r$6 += parseFloat(t$7.paddingBottom) || 0),
-        e$6 instanceof HTMLElement && (r$6 += e$6.offsetHeight - e$6.clientHeight),
-        r$6);
+  function _(e$9) {
+    let t$12 = t$6(e$9),
+      r$8 = parseFloat(t$12.height) || 0;
+    return t$12.boxSizing === `border-box`
+      ? r$8
+      : ((r$8 += parseFloat(t$12.borderTopWidth) || 0),
+        (r$8 += parseFloat(t$12.borderBottomWidth) || 0),
+        (r$8 += parseFloat(t$12.paddingTop) || 0),
+        (r$8 += parseFloat(t$12.paddingBottom) || 0),
+        e$9 instanceof HTMLElement && (r$8 += e$9.offsetHeight - e$9.clientHeight),
+        r$8);
   }
-  function v$2(e$6) {
-    let t$7 = t$4(e$6),
-      r$6 = parseFloat(t$7.width) || 0;
-    return t$7.boxSizing === `border-box`
-      ? r$6
-      : ((r$6 += parseFloat(t$7.borderLeftWidth) || 0),
-        (r$6 += parseFloat(t$7.borderRightWidth) || 0),
-        (r$6 += parseFloat(t$7.paddingLeft) || 0),
-        (r$6 += parseFloat(t$7.paddingRight) || 0),
-        e$6 instanceof HTMLElement && (r$6 += e$6.offsetWidth - e$6.clientWidth),
-        r$6);
+  function v$1(e$9) {
+    let t$12 = t$6(e$9),
+      r$8 = parseFloat(t$12.width) || 0;
+    return t$12.boxSizing === `border-box`
+      ? r$8
+      : ((r$8 += parseFloat(t$12.borderLeftWidth) || 0),
+        (r$8 += parseFloat(t$12.borderRightWidth) || 0),
+        (r$8 += parseFloat(t$12.paddingLeft) || 0),
+        (r$8 += parseFloat(t$12.paddingRight) || 0),
+        e$9 instanceof HTMLElement && (r$8 += e$9.offsetWidth - e$9.clientWidth),
+        r$8);
   }
-  function y$1(e$6, t$7 = !1) {
-    let { translate: r$6, rotate: i$5, scale: a$4, transform: o$5 } = t$4(e$6),
-      s$5 = ``;
-    if (r$6 && r$6 !== `none`) {
-      let [t$8 = `0px`, n$7 = `0px`, i$6] = r$6.split(` `);
-      (t$8.includes(`%`) && (t$8 = `${(parseFloat(t$8) / 100) * v$2(e$6)}px`),
-        n$7.includes(`%`) && (n$7 = `${(parseFloat(n$7) / 100) * _(e$6)}px`),
-        i$6 ? (s$5 += `translate3d(${t$8},${n$7},${i$6})`) : (s$5 += `translate(${t$8},${n$7})`));
+  function y(e$9, t$12 = !1) {
+    let { translate: r$8, rotate: i$7, scale: a$4, transform: o$7 } = t$6(e$9),
+      s$4 = ``;
+    if (r$8 && r$8 !== `none`) {
+      let [t$13 = `0px`, n$11 = `0px`, i$8] = r$8.split(` `);
+      (t$13.includes(`%`) && (t$13 = `${(parseFloat(t$13) / 100) * v$1(e$9)}px`),
+        n$11.includes(`%`) && (n$11 = `${(parseFloat(n$11) / 100) * _(e$9)}px`),
+        i$8
+          ? (s$4 += `translate3d(${t$13},${n$11},${i$8})`)
+          : (s$4 += `translate(${t$13},${n$11})`));
     }
-    if (i$5 && i$5 !== `none`) {
-      let e$7 = i$5.split(` `);
-      e$7.length > 1 ? (s$5 += `rotate3d(${e$7.join(`,`)})`) : (s$5 += `rotate(${e$7.join(`,`)})`);
+    if (i$7 && i$7 !== `none`) {
+      let e$10 = i$7.split(` `);
+      e$10.length > 1
+        ? (s$4 += `rotate3d(${e$10.join(`,`)})`)
+        : (s$4 += `rotate(${e$10.join(`,`)})`);
     }
     if (a$4 && a$4 !== `none`) {
-      let e$7 = a$4.split(` `);
-      e$7.length === 3 ? (s$5 += `scale3d(${e$7.join(`,`)})`) : (s$5 += `scale(${e$7.join(`,`)})`);
+      let e$10 = a$4.split(` `);
+      e$10.length === 3
+        ? (s$4 += `scale3d(${e$10.join(`,`)})`)
+        : (s$4 += `scale(${e$10.join(`,`)})`);
     }
-    return (!t$7 && o$5 && o$5 !== `none` && (s$5 += o$5), s$5);
+    return (!t$12 && o$7 && o$7 !== `none` && (s$4 += o$7), s$4);
   }
-  function b$1(e$6) {
-    return typeof e$6 == `object` && !!e$6 && `x` in e$6 && `y` in e$6;
+  function b(e$9) {
+    return typeof e$9 == `object` && !!e$9 && `x` in e$9 && `y` in e$9;
   }
-  const x$1 = {
+  const x = {
       x: 0,
       y: 0,
     },
-    S$1 = {
+    S = {
       x: 0,
       y: 0,
     };
-  function C$1(
-    e$6,
-    t$7,
-    n$7 = {
+  function C(
+    e$9,
+    t$12,
+    n$11 = {
       x: 0,
       y: 0,
     },
   ) {
-    let r$6 = b$1(e$6) ? e$6 : g(e$6, x$1),
-      i$5 = b$1(t$7) ? t$7 : g(t$7, S$1);
-    return ((n$7.x = i$5.x - r$6.x), (n$7.y = i$5.y - r$6.y), n$7);
+    let r$8 = b(e$9) ? e$9 : g(e$9, x),
+      i$7 = b(t$12) ? t$12 : g(t$12, S);
+    return ((n$11.x = i$7.x - r$8.x), (n$11.y = i$7.y - r$8.y), n$11);
   }
-  function w$1(e$6) {
-    let t$7 = e$6.split(` `),
-      n$7 = ``,
-      r$6 = ``,
-      i$5 = ``;
+  function w(e$9) {
+    let t$12 = e$9.split(` `),
+      n$11 = ``,
+      r$8 = ``,
+      i$7 = ``;
     return (
-      t$7.length === 1
-        ? (n$7 = r$6 = t$7[0])
-        : t$7.length === 2
-          ? ([n$7, r$6] = t$7)
-          : ([n$7, r$6, i$5] = t$7),
+      t$12.length === 1
+        ? (n$11 = r$8 = t$12[0])
+        : t$12.length === 2
+          ? ([n$11, r$8] = t$12)
+          : ([n$11, r$8, i$7] = t$12),
       {
-        x: parseFloat(n$7) || 0,
-        y: parseFloat(r$6) || 0,
-        z: parseFloat(i$5) || 0,
+        x: parseFloat(n$11) || 0,
+        y: parseFloat(r$8) || 0,
+        z: parseFloat(i$7) || 0,
       }
     );
   }
-  const T$1 = e$2 ? new DOMMatrix() : null;
-  function E$1(e$6, t$7 = new DOMMatrix()) {
-    let r$6 = e$6;
-    for (u$2(t$7); r$6; ) {
-      let e$7 = y$1(r$6);
-      if (e$7 && (T$1.setMatrixValue(e$7), !T$1.isIdentity)) {
-        let { transformOrigin: e$8 } = t$4(r$6),
-          { x: i$5, y: a$4, z: o$5 } = w$1(e$8);
-        (o$5 === 0
-          ? T$1.setMatrixValue(
-              `translate(${i$5}px,${a$4}px) ${T$1} translate(${i$5 * -1}px,${a$4 * -1}px)`,
+  const T = e$3 ? new DOMMatrix() : null;
+  function E(e$9, t$12 = new DOMMatrix()) {
+    let r$8 = e$9;
+    for (u$1(t$12); r$8; ) {
+      let e$10 = y(r$8);
+      if (e$10 && (T.setMatrixValue(e$10), !T.isIdentity)) {
+        let { transformOrigin: e$11 } = t$6(r$8),
+          { x: i$7, y: a$4, z: o$7 } = w(e$11);
+        (o$7 === 0
+          ? T.setMatrixValue(
+              `translate(${i$7}px,${a$4}px) ${T} translate(${i$7 * -1}px,${a$4 * -1}px)`,
             )
-          : T$1.setMatrixValue(
-              `translate3d(${i$5}px,${a$4}px,${o$5}px) ${T$1} translate3d(${i$5 * -1}px,${a$4 * -1}px,${o$5 * -1}px)`,
+          : T.setMatrixValue(
+              `translate3d(${i$7}px,${a$4}px,${o$7}px) ${T} translate3d(${i$7 * -1}px,${a$4 * -1}px,${o$7 * -1}px)`,
             ),
-          t$7.preMultiplySelf(T$1));
+          t$12.preMultiplySelf(T));
       }
-      r$6 = r$6.parentElement;
+      r$8 = r$8.parentElement;
     }
-    return t$7;
+    return t$12;
   }
-  const D$1 = e$2 ? h() : null;
-  var O$1 = class {
+  const D = e$3 ? h() : null;
+  var O = class {
     data;
     element;
     elementContainer;
@@ -3086,18 +3112,18 @@
     _alignDiff;
     _matrixCache;
     _clientOffsetCache;
-    constructor(e$6, t$7) {
-      if (!e$6.isConnected) throw Error(`Element is not connected`);
-      let { drag: r$6 } = t$7;
-      if (!r$6) throw Error(`Drag is not defined`);
-      let i$5 = t$4(e$6),
-        a$4 = e$6.getBoundingClientRect(),
-        s$5 = y$1(e$6, !0);
+    constructor(e$9, t$12) {
+      if (!e$9.isConnected) throw Error(`Element is not connected`);
+      let { drag: r$8 } = t$12;
+      if (!r$8) throw Error(`Drag is not defined`);
+      let i$7 = t$6(e$9),
+        a$4 = e$9.getBoundingClientRect(),
+        s$4 = y(e$9, !0);
       ((this.data = {}),
-        (this.element = e$6),
-        (this.elementTransformOrigin = w$1(i$5.transformOrigin)),
-        (this.elementTransformMatrix = new DOMMatrix().setMatrixValue(s$5 + i$5.transform)),
-        (this.elementOffsetMatrix = new DOMMatrix(s$5).invertSelf()),
+        (this.element = e$9),
+        (this.elementTransformOrigin = w(i$7.transformOrigin)),
+        (this.elementTransformMatrix = new DOMMatrix().setMatrixValue(s$4 + i$7.transform)),
+        (this.elementOffsetMatrix = new DOMMatrix(s$4).invertSelf()),
         (this.frozenStyles = null),
         (this.unfrozenStyles = null),
         (this.position = {
@@ -3120,97 +3146,105 @@
           x: 0,
           y: 0,
         }),
-        (this._matrixCache = r$6._matrixCache),
-        (this._clientOffsetCache = r$6._clientOffsetCache));
-      let c$5 = e$6.parentElement;
+        (this._matrixCache = r$8._matrixCache),
+        (this._clientOffsetCache = r$8._clientOffsetCache));
+      let c$5 = e$9.parentElement;
       if (!c$5) throw Error(`Dragged element does not have a parent element.`);
       this.elementContainer = c$5;
-      let l$5 = t$7.settings.container || c$5;
-      if (((this.dragContainer = l$5), c$5 !== l$5)) {
-        let { position: e$7 } = i$5;
-        if (e$7 !== `fixed` && e$7 !== `absolute`)
+      let l$4 = t$12.settings.container,
+        u$4 =
+          (typeof l$4 == `function`
+            ? l$4({
+                draggable: t$12,
+                drag: r$8,
+                element: e$9,
+              })
+            : l$4) || c$5;
+      if (((this.dragContainer = u$4), c$5 !== u$4)) {
+        let { position: e$10 } = i$7;
+        if (e$10 !== `fixed` && e$10 !== `absolute`)
           throw Error(
-            `Dragged element has "${e$7}" position, but only "fixed" or "absolute" are allowed when using a custom drag container.`,
+            `Dragged element has "${e$10}" position, but only "fixed" or "absolute" are allowed when using a custom drag container.`,
           );
       }
-      let u$5 = getOffsetContainer(e$6) || e$6;
-      ((this.elementOffsetContainer = u$5),
+      let d$2 = getOffsetContainer(e$9) || e$9;
+      ((this.elementOffsetContainer = d$2),
         (this.dragOffsetContainer =
-          l$5 === c$5 ? u$5 : getOffsetContainer(e$6, { container: l$5 })));
+          u$4 === c$5 ? d$2 : getOffsetContainer(e$9, { container: u$4 })));
       {
-        let { width: e$7, height: t$8, x: n$7, y: r$7 } = a$4;
+        let { width: e$10, height: t$13, x: n$11, y: r$9 } = a$4;
         this.clientRect = {
-          width: e$7,
-          height: t$8,
-          x: n$7,
-          y: r$7,
+          width: e$10,
+          height: t$13,
+          x: n$11,
+          y: r$9,
         };
       }
       (this._updateContainerMatrices(), this._updateContainerOffset());
-      let d$2 = t$7.settings.frozenStyles({
-        draggable: t$7,
-        drag: r$6,
+      let f$2 = t$12.settings.frozenStyles({
+        draggable: t$12,
+        drag: r$8,
         item: this,
-        style: i$5,
+        style: i$7,
       });
-      if (Array.isArray(d$2))
-        if (d$2.length) {
-          let e$7 = {};
-          for (let t$8 of d$2) e$7[t$8] = i$5[t$8];
-          this.frozenStyles = e$7;
+      if (Array.isArray(f$2))
+        if (f$2.length) {
+          let e$10 = {};
+          for (let t$13 of f$2) e$10[t$13] = i$7[t$13];
+          this.frozenStyles = e$10;
         } else this.frozenStyles = null;
-      else this.frozenStyles = d$2;
+      else this.frozenStyles = f$2;
       if (this.frozenStyles) {
-        let t$8 = {};
-        for (let n$7 in this.frozenStyles) t$8[n$7] = e$6.style[n$7];
-        this.unfrozenStyles = t$8;
+        let t$13 = {};
+        for (let n$11 in this.frozenStyles) t$13[n$11] = e$9.style[n$11];
+        this.unfrozenStyles = t$13;
       }
     }
     _updateContainerMatrices() {
-      [this.elementContainer, this.dragContainer].forEach((e$6) => {
-        if (!this._matrixCache.isValid(e$6)) {
-          let t$7 = this._matrixCache.get(e$6) || [new DOMMatrix(), new DOMMatrix()],
-            [n$7, r$6] = t$7;
-          (E$1(e$6, n$7),
-            r$6.setMatrixValue(n$7.toString()).invertSelf(),
-            this._matrixCache.set(e$6, t$7));
+      [this.elementContainer, this.dragContainer].forEach((e$9) => {
+        if (!this._matrixCache.isValid(e$9)) {
+          let t$12 = this._matrixCache.get(e$9) || [new DOMMatrix(), new DOMMatrix()],
+            [n$11, r$8] = t$12;
+          (E(e$9, n$11),
+            r$8.setMatrixValue(n$11.toString()).invertSelf(),
+            this._matrixCache.set(e$9, t$12));
         }
       });
     }
     _updateContainerOffset() {
       let {
-        elementOffsetContainer: e$6,
-        elementContainer: t$7,
-        dragOffsetContainer: n$7,
-        dragContainer: r$6,
-        containerOffset: i$5,
+        elementOffsetContainer: e$9,
+        elementContainer: t$12,
+        dragOffsetContainer: n$11,
+        dragContainer: r$8,
+        containerOffset: i$7,
         _clientOffsetCache: a$4,
-        _matrixCache: o$5,
+        _matrixCache: o$7,
       } = this;
-      if (e$6 !== n$7) {
-        let [s$5, l$5] = [
-          [r$6, n$7],
-          [t$7, e$6],
-        ].map(([e$7, t$8]) => {
-          let n$8 = a$4.get(t$8) || {
+      if (e$9 !== n$11) {
+        let [s$4, l$4] = [
+          [r$8, n$11],
+          [t$12, e$9],
+        ].map(([e$10, t$13]) => {
+          let n$12 = a$4.get(t$13) || {
             x: 0,
             y: 0,
           };
-          if (!a$4.isValid(t$8)) {
-            let r$7 = o$5.get(e$7);
-            t$8 instanceof HTMLElement && r$7 && !r$7[0].isIdentity
-              ? c$3(r$7[0])
-                ? (D$1.style.setProperty(`transform`, r$7[1].toString(), `important`),
-                  t$8.append(D$1),
-                  g(D$1, n$8),
-                  D$1.remove())
-                : (g(t$8, n$8), (n$8.x -= r$7[0].m41), (n$8.y -= r$7[0].m42))
-              : g(t$8, n$8);
+          if (!a$4.isValid(t$13)) {
+            let r$9 = o$7.get(e$10);
+            t$13 instanceof HTMLElement && r$9 && !r$9[0].isIdentity
+              ? c$3(r$9[0])
+                ? (D.style.setProperty(`transform`, r$9[1].toString(), `important`),
+                  t$13.append(D),
+                  g(D, n$12),
+                  D.remove())
+                : (g(t$13, n$12), (n$12.x -= r$9[0].m41), (n$12.y -= r$9[0].m42))
+              : g(t$13, n$12);
           }
-          return (a$4.set(t$8, n$8), n$8);
+          return (a$4.set(t$13, n$12), n$12);
         });
-        C$1(s$5, l$5, i$5);
-      } else ((i$5.x = 0), (i$5.y = 0));
+        C(s$4, l$4, i$7);
+      } else ((i$7.x = 0), (i$7.y = 0));
     }
     getContainerMatrix() {
       return this._matrixCache.get(this.elementContainer);
@@ -3218,41 +3252,41 @@
     getDragContainerMatrix() {
       return this._matrixCache.get(this.dragContainer);
     }
-    updateSize(e$6) {
-      if (e$6) ((this.clientRect.width = e$6.width), (this.clientRect.height = e$6.height));
+    updateSize(e$9) {
+      if (e$9) ((this.clientRect.width = e$9.width), (this.clientRect.height = e$9.height));
       else {
-        let { width: e$7, height: t$7 } = this.element.getBoundingClientRect();
-        ((this.clientRect.width = e$7), (this.clientRect.height = t$7));
+        let { width: e$10, height: t$12 } = this.element.getBoundingClientRect();
+        ((this.clientRect.width = e$10), (this.clientRect.height = t$12));
       }
     }
   };
-  const k$1 = {
+  const k = {
       capture: !0,
       passive: !0,
     },
-    A$1 = {
+    A = {
       x: 0,
       y: 0,
     },
-    j = e$2 ? new DOMMatrix() : null,
-    M$2 = e$2 ? new DOMMatrix() : null;
-  var N$2 = (function (e$6) {
+    j = e$3 ? new DOMMatrix() : null,
+    M$1 = e$3 ? new DOMMatrix() : null;
+  var N$1 = (function (e$9) {
       return (
-        (e$6[(e$6.None = 0)] = `None`),
-        (e$6[(e$6.Init = 1)] = `Init`),
-        (e$6[(e$6.Prepare = 2)] = `Prepare`),
-        (e$6[(e$6.FinishPrepare = 3)] = `FinishPrepare`),
-        (e$6[(e$6.Apply = 4)] = `Apply`),
-        (e$6[(e$6.FinishApply = 5)] = `FinishApply`),
-        e$6
+        (e$9[(e$9.None = 0)] = `None`),
+        (e$9[(e$9.Init = 1)] = `Init`),
+        (e$9[(e$9.Prepare = 2)] = `Prepare`),
+        (e$9[(e$9.FinishPrepare = 3)] = `FinishPrepare`),
+        (e$9[(e$9.Apply = 4)] = `Apply`),
+        (e$9[(e$9.FinishApply = 5)] = `FinishApply`),
+        e$9
       );
-    })(N$2 || {}),
-    P = (function (e$6) {
+    })(N$1 || {}),
+    P = (function (e$9) {
       return (
-        (e$6[(e$6.Pending = 0)] = `Pending`),
-        (e$6[(e$6.Resolved = 1)] = `Resolved`),
-        (e$6[(e$6.Rejected = 2)] = `Rejected`),
-        e$6
+        (e$9[(e$9.Pending = 0)] = `Pending`),
+        (e$9[(e$9.Resolved = 1)] = `Resolved`),
+        (e$9[(e$9.Rejected = 2)] = `Rejected`),
+        e$9
       );
     })(P || {});
   const F = {
@@ -3264,7 +3298,7 @@
       Immediate: `immediate`,
       Sampled: `sampled`,
     },
-    L$1 = {
+    L = {
       Start: `start`,
       StartAlign: `start-align`,
       Move: `move`,
@@ -3285,39 +3319,39 @@
       startPredicate: () => !0,
       elements: () => null,
       frozenStyles: () => null,
-      applyPosition: ({ item: e$6, phase: t$7 }) => {
-        let n$7 = t$7 === L$1.End || t$7 === L$1.EndAlign,
-          [r$6, i$5] = e$6.getContainerMatrix(),
-          [a$4, o$5] = e$6.getDragContainerMatrix(),
+      applyPosition: ({ item: e$9, phase: t$12 }) => {
+        let n$11 = t$12 === L.End || t$12 === L.EndAlign,
+          [r$8, i$7] = e$9.getContainerMatrix(),
+          [a$4, o$7] = e$9.getDragContainerMatrix(),
           {
-            position: s$5,
+            position: s$4,
             alignmentOffset: c$5,
-            containerOffset: l$5,
+            containerOffset: l$4,
             elementTransformMatrix: d$2,
             elementTransformOrigin: f$2,
             elementOffsetMatrix: p$2,
-          } = e$6,
+          } = e$9,
           { x: m$2, y: h$2, z: g$2 } = f$2,
           _$3 = !d$2.isIdentity && (m$2 !== 0 || h$2 !== 0 || g$2 !== 0),
-          v$4 = s$5.x + c$5.x + l$5.x,
-          y$3 = s$5.y + c$5.y + l$5.y;
-        (u$2(j),
+          v$3 = s$4.x + c$5.x + l$4.x,
+          y$2 = s$4.y + c$5.y + l$4.y;
+        (u$1(j),
           _$3 && (g$2 === 0 ? j.translateSelf(-m$2, -h$2) : j.translateSelf(-m$2, -h$2, -g$2)),
-          n$7 ? i$5.isIdentity || j.multiplySelf(i$5) : o$5.isIdentity || j.multiplySelf(o$5),
-          u$2(M$2).translateSelf(v$4, y$3),
-          j.multiplySelf(M$2),
-          r$6.isIdentity || j.multiplySelf(r$6),
-          _$3 && (u$2(M$2).translateSelf(m$2, h$2, g$2), j.multiplySelf(M$2)),
+          n$11 ? i$7.isIdentity || j.multiplySelf(i$7) : o$7.isIdentity || j.multiplySelf(o$7),
+          u$1(M$1).translateSelf(v$3, y$2),
+          j.multiplySelf(M$1),
+          r$8.isIdentity || j.multiplySelf(r$8),
+          _$3 && (u$1(M$1).translateSelf(m$2, h$2, g$2), j.multiplySelf(M$1)),
           d$2.isIdentity || j.multiplySelf(d$2),
           p$2.isIdentity || j.preMultiplySelf(p$2),
-          (e$6.element.style.transform = `${j}`));
+          (e$9.element.style.transform = `${j}`));
       },
-      computeClientRect: ({ drag: e$6 }) => e$6.items[0].clientRect || null,
+      computeClientRect: ({ drag: e$9 }) => e$9.items[0].clientRect || null,
       positionModifiers: [],
       sensorProcessingMode: I.Sampled,
       dndGroups: /* @__PURE__ */ new Set(),
     };
-  var B$1 = class {
+  var B = class {
     id;
     sensors;
     settings;
@@ -3330,17 +3364,17 @@
     _startId;
     _moveId;
     _alignId;
-    constructor(e$6, t$7 = {}) {
-      let { id: n$7 = Symbol(), ...r$6 } = t$7;
-      ((this.id = n$7),
-        (this.sensors = e$6),
-        (this.settings = this._parseSettings(r$6)),
+    constructor(e$9, t$12 = {}) {
+      let { id: n$11 = Symbol(), ...r$8 } = t$12;
+      ((this.id = n$11),
+        (this.sensors = e$9),
+        (this.settings = this._parseSettings(r$8)),
         (this.plugins = {}),
         (this.drag = null),
         (this.isDestroyed = !1),
         (this._sensorData = /* @__PURE__ */ new Map()),
-        (this._emitter = new v$1()),
-        (this._startPhase = N$2.None),
+        (this._emitter = new v()),
+        (this._startPhase = N$1.None),
         (this._startId = Symbol()),
         (this._moveId = Symbol()),
         (this._alignId = Symbol()),
@@ -3353,49 +3387,49 @@
         (this._applyMove = this._applyMove.bind(this)),
         (this._prepareAlign = this._prepareAlign.bind(this)),
         (this._applyAlign = this._applyAlign.bind(this)),
-        this.sensors.forEach((e$7) => {
-          this._sensorData.set(e$7, {
+        this.sensors.forEach((e$10) => {
+          this._sensorData.set(e$10, {
             predicateState: P.Pending,
             predicateEvent: null,
-            onMove: (t$9) => this._onMove(t$9, e$7),
-            onEnd: (t$9) => this._onEnd(t$9, e$7),
+            onMove: (t$14) => this._onMove(t$14, e$10),
+            onEnd: (t$14) => this._onEnd(t$14, e$10),
           });
-          let { onMove: t$8, onEnd: n$8 } = this._sensorData.get(e$7);
-          (e$7.on(e$1.Start, t$8, t$8),
-            e$7.on(e$1.Move, t$8, t$8),
-            e$7.on(e$1.Cancel, n$8, n$8),
-            e$7.on(e$1.End, n$8, n$8),
-            e$7.on(e$1.Destroy, n$8, n$8));
+          let { onMove: t$13, onEnd: n$12 } = this._sensorData.get(e$10);
+          (e$10.on(e$2.Start, t$13, t$13),
+            e$10.on(e$2.Move, t$13, t$13),
+            e$10.on(e$2.Cancel, n$12, n$12),
+            e$10.on(e$2.End, n$12, n$12),
+            e$10.on(e$2.Destroy, n$12, n$12));
         }));
     }
-    _parseSettings(e$6, t$7 = z) {
+    _parseSettings(e$9, t$12 = z) {
       let {
-        container: n$7 = t$7.container,
-        startPredicate: r$6 = t$7.startPredicate,
-        elements: i$5 = t$7.elements,
-        frozenStyles: a$4 = t$7.frozenStyles,
-        positionModifiers: o$5 = t$7.positionModifiers,
-        applyPosition: s$5 = t$7.applyPosition,
-        computeClientRect: c$5 = t$7.computeClientRect,
-        sensorProcessingMode: l$5 = t$7.sensorProcessingMode,
-        dndGroups: u$5 = t$7.dndGroups,
-        onPrepareStart: d$2 = t$7.onPrepareStart,
-        onStart: f$2 = t$7.onStart,
-        onPrepareMove: p$2 = t$7.onPrepareMove,
-        onMove: m$2 = t$7.onMove,
-        onEnd: h$2 = t$7.onEnd,
-        onDestroy: g$2 = t$7.onDestroy,
-      } = e$6 || {};
+        container: n$11 = t$12.container,
+        startPredicate: r$8 = t$12.startPredicate,
+        elements: i$7 = t$12.elements,
+        frozenStyles: a$4 = t$12.frozenStyles,
+        positionModifiers: o$7 = t$12.positionModifiers,
+        applyPosition: s$4 = t$12.applyPosition,
+        computeClientRect: c$5 = t$12.computeClientRect,
+        sensorProcessingMode: l$4 = t$12.sensorProcessingMode,
+        dndGroups: u$4 = t$12.dndGroups,
+        onPrepareStart: d$2 = t$12.onPrepareStart,
+        onStart: f$2 = t$12.onStart,
+        onPrepareMove: p$2 = t$12.onPrepareMove,
+        onMove: m$2 = t$12.onMove,
+        onEnd: h$2 = t$12.onEnd,
+        onDestroy: g$2 = t$12.onDestroy,
+      } = e$9 || {};
       return {
-        container: n$7,
-        startPredicate: r$6,
-        elements: i$5,
+        container: n$11,
+        startPredicate: r$8,
+        elements: i$7,
         frozenStyles: a$4,
-        positionModifiers: o$5,
-        applyPosition: s$5,
+        positionModifiers: o$7,
+        applyPosition: s$4,
         computeClientRect: c$5,
-        sensorProcessingMode: l$5,
-        dndGroups: u$5,
+        sensorProcessingMode: l$4,
+        dndGroups: u$4,
         onPrepareStart: d$2,
         onStart: f$2,
         onPrepareMove: p$2,
@@ -3404,293 +3438,293 @@
         onDestroy: g$2,
       };
     }
-    _emit(e$6, ...t$7) {
-      this._emitter.emit(e$6, ...t$7);
+    _emit(e$9, ...t$12) {
+      this._emitter.emit(e$9, ...t$12);
     }
-    _onMove(n$7, r$6) {
-      let i$5 = this._sensorData.get(r$6);
-      if (i$5)
-        switch (i$5.predicateState) {
+    _onMove(n$11, r$8) {
+      let i$7 = this._sensorData.get(r$8);
+      if (i$7)
+        switch (i$7.predicateState) {
           case P.Pending: {
-            i$5.predicateEvent = n$7;
-            let e$6 = this.settings.startPredicate({
+            i$7.predicateEvent = n$11;
+            let e$9 = this.settings.startPredicate({
               draggable: this,
-              sensor: r$6,
-              event: n$7,
+              sensor: r$8,
+              event: n$11,
             });
-            e$6 === !0
-              ? this.resolveStartPredicate(r$6)
-              : e$6 === !1 && this.rejectStartPredicate(r$6);
+            e$9 === !0
+              ? this.resolveStartPredicate(r$8)
+              : e$9 === !1 && this.rejectStartPredicate(r$8);
             break;
           }
           case P.Resolved:
             this.drag &&
-              ((this.drag.moveEvent = n$7),
+              ((this.drag.moveEvent = n$11),
               this.settings.sensorProcessingMode === I.Immediate
                 ? (this._prepareMove(), this._applyMove())
-                : (r$3.once(n$3.read, this._prepareMove, this._moveId),
-                  r$3.once(n$3.write, this._applyMove, this._moveId)));
+                : (r$5.once(n$7.read, this._prepareMove, this._moveId),
+                  r$5.once(n$7.write, this._applyMove, this._moveId)));
             break;
         }
     }
     _onScroll() {
       this.align();
     }
-    _onEnd(e$6, t$7) {
-      let n$7 = this._sensorData.get(t$7);
-      n$7 &&
+    _onEnd(e$9, t$12) {
+      let n$11 = this._sensorData.get(t$12);
+      n$11 &&
         (this.drag
-          ? n$7.predicateState === P.Resolved &&
-            ((this.drag.endEvent = e$6),
-            this._sensorData.forEach((e$7) => {
-              ((e$7.predicateState = P.Pending), (e$7.predicateEvent = null));
+          ? n$11.predicateState === P.Resolved &&
+            ((this.drag.endEvent = e$9),
+            this._sensorData.forEach((e$10) => {
+              ((e$10.predicateState = P.Pending), (e$10.predicateEvent = null));
             }),
             this.stop())
-          : ((n$7.predicateState = P.Pending), (n$7.predicateEvent = null)));
+          : ((n$11.predicateState = P.Pending), (n$11.predicateEvent = null)));
     }
     _prepareStart() {
-      let e$6 = this.drag;
-      !e$6 ||
-        this._startPhase !== N$2.Init ||
-        ((this._startPhase = N$2.Prepare),
-        (e$6.items = (
+      let e$9 = this.drag;
+      !e$9 ||
+        this._startPhase !== N$1.Init ||
+        ((this._startPhase = N$1.Prepare),
+        (e$9.items = (
           this.settings.elements({
             draggable: this,
-            drag: e$6,
+            drag: e$9,
           }) || []
-        ).map((e$7) => new O$1(e$7, this))),
+        ).map((e$10) => new O(e$10, this))),
         this._applyModifiers(F.Start, 0, 0),
-        this._emit(R.PrepareStart, e$6.startEvent),
-        this.settings.onPrepareStart?.(e$6, this),
-        (this._startPhase = N$2.FinishPrepare));
+        this._emit(R.PrepareStart, e$9.startEvent),
+        this.settings.onPrepareStart?.(e$9, this),
+        (this._startPhase = N$1.FinishPrepare));
     }
     _applyStart() {
-      let e$6 = this.drag;
-      if (!(!e$6 || this._startPhase !== N$2.FinishPrepare)) {
-        this._startPhase = N$2.Apply;
-        for (let t$7 of e$6.items)
-          (t$7.dragContainer !== t$7.elementContainer && l$2(t$7.dragContainer, t$7.element),
-            t$7.frozenStyles && Object.assign(t$7.element.style, t$7.frozenStyles),
+      let e$9 = this.drag;
+      if (!(!e$9 || this._startPhase !== N$1.FinishPrepare)) {
+        this._startPhase = N$1.Apply;
+        for (let t$12 of e$9.items)
+          (t$12.dragContainer !== t$12.elementContainer && l$1(t$12.dragContainer, t$12.element),
+            t$12.frozenStyles && Object.assign(t$12.element.style, t$12.frozenStyles),
             this.settings.applyPosition({
-              phase: L$1.Start,
+              phase: L.Start,
               draggable: this,
-              drag: e$6,
-              item: t$7,
+              drag: e$9,
+              item: t$12,
             }));
-        for (let t$7 of e$6.items) {
-          let e$7 = t$7.getContainerMatrix()[0],
-            n$7 = t$7.getDragContainerMatrix()[0];
-          if (s$3(e$7, n$7) || (!c$3(e$7) && !c$3(n$7))) continue;
-          let r$6 = t$7.element.getBoundingClientRect(),
-            { alignmentOffset: i$5 } = t$7;
-          ((i$5.x += d(t$7.clientRect.x - r$6.x, 3)), (i$5.y += d(t$7.clientRect.y - r$6.y, 3)));
+        for (let t$12 of e$9.items) {
+          let e$10 = t$12.getContainerMatrix()[0],
+            n$11 = t$12.getDragContainerMatrix()[0];
+          if (s$2(e$10, n$11) || (!c$3(e$10) && !c$3(n$11))) continue;
+          let r$8 = t$12.element.getBoundingClientRect(),
+            { alignmentOffset: i$7 } = t$12;
+          ((i$7.x += d(t$12.clientRect.x - r$8.x, 3)), (i$7.y += d(t$12.clientRect.y - r$8.y, 3)));
         }
-        for (let t$7 of e$6.items) {
-          let { alignmentOffset: n$7 } = t$7;
-          (n$7.x !== 0 || n$7.y !== 0) &&
+        for (let t$12 of e$9.items) {
+          let { alignmentOffset: n$11 } = t$12;
+          (n$11.x !== 0 || n$11.y !== 0) &&
             this.settings.applyPosition({
-              phase: L$1.StartAlign,
+              phase: L.StartAlign,
               draggable: this,
-              drag: e$6,
-              item: t$7,
+              drag: e$9,
+              item: t$12,
             });
         }
-        (window.addEventListener(`scroll`, this._onScroll, k$1),
-          this._emit(R.Start, e$6.startEvent),
-          this.settings.onStart?.(e$6, this),
-          (this._startPhase = N$2.FinishApply));
+        (window.addEventListener(`scroll`, this._onScroll, k),
+          this._emit(R.Start, e$9.startEvent),
+          this.settings.onStart?.(e$9, this),
+          (this._startPhase = N$1.FinishApply));
       }
     }
     _prepareMove() {
-      let e$6 = this.drag;
-      if (!e$6 || e$6.isEnded) return;
-      let { moveEvent: t$7, prevMoveEvent: n$7 } = e$6;
-      t$7 !== n$7 &&
-        (this._applyModifiers(F.Move, t$7.x - n$7.x, t$7.y - n$7.y),
-        this._emit(R.PrepareMove, t$7),
-        !e$6.isEnded &&
-          (this.settings.onPrepareMove?.(e$6, this), !e$6.isEnded && (e$6.prevMoveEvent = t$7)));
+      let e$9 = this.drag;
+      if (!e$9 || e$9.isEnded) return;
+      let { moveEvent: t$12, prevMoveEvent: n$11 } = e$9;
+      t$12 !== n$11 &&
+        (this._applyModifiers(F.Move, t$12.x - n$11.x, t$12.y - n$11.y),
+        this._emit(R.PrepareMove, t$12),
+        !e$9.isEnded &&
+          (this.settings.onPrepareMove?.(e$9, this), !e$9.isEnded && (e$9.prevMoveEvent = t$12)));
     }
     _applyMove() {
-      let e$6 = this.drag;
-      if (!(!e$6 || e$6.isEnded)) {
-        for (let t$7 of e$6.items)
-          ((t$7._moveDiff.x = 0),
-            (t$7._moveDiff.y = 0),
+      let e$9 = this.drag;
+      if (!(!e$9 || e$9.isEnded)) {
+        for (let t$12 of e$9.items)
+          ((t$12._moveDiff.x = 0),
+            (t$12._moveDiff.y = 0),
             this.settings.applyPosition({
-              phase: L$1.Move,
+              phase: L.Move,
               draggable: this,
-              drag: e$6,
-              item: t$7,
+              drag: e$9,
+              item: t$12,
             }));
-        (this._emit(R.Move, e$6.moveEvent), !e$6.isEnded && this.settings.onMove?.(e$6, this));
+        (this._emit(R.Move, e$9.moveEvent), !e$9.isEnded && this.settings.onMove?.(e$9, this));
       }
     }
     _prepareAlign() {
-      let { drag: e$6 } = this;
-      if (!(!e$6 || e$6.isEnded))
-        for (let t$7 of e$6.items) {
-          let { x: e$7, y: n$7 } = t$7.element.getBoundingClientRect(),
-            r$6 = t$7.clientRect.x - t$7._moveDiff.x - e$7;
-          ((t$7.alignmentOffset.x = t$7.alignmentOffset.x - t$7._alignDiff.x + r$6),
-            (t$7._alignDiff.x = r$6));
-          let i$5 = t$7.clientRect.y - t$7._moveDiff.y - n$7;
-          ((t$7.alignmentOffset.y = t$7.alignmentOffset.y - t$7._alignDiff.y + i$5),
-            (t$7._alignDiff.y = i$5));
+      let { drag: e$9 } = this;
+      if (!(!e$9 || e$9.isEnded))
+        for (let t$12 of e$9.items) {
+          let { x: e$10, y: n$11 } = t$12.element.getBoundingClientRect(),
+            r$8 = t$12.clientRect.x - t$12._moveDiff.x - e$10;
+          ((t$12.alignmentOffset.x = t$12.alignmentOffset.x - t$12._alignDiff.x + r$8),
+            (t$12._alignDiff.x = r$8));
+          let i$7 = t$12.clientRect.y - t$12._moveDiff.y - n$11;
+          ((t$12.alignmentOffset.y = t$12.alignmentOffset.y - t$12._alignDiff.y + i$7),
+            (t$12._alignDiff.y = i$7));
         }
     }
     _applyAlign() {
-      let { drag: e$6 } = this;
-      if (!(!e$6 || e$6.isEnded))
-        for (let t$7 of e$6.items)
-          ((t$7._alignDiff.x = 0),
-            (t$7._alignDiff.y = 0),
+      let { drag: e$9 } = this;
+      if (!(!e$9 || e$9.isEnded))
+        for (let t$12 of e$9.items)
+          ((t$12._alignDiff.x = 0),
+            (t$12._alignDiff.y = 0),
             this.settings.applyPosition({
-              phase: L$1.Align,
+              phase: L.Align,
               draggable: this,
-              drag: e$6,
-              item: t$7,
+              drag: e$9,
+              item: t$12,
             }));
     }
-    _applyModifiers(e$6, t$7, n$7) {
-      let { drag: r$6 } = this;
-      if (!r$6) return;
-      let { positionModifiers: i$5 } = this.settings;
-      for (let a$4 of r$6.items) {
-        let o$5 = A$1;
-        ((o$5.x = t$7), (o$5.y = n$7));
-        for (let t$8 of i$5)
-          o$5 = t$8(o$5, {
+    _applyModifiers(e$9, t$12, n$11) {
+      let { drag: r$8 } = this;
+      if (!r$8) return;
+      let { positionModifiers: i$7 } = this.settings;
+      for (let a$4 of r$8.items) {
+        let o$7 = A;
+        ((o$7.x = t$12), (o$7.y = n$11));
+        for (let t$13 of i$7)
+          o$7 = t$13(o$7, {
             draggable: this,
-            drag: r$6,
+            drag: r$8,
             item: a$4,
-            phase: e$6,
+            phase: e$9,
           });
-        ((a$4.position.x += o$5.x),
-          (a$4.position.y += o$5.y),
-          (a$4.clientRect.x += o$5.x),
-          (a$4.clientRect.y += o$5.y),
-          e$6 === `move` && ((a$4._moveDiff.x += o$5.x), (a$4._moveDiff.y += o$5.y)));
+        ((a$4.position.x += o$7.x),
+          (a$4.position.y += o$7.y),
+          (a$4.clientRect.x += o$7.x),
+          (a$4.clientRect.y += o$7.y),
+          e$9 === `move` && ((a$4._moveDiff.x += o$7.x), (a$4._moveDiff.y += o$7.y)));
       }
     }
-    on(e$6, t$7, n$7) {
-      return this._emitter.on(e$6, t$7, n$7);
+    on(e$9, t$12, n$11) {
+      return this._emitter.on(e$9, t$12, n$11);
     }
-    off(e$6, t$7) {
-      this._emitter.off(e$6, t$7);
+    off(e$9, t$12) {
+      this._emitter.off(e$9, t$12);
     }
-    resolveStartPredicate(n$7, r$6) {
-      let i$5 = this._sensorData.get(n$7);
-      if (!i$5) return;
-      let a$4 = r$6 || i$5.predicateEvent;
-      i$5.predicateState === P.Pending &&
+    resolveStartPredicate(n$11, r$8) {
+      let i$7 = this._sensorData.get(n$11);
+      if (!i$7) return;
+      let a$4 = r$8 || i$7.predicateEvent;
+      i$7.predicateState === P.Pending &&
         a$4 &&
-        ((this._startPhase = N$2.Init),
-        (i$5.predicateState = P.Resolved),
-        (i$5.predicateEvent = null),
-        (this.drag = new p(n$7, a$4)),
-        this._sensorData.forEach((e$6, t$7) => {
-          t$7 !== n$7 && ((e$6.predicateState = P.Rejected), (e$6.predicateEvent = null));
+        ((this._startPhase = N$1.Init),
+        (i$7.predicateState = P.Resolved),
+        (i$7.predicateEvent = null),
+        (this.drag = new p(n$11, a$4)),
+        this._sensorData.forEach((e$9, t$12) => {
+          t$12 !== n$11 && ((e$9.predicateState = P.Rejected), (e$9.predicateEvent = null));
         }),
         this.settings.sensorProcessingMode === I.Immediate
           ? (this._prepareStart(), this._applyStart())
-          : (r$3.once(n$3.read, this._prepareStart, this._startId),
-            r$3.once(n$3.write, this._applyStart, this._startId)));
+          : (r$5.once(n$7.read, this._prepareStart, this._startId),
+            r$5.once(n$7.write, this._applyStart, this._startId)));
     }
-    rejectStartPredicate(e$6) {
-      let t$7 = this._sensorData.get(e$6);
-      t$7?.predicateState === P.Pending &&
-        ((t$7.predicateState = P.Rejected), (t$7.predicateEvent = null));
+    rejectStartPredicate(e$9) {
+      let t$12 = this._sensorData.get(e$9);
+      t$12?.predicateState === P.Pending &&
+        ((t$12.predicateState = P.Rejected), (t$12.predicateEvent = null));
     }
     stop() {
-      let n$7 = this.drag;
-      if (!(!n$7 || n$7.isEnded)) {
-        if (this._startPhase === N$2.Prepare || this._startPhase === N$2.Apply)
+      let n$11 = this.drag;
+      if (!(!n$11 || n$11.isEnded)) {
+        if (this._startPhase === N$1.Prepare || this._startPhase === N$1.Apply)
           throw Error(`Cannot stop drag start process at this point`);
-        ((n$7.isEnded = !0),
+        ((n$11.isEnded = !0),
           this._prepareStart(),
           this._applyStart(),
-          (this._startPhase = N$2.None),
-          r$3.off(n$3.read, this._startId),
-          r$3.off(n$3.write, this._startId),
-          r$3.off(n$3.read, this._moveId),
-          r$3.off(n$3.write, this._moveId),
-          r$3.off(n$3.read, this._alignId),
-          r$3.off(n$3.write, this._alignId),
-          window.removeEventListener(`scroll`, this._onScroll, k$1),
+          (this._startPhase = N$1.None),
+          r$5.off(n$7.read, this._startId),
+          r$5.off(n$7.write, this._startId),
+          r$5.off(n$7.read, this._moveId),
+          r$5.off(n$7.write, this._moveId),
+          r$5.off(n$7.read, this._alignId),
+          r$5.off(n$7.write, this._alignId),
+          window.removeEventListener(`scroll`, this._onScroll, k),
           this._applyModifiers(F.End, 0, 0));
-        for (let e$6 of n$7.items) {
+        for (let e$9 of n$11.items) {
           if (
-            (e$6.elementContainer !== e$6.dragContainer &&
-              (l$2(e$6.elementContainer, e$6.element),
-              (e$6.alignmentOffset.x = 0),
-              (e$6.alignmentOffset.y = 0),
-              (e$6.containerOffset.x = 0),
-              (e$6.containerOffset.y = 0)),
-            e$6.unfrozenStyles)
+            (e$9.elementContainer !== e$9.dragContainer &&
+              (l$1(e$9.elementContainer, e$9.element),
+              (e$9.alignmentOffset.x = 0),
+              (e$9.alignmentOffset.y = 0),
+              (e$9.containerOffset.x = 0),
+              (e$9.containerOffset.y = 0)),
+            e$9.unfrozenStyles)
           )
-            for (let t$7 in e$6.unfrozenStyles)
-              e$6.element.style[t$7] = e$6.unfrozenStyles[t$7] || ``;
+            for (let t$12 in e$9.unfrozenStyles)
+              e$9.element.style[t$12] = e$9.unfrozenStyles[t$12] || ``;
           this.settings.applyPosition({
-            phase: L$1.End,
+            phase: L.End,
             draggable: this,
-            drag: n$7,
-            item: e$6,
+            drag: n$11,
+            item: e$9,
           });
         }
-        for (let e$6 of n$7.items)
-          if (e$6.elementContainer !== e$6.dragContainer) {
-            let t$7 = e$6.element.getBoundingClientRect();
-            ((e$6.alignmentOffset.x = d(e$6.clientRect.x - t$7.x, 3)),
-              (e$6.alignmentOffset.y = d(e$6.clientRect.y - t$7.y, 3)));
+        for (let e$9 of n$11.items)
+          if (e$9.elementContainer !== e$9.dragContainer) {
+            let t$12 = e$9.element.getBoundingClientRect();
+            ((e$9.alignmentOffset.x = d(e$9.clientRect.x - t$12.x, 3)),
+              (e$9.alignmentOffset.y = d(e$9.clientRect.y - t$12.y, 3)));
           }
-        for (let e$6 of n$7.items)
-          e$6.elementContainer !== e$6.dragContainer &&
-            (e$6.alignmentOffset.x !== 0 || e$6.alignmentOffset.y !== 0) &&
+        for (let e$9 of n$11.items)
+          e$9.elementContainer !== e$9.dragContainer &&
+            (e$9.alignmentOffset.x !== 0 || e$9.alignmentOffset.y !== 0) &&
             this.settings.applyPosition({
-              phase: L$1.EndAlign,
+              phase: L.EndAlign,
               draggable: this,
-              drag: n$7,
-              item: e$6,
+              drag: n$11,
+              item: e$9,
             });
-        (this._emit(R.End, n$7.endEvent), this.settings.onEnd?.(n$7, this), (this.drag = null));
+        (this._emit(R.End, n$11.endEvent), this.settings.onEnd?.(n$11, this), (this.drag = null));
       }
     }
-    align(n$7 = !1) {
+    align(n$11 = !1) {
       !this.drag ||
         this.drag.isEnded ||
-        (n$7 || this.settings.sensorProcessingMode === I.Immediate
+        (n$11 || this.settings.sensorProcessingMode === I.Immediate
           ? (this._prepareAlign(), this._applyAlign())
-          : (r$3.once(n$3.read, this._prepareAlign, this._alignId),
-            r$3.once(n$3.write, this._applyAlign, this._alignId)));
+          : (r$5.once(n$7.read, this._prepareAlign, this._alignId),
+            r$5.once(n$7.write, this._applyAlign, this._alignId)));
     }
     getClientRect() {
-      let { drag: e$6, settings: t$7 } = this;
+      let { drag: e$9, settings: t$12 } = this;
       return (
-        (e$6 &&
-          t$7.computeClientRect?.({
+        (e$9 &&
+          t$12.computeClientRect?.({
             draggable: this,
-            drag: e$6,
+            drag: e$9,
           })) ||
         null
       );
     }
-    updateSettings(e$6) {
-      this.settings = this._parseSettings(e$6, this.settings);
+    updateSettings(e$9) {
+      this.settings = this._parseSettings(e$9, this.settings);
     }
-    use(e$6) {
-      return e$6(this);
+    use(e$9) {
+      return e$9(this);
     }
     destroy() {
       this.isDestroyed ||
         ((this.isDestroyed = !0),
         this.stop(),
-        this._sensorData.forEach(({ onMove: e$6, onEnd: t$7 }, n$7) => {
-          (n$7.off(e$1.Start, e$6),
-            n$7.off(e$1.Move, e$6),
-            n$7.off(e$1.Cancel, t$7),
-            n$7.off(e$1.End, t$7),
-            n$7.off(e$1.Destroy, t$7));
+        this._sensorData.forEach(({ onMove: e$9, onEnd: t$12 }, n$11) => {
+          (n$11.off(e$2.Start, e$9),
+            n$11.off(e$2.Move, e$9),
+            n$11.off(e$2.Cancel, t$12),
+            n$11.off(e$2.End, t$12),
+            n$11.off(e$2.Destroy, t$12));
         }),
         this._sensorData.clear(),
         this._emit(R.Destroy),
@@ -3700,87 +3734,40 @@
   };
 
   //#endregion
-  //#region ../dragdoll/dist/droppable-Cz3L0fgq.js
-  const t$3 = { Destroy: `destroy` };
-  var n$1 = class {
-    id;
-    element;
-    isDestroyed;
-    accept;
-    data;
-    _clientRect;
-    _emitter;
-    constructor(t$7, n$7 = {}) {
-      let { id: r$6 = Symbol(), accept: i$5 = () => !0, data: a$4 = {} } = n$7;
-      ((this.id = r$6),
-        (this.element = t$7),
-        (this.isDestroyed = !1),
-        (this.accept = i$5),
-        (this.data = a$4),
-        (this._clientRect = {
-          x: 0,
-          y: 0,
-          width: 0,
-          height: 0,
-        }),
-        (this._emitter = new v$1()),
-        this.updateClientRect());
-    }
-    on(e$6, t$7, n$7) {
-      return this._emitter.on(e$6, t$7, n$7);
-    }
-    off(e$6, t$7) {
-      this._emitter.off(e$6, t$7);
-    }
-    getClientRect() {
-      return this._clientRect;
-    }
-    updateClientRect(e$6) {
-      let t$7 = e$6 || this.element.getBoundingClientRect(),
-        { _clientRect: n$7 } = this;
-      ((n$7.x = t$7.x), (n$7.y = t$7.y), (n$7.width = t$7.width), (n$7.height = t$7.height));
-    }
-    destroy() {
-      this.isDestroyed ||
-        ((this.isDestroyed = !0), this._emitter.emit(t$3.Destroy), this._emitter.off());
-    }
-  };
-
-  //#endregion
   //#region ../dragdoll/dist/pointer-sensor-D3DHn381.js
-  function i$4(e$6, t$7) {
-    if (`pointerId` in e$6) return e$6.pointerId === t$7 ? e$6 : null;
-    if (`changedTouches` in e$6) {
-      let n$7 = 0;
-      for (; n$7 < e$6.changedTouches.length; n$7++)
-        if (e$6.changedTouches[n$7].identifier === t$7) return e$6.changedTouches[n$7];
+  function i$6(e$9, t$12) {
+    if (`pointerId` in e$9) return e$9.pointerId === t$12 ? e$9 : null;
+    if (`changedTouches` in e$9) {
+      let n$11 = 0;
+      for (; n$11 < e$9.changedTouches.length; n$11++)
+        if (e$9.changedTouches[n$11].identifier === t$12) return e$9.changedTouches[n$11];
       return null;
     }
-    return e$6;
+    return e$9;
   }
-  function a$3(e$6) {
-    return `pointerId` in e$6
-      ? e$6.pointerId
-      : `changedTouches` in e$6
-        ? e$6.changedTouches[0]
-          ? e$6.changedTouches[0].identifier
+  function a$3(e$9) {
+    return `pointerId` in e$9
+      ? e$9.pointerId
+      : `changedTouches` in e$9
+        ? e$9.changedTouches[0]
+          ? e$9.changedTouches[0].identifier
           : null
         : -1;
   }
-  function o$2(e$6) {
-    return `pointerType` in e$6 ? e$6.pointerType : `touches` in e$6 ? `touch` : `mouse`;
+  function o$4(e$9) {
+    return `pointerType` in e$9 ? e$9.pointerType : `touches` in e$9 ? `touch` : `mouse`;
   }
-  function s$2(e$6 = {}) {
-    let { capture: t$7 = !0, passive: n$7 = !0 } = e$6;
+  function s$1(e$9 = {}) {
+    let { capture: t$12 = !0, passive: n$11 = !0 } = e$9;
     return {
-      capture: t$7,
-      passive: n$7,
+      capture: t$12,
+      passive: n$11,
     };
   }
-  function c$2(n$7) {
-    return n$7 === `auto` || n$7 === void 0 ? (n$5 ? `pointer` : t$2 ? `touch` : `mouse`) : n$7;
+  function c$2(n$11) {
+    return n$11 === `auto` || n$11 === void 0 ? (n$9 ? `pointer` : t$5 ? `touch` : `mouse`) : n$11;
   }
-  const l$1 = {
+  const l = {
     pointer: {
       start: `pointerdown`,
       move: `pointermove`,
@@ -3800,7 +3787,7 @@
       end: `mouseup`,
     },
   };
-  var u$1 = class {
+  var u = class {
     element;
     drag;
     isDestroyed;
@@ -3809,103 +3796,103 @@
     _sourceEvents;
     _areWindowListenersBound;
     _emitter;
-    constructor(e$6, t$7 = {}) {
+    constructor(e$9, t$12 = {}) {
       let {
-        listenerOptions: n$7 = {},
-        sourceEvents: i$5 = `auto`,
-        startPredicate: a$4 = (e$7) => !(`button` in e$7 && e$7.button > 0),
-      } = t$7;
-      ((this.element = e$6),
+        listenerOptions: n$11 = {},
+        sourceEvents: i$7 = `auto`,
+        startPredicate: a$4 = (e$10) => !(`button` in e$10 && e$10.button > 0),
+      } = t$12;
+      ((this.element = e$9),
         (this.drag = null),
         (this.isDestroyed = !1),
         (this._areWindowListenersBound = !1),
         (this._startPredicate = a$4),
-        (this._listenerOptions = s$2(n$7)),
-        (this._sourceEvents = c$2(i$5)),
-        (this._emitter = new v$1()),
+        (this._listenerOptions = s$1(n$11)),
+        (this._sourceEvents = c$2(i$7)),
+        (this._emitter = new v()),
         (this._onStart = this._onStart.bind(this)),
         (this._onMove = this._onMove.bind(this)),
         (this._onCancel = this._onCancel.bind(this)),
         (this._onEnd = this._onEnd.bind(this)),
-        e$6.addEventListener(l$1[this._sourceEvents].start, this._onStart, this._listenerOptions));
+        e$9.addEventListener(l[this._sourceEvents].start, this._onStart, this._listenerOptions));
     }
-    _getTrackedPointerEventData(e$6) {
-      return this.drag ? i$4(e$6, this.drag.pointerId) : null;
+    _getTrackedPointerEventData(e$9) {
+      return this.drag ? i$6(e$9, this.drag.pointerId) : null;
     }
-    _onStart(e$6) {
-      if (this.isDestroyed || this.drag || !this._startPredicate(e$6)) return;
-      let t$7 = a$3(e$6);
-      if (t$7 === null) return;
-      let r$6 = i$4(e$6, t$7);
-      if (r$6 === null) return;
-      let s$5 = {
-        pointerId: t$7,
-        pointerType: o$2(e$6),
-        x: r$6.clientX,
-        y: r$6.clientY,
+    _onStart(e$9) {
+      if (this.isDestroyed || this.drag || !this._startPredicate(e$9)) return;
+      let t$12 = a$3(e$9);
+      if (t$12 === null) return;
+      let r$8 = i$6(e$9, t$12);
+      if (r$8 === null) return;
+      let s$4 = {
+        pointerId: t$12,
+        pointerType: o$4(e$9),
+        x: r$8.clientX,
+        y: r$8.clientY,
       };
-      this.drag = s$5;
+      this.drag = s$4;
       let c$5 = {
-        ...s$5,
-        type: e$1.Start,
-        srcEvent: e$6,
-        target: r$6.target,
+        ...s$4,
+        type: e$2.Start,
+        srcEvent: e$9,
+        target: r$8.target,
       };
       (this._emitter.emit(c$5.type, c$5), this.drag && this._bindWindowListeners());
     }
-    _onMove(e$6) {
+    _onMove(e$9) {
       if (!this.drag) return;
-      let t$7 = this._getTrackedPointerEventData(e$6);
-      if (!t$7) return;
-      ((this.drag.x = t$7.clientX), (this.drag.y = t$7.clientY));
-      let r$6 = {
-        type: e$1.Move,
-        srcEvent: e$6,
-        target: t$7.target,
+      let t$12 = this._getTrackedPointerEventData(e$9);
+      if (!t$12) return;
+      ((this.drag.x = t$12.clientX), (this.drag.y = t$12.clientY));
+      let r$8 = {
+        type: e$2.Move,
+        srcEvent: e$9,
+        target: t$12.target,
         ...this.drag,
       };
-      this._emitter.emit(r$6.type, r$6);
+      this._emitter.emit(r$8.type, r$8);
     }
-    _onCancel(e$6) {
+    _onCancel(e$9) {
       if (!this.drag) return;
-      let t$7 = this._getTrackedPointerEventData(e$6);
-      if (!t$7) return;
-      ((this.drag.x = t$7.clientX), (this.drag.y = t$7.clientY));
-      let r$6 = {
-        type: e$1.Cancel,
-        srcEvent: e$6,
-        target: t$7.target,
+      let t$12 = this._getTrackedPointerEventData(e$9);
+      if (!t$12) return;
+      ((this.drag.x = t$12.clientX), (this.drag.y = t$12.clientY));
+      let r$8 = {
+        type: e$2.Cancel,
+        srcEvent: e$9,
+        target: t$12.target,
         ...this.drag,
       };
-      (this._emitter.emit(r$6.type, r$6), this._resetDrag());
+      (this._emitter.emit(r$8.type, r$8), this._resetDrag());
     }
-    _onEnd(e$6) {
+    _onEnd(e$9) {
       if (!this.drag) return;
-      let t$7 = this._getTrackedPointerEventData(e$6);
-      if (!t$7) return;
-      ((this.drag.x = t$7.clientX), (this.drag.y = t$7.clientY));
-      let r$6 = {
-        type: e$1.End,
-        srcEvent: e$6,
-        target: t$7.target,
+      let t$12 = this._getTrackedPointerEventData(e$9);
+      if (!t$12) return;
+      ((this.drag.x = t$12.clientX), (this.drag.y = t$12.clientY));
+      let r$8 = {
+        type: e$2.End,
+        srcEvent: e$9,
+        target: t$12.target,
         ...this.drag,
       };
-      (this._emitter.emit(r$6.type, r$6), this._resetDrag());
+      (this._emitter.emit(r$8.type, r$8), this._resetDrag());
     }
     _bindWindowListeners() {
       if (this._areWindowListenersBound) return;
-      let { move: e$6, end: t$7, cancel: n$7 } = l$1[this._sourceEvents];
-      (window.addEventListener(e$6, this._onMove, this._listenerOptions),
-        window.addEventListener(t$7, this._onEnd, this._listenerOptions),
-        n$7 && window.addEventListener(n$7, this._onCancel, this._listenerOptions),
+      let { move: e$9, end: t$12, cancel: n$11 } = l[this._sourceEvents];
+      (window.addEventListener(e$9, this._onMove, this._listenerOptions),
+        window.addEventListener(t$12, this._onEnd, this._listenerOptions),
+        n$11 && window.addEventListener(n$11, this._onCancel, this._listenerOptions),
         (this._areWindowListenersBound = !0));
     }
     _unbindWindowListeners() {
       if (this._areWindowListenersBound) {
-        let { move: e$6, end: t$7, cancel: n$7 } = l$1[this._sourceEvents];
-        (window.removeEventListener(e$6, this._onMove, this._listenerOptions),
-          window.removeEventListener(t$7, this._onEnd, this._listenerOptions),
-          n$7 && window.removeEventListener(n$7, this._onCancel, this._listenerOptions),
+        let { move: e$9, end: t$12, cancel: n$11 } = l[this._sourceEvents];
+        (window.removeEventListener(e$9, this._onMove, this._listenerOptions),
+          window.removeEventListener(t$12, this._onEnd, this._listenerOptions),
+          n$11 && window.removeEventListener(n$11, this._onCancel, this._listenerOptions),
           (this._areWindowListenersBound = !1));
       }
     }
@@ -3914,53 +3901,53 @@
     }
     cancel() {
       if (!this.drag) return;
-      let e$6 = {
-        type: e$1.Cancel,
+      let e$9 = {
+        type: e$2.Cancel,
         srcEvent: null,
         target: null,
         ...this.drag,
       };
-      (this._emitter.emit(e$6.type, e$6), this._resetDrag());
+      (this._emitter.emit(e$9.type, e$9), this._resetDrag());
     }
-    updateSettings(e$6) {
+    updateSettings(e$9) {
       if (this.isDestroyed) return;
-      let { listenerOptions: t$7, sourceEvents: n$7, startPredicate: r$6 } = e$6,
-        i$5 = c$2(n$7),
-        a$4 = s$2(t$7);
-      (r$6 && this._startPredicate !== r$6 && (this._startPredicate = r$6),
-        ((t$7 &&
+      let { listenerOptions: t$12, sourceEvents: n$11, startPredicate: r$8 } = e$9,
+        i$7 = c$2(n$11),
+        a$4 = s$1(t$12);
+      (r$8 && this._startPredicate !== r$8 && (this._startPredicate = r$8),
+        ((t$12 &&
           (this._listenerOptions.capture !== a$4.capture ||
             this._listenerOptions.passive === a$4.passive)) ||
-          (n$7 && this._sourceEvents !== i$5)) &&
+          (n$11 && this._sourceEvents !== i$7)) &&
           (this.element.removeEventListener(
-            l$1[this._sourceEvents].start,
+            l[this._sourceEvents].start,
             this._onStart,
             this._listenerOptions,
           ),
           this._unbindWindowListeners(),
           this.cancel(),
-          n$7 && (this._sourceEvents = i$5),
-          t$7 && a$4 && (this._listenerOptions = a$4),
+          n$11 && (this._sourceEvents = i$7),
+          t$12 && a$4 && (this._listenerOptions = a$4),
           this.element.addEventListener(
-            l$1[this._sourceEvents].start,
+            l[this._sourceEvents].start,
             this._onStart,
             this._listenerOptions,
           )));
     }
-    on(e$6, t$7, n$7) {
-      return this._emitter.on(e$6, t$7, n$7);
+    on(e$9, t$12, n$11) {
+      return this._emitter.on(e$9, t$12, n$11);
     }
-    off(e$6, t$7) {
-      this._emitter.off(e$6, t$7);
+    off(e$9, t$12) {
+      this._emitter.off(e$9, t$12);
     }
     destroy() {
       this.isDestroyed ||
         ((this.isDestroyed = !0),
         this.cancel(),
-        this._emitter.emit(e$1.Destroy, { type: e$1.Destroy }),
+        this._emitter.emit(e$2.Destroy, { type: e$2.Destroy }),
         this._emitter.off(),
         this.element.removeEventListener(
-          l$1[this._sourceEvents].start,
+          l[this._sourceEvents].start,
           this._onStart,
           this._listenerOptions,
         ));
@@ -3969,15 +3956,15 @@
 
   //#endregion
   //#region ../dragdoll/dist/auto-scroll-Bx5lxGCK.js
-  const t$1 = new N$1();
+  const t$4 = new N();
 
   //#endregion
-  //#region ../dragdoll/dist/auto-scroll-plugin-Coj8s496.js
-  const r$4 = {
+  //#region ../dragdoll/dist/auto-scroll-plugin-CzQex1ax.js
+  const r$6 = {
       x: 0,
       y: 0,
     },
-    i$3 = {
+    i$5 = {
       width: 0,
       height: 0,
       x: 0,
@@ -3987,40 +3974,40 @@
     return {
       targets: [],
       inertAreaSize: 0.2,
-      speed: M$1(),
+      speed: M(),
       smoothStop: !1,
-      getPosition: (e$6) => {
-        let { drag: t$7 } = e$6,
-          n$7 = t$7?.items[0];
-        if (n$7) return n$7.position;
-        let i$5 = t$7 && (t$7.moveEvent || t$7.startEvent);
-        return ((r$4.x = i$5 ? i$5.x : 0), (r$4.y = i$5 ? i$5.y : 0), r$4);
+      getPosition: (e$9) => {
+        let { drag: t$12 } = e$9,
+          n$11 = t$12?.items[0];
+        if (n$11) return n$11.position;
+        let i$7 = t$12 && (t$12.moveEvent || t$12.startEvent);
+        return ((r$6.x = i$7 ? i$7.x : 0), (r$6.y = i$7 ? i$7.y : 0), r$6);
       },
-      getClientRect: (e$6) => {
-        let { drag: t$7 } = e$6,
-          n$7 = e$6.getClientRect();
-        if (n$7) return n$7;
-        let r$6 = t$7 && (t$7.moveEvent || t$7.startEvent);
+      getClientRect: (e$9) => {
+        let { drag: t$12 } = e$9,
+          n$11 = e$9.getClientRect();
+        if (n$11) return n$11;
+        let r$8 = t$12 && (t$12.moveEvent || t$12.startEvent);
         return (
-          (i$3.width = r$6 ? 50 : 0),
-          (i$3.height = r$6 ? 50 : 0),
-          (i$3.x = r$6 ? r$6.x - 25 : 0),
-          (i$3.y = r$6 ? r$6.y - 25 : 0),
-          i$3
+          (i$5.width = r$8 ? 50 : 0),
+          (i$5.height = r$8 ? 50 : 0),
+          (i$5.x = r$8 ? r$8.x - 25 : 0),
+          (i$5.y = r$8 ? r$8.y - 25 : 0),
+          i$5
         );
       },
       onStart: null,
       onStop: null,
     };
   }
-  var o$1 = class {
+  var o$3 = class {
       _draggableAutoScroll;
       _draggable;
       _position;
       _clientRect;
-      constructor(e$6, t$7) {
-        ((this._draggableAutoScroll = e$6),
-          (this._draggable = t$7),
+      constructor(e$9, t$12) {
+        ((this._draggableAutoScroll = e$9),
+          (this._draggable = t$12),
           (this._position = {
             x: 0,
             y: 0,
@@ -4036,27 +4023,27 @@
         return this._draggableAutoScroll.settings;
       }
       get targets() {
-        let { targets: e$6 } = this._getSettings();
-        return (typeof e$6 == `function` && (e$6 = e$6(this._draggable)), e$6);
+        let { targets: e$9 } = this._getSettings();
+        return (typeof e$9 == `function` && (e$9 = e$9(this._draggable)), e$9);
       }
       get position() {
-        let e$6 = this._position,
-          { getPosition: t$7 } = this._getSettings();
+        let e$9 = this._position,
+          { getPosition: t$12 } = this._getSettings();
         return (
-          typeof t$7 == `function`
-            ? Object.assign(e$6, t$7(this._draggable))
-            : ((e$6.x = 0), (e$6.y = 0)),
-          e$6
+          typeof t$12 == `function`
+            ? Object.assign(e$9, t$12(this._draggable))
+            : ((e$9.x = 0), (e$9.y = 0)),
+          e$9
         );
       }
       get clientRect() {
-        let e$6 = this._clientRect,
-          { getClientRect: t$7 } = this._getSettings();
+        let e$9 = this._clientRect,
+          { getClientRect: t$12 } = this._getSettings();
         return (
-          typeof t$7 == `function`
-            ? Object.assign(e$6, t$7(this._draggable))
-            : ((e$6.width = 0), (e$6.height = 0), (e$6.x = 0), (e$6.y = 0)),
-          e$6
+          typeof t$12 == `function`
+            ? Object.assign(e$9, t$12(this._draggable))
+            : ((e$9.width = 0), (e$9.height = 0), (e$9.x = 0), (e$9.y = 0)),
+          e$9
         );
       }
       get inertAreaSize() {
@@ -4075,105 +4062,105 @@
         return this._getSettings().onStop;
       }
     },
-    s$1 = class {
+    s = class {
       name;
       version;
       settings;
       _autoScrollProxy;
-      constructor(e$6, r$6 = {}) {
+      constructor(e$9, r$8 = {}) {
         ((this.name = `autoscroll`),
           (this.version = `0.0.3`),
-          (this.settings = this._parseSettings(r$6)),
+          (this.settings = this._parseSettings(r$8)),
           (this._autoScrollProxy = null),
-          e$6.on(R.Start, () => {
+          e$9.on(R.Start, () => {
             this._autoScrollProxy ||
-              ((this._autoScrollProxy = new o$1(this, e$6)), t$1.addItem(this._autoScrollProxy));
+              ((this._autoScrollProxy = new o$3(this, e$9)), t$4.addItem(this._autoScrollProxy));
           }),
-          e$6.on(R.End, () => {
-            this._autoScrollProxy &&= (t$1.removeItem(this._autoScrollProxy), null);
+          e$9.on(R.End, () => {
+            this._autoScrollProxy &&= (t$4.removeItem(this._autoScrollProxy), null);
           }));
       }
-      _parseSettings(e$6, t$7 = a$2()) {
+      _parseSettings(e$9, t$12 = a$2()) {
         let {
-          targets: n$7 = t$7.targets,
-          inertAreaSize: r$6 = t$7.inertAreaSize,
-          speed: i$5 = t$7.speed,
-          smoothStop: o$5 = t$7.smoothStop,
-          getPosition: s$5 = t$7.getPosition,
-          getClientRect: c$5 = t$7.getClientRect,
-          onStart: l$5 = t$7.onStart,
-          onStop: u$5 = t$7.onStop,
-        } = e$6 || {};
+          targets: n$11 = t$12.targets,
+          inertAreaSize: r$8 = t$12.inertAreaSize,
+          speed: i$7 = t$12.speed,
+          smoothStop: o$7 = t$12.smoothStop,
+          getPosition: s$4 = t$12.getPosition,
+          getClientRect: c$5 = t$12.getClientRect,
+          onStart: l$4 = t$12.onStart,
+          onStop: u$4 = t$12.onStop,
+        } = e$9 || {};
         return {
-          targets: n$7,
-          inertAreaSize: r$6,
-          speed: i$5,
-          smoothStop: o$5,
-          getPosition: s$5,
+          targets: n$11,
+          inertAreaSize: r$8,
+          speed: i$7,
+          smoothStop: o$7,
+          getPosition: s$4,
           getClientRect: c$5,
-          onStart: l$5,
-          onStop: u$5,
+          onStart: l$4,
+          onStop: u$4,
         };
       }
-      updateSettings(e$6 = {}) {
-        this.settings = this._parseSettings(e$6, this.settings);
+      updateSettings(e$9 = {}) {
+        this.settings = this._parseSettings(e$9, this.settings);
       }
     };
-  function c$1(e$6) {
-    return (t$7) => {
-      let n$7 = new s$1(t$7, e$6),
-        r$6 = t$7;
-      return ((r$6.plugins[n$7.name] = n$7), r$6);
+  function c$1(e$9) {
+    return (t$12) => {
+      let n$11 = new s(t$12, e$9),
+        r$8 = t$12;
+      return ((r$8.plugins[n$11.name] = n$11), r$8);
     };
   }
 
   //#endregion
   //#region ../dragdoll/dist/base-sensor-DVrttP21.js
-  var n$4 = class {
+  var n$8 = class {
     drag;
     isDestroyed;
     _emitter;
     constructor() {
-      ((this.drag = null), (this.isDestroyed = !1), (this._emitter = new v$1()));
+      ((this.drag = null), (this.isDestroyed = !1), (this._emitter = new v()));
     }
-    _createDragData(e$6) {
+    _createDragData(e$9) {
       return {
-        x: e$6.x,
-        y: e$6.y,
+        x: e$9.x,
+        y: e$9.y,
       };
     }
-    _updateDragData(e$6) {
-      this.drag && ((this.drag.x = e$6.x), (this.drag.y = e$6.y));
+    _updateDragData(e$9) {
+      this.drag && ((this.drag.x = e$9.x), (this.drag.y = e$9.y));
     }
     _resetDragData() {
       this.drag = null;
     }
-    _start(t$7) {
+    _start(t$12) {
       this.isDestroyed ||
         this.drag ||
-        ((this.drag = this._createDragData(t$7)), this._emitter.emit(e$1.Start, t$7));
+        ((this.drag = this._createDragData(t$12)), this._emitter.emit(e$2.Start, t$12));
     }
-    _move(t$7) {
-      this.drag && (this._updateDragData(t$7), this._emitter.emit(e$1.Move, t$7));
+    _move(t$12) {
+      this.drag && (this._updateDragData(t$12), this._emitter.emit(e$2.Move, t$12));
     }
-    _end(t$7) {
+    _end(t$12) {
       this.drag &&
-        (this._updateDragData(t$7), this._emitter.emit(e$1.End, t$7), this._resetDragData());
+        (this._updateDragData(t$12), this._emitter.emit(e$2.End, t$12), this._resetDragData());
     }
-    _cancel(t$7) {
+    _cancel(t$12) {
       this.drag &&
-        (this._updateDragData(t$7), this._emitter.emit(e$1.Cancel, t$7), this._resetDragData());
+        (this._updateDragData(t$12), this._emitter.emit(e$2.Cancel, t$12), this._resetDragData());
     }
-    on(e$6, t$7, n$7) {
-      return this._emitter.on(e$6, t$7, n$7);
+    on(e$9, t$12, n$11) {
+      return this._emitter.on(e$9, t$12, n$11);
     }
-    off(e$6, t$7) {
-      this._emitter.off(e$6, t$7);
+    off(e$9, t$12) {
+      this._emitter.off(e$9, t$12);
     }
     cancel() {
       this.drag &&
         this._cancel({
-          type: e$1.Cancel,
+          type: e$2.Cancel,
           x: this.drag.x,
           y: this.drag.y,
         });
@@ -4182,14 +4169,14 @@
       this.isDestroyed ||
         ((this.isDestroyed = !0),
         this.cancel(),
-        this._emitter.emit(e$1.Destroy, { type: e$1.Destroy }),
+        this._emitter.emit(e$2.Destroy, { type: e$2.Destroy }),
         this._emitter.off());
     }
   };
 
   //#endregion
   //#region ../dragdoll/dist/base-motion-sensor-QRxjT_GX.js
-  var i$1 = class extends n$4 {
+  var i$3 = class extends n$8 {
     drag;
     _direction;
     _speed;
@@ -4203,60 +4190,60 @@
         (this._speed = 0),
         (this._tick = this._tick.bind(this)));
     }
-    _createDragData(e$6) {
+    _createDragData(e$9) {
       return {
-        ...super._createDragData(e$6),
+        ...super._createDragData(e$9),
         time: 0,
         deltaTime: 0,
       };
     }
-    _start(n$7) {
+    _start(n$11) {
       this.isDestroyed ||
         this.drag ||
-        (super._start(n$7), r$3.on(n$3.read, this._tick, this._tick));
+        (super._start(n$11), r$5.on(n$7.read, this._tick, this._tick));
     }
-    _end(n$7) {
-      this.drag && (r$3.off(n$3.read, this._tick), super._end(n$7));
+    _end(n$11) {
+      this.drag && (r$5.off(n$7.read, this._tick), super._end(n$11));
     }
-    _cancel(n$7) {
-      this.drag && (r$3.off(n$3.read, this._tick), super._cancel(n$7));
+    _cancel(n$11) {
+      this.drag && (r$5.off(n$7.read, this._tick), super._cancel(n$11));
     }
-    _tick(e$6) {
+    _tick(e$9) {
       if (this.drag)
-        if (e$6 && this.drag.time) {
-          ((this.drag.deltaTime = e$6 - this.drag.time), (this.drag.time = e$6));
-          let t$7 = {
+        if (e$9 && this.drag.time) {
+          ((this.drag.deltaTime = e$9 - this.drag.time), (this.drag.time = e$9));
+          let t$12 = {
             type: `tick`,
             time: this.drag.time,
             deltaTime: this.drag.deltaTime,
           };
-          if ((this._emitter.emit(`tick`, t$7), !this.drag)) return;
-          let r$6 = this._speed * (this.drag.deltaTime / 1e3),
-            i$5 = this._direction.x * r$6,
-            a$4 = this._direction.y * r$6;
-          (i$5 || a$4) &&
+          if ((this._emitter.emit(`tick`, t$12), !this.drag)) return;
+          let r$8 = this._speed * (this.drag.deltaTime / 1e3),
+            i$7 = this._direction.x * r$8,
+            a$4 = this._direction.y * r$8;
+          (i$7 || a$4) &&
             this._move({
-              type: e$1.Move,
-              x: this.drag.x + i$5,
+              type: e$2.Move,
+              x: this.drag.x + i$7,
               y: this.drag.y + a$4,
             });
-        } else ((this.drag.time = e$6), (this.drag.deltaTime = 0));
+        } else ((this.drag.time = e$9), (this.drag.deltaTime = 0));
     }
   };
 
   //#endregion
   //#region ../dragdoll/dist/keyboard-motion-sensor-BsMzohjd.js
-  const n$2 = [`start`, `cancel`, `end`, `moveLeft`, `moveRight`, `moveUp`, `moveDown`];
-  function r$2(e$6, t$7) {
-    if (!e$6.size || !t$7.size) return Infinity;
-    let n$7 = Infinity;
-    for (let r$6 of e$6) {
-      let e$7 = t$7.get(r$6);
-      e$7 !== void 0 && e$7 < n$7 && (n$7 = e$7);
+  const n$6 = [`start`, `cancel`, `end`, `moveLeft`, `moveRight`, `moveUp`, `moveDown`];
+  function r$4(e$9, t$12) {
+    if (!e$9.size || !t$12.size) return Infinity;
+    let n$11 = Infinity;
+    for (let r$8 of e$9) {
+      let e$10 = t$12.get(r$8);
+      e$10 !== void 0 && e$10 < n$11 && (n$11 = e$10);
     }
-    return n$7;
+    return n$11;
   }
-  const i$2 = {
+  const i$4 = {
     startKeys: [` `, `Enter`],
     moveLeftKeys: [`ArrowLeft`],
     moveRightKeys: [`ArrowRight`],
@@ -4267,18 +4254,18 @@
     cancelOnBlur: !0,
     cancelOnVisibilityChange: !0,
     computeSpeed: () => 500,
-    startPredicate: (e$6, t$7) => {
-      if (t$7.element && document.activeElement === t$7.element) {
-        let { left: e$7, top: n$7 } = t$7.element.getBoundingClientRect();
+    startPredicate: (e$9, t$12) => {
+      if (t$12.element && document.activeElement === t$12.element) {
+        let { left: e$10, top: n$11 } = t$12.element.getBoundingClientRect();
         return {
-          x: e$7,
-          y: n$7,
+          x: e$10,
+          y: n$11,
         };
       }
       return null;
     },
   };
-  var a$1 = class extends i$1 {
+  var a = class extends i$3 {
     element;
     _moveKeys;
     _moveKeyTimestamps;
@@ -4293,35 +4280,35 @@
     _cancelOnVisibilityChange;
     _computeSpeed;
     _startPredicate;
-    constructor(e$6, t$7 = {}) {
+    constructor(e$9, t$12 = {}) {
       super();
       let {
-        startPredicate: n$7 = i$2.startPredicate,
-        computeSpeed: r$6 = i$2.computeSpeed,
-        cancelOnVisibilityChange: a$4 = i$2.cancelOnVisibilityChange,
-        cancelOnBlur: o$5 = i$2.cancelOnBlur,
-        startKeys: s$5 = i$2.startKeys,
-        moveLeftKeys: c$5 = i$2.moveLeftKeys,
-        moveRightKeys: l$5 = i$2.moveRightKeys,
-        moveUpKeys: u$5 = i$2.moveUpKeys,
-        moveDownKeys: d$2 = i$2.moveDownKeys,
-        cancelKeys: f$2 = i$2.cancelKeys,
-        endKeys: p$2 = i$2.endKeys,
-      } = t$7;
-      ((this.element = e$6),
-        (this._startKeys = new Set(s$5)),
+        startPredicate: n$11 = i$4.startPredicate,
+        computeSpeed: r$8 = i$4.computeSpeed,
+        cancelOnVisibilityChange: a$4 = i$4.cancelOnVisibilityChange,
+        cancelOnBlur: o$7 = i$4.cancelOnBlur,
+        startKeys: s$4 = i$4.startKeys,
+        moveLeftKeys: c$5 = i$4.moveLeftKeys,
+        moveRightKeys: l$4 = i$4.moveRightKeys,
+        moveUpKeys: u$4 = i$4.moveUpKeys,
+        moveDownKeys: d$2 = i$4.moveDownKeys,
+        cancelKeys: f$2 = i$4.cancelKeys,
+        endKeys: p$2 = i$4.endKeys,
+      } = t$12;
+      ((this.element = e$9),
+        (this._startKeys = new Set(s$4)),
         (this._cancelKeys = new Set(f$2)),
         (this._endKeys = new Set(p$2)),
         (this._moveLeftKeys = new Set(c$5)),
-        (this._moveRightKeys = new Set(l$5)),
-        (this._moveUpKeys = new Set(u$5)),
+        (this._moveRightKeys = new Set(l$4)),
+        (this._moveUpKeys = new Set(u$4)),
         (this._moveDownKeys = new Set(d$2)),
-        (this._moveKeys = new Set([...c$5, ...l$5, ...u$5, ...d$2])),
+        (this._moveKeys = new Set([...c$5, ...l$4, ...u$4, ...d$2])),
         (this._moveKeyTimestamps = /* @__PURE__ */ new Map()),
-        (this._cancelOnBlur = o$5),
+        (this._cancelOnBlur = o$7),
         (this._cancelOnVisibilityChange = a$4),
-        (this._computeSpeed = r$6),
-        (this._startPredicate = n$7),
+        (this._computeSpeed = r$8),
+        (this._startPredicate = n$11),
         (this._onKeyDown = this._onKeyDown.bind(this)),
         (this._onKeyUp = this._onKeyUp.bind(this)),
         (this._onTick = this._onTick.bind(this)),
@@ -4330,22 +4317,22 @@
         this.on(`tick`, this._onTick, this._onTick),
         document.addEventListener(`keydown`, this._onKeyDown),
         document.addEventListener(`keyup`, this._onKeyUp),
-        o$5 && e$6?.addEventListener(`blur`, this._blurCancelHandler),
+        o$7 && e$9?.addEventListener(`blur`, this._blurCancelHandler),
         a$4 && document.addEventListener(`visibilitychange`, this._internalCancel));
     }
-    _end(e$6) {
+    _end(e$9) {
       this.drag &&
         (this._moveKeyTimestamps.clear(),
         (this._direction.x = 0),
         (this._direction.y = 0),
-        super._end(e$6));
+        super._end(e$9));
     }
-    _cancel(e$6) {
+    _cancel(e$9) {
       this.drag &&
         (this._moveKeyTimestamps.clear(),
         (this._direction.x = 0),
         (this._direction.y = 0),
-        super._cancel(e$6));
+        super._cancel(e$9));
     }
     _internalCancel() {
       this.cancel();
@@ -4356,97 +4343,97 @@
       });
     }
     _updateDirection() {
-      let e$6 = r$2(this._moveLeftKeys, this._moveKeyTimestamps),
-        t$7 = r$2(this._moveRightKeys, this._moveKeyTimestamps),
-        n$7 = r$2(this._moveUpKeys, this._moveKeyTimestamps),
-        i$5 = r$2(this._moveDownKeys, this._moveKeyTimestamps),
-        a$4 = e$6 === t$7 ? 0 : e$6 < t$7 ? -1 : 1,
-        o$5 = n$7 === i$5 ? 0 : n$7 < i$5 ? -1 : 1;
-      if (!(a$4 === 0 || o$5 === 0)) {
-        let e$7 = 1 / (Math.sqrt(a$4 * a$4 + o$5 * o$5) || 1);
-        ((a$4 *= e$7), (o$5 *= e$7));
+      let e$9 = r$4(this._moveLeftKeys, this._moveKeyTimestamps),
+        t$12 = r$4(this._moveRightKeys, this._moveKeyTimestamps),
+        n$11 = r$4(this._moveUpKeys, this._moveKeyTimestamps),
+        i$7 = r$4(this._moveDownKeys, this._moveKeyTimestamps),
+        a$4 = e$9 === t$12 ? 0 : e$9 < t$12 ? -1 : 1,
+        o$7 = n$11 === i$7 ? 0 : n$11 < i$7 ? -1 : 1;
+      if (!(a$4 === 0 || o$7 === 0)) {
+        let e$10 = 1 / (Math.sqrt(a$4 * a$4 + o$7 * o$7) || 1);
+        ((a$4 *= e$10), (o$7 *= e$10));
       }
-      ((this._direction.x = a$4), (this._direction.y = o$5));
+      ((this._direction.x = a$4), (this._direction.y = o$7));
     }
     _onTick() {
       this._speed = this._computeSpeed(this);
     }
-    _onKeyUp(e$6) {
-      this._moveKeyTimestamps.get(e$6.key) &&
-        (this._moveKeyTimestamps.delete(e$6.key), this._updateDirection());
+    _onKeyUp(e$9) {
+      this._moveKeyTimestamps.get(e$9.key) &&
+        (this._moveKeyTimestamps.delete(e$9.key), this._updateDirection());
     }
-    _onKeyDown(t$7) {
+    _onKeyDown(t$12) {
       if (!this.drag) {
-        if (this._startKeys.has(t$7.key)) {
-          let n$7 = this._startPredicate(t$7, this);
-          n$7 &&
-            (t$7.preventDefault(),
+        if (this._startKeys.has(t$12.key)) {
+          let n$11 = this._startPredicate(t$12, this);
+          n$11 &&
+            (t$12.preventDefault(),
             this._start({
-              type: e$1.Start,
-              x: n$7.x,
-              y: n$7.y,
+              type: e$2.Start,
+              x: n$11.x,
+              y: n$11.y,
             }));
         }
         return;
       }
-      if (this._cancelKeys.has(t$7.key)) {
-        (t$7.preventDefault(), this._internalCancel());
+      if (this._cancelKeys.has(t$12.key)) {
+        (t$12.preventDefault(), this._internalCancel());
         return;
       }
-      if (this._endKeys.has(t$7.key)) {
-        (t$7.preventDefault(),
+      if (this._endKeys.has(t$12.key)) {
+        (t$12.preventDefault(),
           this._end({
-            type: e$1.End,
+            type: e$2.End,
             x: this.drag.x,
             y: this.drag.y,
           }));
         return;
       }
-      if (this._moveKeys.has(t$7.key)) {
-        (t$7.preventDefault(),
-          this._moveKeyTimestamps.get(t$7.key) ||
-            (this._moveKeyTimestamps.set(t$7.key, Date.now()), this._updateDirection()));
+      if (this._moveKeys.has(t$12.key)) {
+        (t$12.preventDefault(),
+          this._moveKeyTimestamps.get(t$12.key) ||
+            (this._moveKeyTimestamps.set(t$12.key, Date.now()), this._updateDirection()));
         return;
       }
     }
-    updateSettings(e$6) {
-      let t$7 = !1,
+    updateSettings(e$9) {
+      let t$12 = !1,
         {
-          cancelOnBlur: r$6,
-          cancelOnVisibilityChange: i$5,
+          cancelOnBlur: r$8,
+          cancelOnVisibilityChange: i$7,
           startPredicate: a$4,
-          computeSpeed: o$5,
-        } = e$6;
+          computeSpeed: o$7,
+        } = e$9;
       if (
-        (r$6 !== void 0 &&
-          this._cancelOnBlur !== r$6 &&
-          ((this._cancelOnBlur = r$6),
-          r$6
+        (r$8 !== void 0 &&
+          this._cancelOnBlur !== r$8 &&
+          ((this._cancelOnBlur = r$8),
+          r$8
             ? this.element?.addEventListener(`blur`, this._blurCancelHandler)
             : this.element?.removeEventListener(`blur`, this._blurCancelHandler)),
-        i$5 !== void 0 &&
-          this._cancelOnVisibilityChange !== i$5 &&
-          ((this._cancelOnVisibilityChange = i$5),
-          i$5
+        i$7 !== void 0 &&
+          this._cancelOnVisibilityChange !== i$7 &&
+          ((this._cancelOnVisibilityChange = i$7),
+          i$7
             ? document.addEventListener(`visibilitychange`, this._internalCancel)
             : document.removeEventListener(`visibilitychange`, this._internalCancel)),
         a$4 !== void 0 && (this._startPredicate = a$4),
-        o$5 !== void 0 && (this._computeSpeed = o$5),
-        n$2.forEach((n$7, r$7) => {
-          let i$6 = `${n$7}Keys`,
-            a$5 = e$6[i$6];
-          a$5 !== void 0 && ((this[`_${i$6}`] = new Set(a$5)), r$7 >= 3 && (t$7 = !0));
+        o$7 !== void 0 && (this._computeSpeed = o$7),
+        n$6.forEach((n$11, r$9) => {
+          let i$8 = `${n$11}Keys`,
+            a$5 = e$9[i$8];
+          a$5 !== void 0 && ((this[`_${i$8}`] = new Set(a$5)), r$9 >= 3 && (t$12 = !0));
         }),
-        t$7)
+        t$12)
       ) {
-        let e$7 = [
+        let e$10 = [
           ...this._moveLeftKeys,
           ...this._moveRightKeys,
           ...this._moveUpKeys,
           ...this._moveDownKeys,
         ];
-        [...this._moveKeys].every((t$8, n$7) => e$7[n$7] === t$8) ||
-          ((this._moveKeys = new Set(e$7)),
+        [...this._moveKeys].every((t$13, n$11) => e$10[n$11] === t$13) ||
+          ((this._moveKeys = new Set(e$10)),
           this._moveKeyTimestamps.clear(),
           this._updateDirection());
       }
@@ -4464,641 +4451,266 @@
   };
 
   //#endregion
-  //#region ../../node_modules/react/cjs/react-jsx-runtime.development.js
-  var require_react_jsx_runtime_development = /* @__PURE__ */ __commonJS({
-    '../../node_modules/react/cjs/react-jsx-runtime.development.js': (exports) => {
-      (function () {
-        function getComponentNameFromType(type) {
-          if (null == type) return null;
-          if ('function' === typeof type)
-            return type.$$typeof === REACT_CLIENT_REFERENCE
-              ? null
-              : type.displayName || type.name || null;
-          if ('string' === typeof type) return type;
-          switch (type) {
-            case REACT_FRAGMENT_TYPE:
-              return 'Fragment';
-            case REACT_PROFILER_TYPE:
-              return 'Profiler';
-            case REACT_STRICT_MODE_TYPE:
-              return 'StrictMode';
-            case REACT_SUSPENSE_TYPE:
-              return 'Suspense';
-            case REACT_SUSPENSE_LIST_TYPE:
-              return 'SuspenseList';
-            case REACT_ACTIVITY_TYPE:
-              return 'Activity';
-          }
-          if ('object' === typeof type)
-            switch (
-              ('number' === typeof type.tag &&
-                console.error(
-                  'Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue.',
-                ),
-              type.$$typeof)
-            ) {
-              case REACT_PORTAL_TYPE:
-                return 'Portal';
-              case REACT_CONTEXT_TYPE:
-                return type.displayName || 'Context';
-              case REACT_CONSUMER_TYPE:
-                return (type._context.displayName || 'Context') + '.Consumer';
-              case REACT_FORWARD_REF_TYPE:
-                var innerType = type.render;
-                type = type.displayName;
-                type ||
-                  ((type = innerType.displayName || innerType.name || ''),
-                  (type = '' !== type ? 'ForwardRef(' + type + ')' : 'ForwardRef'));
-                return type;
-              case REACT_MEMO_TYPE:
-                return (
-                  (innerType = type.displayName || null),
-                  null !== innerType ? innerType : getComponentNameFromType(type.type) || 'Memo'
-                );
-              case REACT_LAZY_TYPE:
-                innerType = type._payload;
-                type = type._init;
-                try {
-                  return getComponentNameFromType(type(innerType));
-                } catch (x$3) {}
-            }
-          return null;
-        }
-        function testStringCoercion(value) {
-          return '' + value;
-        }
-        function checkKeyStringCoercion(value) {
-          try {
-            testStringCoercion(value);
-            var JSCompiler_inline_result = !1;
-          } catch (e$6) {
-            JSCompiler_inline_result = !0;
-          }
-          if (JSCompiler_inline_result) {
-            JSCompiler_inline_result = console;
-            var JSCompiler_temp_const = JSCompiler_inline_result.error;
-            var JSCompiler_inline_result$jscomp$0 =
-              ('function' === typeof Symbol && Symbol.toStringTag && value[Symbol.toStringTag]) ||
-              value.constructor.name ||
-              'Object';
-            JSCompiler_temp_const.call(
-              JSCompiler_inline_result,
-              'The provided key is an unsupported type %s. This value must be coerced to a string before using it here.',
-              JSCompiler_inline_result$jscomp$0,
-            );
-            return testStringCoercion(value);
-          }
-        }
-        function getTaskName(type) {
-          if (type === REACT_FRAGMENT_TYPE) return '<>';
-          if ('object' === typeof type && null !== type && type.$$typeof === REACT_LAZY_TYPE)
-            return '<...>';
-          try {
-            var name = getComponentNameFromType(type);
-            return name ? '<' + name + '>' : '<...>';
-          } catch (x$3) {
-            return '<...>';
-          }
-        }
-        function getOwner() {
-          var dispatcher = ReactSharedInternals.A;
-          return null === dispatcher ? null : dispatcher.getOwner();
-        }
-        function UnknownOwner() {
-          return Error('react-stack-top-frame');
-        }
-        function hasValidKey(config) {
-          if (hasOwnProperty.call(config, 'key')) {
-            var getter = Object.getOwnPropertyDescriptor(config, 'key').get;
-            if (getter && getter.isReactWarning) return !1;
-          }
-          return void 0 !== config.key;
-        }
-        function defineKeyPropWarningGetter(props, displayName) {
-          function warnAboutAccessingKey() {
-            specialPropKeyWarningShown ||
-              ((specialPropKeyWarningShown = !0),
-              console.error(
-                '%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://react.dev/link/special-props)',
-                displayName,
-              ));
-          }
-          warnAboutAccessingKey.isReactWarning = !0;
-          Object.defineProperty(props, 'key', {
-            get: warnAboutAccessingKey,
-            configurable: !0,
-          });
-        }
-        function elementRefGetterWithDeprecationWarning() {
-          var componentName = getComponentNameFromType(this.type);
-          didWarnAboutElementRef[componentName] ||
-            ((didWarnAboutElementRef[componentName] = !0),
-            console.error(
-              'Accessing element.ref was removed in React 19. ref is now a regular prop. It will be removed from the JSX Element type in a future release.',
-            ));
-          componentName = this.props.ref;
-          return void 0 !== componentName ? componentName : null;
-        }
-        function ReactElement(type, key, props, owner, debugStack, debugTask) {
-          var refProp = props.ref;
-          type = {
-            $$typeof: REACT_ELEMENT_TYPE,
-            type,
-            key,
-            props,
-            _owner: owner,
-          };
-          null !== (void 0 !== refProp ? refProp : null)
-            ? Object.defineProperty(type, 'ref', {
-                enumerable: !1,
-                get: elementRefGetterWithDeprecationWarning,
-              })
-            : Object.defineProperty(type, 'ref', {
-                enumerable: !1,
-                value: null,
-              });
-          type._store = {};
-          Object.defineProperty(type._store, 'validated', {
-            configurable: !1,
-            enumerable: !1,
-            writable: !0,
-            value: 0,
-          });
-          Object.defineProperty(type, '_debugInfo', {
-            configurable: !1,
-            enumerable: !1,
-            writable: !0,
-            value: null,
-          });
-          Object.defineProperty(type, '_debugStack', {
-            configurable: !1,
-            enumerable: !1,
-            writable: !0,
-            value: debugStack,
-          });
-          Object.defineProperty(type, '_debugTask', {
-            configurable: !1,
-            enumerable: !1,
-            writable: !0,
-            value: debugTask,
-          });
-          Object.freeze && (Object.freeze(type.props), Object.freeze(type));
-          return type;
-        }
-        function jsxDEVImpl(type, config, maybeKey, isStaticChildren, debugStack, debugTask) {
-          var children = config.children;
-          if (void 0 !== children)
-            if (isStaticChildren)
-              if (isArrayImpl(children)) {
-                for (isStaticChildren = 0; isStaticChildren < children.length; isStaticChildren++)
-                  validateChildKeys(children[isStaticChildren]);
-                Object.freeze && Object.freeze(children);
-              } else
-                console.error(
-                  'React.jsx: Static children should always be an array. You are likely explicitly calling React.jsxs or React.jsxDEV. Use the Babel transform instead.',
-                );
-            else validateChildKeys(children);
-          if (hasOwnProperty.call(config, 'key')) {
-            children = getComponentNameFromType(type);
-            var keys = Object.keys(config).filter(function (k$3) {
-              return 'key' !== k$3;
-            });
-            isStaticChildren =
-              0 < keys.length
-                ? '{key: someKey, ' + keys.join(': ..., ') + ': ...}'
-                : '{key: someKey}';
-            didWarnAboutKeySpread[children + isStaticChildren] ||
-              ((keys = 0 < keys.length ? '{' + keys.join(': ..., ') + ': ...}' : '{}'),
-              console.error(
-                'A props object containing a "key" prop is being spread into JSX:\n  let props = %s;\n  <%s {...props} />\nReact keys must be passed directly to JSX without using spread:\n  let props = %s;\n  <%s key={someKey} {...props} />',
-                isStaticChildren,
-                children,
-                keys,
-                children,
-              ),
-              (didWarnAboutKeySpread[children + isStaticChildren] = !0));
-          }
-          children = null;
-          void 0 !== maybeKey && (checkKeyStringCoercion(maybeKey), (children = '' + maybeKey));
-          hasValidKey(config) && (checkKeyStringCoercion(config.key), (children = '' + config.key));
-          if ('key' in config) {
-            maybeKey = {};
-            for (var propName in config)
-              'key' !== propName && (maybeKey[propName] = config[propName]);
-          } else maybeKey = config;
-          children &&
-            defineKeyPropWarningGetter(
-              maybeKey,
-              'function' === typeof type ? type.displayName || type.name || 'Unknown' : type,
-            );
-          return ReactElement(type, children, maybeKey, getOwner(), debugStack, debugTask);
-        }
-        function validateChildKeys(node) {
-          isValidElement(node)
-            ? node._store && (node._store.validated = 1)
-            : 'object' === typeof node &&
-              null !== node &&
-              node.$$typeof === REACT_LAZY_TYPE &&
-              ('fulfilled' === node._payload.status
-                ? isValidElement(node._payload.value) &&
-                  node._payload.value._store &&
-                  (node._payload.value._store.validated = 1)
-                : node._store && (node._store.validated = 1));
-        }
-        function isValidElement(object) {
-          return (
-            'object' === typeof object && null !== object && object.$$typeof === REACT_ELEMENT_TYPE
-          );
-        }
-        var React = require_react(),
-          REACT_ELEMENT_TYPE = Symbol.for('react.transitional.element'),
-          REACT_PORTAL_TYPE = Symbol.for('react.portal'),
-          REACT_FRAGMENT_TYPE = Symbol.for('react.fragment'),
-          REACT_STRICT_MODE_TYPE = Symbol.for('react.strict_mode'),
-          REACT_PROFILER_TYPE = Symbol.for('react.profiler'),
-          REACT_CONSUMER_TYPE = Symbol.for('react.consumer'),
-          REACT_CONTEXT_TYPE = Symbol.for('react.context'),
-          REACT_FORWARD_REF_TYPE = Symbol.for('react.forward_ref'),
-          REACT_SUSPENSE_TYPE = Symbol.for('react.suspense'),
-          REACT_SUSPENSE_LIST_TYPE = Symbol.for('react.suspense_list'),
-          REACT_MEMO_TYPE = Symbol.for('react.memo'),
-          REACT_LAZY_TYPE = Symbol.for('react.lazy'),
-          REACT_ACTIVITY_TYPE = Symbol.for('react.activity'),
-          REACT_CLIENT_REFERENCE = Symbol.for('react.client.reference'),
-          ReactSharedInternals =
-            React.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE,
-          hasOwnProperty = Object.prototype.hasOwnProperty,
-          isArrayImpl = Array.isArray,
-          createTask = console.createTask
-            ? console.createTask
-            : function () {
-                return null;
-              };
-        React = {
-          react_stack_bottom_frame: function (callStackForError) {
-            return callStackForError();
-          },
-        };
-        var specialPropKeyWarningShown;
-        var didWarnAboutElementRef = {};
-        var unknownOwnerDebugStack = React.react_stack_bottom_frame.bind(React, UnknownOwner)();
-        var unknownOwnerDebugTask = createTask(getTaskName(UnknownOwner));
-        var didWarnAboutKeySpread = {};
-        exports.Fragment = REACT_FRAGMENT_TYPE;
-        exports.jsx = function (type, config, maybeKey) {
-          var trackActualOwner = 1e4 > ReactSharedInternals.recentlyCreatedOwnerStacks++;
-          return jsxDEVImpl(
-            type,
-            config,
-            maybeKey,
-            !1,
-            trackActualOwner ? Error('react-stack-top-frame') : unknownOwnerDebugStack,
-            trackActualOwner ? createTask(getTaskName(type)) : unknownOwnerDebugTask,
-          );
-        };
-        exports.jsxs = function (type, config, maybeKey) {
-          var trackActualOwner = 1e4 > ReactSharedInternals.recentlyCreatedOwnerStacks++;
-          return jsxDEVImpl(
-            type,
-            config,
-            maybeKey,
-            !0,
-            trackActualOwner ? Error('react-stack-top-frame') : unknownOwnerDebugStack,
-            trackActualOwner ? createTask(getTaskName(type)) : unknownOwnerDebugTask,
-          );
-        };
-      })();
-    },
-  });
-
-  //#endregion
-  //#region ../../node_modules/react/jsx-runtime.js
-  var require_jsx_runtime = /* @__PURE__ */ __commonJS({
-    '../../node_modules/react/jsx-runtime.js': (exports, module) => {
-      module.exports = require_react_jsx_runtime_development();
-    },
-  });
-
-  //#endregion
-  //#region ../dragdoll-react/dist/index.js
-  var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
-  var import_jsx_runtime = /* @__PURE__ */ __toESM(require_jsx_runtime(), 1);
-  const y = Object.prototype.hasOwnProperty,
-    b = (e$6) => {
-      if (typeof e$6 != `object` || !e$6) return !1;
-      let t$7 = Object.getPrototypeOf(e$6);
-      return t$7 === Object.prototype || t$7 === null;
+  //#region ../dragdoll-react/dist/are-configs-equal-Cv4ZY5_I.js
+  const e$1 = Object.prototype.hasOwnProperty,
+    t$3 = (e$9) => {
+      if (typeof e$9 != `object` || !e$9) return !1;
+      let t$12 = Object.getPrototypeOf(e$9);
+      return t$12 === Object.prototype || t$12 === null;
     };
-  function x(e$6, t$7) {
-    if (Object.is(e$6, t$7)) return !0;
-    if (e$6 === null || t$7 === null || typeof e$6 != `object` || typeof t$7 != `object`) return !1;
-    let n$7 = Array.isArray(e$6),
-      r$6 = Array.isArray(t$7);
-    if (n$7 || r$6) {
-      if (!n$7 || !r$6) return !1;
-      let i$6 = e$6.length;
-      if (i$6 !== t$7.length) return !1;
-      for (let n$8 = 0; n$8 < i$6; n$8++) if (!x(e$6[n$8], t$7[n$8])) return !1;
+  function n$3(r$8, i$7) {
+    if (Object.is(r$8, i$7)) return !0;
+    if (r$8 === null || i$7 === null || typeof r$8 != `object` || typeof i$7 != `object`) return !1;
+    let a$4 = Array.isArray(r$8),
+      o$7 = Array.isArray(i$7);
+    if (a$4 || o$7) {
+      if (!a$4 || !o$7) return !1;
+      let e$9 = r$8.length;
+      if (e$9 !== i$7.length) return !1;
+      for (let t$12 = 0; t$12 < e$9; t$12++) if (!n$3(r$8[t$12], i$7[t$12])) return !1;
       return !0;
     }
-    let i$5 = e$6 instanceof Set,
-      a$4 = t$7 instanceof Set;
-    if (i$5 || a$4) return !i$5 || !a$4 || e$6.size !== t$7.size ? !1 : e$6.isSubsetOf(t$7);
-    if (!b(e$6) || !b(t$7)) return !1;
-    let o$5 = Object.keys(e$6),
-      s$5 = Object.keys(t$7);
-    if (o$5.length !== s$5.length) return !1;
-    for (let n$8 = 0; n$8 < o$5.length; n$8++) {
-      let r$7 = o$5[n$8];
-      if (!y.call(t$7, r$7) || !x(e$6[r$7], t$7[r$7])) return !1;
+    let s$4 = r$8 instanceof Set,
+      c$5 = i$7 instanceof Set;
+    if (s$4 || c$5) return !s$4 || !c$5 || r$8.size !== i$7.size ? !1 : r$8.isSubsetOf(i$7);
+    if (!t$3(r$8) || !t$3(i$7)) return !1;
+    let l$4 = Object.keys(r$8),
+      u$4 = Object.keys(i$7);
+    if (l$4.length !== u$4.length) return !1;
+    for (let t$12 = 0; t$12 < l$4.length; t$12++) {
+      let a$5 = l$4[t$12];
+      if (!e$1.call(i$7, a$5) || !n$3(r$8[a$5], i$7[a$5])) return !1;
     }
     return !0;
   }
-  function S(e$6, t$7) {
-    if (e$6 === t$7) return !0;
-    if (e$6.length !== t$7.length) return !1;
-    for (let n$7 = 0; n$7 < e$6.length; n$7++) if (!Object.is(e$6[n$7], t$7[n$7])) return !1;
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-callback-stable-CtO9rJmq.js
+  function t$2(e$9, t$12) {
+    if (e$9 === t$12) return !0;
+    if (e$9.length !== t$12.length) return !1;
+    for (let n$11 = 0; n$11 < e$9.length; n$11++) if (!Object.is(e$9[n$11], t$12[n$11])) return !1;
     return !0;
   }
-  function C(e$6, t$7) {
-    let n$7 = (0, import_react.useRef)(null),
-      r$6 = n$7.current || {
-        deps: t$7,
-        value: e$6(),
+  function n$1(n$11, r$8) {
+    let i$7 = (0, import_react.useRef)(null),
+      a$4 = i$7.current || {
+        deps: r$8,
+        value: n$11(),
       };
     return (
-      n$7.current
-        ? S(t$7, r$6.deps) || ((r$6.deps = t$7), (r$6.value = e$6()))
-        : (n$7.current = r$6),
-      r$6.value
+      i$7.current
+        ? t$2(r$8, a$4.deps) || ((a$4.deps = r$8), (a$4.value = n$11()))
+        : (i$7.current = a$4),
+      a$4.value
     );
   }
-  function w(e$6, t$7) {
-    return C(() => e$6, t$7);
+  function r$1(e$9, t$12) {
+    return n$1(() => e$9, t$12);
   }
-  const T = (0, import_react.createContext)(null);
-  function E() {
-    return (0, import_react.useContext)(T);
-  }
-  const D = typeof window > `u` ? import_react.useEffect : import_react.useLayoutEffect;
-  function O(e$6, t$7) {
-    let n$7 = C(() => e$6.filter((e$7) => !!e$7), [...e$6]),
-      { id: r$6, dndObserver: i$5, ...a$4 } = t$7 || {},
-      o$5 = E(),
-      l$5 = i$5 === void 0 ? o$5 : i$5,
-      [u$5, f$2] = (0, import_react.useState)(null),
-      p$2 = (0, import_react.useRef)(null),
-      m$2 = (0, import_react.useRef)(n$7);
-    m$2.current = n$7;
-    let h$2 = (0, import_react.useRef)(r$6),
-      g$2 = (0, import_react.useRef)(t$7),
-      _$3 = (0, import_react.useRef)(l$5),
-      v$4 = (0, import_react.useRef)(r$6);
-    v$4.current = r$6;
-    let y$3 = (0, import_react.useRef)(l$5);
-    y$3.current = l$5;
-    let b$3 = (0, import_react.useRef)(a$4);
-    b$3.current = a$4;
-    let S$3 = w(() => {
-        let e$7 = p$2.current;
-        e$7 && (e$7.destroy(), (p$2.current = null), f$2(null));
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-draggable-B_WlZ0op.js
+  function c(c$5, l$4) {
+    let u$4 = n$1(() => c$5.filter((e$9) => !!e$9), [...c$5]),
+      { id: d$2, dndObserver: f$2, ...p$2 } = l$4 || {},
+      m$2 = n$5(),
+      h$2 = f$2 === void 0 ? m$2 : f$2,
+      [g$2, _$3] = (0, import_react.useState)(null),
+      v$3 = (0, import_react.useRef)(null),
+      y$2 = (0, import_react.useRef)(u$4);
+    y$2.current = u$4;
+    let b$2 = (0, import_react.useRef)(d$2),
+      x$2 = (0, import_react.useRef)(l$4),
+      S$2 = (0, import_react.useRef)(h$2),
+      C$2 = (0, import_react.useRef)(d$2);
+    C$2.current = d$2;
+    let w$2 = (0, import_react.useRef)(h$2);
+    w$2.current = h$2;
+    let T$2 = (0, import_react.useRef)(p$2);
+    T$2.current = p$2;
+    let E$3 = r$1(() => {
+        let e$9 = v$3.current;
+        e$9 && (e$9.destroy(), (v$3.current = null), _$3(null));
       }, []),
-      T$3 = w(() => {
-        S$3();
-        let e$7 = m$2.current;
-        if (e$7.length === 0) return;
-        let t$8 = v$4.current,
-          n$8 = y$3.current,
-          r$7 = new B$1(e$7, {
-            id: t$8,
-            ...(b$3.current || {}),
+      D$2 = r$1(() => {
+        E$3();
+        let e$9 = y$2.current;
+        if (e$9.length === 0) return;
+        let t$12 = C$2.current,
+          n$11 = w$2.current,
+          r$8 = new B(e$9, {
+            id: t$12,
+            ...(T$2.current || {}),
           });
-        (n$8?.addDraggables([r$7]),
-          (p$2.current = r$7),
-          (h$2.current = t$8),
-          (g$2.current = b$3.current),
-          (_$3.current = n$8),
-          f$2(r$7));
-      }, [S$3]);
+        (n$11?.addDraggables([r$8]),
+          (v$3.current = r$8),
+          (b$2.current = t$12),
+          (x$2.current = T$2.current),
+          (S$2.current = n$11),
+          _$3(r$8));
+      }, [E$3]);
     return (
-      D(() => {
-        if (!n$7.length) {
-          S$3();
+      n(() => {
+        if (!u$4.length) {
+          E$3();
           return;
         }
-        let e$7 = p$2.current;
-        if (!e$7) {
-          T$3();
+        let e$9 = v$3.current;
+        if (!e$9) {
+          D$2();
           return;
         }
-        (n$7.length !== e$7.sensors.length || n$7.some((t$8) => !e$7.sensors.includes(t$8))) &&
-          T$3();
-      }, [n$7, T$3, S$3]),
-      D(() => {
-        p$2.current && h$2.current !== r$6 && T$3();
-      }, [r$6, T$3]),
-      D(() => {
-        let e$7 = _$3.current;
-        if (e$7 === l$5) return;
-        let t$8 = p$2.current;
-        (t$8 && (e$7?.removeDraggables([t$8]), l$5?.addDraggables([t$8])), (_$3.current = l$5));
-      }, [l$5]),
-      D(() => {
-        let e$7 = p$2.current;
-        e$7 &&
-          (x(g$2.current, a$4) || e$7.updateSettings(e$7._parseSettings(a$4)), (g$2.current = a$4));
-      }, [a$4]),
-      D(() => S$3, [S$3]),
-      u$5
+        (u$4.length !== e$9.sensors.length || u$4.some((t$12) => !e$9.sensors.includes(t$12))) &&
+          D$2();
+      }, [u$4, D$2, E$3]),
+      n(() => {
+        v$3.current && b$2.current !== d$2 && D$2();
+      }, [d$2, D$2]),
+      n(() => {
+        let e$9 = S$2.current;
+        if (e$9 === h$2) return;
+        let t$12 = v$3.current;
+        (t$12 && (e$9?.removeDraggables([t$12]), h$2?.addDraggables([t$12])), (S$2.current = h$2));
+      }, [h$2]),
+      n(() => {
+        let e$9 = v$3.current;
+        e$9 &&
+          (n$3(x$2.current, p$2) || e$9.updateSettings(e$9._parseSettings(p$2)),
+          (x$2.current = p$2));
+      }, [p$2]),
+      n(() => E$3, [E$3]),
+      g$2
     );
   }
-  function k({ sensors: e$6, id: t$7, dndObserver: n$7, children: r$6, ref: i$5, ...o$5 }) {
-    let s$5 = O(e$6, {
-      ...o$5,
-      ...(t$7 === void 0 ? {} : { id: t$7 }),
-      ...(n$7 === void 0 ? {} : { dndObserver: n$7 }),
-    });
-    return ((0, import_react.useImperativeHandle)(i$5, () => s$5, [s$5]), r$6);
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-draggable-auto-scroll-Bfc-BIux.js
+  function i(i$7, a$4) {
+    let o$7 = (0, import_react.useRef)(a$4);
+    o$7.current = a$4;
+    let s$4 = (0, import_react.useRef)(a$4);
+    return (
+      n(() => {
+        i$7 && (i$7.plugins.autoscroll || (i$7.use(c$1(o$7.current)), (s$4.current = o$7.current)));
+      }, [i$7]),
+      n(() => {
+        let e$9 = i$7?.plugins.autoscroll;
+        e$9 &&
+          (n$3(s$4.current, a$4) || e$9.updateSettings(e$9._parseSettings(a$4)),
+          (s$4.current = a$4));
+      }, [i$7, a$4]),
+      i$7
+    );
   }
-  const A = (0, import_react.memo)(k);
-  A.displayName = `Draggable`;
-  function M({ id: e$6, accept: t$7, data: n$7, element: r$6, dndObserver: i$5 } = {}) {
-    let a$4 = E(),
-      o$5 = i$5 === void 0 ? a$4 : i$5,
-      [l$5, u$5] = (0, import_react.useState)(null),
-      d$2 = (0, import_react.useRef)(null),
-      f$2 = (0, import_react.useRef)({
-        id: e$6,
-        accept: t$7,
-        data: n$7,
-      });
-    ((f$2.current.id = e$6), (f$2.current.accept = t$7), (f$2.current.data = n$7));
-    let m$2 = (0, import_react.useRef)(e$6),
-      h$2 = (0, import_react.useRef)(o$5);
-    h$2.current = o$5;
-    let g$2 = (0, import_react.useRef)(o$5),
-      _$3 = w(() => {
-        let e$7 = d$2.current;
-        e$7 && (e$7.destroy(), (d$2.current = null), u$5(null));
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-draggable-callback-Cd1g8lnj.js
+  function n$2(n$11, r$8, i$7) {
+    let a$4 = !!i$7,
+      o$7 = (0, import_react.useRef)(i$7);
+    ((o$7.current = i$7),
+      n(() => {
+        if (!n$11 || !a$4) return;
+        let e$9 = n$11.on(r$8, (...e$10) => {
+          o$7.current?.(...e$10);
+        });
+        return () => void n$11.off(r$8, e$9);
+      }, [n$11, r$8, a$4]));
+  }
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-draggable-drag-cqJKOXjJ.js
+  function r(r$8, i$7 = !1) {
+    let [a$4, o$7] = (0, import_react.useState)(r$8?.drag || null),
+      s$4 = (0, import_react.useState)(void 0)[1];
+    return (
+      n$2(r$8, R.Start, () => {
+        o$7(r$8?.drag || null);
+      }),
+      n$2(r$8, R.Move, () => {
+        i$7 && a$4 && s$4(Symbol());
+      }),
+      n$2(r$8, R.End, () => {
+        o$7(null);
+      }),
+      a$4
+    );
+  }
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-keyboard-motion-sensor-B0wbimu8.js
+  function o(o$7 = {}, s$4) {
+    let [c$5, l$4] = (0, import_react.useState)(null),
+      u$4 = (0, import_react.useRef)(c$5),
+      d$2 = (0, import_react.useRef)(o$7),
+      f$2 = r$1((e$9) => {
+        u$4.current?.destroy();
+        let t$12 = new a(e$9, d$2.current);
+        ((u$4.current = t$12), l$4(t$12));
       }, []),
-      v$4 = w(
-        (e$7) => {
-          _$3();
-          let t$8 = h$2.current,
-            n$8 = new n$1(e$7, f$2.current);
-          ((d$2.current = n$8), (m$2.current = f$2.current.id), (g$2.current = t$8), u$5(n$8));
-        },
-        [_$3],
-      ),
-      y$3 = w(
-        (e$7) => {
-          if (r$6 !== void 0) return;
-          if (e$7 === null) {
-            _$3();
+      p$2 = r$1(() => {
+        u$4.current && (u$4.current.destroy(), (u$4.current = null), l$4(null));
+      }, []),
+      m$2 = r$1(
+        (e$9) => {
+          if (s$4 !== void 0) return;
+          if (e$9 === null) {
+            p$2();
             return;
           }
-          let t$8 = d$2.current;
-          (!t$8 || t$8.element !== e$7) && v$4(e$7);
+          let t$12 = u$4.current;
+          (!t$12 || t$12.element !== e$9) && f$2(e$9);
         },
-        [r$6, v$4, _$3],
+        [s$4, f$2, p$2],
       );
     return (
-      D(() => {
-        if (r$6 !== void 0) return (v$4(r$6), _$3);
-      }, [r$6, v$4, _$3]),
-      D(() => {
-        let t$8 = d$2.current;
-        t$8 && m$2.current !== e$6 && v$4(t$8.element);
-      }, [e$6, v$4]),
-      D(() => {
-        let e$7 = g$2.current;
-        if (e$7 === o$5) return;
-        let t$8 = d$2.current;
-        (t$8 && (e$7?.removeDroppables([t$8]), o$5?.addDroppables([t$8])), (g$2.current = o$5));
-      }, [o$5]),
-      D(() => {
-        let e$7 = d$2.current;
-        e$7 && (e$7.accept = t$7 || (() => !0));
-      }, [t$7]),
-      D(() => {
-        let e$7 = d$2.current;
-        e$7 && (e$7.data = n$7 || {});
-      }, [n$7]),
-      D(() => _$3, [_$3]),
-      C(() => [l$5, y$3], [l$5, y$3])
+      (d$2.current = o$7),
+      n(() => {
+        if (s$4 !== void 0) return (f$2(s$4), p$2);
+      }, [s$4, f$2, p$2]),
+      n(() => {
+        c$5 && c$5.updateSettings(o$7);
+      }, [c$5, o$7]),
+      n$1(() => [c$5, m$2], [c$5, m$2])
     );
   }
-  const N = (0, import_react.memo)((e$6) => {
-    let {
-        as: t$7,
-        droppableOptions: r$6,
-        droppableRef: i$5,
-        ref: o$5,
-        children: s$5,
-        ...c$5
-      } = e$6,
-      l$5 = t$7 || `div`,
-      [u$5, d$2] = M(r$6),
-      f$2 = (0, import_react.useCallback)(
-        (e$7) => {
-          (d$2(e$7), o$5 && (typeof o$5 == `function` ? o$5(e$7) : (o$5.current = e$7)));
-        },
-        [d$2, o$5],
-      );
-    return (
-      (0, import_react.useImperativeHandle)(i$5, () => u$5, [u$5]),
-      (0, import_jsx_runtime.jsx)(l$5, {
-        ref: f$2,
-        ...c$5,
-        children: s$5,
-      })
-    );
-  });
-  N.displayName = `Droppable`;
-  function L(e$6, t$7) {
-    let n$7 = (0, import_react.useRef)(t$7);
-    n$7.current = t$7;
-    let r$6 = (0, import_react.useRef)(t$7);
-    return (
-      D(() => {
-        e$6 && (e$6.plugins.autoscroll || (e$6.use(c$1(n$7.current)), (r$6.current = n$7.current)));
-      }, [e$6]),
-      D(() => {
-        let n$8 = e$6?.plugins.autoscroll;
-        n$8 &&
-          (x(r$6.current, t$7) || n$8.updateSettings(n$8._parseSettings(t$7)), (r$6.current = t$7));
-      }, [e$6, t$7]),
-      e$6
-    );
-  }
-  function B(e$6 = {}, t$7) {
-    let [n$7, r$6] = (0, import_react.useState)(null),
-      i$5 = (0, import_react.useRef)(n$7),
-      a$4 = (0, import_react.useRef)(e$6),
-      o$5 = w((e$7) => {
-        i$5.current?.destroy();
-        let t$8 = new a$1(e$7, a$4.current);
-        ((i$5.current = t$8), r$6(t$8));
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-pointer-sensor-_yqecFSk.js
+  function o$1(o$7 = {}, s$4) {
+    let [c$5, l$4] = (0, import_react.useState)(null),
+      u$4 = (0, import_react.useRef)(c$5),
+      d$2 = (0, import_react.useRef)(o$7),
+      f$2 = r$1((e$9) => {
+        u$4.current?.destroy();
+        let t$12 = new u(e$9, d$2.current);
+        ((u$4.current = t$12), l$4(t$12));
       }, []),
-      l$5 = w(() => {
-        i$5.current && (i$5.current.destroy(), (i$5.current = null), r$6(null));
+      p$2 = r$1(() => {
+        u$4.current && (u$4.current.destroy(), (u$4.current = null), l$4(null));
       }, []),
-      u$5 = w(
-        (e$7) => {
-          if (t$7 !== void 0) return;
-          if (e$7 === null) {
-            l$5();
+      m$2 = r$1(
+        (e$9) => {
+          if (s$4 !== void 0) return;
+          if (e$9 === null) {
+            p$2();
             return;
           }
-          let n$8 = i$5.current;
-          (!n$8 || n$8.element !== e$7) && o$5(e$7);
+          let t$12 = u$4.current;
+          (!t$12 || t$12.element !== e$9) && f$2(e$9);
         },
-        [t$7, o$5, l$5],
+        [s$4, f$2, p$2],
       );
     return (
-      (a$4.current = e$6),
-      D(() => {
-        if (t$7 !== void 0) return (o$5(t$7), l$5);
-      }, [t$7, o$5, l$5]),
-      D(() => {
-        n$7 && n$7.updateSettings(e$6);
-      }, [n$7, e$6]),
-      C(() => [n$7, u$5], [n$7, u$5])
-    );
-  }
-  function H(e$6 = {}, t$7) {
-    let [n$7, r$6] = (0, import_react.useState)(null),
-      i$5 = (0, import_react.useRef)(n$7),
-      a$4 = (0, import_react.useRef)(e$6),
-      o$5 = w((e$7) => {
-        i$5.current?.destroy();
-        let t$8 = new u$1(e$7, a$4.current);
-        ((i$5.current = t$8), r$6(t$8));
-      }, []),
-      l$5 = w(() => {
-        i$5.current && (i$5.current.destroy(), (i$5.current = null), r$6(null));
-      }, []),
-      u$5 = w(
-        (e$7) => {
-          if (t$7 !== void 0) return;
-          if (e$7 === null) {
-            l$5();
-            return;
-          }
-          let n$8 = i$5.current;
-          (!n$8 || n$8.element !== e$7) && o$5(e$7);
-        },
-        [t$7, o$5, l$5],
-      );
-    return (
-      (a$4.current = e$6),
-      D(() => {
-        if (t$7 !== void 0) return (o$5(t$7), l$5);
-      }, [t$7, o$5, l$5]),
-      D(() => {
-        n$7 && n$7.updateSettings(e$6);
-      }, [n$7, e$6]),
-      C(() => [n$7, u$5], [n$7, u$5])
+      (d$2.current = o$7),
+      n(() => {
+        if (s$4 !== void 0) return (f$2(s$4), p$2);
+      }, [s$4, f$2, p$2]),
+      n(() => {
+        c$5 && c$5.updateSettings(o$7);
+      }, [c$5, o$7]),
+      n$1(() => [c$5, m$2], [c$5, m$2])
     );
   }
 
@@ -5211,9 +4823,9 @@
           }
           return first;
         }
-        function compare(a$4, b$3) {
-          var diff = a$4.sortIndex - b$3.sortIndex;
-          return 0 !== diff ? diff : a$4.id - b$3.id;
+        function compare(a$4, b$2) {
+          var diff = a$4.sortIndex - b$2.sortIndex;
+          return 0 !== diff ? diff : a$4.id - b$2.id;
         }
         function advanceTimers(currentTime) {
           for (var timer = peek(timerQueue); null !== timer; ) {
@@ -5444,7 +5056,7 @@
           try {
             testStringCoercion(key);
             var JSCompiler_inline_result = !1;
-          } catch (e$6) {
+          } catch (e$9) {
             JSCompiler_inline_result = !0;
           }
           JSCompiler_inline_result &&
@@ -5827,8 +5439,8 @@
           if (oldPath.length !== newPath.length)
             console.warn('copyWithRename() expects paths of the same length');
           else {
-            for (var i$5 = 0; i$5 < newPath.length - 1; i$5++)
-              if (oldPath[i$5] !== newPath[i$5]) {
+            for (var i$7 = 0; i$7 < newPath.length - 1; i$7++)
+              if (oldPath[i$7] !== newPath[i$7]) {
                 console.warn(
                   'copyWithRename() expects paths to be the same except for the deepest key',
                 );
@@ -5945,14 +5557,14 @@
             if (null === alternate) throw Error('Unable to find node on an unmounted component.');
             return alternate !== fiber ? null : fiber;
           }
-          for (var a$4 = fiber, b$3 = alternate; ; ) {
+          for (var a$4 = fiber, b$2 = alternate; ; ) {
             var parentA = a$4.return;
             if (null === parentA) break;
             var parentB = parentA.alternate;
             if (null === parentB) {
-              b$3 = parentA.return;
-              if (null !== b$3) {
-                a$4 = b$3;
+              b$2 = parentA.return;
+              if (null !== b$2) {
+                a$4 = b$2;
                 continue;
               }
               break;
@@ -5960,23 +5572,23 @@
             if (parentA.child === parentB.child) {
               for (parentB = parentA.child; parentB; ) {
                 if (parentB === a$4) return (assertIsMounted(parentA), fiber);
-                if (parentB === b$3) return (assertIsMounted(parentA), alternate);
+                if (parentB === b$2) return (assertIsMounted(parentA), alternate);
                 parentB = parentB.sibling;
               }
               throw Error('Unable to find node on an unmounted component.');
             }
-            if (a$4.return !== b$3.return) ((a$4 = parentA), (b$3 = parentB));
+            if (a$4.return !== b$2.return) ((a$4 = parentA), (b$2 = parentB));
             else {
               for (var didFindChild = !1, _child = parentA.child; _child; ) {
                 if (_child === a$4) {
                   didFindChild = !0;
                   a$4 = parentA;
-                  b$3 = parentB;
+                  b$2 = parentB;
                   break;
                 }
-                if (_child === b$3) {
+                if (_child === b$2) {
                   didFindChild = !0;
-                  b$3 = parentA;
+                  b$2 = parentA;
                   a$4 = parentB;
                   break;
                 }
@@ -5987,12 +5599,12 @@
                   if (_child === a$4) {
                     didFindChild = !0;
                     a$4 = parentB;
-                    b$3 = parentA;
+                    b$2 = parentA;
                     break;
                   }
-                  if (_child === b$3) {
+                  if (_child === b$2) {
                     didFindChild = !0;
-                    b$3 = parentB;
+                    b$2 = parentB;
                     a$4 = parentA;
                     break;
                   }
@@ -6004,7 +5616,7 @@
                   );
               }
             }
-            if (a$4.alternate !== b$3)
+            if (a$4.alternate !== b$2)
               throw Error(
                 "Return fibers should always be each others' alternates. This error is likely caused by a bug in React. Please file an issue.",
               );
@@ -6081,7 +5693,7 @@
                 type = type._init;
                 try {
                   return getComponentNameFromType(type(innerType));
-                } catch (x$3) {}
+                } catch (x$2) {}
             }
           return null;
         }
@@ -6149,8 +5761,8 @@
             case 29:
               type = fiber._debugInfo;
               if (null != type) {
-                for (var i$5 = type.length - 1; 0 <= i$5; i$5--)
-                  if ('string' === typeof type[i$5].name) return type[i$5].name;
+                for (var i$7 = type.length - 1; 0 <= i$7; i$7--)
+                  if ('string' === typeof type[i$7].name) return type[i$7].name;
               }
               if (null !== fiber.return) return getComponentNameFromFiber(fiber.return);
           }
@@ -6323,13 +5935,13 @@
           if (void 0 === prefix)
             try {
               throw Error();
-            } catch (x$3) {
-              var match = x$3.stack.trim().match(/\n( *(at )?)/);
+            } catch (x$2) {
+              var match = x$2.stack.trim().match(/\n( *(at )?)/);
               prefix = (match && match[1]) || '';
               suffix =
-                -1 < x$3.stack.indexOf('\n    at')
+                -1 < x$2.stack.indexOf('\n    at')
                   ? ' (<anonymous>)'
-                  : -1 < x$3.stack.indexOf('@')
+                  : -1 < x$2.stack.indexOf('@')
                     ? '@unknown:0:0'
                     : '';
             }
@@ -6362,8 +5974,8 @@
                     if ('object' === typeof Reflect && Reflect.construct) {
                       try {
                         Reflect.construct(Fake, []);
-                      } catch (x$3) {
-                        var control = x$3;
+                      } catch (x$2) {
+                        var control = x$2;
                       }
                       Reflect.construct(fn, [], Fake);
                     } else {
@@ -6505,8 +6117,8 @@
               info += describeFiber(workInProgress$1, previous);
               var debugInfo = workInProgress$1._debugInfo;
               if (debugInfo)
-                for (var i$5 = debugInfo.length - 1; 0 <= i$5; i$5--) {
-                  var entry = debugInfo[i$5];
+                for (var i$7 = debugInfo.length - 1; 0 <= i$7; i$7--) {
+                  var entry = debugInfo[i$7];
                   if ('string' === typeof entry.name) {
                     var JSCompiler_temp_const = info;
                     a: {
@@ -6533,8 +6145,8 @@
               workInProgress$1 = workInProgress$1.return;
             } while (workInProgress$1);
             return info;
-          } catch (x$3) {
-            return '\nError generating stack: ' + x$3.message + '\n' + x$3.stack;
+          } catch (x$2) {
+            return '\nError generating stack: ' + x$2.message + '\n' + x$2.stack;
           }
         }
         function describeFunctionComponentFrameWithoutLineNumber(fn) {
@@ -6599,9 +6211,9 @@
                   (info += '\n' + formatOwnerStack(ownerStack));
               } else break;
             var JSCompiler_inline_result = info;
-          } catch (x$3) {
+          } catch (x$2) {
             JSCompiler_inline_result =
-              '\nError generating stack: ' + x$3.message + '\n' + x$3.stack;
+              '\nError generating stack: ' + x$2.message + '\n' + x$2.stack;
           }
           return JSCompiler_inline_result;
         }
@@ -6634,7 +6246,7 @@
         function willCoercionThrow(value) {
           try {
             return (testStringCoercion(value), !1);
-          } catch (e$6) {
+          } catch (e$9) {
             return !0;
           }
         }
@@ -6702,9 +6314,9 @@
                 console.error('React instrumentation encountered an error: %o', err));
             }
         }
-        function clz32Fallback(x$3) {
-          x$3 >>>= 0;
-          return 0 === x$3 ? 32 : (31 - ((log(x$3) / LN2) | 0)) | 0;
+        function clz32Fallback(x$2) {
+          x$2 >>>= 0;
+          return 0 === x$2 ? 32 : (31 - ((log(x$2) / LN2) | 0)) | 0;
         }
         function getHighestPriorityLanes(lanes) {
           var pendingSyncLanes = lanes & 42;
@@ -6861,7 +6473,7 @@
           return lane;
         }
         function createLaneMap(initial) {
-          for (var laneMap = [], i$5 = 0; 31 > i$5; i$5++) laneMap.push(initial);
+          for (var laneMap = [], i$7 = 0; 31 > i$7; i$7++) laneMap.push(initial);
           return laneMap;
         }
         function markRootUpdated$1(root$1, updateLane) {
@@ -7293,7 +6905,7 @@
           if ('undefined' === typeof doc) return null;
           try {
             return doc.activeElement || doc.body;
-          } catch (e$6) {
+          } catch (e$9) {
             return doc.body;
           }
         }
@@ -7442,21 +7054,21 @@
           node = node.options;
           if (multiple) {
             multiple = {};
-            for (var i$5 = 0; i$5 < propValue.length; i$5++) multiple['$' + propValue[i$5]] = !0;
+            for (var i$7 = 0; i$7 < propValue.length; i$7++) multiple['$' + propValue[i$7]] = !0;
             for (propValue = 0; propValue < node.length; propValue++)
-              ((i$5 = multiple.hasOwnProperty('$' + node[propValue].value)),
-                node[propValue].selected !== i$5 && (node[propValue].selected = i$5),
-                i$5 && setDefaultSelected && (node[propValue].defaultSelected = !0));
+              ((i$7 = multiple.hasOwnProperty('$' + node[propValue].value)),
+                node[propValue].selected !== i$7 && (node[propValue].selected = i$7),
+                i$7 && setDefaultSelected && (node[propValue].defaultSelected = !0));
           } else {
             propValue = '' + getToStringValue(propValue);
             multiple = null;
-            for (i$5 = 0; i$5 < node.length; i$5++) {
-              if (node[i$5].value === propValue) {
-                node[i$5].selected = !0;
-                setDefaultSelected && (node[i$5].defaultSelected = !0);
+            for (i$7 = 0; i$7 < node.length; i$7++) {
+              if (node[i$7].value === propValue) {
+                node[i$7].selected = !0;
+                setDefaultSelected && (node[i$7].defaultSelected = !0);
                 return;
               }
-              null !== multiple || node[i$5].disabled || (multiple = node[i$5]);
+              null !== multiple || node[i$7].disabled || (multiple = node[i$7]);
             }
             null !== multiple && (multiple.selected = !0);
           }
@@ -7842,15 +7454,15 @@
           skipToNode = '';
           var debugInfo = node.fiber._debugInfo;
           if (debugInfo)
-            for (var i$5 = 0; i$5 < debugInfo.length; i$5++) {
-              var serverComponentName = debugInfo[i$5].name;
+            for (var i$7 = 0; i$7 < debugInfo.length; i$7++) {
+              var serverComponentName = debugInfo[i$7].name;
               'string' === typeof serverComponentName &&
                 ((skipToNode += indentation(indent) + '<' + serverComponentName + '>\n'), indent++);
             }
           debugInfo = '';
-          i$5 = node.fiber.pendingProps;
+          i$7 = node.fiber.pendingProps;
           if (6 === node.fiber.tag)
-            ((debugInfo = describeTextDiff(i$5, node.serverProps, indent)), indent++);
+            ((debugInfo = describeTextDiff(i$7, node.serverProps, indent)), indent++);
           else if (
             ((serverComponentName = describeFiberType(node.fiber)), null !== serverComponentName)
           )
@@ -7858,9 +7470,9 @@
               debugInfo = indent;
               var maxLength = 120 - 2 * debugInfo - serverComponentName.length - 2,
                 content = '';
-              for (propName in i$5)
-                if (i$5.hasOwnProperty(propName) && 'children' !== propName) {
-                  var propValue = describePropValue(i$5[propName], 15);
+              for (propName in i$7)
+                if (i$7.hasOwnProperty(propName) && 'children' !== propName) {
+                  var propValue = describePropValue(i$7[propName], 15);
                   maxLength -= propName.length + propValue.length + 2;
                   if (0 > maxLength) {
                     content += ' ...';
@@ -7872,7 +7484,7 @@
               indent++;
             } else
               null === node.serverProps
-                ? ((debugInfo = describeExpandedElement(serverComponentName, i$5, added(indent))),
+                ? ((debugInfo = describeExpandedElement(serverComponentName, i$7, added(indent))),
                   indent++)
                 : 'string' === typeof node.serverProps
                   ? console.error(
@@ -7880,24 +7492,24 @@
                     )
                   : ((debugInfo = describeElementDiff(
                       serverComponentName,
-                      i$5,
+                      i$7,
                       node.serverProps,
                       indent,
                     )),
                     indent++);
           var propName = '';
-          i$5 = node.fiber.child;
-          for (serverComponentName = 0; i$5 && serverComponentName < node.children.length; )
+          i$7 = node.fiber.child;
+          for (serverComponentName = 0; i$7 && serverComponentName < node.children.length; )
             ((maxLength = node.children[serverComponentName]),
-              maxLength.fiber === i$5
+              maxLength.fiber === i$7
                 ? ((propName += describeNode(maxLength, indent)), serverComponentName++)
-                : (propName += describeSiblingFiber(i$5, indent)),
-              (i$5 = i$5.sibling));
-          i$5 && 0 < node.children.length && (propName += indentation(indent) + '...\n');
-          i$5 = node.serverTail;
+                : (propName += describeSiblingFiber(i$7, indent)),
+              (i$7 = i$7.sibling));
+          i$7 && 0 < node.children.length && (propName += indentation(indent) + '...\n');
+          i$7 = node.serverTail;
           null === node.serverProps && indent--;
-          for (node = 0; node < i$5.length; node++)
-            ((serverComponentName = i$5[node]),
+          for (node = 0; node < i$7.length; node++)
+            ((serverComponentName = i$7[node]),
               (propName =
                 'string' === typeof serverComponentName
                   ? propName +
@@ -7915,7 +7527,7 @@
         function describeDiff(rootNode) {
           try {
             return '\n\n' + describeNode(rootNode, 0);
-          } catch (x$3) {
+          } catch (x$2) {
             return '';
           }
         }
@@ -8307,11 +7919,11 @@
                 for (var key in prevStyles)
                   if (prevStyles.hasOwnProperty(key) && !styles.hasOwnProperty(key))
                     for (
-                      var longhands = shorthandToLonghand[key] || [key], i$5 = 0;
-                      i$5 < longhands.length;
-                      i$5++
+                      var longhands = shorthandToLonghand[key] || [key], i$7 = 0;
+                      i$7 < longhands.length;
+                      i$7++
                     )
-                      expandedUpdates[longhands[i$5]] = key;
+                      expandedUpdates[longhands[i$7]] = key;
               }
               for (var _key in styles)
                 if (
@@ -8338,13 +7950,13 @@
                   ((key = expandedUpdates[_key2]),
                   (longhands = _key[_key2]) &&
                     key !== longhands &&
-                    ((i$5 = key + ',' + longhands), !key$jscomp$0[i$5]))
+                    ((i$7 = key + ',' + longhands), !key$jscomp$0[i$7]))
                 ) {
-                  key$jscomp$0[i$5] = !0;
-                  i$5 = console;
+                  key$jscomp$0[i$7] = !0;
+                  i$7 = console;
                   var value = styles[key];
-                  i$5.error.call(
-                    i$5,
+                  i$7.error.call(
+                    i$7,
                     "%s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values.",
                     null == value || 'boolean' === typeof value || '' === value
                       ? 'Removing'
@@ -8769,8 +8381,8 @@
             }
           }
         }
-        function batchedUpdates$1(fn, a$4, b$3) {
-          if (isInsideEventHandler) return fn(a$4, b$3);
+        function batchedUpdates$1(fn, a$4, b$2) {
+          if (isInsideEventHandler) return fn(a$4, b$2);
           isInsideEventHandler = !0;
           try {
             return fn(a$4);
@@ -9070,9 +8682,9 @@
           if ('input' === domEventName || 'change' === domEventName)
             return getInstIfValueChanged(targetInst);
         }
-        function is(x$3, y$3) {
+        function is(x$2, y$2) {
           return (
-            (x$3 === y$3 && (0 !== x$3 || 1 / x$3 === 1 / y$3)) || (x$3 !== x$3 && y$3 !== y$3)
+            (x$2 === y$2 && (0 !== x$2 || 1 / x$2 === 1 / y$2)) || (x$2 !== x$2 && y$2 !== y$2)
           );
         }
         function shallowEqual(objA, objB) {
@@ -9245,8 +8857,8 @@
           registerTwoPhaseEvent(reactName, [domEventName]);
         }
         function getArrayKind(array) {
-          for (var kind = EMPTY_ARRAY, i$5 = 0; i$5 < array.length; i$5++) {
-            var value = array[i$5];
+          for (var kind = EMPTY_ARRAY, i$7 = 0; i$7 < array.length; i$7++) {
+            var value = array[i$7];
             if ('object' === typeof value && null !== value)
               if (isArrayImpl(value) && 2 === value.length && 'string' === typeof value[0]) {
                 if (kind !== EMPTY_ARRAY && kind !== ENTRIES_ARRAY) return COMPLEX_ARRAY;
@@ -9576,8 +9188,8 @@
           if (supportsUserTiming) {
             var name = getComponentNameFromFiber(fiber);
             if (null !== name) {
-              for (var debugTask = null, properties = [], i$5 = 0; i$5 < errors.length; i$5++) {
-                var capturedValue = errors[i$5];
+              for (var debugTask = null, properties = [], i$7 = 0; i$7 < errors.length; i$7++) {
+                var capturedValue = errors[i$7];
                 null == debugTask &&
                   null !== capturedValue.source &&
                   (debugTask = capturedValue.source._debugTask);
@@ -9620,8 +9232,8 @@
               var name = getComponentNameFromFiber(fiber);
               if (null !== name) {
                 selfTime = [];
-                for (var i$5 = 0; i$5 < errors.length; i$5++) {
-                  var error = errors[i$5].value;
+                for (var i$7 = 0; i$7 < errors.length; i$7++) {
+                  var error = errors[i$7].value;
                   selfTime.push([
                     'Error',
                     'object' === typeof error && null !== error && 'string' === typeof error.message
@@ -9766,8 +9378,8 @@
         ) {
           if (supportsUserTiming && !(endTime <= startTime)) {
             lanes = [];
-            for (var i$5 = 0; i$5 < recoverableErrors.length; i$5++) {
-              var error = recoverableErrors[i$5].value;
+            for (var i$7 = 0; i$7 < recoverableErrors.length; i$7++) {
+              var error = recoverableErrors[i$7].value;
               lanes.push([
                 'Recoverable Error',
                 'object' === typeof error && null !== error && 'string' === typeof error.message
@@ -9843,8 +9455,8 @@
         }
         function logCommitErrored(startTime, endTime, errors, passive, debugTask) {
           if (supportsUserTiming && !(endTime <= startTime)) {
-            for (var properties = [], i$5 = 0; i$5 < errors.length; i$5++) {
-              var error = errors[i$5].value;
+            for (var properties = [], i$7 = 0; i$7 < errors.length; i$7++) {
+              var error = errors[i$7].value;
               properties.push([
                 'Error',
                 'object' === typeof error && null !== error && 'string' === typeof error.message
@@ -9897,18 +9509,18 @@
         function finishQueueingConcurrentUpdates() {
           for (
             var endIndex = concurrentQueuesIndex,
-              i$5 = (concurrentlyUpdatedLanes = concurrentQueuesIndex = 0);
-            i$5 < endIndex;
+              i$7 = (concurrentlyUpdatedLanes = concurrentQueuesIndex = 0);
+            i$7 < endIndex;
 
           ) {
-            var fiber = concurrentQueues[i$5];
-            concurrentQueues[i$5++] = null;
-            var queue = concurrentQueues[i$5];
-            concurrentQueues[i$5++] = null;
-            var update = concurrentQueues[i$5];
-            concurrentQueues[i$5++] = null;
-            var lane = concurrentQueues[i$5];
-            concurrentQueues[i$5++] = null;
+            var fiber = concurrentQueues[i$7];
+            concurrentQueues[i$7++] = null;
+            var queue = concurrentQueues[i$7];
+            concurrentQueues[i$7++] = null;
+            var update = concurrentQueues[i$7];
+            concurrentQueues[i$7++] = null;
+            var lane = concurrentQueues[i$7];
+            concurrentQueues[i$7++] = null;
             if (null !== queue && null !== update) {
               var pending = queue.pending;
               null === pending
@@ -10785,8 +10397,8 @@
               a: for (; null !== list; ) {
                 var dependency = list;
                 list = fiber;
-                for (var i$5 = 0; i$5 < contexts.length; i$5++)
-                  if (dependency.context === contexts[i$5]) {
+                for (var i$7 = 0; i$7 < contexts.length; i$7++)
+                  if (dependency.context === contexts[i$7]) {
                     list.lanes |= renderLanes$1;
                     dependency = list.alternate;
                     null !== dependency && (dependency.lanes |= renderLanes$1);
@@ -11126,7 +10738,7 @@
             currentEntangledListeners = null;
             currentEntangledLane = 0;
             currentEntangledActionThenable = null;
-            for (var i$5 = 0; i$5 < listeners.length; i$5++) (0, listeners[i$5])();
+            for (var i$7 = 0; i$7 < listeners.length; i$7++) (0, listeners[i$7])();
           }
         }
         function chainThenableValue(thenable, result) {
@@ -11143,7 +10755,7 @@
             function () {
               thenableWithOverride.status = 'fulfilled';
               thenableWithOverride.value = result;
-              for (var i$5 = 0; i$5 < listeners.length; i$5++) (0, listeners[i$5])(result);
+              for (var i$7 = 0; i$7 < listeners.length; i$7++) (0, listeners[i$7])(result);
             },
             function (error) {
               thenableWithOverride.status = 'rejected';
@@ -11268,14 +10880,14 @@
         function resolveLazy(lazyType) {
           try {
             return callLazyInitInDEV(lazyType);
-          } catch (x$3) {
-            if (null !== x$3 && 'object' === typeof x$3 && 'function' === typeof x$3.then)
+          } catch (x$2) {
+            if (null !== x$2 && 'object' === typeof x$2 && 'function' === typeof x$2.then)
               throw (
-                (suspendedThenable = x$3),
+                (suspendedThenable = x$2),
                 (needsToResetSuspendedThenableDEV = !0),
                 SuspenseException
               );
-            throw x$3;
+            throw x$2;
           }
         }
         function getSuspendedThenable() {
@@ -11304,17 +10916,17 @@
         function getCurrentDebugTask() {
           var debugInfo = currentDebugInfo;
           if (null != debugInfo) {
-            for (var i$5 = debugInfo.length - 1; 0 <= i$5; i$5--)
-              if (null != debugInfo[i$5].name) {
-                var debugTask = debugInfo[i$5].debugTask;
+            for (var i$7 = debugInfo.length - 1; 0 <= i$7; i$7--)
+              if (null != debugInfo[i$7].name) {
+                var debugTask = debugInfo[i$7].debugTask;
                 if (null != debugTask) return debugTask;
               }
           }
           return null;
         }
         function validateFragmentProps(element, fiber, returnFiber) {
-          for (var keys = Object.keys(element.props), i$5 = 0; i$5 < keys.length; i$5++) {
-            var key = keys[i$5];
+          for (var keys = Object.keys(element.props), i$7 = 0; i$7 < keys.length; i$7++) {
+            var key = keys[i$7];
             if ('children' !== key && 'key' !== key) {
               null === fiber &&
                 ((fiber = createFiberFromElement(element, returnFiber.mode, 0)),
@@ -12166,19 +11778,19 @@
               );
               thenableState$1 = null;
               return firstChildFiber;
-            } catch (x$3) {
-              if (x$3 === SuspenseException || x$3 === SuspenseActionException) throw x$3;
-              var fiber = createFiber(29, x$3, null, returnFiber.mode);
+            } catch (x$2) {
+              if (x$2 === SuspenseException || x$2 === SuspenseActionException) throw x$2;
+              var fiber = createFiber(29, x$2, null, returnFiber.mode);
               fiber.lanes = lanes;
               fiber.return = returnFiber;
               var debugInfo = (fiber._debugInfo = currentDebugInfo);
               fiber._debugOwner = returnFiber._debugOwner;
               fiber._debugTask = returnFiber._debugTask;
               if (null != debugInfo) {
-                for (var i$5 = debugInfo.length - 1; 0 <= i$5; i$5--)
-                  if ('string' === typeof debugInfo[i$5].stack) {
-                    fiber._debugOwner = debugInfo[i$5];
-                    fiber._debugTask = debugInfo[i$5].debugTask;
+                for (var i$7 = debugInfo.length - 1; 0 <= i$7; i$7--)
+                  if ('string' === typeof debugInfo[i$7].stack) {
+                    fiber._debugOwner = debugInfo[i$7];
+                    fiber._debugTask = debugInfo[i$7].debugTask;
                     break;
                   }
               }
@@ -12586,10 +12198,10 @@
               !didWarnAboutMismatchedHooksForComponent.has(componentName$1) &&
               (didWarnAboutMismatchedHooksForComponent.add(componentName$1), null !== hookTypesDev)
             ) {
-              for (var table = '', i$5 = 0; i$5 <= hookTypesUpdateIndexDev; i$5++) {
-                var oldHookName = hookTypesDev[i$5],
-                  newHookName = i$5 === hookTypesUpdateIndexDev ? hookName : oldHookName;
-                for (oldHookName = i$5 + 1 + '. ' + oldHookName; 30 > oldHookName.length; )
+              for (var table = '', i$7 = 0; i$7 <= hookTypesUpdateIndexDev; i$7++) {
+                var oldHookName = hookTypesDev[i$7],
+                  newHookName = i$7 === hookTypesUpdateIndexDev ? hookName : oldHookName;
+                for (oldHookName = i$7 + 1 + '. ' + oldHookName; 30 > oldHookName.length; )
                   oldHookName += ' ';
                 oldHookName += newHookName + '\n';
                 table += oldHookName;
@@ -12643,8 +12255,8 @@
               '[' + prevDeps.join(', ') + ']',
               '[' + nextDeps.join(', ') + ']',
             );
-          for (var i$5 = 0; i$5 < prevDeps.length && i$5 < nextDeps.length; i$5++)
-            if (!objectIs(nextDeps[i$5], prevDeps[i$5])) return !1;
+          for (var i$7 = 0; i$7 < prevDeps.length && i$7 < nextDeps.length; i$7++)
+            if (!objectIs(nextDeps[i$7], prevDeps[i$7])) return !1;
           return !0;
         }
         function renderWithHooks(
@@ -13430,7 +13042,7 @@
         }
         function notifyActionListeners(actionNode) {
           actionNode = actionNode.listeners;
-          for (var i$5 = 0; i$5 < actionNode.length; i$5++) (0, actionNode[i$5])();
+          for (var i$7 = 0; i$7 < actionNode.length; i$7++) (0, actionNode[i$7])();
         }
         function actionStateReducer(oldState, newState) {
           return newState;
@@ -13531,9 +13143,9 @@
           )
             try {
               var state = useThenable(currentStateHook);
-            } catch (x$3) {
-              if (x$3 === SuspenseException) throw SuspenseActionException;
-              throw x$3;
+            } catch (x$2) {
+              if (x$2 === SuspenseException) throw SuspenseActionException;
+              throw x$2;
             }
           else state = currentStateHook;
           currentStateHook = updateWorkInProgressHook();
@@ -14306,9 +13918,9 @@
               componentStack: errorInfo.stack,
               errorBoundary: 1 === boundary.tag ? boundary.stateNode : null,
             });
-          } catch (e$6) {
+          } catch (e$6$1) {
             setTimeout(function () {
-              throw e$6;
+              throw e$6$1;
             });
           }
         }
@@ -17689,10 +17301,10 @@
                         : ' You returned: ' + lastEffect;
                   runWithFiberInDEV(
                     finishedWork,
-                    function (n$7, a$4) {
+                    function (n$11, a$4) {
                       console.error(
                         '%s must not return anything besides a function, which is used for clean-up.%s',
-                        n$7,
+                        n$11,
                         a$4,
                       );
                     },
@@ -18790,10 +18402,10 @@
         function recursivelyTraverseMutationEffects(root$jscomp$0, parentFiber) {
           var deletions = parentFiber.deletions;
           if (null !== deletions)
-            for (var i$5 = 0; i$5 < deletions.length; i$5++) {
+            for (var i$7 = 0; i$7 < deletions.length; i$7++) {
               var root$1 = root$jscomp$0,
                 returnFiber = parentFiber,
-                deletedFiber = deletions[i$5],
+                deletedFiber = deletions[i$7],
                 prevEffectStart = pushComponentEffectStart(),
                 parent = returnFiber;
               a: for (; null !== parent; ) {
@@ -18939,9 +18551,9 @@
                               existingHiddenCallbacks,
                             ).get(flags + (current$1.href || ''));
                             if (maybeNodes) {
-                              for (var i$5 = 0; i$5 < maybeNodes.length; i$5++)
+                              for (var i$7 = 0; i$7 < maybeNodes.length; i$7++)
                                 if (
-                                  ((currentResource = maybeNodes[i$5]),
+                                  ((currentResource = maybeNodes[i$7]),
                                   currentResource.getAttribute('href') ===
                                     (null == current$1.href || '' === current$1.href
                                       ? null
@@ -18955,7 +18567,7 @@
                                         ? null
                                         : current$1.crossOrigin))
                                 ) {
-                                  maybeNodes.splice(i$5, 1);
+                                  maybeNodes.splice(i$7, 1);
                                   break b;
                                 }
                             }
@@ -18971,9 +18583,9 @@
                                 existingHiddenCallbacks,
                               ).get(flags + (current$1.content || '')))
                             ) {
-                              for (i$5 = 0; i$5 < maybeNodes.length; i$5++)
+                              for (i$7 = 0; i$7 < maybeNodes.length; i$7++)
                                 if (
-                                  ((currentResource = maybeNodes[i$5]),
+                                  ((currentResource = maybeNodes[i$7]),
                                   checkAttributeStringCoercion(current$1.content, 'content'),
                                   currentResource.getAttribute('content') ===
                                     (null == current$1.content ? null : '' + current$1.content) &&
@@ -18986,7 +18598,7 @@
                                     currentResource.getAttribute('charset') ===
                                       (null == current$1.charSet ? null : current$1.charSet))
                                 ) {
-                                  maybeNodes.splice(i$5, 1);
+                                  maybeNodes.splice(i$7, 1);
                                   break b;
                                 }
                             }
@@ -19251,9 +18863,9 @@
                     if (null === current$1) {
                       wasHidden = root$1;
                       try {
-                        ((i$5 = wasHidden.stateNode),
+                        ((i$7 = wasHidden.stateNode),
                           existingHiddenCallbacks
-                            ? runWithFiberInDEV(wasHidden, hideDehydratedBoundary, i$5)
+                            ? runWithFiberInDEV(wasHidden, hideDehydratedBoundary, i$7)
                             : runWithFiberInDEV(
                                 wasHidden,
                                 unhideDehydratedBoundary,
@@ -20185,8 +19797,8 @@
           var deletions = parentFiber.deletions;
           if (0 !== (parentFiber.flags & 16)) {
             if (null !== deletions)
-              for (var i$5 = 0; i$5 < deletions.length; i$5++) {
-                var childToDelete = deletions[i$5],
+              for (var i$7 = 0; i$7 < deletions.length; i$7++) {
+                var childToDelete = deletions[i$7],
                   prevEffectStart = pushComponentEffectStart();
                 nextEffect = childToDelete;
                 commitPassiveUnmountEffectsInsideOfDeletedTree_begin(childToDelete, parentFiber);
@@ -20281,8 +19893,8 @@
           var deletions = parentFiber.deletions;
           if (0 !== (parentFiber.flags & 16)) {
             if (null !== deletions)
-              for (var i$5 = 0; i$5 < deletions.length; i$5++) {
-                var childToDelete = deletions[i$5],
+              for (var i$7 = 0; i$7 < deletions.length; i$7++) {
+                var childToDelete = deletions[i$7],
                   prevEffectStart = pushComponentEffectStart();
                 nextEffect = childToDelete;
                 commitPassiveUnmountEffectsInsideOfDeletedTree_begin(childToDelete, parentFiber);
@@ -20906,8 +20518,8 @@
               node.flags & 16384 &&
               ((tag = node.updateQueue), null !== tag && ((tag = tag.stores), null !== tag))
             )
-              for (var i$5 = 0; i$5 < tag.length; i$5++) {
-                var check = tag[i$5],
+              for (var i$7 = 0; i$7 < tag.length; i$7++) {
+                var check = tag[i$7],
                   getSnapshot = check.getSnapshot;
                 check = check.value;
                 try {
@@ -22959,8 +22571,8 @@
         }
         function processDispatchQueue(dispatchQueue, eventSystemFlags) {
           eventSystemFlags = 0 !== (eventSystemFlags & 4);
-          for (var i$5 = 0; i$5 < dispatchQueue.length; i$5++) {
-            var _dispatchQueue$i = dispatchQueue[i$5];
+          for (var i$7 = 0; i$7 < dispatchQueue.length; i$7++) {
+            var _dispatchQueue$i = dispatchQueue[i$7];
             a: {
               var previousInstance = void 0,
                 event = _dispatchQueue$i.event;
@@ -24678,8 +24290,8 @@
         function getStylesObjectFromElement(domElement) {
           var serverValueInObjectForm = {};
           domElement = domElement.style;
-          for (var i$5 = 0; i$5 < domElement.length; i$5++) {
-            var styleName = domElement[i$5];
+          for (var i$7 = 0; i$7 < domElement.length; i$7++) {
+            var styleName = domElement[i$7];
             serverValueInObjectForm[styleName] = domElement.getPropertyValue(styleName);
           }
           return serverValueInObjectForm;
@@ -24890,11 +24502,11 @@
             var serverDifferences = {},
               extraAttributes = /* @__PURE__ */ new Set(),
               attributes = domElement.attributes,
-              i$5 = 0;
-            i$5 < attributes.length;
-            i$5++
+              i$7 = 0;
+            i$7 < attributes.length;
+            i$7++
           )
-            switch (attributes[i$5].name.toLowerCase()) {
+            switch (attributes[i$7].name.toLowerCase()) {
               case 'value':
                 break;
               case 'checked':
@@ -24902,7 +24514,7 @@
               case 'selected':
                 break;
               default:
-                extraAttributes.add(attributes[i$5].name);
+                extraAttributes.add(attributes[i$7].name);
             }
           if (isCustomElement(tag)) {
             for (var propKey in props)
@@ -25197,12 +24809,12 @@
                     case 'capture':
                     case 'download':
                       a: {
-                        i$5 = domElement;
+                        i$7 = domElement;
                         var attributeName = (attributes = value),
                           serverDifferences$jscomp$0 = serverDifferences;
                         extraAttributes.delete(attributeName);
-                        i$5 = i$5.getAttribute(attributeName);
-                        if (null === i$5)
+                        i$7 = i$7.getAttribute(attributeName);
+                        if (null === i$7)
                           switch (typeof propKey) {
                             case 'undefined':
                             case 'function':
@@ -25217,16 +24829,16 @@
                             case 'symbol':
                               break;
                             case 'boolean':
-                              if (!0 === propKey && '' === i$5) break a;
+                              if (!0 === propKey && '' === i$7) break a;
                               break;
                             default:
                               if (
                                 (checkAttributeStringCoercion(propKey, attributes),
-                                i$5 === '' + propKey)
+                                i$7 === '' + propKey)
                               )
                                 break a;
                           }
-                        warnForPropDifference(attributes, i$5, propKey, serverDifferences$jscomp$0);
+                        warnForPropDifference(attributes, i$7, propKey, serverDifferences$jscomp$0);
                       }
                       continue;
                     case 'cols':
@@ -25234,12 +24846,12 @@
                     case 'size':
                     case 'span':
                       a: {
-                        i$5 = domElement;
+                        i$7 = domElement;
                         attributeName = attributes = value;
                         serverDifferences$jscomp$0 = serverDifferences;
                         extraAttributes.delete(attributeName);
-                        i$5 = i$5.getAttribute(attributeName);
-                        if (null === i$5)
+                        i$7 = i$7.getAttribute(attributeName);
+                        if (null === i$7)
                           switch (typeof propKey) {
                             case 'undefined':
                             case 'function':
@@ -25259,11 +24871,11 @@
                               if (
                                 !(isNaN(propKey) || 1 > propKey) &&
                                 (checkAttributeStringCoercion(propKey, attributes),
-                                i$5 === '' + propKey)
+                                i$7 === '' + propKey)
                               )
                                 break a;
                           }
-                        warnForPropDifference(attributes, i$5, propKey, serverDifferences$jscomp$0);
+                        warnForPropDifference(attributes, i$7, propKey, serverDifferences$jscomp$0);
                       }
                       continue;
                     case 'rowSpan':
@@ -25409,12 +25021,12 @@
                         ('o' !== value[0] && 'O' !== value[0]) ||
                         ('n' !== value[1] && 'N' !== value[1])
                       ) {
-                        i$5 = getAttributeAlias(value);
+                        i$7 = getAttributeAlias(value);
                         attributes = !1;
                         hostContext.context === HostContextNamespaceNone &&
                         'svg' !== tag &&
                         'math' !== tag
-                          ? extraAttributes.delete(i$5.toLowerCase())
+                          ? extraAttributes.delete(i$7.toLowerCase())
                           : ((attributeName = value.toLowerCase()),
                             (attributeName = possibleStandardNames.hasOwnProperty(attributeName)
                               ? possibleStandardNames[attributeName] || null
@@ -25422,21 +25034,21 @@
                             null !== attributeName &&
                               attributeName !== value &&
                               ((attributes = !0), extraAttributes.delete(attributeName)),
-                            extraAttributes.delete(i$5));
+                            extraAttributes.delete(i$7));
                         a: if (
                           ((attributeName = domElement),
-                          (serverDifferences$jscomp$0 = i$5),
-                          (i$5 = propKey),
+                          (serverDifferences$jscomp$0 = i$7),
+                          (i$7 = propKey),
                           isAttributeNameSafe(serverDifferences$jscomp$0))
                         )
                           if (attributeName.hasAttribute(serverDifferences$jscomp$0))
                             ((attributeName = attributeName.getAttribute(
                               serverDifferences$jscomp$0,
                             )),
-                              checkAttributeStringCoercion(i$5, serverDifferences$jscomp$0),
-                              (i$5 = attributeName === '' + i$5 ? i$5 : attributeName));
+                              checkAttributeStringCoercion(i$7, serverDifferences$jscomp$0),
+                              (i$7 = attributeName === '' + i$7 ? i$7 : attributeName));
                           else {
-                            switch (typeof i$5) {
+                            switch (typeof i$7) {
                               case 'function':
                               case 'symbol':
                                 break a;
@@ -25449,10 +25061,10 @@
                                 )
                                   break a;
                             }
-                            i$5 = void 0 === i$5 ? void 0 : null;
+                            i$7 = void 0 === i$7 ? void 0 : null;
                           }
-                        else i$5 = void 0;
-                        attributes || warnForPropDifference(value, i$5, propKey, serverDifferences);
+                        else i$7 = void 0;
+                        attributes || warnForPropDifference(value, i$7, propKey, serverDifferences);
                       }
                   }
               }
@@ -25493,19 +25105,19 @@
               var count = 0,
                 bits = 0,
                 resourceEntries = performance.getEntriesByType('resource'),
-                i$5 = 0;
-              i$5 < resourceEntries.length;
-              i$5++
+                i$7 = 0;
+              i$7 < resourceEntries.length;
+              i$7++
             ) {
-              var entry = resourceEntries[i$5],
+              var entry = resourceEntries[i$7],
                 transferSize = entry.transferSize,
                 initiatorType = entry.initiatorType,
                 duration = entry.duration;
               if (transferSize && duration && isLikelyStaticResource(initiatorType)) {
                 initiatorType = 0;
                 duration = entry.responseEnd;
-                for (i$5 += 1; i$5 < resourceEntries.length; i$5++) {
-                  var overlapEntry = resourceEntries[i$5],
+                for (i$7 += 1; i$7 < resourceEntries.length; i$7++) {
+                  var overlapEntry = resourceEntries[i$7],
                     overlapStartTime = overlapEntry.startTime;
                   if (overlapStartTime > duration) break;
                   var overlapTransferSize = overlapEntry.transferSize,
@@ -25519,7 +25131,7 @@
                         ? 1
                         : (duration - overlapStartTime) / (overlapEntry - overlapStartTime))));
                 }
-                --i$5;
+                --i$7;
                 bits += (8 * (transferSize + initiatorType)) / (entry.duration / 1e3);
                 count++;
                 if (10 < count) break;
@@ -25926,11 +25538,11 @@
               var JSCompiler_temp_const = instance.nodeName.toLowerCase(),
                 serverDifferences = {},
                 attributes = instance.attributes,
-                i$5 = 0;
-              i$5 < attributes.length;
-              i$5++
+                i$7 = 0;
+              i$7 < attributes.length;
+              i$7++
             ) {
-              var attr = attributes[i$5];
+              var attr = attributes[i$7];
               serverDifferences[getPropNameFromAttributeName(attr.name)] =
                 'style' === attr.name.toLowerCase()
                   ? getStylesObjectFromElement(instance)
@@ -26397,11 +26009,11 @@
               ),
               last = nodes.length ? nodes[nodes.length - 1] : null,
               prior = last,
-              i$5 = 0;
-            i$5 < nodes.length;
-            i$5++
+              i$7 = 0;
+            i$7 < nodes.length;
+            i$7++
           ) {
-            var node = nodes[i$5];
+            var node = nodes[i$7];
             if (node.dataset.precedence === precedence) prior = node;
             else if (prior !== last) break;
           }
@@ -26704,11 +26316,11 @@
               precedencesByRoot.set(root$1, precedences);
               for (
                 var nodes = root$1.querySelectorAll('link[data-precedence],style[data-precedence]'),
-                  i$5 = 0;
-                i$5 < nodes.length;
-                i$5++
+                  i$7 = 0;
+                i$7 < nodes.length;
+                i$7++
               ) {
-                var node = nodes[i$5];
+                var node = nodes[i$7];
                 if ('LINK' === node.nodeName || 'not all' !== node.getAttribute('media'))
                   (precedences.set(node.dataset.precedence, node), (last = node));
               }
@@ -26716,15 +26328,15 @@
             }
             nodes = resource.instance;
             node = nodes.getAttribute('data-precedence');
-            i$5 = precedences.get(node) || last;
-            i$5 === last && precedences.set(LAST_PRECEDENCE, nodes);
+            i$7 = precedences.get(node) || last;
+            i$7 === last && precedences.set(LAST_PRECEDENCE, nodes);
             precedences.set(node, nodes);
             this.count++;
             last = onUnsuspend.bind(this);
             nodes.addEventListener('load', last);
             nodes.addEventListener('error', last);
-            i$5
-              ? i$5.parentNode.insertBefore(nodes, i$5.nextSibling)
+            i$7
+              ? i$7.parentNode.insertBefore(nodes, i$7.nextSibling)
               : ((root$1 = 9 === root$1.nodeType ? root$1.head : root$1),
                 root$1.insertBefore(nodes, root$1.firstChild));
             resource.state.loading |= Inserted;
@@ -27357,17 +26969,17 @@
             ((lastScheduledReplayQueue = formReplayingQueue),
             Scheduler.unstable_scheduleCallback(Scheduler.unstable_NormalPriority, function () {
               lastScheduledReplayQueue === formReplayingQueue && (lastScheduledReplayQueue = null);
-              for (var i$5 = 0; i$5 < formReplayingQueue.length; i$5 += 3) {
-                var form = formReplayingQueue[i$5],
-                  submitterOrAction = formReplayingQueue[i$5 + 1],
-                  formData = formReplayingQueue[i$5 + 2];
+              for (var i$7 = 0; i$7 < formReplayingQueue.length; i$7 += 3) {
+                var form = formReplayingQueue[i$7],
+                  submitterOrAction = formReplayingQueue[i$7 + 1],
+                  formData = formReplayingQueue[i$7 + 2];
                 if ('function' !== typeof submitterOrAction)
                   if (null === findInstanceBlockingTarget(submitterOrAction || form)) continue;
                   else break;
                 var formInst = getInstanceFromNode(form);
                 null !== formInst &&
-                  (formReplayingQueue.splice(i$5, 3),
-                  (i$5 -= 3),
+                  (formReplayingQueue.splice(i$7, 3),
+                  (i$7 -= 3),
                   (form = {
                     pending: !0,
                     data: formData,
@@ -27388,26 +27000,26 @@
           null !== queuedMouse && scheduleCallbackIfUnblocked(queuedMouse, unblocked);
           queuedPointers.forEach(unblock);
           queuedPointerCaptures.forEach(unblock);
-          for (var i$5 = 0; i$5 < queuedExplicitHydrationTargets.length; i$5++) {
-            var queuedTarget = queuedExplicitHydrationTargets[i$5];
+          for (var i$7 = 0; i$7 < queuedExplicitHydrationTargets.length; i$7++) {
+            var queuedTarget = queuedExplicitHydrationTargets[i$7];
             queuedTarget.blockedOn === unblocked && (queuedTarget.blockedOn = null);
           }
           for (
             ;
             0 < queuedExplicitHydrationTargets.length &&
-            ((i$5 = queuedExplicitHydrationTargets[0]), null === i$5.blockedOn);
+            ((i$7 = queuedExplicitHydrationTargets[0]), null === i$7.blockedOn);
 
           )
-            (attemptExplicitHydrationTarget(i$5),
-              null === i$5.blockedOn && queuedExplicitHydrationTargets.shift());
-          i$5 = (unblocked.ownerDocument || unblocked).$$reactFormReplay;
-          if (null != i$5)
-            for (queuedTarget = 0; queuedTarget < i$5.length; queuedTarget += 3) {
-              var form = i$5[queuedTarget],
-                submitterOrAction = i$5[queuedTarget + 1],
+            (attemptExplicitHydrationTarget(i$7),
+              null === i$7.blockedOn && queuedExplicitHydrationTargets.shift());
+          i$7 = (unblocked.ownerDocument || unblocked).$$reactFormReplay;
+          if (null != i$7)
+            for (queuedTarget = 0; queuedTarget < i$7.length; queuedTarget += 3) {
+              var form = i$7[queuedTarget],
+                submitterOrAction = i$7[queuedTarget + 1],
                 formProps = form[internalPropsKey] || null;
               if ('function' === typeof submitterOrAction)
-                formProps || scheduleReplayQueueIfNeeded(i$5);
+                formProps || scheduleReplayQueueIfNeeded(i$7);
               else if (formProps) {
                 var action = null;
                 if (submitterOrAction && submitterOrAction.hasAttribute('formAction')) {
@@ -27419,9 +27031,9 @@
                   else if (null !== findInstanceBlockingTarget(form)) continue;
                 } else action = formProps.action;
                 'function' === typeof action
-                  ? (i$5[queuedTarget + 1] = action)
-                  : (i$5.splice(queuedTarget, 3), (queuedTarget -= 3));
-                scheduleReplayQueueIfNeeded(i$5);
+                  ? (i$7[queuedTarget + 1] = action)
+                  : (i$7.splice(queuedTarget, 3), (queuedTarget -= 3));
+                scheduleReplayQueueIfNeeded(i$7);
               }
             }
         }
@@ -28426,7 +28038,7 @@
             });
             window.addEventListener('test', options$jscomp$0, options$jscomp$0);
             window.removeEventListener('test', options$jscomp$0, options$jscomp$0);
-          } catch (e$6) {
+          } catch (e$9) {
             passiveBrowserEventsSupported = !1;
           }
         var root = null,
@@ -30552,8 +30164,8 @@
           currentEventTransitionLane = 0,
           fakeActCallbackNode = {};
         (function () {
-          for (var i$5 = 0; i$5 < simpleEventPluginEvents.length; i$5++) {
-            var eventName = simpleEventPluginEvents[i$5],
+          for (var i$7 = 0; i$7 < simpleEventPluginEvents.length; i$7++) {
+            var eventName = simpleEventPluginEvents[i$7],
               domEventName = eventName.toLowerCase();
             eventName = eventName[0].toUpperCase() + eventName.slice(1);
             registerSimpleEvent(domEventName, 'on' + eventName);
@@ -31069,14 +30681,14 @@
               priority: updatePriority,
             };
             for (
-              var i$5 = 0;
-              i$5 < queuedExplicitHydrationTargets.length &&
+              var i$7 = 0;
+              i$7 < queuedExplicitHydrationTargets.length &&
               0 !== updatePriority &&
-              updatePriority < queuedExplicitHydrationTargets[i$5].priority;
-              i$5++
+              updatePriority < queuedExplicitHydrationTargets[i$7].priority;
+              i$7++
             );
-            queuedExplicitHydrationTargets.splice(i$5, 0, target);
-            0 === i$5 && attemptExplicitHydrationTarget(target);
+            queuedExplicitHydrationTargets.splice(i$7, 0, target);
+            0 === i$7 && attemptExplicitHydrationTarget(target);
           }
         };
         (function () {
@@ -31266,70 +30878,397 @@
   });
 
   //#endregion
+  //#region ../../node_modules/react/cjs/react-jsx-runtime.development.js
+  var require_react_jsx_runtime_development = /* @__PURE__ */ __commonJS({
+    '../../node_modules/react/cjs/react-jsx-runtime.development.js': (exports) => {
+      (function () {
+        function getComponentNameFromType(type) {
+          if (null == type) return null;
+          if ('function' === typeof type)
+            return type.$$typeof === REACT_CLIENT_REFERENCE
+              ? null
+              : type.displayName || type.name || null;
+          if ('string' === typeof type) return type;
+          switch (type) {
+            case REACT_FRAGMENT_TYPE:
+              return 'Fragment';
+            case REACT_PROFILER_TYPE:
+              return 'Profiler';
+            case REACT_STRICT_MODE_TYPE:
+              return 'StrictMode';
+            case REACT_SUSPENSE_TYPE:
+              return 'Suspense';
+            case REACT_SUSPENSE_LIST_TYPE:
+              return 'SuspenseList';
+            case REACT_ACTIVITY_TYPE:
+              return 'Activity';
+          }
+          if ('object' === typeof type)
+            switch (
+              ('number' === typeof type.tag &&
+                console.error(
+                  'Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue.',
+                ),
+              type.$$typeof)
+            ) {
+              case REACT_PORTAL_TYPE:
+                return 'Portal';
+              case REACT_CONTEXT_TYPE:
+                return type.displayName || 'Context';
+              case REACT_CONSUMER_TYPE:
+                return (type._context.displayName || 'Context') + '.Consumer';
+              case REACT_FORWARD_REF_TYPE:
+                var innerType = type.render;
+                type = type.displayName;
+                type ||
+                  ((type = innerType.displayName || innerType.name || ''),
+                  (type = '' !== type ? 'ForwardRef(' + type + ')' : 'ForwardRef'));
+                return type;
+              case REACT_MEMO_TYPE:
+                return (
+                  (innerType = type.displayName || null),
+                  null !== innerType ? innerType : getComponentNameFromType(type.type) || 'Memo'
+                );
+              case REACT_LAZY_TYPE:
+                innerType = type._payload;
+                type = type._init;
+                try {
+                  return getComponentNameFromType(type(innerType));
+                } catch (x$2) {}
+            }
+          return null;
+        }
+        function testStringCoercion(value) {
+          return '' + value;
+        }
+        function checkKeyStringCoercion(value) {
+          try {
+            testStringCoercion(value);
+            var JSCompiler_inline_result = !1;
+          } catch (e$9) {
+            JSCompiler_inline_result = !0;
+          }
+          if (JSCompiler_inline_result) {
+            JSCompiler_inline_result = console;
+            var JSCompiler_temp_const = JSCompiler_inline_result.error;
+            var JSCompiler_inline_result$jscomp$0 =
+              ('function' === typeof Symbol && Symbol.toStringTag && value[Symbol.toStringTag]) ||
+              value.constructor.name ||
+              'Object';
+            JSCompiler_temp_const.call(
+              JSCompiler_inline_result,
+              'The provided key is an unsupported type %s. This value must be coerced to a string before using it here.',
+              JSCompiler_inline_result$jscomp$0,
+            );
+            return testStringCoercion(value);
+          }
+        }
+        function getTaskName(type) {
+          if (type === REACT_FRAGMENT_TYPE) return '<>';
+          if ('object' === typeof type && null !== type && type.$$typeof === REACT_LAZY_TYPE)
+            return '<...>';
+          try {
+            var name = getComponentNameFromType(type);
+            return name ? '<' + name + '>' : '<...>';
+          } catch (x$2) {
+            return '<...>';
+          }
+        }
+        function getOwner() {
+          var dispatcher = ReactSharedInternals.A;
+          return null === dispatcher ? null : dispatcher.getOwner();
+        }
+        function UnknownOwner() {
+          return Error('react-stack-top-frame');
+        }
+        function hasValidKey(config) {
+          if (hasOwnProperty.call(config, 'key')) {
+            var getter = Object.getOwnPropertyDescriptor(config, 'key').get;
+            if (getter && getter.isReactWarning) return !1;
+          }
+          return void 0 !== config.key;
+        }
+        function defineKeyPropWarningGetter(props, displayName) {
+          function warnAboutAccessingKey() {
+            specialPropKeyWarningShown ||
+              ((specialPropKeyWarningShown = !0),
+              console.error(
+                '%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://react.dev/link/special-props)',
+                displayName,
+              ));
+          }
+          warnAboutAccessingKey.isReactWarning = !0;
+          Object.defineProperty(props, 'key', {
+            get: warnAboutAccessingKey,
+            configurable: !0,
+          });
+        }
+        function elementRefGetterWithDeprecationWarning() {
+          var componentName = getComponentNameFromType(this.type);
+          didWarnAboutElementRef[componentName] ||
+            ((didWarnAboutElementRef[componentName] = !0),
+            console.error(
+              'Accessing element.ref was removed in React 19. ref is now a regular prop. It will be removed from the JSX Element type in a future release.',
+            ));
+          componentName = this.props.ref;
+          return void 0 !== componentName ? componentName : null;
+        }
+        function ReactElement(type, key, props, owner, debugStack, debugTask) {
+          var refProp = props.ref;
+          type = {
+            $$typeof: REACT_ELEMENT_TYPE,
+            type,
+            key,
+            props,
+            _owner: owner,
+          };
+          null !== (void 0 !== refProp ? refProp : null)
+            ? Object.defineProperty(type, 'ref', {
+                enumerable: !1,
+                get: elementRefGetterWithDeprecationWarning,
+              })
+            : Object.defineProperty(type, 'ref', {
+                enumerable: !1,
+                value: null,
+              });
+          type._store = {};
+          Object.defineProperty(type._store, 'validated', {
+            configurable: !1,
+            enumerable: !1,
+            writable: !0,
+            value: 0,
+          });
+          Object.defineProperty(type, '_debugInfo', {
+            configurable: !1,
+            enumerable: !1,
+            writable: !0,
+            value: null,
+          });
+          Object.defineProperty(type, '_debugStack', {
+            configurable: !1,
+            enumerable: !1,
+            writable: !0,
+            value: debugStack,
+          });
+          Object.defineProperty(type, '_debugTask', {
+            configurable: !1,
+            enumerable: !1,
+            writable: !0,
+            value: debugTask,
+          });
+          Object.freeze && (Object.freeze(type.props), Object.freeze(type));
+          return type;
+        }
+        function jsxDEVImpl(type, config, maybeKey, isStaticChildren, debugStack, debugTask) {
+          var children = config.children;
+          if (void 0 !== children)
+            if (isStaticChildren)
+              if (isArrayImpl(children)) {
+                for (isStaticChildren = 0; isStaticChildren < children.length; isStaticChildren++)
+                  validateChildKeys(children[isStaticChildren]);
+                Object.freeze && Object.freeze(children);
+              } else
+                console.error(
+                  'React.jsx: Static children should always be an array. You are likely explicitly calling React.jsxs or React.jsxDEV. Use the Babel transform instead.',
+                );
+            else validateChildKeys(children);
+          if (hasOwnProperty.call(config, 'key')) {
+            children = getComponentNameFromType(type);
+            var keys = Object.keys(config).filter(function (k$2) {
+              return 'key' !== k$2;
+            });
+            isStaticChildren =
+              0 < keys.length
+                ? '{key: someKey, ' + keys.join(': ..., ') + ': ...}'
+                : '{key: someKey}';
+            didWarnAboutKeySpread[children + isStaticChildren] ||
+              ((keys = 0 < keys.length ? '{' + keys.join(': ..., ') + ': ...}' : '{}'),
+              console.error(
+                'A props object containing a "key" prop is being spread into JSX:\n  let props = %s;\n  <%s {...props} />\nReact keys must be passed directly to JSX without using spread:\n  let props = %s;\n  <%s key={someKey} {...props} />',
+                isStaticChildren,
+                children,
+                keys,
+                children,
+              ),
+              (didWarnAboutKeySpread[children + isStaticChildren] = !0));
+          }
+          children = null;
+          void 0 !== maybeKey && (checkKeyStringCoercion(maybeKey), (children = '' + maybeKey));
+          hasValidKey(config) && (checkKeyStringCoercion(config.key), (children = '' + config.key));
+          if ('key' in config) {
+            maybeKey = {};
+            for (var propName in config)
+              'key' !== propName && (maybeKey[propName] = config[propName]);
+          } else maybeKey = config;
+          children &&
+            defineKeyPropWarningGetter(
+              maybeKey,
+              'function' === typeof type ? type.displayName || type.name || 'Unknown' : type,
+            );
+          return ReactElement(type, children, maybeKey, getOwner(), debugStack, debugTask);
+        }
+        function validateChildKeys(node) {
+          isValidElement(node)
+            ? node._store && (node._store.validated = 1)
+            : 'object' === typeof node &&
+              null !== node &&
+              node.$$typeof === REACT_LAZY_TYPE &&
+              ('fulfilled' === node._payload.status
+                ? isValidElement(node._payload.value) &&
+                  node._payload.value._store &&
+                  (node._payload.value._store.validated = 1)
+                : node._store && (node._store.validated = 1));
+        }
+        function isValidElement(object) {
+          return (
+            'object' === typeof object && null !== object && object.$$typeof === REACT_ELEMENT_TYPE
+          );
+        }
+        var React = require_react(),
+          REACT_ELEMENT_TYPE = Symbol.for('react.transitional.element'),
+          REACT_PORTAL_TYPE = Symbol.for('react.portal'),
+          REACT_FRAGMENT_TYPE = Symbol.for('react.fragment'),
+          REACT_STRICT_MODE_TYPE = Symbol.for('react.strict_mode'),
+          REACT_PROFILER_TYPE = Symbol.for('react.profiler'),
+          REACT_CONSUMER_TYPE = Symbol.for('react.consumer'),
+          REACT_CONTEXT_TYPE = Symbol.for('react.context'),
+          REACT_FORWARD_REF_TYPE = Symbol.for('react.forward_ref'),
+          REACT_SUSPENSE_TYPE = Symbol.for('react.suspense'),
+          REACT_SUSPENSE_LIST_TYPE = Symbol.for('react.suspense_list'),
+          REACT_MEMO_TYPE = Symbol.for('react.memo'),
+          REACT_LAZY_TYPE = Symbol.for('react.lazy'),
+          REACT_ACTIVITY_TYPE = Symbol.for('react.activity'),
+          REACT_CLIENT_REFERENCE = Symbol.for('react.client.reference'),
+          ReactSharedInternals =
+            React.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE,
+          hasOwnProperty = Object.prototype.hasOwnProperty,
+          isArrayImpl = Array.isArray,
+          createTask = console.createTask
+            ? console.createTask
+            : function () {
+                return null;
+              };
+        React = {
+          react_stack_bottom_frame: function (callStackForError) {
+            return callStackForError();
+          },
+        };
+        var specialPropKeyWarningShown;
+        var didWarnAboutElementRef = {};
+        var unknownOwnerDebugStack = React.react_stack_bottom_frame.bind(React, UnknownOwner)();
+        var unknownOwnerDebugTask = createTask(getTaskName(UnknownOwner));
+        var didWarnAboutKeySpread = {};
+        exports.Fragment = REACT_FRAGMENT_TYPE;
+        exports.jsx = function (type, config, maybeKey) {
+          var trackActualOwner = 1e4 > ReactSharedInternals.recentlyCreatedOwnerStacks++;
+          return jsxDEVImpl(
+            type,
+            config,
+            maybeKey,
+            !1,
+            trackActualOwner ? Error('react-stack-top-frame') : unknownOwnerDebugStack,
+            trackActualOwner ? createTask(getTaskName(type)) : unknownOwnerDebugTask,
+          );
+        };
+        exports.jsxs = function (type, config, maybeKey) {
+          var trackActualOwner = 1e4 > ReactSharedInternals.recentlyCreatedOwnerStacks++;
+          return jsxDEVImpl(
+            type,
+            config,
+            maybeKey,
+            !0,
+            trackActualOwner ? Error('react-stack-top-frame') : unknownOwnerDebugStack,
+            trackActualOwner ? createTask(getTaskName(type)) : unknownOwnerDebugTask,
+          );
+        };
+      })();
+    },
+  });
+
+  //#endregion
+  //#region ../../node_modules/react/jsx-runtime.js
+  var require_jsx_runtime = /* @__PURE__ */ __commonJS({
+    '../../node_modules/react/jsx-runtime.js': (exports, module) => {
+      module.exports = require_react_jsx_runtime_development();
+    },
+  });
+
+  //#endregion
   //#region react-examples/002-draggable-auto-scroll/index.tsx
   var import_client = /* @__PURE__ */ __toESM(require_client());
-  function DraggableCard() {
-    const containerRef = (0, import_react.useRef)(null);
-    const [pointerSensor, setPointerRef] = H();
-    const [keyboardSensor, setKeyboardRef] = B({ computeSpeed: () => 100 });
-    const setRefs = (node) => {
-      setPointerRef(node);
-      setKeyboardRef(node);
-    };
-    L(
-      O([pointerSensor, keyboardSensor], {
-        container: containerRef.current,
+  var import_jsx_runtime = /* @__PURE__ */ __toESM(require_jsx_runtime());
+  const DraggableCardMemo = (0, import_react.memo)(function DraggableCard({ dragContainerRef }) {
+    const elementRef = (0, import_react.useRef)(null);
+    const [pointerSensor, setPointerSensorRef] = o$1();
+    const [keyboardSensor, setKeyboardSensorRef] = o({ computeSpeed: () => 100 });
+    const draggableSettings = (0, import_react.useMemo)(
+      () => ({
+        container: () => dragContainerRef.current || null,
+        elements: () => (elementRef.current ? [elementRef.current] : []),
         frozenStyles: () => ['left', 'top'],
-        onStart: (drag) => {
-          drag.items[0].element.classList.add('dragging');
-        },
-        onEnd: (drag) => {
-          drag.items[0].element.classList.remove('dragging');
-        },
       }),
-      (0, import_react.useMemo)(
-        () => ({
-          targets: [
-            {
-              element: window,
-              axis: 'y',
-              padding: {
-                top: Infinity,
-                bottom: Infinity,
-              },
-            },
-          ],
-        }),
-        [],
-      ),
+      [dragContainerRef],
     );
+    const autoScrollSettings = (0, import_react.useMemo)(
+      () => ({
+        targets: [
+          {
+            element: window,
+            axis: 'y',
+            padding: {
+              top: Infinity,
+              bottom: Infinity,
+            },
+          },
+        ],
+      }),
+      [],
+    );
+    const drag = r(i(c([pointerSensor, keyboardSensor], draggableSettings), autoScrollSettings));
+    return /* @__PURE__ */ (0, import_jsx_runtime.jsx)('div', {
+      ref: (0, import_react.useCallback)(
+        (node) => {
+          elementRef.current = node;
+          setPointerSensorRef(node);
+          setKeyboardSensorRef(node);
+        },
+        [setPointerSensorRef, setKeyboardSensorRef],
+      ),
+      className: `card draggable ${drag ? 'dragging' : ''}`,
+      tabIndex: 0,
+      children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)('svg', {
+        xmlns: 'http://www.w3.org/2000/svg',
+        viewBox: '0 0 512 512',
+        children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)('path', {
+          d: 'M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z',
+        }),
+      }),
+    });
+  });
+  function App() {
+    const dragContainerRef = (0, import_react.useRef)(null);
     return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, {
       children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)('div', {
+          ref: dragContainerRef,
           className: 'drag-container',
-          ref: containerRef,
         }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)('div', {
           className: 'card-container',
-          children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)('div', {
-            className: 'card draggable',
-            tabIndex: 0,
-            ref: setRefs,
-            children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)('svg', {
-              xmlns: 'http://www.w3.org/2000/svg',
-              viewBox: '0 0 512 512',
-              children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)('path', {
-                d: 'M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z',
-              }),
-            }),
-          }),
+          children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+            DraggableCardMemo,
+            { dragContainerRef },
+            'card',
+          ),
         }),
       ],
     });
   }
-  (0, import_client.createRoot)(document.body).render(
+  const rootElement = document.getElementById('root');
+  if (!rootElement) throw new Error('Failed to find the root element');
+  (0, import_client.createRoot)(rootElement).render(
     /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, {
-      children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DraggableCard, {}),
+      children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App, {}),
     }),
   );
 

@@ -103,19 +103,37 @@ Set to `null` to explicitly opt out of the automatic context observer registrati
 #### container
 
 ```ts
-type container = Element | null;
+type container =
+  | HTMLElement
+  | null
+  | ((data: {
+      draggable: Draggable<S>;
+      drag: DraggableDrag<S>;
+      element: HTMLElement | SVGSVGElement;
+    }) => HTMLElement | null);
 ```
 
 The element the dragged elements should be appended to for the duration of the drag. If set to `null` the element's current parent element is used.
 
 > [!IMPORTANT]  
-> The `container` setting is not fully supported in React because it will make the core library move DOM nodes under a different node for the duration of the drag. React has it's own [portal API](https://react.dev/reference/react-dom/createPortal) for moving DOM nodes around, which is very hard to support in a wrapper library. It would require a full React specific rewrite of the Draggable class to support the `container` option fully, and even then it would _probably_ be a bit finicky.
+> The `container` setting is not fully supported in React because it will make the core library move DOM nodes under a different node for the duration of the drag. React has it's own [portal API](https://react.dev/reference/react-dom/createPortal) for moving DOM nodes around, which is very hard to support in a wrapper library.
 
-However, all is not lost. The `container` option can be used to an extent. As long as you don't provide React controlled elements to [`elements`](#elements) setting when you are also using the `container` setting you should be fine.
+However, all is not lost. The `container` option can be used to a quite large extent. As long as you don't give React any reason to _move_ the dragged element (provided via the [`elements`](#elements) setting) in the DOM during the drag, you should be mostly fine.
 
-You should also be mindful about which element you use as a container, because React will not be happy if we start manually appending extra DOM nodes to an element it controls. So either use an element that is outside React's control (e.g. `document.body`) or make sure the React controlled element is not re-rendered during the drag.
+If you follow these rules, you should be mostly fine:
 
-You can for example create a clone of the dragged element (outside React) and provide the clone as the dragged element via the [`elements`](#elements) setting, and then remove the clone after the drag ends and the clone has animated to the final position.
+1. The dragged element should not be moved in the DOM during the drag.
+2. The dragged element should not be removed from the DOM during the drag.
+3. The dragged element should not be recreated during the drag, e.g. React creating a new DOM node for the dragged element during the drag.
+4. The container element should not be removed from the DOM during the drag.
+5. The container element should not be recreated during the drag, e.g. React creating a new DOM node for the container element during the drag.
+
+To really play it safe, it's recommended to do the following:
+
+1. Use a non-React controlled element as the `container`, e.g. `document.body`.
+2. Create a non-React controlled drag preview element (e.g. clone the actual draggable element) and provide it as the dragged element via the [`elements`](#elements) setting.
+
+If you do both, React should have no reason to throw an error about the DOM manipulations by the core library.
 
 Check the [`container`](/draggable#container) core docs for more info.
 

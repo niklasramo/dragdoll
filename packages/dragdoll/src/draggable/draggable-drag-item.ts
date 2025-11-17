@@ -78,7 +78,11 @@ export class DraggableDragItem<S extends Sensor[] = Sensor[]> {
     this.elementContainer = elementContainer;
 
     // Get element's drag parent, default to element's parent element.
-    const dragContainer = draggable.settings.container || elementContainer;
+    const containerSetting = draggable.settings.container;
+    const dragContainer =
+      (typeof containerSetting === 'function'
+        ? containerSetting({ draggable, drag, element })
+        : containerSetting) || elementContainer;
     this.dragContainer = dragContainer;
 
     // Make sure that the element is fixed or absolute positioned if there

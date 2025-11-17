@@ -57,7 +57,7 @@ function DraggableBox() {
 ```ts
 function useDraggableAutoScroll<S extends Sensor[] = Sensor[], P extends DraggablePluginMap = {}>(
   draggable: Draggable<S, P> | null,
-  options?: DraggableAutoScrollOptions<S>,
+  options?: UseDraggableAutoScrollSettings<S>,
 ): Draggable<S, P & { autoscroll: AutoScrollPlugin }> | null;
 ```
 
@@ -76,7 +76,7 @@ The [`Draggable`](/draggable) instance to add auto-scroll functionality to. Can 
 ### settings
 
 ```ts
-type settings = DraggableAutoScrollOptions<S>;
+type settings = UseDraggableAutoScrollSettings<S>;
 ```
 
 Configuration options for auto-scrolling. See the auto-scroll plugin [settings](/draggable-auto-scroll-plugin#settings) for all the available options.
@@ -95,3 +95,15 @@ type returnValue = Draggable<S, P & { autoscroll: AutoScrollPlugin }> | null;
 Returns the [`Draggable`](/draggable) instance with the auto-scroll plugin attached (which also extends the `Draggable` instance's types).
 
 Returns `null` if the `draggable` parameter is `null`.
+
+## Types
+
+### UseDraggableAutoScrollSettings
+
+```ts
+// Import
+import type { UseDraggableAutoScrollSettings } from 'dragdoll-react';
+
+// Type
+type UseDraggableAutoScrollSettings<S extends Sensor[] = Sensor[]> = DraggableAutoScrollOptions<S>;
+```

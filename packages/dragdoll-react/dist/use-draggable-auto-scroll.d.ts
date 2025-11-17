@@ -1,2 +1,2 @@
-import { t as useDraggableAutoScroll } from "./use-draggable-auto-scroll-CPmfswTT.js";
-export { useDraggableAutoScroll };
+import { n as useDraggableAutoScroll, t as UseDraggableAutoScrollSettings } from "./use-draggable-auto-scroll-CZIQfvvK.js";
+export { UseDraggableAutoScrollSettings, useDraggableAutoScroll };

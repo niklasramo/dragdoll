@@ -10,11 +10,14 @@ type DraggableWithAutoScroll<
   P extends DraggablePluginMap = {},
 > = ReturnType<ReturnType<typeof autoScrollPlugin<S, P>>> | null;
 
+export type UseDraggableAutoScrollSettings<S extends Sensor[] = Sensor[]> =
+  DraggableAutoScrollOptions<S>;
+
 export function useDraggableAutoScroll<
   S extends Sensor[] = Sensor[],
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   P extends DraggablePluginMap = {},
->(draggable: Draggable<S, P> | null, settings?: DraggableAutoScrollOptions<S>) {
+>(draggable: Draggable<S, P> | null, settings?: UseDraggableAutoScrollSettings<S>) {
   // Store settings in ref for stable access in effects.
   const settingsRef = useRef(settings);
   settingsRef.current = settings;

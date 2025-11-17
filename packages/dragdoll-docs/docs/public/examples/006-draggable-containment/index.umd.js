@@ -398,7 +398,7 @@ function getOffsetContainer(n$5, t$2 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-oKZ1M89x.js
+//#region ../dragdoll/dist/draggable-CUeOOVDR.js
 function s$1(e$4, t$2) {
 	return e$4.isIdentity && t$2.isIdentity ? !0 : e$4.is2D && t$2.is2D ? e$4.a === t$2.a && e$4.b === t$2.b && e$4.c === t$2.c && e$4.d === t$2.d && e$4.e === t$2.e && e$4.f === t$2.f : e$4.m11 === t$2.m11 && e$4.m12 === t$2.m12 && e$4.m13 === t$2.m13 && e$4.m14 === t$2.m14 && e$4.m21 === t$2.m21 && e$4.m22 === t$2.m22 && e$4.m23 === t$2.m23 && e$4.m24 === t$2.m24 && e$4.m31 === t$2.m31 && e$4.m32 === t$2.m32 && e$4.m33 === t$2.m33 && e$4.m34 === t$2.m34 && e$4.m41 === t$2.m41 && e$4.m42 === t$2.m42 && e$4.m43 === t$2.m43 && e$4.m44 === t$2.m44;
 }
@@ -598,13 +598,17 @@ var O = class {
 		let c$2 = e$4.parentElement;
 		if (!c$2) throw Error(`Dragged element does not have a parent element.`);
 		this.elementContainer = c$2;
-		let l$3 = t$2.settings.container || c$2;
-		if (this.dragContainer = l$3, c$2 !== l$3) {
+		let l$3 = t$2.settings.container, u$3 = (typeof l$3 == `function` ? l$3({
+			draggable: t$2,
+			drag: r$4,
+			element: e$4
+		}) : l$3) || c$2;
+		if (this.dragContainer = u$3, c$2 !== u$3) {
 			let { position: e$5 } = i$4;
 			if (e$5 !== `fixed` && e$5 !== `absolute`) throw Error(`Dragged element has "${e$5}" position, but only "fixed" or "absolute" are allowed when using a custom drag container.`);
 		}
-		let u$3 = getOffsetContainer(e$4) || e$4;
-		this.elementOffsetContainer = u$3, this.dragOffsetContainer = l$3 === c$2 ? u$3 : getOffsetContainer(e$4, { container: l$3 });
+		let d$1 = getOffsetContainer(e$4) || e$4;
+		this.elementOffsetContainer = d$1, this.dragOffsetContainer = u$3 === c$2 ? d$1 : getOffsetContainer(e$4, { container: u$3 });
 		{
 			let { width: e$5, height: t$3, x: n$5, y: r$5 } = a$3;
 			this.clientRect = {
@@ -615,18 +619,18 @@ var O = class {
 			};
 		}
 		this._updateContainerMatrices(), this._updateContainerOffset();
-		let d$1 = t$2.settings.frozenStyles({
+		let f$1 = t$2.settings.frozenStyles({
 			draggable: t$2,
 			drag: r$4,
 			item: this,
 			style: i$4
 		});
-		if (Array.isArray(d$1)) if (d$1.length) {
+		if (Array.isArray(f$1)) if (f$1.length) {
 			let e$5 = {};
-			for (let t$3 of d$1) e$5[t$3] = i$4[t$3];
+			for (let t$3 of f$1) e$5[t$3] = i$4[t$3];
 			this.frozenStyles = e$5;
 		} else this.frozenStyles = null;
-		else this.frozenStyles = d$1;
+		else this.frozenStyles = f$1;
 		if (this.frozenStyles) {
 			let t$3 = {};
 			for (let n$5 in this.frozenStyles) t$3[n$5] = e$4.style[n$5];

@@ -1,0 +1,94 @@
+body {
+  width: 100%;
+  height: 100%;
+}
+
+#root {
+  display: flex;
+  align-items: safe center;
+  justify-content: safe center;
+  width: 100%;
+  height: 100%;
+}
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: safe center;
+  justify-content: safe center;
+  flex-direction: row;
+  gap: 20px;
+  padding: 20px;
+}
+
+.scroll-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  justify-content: safe center;
+  gap: 20px;
+  padding: 20px;
+  display: grid;
+  position: relative;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  width: 260px;
+  height: min(520px, 100%);
+  overflow: hidden scroll;
+}
+
+.droppable {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  aspect-ratio: 1 / 1;
+  background-color: var(--bg-color);
+  border-radius: 17px;
+  border: 1.5px solid var(--theme-color);
+  transition:
+    border-color 0.2s ease-out,
+    box-shadow 0.2s ease-out;
+  box-shadow:
+    0 0 0 2px transparent,
+    0 0 0 3.5px transparent;
+
+  &[data-draggable-over] {
+    border-color: var(--card-bgColor--focus);
+    box-shadow:
+      0 0 0 2px var(--bg-color),
+      0 0 0 3.5px var(--card-bgColor--focus);
+  }
+}
+
+.card.draggable {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: calc(100% - 20px);
+  height: calc(100% - 20px);
+  z-index: 100;
+
+  &.animate {
+    transition: transform 0.3s cubic-bezier(0.33, 0.975, 0, 1.65);
+  }
+}
+
+.card.draggable.hidden {
+  visibility: hidden;
+}
+
+.ghost {
+  z-index: 1000;
+  pointer-events: none;
+
+  &.animating {
+    transition: transform 0.3s cubic-bezier(0.33, 0.975, 0, 1.65);
+  }
+}
+
+@media (width < 600px) {
+  .scroll-list {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    justify-content: safe center;
+  }
+}

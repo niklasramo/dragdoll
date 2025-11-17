@@ -88,7 +88,14 @@ export type DraggableModifier<S extends Sensor[]> = (
 ) => Point;
 
 export interface DraggableSettings<S extends Sensor[]> {
-  container: HTMLElement | null;
+  container:
+    | HTMLElement
+    | null
+    | ((data: {
+        draggable: Draggable<S>;
+        drag: DraggableDrag<S>;
+        element: HTMLElement | SVGSVGElement;
+      }) => HTMLElement | null);
   startPredicate: (data: {
     draggable: Draggable<S>;
     sensor: S[number];

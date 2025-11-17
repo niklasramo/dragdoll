@@ -17,11 +17,11 @@
     };
   var __copyProps = (to, from, except, desc) => {
     if ((from && typeof from === 'object') || typeof from === 'function')
-      for (var keys = __getOwnPropNames(from), i$4 = 0, n$6 = keys.length, key; i$4 < n$6; i$4++) {
-        key = keys[i$4];
+      for (var keys = __getOwnPropNames(from), i$5 = 0, n$9 = keys.length, key; i$5 < n$9; i$5++) {
+        key = keys[i$5];
         if (!__hasOwnProp.call(to, key) && key !== except)
           __defProp(to, key, {
-            get: ((k$2) => from[k$2]).bind(null, key),
+            get: ((k$1) => from[k$1]).bind(null, key),
             enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable,
           });
       }
@@ -99,7 +99,7 @@
           try {
             testStringCoercion(value);
             var JSCompiler_inline_result = !1;
-          } catch (e$4) {
+          } catch (e$7) {
             JSCompiler_inline_result = !0;
           }
           if (JSCompiler_inline_result) {
@@ -169,7 +169,7 @@
                 type = type._init;
                 try {
                   return getComponentNameFromType(type(innerType));
-                } catch (x$2) {}
+                } catch (x$1) {}
             }
           return null;
         }
@@ -180,7 +180,7 @@
           try {
             var name = getComponentNameFromType(type);
             return name ? '<' + name + '>' : '<...>';
-          } catch (x$2) {
+          } catch (x$1) {
             return '<...>';
           }
         }
@@ -385,8 +385,8 @@
               ? ((escapedPrefix = ''),
                 null != childKey &&
                   (escapedPrefix = childKey.replace(userProvidedKeyEscapeRegex, '$&/') + '/'),
-                mapIntoArray(callback, array, escapedPrefix, '', function (c$4) {
-                  return c$4;
+                mapIntoArray(callback, array, escapedPrefix, '', function (c$3) {
+                  return c$3;
                 }))
               : null != callback &&
                 (isValidElement(callback) &&
@@ -416,25 +416,25 @@
           invokeCallback = 0;
           childKey = '' === nameSoFar ? '.' : nameSoFar + ':';
           if (isArrayImpl(children))
-            for (var i$4 = 0; i$4 < children.length; i$4++)
-              ((nameSoFar = children[i$4]),
-                (type = childKey + getElementKey(nameSoFar, i$4)),
+            for (var i$5 = 0; i$5 < children.length; i$5++)
+              ((nameSoFar = children[i$5]),
+                (type = childKey + getElementKey(nameSoFar, i$5)),
                 (invokeCallback += mapIntoArray(nameSoFar, array, escapedPrefix, type, callback)));
-          else if (((i$4 = getIteratorFn(children)), 'function' === typeof i$4))
+          else if (((i$5 = getIteratorFn(children)), 'function' === typeof i$5))
             for (
-              i$4 === children.entries &&
+              i$5 === children.entries &&
                 (didWarnAboutMaps ||
                   console.warn(
                     'Using Maps as children is not supported. Use an array of keyed ReactElements instead.',
                   ),
                 (didWarnAboutMaps = !0)),
-                children = i$4.call(children),
-                i$4 = 0;
+                children = i$5.call(children),
+                i$5 = 0;
               !(nameSoFar = children.next()).done;
 
             )
               ((nameSoFar = nameSoFar.value),
-                (type = childKey + getElementKey(nameSoFar, i$4++)),
+                (type = childKey + getElementKey(nameSoFar, i$5++)),
                 (invokeCallback += mapIntoArray(nameSoFar, array, escapedPrefix, type, callback)));
           else if ('object' === type) {
             if ('function' === typeof children.then)
@@ -587,17 +587,17 @@
         function flushActQueue(queue) {
           if (!isFlushing) {
             isFlushing = !0;
-            var i$4 = 0;
+            var i$5 = 0;
             try {
-              for (; i$4 < queue.length; i$4++) {
-                var callback = queue[i$4];
+              for (; i$5 < queue.length; i$5++) {
+                var callback = queue[i$5];
                 do {
                   ReactSharedInternals.didUsePromise = !1;
                   var continuation = callback(!1);
                   if (null !== continuation) {
                     if (ReactSharedInternals.didUsePromise) {
-                      queue[i$4] = callback;
-                      queue.splice(0, i$4);
+                      queue[i$5] = callback;
+                      queue.splice(0, i$5);
                       return;
                     }
                     callback = continuation;
@@ -606,7 +606,7 @@
               }
               queue.length = 0;
             } catch (error) {
-              (queue.splice(0, i$4 + 1), ReactSharedInternals.thrownErrors.push(error));
+              (queue.splice(0, i$5 + 1), ReactSharedInternals.thrownErrors.push(error));
             } finally {
               isFlushing = !1;
             }
@@ -770,11 +770,11 @@
             );
           },
           count: function (children) {
-            var n$6 = 0;
+            var n$9 = 0;
             mapChildren(children, function () {
-              n$6++;
+              n$9++;
             });
-            return n$6;
+            return n$9;
           },
           toArray: function (children) {
             return (
@@ -939,8 +939,8 @@
           if (1 === propName) props.children = children;
           else if (1 < propName) {
             JSCompiler_inline_result = Array(propName);
-            for (var i$4 = 0; i$4 < propName; i$4++)
-              JSCompiler_inline_result[i$4] = arguments[i$4 + 2];
+            for (var i$5 = 0; i$5 < propName; i$5++)
+              JSCompiler_inline_result[i$5] = arguments[i$5 + 2];
             props.children = JSCompiler_inline_result;
           }
           props = ReactElement(
@@ -973,8 +973,8 @@
           return defaultValue;
         };
         exports.createElement = function (type, config, children) {
-          for (var i$4 = 2; i$4 < arguments.length; i$4++) validateChildKeys(arguments[i$4]);
-          i$4 = {};
+          for (var i$5 = 2; i$5 < arguments.length; i$5++) validateChildKeys(arguments[i$5]);
+          i$5 = {};
           var key = null;
           if (null != config)
             for (propName in (didWarnAboutOldJSXRuntime ||
@@ -990,28 +990,28 @@
                 'key' !== propName &&
                 '__self' !== propName &&
                 '__source' !== propName &&
-                (i$4[propName] = config[propName]);
+                (i$5[propName] = config[propName]);
           var childrenLength = arguments.length - 2;
-          if (1 === childrenLength) i$4.children = children;
+          if (1 === childrenLength) i$5.children = children;
           else if (1 < childrenLength) {
             for (var childArray = Array(childrenLength), _i = 0; _i < childrenLength; _i++)
               childArray[_i] = arguments[_i + 2];
             Object.freeze && Object.freeze(childArray);
-            i$4.children = childArray;
+            i$5.children = childArray;
           }
           if (type && type.defaultProps)
             for (propName in ((childrenLength = type.defaultProps), childrenLength))
-              void 0 === i$4[propName] && (i$4[propName] = childrenLength[propName]);
+              void 0 === i$5[propName] && (i$5[propName] = childrenLength[propName]);
           key &&
             defineKeyPropWarningGetter(
-              i$4,
+              i$5,
               'function' === typeof type ? type.displayName || type.name || 'Unknown' : type,
             );
           var propName = 1e4 > ReactSharedInternals.recentlyCreatedOwnerStacks++;
           return ReactElement(
             type,
             key,
-            i$4,
+            i$5,
             getOwner(),
             propName ? Error('react-stack-top-frame') : unknownOwnerDebugStack,
             propName ? createTask(getTaskName(type)) : unknownOwnerDebugTask,
@@ -1253,106 +1253,121 @@
   });
 
   //#endregion
+  //#region ../dragdoll-react/dist/dnd-observer-context-DpsKiq2G.js
+  var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
+  const t$7 = (0, import_react.createContext)(null);
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-dnd-observer-context-BL_LF-TG.js
+  function n$3() {
+    return (0, import_react.useContext)(t$7);
+  }
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-isomorphic-layout-effect-D2LtpjJM.js
+  const n = typeof window > `u` ? import_react.useEffect : import_react.useLayoutEffect;
+
+  //#endregion
   //#region ../../node_modules/eventti/dist/index.js
-  var E$2 = {
+  var E$1 = {
       ADD: 'add',
       UPDATE: 'update',
       IGNORE: 'ignore',
       THROW: 'throw',
     },
-    r$4,
-    v$1 = class {
-      constructor(t$4 = {}) {
-        ((this.dedupe = t$4.dedupe || E$2.ADD),
-          (this.getId = t$4.getId || (() => Symbol())),
+    r$6,
+    v = class {
+      constructor(t$9 = {}) {
+        ((this.dedupe = t$9.dedupe || E$1.ADD),
+          (this.getId = t$9.getId || (() => Symbol())),
           (this._events = /* @__PURE__ */ new Map()));
       }
-      _getListeners(t$4) {
-        let n$6 = this._events.get(t$4);
-        return n$6 ? n$6.l || (n$6.l = [...n$6.m.values()]) : null;
+      _getListeners(t$9) {
+        let n$9 = this._events.get(t$9);
+        return n$9 ? n$9.l || (n$9.l = [...n$9.m.values()]) : null;
       }
-      on(t$4, n$6, e$4) {
-        let i$4 = this._events,
-          s$3 = i$4.get(t$4);
-        s$3 ||
-          ((s$3 = {
+      on(t$9, n$9, e$7) {
+        let i$5 = this._events,
+          s$2 = i$5.get(t$9);
+        s$2 ||
+          ((s$2 = {
             m: /* @__PURE__ */ new Map(),
             l: null,
           }),
-          i$4.set(t$4, s$3));
-        let o$3 = s$3.m;
-        if (((e$4 = e$4 === r$4 ? this.getId(n$6) : e$4), o$3.has(e$4)))
+          i$5.set(t$9, s$2));
+        let o$5 = s$2.m;
+        if (((e$7 = e$7 === r$6 ? this.getId(n$9) : e$7), o$5.has(e$7)))
           switch (this.dedupe) {
-            case E$2.THROW:
+            case E$1.THROW:
               throw new Error('Eventti: duplicate listener id!');
-            case E$2.IGNORE:
-              return e$4;
-            case E$2.UPDATE:
-              s$3.l = null;
+            case E$1.IGNORE:
+              return e$7;
+            case E$1.UPDATE:
+              s$2.l = null;
               break;
             default:
-              (o$3.delete(e$4), (s$3.l = null));
+              (o$5.delete(e$7), (s$2.l = null));
           }
-        return (o$3.set(e$4, n$6), s$3.l?.push(n$6), e$4);
+        return (o$5.set(e$7, n$9), s$2.l?.push(n$9), e$7);
       }
-      once(t$4, n$6, e$4) {
-        let i$4 = 0;
+      once(t$9, n$9, e$7) {
+        let i$5 = 0;
         return (
-          (e$4 = e$4 === r$4 ? this.getId(n$6) : e$4),
+          (e$7 = e$7 === r$6 ? this.getId(n$9) : e$7),
           this.on(
-            t$4,
-            (...s$3) => {
-              i$4 || ((i$4 = 1), this.off(t$4, e$4), n$6(...s$3));
+            t$9,
+            (...s$2) => {
+              i$5 || ((i$5 = 1), this.off(t$9, e$7), n$9(...s$2));
             },
-            e$4,
+            e$7,
           )
         );
       }
-      off(t$4, n$6) {
-        if (t$4 === r$4) {
+      off(t$9, n$9) {
+        if (t$9 === r$6) {
           this._events.clear();
           return;
         }
-        if (n$6 === r$4) {
-          this._events.delete(t$4);
+        if (n$9 === r$6) {
+          this._events.delete(t$9);
           return;
         }
-        let e$4 = this._events.get(t$4);
-        e$4?.m.delete(n$6) && ((e$4.l = null), e$4.m.size || this._events.delete(t$4));
+        let e$7 = this._events.get(t$9);
+        e$7?.m.delete(n$9) && ((e$7.l = null), e$7.m.size || this._events.delete(t$9));
       }
-      emit(t$4, ...n$6) {
-        let e$4 = this._getListeners(t$4);
-        if (e$4) {
-          let i$4 = e$4.length,
-            s$3 = 0;
-          if (n$6.length) for (; s$3 < i$4; s$3++) e$4[s$3](...n$6);
-          else for (; s$3 < i$4; s$3++) e$4[s$3]();
+      emit(t$9, ...n$9) {
+        let e$7 = this._getListeners(t$9);
+        if (e$7) {
+          let i$5 = e$7.length,
+            s$2 = 0;
+          if (n$9.length) for (; s$2 < i$5; s$2++) e$7[s$2](...n$9);
+          else for (; s$2 < i$5; s$2++) e$7[s$2]();
         }
       }
-      listenerCount(t$4) {
-        if (t$4 === r$4) {
-          let n$6 = 0;
+      listenerCount(t$9) {
+        if (t$9 === r$6) {
+          let n$9 = 0;
           return (
-            this._events.forEach((e$4) => {
-              n$6 += e$4.m.size;
+            this._events.forEach((e$7) => {
+              n$9 += e$7.m.size;
             }),
-            n$6
+            n$9
           );
         }
-        return this._events.get(t$4)?.m.size || 0;
+        return this._events.get(t$9)?.m.size || 0;
       }
     };
 
   //#endregion
   //#region ../../node_modules/tikki/dist/index.js
-  var _$1 = E$2,
-    o$2 = class {
-      constructor(e$4 = {}) {
-        let { phases: t$4 = [], dedupe: r$5, getId: s$3 } = e$4;
-        ((this._phases = t$4),
-          (this._emitter = new v$1({
-            getId: s$3,
-            dedupe: r$5,
+  var _$1 = E$1,
+    o$4 = class {
+      constructor(e$7 = {}) {
+        let { phases: t$9 = [], dedupe: r$7, getId: s$2 } = e$7;
+        ((this._phases = t$9),
+          (this._emitter = new v({
+            getId: s$2,
+            dedupe: r$7,
           })),
           (this._queue = []),
           (this.tick = this.tick.bind(this)),
@@ -1361,116 +1376,116 @@
       get phases() {
         return this._phases;
       }
-      set phases(e$4) {
-        this._phases = e$4;
+      set phases(e$7) {
+        this._phases = e$7;
       }
       get dedupe() {
         return this._emitter.dedupe;
       }
-      set dedupe(e$4) {
-        this._emitter.dedupe = e$4;
+      set dedupe(e$7) {
+        this._emitter.dedupe = e$7;
       }
       get getId() {
         return this._emitter.getId;
       }
-      set getId(e$4) {
-        this._emitter.getId = e$4;
+      set getId(e$7) {
+        this._emitter.getId = e$7;
       }
-      tick(...e$4) {
-        (this._assertEmptyQueue(), this._fillQueue(), this._processQueue(...e$4));
+      tick(...e$7) {
+        (this._assertEmptyQueue(), this._fillQueue(), this._processQueue(...e$7));
       }
-      on(e$4, t$4, r$5) {
-        return this._emitter.on(e$4, t$4, r$5);
+      on(e$7, t$9, r$7) {
+        return this._emitter.on(e$7, t$9, r$7);
       }
-      once(e$4, t$4, r$5) {
-        return this._emitter.once(e$4, t$4, r$5);
+      once(e$7, t$9, r$7) {
+        return this._emitter.once(e$7, t$9, r$7);
       }
-      off(e$4, t$4) {
-        return this._emitter.off(e$4, t$4);
+      off(e$7, t$9) {
+        return this._emitter.off(e$7, t$9);
       }
-      count(e$4) {
-        return this._emitter.listenerCount(e$4);
+      count(e$7) {
+        return this._emitter.listenerCount(e$7);
       }
       _assertEmptyQueue() {
         if (this._queue.length)
           throw new Error("Ticker: Can't tick before the previous tick has finished!");
       }
       _fillQueue() {
-        let e$4 = this._queue,
-          t$4 = this._phases,
-          r$5 = this._getListeners,
-          s$3 = 0,
-          a$3 = t$4.length,
-          n$6;
-        for (; s$3 < a$3; s$3++) ((n$6 = r$5(t$4[s$3])), n$6 && e$4.push(n$6));
-        return e$4;
+        let e$7 = this._queue,
+          t$9 = this._phases,
+          r$7 = this._getListeners,
+          s$2 = 0,
+          a$3 = t$9.length,
+          n$9;
+        for (; s$2 < a$3; s$2++) ((n$9 = r$7(t$9[s$2])), n$9 && e$7.push(n$9));
+        return e$7;
       }
-      _processQueue(...e$4) {
-        let t$4 = this._queue,
-          r$5 = t$4.length;
-        if (!r$5) return;
-        let s$3 = 0,
+      _processQueue(...e$7) {
+        let t$9 = this._queue,
+          r$7 = t$9.length;
+        if (!r$7) return;
+        let s$2 = 0,
           a$3 = 0,
-          n$6,
-          c$4;
-        for (; s$3 < r$5; s$3++)
-          for (n$6 = t$4[s$3], a$3 = 0, c$4 = n$6.length; a$3 < c$4; a$3++) n$6[a$3](...e$4);
-        t$4.length = 0;
+          n$9,
+          c$3;
+        for (; s$2 < r$7; s$2++)
+          for (n$9 = t$9[s$2], a$3 = 0, c$3 = n$9.length; a$3 < c$3; a$3++) n$9[a$3](...e$7);
+        t$9.length = 0;
       }
     };
-  function u$3(i$4 = 60) {
+  function u$2(i$5 = 60) {
     if (typeof requestAnimationFrame == 'function' && typeof cancelAnimationFrame == 'function')
-      return (e$4) => {
-        let t$4 = requestAnimationFrame(e$4);
-        return () => cancelAnimationFrame(t$4);
+      return (e$7) => {
+        let t$9 = requestAnimationFrame(e$7);
+        return () => cancelAnimationFrame(t$9);
       };
     {
-      let e$4 = 1e3 / i$4,
-        t$4 = typeof performance > 'u' ? () => Date.now() : () => performance.now();
-      return (r$5) => {
-        let s$3 = setTimeout(() => r$5(t$4()), e$4);
-        return () => clearTimeout(s$3);
+      let e$7 = 1e3 / i$5,
+        t$9 = typeof performance > 'u' ? () => Date.now() : () => performance.now();
+      return (r$7) => {
+        let s$2 = setTimeout(() => r$7(t$9()), e$7);
+        return () => clearTimeout(s$2);
       };
     }
   }
-  var l$3 = class extends o$2 {
-    constructor(e$4 = {}) {
-      let { paused: t$4 = !1, onDemand: r$5 = !1, requestFrame: s$3 = u$3(), ...a$3 } = e$4;
+  var l$2 = class extends o$4 {
+    constructor(e$7 = {}) {
+      let { paused: t$9 = !1, onDemand: r$7 = !1, requestFrame: s$2 = u$2(), ...a$3 } = e$7;
       (super(a$3),
-        (this._paused = t$4),
-        (this._onDemand = r$5),
-        (this._requestFrame = s$3),
+        (this._paused = t$9),
+        (this._onDemand = r$7),
+        (this._requestFrame = s$2),
         (this._cancelFrame = null),
         (this._empty = !0),
-        !t$4 && !r$5 && this._request());
+        !t$9 && !r$7 && this._request());
     }
     get phases() {
       return this._phases;
     }
-    set phases(e$4) {
-      ((this._phases = e$4),
-        e$4.length ? ((this._empty = !1), this._request()) : (this._empty = !0));
+    set phases(e$7) {
+      ((this._phases = e$7),
+        e$7.length ? ((this._empty = !1), this._request()) : (this._empty = !0));
     }
     get paused() {
       return this._paused;
     }
-    set paused(e$4) {
-      ((this._paused = e$4), e$4 ? this._cancel() : this._request());
+    set paused(e$7) {
+      ((this._paused = e$7), e$7 ? this._cancel() : this._request());
     }
     get onDemand() {
       return this._onDemand;
     }
-    set onDemand(e$4) {
-      ((this._onDemand = e$4), e$4 || this._request());
+    set onDemand(e$7) {
+      ((this._onDemand = e$7), e$7 || this._request());
     }
     get requestFrame() {
       return this._requestFrame;
     }
-    set requestFrame(e$4) {
-      this._requestFrame !== e$4 &&
-        ((this._requestFrame = e$4), this._cancelFrame && (this._cancel(), this._request()));
+    set requestFrame(e$7) {
+      this._requestFrame !== e$7 &&
+        ((this._requestFrame = e$7), this._cancelFrame && (this._cancel(), this._request()));
     }
-    tick(...e$4) {
+    tick(...e$7) {
       if (
         (this._assertEmptyQueue(),
         (this._cancelFrame = null),
@@ -1481,16 +1496,16 @@
           this._empty = !0;
           return;
         }
-        (this._onDemand && this._request(), this._processQueue(...e$4));
+        (this._onDemand && this._request(), this._processQueue(...e$7));
       }
     }
-    on(e$4, t$4, r$5) {
-      let s$3 = super.on(e$4, t$4, r$5);
-      return ((this._empty = !1), this._request(), s$3);
+    on(e$7, t$9, r$7) {
+      let s$2 = super.on(e$7, t$9, r$7);
+      return ((this._empty = !1), this._request(), s$2);
     }
-    once(e$4, t$4, r$5) {
-      let s$3 = super.once(e$4, t$4, r$5);
-      return ((this._empty = !1), this._request(), s$3);
+    once(e$7, t$9, r$7) {
+      let s$2 = super.once(e$7, t$9, r$7);
+      return ((this._empty = !1), this._request(), s$2);
     }
     _request() {
       this._paused || this._cancelFrame || (this._cancelFrame = this._requestFrame(this.tick));
@@ -1502,13 +1517,13 @@
 
   //#endregion
   //#region ../dragdoll/dist/ticker-Bio34ZvT.js
-  const n$3 = {
+  const n$6 = {
     read: Symbol(),
     write: Symbol(),
   };
-  let r$3 = new l$3({
-    phases: [n$3.read, n$3.write],
-    requestFrame: typeof window < `u` ? u$3() : () => () => {},
+  let r$5 = new l$2({
+    phases: [n$6.read, n$6.write],
+    requestFrame: typeof window < `u` ? u$2() : () => () => {},
   });
 
   //#endregion
@@ -1538,55 +1553,55 @@
   };
   const IS_CHROMIUM = (() => {
     try {
-      return window.navigator.userAgentData.brands.some(({ brand: n$6 }) => 'Chromium' === n$6);
-    } catch (n$6) {
+      return window.navigator.userAgentData.brands.some(({ brand: n$9 }) => 'Chromium' === n$9);
+    } catch (n$9) {
       return !1;
     }
   })();
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/isWindow.js
-  function isWindow(n$6) {
-    return n$6 instanceof Window;
+  function isWindow(n$9) {
+    return n$9 instanceof Window;
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/getStyle.js
   const STYLE_DECLARATION_CACHE = /* @__PURE__ */ new WeakMap();
-  function getStyle(e$4, t$4) {
-    if (t$4) return window.getComputedStyle(e$4, t$4);
-    let C$2 = STYLE_DECLARATION_CACHE.get(e$4)?.deref();
+  function getStyle(e$7, t$9) {
+    if (t$9) return window.getComputedStyle(e$7, t$9);
+    let C$1 = STYLE_DECLARATION_CACHE.get(e$7)?.deref();
     return (
-      C$2 ||
-        ((C$2 = window.getComputedStyle(e$4, null)),
-        STYLE_DECLARATION_CACHE.set(e$4, new WeakRef(C$2))),
-      C$2
+      C$1 ||
+        ((C$1 = window.getComputedStyle(e$7, null)),
+        STYLE_DECLARATION_CACHE.set(e$7, new WeakRef(C$1))),
+      C$1
     );
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/isDocumentElement.js
-  function isDocumentElement(e$4) {
-    return e$4 instanceof HTMLHtmlElement;
+  function isDocumentElement(e$7) {
+    return e$7 instanceof HTMLHtmlElement;
   }
 
   //#endregion
   //#region ../dragdoll/dist/get-style-CC2j8jdv.js
-  const e$3 = /* @__PURE__ */ new WeakMap();
-  function t$3(t$4) {
-    let n$6 = e$3.get(t$4)?.deref();
+  const e$4 = /* @__PURE__ */ new WeakMap();
+  function t$5(t$9) {
+    let n$9 = e$4.get(t$9)?.deref();
     return (
-      n$6 || ((n$6 = window.getComputedStyle(t$4, null)), e$3.set(t$4, new WeakRef(n$6))),
-      n$6
+      n$9 || ((n$9 = window.getComputedStyle(t$9, null)), e$4.set(t$9, new WeakRef(n$9))),
+      n$9
     );
   }
 
   //#endregion
   //#region ../dragdoll/dist/constants-CMClRu_c.js
-  const e$2 = typeof window < `u` && window.document !== void 0,
-    t$1 = e$2 && `ontouchstart` in window,
-    n$5 = e$2 && !!window.PointerEvent;
-  e$2 &&
+  const e$3 = typeof window < `u` && window.document !== void 0,
+    t$4 = e$3 && `ontouchstart` in window,
+    n$8 = e$3 && !!window.PointerEvent;
+  e$3 &&
     navigator.vendor &&
     navigator.vendor.indexOf(`Apple`) > -1 &&
     navigator.userAgent &&
@@ -1595,7 +1610,7 @@
 
   //#endregion
   //#region ../dragdoll/dist/sensor-Uwz8qy61.js
-  const e$1 = {
+  const e$2 = {
     Start: `start`,
     Move: `move`,
     Cancel: `cancel`,
@@ -1605,8 +1620,8 @@
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/isBlockElement.js
-  function isBlockElement(e$4) {
-    switch (getStyle(e$4).display) {
+  function isBlockElement(e$7) {
+    switch (getStyle(e$7).display) {
       case 'none':
         return null;
       case 'inline':
@@ -1619,25 +1634,25 @@
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/isContainingBlockForFixedElement.js
-  function isContainingBlockForFixedElement(n$6) {
-    const t$4 = getStyle(n$6);
+  function isContainingBlockForFixedElement(n$9) {
+    const t$9 = getStyle(n$9);
     if (!IS_SAFARI) {
-      const { filter: n$7 } = t$4;
-      if (n$7 && 'none' !== n$7) return !0;
-      const { backdropFilter: e$5 } = t$4;
-      if (e$5 && 'none' !== e$5) return !0;
-      const { willChange: i$5 } = t$4;
-      if (i$5 && (i$5.indexOf('filter') > -1 || i$5.indexOf('backdrop-filter') > -1)) return !0;
+      const { filter: n$10 } = t$9;
+      if (n$10 && 'none' !== n$10) return !0;
+      const { backdropFilter: e$8 } = t$9;
+      if (e$8 && 'none' !== e$8) return !0;
+      const { willChange: i$6 } = t$9;
+      if (i$6 && (i$6.indexOf('filter') > -1 || i$6.indexOf('backdrop-filter') > -1)) return !0;
     }
-    const e$4 = isBlockElement(n$6);
-    if (!e$4) return e$4;
-    const { transform: i$4 } = t$4;
-    if (i$4 && 'none' !== i$4) return !0;
-    const { perspective: r$5 } = t$4;
-    if (r$5 && 'none' !== r$5) return !0;
-    const { contentVisibility: o$3 } = t$4;
-    if (o$3 && 'auto' === o$3) return !0;
-    const { contain: f$1 } = t$4;
+    const e$7 = isBlockElement(n$9);
+    if (!e$7) return e$7;
+    const { transform: i$5 } = t$9;
+    if (i$5 && 'none' !== i$5) return !0;
+    const { perspective: r$7 } = t$9;
+    if (r$7 && 'none' !== r$7) return !0;
+    const { contentVisibility: o$5 } = t$9;
+    if (o$5 && 'auto' === o$5) return !0;
+    const { contain: f$1 } = t$9;
     if (
       f$1 &&
       ('strict' === f$1 ||
@@ -1646,58 +1661,58 @@
         f$1.indexOf('layout') > -1)
     )
       return !0;
-    const { willChange: c$4 } = t$4;
+    const { willChange: c$3 } = t$9;
     return (
       !(
-        !c$4 ||
+        !c$3 ||
         !(
-          c$4.indexOf('transform') > -1 ||
-          c$4.indexOf('perspective') > -1 ||
-          c$4.indexOf('contain') > -1
+          c$3.indexOf('transform') > -1 ||
+          c$3.indexOf('perspective') > -1 ||
+          c$3.indexOf('contain') > -1
         )
-      ) || !!(IS_SAFARI && c$4 && c$4.indexOf('filter') > -1)
+      ) || !!(IS_SAFARI && c$3 && c$3.indexOf('filter') > -1)
     );
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/isContainingBlockForAbsoluteElement.js
-  function isContainingBlockForAbsoluteElement(t$4) {
-    return 'static' !== getStyle(t$4).position || isContainingBlockForFixedElement(t$4);
+  function isContainingBlockForAbsoluteElement(t$9) {
+    return 'static' !== getStyle(t$9).position || isContainingBlockForFixedElement(t$9);
   }
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/getContainingBlock.js
-  function getContainingBlock(e$4, t$4 = {}) {
-    if (isDocumentElement(e$4)) return e$4.ownerDocument.defaultView;
-    const n$6 = t$4.position || getStyle(e$4).position,
-      { skipDisplayNone: i$4, container: o$3 } = t$4;
-    switch (n$6) {
+  function getContainingBlock(e$7, t$9 = {}) {
+    if (isDocumentElement(e$7)) return e$7.ownerDocument.defaultView;
+    const n$9 = t$9.position || getStyle(e$7).position,
+      { skipDisplayNone: i$5, container: o$5 } = t$9;
+    switch (n$9) {
       case 'static':
       case 'relative':
       case 'sticky':
       case '-webkit-sticky': {
-        let t$5 = o$3 || e$4.parentElement;
-        for (; t$5; ) {
-          const e$5 = isBlockElement(t$5);
-          if (e$5) return t$5;
-          if (null === e$5 && !i$4) return null;
-          t$5 = t$5.parentElement;
+        let t$10 = o$5 || e$7.parentElement;
+        for (; t$10; ) {
+          const e$8 = isBlockElement(t$10);
+          if (e$8) return t$10;
+          if (null === e$8 && !i$5) return null;
+          t$10 = t$10.parentElement;
         }
-        return e$4.ownerDocument.documentElement;
+        return e$7.ownerDocument.documentElement;
       }
       case 'absolute':
       case 'fixed': {
-        const t$5 = 'fixed' === n$6;
-        let l$4 = o$3 || e$4.parentElement;
-        for (; l$4; ) {
-          const e$5 = t$5
-            ? isContainingBlockForFixedElement(l$4)
-            : isContainingBlockForAbsoluteElement(l$4);
-          if (!0 === e$5) return l$4;
-          if (null === e$5 && !i$4) return null;
-          l$4 = l$4.parentElement;
+        const t$10 = 'fixed' === n$9;
+        let l$3 = o$5 || e$7.parentElement;
+        for (; l$3; ) {
+          const e$8 = t$10
+            ? isContainingBlockForFixedElement(l$3)
+            : isContainingBlockForAbsoluteElement(l$3);
+          if (!0 === e$8) return l$3;
+          if (null === e$8 && !i$5) return null;
+          l$3 = l$3.parentElement;
         }
-        return e$4.ownerDocument.defaultView;
+        return e$7.ownerDocument.defaultView;
       }
       default:
         return null;
@@ -1706,27 +1721,27 @@
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/getOffsetContainer.js
-  function getOffsetContainer(n$6, t$4 = {}) {
-    const { display: o$3 } = getStyle(n$6);
-    if ('none' === o$3 || 'contents' === o$3) return null;
-    const e$4 = t$4.position || getStyle(n$6).position,
-      { skipDisplayNone: s$3, container: r$5 } = t$4;
-    switch (e$4) {
+  function getOffsetContainer(n$9, t$9 = {}) {
+    const { display: o$5 } = getStyle(n$9);
+    if ('none' === o$5 || 'contents' === o$5) return null;
+    const e$7 = t$9.position || getStyle(n$9).position,
+      { skipDisplayNone: s$2, container: r$7 } = t$9;
+    switch (e$7) {
       case 'relative':
-        return n$6;
+        return n$9;
       case 'fixed':
-        return getContainingBlock(n$6, {
-          container: r$5,
-          position: e$4,
-          skipDisplayNone: s$3,
+        return getContainingBlock(n$9, {
+          container: r$7,
+          position: e$7,
+          skipDisplayNone: s$2,
         });
       case 'absolute': {
-        const t$5 = getContainingBlock(n$6, {
-          container: r$5,
-          position: e$4,
-          skipDisplayNone: s$3,
+        const t$10 = getContainingBlock(n$9, {
+          container: r$7,
+          position: e$7,
+          skipDisplayNone: s$2,
         });
-        return isWindow(t$5) ? n$6.ownerDocument : t$5;
+        return isWindow(t$10) ? n$9.ownerDocument : t$10;
       }
       default:
         return null;
@@ -1734,72 +1749,72 @@
   }
 
   //#endregion
-  //#region ../dragdoll/dist/draggable-oKZ1M89x.js
-  function s$2(e$4, t$4) {
-    return e$4.isIdentity && t$4.isIdentity
+  //#region ../dragdoll/dist/draggable-CUeOOVDR.js
+  function s$1(e$7, t$9) {
+    return e$7.isIdentity && t$9.isIdentity
       ? !0
-      : e$4.is2D && t$4.is2D
-        ? e$4.a === t$4.a &&
-          e$4.b === t$4.b &&
-          e$4.c === t$4.c &&
-          e$4.d === t$4.d &&
-          e$4.e === t$4.e &&
-          e$4.f === t$4.f
-        : e$4.m11 === t$4.m11 &&
-          e$4.m12 === t$4.m12 &&
-          e$4.m13 === t$4.m13 &&
-          e$4.m14 === t$4.m14 &&
-          e$4.m21 === t$4.m21 &&
-          e$4.m22 === t$4.m22 &&
-          e$4.m23 === t$4.m23 &&
-          e$4.m24 === t$4.m24 &&
-          e$4.m31 === t$4.m31 &&
-          e$4.m32 === t$4.m32 &&
-          e$4.m33 === t$4.m33 &&
-          e$4.m34 === t$4.m34 &&
-          e$4.m41 === t$4.m41 &&
-          e$4.m42 === t$4.m42 &&
-          e$4.m43 === t$4.m43 &&
-          e$4.m44 === t$4.m44;
+      : e$7.is2D && t$9.is2D
+        ? e$7.a === t$9.a &&
+          e$7.b === t$9.b &&
+          e$7.c === t$9.c &&
+          e$7.d === t$9.d &&
+          e$7.e === t$9.e &&
+          e$7.f === t$9.f
+        : e$7.m11 === t$9.m11 &&
+          e$7.m12 === t$9.m12 &&
+          e$7.m13 === t$9.m13 &&
+          e$7.m14 === t$9.m14 &&
+          e$7.m21 === t$9.m21 &&
+          e$7.m22 === t$9.m22 &&
+          e$7.m23 === t$9.m23 &&
+          e$7.m24 === t$9.m24 &&
+          e$7.m31 === t$9.m31 &&
+          e$7.m32 === t$9.m32 &&
+          e$7.m33 === t$9.m33 &&
+          e$7.m34 === t$9.m34 &&
+          e$7.m41 === t$9.m41 &&
+          e$7.m42 === t$9.m42 &&
+          e$7.m43 === t$9.m43 &&
+          e$7.m44 === t$9.m44;
   }
-  function c$3(e$4) {
+  function c$2(e$7) {
     return (
-      e$4.m11 !== 1 ||
-      e$4.m12 !== 0 ||
-      e$4.m13 !== 0 ||
-      e$4.m14 !== 0 ||
-      e$4.m21 !== 0 ||
-      e$4.m22 !== 1 ||
-      e$4.m23 !== 0 ||
-      e$4.m24 !== 0 ||
-      e$4.m31 !== 0 ||
-      e$4.m32 !== 0 ||
-      e$4.m33 !== 1 ||
-      e$4.m34 !== 0 ||
-      e$4.m43 !== 0 ||
-      e$4.m44 !== 1
+      e$7.m11 !== 1 ||
+      e$7.m12 !== 0 ||
+      e$7.m13 !== 0 ||
+      e$7.m14 !== 0 ||
+      e$7.m21 !== 0 ||
+      e$7.m22 !== 1 ||
+      e$7.m23 !== 0 ||
+      e$7.m24 !== 0 ||
+      e$7.m31 !== 0 ||
+      e$7.m32 !== 0 ||
+      e$7.m33 !== 1 ||
+      e$7.m34 !== 0 ||
+      e$7.m43 !== 0 ||
+      e$7.m44 !== 1
     );
   }
-  function l$2(e$4, t$4, n$6 = null) {
-    if (`moveBefore` in e$4 && e$4.isConnected === t$4.isConnected)
+  function l$1(e$7, t$9, n$9 = null) {
+    if (`moveBefore` in e$7 && e$7.isConnected === t$9.isConnected)
       try {
-        e$4.moveBefore(t$4, n$6);
+        e$7.moveBefore(t$9, n$9);
         return;
       } catch {}
-    let r$5 = document.activeElement,
-      i$4 = t$4.contains(r$5);
-    (e$4.insertBefore(t$4, n$6),
-      i$4 &&
-        document.activeElement !== r$5 &&
-        r$5 instanceof HTMLElement &&
-        r$5.focus({ preventScroll: !0 }));
+    let r$7 = document.activeElement,
+      i$5 = t$9.contains(r$7);
+    (e$7.insertBefore(t$9, n$9),
+      i$5 &&
+        document.activeElement !== r$7 &&
+        r$7 instanceof HTMLElement &&
+        r$7.focus({ preventScroll: !0 }));
   }
-  function u$2(e$4) {
-    return e$4.setMatrixValue(`scale(1, 1)`);
+  function u$1(e$7) {
+    return e$7.setMatrixValue(`scale(1, 1)`);
   }
-  function d(e$4, t$4 = 0) {
-    let n$6 = 10 ** t$4;
-    return Math.round((e$4 + 2 ** -52) * n$6) / n$6;
+  function d(e$7, t$9 = 0) {
+    let n$9 = 10 ** t$9;
+    return Math.round((e$7 + 2 ** -52) * n$9) / n$9;
   }
   var f = class {
       _cache;
@@ -1807,23 +1822,23 @@
       constructor() {
         ((this._cache = /* @__PURE__ */ new Map()), (this._validation = /* @__PURE__ */ new Set()));
       }
-      set(e$4, t$4) {
-        (this._cache.set(e$4, t$4), this._validation.add(e$4));
+      set(e$7, t$9) {
+        (this._cache.set(e$7, t$9), this._validation.add(e$7));
       }
-      get(e$4) {
-        return this._cache.get(e$4);
+      get(e$7) {
+        return this._cache.get(e$7);
       }
-      has(e$4) {
-        return this._cache.has(e$4);
+      has(e$7) {
+        return this._cache.has(e$7);
       }
-      delete(e$4) {
-        (this._cache.delete(e$4), this._validation.delete(e$4));
+      delete(e$7) {
+        (this._cache.delete(e$7), this._validation.delete(e$7));
       }
-      isValid(e$4) {
-        return this._validation.has(e$4);
+      isValid(e$7) {
+        return this._validation.has(e$7);
       }
-      invalidate(e$4) {
-        e$4 === void 0 ? this._validation.clear() : this._validation.delete(e$4);
+      invalidate(e$7) {
+        e$7 === void 0 ? this._validation.clear() : this._validation.delete(e$7);
       }
       clear() {
         (this._cache.clear(), this._validation.clear());
@@ -1839,11 +1854,11 @@
       isEnded;
       _matrixCache;
       _clientOffsetCache;
-      constructor(e$4, t$4) {
-        ((this.sensor = e$4),
-          (this.startEvent = t$4),
-          (this.prevMoveEvent = t$4),
-          (this.moveEvent = t$4),
+      constructor(e$7, t$9) {
+        ((this.sensor = e$7),
+          (this.startEvent = t$9),
+          (this.prevMoveEvent = t$9),
+          (this.moveEvent = t$9),
           (this.endEvent = null),
           (this.items = []),
           (this.isEnded = !1),
@@ -1851,16 +1866,16 @@
           (this._clientOffsetCache = new f()));
       }
     };
-  function m(e$4, t$4, n$6 = !1) {
-    let { style: r$5 } = e$4;
-    for (let e$5 in t$4) r$5.setProperty(e$5, t$4[e$5], n$6 ? `important` : ``);
+  function m(e$7, t$9, n$9 = !1) {
+    let { style: r$7 } = e$7;
+    for (let e$8 in t$9) r$7.setProperty(e$8, t$9[e$8], n$9 ? `important` : ``);
   }
   function h() {
-    let e$4 = document.createElement(`div`);
+    let e$7 = document.createElement(`div`);
     return (
-      e$4.classList.add(`dragdoll-measure`),
+      e$7.classList.add(`dragdoll-measure`),
       m(
-        e$4,
+        e$7,
         {
           display: `block`,
           position: `absolute`,
@@ -1877,134 +1892,134 @@
         },
         !0,
       ),
-      e$4
+      e$7
     );
   }
   function g(
-    e$4,
-    t$4 = {
+    e$7,
+    t$9 = {
       x: 0,
       y: 0,
     },
   ) {
-    if (((t$4.x = 0), (t$4.y = 0), e$4 instanceof Window)) return t$4;
-    if (e$4 instanceof Document)
-      return ((t$4.x = window.scrollX * -1), (t$4.y = window.scrollY * -1), t$4);
-    let { x: r$5, y: i$4 } = e$4.getBoundingClientRect(),
-      a$3 = t$3(e$4);
+    if (((t$9.x = 0), (t$9.y = 0), e$7 instanceof Window)) return t$9;
+    if (e$7 instanceof Document)
+      return ((t$9.x = window.scrollX * -1), (t$9.y = window.scrollY * -1), t$9);
+    let { x: r$7, y: i$5 } = e$7.getBoundingClientRect(),
+      a$3 = t$5(e$7);
     return (
-      (t$4.x = r$5 + (parseFloat(a$3.borderLeftWidth) || 0)),
-      (t$4.y = i$4 + (parseFloat(a$3.borderTopWidth) || 0)),
-      t$4
+      (t$9.x = r$7 + (parseFloat(a$3.borderLeftWidth) || 0)),
+      (t$9.y = i$5 + (parseFloat(a$3.borderTopWidth) || 0)),
+      t$9
     );
   }
-  function _(e$4) {
-    let t$4 = t$3(e$4),
-      r$5 = parseFloat(t$4.height) || 0;
-    return t$4.boxSizing === `border-box`
-      ? r$5
-      : ((r$5 += parseFloat(t$4.borderTopWidth) || 0),
-        (r$5 += parseFloat(t$4.borderBottomWidth) || 0),
-        (r$5 += parseFloat(t$4.paddingTop) || 0),
-        (r$5 += parseFloat(t$4.paddingBottom) || 0),
-        e$4 instanceof HTMLElement && (r$5 += e$4.offsetHeight - e$4.clientHeight),
-        r$5);
+  function _(e$7) {
+    let t$9 = t$5(e$7),
+      r$7 = parseFloat(t$9.height) || 0;
+    return t$9.boxSizing === `border-box`
+      ? r$7
+      : ((r$7 += parseFloat(t$9.borderTopWidth) || 0),
+        (r$7 += parseFloat(t$9.borderBottomWidth) || 0),
+        (r$7 += parseFloat(t$9.paddingTop) || 0),
+        (r$7 += parseFloat(t$9.paddingBottom) || 0),
+        e$7 instanceof HTMLElement && (r$7 += e$7.offsetHeight - e$7.clientHeight),
+        r$7);
   }
-  function v$2(e$4) {
-    let t$4 = t$3(e$4),
-      r$5 = parseFloat(t$4.width) || 0;
-    return t$4.boxSizing === `border-box`
-      ? r$5
-      : ((r$5 += parseFloat(t$4.borderLeftWidth) || 0),
-        (r$5 += parseFloat(t$4.borderRightWidth) || 0),
-        (r$5 += parseFloat(t$4.paddingLeft) || 0),
-        (r$5 += parseFloat(t$4.paddingRight) || 0),
-        e$4 instanceof HTMLElement && (r$5 += e$4.offsetWidth - e$4.clientWidth),
-        r$5);
+  function v$1(e$7) {
+    let t$9 = t$5(e$7),
+      r$7 = parseFloat(t$9.width) || 0;
+    return t$9.boxSizing === `border-box`
+      ? r$7
+      : ((r$7 += parseFloat(t$9.borderLeftWidth) || 0),
+        (r$7 += parseFloat(t$9.borderRightWidth) || 0),
+        (r$7 += parseFloat(t$9.paddingLeft) || 0),
+        (r$7 += parseFloat(t$9.paddingRight) || 0),
+        e$7 instanceof HTMLElement && (r$7 += e$7.offsetWidth - e$7.clientWidth),
+        r$7);
   }
-  function y$1(e$4, t$4 = !1) {
-    let { translate: r$5, rotate: i$4, scale: a$3, transform: o$3 } = t$3(e$4),
-      s$3 = ``;
-    if (r$5 && r$5 !== `none`) {
-      let [t$5 = `0px`, n$6 = `0px`, i$5] = r$5.split(` `);
-      (t$5.includes(`%`) && (t$5 = `${(parseFloat(t$5) / 100) * v$2(e$4)}px`),
-        n$6.includes(`%`) && (n$6 = `${(parseFloat(n$6) / 100) * _(e$4)}px`),
-        i$5 ? (s$3 += `translate3d(${t$5},${n$6},${i$5})`) : (s$3 += `translate(${t$5},${n$6})`));
+  function y(e$7, t$9 = !1) {
+    let { translate: r$7, rotate: i$5, scale: a$3, transform: o$5 } = t$5(e$7),
+      s$2 = ``;
+    if (r$7 && r$7 !== `none`) {
+      let [t$10 = `0px`, n$9 = `0px`, i$6] = r$7.split(` `);
+      (t$10.includes(`%`) && (t$10 = `${(parseFloat(t$10) / 100) * v$1(e$7)}px`),
+        n$9.includes(`%`) && (n$9 = `${(parseFloat(n$9) / 100) * _(e$7)}px`),
+        i$6 ? (s$2 += `translate3d(${t$10},${n$9},${i$6})`) : (s$2 += `translate(${t$10},${n$9})`));
     }
-    if (i$4 && i$4 !== `none`) {
-      let e$5 = i$4.split(` `);
-      e$5.length > 1 ? (s$3 += `rotate3d(${e$5.join(`,`)})`) : (s$3 += `rotate(${e$5.join(`,`)})`);
+    if (i$5 && i$5 !== `none`) {
+      let e$8 = i$5.split(` `);
+      e$8.length > 1 ? (s$2 += `rotate3d(${e$8.join(`,`)})`) : (s$2 += `rotate(${e$8.join(`,`)})`);
     }
     if (a$3 && a$3 !== `none`) {
-      let e$5 = a$3.split(` `);
-      e$5.length === 3 ? (s$3 += `scale3d(${e$5.join(`,`)})`) : (s$3 += `scale(${e$5.join(`,`)})`);
+      let e$8 = a$3.split(` `);
+      e$8.length === 3 ? (s$2 += `scale3d(${e$8.join(`,`)})`) : (s$2 += `scale(${e$8.join(`,`)})`);
     }
-    return (!t$4 && o$3 && o$3 !== `none` && (s$3 += o$3), s$3);
+    return (!t$9 && o$5 && o$5 !== `none` && (s$2 += o$5), s$2);
   }
-  function b$1(e$4) {
-    return typeof e$4 == `object` && !!e$4 && `x` in e$4 && `y` in e$4;
+  function b(e$7) {
+    return typeof e$7 == `object` && !!e$7 && `x` in e$7 && `y` in e$7;
   }
-  const x$1 = {
+  const x = {
       x: 0,
       y: 0,
     },
-    S$1 = {
+    S = {
       x: 0,
       y: 0,
     };
-  function C$1(
-    e$4,
-    t$4,
-    n$6 = {
+  function C(
+    e$7,
+    t$9,
+    n$9 = {
       x: 0,
       y: 0,
     },
   ) {
-    let r$5 = b$1(e$4) ? e$4 : g(e$4, x$1),
-      i$4 = b$1(t$4) ? t$4 : g(t$4, S$1);
-    return ((n$6.x = i$4.x - r$5.x), (n$6.y = i$4.y - r$5.y), n$6);
+    let r$7 = b(e$7) ? e$7 : g(e$7, x),
+      i$5 = b(t$9) ? t$9 : g(t$9, S);
+    return ((n$9.x = i$5.x - r$7.x), (n$9.y = i$5.y - r$7.y), n$9);
   }
-  function w$1(e$4) {
-    let t$4 = e$4.split(` `),
-      n$6 = ``,
-      r$5 = ``,
-      i$4 = ``;
+  function w(e$7) {
+    let t$9 = e$7.split(` `),
+      n$9 = ``,
+      r$7 = ``,
+      i$5 = ``;
     return (
-      t$4.length === 1
-        ? (n$6 = r$5 = t$4[0])
-        : t$4.length === 2
-          ? ([n$6, r$5] = t$4)
-          : ([n$6, r$5, i$4] = t$4),
+      t$9.length === 1
+        ? (n$9 = r$7 = t$9[0])
+        : t$9.length === 2
+          ? ([n$9, r$7] = t$9)
+          : ([n$9, r$7, i$5] = t$9),
       {
-        x: parseFloat(n$6) || 0,
-        y: parseFloat(r$5) || 0,
-        z: parseFloat(i$4) || 0,
+        x: parseFloat(n$9) || 0,
+        y: parseFloat(r$7) || 0,
+        z: parseFloat(i$5) || 0,
       }
     );
   }
-  const T$1 = e$2 ? new DOMMatrix() : null;
-  function E$1(e$4, t$4 = new DOMMatrix()) {
-    let r$5 = e$4;
-    for (u$2(t$4); r$5; ) {
-      let e$5 = y$1(r$5);
-      if (e$5 && (T$1.setMatrixValue(e$5), !T$1.isIdentity)) {
-        let { transformOrigin: e$6 } = t$3(r$5),
-          { x: i$4, y: a$3, z: o$3 } = w$1(e$6);
-        (o$3 === 0
-          ? T$1.setMatrixValue(
-              `translate(${i$4}px,${a$3}px) ${T$1} translate(${i$4 * -1}px,${a$3 * -1}px)`,
+  const T = e$3 ? new DOMMatrix() : null;
+  function E(e$7, t$9 = new DOMMatrix()) {
+    let r$7 = e$7;
+    for (u$1(t$9); r$7; ) {
+      let e$8 = y(r$7);
+      if (e$8 && (T.setMatrixValue(e$8), !T.isIdentity)) {
+        let { transformOrigin: e$9 } = t$5(r$7),
+          { x: i$5, y: a$3, z: o$5 } = w(e$9);
+        (o$5 === 0
+          ? T.setMatrixValue(
+              `translate(${i$5}px,${a$3}px) ${T} translate(${i$5 * -1}px,${a$3 * -1}px)`,
             )
-          : T$1.setMatrixValue(
-              `translate3d(${i$4}px,${a$3}px,${o$3}px) ${T$1} translate3d(${i$4 * -1}px,${a$3 * -1}px,${o$3 * -1}px)`,
+          : T.setMatrixValue(
+              `translate3d(${i$5}px,${a$3}px,${o$5}px) ${T} translate3d(${i$5 * -1}px,${a$3 * -1}px,${o$5 * -1}px)`,
             ),
-          t$4.preMultiplySelf(T$1));
+          t$9.preMultiplySelf(T));
       }
-      r$5 = r$5.parentElement;
+      r$7 = r$7.parentElement;
     }
-    return t$4;
+    return t$9;
   }
-  const D$1 = e$2 ? h() : null;
-  var O$1 = class {
+  const D = e$3 ? h() : null;
+  var O = class {
     data;
     element;
     elementContainer;
@@ -2024,18 +2039,18 @@
     _alignDiff;
     _matrixCache;
     _clientOffsetCache;
-    constructor(e$4, t$4) {
-      if (!e$4.isConnected) throw Error(`Element is not connected`);
-      let { drag: r$5 } = t$4;
-      if (!r$5) throw Error(`Drag is not defined`);
-      let i$4 = t$3(e$4),
-        a$3 = e$4.getBoundingClientRect(),
-        s$3 = y$1(e$4, !0);
+    constructor(e$7, t$9) {
+      if (!e$7.isConnected) throw Error(`Element is not connected`);
+      let { drag: r$7 } = t$9;
+      if (!r$7) throw Error(`Drag is not defined`);
+      let i$5 = t$5(e$7),
+        a$3 = e$7.getBoundingClientRect(),
+        s$2 = y(e$7, !0);
       ((this.data = {}),
-        (this.element = e$4),
-        (this.elementTransformOrigin = w$1(i$4.transformOrigin)),
-        (this.elementTransformMatrix = new DOMMatrix().setMatrixValue(s$3 + i$4.transform)),
-        (this.elementOffsetMatrix = new DOMMatrix(s$3).invertSelf()),
+        (this.element = e$7),
+        (this.elementTransformOrigin = w(i$5.transformOrigin)),
+        (this.elementTransformMatrix = new DOMMatrix().setMatrixValue(s$2 + i$5.transform)),
+        (this.elementOffsetMatrix = new DOMMatrix(s$2).invertSelf()),
         (this.frozenStyles = null),
         (this.unfrozenStyles = null),
         (this.position = {
@@ -2058,97 +2073,105 @@
           x: 0,
           y: 0,
         }),
-        (this._matrixCache = r$5._matrixCache),
-        (this._clientOffsetCache = r$5._clientOffsetCache));
-      let c$4 = e$4.parentElement;
-      if (!c$4) throw Error(`Dragged element does not have a parent element.`);
-      this.elementContainer = c$4;
-      let l$4 = t$4.settings.container || c$4;
-      if (((this.dragContainer = l$4), c$4 !== l$4)) {
-        let { position: e$5 } = i$4;
-        if (e$5 !== `fixed` && e$5 !== `absolute`)
+        (this._matrixCache = r$7._matrixCache),
+        (this._clientOffsetCache = r$7._clientOffsetCache));
+      let c$3 = e$7.parentElement;
+      if (!c$3) throw Error(`Dragged element does not have a parent element.`);
+      this.elementContainer = c$3;
+      let l$3 = t$9.settings.container,
+        u$3 =
+          (typeof l$3 == `function`
+            ? l$3({
+                draggable: t$9,
+                drag: r$7,
+                element: e$7,
+              })
+            : l$3) || c$3;
+      if (((this.dragContainer = u$3), c$3 !== u$3)) {
+        let { position: e$8 } = i$5;
+        if (e$8 !== `fixed` && e$8 !== `absolute`)
           throw Error(
-            `Dragged element has "${e$5}" position, but only "fixed" or "absolute" are allowed when using a custom drag container.`,
+            `Dragged element has "${e$8}" position, but only "fixed" or "absolute" are allowed when using a custom drag container.`,
           );
       }
-      let u$4 = getOffsetContainer(e$4) || e$4;
-      ((this.elementOffsetContainer = u$4),
+      let d$1 = getOffsetContainer(e$7) || e$7;
+      ((this.elementOffsetContainer = d$1),
         (this.dragOffsetContainer =
-          l$4 === c$4 ? u$4 : getOffsetContainer(e$4, { container: l$4 })));
+          u$3 === c$3 ? d$1 : getOffsetContainer(e$7, { container: u$3 })));
       {
-        let { width: e$5, height: t$5, x: n$6, y: r$6 } = a$3;
+        let { width: e$8, height: t$10, x: n$9, y: r$8 } = a$3;
         this.clientRect = {
-          width: e$5,
-          height: t$5,
-          x: n$6,
-          y: r$6,
+          width: e$8,
+          height: t$10,
+          x: n$9,
+          y: r$8,
         };
       }
       (this._updateContainerMatrices(), this._updateContainerOffset());
-      let d$1 = t$4.settings.frozenStyles({
-        draggable: t$4,
-        drag: r$5,
+      let f$1 = t$9.settings.frozenStyles({
+        draggable: t$9,
+        drag: r$7,
         item: this,
-        style: i$4,
+        style: i$5,
       });
-      if (Array.isArray(d$1))
-        if (d$1.length) {
-          let e$5 = {};
-          for (let t$5 of d$1) e$5[t$5] = i$4[t$5];
-          this.frozenStyles = e$5;
+      if (Array.isArray(f$1))
+        if (f$1.length) {
+          let e$8 = {};
+          for (let t$10 of f$1) e$8[t$10] = i$5[t$10];
+          this.frozenStyles = e$8;
         } else this.frozenStyles = null;
-      else this.frozenStyles = d$1;
+      else this.frozenStyles = f$1;
       if (this.frozenStyles) {
-        let t$5 = {};
-        for (let n$6 in this.frozenStyles) t$5[n$6] = e$4.style[n$6];
-        this.unfrozenStyles = t$5;
+        let t$10 = {};
+        for (let n$9 in this.frozenStyles) t$10[n$9] = e$7.style[n$9];
+        this.unfrozenStyles = t$10;
       }
     }
     _updateContainerMatrices() {
-      [this.elementContainer, this.dragContainer].forEach((e$4) => {
-        if (!this._matrixCache.isValid(e$4)) {
-          let t$4 = this._matrixCache.get(e$4) || [new DOMMatrix(), new DOMMatrix()],
-            [n$6, r$5] = t$4;
-          (E$1(e$4, n$6),
-            r$5.setMatrixValue(n$6.toString()).invertSelf(),
-            this._matrixCache.set(e$4, t$4));
+      [this.elementContainer, this.dragContainer].forEach((e$7) => {
+        if (!this._matrixCache.isValid(e$7)) {
+          let t$9 = this._matrixCache.get(e$7) || [new DOMMatrix(), new DOMMatrix()],
+            [n$9, r$7] = t$9;
+          (E(e$7, n$9),
+            r$7.setMatrixValue(n$9.toString()).invertSelf(),
+            this._matrixCache.set(e$7, t$9));
         }
       });
     }
     _updateContainerOffset() {
       let {
-        elementOffsetContainer: e$4,
-        elementContainer: t$4,
-        dragOffsetContainer: n$6,
-        dragContainer: r$5,
-        containerOffset: i$4,
+        elementOffsetContainer: e$7,
+        elementContainer: t$9,
+        dragOffsetContainer: n$9,
+        dragContainer: r$7,
+        containerOffset: i$5,
         _clientOffsetCache: a$3,
-        _matrixCache: o$3,
+        _matrixCache: o$5,
       } = this;
-      if (e$4 !== n$6) {
-        let [s$3, l$4] = [
-          [r$5, n$6],
-          [t$4, e$4],
-        ].map(([e$5, t$5]) => {
-          let n$7 = a$3.get(t$5) || {
+      if (e$7 !== n$9) {
+        let [s$2, l$3] = [
+          [r$7, n$9],
+          [t$9, e$7],
+        ].map(([e$8, t$10]) => {
+          let n$10 = a$3.get(t$10) || {
             x: 0,
             y: 0,
           };
-          if (!a$3.isValid(t$5)) {
-            let r$6 = o$3.get(e$5);
-            t$5 instanceof HTMLElement && r$6 && !r$6[0].isIdentity
-              ? c$3(r$6[0])
-                ? (D$1.style.setProperty(`transform`, r$6[1].toString(), `important`),
-                  t$5.append(D$1),
-                  g(D$1, n$7),
-                  D$1.remove())
-                : (g(t$5, n$7), (n$7.x -= r$6[0].m41), (n$7.y -= r$6[0].m42))
-              : g(t$5, n$7);
+          if (!a$3.isValid(t$10)) {
+            let r$8 = o$5.get(e$8);
+            t$10 instanceof HTMLElement && r$8 && !r$8[0].isIdentity
+              ? c$2(r$8[0])
+                ? (D.style.setProperty(`transform`, r$8[1].toString(), `important`),
+                  t$10.append(D),
+                  g(D, n$10),
+                  D.remove())
+                : (g(t$10, n$10), (n$10.x -= r$8[0].m41), (n$10.y -= r$8[0].m42))
+              : g(t$10, n$10);
           }
-          return (a$3.set(t$5, n$7), n$7);
+          return (a$3.set(t$10, n$10), n$10);
         });
-        C$1(s$3, l$4, i$4);
-      } else ((i$4.x = 0), (i$4.y = 0));
+        C(s$2, l$3, i$5);
+      } else ((i$5.x = 0), (i$5.y = 0));
     }
     getContainerMatrix() {
       return this._matrixCache.get(this.elementContainer);
@@ -2156,41 +2179,41 @@
     getDragContainerMatrix() {
       return this._matrixCache.get(this.dragContainer);
     }
-    updateSize(e$4) {
-      if (e$4) ((this.clientRect.width = e$4.width), (this.clientRect.height = e$4.height));
+    updateSize(e$7) {
+      if (e$7) ((this.clientRect.width = e$7.width), (this.clientRect.height = e$7.height));
       else {
-        let { width: e$5, height: t$4 } = this.element.getBoundingClientRect();
-        ((this.clientRect.width = e$5), (this.clientRect.height = t$4));
+        let { width: e$8, height: t$9 } = this.element.getBoundingClientRect();
+        ((this.clientRect.width = e$8), (this.clientRect.height = t$9));
       }
     }
   };
-  const k$1 = {
+  const k = {
       capture: !0,
       passive: !0,
     },
-    A$1 = {
+    A = {
       x: 0,
       y: 0,
     },
-    j$1 = e$2 ? new DOMMatrix() : null,
-    M$1 = e$2 ? new DOMMatrix() : null;
-  var N$1 = (function (e$4) {
+    j = e$3 ? new DOMMatrix() : null,
+    M = e$3 ? new DOMMatrix() : null;
+  var N = (function (e$7) {
       return (
-        (e$4[(e$4.None = 0)] = `None`),
-        (e$4[(e$4.Init = 1)] = `Init`),
-        (e$4[(e$4.Prepare = 2)] = `Prepare`),
-        (e$4[(e$4.FinishPrepare = 3)] = `FinishPrepare`),
-        (e$4[(e$4.Apply = 4)] = `Apply`),
-        (e$4[(e$4.FinishApply = 5)] = `FinishApply`),
-        e$4
+        (e$7[(e$7.None = 0)] = `None`),
+        (e$7[(e$7.Init = 1)] = `Init`),
+        (e$7[(e$7.Prepare = 2)] = `Prepare`),
+        (e$7[(e$7.FinishPrepare = 3)] = `FinishPrepare`),
+        (e$7[(e$7.Apply = 4)] = `Apply`),
+        (e$7[(e$7.FinishApply = 5)] = `FinishApply`),
+        e$7
       );
-    })(N$1 || {}),
-    P = (function (e$4) {
+    })(N || {}),
+    P = (function (e$7) {
       return (
-        (e$4[(e$4.Pending = 0)] = `Pending`),
-        (e$4[(e$4.Resolved = 1)] = `Resolved`),
-        (e$4[(e$4.Rejected = 2)] = `Rejected`),
-        e$4
+        (e$7[(e$7.Pending = 0)] = `Pending`),
+        (e$7[(e$7.Resolved = 1)] = `Resolved`),
+        (e$7[(e$7.Rejected = 2)] = `Rejected`),
+        e$7
       );
     })(P || {});
   const F = {
@@ -2223,39 +2246,39 @@
       startPredicate: () => !0,
       elements: () => null,
       frozenStyles: () => null,
-      applyPosition: ({ item: e$4, phase: t$4 }) => {
-        let n$6 = t$4 === L.End || t$4 === L.EndAlign,
-          [r$5, i$4] = e$4.getContainerMatrix(),
-          [a$3, o$3] = e$4.getDragContainerMatrix(),
+      applyPosition: ({ item: e$7, phase: t$9 }) => {
+        let n$9 = t$9 === L.End || t$9 === L.EndAlign,
+          [r$7, i$5] = e$7.getContainerMatrix(),
+          [a$3, o$5] = e$7.getDragContainerMatrix(),
           {
-            position: s$3,
-            alignmentOffset: c$4,
-            containerOffset: l$4,
+            position: s$2,
+            alignmentOffset: c$3,
+            containerOffset: l$3,
             elementTransformMatrix: d$1,
             elementTransformOrigin: f$1,
             elementOffsetMatrix: p$1,
-          } = e$4,
+          } = e$7,
           { x: m$1, y: h$1, z: g$1 } = f$1,
           _$2 = !d$1.isIdentity && (m$1 !== 0 || h$1 !== 0 || g$1 !== 0),
-          v$3 = s$3.x + c$4.x + l$4.x,
-          y$2 = s$3.y + c$4.y + l$4.y;
-        (u$2(j$1),
-          _$2 && (g$1 === 0 ? j$1.translateSelf(-m$1, -h$1) : j$1.translateSelf(-m$1, -h$1, -g$1)),
-          n$6 ? i$4.isIdentity || j$1.multiplySelf(i$4) : o$3.isIdentity || j$1.multiplySelf(o$3),
-          u$2(M$1).translateSelf(v$3, y$2),
-          j$1.multiplySelf(M$1),
-          r$5.isIdentity || j$1.multiplySelf(r$5),
-          _$2 && (u$2(M$1).translateSelf(m$1, h$1, g$1), j$1.multiplySelf(M$1)),
-          d$1.isIdentity || j$1.multiplySelf(d$1),
-          p$1.isIdentity || j$1.preMultiplySelf(p$1),
-          (e$4.element.style.transform = `${j$1}`));
+          v$2 = s$2.x + c$3.x + l$3.x,
+          y$1 = s$2.y + c$3.y + l$3.y;
+        (u$1(j),
+          _$2 && (g$1 === 0 ? j.translateSelf(-m$1, -h$1) : j.translateSelf(-m$1, -h$1, -g$1)),
+          n$9 ? i$5.isIdentity || j.multiplySelf(i$5) : o$5.isIdentity || j.multiplySelf(o$5),
+          u$1(M).translateSelf(v$2, y$1),
+          j.multiplySelf(M),
+          r$7.isIdentity || j.multiplySelf(r$7),
+          _$2 && (u$1(M).translateSelf(m$1, h$1, g$1), j.multiplySelf(M)),
+          d$1.isIdentity || j.multiplySelf(d$1),
+          p$1.isIdentity || j.preMultiplySelf(p$1),
+          (e$7.element.style.transform = `${j}`));
       },
-      computeClientRect: ({ drag: e$4 }) => e$4.items[0].clientRect || null,
+      computeClientRect: ({ drag: e$7 }) => e$7.items[0].clientRect || null,
       positionModifiers: [],
       sensorProcessingMode: I.Sampled,
       dndGroups: /* @__PURE__ */ new Set(),
     };
-  var B$1 = class {
+  var B = class {
     id;
     sensors;
     settings;
@@ -2268,17 +2291,17 @@
     _startId;
     _moveId;
     _alignId;
-    constructor(e$4, t$4 = {}) {
-      let { id: n$6 = Symbol(), ...r$5 } = t$4;
-      ((this.id = n$6),
-        (this.sensors = e$4),
-        (this.settings = this._parseSettings(r$5)),
+    constructor(e$7, t$9 = {}) {
+      let { id: n$9 = Symbol(), ...r$7 } = t$9;
+      ((this.id = n$9),
+        (this.sensors = e$7),
+        (this.settings = this._parseSettings(r$7)),
         (this.plugins = {}),
         (this.drag = null),
         (this.isDestroyed = !1),
         (this._sensorData = /* @__PURE__ */ new Map()),
-        (this._emitter = new v$1()),
-        (this._startPhase = N$1.None),
+        (this._emitter = new v()),
+        (this._startPhase = N.None),
         (this._startId = Symbol()),
         (this._moveId = Symbol()),
         (this._alignId = Symbol()),
@@ -2291,49 +2314,49 @@
         (this._applyMove = this._applyMove.bind(this)),
         (this._prepareAlign = this._prepareAlign.bind(this)),
         (this._applyAlign = this._applyAlign.bind(this)),
-        this.sensors.forEach((e$5) => {
-          this._sensorData.set(e$5, {
+        this.sensors.forEach((e$8) => {
+          this._sensorData.set(e$8, {
             predicateState: P.Pending,
             predicateEvent: null,
-            onMove: (t$6) => this._onMove(t$6, e$5),
-            onEnd: (t$6) => this._onEnd(t$6, e$5),
+            onMove: (t$11) => this._onMove(t$11, e$8),
+            onEnd: (t$11) => this._onEnd(t$11, e$8),
           });
-          let { onMove: t$5, onEnd: n$7 } = this._sensorData.get(e$5);
-          (e$5.on(e$1.Start, t$5, t$5),
-            e$5.on(e$1.Move, t$5, t$5),
-            e$5.on(e$1.Cancel, n$7, n$7),
-            e$5.on(e$1.End, n$7, n$7),
-            e$5.on(e$1.Destroy, n$7, n$7));
+          let { onMove: t$10, onEnd: n$10 } = this._sensorData.get(e$8);
+          (e$8.on(e$2.Start, t$10, t$10),
+            e$8.on(e$2.Move, t$10, t$10),
+            e$8.on(e$2.Cancel, n$10, n$10),
+            e$8.on(e$2.End, n$10, n$10),
+            e$8.on(e$2.Destroy, n$10, n$10));
         }));
     }
-    _parseSettings(e$4, t$4 = z) {
+    _parseSettings(e$7, t$9 = z) {
       let {
-        container: n$6 = t$4.container,
-        startPredicate: r$5 = t$4.startPredicate,
-        elements: i$4 = t$4.elements,
-        frozenStyles: a$3 = t$4.frozenStyles,
-        positionModifiers: o$3 = t$4.positionModifiers,
-        applyPosition: s$3 = t$4.applyPosition,
-        computeClientRect: c$4 = t$4.computeClientRect,
-        sensorProcessingMode: l$4 = t$4.sensorProcessingMode,
-        dndGroups: u$4 = t$4.dndGroups,
-        onPrepareStart: d$1 = t$4.onPrepareStart,
-        onStart: f$1 = t$4.onStart,
-        onPrepareMove: p$1 = t$4.onPrepareMove,
-        onMove: m$1 = t$4.onMove,
-        onEnd: h$1 = t$4.onEnd,
-        onDestroy: g$1 = t$4.onDestroy,
-      } = e$4 || {};
+        container: n$9 = t$9.container,
+        startPredicate: r$7 = t$9.startPredicate,
+        elements: i$5 = t$9.elements,
+        frozenStyles: a$3 = t$9.frozenStyles,
+        positionModifiers: o$5 = t$9.positionModifiers,
+        applyPosition: s$2 = t$9.applyPosition,
+        computeClientRect: c$3 = t$9.computeClientRect,
+        sensorProcessingMode: l$3 = t$9.sensorProcessingMode,
+        dndGroups: u$3 = t$9.dndGroups,
+        onPrepareStart: d$1 = t$9.onPrepareStart,
+        onStart: f$1 = t$9.onStart,
+        onPrepareMove: p$1 = t$9.onPrepareMove,
+        onMove: m$1 = t$9.onMove,
+        onEnd: h$1 = t$9.onEnd,
+        onDestroy: g$1 = t$9.onDestroy,
+      } = e$7 || {};
       return {
-        container: n$6,
-        startPredicate: r$5,
-        elements: i$4,
+        container: n$9,
+        startPredicate: r$7,
+        elements: i$5,
         frozenStyles: a$3,
-        positionModifiers: o$3,
-        applyPosition: s$3,
-        computeClientRect: c$4,
-        sensorProcessingMode: l$4,
-        dndGroups: u$4,
+        positionModifiers: o$5,
+        applyPosition: s$2,
+        computeClientRect: c$3,
+        sensorProcessingMode: l$3,
+        dndGroups: u$3,
         onPrepareStart: d$1,
         onStart: f$1,
         onPrepareMove: p$1,
@@ -2342,293 +2365,293 @@
         onDestroy: g$1,
       };
     }
-    _emit(e$4, ...t$4) {
-      this._emitter.emit(e$4, ...t$4);
+    _emit(e$7, ...t$9) {
+      this._emitter.emit(e$7, ...t$9);
     }
-    _onMove(n$6, r$5) {
-      let i$4 = this._sensorData.get(r$5);
-      if (i$4)
-        switch (i$4.predicateState) {
+    _onMove(n$9, r$7) {
+      let i$5 = this._sensorData.get(r$7);
+      if (i$5)
+        switch (i$5.predicateState) {
           case P.Pending: {
-            i$4.predicateEvent = n$6;
-            let e$4 = this.settings.startPredicate({
+            i$5.predicateEvent = n$9;
+            let e$7 = this.settings.startPredicate({
               draggable: this,
-              sensor: r$5,
-              event: n$6,
+              sensor: r$7,
+              event: n$9,
             });
-            e$4 === !0
-              ? this.resolveStartPredicate(r$5)
-              : e$4 === !1 && this.rejectStartPredicate(r$5);
+            e$7 === !0
+              ? this.resolveStartPredicate(r$7)
+              : e$7 === !1 && this.rejectStartPredicate(r$7);
             break;
           }
           case P.Resolved:
             this.drag &&
-              ((this.drag.moveEvent = n$6),
+              ((this.drag.moveEvent = n$9),
               this.settings.sensorProcessingMode === I.Immediate
                 ? (this._prepareMove(), this._applyMove())
-                : (r$3.once(n$3.read, this._prepareMove, this._moveId),
-                  r$3.once(n$3.write, this._applyMove, this._moveId)));
+                : (r$5.once(n$6.read, this._prepareMove, this._moveId),
+                  r$5.once(n$6.write, this._applyMove, this._moveId)));
             break;
         }
     }
     _onScroll() {
       this.align();
     }
-    _onEnd(e$4, t$4) {
-      let n$6 = this._sensorData.get(t$4);
-      n$6 &&
+    _onEnd(e$7, t$9) {
+      let n$9 = this._sensorData.get(t$9);
+      n$9 &&
         (this.drag
-          ? n$6.predicateState === P.Resolved &&
-            ((this.drag.endEvent = e$4),
-            this._sensorData.forEach((e$5) => {
-              ((e$5.predicateState = P.Pending), (e$5.predicateEvent = null));
+          ? n$9.predicateState === P.Resolved &&
+            ((this.drag.endEvent = e$7),
+            this._sensorData.forEach((e$8) => {
+              ((e$8.predicateState = P.Pending), (e$8.predicateEvent = null));
             }),
             this.stop())
-          : ((n$6.predicateState = P.Pending), (n$6.predicateEvent = null)));
+          : ((n$9.predicateState = P.Pending), (n$9.predicateEvent = null)));
     }
     _prepareStart() {
-      let e$4 = this.drag;
-      !e$4 ||
-        this._startPhase !== N$1.Init ||
-        ((this._startPhase = N$1.Prepare),
-        (e$4.items = (
+      let e$7 = this.drag;
+      !e$7 ||
+        this._startPhase !== N.Init ||
+        ((this._startPhase = N.Prepare),
+        (e$7.items = (
           this.settings.elements({
             draggable: this,
-            drag: e$4,
+            drag: e$7,
           }) || []
-        ).map((e$5) => new O$1(e$5, this))),
+        ).map((e$8) => new O(e$8, this))),
         this._applyModifiers(F.Start, 0, 0),
-        this._emit(R.PrepareStart, e$4.startEvent),
-        this.settings.onPrepareStart?.(e$4, this),
-        (this._startPhase = N$1.FinishPrepare));
+        this._emit(R.PrepareStart, e$7.startEvent),
+        this.settings.onPrepareStart?.(e$7, this),
+        (this._startPhase = N.FinishPrepare));
     }
     _applyStart() {
-      let e$4 = this.drag;
-      if (!(!e$4 || this._startPhase !== N$1.FinishPrepare)) {
-        this._startPhase = N$1.Apply;
-        for (let t$4 of e$4.items)
-          (t$4.dragContainer !== t$4.elementContainer && l$2(t$4.dragContainer, t$4.element),
-            t$4.frozenStyles && Object.assign(t$4.element.style, t$4.frozenStyles),
+      let e$7 = this.drag;
+      if (!(!e$7 || this._startPhase !== N.FinishPrepare)) {
+        this._startPhase = N.Apply;
+        for (let t$9 of e$7.items)
+          (t$9.dragContainer !== t$9.elementContainer && l$1(t$9.dragContainer, t$9.element),
+            t$9.frozenStyles && Object.assign(t$9.element.style, t$9.frozenStyles),
             this.settings.applyPosition({
               phase: L.Start,
               draggable: this,
-              drag: e$4,
-              item: t$4,
+              drag: e$7,
+              item: t$9,
             }));
-        for (let t$4 of e$4.items) {
-          let e$5 = t$4.getContainerMatrix()[0],
-            n$6 = t$4.getDragContainerMatrix()[0];
-          if (s$2(e$5, n$6) || (!c$3(e$5) && !c$3(n$6))) continue;
-          let r$5 = t$4.element.getBoundingClientRect(),
-            { alignmentOffset: i$4 } = t$4;
-          ((i$4.x += d(t$4.clientRect.x - r$5.x, 3)), (i$4.y += d(t$4.clientRect.y - r$5.y, 3)));
+        for (let t$9 of e$7.items) {
+          let e$8 = t$9.getContainerMatrix()[0],
+            n$9 = t$9.getDragContainerMatrix()[0];
+          if (s$1(e$8, n$9) || (!c$2(e$8) && !c$2(n$9))) continue;
+          let r$7 = t$9.element.getBoundingClientRect(),
+            { alignmentOffset: i$5 } = t$9;
+          ((i$5.x += d(t$9.clientRect.x - r$7.x, 3)), (i$5.y += d(t$9.clientRect.y - r$7.y, 3)));
         }
-        for (let t$4 of e$4.items) {
-          let { alignmentOffset: n$6 } = t$4;
-          (n$6.x !== 0 || n$6.y !== 0) &&
+        for (let t$9 of e$7.items) {
+          let { alignmentOffset: n$9 } = t$9;
+          (n$9.x !== 0 || n$9.y !== 0) &&
             this.settings.applyPosition({
               phase: L.StartAlign,
               draggable: this,
-              drag: e$4,
-              item: t$4,
+              drag: e$7,
+              item: t$9,
             });
         }
-        (window.addEventListener(`scroll`, this._onScroll, k$1),
-          this._emit(R.Start, e$4.startEvent),
-          this.settings.onStart?.(e$4, this),
-          (this._startPhase = N$1.FinishApply));
+        (window.addEventListener(`scroll`, this._onScroll, k),
+          this._emit(R.Start, e$7.startEvent),
+          this.settings.onStart?.(e$7, this),
+          (this._startPhase = N.FinishApply));
       }
     }
     _prepareMove() {
-      let e$4 = this.drag;
-      if (!e$4 || e$4.isEnded) return;
-      let { moveEvent: t$4, prevMoveEvent: n$6 } = e$4;
-      t$4 !== n$6 &&
-        (this._applyModifiers(F.Move, t$4.x - n$6.x, t$4.y - n$6.y),
-        this._emit(R.PrepareMove, t$4),
-        !e$4.isEnded &&
-          (this.settings.onPrepareMove?.(e$4, this), !e$4.isEnded && (e$4.prevMoveEvent = t$4)));
+      let e$7 = this.drag;
+      if (!e$7 || e$7.isEnded) return;
+      let { moveEvent: t$9, prevMoveEvent: n$9 } = e$7;
+      t$9 !== n$9 &&
+        (this._applyModifiers(F.Move, t$9.x - n$9.x, t$9.y - n$9.y),
+        this._emit(R.PrepareMove, t$9),
+        !e$7.isEnded &&
+          (this.settings.onPrepareMove?.(e$7, this), !e$7.isEnded && (e$7.prevMoveEvent = t$9)));
     }
     _applyMove() {
-      let e$4 = this.drag;
-      if (!(!e$4 || e$4.isEnded)) {
-        for (let t$4 of e$4.items)
-          ((t$4._moveDiff.x = 0),
-            (t$4._moveDiff.y = 0),
+      let e$7 = this.drag;
+      if (!(!e$7 || e$7.isEnded)) {
+        for (let t$9 of e$7.items)
+          ((t$9._moveDiff.x = 0),
+            (t$9._moveDiff.y = 0),
             this.settings.applyPosition({
               phase: L.Move,
               draggable: this,
-              drag: e$4,
-              item: t$4,
+              drag: e$7,
+              item: t$9,
             }));
-        (this._emit(R.Move, e$4.moveEvent), !e$4.isEnded && this.settings.onMove?.(e$4, this));
+        (this._emit(R.Move, e$7.moveEvent), !e$7.isEnded && this.settings.onMove?.(e$7, this));
       }
     }
     _prepareAlign() {
-      let { drag: e$4 } = this;
-      if (!(!e$4 || e$4.isEnded))
-        for (let t$4 of e$4.items) {
-          let { x: e$5, y: n$6 } = t$4.element.getBoundingClientRect(),
-            r$5 = t$4.clientRect.x - t$4._moveDiff.x - e$5;
-          ((t$4.alignmentOffset.x = t$4.alignmentOffset.x - t$4._alignDiff.x + r$5),
-            (t$4._alignDiff.x = r$5));
-          let i$4 = t$4.clientRect.y - t$4._moveDiff.y - n$6;
-          ((t$4.alignmentOffset.y = t$4.alignmentOffset.y - t$4._alignDiff.y + i$4),
-            (t$4._alignDiff.y = i$4));
+      let { drag: e$7 } = this;
+      if (!(!e$7 || e$7.isEnded))
+        for (let t$9 of e$7.items) {
+          let { x: e$8, y: n$9 } = t$9.element.getBoundingClientRect(),
+            r$7 = t$9.clientRect.x - t$9._moveDiff.x - e$8;
+          ((t$9.alignmentOffset.x = t$9.alignmentOffset.x - t$9._alignDiff.x + r$7),
+            (t$9._alignDiff.x = r$7));
+          let i$5 = t$9.clientRect.y - t$9._moveDiff.y - n$9;
+          ((t$9.alignmentOffset.y = t$9.alignmentOffset.y - t$9._alignDiff.y + i$5),
+            (t$9._alignDiff.y = i$5));
         }
     }
     _applyAlign() {
-      let { drag: e$4 } = this;
-      if (!(!e$4 || e$4.isEnded))
-        for (let t$4 of e$4.items)
-          ((t$4._alignDiff.x = 0),
-            (t$4._alignDiff.y = 0),
+      let { drag: e$7 } = this;
+      if (!(!e$7 || e$7.isEnded))
+        for (let t$9 of e$7.items)
+          ((t$9._alignDiff.x = 0),
+            (t$9._alignDiff.y = 0),
             this.settings.applyPosition({
               phase: L.Align,
               draggable: this,
-              drag: e$4,
-              item: t$4,
+              drag: e$7,
+              item: t$9,
             }));
     }
-    _applyModifiers(e$4, t$4, n$6) {
-      let { drag: r$5 } = this;
-      if (!r$5) return;
-      let { positionModifiers: i$4 } = this.settings;
-      for (let a$3 of r$5.items) {
-        let o$3 = A$1;
-        ((o$3.x = t$4), (o$3.y = n$6));
-        for (let t$5 of i$4)
-          o$3 = t$5(o$3, {
+    _applyModifiers(e$7, t$9, n$9) {
+      let { drag: r$7 } = this;
+      if (!r$7) return;
+      let { positionModifiers: i$5 } = this.settings;
+      for (let a$3 of r$7.items) {
+        let o$5 = A;
+        ((o$5.x = t$9), (o$5.y = n$9));
+        for (let t$10 of i$5)
+          o$5 = t$10(o$5, {
             draggable: this,
-            drag: r$5,
+            drag: r$7,
             item: a$3,
-            phase: e$4,
+            phase: e$7,
           });
-        ((a$3.position.x += o$3.x),
-          (a$3.position.y += o$3.y),
-          (a$3.clientRect.x += o$3.x),
-          (a$3.clientRect.y += o$3.y),
-          e$4 === `move` && ((a$3._moveDiff.x += o$3.x), (a$3._moveDiff.y += o$3.y)));
+        ((a$3.position.x += o$5.x),
+          (a$3.position.y += o$5.y),
+          (a$3.clientRect.x += o$5.x),
+          (a$3.clientRect.y += o$5.y),
+          e$7 === `move` && ((a$3._moveDiff.x += o$5.x), (a$3._moveDiff.y += o$5.y)));
       }
     }
-    on(e$4, t$4, n$6) {
-      return this._emitter.on(e$4, t$4, n$6);
+    on(e$7, t$9, n$9) {
+      return this._emitter.on(e$7, t$9, n$9);
     }
-    off(e$4, t$4) {
-      this._emitter.off(e$4, t$4);
+    off(e$7, t$9) {
+      this._emitter.off(e$7, t$9);
     }
-    resolveStartPredicate(n$6, r$5) {
-      let i$4 = this._sensorData.get(n$6);
-      if (!i$4) return;
-      let a$3 = r$5 || i$4.predicateEvent;
-      i$4.predicateState === P.Pending &&
+    resolveStartPredicate(n$9, r$7) {
+      let i$5 = this._sensorData.get(n$9);
+      if (!i$5) return;
+      let a$3 = r$7 || i$5.predicateEvent;
+      i$5.predicateState === P.Pending &&
         a$3 &&
-        ((this._startPhase = N$1.Init),
-        (i$4.predicateState = P.Resolved),
-        (i$4.predicateEvent = null),
-        (this.drag = new p(n$6, a$3)),
-        this._sensorData.forEach((e$4, t$4) => {
-          t$4 !== n$6 && ((e$4.predicateState = P.Rejected), (e$4.predicateEvent = null));
+        ((this._startPhase = N.Init),
+        (i$5.predicateState = P.Resolved),
+        (i$5.predicateEvent = null),
+        (this.drag = new p(n$9, a$3)),
+        this._sensorData.forEach((e$7, t$9) => {
+          t$9 !== n$9 && ((e$7.predicateState = P.Rejected), (e$7.predicateEvent = null));
         }),
         this.settings.sensorProcessingMode === I.Immediate
           ? (this._prepareStart(), this._applyStart())
-          : (r$3.once(n$3.read, this._prepareStart, this._startId),
-            r$3.once(n$3.write, this._applyStart, this._startId)));
+          : (r$5.once(n$6.read, this._prepareStart, this._startId),
+            r$5.once(n$6.write, this._applyStart, this._startId)));
     }
-    rejectStartPredicate(e$4) {
-      let t$4 = this._sensorData.get(e$4);
-      t$4?.predicateState === P.Pending &&
-        ((t$4.predicateState = P.Rejected), (t$4.predicateEvent = null));
+    rejectStartPredicate(e$7) {
+      let t$9 = this._sensorData.get(e$7);
+      t$9?.predicateState === P.Pending &&
+        ((t$9.predicateState = P.Rejected), (t$9.predicateEvent = null));
     }
     stop() {
-      let n$6 = this.drag;
-      if (!(!n$6 || n$6.isEnded)) {
-        if (this._startPhase === N$1.Prepare || this._startPhase === N$1.Apply)
+      let n$9 = this.drag;
+      if (!(!n$9 || n$9.isEnded)) {
+        if (this._startPhase === N.Prepare || this._startPhase === N.Apply)
           throw Error(`Cannot stop drag start process at this point`);
-        ((n$6.isEnded = !0),
+        ((n$9.isEnded = !0),
           this._prepareStart(),
           this._applyStart(),
-          (this._startPhase = N$1.None),
-          r$3.off(n$3.read, this._startId),
-          r$3.off(n$3.write, this._startId),
-          r$3.off(n$3.read, this._moveId),
-          r$3.off(n$3.write, this._moveId),
-          r$3.off(n$3.read, this._alignId),
-          r$3.off(n$3.write, this._alignId),
-          window.removeEventListener(`scroll`, this._onScroll, k$1),
+          (this._startPhase = N.None),
+          r$5.off(n$6.read, this._startId),
+          r$5.off(n$6.write, this._startId),
+          r$5.off(n$6.read, this._moveId),
+          r$5.off(n$6.write, this._moveId),
+          r$5.off(n$6.read, this._alignId),
+          r$5.off(n$6.write, this._alignId),
+          window.removeEventListener(`scroll`, this._onScroll, k),
           this._applyModifiers(F.End, 0, 0));
-        for (let e$4 of n$6.items) {
+        for (let e$7 of n$9.items) {
           if (
-            (e$4.elementContainer !== e$4.dragContainer &&
-              (l$2(e$4.elementContainer, e$4.element),
-              (e$4.alignmentOffset.x = 0),
-              (e$4.alignmentOffset.y = 0),
-              (e$4.containerOffset.x = 0),
-              (e$4.containerOffset.y = 0)),
-            e$4.unfrozenStyles)
+            (e$7.elementContainer !== e$7.dragContainer &&
+              (l$1(e$7.elementContainer, e$7.element),
+              (e$7.alignmentOffset.x = 0),
+              (e$7.alignmentOffset.y = 0),
+              (e$7.containerOffset.x = 0),
+              (e$7.containerOffset.y = 0)),
+            e$7.unfrozenStyles)
           )
-            for (let t$4 in e$4.unfrozenStyles)
-              e$4.element.style[t$4] = e$4.unfrozenStyles[t$4] || ``;
+            for (let t$9 in e$7.unfrozenStyles)
+              e$7.element.style[t$9] = e$7.unfrozenStyles[t$9] || ``;
           this.settings.applyPosition({
             phase: L.End,
             draggable: this,
-            drag: n$6,
-            item: e$4,
+            drag: n$9,
+            item: e$7,
           });
         }
-        for (let e$4 of n$6.items)
-          if (e$4.elementContainer !== e$4.dragContainer) {
-            let t$4 = e$4.element.getBoundingClientRect();
-            ((e$4.alignmentOffset.x = d(e$4.clientRect.x - t$4.x, 3)),
-              (e$4.alignmentOffset.y = d(e$4.clientRect.y - t$4.y, 3)));
+        for (let e$7 of n$9.items)
+          if (e$7.elementContainer !== e$7.dragContainer) {
+            let t$9 = e$7.element.getBoundingClientRect();
+            ((e$7.alignmentOffset.x = d(e$7.clientRect.x - t$9.x, 3)),
+              (e$7.alignmentOffset.y = d(e$7.clientRect.y - t$9.y, 3)));
           }
-        for (let e$4 of n$6.items)
-          e$4.elementContainer !== e$4.dragContainer &&
-            (e$4.alignmentOffset.x !== 0 || e$4.alignmentOffset.y !== 0) &&
+        for (let e$7 of n$9.items)
+          e$7.elementContainer !== e$7.dragContainer &&
+            (e$7.alignmentOffset.x !== 0 || e$7.alignmentOffset.y !== 0) &&
             this.settings.applyPosition({
               phase: L.EndAlign,
               draggable: this,
-              drag: n$6,
-              item: e$4,
+              drag: n$9,
+              item: e$7,
             });
-        (this._emit(R.End, n$6.endEvent), this.settings.onEnd?.(n$6, this), (this.drag = null));
+        (this._emit(R.End, n$9.endEvent), this.settings.onEnd?.(n$9, this), (this.drag = null));
       }
     }
-    align(n$6 = !1) {
+    align(n$9 = !1) {
       !this.drag ||
         this.drag.isEnded ||
-        (n$6 || this.settings.sensorProcessingMode === I.Immediate
+        (n$9 || this.settings.sensorProcessingMode === I.Immediate
           ? (this._prepareAlign(), this._applyAlign())
-          : (r$3.once(n$3.read, this._prepareAlign, this._alignId),
-            r$3.once(n$3.write, this._applyAlign, this._alignId)));
+          : (r$5.once(n$6.read, this._prepareAlign, this._alignId),
+            r$5.once(n$6.write, this._applyAlign, this._alignId)));
     }
     getClientRect() {
-      let { drag: e$4, settings: t$4 } = this;
+      let { drag: e$7, settings: t$9 } = this;
       return (
-        (e$4 &&
-          t$4.computeClientRect?.({
+        (e$7 &&
+          t$9.computeClientRect?.({
             draggable: this,
-            drag: e$4,
+            drag: e$7,
           })) ||
         null
       );
     }
-    updateSettings(e$4) {
-      this.settings = this._parseSettings(e$4, this.settings);
+    updateSettings(e$7) {
+      this.settings = this._parseSettings(e$7, this.settings);
     }
-    use(e$4) {
-      return e$4(this);
+    use(e$7) {
+      return e$7(this);
     }
     destroy() {
       this.isDestroyed ||
         ((this.isDestroyed = !0),
         this.stop(),
-        this._sensorData.forEach(({ onMove: e$4, onEnd: t$4 }, n$6) => {
-          (n$6.off(e$1.Start, e$4),
-            n$6.off(e$1.Move, e$4),
-            n$6.off(e$1.Cancel, t$4),
-            n$6.off(e$1.End, t$4),
-            n$6.off(e$1.Destroy, t$4));
+        this._sensorData.forEach(({ onMove: e$7, onEnd: t$9 }, n$9) => {
+          (n$9.off(e$2.Start, e$7),
+            n$9.off(e$2.Move, e$7),
+            n$9.off(e$2.Cancel, t$9),
+            n$9.off(e$2.End, t$9),
+            n$9.off(e$2.Destroy, t$9));
         }),
         this._sensorData.clear(),
         this._emit(R.Destroy),
@@ -2638,87 +2661,40 @@
   };
 
   //#endregion
-  //#region ../dragdoll/dist/droppable-Cz3L0fgq.js
-  const t$2 = { Destroy: `destroy` };
-  var n$1 = class {
-    id;
-    element;
-    isDestroyed;
-    accept;
-    data;
-    _clientRect;
-    _emitter;
-    constructor(t$4, n$6 = {}) {
-      let { id: r$5 = Symbol(), accept: i$4 = () => !0, data: a$3 = {} } = n$6;
-      ((this.id = r$5),
-        (this.element = t$4),
-        (this.isDestroyed = !1),
-        (this.accept = i$4),
-        (this.data = a$3),
-        (this._clientRect = {
-          x: 0,
-          y: 0,
-          width: 0,
-          height: 0,
-        }),
-        (this._emitter = new v$1()),
-        this.updateClientRect());
-    }
-    on(e$4, t$4, n$6) {
-      return this._emitter.on(e$4, t$4, n$6);
-    }
-    off(e$4, t$4) {
-      this._emitter.off(e$4, t$4);
-    }
-    getClientRect() {
-      return this._clientRect;
-    }
-    updateClientRect(e$4) {
-      let t$4 = e$4 || this.element.getBoundingClientRect(),
-        { _clientRect: n$6 } = this;
-      ((n$6.x = t$4.x), (n$6.y = t$4.y), (n$6.width = t$4.width), (n$6.height = t$4.height));
-    }
-    destroy() {
-      this.isDestroyed ||
-        ((this.isDestroyed = !0), this._emitter.emit(t$2.Destroy), this._emitter.off());
-    }
-  };
-
-  //#endregion
   //#region ../dragdoll/dist/pointer-sensor-D3DHn381.js
-  function i$3(e$4, t$4) {
-    if (`pointerId` in e$4) return e$4.pointerId === t$4 ? e$4 : null;
-    if (`changedTouches` in e$4) {
-      let n$6 = 0;
-      for (; n$6 < e$4.changedTouches.length; n$6++)
-        if (e$4.changedTouches[n$6].identifier === t$4) return e$4.changedTouches[n$6];
+  function i$4(e$7, t$9) {
+    if (`pointerId` in e$7) return e$7.pointerId === t$9 ? e$7 : null;
+    if (`changedTouches` in e$7) {
+      let n$9 = 0;
+      for (; n$9 < e$7.changedTouches.length; n$9++)
+        if (e$7.changedTouches[n$9].identifier === t$9) return e$7.changedTouches[n$9];
       return null;
     }
-    return e$4;
+    return e$7;
   }
-  function a$2(e$4) {
-    return `pointerId` in e$4
-      ? e$4.pointerId
-      : `changedTouches` in e$4
-        ? e$4.changedTouches[0]
-          ? e$4.changedTouches[0].identifier
+  function a$2(e$7) {
+    return `pointerId` in e$7
+      ? e$7.pointerId
+      : `changedTouches` in e$7
+        ? e$7.changedTouches[0]
+          ? e$7.changedTouches[0].identifier
           : null
         : -1;
   }
-  function o$1(e$4) {
-    return `pointerType` in e$4 ? e$4.pointerType : `touches` in e$4 ? `touch` : `mouse`;
+  function o$3(e$7) {
+    return `pointerType` in e$7 ? e$7.pointerType : `touches` in e$7 ? `touch` : `mouse`;
   }
-  function s$1(e$4 = {}) {
-    let { capture: t$4 = !0, passive: n$6 = !0 } = e$4;
+  function s(e$7 = {}) {
+    let { capture: t$9 = !0, passive: n$9 = !0 } = e$7;
     return {
-      capture: t$4,
-      passive: n$6,
+      capture: t$9,
+      passive: n$9,
     };
   }
-  function c$2(n$6) {
-    return n$6 === `auto` || n$6 === void 0 ? (n$5 ? `pointer` : t$1 ? `touch` : `mouse`) : n$6;
+  function c$1(n$9) {
+    return n$9 === `auto` || n$9 === void 0 ? (n$8 ? `pointer` : t$4 ? `touch` : `mouse`) : n$9;
   }
-  const l$1 = {
+  const l = {
     pointer: {
       start: `pointerdown`,
       move: `pointermove`,
@@ -2738,7 +2714,7 @@
       end: `mouseup`,
     },
   };
-  var u$1 = class {
+  var u = class {
     element;
     drag;
     isDestroyed;
@@ -2747,103 +2723,103 @@
     _sourceEvents;
     _areWindowListenersBound;
     _emitter;
-    constructor(e$4, t$4 = {}) {
+    constructor(e$7, t$9 = {}) {
       let {
-        listenerOptions: n$6 = {},
-        sourceEvents: i$4 = `auto`,
-        startPredicate: a$3 = (e$5) => !(`button` in e$5 && e$5.button > 0),
-      } = t$4;
-      ((this.element = e$4),
+        listenerOptions: n$9 = {},
+        sourceEvents: i$5 = `auto`,
+        startPredicate: a$3 = (e$8) => !(`button` in e$8 && e$8.button > 0),
+      } = t$9;
+      ((this.element = e$7),
         (this.drag = null),
         (this.isDestroyed = !1),
         (this._areWindowListenersBound = !1),
         (this._startPredicate = a$3),
-        (this._listenerOptions = s$1(n$6)),
-        (this._sourceEvents = c$2(i$4)),
-        (this._emitter = new v$1()),
+        (this._listenerOptions = s(n$9)),
+        (this._sourceEvents = c$1(i$5)),
+        (this._emitter = new v()),
         (this._onStart = this._onStart.bind(this)),
         (this._onMove = this._onMove.bind(this)),
         (this._onCancel = this._onCancel.bind(this)),
         (this._onEnd = this._onEnd.bind(this)),
-        e$4.addEventListener(l$1[this._sourceEvents].start, this._onStart, this._listenerOptions));
+        e$7.addEventListener(l[this._sourceEvents].start, this._onStart, this._listenerOptions));
     }
-    _getTrackedPointerEventData(e$4) {
-      return this.drag ? i$3(e$4, this.drag.pointerId) : null;
+    _getTrackedPointerEventData(e$7) {
+      return this.drag ? i$4(e$7, this.drag.pointerId) : null;
     }
-    _onStart(e$4) {
-      if (this.isDestroyed || this.drag || !this._startPredicate(e$4)) return;
-      let t$4 = a$2(e$4);
-      if (t$4 === null) return;
-      let r$5 = i$3(e$4, t$4);
-      if (r$5 === null) return;
-      let s$3 = {
-        pointerId: t$4,
-        pointerType: o$1(e$4),
-        x: r$5.clientX,
-        y: r$5.clientY,
+    _onStart(e$7) {
+      if (this.isDestroyed || this.drag || !this._startPredicate(e$7)) return;
+      let t$9 = a$2(e$7);
+      if (t$9 === null) return;
+      let r$7 = i$4(e$7, t$9);
+      if (r$7 === null) return;
+      let s$2 = {
+        pointerId: t$9,
+        pointerType: o$3(e$7),
+        x: r$7.clientX,
+        y: r$7.clientY,
       };
-      this.drag = s$3;
-      let c$4 = {
-        ...s$3,
-        type: e$1.Start,
-        srcEvent: e$4,
-        target: r$5.target,
+      this.drag = s$2;
+      let c$3 = {
+        ...s$2,
+        type: e$2.Start,
+        srcEvent: e$7,
+        target: r$7.target,
       };
-      (this._emitter.emit(c$4.type, c$4), this.drag && this._bindWindowListeners());
+      (this._emitter.emit(c$3.type, c$3), this.drag && this._bindWindowListeners());
     }
-    _onMove(e$4) {
+    _onMove(e$7) {
       if (!this.drag) return;
-      let t$4 = this._getTrackedPointerEventData(e$4);
-      if (!t$4) return;
-      ((this.drag.x = t$4.clientX), (this.drag.y = t$4.clientY));
-      let r$5 = {
-        type: e$1.Move,
-        srcEvent: e$4,
-        target: t$4.target,
+      let t$9 = this._getTrackedPointerEventData(e$7);
+      if (!t$9) return;
+      ((this.drag.x = t$9.clientX), (this.drag.y = t$9.clientY));
+      let r$7 = {
+        type: e$2.Move,
+        srcEvent: e$7,
+        target: t$9.target,
         ...this.drag,
       };
-      this._emitter.emit(r$5.type, r$5);
+      this._emitter.emit(r$7.type, r$7);
     }
-    _onCancel(e$4) {
+    _onCancel(e$7) {
       if (!this.drag) return;
-      let t$4 = this._getTrackedPointerEventData(e$4);
-      if (!t$4) return;
-      ((this.drag.x = t$4.clientX), (this.drag.y = t$4.clientY));
-      let r$5 = {
-        type: e$1.Cancel,
-        srcEvent: e$4,
-        target: t$4.target,
+      let t$9 = this._getTrackedPointerEventData(e$7);
+      if (!t$9) return;
+      ((this.drag.x = t$9.clientX), (this.drag.y = t$9.clientY));
+      let r$7 = {
+        type: e$2.Cancel,
+        srcEvent: e$7,
+        target: t$9.target,
         ...this.drag,
       };
-      (this._emitter.emit(r$5.type, r$5), this._resetDrag());
+      (this._emitter.emit(r$7.type, r$7), this._resetDrag());
     }
-    _onEnd(e$4) {
+    _onEnd(e$7) {
       if (!this.drag) return;
-      let t$4 = this._getTrackedPointerEventData(e$4);
-      if (!t$4) return;
-      ((this.drag.x = t$4.clientX), (this.drag.y = t$4.clientY));
-      let r$5 = {
-        type: e$1.End,
-        srcEvent: e$4,
-        target: t$4.target,
+      let t$9 = this._getTrackedPointerEventData(e$7);
+      if (!t$9) return;
+      ((this.drag.x = t$9.clientX), (this.drag.y = t$9.clientY));
+      let r$7 = {
+        type: e$2.End,
+        srcEvent: e$7,
+        target: t$9.target,
         ...this.drag,
       };
-      (this._emitter.emit(r$5.type, r$5), this._resetDrag());
+      (this._emitter.emit(r$7.type, r$7), this._resetDrag());
     }
     _bindWindowListeners() {
       if (this._areWindowListenersBound) return;
-      let { move: e$4, end: t$4, cancel: n$6 } = l$1[this._sourceEvents];
-      (window.addEventListener(e$4, this._onMove, this._listenerOptions),
-        window.addEventListener(t$4, this._onEnd, this._listenerOptions),
-        n$6 && window.addEventListener(n$6, this._onCancel, this._listenerOptions),
+      let { move: e$7, end: t$9, cancel: n$9 } = l[this._sourceEvents];
+      (window.addEventListener(e$7, this._onMove, this._listenerOptions),
+        window.addEventListener(t$9, this._onEnd, this._listenerOptions),
+        n$9 && window.addEventListener(n$9, this._onCancel, this._listenerOptions),
         (this._areWindowListenersBound = !0));
     }
     _unbindWindowListeners() {
       if (this._areWindowListenersBound) {
-        let { move: e$4, end: t$4, cancel: n$6 } = l$1[this._sourceEvents];
-        (window.removeEventListener(e$4, this._onMove, this._listenerOptions),
-          window.removeEventListener(t$4, this._onEnd, this._listenerOptions),
-          n$6 && window.removeEventListener(n$6, this._onCancel, this._listenerOptions),
+        let { move: e$7, end: t$9, cancel: n$9 } = l[this._sourceEvents];
+        (window.removeEventListener(e$7, this._onMove, this._listenerOptions),
+          window.removeEventListener(t$9, this._onEnd, this._listenerOptions),
+          n$9 && window.removeEventListener(n$9, this._onCancel, this._listenerOptions),
           (this._areWindowListenersBound = !1));
       }
     }
@@ -2852,53 +2828,53 @@
     }
     cancel() {
       if (!this.drag) return;
-      let e$4 = {
-        type: e$1.Cancel,
+      let e$7 = {
+        type: e$2.Cancel,
         srcEvent: null,
         target: null,
         ...this.drag,
       };
-      (this._emitter.emit(e$4.type, e$4), this._resetDrag());
+      (this._emitter.emit(e$7.type, e$7), this._resetDrag());
     }
-    updateSettings(e$4) {
+    updateSettings(e$7) {
       if (this.isDestroyed) return;
-      let { listenerOptions: t$4, sourceEvents: n$6, startPredicate: r$5 } = e$4,
-        i$4 = c$2(n$6),
-        a$3 = s$1(t$4);
-      (r$5 && this._startPredicate !== r$5 && (this._startPredicate = r$5),
-        ((t$4 &&
+      let { listenerOptions: t$9, sourceEvents: n$9, startPredicate: r$7 } = e$7,
+        i$5 = c$1(n$9),
+        a$3 = s(t$9);
+      (r$7 && this._startPredicate !== r$7 && (this._startPredicate = r$7),
+        ((t$9 &&
           (this._listenerOptions.capture !== a$3.capture ||
             this._listenerOptions.passive === a$3.passive)) ||
-          (n$6 && this._sourceEvents !== i$4)) &&
+          (n$9 && this._sourceEvents !== i$5)) &&
           (this.element.removeEventListener(
-            l$1[this._sourceEvents].start,
+            l[this._sourceEvents].start,
             this._onStart,
             this._listenerOptions,
           ),
           this._unbindWindowListeners(),
           this.cancel(),
-          n$6 && (this._sourceEvents = i$4),
-          t$4 && a$3 && (this._listenerOptions = a$3),
+          n$9 && (this._sourceEvents = i$5),
+          t$9 && a$3 && (this._listenerOptions = a$3),
           this.element.addEventListener(
-            l$1[this._sourceEvents].start,
+            l[this._sourceEvents].start,
             this._onStart,
             this._listenerOptions,
           )));
     }
-    on(e$4, t$4, n$6) {
-      return this._emitter.on(e$4, t$4, n$6);
+    on(e$7, t$9, n$9) {
+      return this._emitter.on(e$7, t$9, n$9);
     }
-    off(e$4, t$4) {
-      this._emitter.off(e$4, t$4);
+    off(e$7, t$9) {
+      this._emitter.off(e$7, t$9);
     }
     destroy() {
       this.isDestroyed ||
         ((this.isDestroyed = !0),
         this.cancel(),
-        this._emitter.emit(e$1.Destroy, { type: e$1.Destroy }),
+        this._emitter.emit(e$2.Destroy, { type: e$2.Destroy }),
         this._emitter.off(),
         this.element.removeEventListener(
-          l$1[this._sourceEvents].start,
+          l[this._sourceEvents].start,
           this._onStart,
           this._listenerOptions,
         ));
@@ -2907,51 +2883,51 @@
 
   //#endregion
   //#region ../dragdoll/dist/base-sensor-DVrttP21.js
-  var n$4 = class {
+  var n$7 = class {
     drag;
     isDestroyed;
     _emitter;
     constructor() {
-      ((this.drag = null), (this.isDestroyed = !1), (this._emitter = new v$1()));
+      ((this.drag = null), (this.isDestroyed = !1), (this._emitter = new v()));
     }
-    _createDragData(e$4) {
+    _createDragData(e$7) {
       return {
-        x: e$4.x,
-        y: e$4.y,
+        x: e$7.x,
+        y: e$7.y,
       };
     }
-    _updateDragData(e$4) {
-      this.drag && ((this.drag.x = e$4.x), (this.drag.y = e$4.y));
+    _updateDragData(e$7) {
+      this.drag && ((this.drag.x = e$7.x), (this.drag.y = e$7.y));
     }
     _resetDragData() {
       this.drag = null;
     }
-    _start(t$4) {
+    _start(t$9) {
       this.isDestroyed ||
         this.drag ||
-        ((this.drag = this._createDragData(t$4)), this._emitter.emit(e$1.Start, t$4));
+        ((this.drag = this._createDragData(t$9)), this._emitter.emit(e$2.Start, t$9));
     }
-    _move(t$4) {
-      this.drag && (this._updateDragData(t$4), this._emitter.emit(e$1.Move, t$4));
+    _move(t$9) {
+      this.drag && (this._updateDragData(t$9), this._emitter.emit(e$2.Move, t$9));
     }
-    _end(t$4) {
+    _end(t$9) {
       this.drag &&
-        (this._updateDragData(t$4), this._emitter.emit(e$1.End, t$4), this._resetDragData());
+        (this._updateDragData(t$9), this._emitter.emit(e$2.End, t$9), this._resetDragData());
     }
-    _cancel(t$4) {
+    _cancel(t$9) {
       this.drag &&
-        (this._updateDragData(t$4), this._emitter.emit(e$1.Cancel, t$4), this._resetDragData());
+        (this._updateDragData(t$9), this._emitter.emit(e$2.Cancel, t$9), this._resetDragData());
     }
-    on(e$4, t$4, n$6) {
-      return this._emitter.on(e$4, t$4, n$6);
+    on(e$7, t$9, n$9) {
+      return this._emitter.on(e$7, t$9, n$9);
     }
-    off(e$4, t$4) {
-      this._emitter.off(e$4, t$4);
+    off(e$7, t$9) {
+      this._emitter.off(e$7, t$9);
     }
     cancel() {
       this.drag &&
         this._cancel({
-          type: e$1.Cancel,
+          type: e$2.Cancel,
           x: this.drag.x,
           y: this.drag.y,
         });
@@ -2960,14 +2936,14 @@
       this.isDestroyed ||
         ((this.isDestroyed = !0),
         this.cancel(),
-        this._emitter.emit(e$1.Destroy, { type: e$1.Destroy }),
+        this._emitter.emit(e$2.Destroy, { type: e$2.Destroy }),
         this._emitter.off());
     }
   };
 
   //#endregion
   //#region ../dragdoll/dist/base-motion-sensor-QRxjT_GX.js
-  var i$1 = class extends n$4 {
+  var i$2 = class extends n$7 {
     drag;
     _direction;
     _speed;
@@ -2981,60 +2957,60 @@
         (this._speed = 0),
         (this._tick = this._tick.bind(this)));
     }
-    _createDragData(e$4) {
+    _createDragData(e$7) {
       return {
-        ...super._createDragData(e$4),
+        ...super._createDragData(e$7),
         time: 0,
         deltaTime: 0,
       };
     }
-    _start(n$6) {
+    _start(n$9) {
       this.isDestroyed ||
         this.drag ||
-        (super._start(n$6), r$3.on(n$3.read, this._tick, this._tick));
+        (super._start(n$9), r$5.on(n$6.read, this._tick, this._tick));
     }
-    _end(n$6) {
-      this.drag && (r$3.off(n$3.read, this._tick), super._end(n$6));
+    _end(n$9) {
+      this.drag && (r$5.off(n$6.read, this._tick), super._end(n$9));
     }
-    _cancel(n$6) {
-      this.drag && (r$3.off(n$3.read, this._tick), super._cancel(n$6));
+    _cancel(n$9) {
+      this.drag && (r$5.off(n$6.read, this._tick), super._cancel(n$9));
     }
-    _tick(e$4) {
+    _tick(e$7) {
       if (this.drag)
-        if (e$4 && this.drag.time) {
-          ((this.drag.deltaTime = e$4 - this.drag.time), (this.drag.time = e$4));
-          let t$4 = {
+        if (e$7 && this.drag.time) {
+          ((this.drag.deltaTime = e$7 - this.drag.time), (this.drag.time = e$7));
+          let t$9 = {
             type: `tick`,
             time: this.drag.time,
             deltaTime: this.drag.deltaTime,
           };
-          if ((this._emitter.emit(`tick`, t$4), !this.drag)) return;
-          let r$5 = this._speed * (this.drag.deltaTime / 1e3),
-            i$4 = this._direction.x * r$5,
-            a$3 = this._direction.y * r$5;
-          (i$4 || a$3) &&
+          if ((this._emitter.emit(`tick`, t$9), !this.drag)) return;
+          let r$7 = this._speed * (this.drag.deltaTime / 1e3),
+            i$5 = this._direction.x * r$7,
+            a$3 = this._direction.y * r$7;
+          (i$5 || a$3) &&
             this._move({
-              type: e$1.Move,
-              x: this.drag.x + i$4,
+              type: e$2.Move,
+              x: this.drag.x + i$5,
               y: this.drag.y + a$3,
             });
-        } else ((this.drag.time = e$4), (this.drag.deltaTime = 0));
+        } else ((this.drag.time = e$7), (this.drag.deltaTime = 0));
     }
   };
 
   //#endregion
   //#region ../dragdoll/dist/keyboard-motion-sensor-BsMzohjd.js
-  const n$2 = [`start`, `cancel`, `end`, `moveLeft`, `moveRight`, `moveUp`, `moveDown`];
-  function r$2(e$4, t$4) {
-    if (!e$4.size || !t$4.size) return Infinity;
-    let n$6 = Infinity;
-    for (let r$5 of e$4) {
-      let e$5 = t$4.get(r$5);
-      e$5 !== void 0 && e$5 < n$6 && (n$6 = e$5);
+  const n$5 = [`start`, `cancel`, `end`, `moveLeft`, `moveRight`, `moveUp`, `moveDown`];
+  function r$4(e$7, t$9) {
+    if (!e$7.size || !t$9.size) return Infinity;
+    let n$9 = Infinity;
+    for (let r$7 of e$7) {
+      let e$8 = t$9.get(r$7);
+      e$8 !== void 0 && e$8 < n$9 && (n$9 = e$8);
     }
-    return n$6;
+    return n$9;
   }
-  const i$2 = {
+  const i$3 = {
     startKeys: [` `, `Enter`],
     moveLeftKeys: [`ArrowLeft`],
     moveRightKeys: [`ArrowRight`],
@@ -3045,18 +3021,18 @@
     cancelOnBlur: !0,
     cancelOnVisibilityChange: !0,
     computeSpeed: () => 500,
-    startPredicate: (e$4, t$4) => {
-      if (t$4.element && document.activeElement === t$4.element) {
-        let { left: e$5, top: n$6 } = t$4.element.getBoundingClientRect();
+    startPredicate: (e$7, t$9) => {
+      if (t$9.element && document.activeElement === t$9.element) {
+        let { left: e$8, top: n$9 } = t$9.element.getBoundingClientRect();
         return {
-          x: e$5,
-          y: n$6,
+          x: e$8,
+          y: n$9,
         };
       }
       return null;
     },
   };
-  var a$1 = class extends i$1 {
+  var a = class extends i$2 {
     element;
     _moveKeys;
     _moveKeyTimestamps;
@@ -3071,35 +3047,35 @@
     _cancelOnVisibilityChange;
     _computeSpeed;
     _startPredicate;
-    constructor(e$4, t$4 = {}) {
+    constructor(e$7, t$9 = {}) {
       super();
       let {
-        startPredicate: n$6 = i$2.startPredicate,
-        computeSpeed: r$5 = i$2.computeSpeed,
-        cancelOnVisibilityChange: a$3 = i$2.cancelOnVisibilityChange,
-        cancelOnBlur: o$3 = i$2.cancelOnBlur,
-        startKeys: s$3 = i$2.startKeys,
-        moveLeftKeys: c$4 = i$2.moveLeftKeys,
-        moveRightKeys: l$4 = i$2.moveRightKeys,
-        moveUpKeys: u$4 = i$2.moveUpKeys,
-        moveDownKeys: d$1 = i$2.moveDownKeys,
-        cancelKeys: f$1 = i$2.cancelKeys,
-        endKeys: p$1 = i$2.endKeys,
-      } = t$4;
-      ((this.element = e$4),
-        (this._startKeys = new Set(s$3)),
+        startPredicate: n$9 = i$3.startPredicate,
+        computeSpeed: r$7 = i$3.computeSpeed,
+        cancelOnVisibilityChange: a$3 = i$3.cancelOnVisibilityChange,
+        cancelOnBlur: o$5 = i$3.cancelOnBlur,
+        startKeys: s$2 = i$3.startKeys,
+        moveLeftKeys: c$3 = i$3.moveLeftKeys,
+        moveRightKeys: l$3 = i$3.moveRightKeys,
+        moveUpKeys: u$3 = i$3.moveUpKeys,
+        moveDownKeys: d$1 = i$3.moveDownKeys,
+        cancelKeys: f$1 = i$3.cancelKeys,
+        endKeys: p$1 = i$3.endKeys,
+      } = t$9;
+      ((this.element = e$7),
+        (this._startKeys = new Set(s$2)),
         (this._cancelKeys = new Set(f$1)),
         (this._endKeys = new Set(p$1)),
-        (this._moveLeftKeys = new Set(c$4)),
-        (this._moveRightKeys = new Set(l$4)),
-        (this._moveUpKeys = new Set(u$4)),
+        (this._moveLeftKeys = new Set(c$3)),
+        (this._moveRightKeys = new Set(l$3)),
+        (this._moveUpKeys = new Set(u$3)),
         (this._moveDownKeys = new Set(d$1)),
-        (this._moveKeys = new Set([...c$4, ...l$4, ...u$4, ...d$1])),
+        (this._moveKeys = new Set([...c$3, ...l$3, ...u$3, ...d$1])),
         (this._moveKeyTimestamps = /* @__PURE__ */ new Map()),
-        (this._cancelOnBlur = o$3),
+        (this._cancelOnBlur = o$5),
         (this._cancelOnVisibilityChange = a$3),
-        (this._computeSpeed = r$5),
-        (this._startPredicate = n$6),
+        (this._computeSpeed = r$7),
+        (this._startPredicate = n$9),
         (this._onKeyDown = this._onKeyDown.bind(this)),
         (this._onKeyUp = this._onKeyUp.bind(this)),
         (this._onTick = this._onTick.bind(this)),
@@ -3108,22 +3084,22 @@
         this.on(`tick`, this._onTick, this._onTick),
         document.addEventListener(`keydown`, this._onKeyDown),
         document.addEventListener(`keyup`, this._onKeyUp),
-        o$3 && e$4?.addEventListener(`blur`, this._blurCancelHandler),
+        o$5 && e$7?.addEventListener(`blur`, this._blurCancelHandler),
         a$3 && document.addEventListener(`visibilitychange`, this._internalCancel));
     }
-    _end(e$4) {
+    _end(e$7) {
       this.drag &&
         (this._moveKeyTimestamps.clear(),
         (this._direction.x = 0),
         (this._direction.y = 0),
-        super._end(e$4));
+        super._end(e$7));
     }
-    _cancel(e$4) {
+    _cancel(e$7) {
       this.drag &&
         (this._moveKeyTimestamps.clear(),
         (this._direction.x = 0),
         (this._direction.y = 0),
-        super._cancel(e$4));
+        super._cancel(e$7));
     }
     _internalCancel() {
       this.cancel();
@@ -3134,97 +3110,97 @@
       });
     }
     _updateDirection() {
-      let e$4 = r$2(this._moveLeftKeys, this._moveKeyTimestamps),
-        t$4 = r$2(this._moveRightKeys, this._moveKeyTimestamps),
-        n$6 = r$2(this._moveUpKeys, this._moveKeyTimestamps),
-        i$4 = r$2(this._moveDownKeys, this._moveKeyTimestamps),
-        a$3 = e$4 === t$4 ? 0 : e$4 < t$4 ? -1 : 1,
-        o$3 = n$6 === i$4 ? 0 : n$6 < i$4 ? -1 : 1;
-      if (!(a$3 === 0 || o$3 === 0)) {
-        let e$5 = 1 / (Math.sqrt(a$3 * a$3 + o$3 * o$3) || 1);
-        ((a$3 *= e$5), (o$3 *= e$5));
+      let e$7 = r$4(this._moveLeftKeys, this._moveKeyTimestamps),
+        t$9 = r$4(this._moveRightKeys, this._moveKeyTimestamps),
+        n$9 = r$4(this._moveUpKeys, this._moveKeyTimestamps),
+        i$5 = r$4(this._moveDownKeys, this._moveKeyTimestamps),
+        a$3 = e$7 === t$9 ? 0 : e$7 < t$9 ? -1 : 1,
+        o$5 = n$9 === i$5 ? 0 : n$9 < i$5 ? -1 : 1;
+      if (!(a$3 === 0 || o$5 === 0)) {
+        let e$8 = 1 / (Math.sqrt(a$3 * a$3 + o$5 * o$5) || 1);
+        ((a$3 *= e$8), (o$5 *= e$8));
       }
-      ((this._direction.x = a$3), (this._direction.y = o$3));
+      ((this._direction.x = a$3), (this._direction.y = o$5));
     }
     _onTick() {
       this._speed = this._computeSpeed(this);
     }
-    _onKeyUp(e$4) {
-      this._moveKeyTimestamps.get(e$4.key) &&
-        (this._moveKeyTimestamps.delete(e$4.key), this._updateDirection());
+    _onKeyUp(e$7) {
+      this._moveKeyTimestamps.get(e$7.key) &&
+        (this._moveKeyTimestamps.delete(e$7.key), this._updateDirection());
     }
-    _onKeyDown(t$4) {
+    _onKeyDown(t$9) {
       if (!this.drag) {
-        if (this._startKeys.has(t$4.key)) {
-          let n$6 = this._startPredicate(t$4, this);
-          n$6 &&
-            (t$4.preventDefault(),
+        if (this._startKeys.has(t$9.key)) {
+          let n$9 = this._startPredicate(t$9, this);
+          n$9 &&
+            (t$9.preventDefault(),
             this._start({
-              type: e$1.Start,
-              x: n$6.x,
-              y: n$6.y,
+              type: e$2.Start,
+              x: n$9.x,
+              y: n$9.y,
             }));
         }
         return;
       }
-      if (this._cancelKeys.has(t$4.key)) {
-        (t$4.preventDefault(), this._internalCancel());
+      if (this._cancelKeys.has(t$9.key)) {
+        (t$9.preventDefault(), this._internalCancel());
         return;
       }
-      if (this._endKeys.has(t$4.key)) {
-        (t$4.preventDefault(),
+      if (this._endKeys.has(t$9.key)) {
+        (t$9.preventDefault(),
           this._end({
-            type: e$1.End,
+            type: e$2.End,
             x: this.drag.x,
             y: this.drag.y,
           }));
         return;
       }
-      if (this._moveKeys.has(t$4.key)) {
-        (t$4.preventDefault(),
-          this._moveKeyTimestamps.get(t$4.key) ||
-            (this._moveKeyTimestamps.set(t$4.key, Date.now()), this._updateDirection()));
+      if (this._moveKeys.has(t$9.key)) {
+        (t$9.preventDefault(),
+          this._moveKeyTimestamps.get(t$9.key) ||
+            (this._moveKeyTimestamps.set(t$9.key, Date.now()), this._updateDirection()));
         return;
       }
     }
-    updateSettings(e$4) {
-      let t$4 = !1,
+    updateSettings(e$7) {
+      let t$9 = !1,
         {
-          cancelOnBlur: r$5,
-          cancelOnVisibilityChange: i$4,
+          cancelOnBlur: r$7,
+          cancelOnVisibilityChange: i$5,
           startPredicate: a$3,
-          computeSpeed: o$3,
-        } = e$4;
+          computeSpeed: o$5,
+        } = e$7;
       if (
-        (r$5 !== void 0 &&
-          this._cancelOnBlur !== r$5 &&
-          ((this._cancelOnBlur = r$5),
-          r$5
+        (r$7 !== void 0 &&
+          this._cancelOnBlur !== r$7 &&
+          ((this._cancelOnBlur = r$7),
+          r$7
             ? this.element?.addEventListener(`blur`, this._blurCancelHandler)
             : this.element?.removeEventListener(`blur`, this._blurCancelHandler)),
-        i$4 !== void 0 &&
-          this._cancelOnVisibilityChange !== i$4 &&
-          ((this._cancelOnVisibilityChange = i$4),
-          i$4
+        i$5 !== void 0 &&
+          this._cancelOnVisibilityChange !== i$5 &&
+          ((this._cancelOnVisibilityChange = i$5),
+          i$5
             ? document.addEventListener(`visibilitychange`, this._internalCancel)
             : document.removeEventListener(`visibilitychange`, this._internalCancel)),
         a$3 !== void 0 && (this._startPredicate = a$3),
-        o$3 !== void 0 && (this._computeSpeed = o$3),
-        n$2.forEach((n$6, r$6) => {
-          let i$5 = `${n$6}Keys`,
-            a$4 = e$4[i$5];
-          a$4 !== void 0 && ((this[`_${i$5}`] = new Set(a$4)), r$6 >= 3 && (t$4 = !0));
+        o$5 !== void 0 && (this._computeSpeed = o$5),
+        n$5.forEach((n$9, r$8) => {
+          let i$6 = `${n$9}Keys`,
+            a$4 = e$7[i$6];
+          a$4 !== void 0 && ((this[`_${i$6}`] = new Set(a$4)), r$8 >= 3 && (t$9 = !0));
         }),
-        t$4)
+        t$9)
       ) {
-        let e$5 = [
+        let e$8 = [
           ...this._moveLeftKeys,
           ...this._moveRightKeys,
           ...this._moveUpKeys,
           ...this._moveDownKeys,
         ];
-        [...this._moveKeys].every((t$5, n$6) => e$5[n$6] === t$5) ||
-          ((this._moveKeys = new Set(e$5)),
+        [...this._moveKeys].every((t$10, n$9) => e$8[n$9] === t$10) ||
+          ((this._moveKeys = new Set(e$8)),
           this._moveKeyTimestamps.clear(),
           this._updateDirection());
       }
@@ -3242,626 +3218,246 @@
   };
 
   //#endregion
-  //#region ../../node_modules/react/cjs/react-jsx-runtime.development.js
-  var require_react_jsx_runtime_development = /* @__PURE__ */ __commonJS({
-    '../../node_modules/react/cjs/react-jsx-runtime.development.js': (exports) => {
-      (function () {
-        function getComponentNameFromType(type) {
-          if (null == type) return null;
-          if ('function' === typeof type)
-            return type.$$typeof === REACT_CLIENT_REFERENCE
-              ? null
-              : type.displayName || type.name || null;
-          if ('string' === typeof type) return type;
-          switch (type) {
-            case REACT_FRAGMENT_TYPE:
-              return 'Fragment';
-            case REACT_PROFILER_TYPE:
-              return 'Profiler';
-            case REACT_STRICT_MODE_TYPE:
-              return 'StrictMode';
-            case REACT_SUSPENSE_TYPE:
-              return 'Suspense';
-            case REACT_SUSPENSE_LIST_TYPE:
-              return 'SuspenseList';
-            case REACT_ACTIVITY_TYPE:
-              return 'Activity';
-          }
-          if ('object' === typeof type)
-            switch (
-              ('number' === typeof type.tag &&
-                console.error(
-                  'Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue.',
-                ),
-              type.$$typeof)
-            ) {
-              case REACT_PORTAL_TYPE:
-                return 'Portal';
-              case REACT_CONTEXT_TYPE:
-                return type.displayName || 'Context';
-              case REACT_CONSUMER_TYPE:
-                return (type._context.displayName || 'Context') + '.Consumer';
-              case REACT_FORWARD_REF_TYPE:
-                var innerType = type.render;
-                type = type.displayName;
-                type ||
-                  ((type = innerType.displayName || innerType.name || ''),
-                  (type = '' !== type ? 'ForwardRef(' + type + ')' : 'ForwardRef'));
-                return type;
-              case REACT_MEMO_TYPE:
-                return (
-                  (innerType = type.displayName || null),
-                  null !== innerType ? innerType : getComponentNameFromType(type.type) || 'Memo'
-                );
-              case REACT_LAZY_TYPE:
-                innerType = type._payload;
-                type = type._init;
-                try {
-                  return getComponentNameFromType(type(innerType));
-                } catch (x$2) {}
-            }
-          return null;
-        }
-        function testStringCoercion(value) {
-          return '' + value;
-        }
-        function checkKeyStringCoercion(value) {
-          try {
-            testStringCoercion(value);
-            var JSCompiler_inline_result = !1;
-          } catch (e$4) {
-            JSCompiler_inline_result = !0;
-          }
-          if (JSCompiler_inline_result) {
-            JSCompiler_inline_result = console;
-            var JSCompiler_temp_const = JSCompiler_inline_result.error;
-            var JSCompiler_inline_result$jscomp$0 =
-              ('function' === typeof Symbol && Symbol.toStringTag && value[Symbol.toStringTag]) ||
-              value.constructor.name ||
-              'Object';
-            JSCompiler_temp_const.call(
-              JSCompiler_inline_result,
-              'The provided key is an unsupported type %s. This value must be coerced to a string before using it here.',
-              JSCompiler_inline_result$jscomp$0,
-            );
-            return testStringCoercion(value);
-          }
-        }
-        function getTaskName(type) {
-          if (type === REACT_FRAGMENT_TYPE) return '<>';
-          if ('object' === typeof type && null !== type && type.$$typeof === REACT_LAZY_TYPE)
-            return '<...>';
-          try {
-            var name = getComponentNameFromType(type);
-            return name ? '<' + name + '>' : '<...>';
-          } catch (x$2) {
-            return '<...>';
-          }
-        }
-        function getOwner() {
-          var dispatcher = ReactSharedInternals.A;
-          return null === dispatcher ? null : dispatcher.getOwner();
-        }
-        function UnknownOwner() {
-          return Error('react-stack-top-frame');
-        }
-        function hasValidKey(config) {
-          if (hasOwnProperty.call(config, 'key')) {
-            var getter = Object.getOwnPropertyDescriptor(config, 'key').get;
-            if (getter && getter.isReactWarning) return !1;
-          }
-          return void 0 !== config.key;
-        }
-        function defineKeyPropWarningGetter(props, displayName) {
-          function warnAboutAccessingKey() {
-            specialPropKeyWarningShown ||
-              ((specialPropKeyWarningShown = !0),
-              console.error(
-                '%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://react.dev/link/special-props)',
-                displayName,
-              ));
-          }
-          warnAboutAccessingKey.isReactWarning = !0;
-          Object.defineProperty(props, 'key', {
-            get: warnAboutAccessingKey,
-            configurable: !0,
-          });
-        }
-        function elementRefGetterWithDeprecationWarning() {
-          var componentName = getComponentNameFromType(this.type);
-          didWarnAboutElementRef[componentName] ||
-            ((didWarnAboutElementRef[componentName] = !0),
-            console.error(
-              'Accessing element.ref was removed in React 19. ref is now a regular prop. It will be removed from the JSX Element type in a future release.',
-            ));
-          componentName = this.props.ref;
-          return void 0 !== componentName ? componentName : null;
-        }
-        function ReactElement(type, key, props, owner, debugStack, debugTask) {
-          var refProp = props.ref;
-          type = {
-            $$typeof: REACT_ELEMENT_TYPE,
-            type,
-            key,
-            props,
-            _owner: owner,
-          };
-          null !== (void 0 !== refProp ? refProp : null)
-            ? Object.defineProperty(type, 'ref', {
-                enumerable: !1,
-                get: elementRefGetterWithDeprecationWarning,
-              })
-            : Object.defineProperty(type, 'ref', {
-                enumerable: !1,
-                value: null,
-              });
-          type._store = {};
-          Object.defineProperty(type._store, 'validated', {
-            configurable: !1,
-            enumerable: !1,
-            writable: !0,
-            value: 0,
-          });
-          Object.defineProperty(type, '_debugInfo', {
-            configurable: !1,
-            enumerable: !1,
-            writable: !0,
-            value: null,
-          });
-          Object.defineProperty(type, '_debugStack', {
-            configurable: !1,
-            enumerable: !1,
-            writable: !0,
-            value: debugStack,
-          });
-          Object.defineProperty(type, '_debugTask', {
-            configurable: !1,
-            enumerable: !1,
-            writable: !0,
-            value: debugTask,
-          });
-          Object.freeze && (Object.freeze(type.props), Object.freeze(type));
-          return type;
-        }
-        function jsxDEVImpl(type, config, maybeKey, isStaticChildren, debugStack, debugTask) {
-          var children = config.children;
-          if (void 0 !== children)
-            if (isStaticChildren)
-              if (isArrayImpl(children)) {
-                for (isStaticChildren = 0; isStaticChildren < children.length; isStaticChildren++)
-                  validateChildKeys(children[isStaticChildren]);
-                Object.freeze && Object.freeze(children);
-              } else
-                console.error(
-                  'React.jsx: Static children should always be an array. You are likely explicitly calling React.jsxs or React.jsxDEV. Use the Babel transform instead.',
-                );
-            else validateChildKeys(children);
-          if (hasOwnProperty.call(config, 'key')) {
-            children = getComponentNameFromType(type);
-            var keys = Object.keys(config).filter(function (k$2) {
-              return 'key' !== k$2;
-            });
-            isStaticChildren =
-              0 < keys.length
-                ? '{key: someKey, ' + keys.join(': ..., ') + ': ...}'
-                : '{key: someKey}';
-            didWarnAboutKeySpread[children + isStaticChildren] ||
-              ((keys = 0 < keys.length ? '{' + keys.join(': ..., ') + ': ...}' : '{}'),
-              console.error(
-                'A props object containing a "key" prop is being spread into JSX:\n  let props = %s;\n  <%s {...props} />\nReact keys must be passed directly to JSX without using spread:\n  let props = %s;\n  <%s key={someKey} {...props} />',
-                isStaticChildren,
-                children,
-                keys,
-                children,
-              ),
-              (didWarnAboutKeySpread[children + isStaticChildren] = !0));
-          }
-          children = null;
-          void 0 !== maybeKey && (checkKeyStringCoercion(maybeKey), (children = '' + maybeKey));
-          hasValidKey(config) && (checkKeyStringCoercion(config.key), (children = '' + config.key));
-          if ('key' in config) {
-            maybeKey = {};
-            for (var propName in config)
-              'key' !== propName && (maybeKey[propName] = config[propName]);
-          } else maybeKey = config;
-          children &&
-            defineKeyPropWarningGetter(
-              maybeKey,
-              'function' === typeof type ? type.displayName || type.name || 'Unknown' : type,
-            );
-          return ReactElement(type, children, maybeKey, getOwner(), debugStack, debugTask);
-        }
-        function validateChildKeys(node) {
-          isValidElement(node)
-            ? node._store && (node._store.validated = 1)
-            : 'object' === typeof node &&
-              null !== node &&
-              node.$$typeof === REACT_LAZY_TYPE &&
-              ('fulfilled' === node._payload.status
-                ? isValidElement(node._payload.value) &&
-                  node._payload.value._store &&
-                  (node._payload.value._store.validated = 1)
-                : node._store && (node._store.validated = 1));
-        }
-        function isValidElement(object) {
-          return (
-            'object' === typeof object && null !== object && object.$$typeof === REACT_ELEMENT_TYPE
-          );
-        }
-        var React = require_react(),
-          REACT_ELEMENT_TYPE = Symbol.for('react.transitional.element'),
-          REACT_PORTAL_TYPE = Symbol.for('react.portal'),
-          REACT_FRAGMENT_TYPE = Symbol.for('react.fragment'),
-          REACT_STRICT_MODE_TYPE = Symbol.for('react.strict_mode'),
-          REACT_PROFILER_TYPE = Symbol.for('react.profiler'),
-          REACT_CONSUMER_TYPE = Symbol.for('react.consumer'),
-          REACT_CONTEXT_TYPE = Symbol.for('react.context'),
-          REACT_FORWARD_REF_TYPE = Symbol.for('react.forward_ref'),
-          REACT_SUSPENSE_TYPE = Symbol.for('react.suspense'),
-          REACT_SUSPENSE_LIST_TYPE = Symbol.for('react.suspense_list'),
-          REACT_MEMO_TYPE = Symbol.for('react.memo'),
-          REACT_LAZY_TYPE = Symbol.for('react.lazy'),
-          REACT_ACTIVITY_TYPE = Symbol.for('react.activity'),
-          REACT_CLIENT_REFERENCE = Symbol.for('react.client.reference'),
-          ReactSharedInternals =
-            React.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE,
-          hasOwnProperty = Object.prototype.hasOwnProperty,
-          isArrayImpl = Array.isArray,
-          createTask = console.createTask
-            ? console.createTask
-            : function () {
-                return null;
-              };
-        React = {
-          react_stack_bottom_frame: function (callStackForError) {
-            return callStackForError();
-          },
-        };
-        var specialPropKeyWarningShown;
-        var didWarnAboutElementRef = {};
-        var unknownOwnerDebugStack = React.react_stack_bottom_frame.bind(React, UnknownOwner)();
-        var unknownOwnerDebugTask = createTask(getTaskName(UnknownOwner));
-        var didWarnAboutKeySpread = {};
-        exports.Fragment = REACT_FRAGMENT_TYPE;
-        exports.jsx = function (type, config, maybeKey) {
-          var trackActualOwner = 1e4 > ReactSharedInternals.recentlyCreatedOwnerStacks++;
-          return jsxDEVImpl(
-            type,
-            config,
-            maybeKey,
-            !1,
-            trackActualOwner ? Error('react-stack-top-frame') : unknownOwnerDebugStack,
-            trackActualOwner ? createTask(getTaskName(type)) : unknownOwnerDebugTask,
-          );
-        };
-        exports.jsxs = function (type, config, maybeKey) {
-          var trackActualOwner = 1e4 > ReactSharedInternals.recentlyCreatedOwnerStacks++;
-          return jsxDEVImpl(
-            type,
-            config,
-            maybeKey,
-            !0,
-            trackActualOwner ? Error('react-stack-top-frame') : unknownOwnerDebugStack,
-            trackActualOwner ? createTask(getTaskName(type)) : unknownOwnerDebugTask,
-          );
-        };
-      })();
-    },
-  });
-
-  //#endregion
-  //#region ../../node_modules/react/jsx-runtime.js
-  var require_jsx_runtime = /* @__PURE__ */ __commonJS({
-    '../../node_modules/react/jsx-runtime.js': (exports, module) => {
-      module.exports = require_react_jsx_runtime_development();
-    },
-  });
-
-  //#endregion
-  //#region ../dragdoll-react/dist/index.js
-  var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
-  var import_jsx_runtime = /* @__PURE__ */ __toESM(require_jsx_runtime(), 1);
-  const y = Object.prototype.hasOwnProperty,
-    b = (e$4) => {
-      if (typeof e$4 != `object` || !e$4) return !1;
-      let t$4 = Object.getPrototypeOf(e$4);
-      return t$4 === Object.prototype || t$4 === null;
+  //#region ../dragdoll-react/dist/are-configs-equal-Cv4ZY5_I.js
+  const e$1 = Object.prototype.hasOwnProperty,
+    t$3 = (e$7) => {
+      if (typeof e$7 != `object` || !e$7) return !1;
+      let t$9 = Object.getPrototypeOf(e$7);
+      return t$9 === Object.prototype || t$9 === null;
     };
-  function x(e$4, t$4) {
-    if (Object.is(e$4, t$4)) return !0;
-    if (e$4 === null || t$4 === null || typeof e$4 != `object` || typeof t$4 != `object`) return !1;
-    let n$6 = Array.isArray(e$4),
-      r$5 = Array.isArray(t$4);
-    if (n$6 || r$5) {
-      if (!n$6 || !r$5) return !1;
-      let i$5 = e$4.length;
-      if (i$5 !== t$4.length) return !1;
-      for (let n$7 = 0; n$7 < i$5; n$7++) if (!x(e$4[n$7], t$4[n$7])) return !1;
+  function n$4(r$7, i$5) {
+    if (Object.is(r$7, i$5)) return !0;
+    if (r$7 === null || i$5 === null || typeof r$7 != `object` || typeof i$5 != `object`) return !1;
+    let a$3 = Array.isArray(r$7),
+      o$5 = Array.isArray(i$5);
+    if (a$3 || o$5) {
+      if (!a$3 || !o$5) return !1;
+      let e$7 = r$7.length;
+      if (e$7 !== i$5.length) return !1;
+      for (let t$9 = 0; t$9 < e$7; t$9++) if (!n$4(r$7[t$9], i$5[t$9])) return !1;
       return !0;
     }
-    let i$4 = e$4 instanceof Set,
-      a$3 = t$4 instanceof Set;
-    if (i$4 || a$3) return !i$4 || !a$3 || e$4.size !== t$4.size ? !1 : e$4.isSubsetOf(t$4);
-    if (!b(e$4) || !b(t$4)) return !1;
-    let o$3 = Object.keys(e$4),
-      s$3 = Object.keys(t$4);
-    if (o$3.length !== s$3.length) return !1;
-    for (let n$7 = 0; n$7 < o$3.length; n$7++) {
-      let r$6 = o$3[n$7];
-      if (!y.call(t$4, r$6) || !x(e$4[r$6], t$4[r$6])) return !1;
+    let s$2 = r$7 instanceof Set,
+      c$3 = i$5 instanceof Set;
+    if (s$2 || c$3) return !s$2 || !c$3 || r$7.size !== i$5.size ? !1 : r$7.isSubsetOf(i$5);
+    if (!t$3(r$7) || !t$3(i$5)) return !1;
+    let l$3 = Object.keys(r$7),
+      u$3 = Object.keys(i$5);
+    if (l$3.length !== u$3.length) return !1;
+    for (let t$9 = 0; t$9 < l$3.length; t$9++) {
+      let a$4 = l$3[t$9];
+      if (!e$1.call(i$5, a$4) || !n$4(r$7[a$4], i$5[a$4])) return !1;
     }
     return !0;
   }
-  function S(e$4, t$4) {
-    if (e$4 === t$4) return !0;
-    if (e$4.length !== t$4.length) return !1;
-    for (let n$6 = 0; n$6 < e$4.length; n$6++) if (!Object.is(e$4[n$6], t$4[n$6])) return !1;
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-callback-stable-CtO9rJmq.js
+  function t$2(e$7, t$9) {
+    if (e$7 === t$9) return !0;
+    if (e$7.length !== t$9.length) return !1;
+    for (let n$9 = 0; n$9 < e$7.length; n$9++) if (!Object.is(e$7[n$9], t$9[n$9])) return !1;
     return !0;
   }
-  function C(e$4, t$4) {
-    let n$6 = (0, import_react.useRef)(null),
-      r$5 = n$6.current || {
-        deps: t$4,
-        value: e$4(),
+  function n$1(n$9, r$7) {
+    let i$5 = (0, import_react.useRef)(null),
+      a$3 = i$5.current || {
+        deps: r$7,
+        value: n$9(),
       };
     return (
-      n$6.current
-        ? S(t$4, r$5.deps) || ((r$5.deps = t$4), (r$5.value = e$4()))
-        : (n$6.current = r$5),
-      r$5.value
+      i$5.current
+        ? t$2(r$7, a$3.deps) || ((a$3.deps = r$7), (a$3.value = n$9()))
+        : (i$5.current = a$3),
+      a$3.value
     );
   }
-  function w(e$4, t$4) {
-    return C(() => e$4, t$4);
+  function r$1(e$7, t$9) {
+    return n$1(() => e$7, t$9);
   }
-  const T = (0, import_react.createContext)(null);
-  function E() {
-    return (0, import_react.useContext)(T);
-  }
-  const D = typeof window > `u` ? import_react.useEffect : import_react.useLayoutEffect;
-  function O(e$4, t$4) {
-    let n$6 = C(() => e$4.filter((e$5) => !!e$5), [...e$4]),
-      { id: r$5, dndObserver: i$4, ...a$3 } = t$4 || {},
-      o$3 = E(),
-      l$4 = i$4 === void 0 ? o$3 : i$4,
-      [u$4, f$1] = (0, import_react.useState)(null),
-      p$1 = (0, import_react.useRef)(null),
-      m$1 = (0, import_react.useRef)(n$6);
-    m$1.current = n$6;
-    let h$1 = (0, import_react.useRef)(r$5),
-      g$1 = (0, import_react.useRef)(t$4),
-      _$2 = (0, import_react.useRef)(l$4),
-      v$3 = (0, import_react.useRef)(r$5);
-    v$3.current = r$5;
-    let y$2 = (0, import_react.useRef)(l$4);
-    y$2.current = l$4;
-    let b$2 = (0, import_react.useRef)(a$3);
-    b$2.current = a$3;
-    let S$2 = w(() => {
-        let e$5 = p$1.current;
-        e$5 && (e$5.destroy(), (p$1.current = null), f$1(null));
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-draggable-B_WlZ0op.js
+  function c(c$3, l$3) {
+    let u$3 = n$1(() => c$3.filter((e$7) => !!e$7), [...c$3]),
+      { id: d$1, dndObserver: f$1, ...p$1 } = l$3 || {},
+      m$1 = n$3(),
+      h$1 = f$1 === void 0 ? m$1 : f$1,
+      [g$1, _$2] = (0, import_react.useState)(null),
+      v$2 = (0, import_react.useRef)(null),
+      y$1 = (0, import_react.useRef)(u$3);
+    y$1.current = u$3;
+    let b$1 = (0, import_react.useRef)(d$1),
+      x$1 = (0, import_react.useRef)(l$3),
+      S$1 = (0, import_react.useRef)(h$1),
+      C$1 = (0, import_react.useRef)(d$1);
+    C$1.current = d$1;
+    let w$1 = (0, import_react.useRef)(h$1);
+    w$1.current = h$1;
+    let T$1 = (0, import_react.useRef)(p$1);
+    T$1.current = p$1;
+    let E$2 = r$1(() => {
+        let e$7 = v$2.current;
+        e$7 && (e$7.destroy(), (v$2.current = null), _$2(null));
       }, []),
-      T$2 = w(() => {
-        S$2();
-        let e$5 = m$1.current;
-        if (e$5.length === 0) return;
-        let t$5 = v$3.current,
-          n$7 = y$2.current,
-          r$6 = new B$1(e$5, {
-            id: t$5,
-            ...(b$2.current || {}),
+      D$1 = r$1(() => {
+        E$2();
+        let e$7 = y$1.current;
+        if (e$7.length === 0) return;
+        let t$9 = C$1.current,
+          n$9 = w$1.current,
+          r$7 = new B(e$7, {
+            id: t$9,
+            ...(T$1.current || {}),
           });
-        (n$7?.addDraggables([r$6]),
-          (p$1.current = r$6),
-          (h$1.current = t$5),
-          (g$1.current = b$2.current),
-          (_$2.current = n$7),
-          f$1(r$6));
-      }, [S$2]);
+        (n$9?.addDraggables([r$7]),
+          (v$2.current = r$7),
+          (b$1.current = t$9),
+          (x$1.current = T$1.current),
+          (S$1.current = n$9),
+          _$2(r$7));
+      }, [E$2]);
     return (
-      D(() => {
-        if (!n$6.length) {
-          S$2();
+      n(() => {
+        if (!u$3.length) {
+          E$2();
           return;
         }
-        let e$5 = p$1.current;
-        if (!e$5) {
-          T$2();
+        let e$7 = v$2.current;
+        if (!e$7) {
+          D$1();
           return;
         }
-        (n$6.length !== e$5.sensors.length || n$6.some((t$5) => !e$5.sensors.includes(t$5))) &&
-          T$2();
-      }, [n$6, T$2, S$2]),
-      D(() => {
-        p$1.current && h$1.current !== r$5 && T$2();
-      }, [r$5, T$2]),
-      D(() => {
-        let e$5 = _$2.current;
-        if (e$5 === l$4) return;
-        let t$5 = p$1.current;
-        (t$5 && (e$5?.removeDraggables([t$5]), l$4?.addDraggables([t$5])), (_$2.current = l$4));
-      }, [l$4]),
-      D(() => {
-        let e$5 = p$1.current;
-        e$5 &&
-          (x(g$1.current, a$3) || e$5.updateSettings(e$5._parseSettings(a$3)), (g$1.current = a$3));
-      }, [a$3]),
-      D(() => S$2, [S$2]),
-      u$4
+        (u$3.length !== e$7.sensors.length || u$3.some((t$9) => !e$7.sensors.includes(t$9))) &&
+          D$1();
+      }, [u$3, D$1, E$2]),
+      n(() => {
+        v$2.current && b$1.current !== d$1 && D$1();
+      }, [d$1, D$1]),
+      n(() => {
+        let e$7 = S$1.current;
+        if (e$7 === h$1) return;
+        let t$9 = v$2.current;
+        (t$9 && (e$7?.removeDraggables([t$9]), h$1?.addDraggables([t$9])), (S$1.current = h$1));
+      }, [h$1]),
+      n(() => {
+        let e$7 = v$2.current;
+        e$7 &&
+          (n$4(x$1.current, p$1) || e$7.updateSettings(e$7._parseSettings(p$1)),
+          (x$1.current = p$1));
+      }, [p$1]),
+      n(() => E$2, [E$2]),
+      g$1
     );
   }
-  function k({ sensors: e$4, id: t$4, dndObserver: n$6, children: r$5, ref: i$4, ...o$3 }) {
-    let s$3 = O(e$4, {
-      ...o$3,
-      ...(t$4 === void 0 ? {} : { id: t$4 }),
-      ...(n$6 === void 0 ? {} : { dndObserver: n$6 }),
-    });
-    return ((0, import_react.useImperativeHandle)(i$4, () => s$3, [s$3]), r$5);
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-draggable-callback-Cd1g8lnj.js
+  function n$2(n$9, r$7, i$5) {
+    let a$3 = !!i$5,
+      o$5 = (0, import_react.useRef)(i$5);
+    ((o$5.current = i$5),
+      n(() => {
+        if (!n$9 || !a$3) return;
+        let e$7 = n$9.on(r$7, (...e$8) => {
+          o$5.current?.(...e$8);
+        });
+        return () => void n$9.off(r$7, e$7);
+      }, [n$9, r$7, a$3]));
   }
-  const A = (0, import_react.memo)(k);
-  A.displayName = `Draggable`;
-  const j = A;
-  function M({ id: e$4, accept: t$4, data: n$6, element: r$5, dndObserver: i$4 } = {}) {
-    let a$3 = E(),
-      o$3 = i$4 === void 0 ? a$3 : i$4,
-      [l$4, u$4] = (0, import_react.useState)(null),
-      d$1 = (0, import_react.useRef)(null),
-      f$1 = (0, import_react.useRef)({
-        id: e$4,
-        accept: t$4,
-        data: n$6,
-      });
-    ((f$1.current.id = e$4), (f$1.current.accept = t$4), (f$1.current.data = n$6));
-    let m$1 = (0, import_react.useRef)(e$4),
-      h$1 = (0, import_react.useRef)(o$3);
-    h$1.current = o$3;
-    let g$1 = (0, import_react.useRef)(o$3),
-      _$2 = w(() => {
-        let e$5 = d$1.current;
-        e$5 && (e$5.destroy(), (d$1.current = null), u$4(null));
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-draggable-drag-cqJKOXjJ.js
+  function r(r$7, i$5 = !1) {
+    let [a$3, o$5] = (0, import_react.useState)(r$7?.drag || null),
+      s$2 = (0, import_react.useState)(void 0)[1];
+    return (
+      n$2(r$7, R.Start, () => {
+        o$5(r$7?.drag || null);
+      }),
+      n$2(r$7, R.Move, () => {
+        i$5 && a$3 && s$2(Symbol());
+      }),
+      n$2(r$7, R.End, () => {
+        o$5(null);
+      }),
+      a$3
+    );
+  }
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-keyboard-motion-sensor-B0wbimu8.js
+  function o(o$5 = {}, s$2) {
+    let [c$3, l$3] = (0, import_react.useState)(null),
+      u$3 = (0, import_react.useRef)(c$3),
+      d$1 = (0, import_react.useRef)(o$5),
+      f$1 = r$1((e$7) => {
+        u$3.current?.destroy();
+        let t$9 = new a(e$7, d$1.current);
+        ((u$3.current = t$9), l$3(t$9));
       }, []),
-      v$3 = w(
-        (e$5) => {
-          _$2();
-          let t$5 = h$1.current,
-            n$7 = new n$1(e$5, f$1.current);
-          ((d$1.current = n$7), (m$1.current = f$1.current.id), (g$1.current = t$5), u$4(n$7));
-        },
-        [_$2],
-      ),
-      y$2 = w(
-        (e$5) => {
-          if (r$5 !== void 0) return;
-          if (e$5 === null) {
-            _$2();
+      p$1 = r$1(() => {
+        u$3.current && (u$3.current.destroy(), (u$3.current = null), l$3(null));
+      }, []),
+      m$1 = r$1(
+        (e$7) => {
+          if (s$2 !== void 0) return;
+          if (e$7 === null) {
+            p$1();
             return;
           }
-          let t$5 = d$1.current;
-          (!t$5 || t$5.element !== e$5) && v$3(e$5);
+          let t$9 = u$3.current;
+          (!t$9 || t$9.element !== e$7) && f$1(e$7);
         },
-        [r$5, v$3, _$2],
+        [s$2, f$1, p$1],
       );
     return (
-      D(() => {
-        if (r$5 !== void 0) return (v$3(r$5), _$2);
-      }, [r$5, v$3, _$2]),
-      D(() => {
-        let t$5 = d$1.current;
-        t$5 && m$1.current !== e$4 && v$3(t$5.element);
-      }, [e$4, v$3]),
-      D(() => {
-        let e$5 = g$1.current;
-        if (e$5 === o$3) return;
-        let t$5 = d$1.current;
-        (t$5 && (e$5?.removeDroppables([t$5]), o$3?.addDroppables([t$5])), (g$1.current = o$3));
-      }, [o$3]),
-      D(() => {
-        let e$5 = d$1.current;
-        e$5 && (e$5.accept = t$4 || (() => !0));
-      }, [t$4]),
-      D(() => {
-        let e$5 = d$1.current;
-        e$5 && (e$5.data = n$6 || {});
-      }, [n$6]),
-      D(() => _$2, [_$2]),
-      C(() => [l$4, y$2], [l$4, y$2])
+      (d$1.current = o$5),
+      n(() => {
+        if (s$2 !== void 0) return (f$1(s$2), p$1);
+      }, [s$2, f$1, p$1]),
+      n(() => {
+        c$3 && c$3.updateSettings(o$5);
+      }, [c$3, o$5]),
+      n$1(() => [c$3, m$1], [c$3, m$1])
     );
   }
-  const N = (0, import_react.memo)((e$4) => {
-    let {
-        as: t$4,
-        droppableOptions: r$5,
-        droppableRef: i$4,
-        ref: o$3,
-        children: s$3,
-        ...c$4
-      } = e$4,
-      l$4 = t$4 || `div`,
-      [u$4, d$1] = M(r$5),
-      f$1 = (0, import_react.useCallback)(
-        (e$5) => {
-          (d$1(e$5), o$3 && (typeof o$3 == `function` ? o$3(e$5) : (o$3.current = e$5)));
-        },
-        [d$1, o$3],
-      );
-    return (
-      (0, import_react.useImperativeHandle)(i$4, () => u$4, [u$4]),
-      (0, import_jsx_runtime.jsx)(l$4, {
-        ref: f$1,
-        ...c$4,
-        children: s$3,
-      })
-    );
-  });
-  N.displayName = `Droppable`;
-  function B(e$4 = {}, t$4) {
-    let [n$6, r$5] = (0, import_react.useState)(null),
-      i$4 = (0, import_react.useRef)(n$6),
-      a$3 = (0, import_react.useRef)(e$4),
-      o$3 = w((e$5) => {
-        i$4.current?.destroy();
-        let t$5 = new a$1(e$5, a$3.current);
-        ((i$4.current = t$5), r$5(t$5));
+
+  //#endregion
+  //#region ../dragdoll-react/dist/use-pointer-sensor-_yqecFSk.js
+  function o$1(o$5 = {}, s$2) {
+    let [c$3, l$3] = (0, import_react.useState)(null),
+      u$3 = (0, import_react.useRef)(c$3),
+      d$1 = (0, import_react.useRef)(o$5),
+      f$1 = r$1((e$7) => {
+        u$3.current?.destroy();
+        let t$9 = new u(e$7, d$1.current);
+        ((u$3.current = t$9), l$3(t$9));
       }, []),
-      l$4 = w(() => {
-        i$4.current && (i$4.current.destroy(), (i$4.current = null), r$5(null));
+      p$1 = r$1(() => {
+        u$3.current && (u$3.current.destroy(), (u$3.current = null), l$3(null));
       }, []),
-      u$4 = w(
-        (e$5) => {
-          if (t$4 !== void 0) return;
-          if (e$5 === null) {
-            l$4();
+      m$1 = r$1(
+        (e$7) => {
+          if (s$2 !== void 0) return;
+          if (e$7 === null) {
+            p$1();
             return;
           }
-          let n$7 = i$4.current;
-          (!n$7 || n$7.element !== e$5) && o$3(e$5);
+          let t$9 = u$3.current;
+          (!t$9 || t$9.element !== e$7) && f$1(e$7);
         },
-        [t$4, o$3, l$4],
+        [s$2, f$1, p$1],
       );
     return (
-      (a$3.current = e$4),
-      D(() => {
-        if (t$4 !== void 0) return (o$3(t$4), l$4);
-      }, [t$4, o$3, l$4]),
-      D(() => {
-        n$6 && n$6.updateSettings(e$4);
-      }, [n$6, e$4]),
-      C(() => [n$6, u$4], [n$6, u$4])
-    );
-  }
-  function H(e$4 = {}, t$4) {
-    let [n$6, r$5] = (0, import_react.useState)(null),
-      i$4 = (0, import_react.useRef)(n$6),
-      a$3 = (0, import_react.useRef)(e$4),
-      o$3 = w((e$5) => {
-        i$4.current?.destroy();
-        let t$5 = new u$1(e$5, a$3.current);
-        ((i$4.current = t$5), r$5(t$5));
-      }, []),
-      l$4 = w(() => {
-        i$4.current && (i$4.current.destroy(), (i$4.current = null), r$5(null));
-      }, []),
-      u$4 = w(
-        (e$5) => {
-          if (t$4 !== void 0) return;
-          if (e$5 === null) {
-            l$4();
-            return;
-          }
-          let n$7 = i$4.current;
-          (!n$7 || n$7.element !== e$5) && o$3(e$5);
-        },
-        [t$4, o$3, l$4],
-      );
-    return (
-      (a$3.current = e$4),
-      D(() => {
-        if (t$4 !== void 0) return (o$3(t$4), l$4);
-      }, [t$4, o$3, l$4]),
-      D(() => {
-        n$6 && n$6.updateSettings(e$4);
-      }, [n$6, e$4]),
-      C(() => [n$6, u$4], [n$6, u$4])
+      (d$1.current = o$5),
+      n(() => {
+        if (s$2 !== void 0) return (f$1(s$2), p$1);
+      }, [s$2, f$1, p$1]),
+      n(() => {
+        c$3 && c$3.updateSettings(o$5);
+      }, [c$3, o$5]),
+      n$1(() => [c$3, m$1], [c$3, m$1])
     );
   }
 
@@ -3974,9 +3570,9 @@
           }
           return first;
         }
-        function compare(a$3, b$2) {
-          var diff = a$3.sortIndex - b$2.sortIndex;
-          return 0 !== diff ? diff : a$3.id - b$2.id;
+        function compare(a$3, b$1) {
+          var diff = a$3.sortIndex - b$1.sortIndex;
+          return 0 !== diff ? diff : a$3.id - b$1.id;
         }
         function advanceTimers(currentTime) {
           for (var timer = peek(timerQueue); null !== timer; ) {
@@ -4207,7 +3803,7 @@
           try {
             testStringCoercion(key);
             var JSCompiler_inline_result = !1;
-          } catch (e$4) {
+          } catch (e$7) {
             JSCompiler_inline_result = !0;
           }
           JSCompiler_inline_result &&
@@ -4590,8 +4186,8 @@
           if (oldPath.length !== newPath.length)
             console.warn('copyWithRename() expects paths of the same length');
           else {
-            for (var i$4 = 0; i$4 < newPath.length - 1; i$4++)
-              if (oldPath[i$4] !== newPath[i$4]) {
+            for (var i$5 = 0; i$5 < newPath.length - 1; i$5++)
+              if (oldPath[i$5] !== newPath[i$5]) {
                 console.warn(
                   'copyWithRename() expects paths to be the same except for the deepest key',
                 );
@@ -4708,14 +4304,14 @@
             if (null === alternate) throw Error('Unable to find node on an unmounted component.');
             return alternate !== fiber ? null : fiber;
           }
-          for (var a$3 = fiber, b$2 = alternate; ; ) {
+          for (var a$3 = fiber, b$1 = alternate; ; ) {
             var parentA = a$3.return;
             if (null === parentA) break;
             var parentB = parentA.alternate;
             if (null === parentB) {
-              b$2 = parentA.return;
-              if (null !== b$2) {
-                a$3 = b$2;
+              b$1 = parentA.return;
+              if (null !== b$1) {
+                a$3 = b$1;
                 continue;
               }
               break;
@@ -4723,23 +4319,23 @@
             if (parentA.child === parentB.child) {
               for (parentB = parentA.child; parentB; ) {
                 if (parentB === a$3) return (assertIsMounted(parentA), fiber);
-                if (parentB === b$2) return (assertIsMounted(parentA), alternate);
+                if (parentB === b$1) return (assertIsMounted(parentA), alternate);
                 parentB = parentB.sibling;
               }
               throw Error('Unable to find node on an unmounted component.');
             }
-            if (a$3.return !== b$2.return) ((a$3 = parentA), (b$2 = parentB));
+            if (a$3.return !== b$1.return) ((a$3 = parentA), (b$1 = parentB));
             else {
               for (var didFindChild = !1, _child = parentA.child; _child; ) {
                 if (_child === a$3) {
                   didFindChild = !0;
                   a$3 = parentA;
-                  b$2 = parentB;
+                  b$1 = parentB;
                   break;
                 }
-                if (_child === b$2) {
+                if (_child === b$1) {
                   didFindChild = !0;
-                  b$2 = parentA;
+                  b$1 = parentA;
                   a$3 = parentB;
                   break;
                 }
@@ -4750,12 +4346,12 @@
                   if (_child === a$3) {
                     didFindChild = !0;
                     a$3 = parentB;
-                    b$2 = parentA;
+                    b$1 = parentA;
                     break;
                   }
-                  if (_child === b$2) {
+                  if (_child === b$1) {
                     didFindChild = !0;
-                    b$2 = parentB;
+                    b$1 = parentB;
                     a$3 = parentA;
                     break;
                   }
@@ -4767,7 +4363,7 @@
                   );
               }
             }
-            if (a$3.alternate !== b$2)
+            if (a$3.alternate !== b$1)
               throw Error(
                 "Return fibers should always be each others' alternates. This error is likely caused by a bug in React. Please file an issue.",
               );
@@ -4844,7 +4440,7 @@
                 type = type._init;
                 try {
                   return getComponentNameFromType(type(innerType));
-                } catch (x$2) {}
+                } catch (x$1) {}
             }
           return null;
         }
@@ -4912,8 +4508,8 @@
             case 29:
               type = fiber._debugInfo;
               if (null != type) {
-                for (var i$4 = type.length - 1; 0 <= i$4; i$4--)
-                  if ('string' === typeof type[i$4].name) return type[i$4].name;
+                for (var i$5 = type.length - 1; 0 <= i$5; i$5--)
+                  if ('string' === typeof type[i$5].name) return type[i$5].name;
               }
               if (null !== fiber.return) return getComponentNameFromFiber(fiber.return);
           }
@@ -4937,12 +4533,12 @@
           fiberStack[index$jscomp$0] = fiber;
           cursor.current = value;
         }
-        function requiredContext(c$4) {
-          null === c$4 &&
+        function requiredContext(c$3) {
+          null === c$3 &&
             console.error(
               'Expected host context to exist. This error is likely caused by a bug in React. Please file an issue.',
             );
-          return c$4;
+          return c$3;
         }
         function pushHostContainer(fiber, nextRootInstance) {
           push(rootInstanceStackCursor, nextRootInstance, fiber);
@@ -5086,13 +4682,13 @@
           if (void 0 === prefix)
             try {
               throw Error();
-            } catch (x$2) {
-              var match = x$2.stack.trim().match(/\n( *(at )?)/);
+            } catch (x$1) {
+              var match = x$1.stack.trim().match(/\n( *(at )?)/);
               prefix = (match && match[1]) || '';
               suffix =
-                -1 < x$2.stack.indexOf('\n    at')
+                -1 < x$1.stack.indexOf('\n    at')
                   ? ' (<anonymous>)'
-                  : -1 < x$2.stack.indexOf('@')
+                  : -1 < x$1.stack.indexOf('@')
                     ? '@unknown:0:0'
                     : '';
             }
@@ -5125,8 +4721,8 @@
                     if ('object' === typeof Reflect && Reflect.construct) {
                       try {
                         Reflect.construct(Fake, []);
-                      } catch (x$2) {
-                        var control = x$2;
+                      } catch (x$1) {
+                        var control = x$1;
                       }
                       Reflect.construct(fn, [], Fake);
                     } else {
@@ -5140,8 +4736,8 @@
                   } else {
                     try {
                       throw Error();
-                    } catch (x$1$1) {
-                      control = x$1$1;
+                    } catch (x$1) {
+                      control = x$1;
                     }
                     (Fake = fn()) && 'function' === typeof Fake.catch && Fake.catch(function () {});
                   }
@@ -5268,8 +4864,8 @@
               info += describeFiber(workInProgress$1, previous);
               var debugInfo = workInProgress$1._debugInfo;
               if (debugInfo)
-                for (var i$4 = debugInfo.length - 1; 0 <= i$4; i$4--) {
-                  var entry = debugInfo[i$4];
+                for (var i$5 = debugInfo.length - 1; 0 <= i$5; i$5--) {
+                  var entry = debugInfo[i$5];
                   if ('string' === typeof entry.name) {
                     var JSCompiler_temp_const = info;
                     a: {
@@ -5296,8 +4892,8 @@
               workInProgress$1 = workInProgress$1.return;
             } while (workInProgress$1);
             return info;
-          } catch (x$2) {
-            return '\nError generating stack: ' + x$2.message + '\n' + x$2.stack;
+          } catch (x$1) {
+            return '\nError generating stack: ' + x$1.message + '\n' + x$1.stack;
           }
         }
         function describeFunctionComponentFrameWithoutLineNumber(fn) {
@@ -5362,9 +4958,9 @@
                   (info += '\n' + formatOwnerStack(ownerStack));
               } else break;
             var JSCompiler_inline_result = info;
-          } catch (x$2) {
+          } catch (x$1) {
             JSCompiler_inline_result =
-              '\nError generating stack: ' + x$2.message + '\n' + x$2.stack;
+              '\nError generating stack: ' + x$1.message + '\n' + x$1.stack;
           }
           return JSCompiler_inline_result;
         }
@@ -5397,7 +4993,7 @@
         function willCoercionThrow(value) {
           try {
             return (testStringCoercion(value), !1);
-          } catch (e$4) {
+          } catch (e$7) {
             return !0;
           }
         }
@@ -5465,9 +5061,9 @@
                 console.error('React instrumentation encountered an error: %o', err));
             }
         }
-        function clz32Fallback(x$2) {
-          x$2 >>>= 0;
-          return 0 === x$2 ? 32 : (31 - ((log(x$2) / LN2) | 0)) | 0;
+        function clz32Fallback(x$1) {
+          x$1 >>>= 0;
+          return 0 === x$1 ? 32 : (31 - ((log(x$1) / LN2) | 0)) | 0;
         }
         function getHighestPriorityLanes(lanes) {
           var pendingSyncLanes = lanes & 42;
@@ -5624,7 +5220,7 @@
           return lane;
         }
         function createLaneMap(initial) {
-          for (var laneMap = [], i$4 = 0; 31 > i$4; i$4++) laneMap.push(initial);
+          for (var laneMap = [], i$5 = 0; 31 > i$5; i$5++) laneMap.push(initial);
           return laneMap;
         }
         function markRootUpdated$1(root$1, updateLane) {
@@ -6056,7 +5652,7 @@
           if ('undefined' === typeof doc) return null;
           try {
             return doc.activeElement || doc.body;
-          } catch (e$4) {
+          } catch (e$7) {
             return doc.body;
           }
         }
@@ -6205,21 +5801,21 @@
           node = node.options;
           if (multiple) {
             multiple = {};
-            for (var i$4 = 0; i$4 < propValue.length; i$4++) multiple['$' + propValue[i$4]] = !0;
+            for (var i$5 = 0; i$5 < propValue.length; i$5++) multiple['$' + propValue[i$5]] = !0;
             for (propValue = 0; propValue < node.length; propValue++)
-              ((i$4 = multiple.hasOwnProperty('$' + node[propValue].value)),
-                node[propValue].selected !== i$4 && (node[propValue].selected = i$4),
-                i$4 && setDefaultSelected && (node[propValue].defaultSelected = !0));
+              ((i$5 = multiple.hasOwnProperty('$' + node[propValue].value)),
+                node[propValue].selected !== i$5 && (node[propValue].selected = i$5),
+                i$5 && setDefaultSelected && (node[propValue].defaultSelected = !0));
           } else {
             propValue = '' + getToStringValue(propValue);
             multiple = null;
-            for (i$4 = 0; i$4 < node.length; i$4++) {
-              if (node[i$4].value === propValue) {
-                node[i$4].selected = !0;
-                setDefaultSelected && (node[i$4].defaultSelected = !0);
+            for (i$5 = 0; i$5 < node.length; i$5++) {
+              if (node[i$5].value === propValue) {
+                node[i$5].selected = !0;
+                setDefaultSelected && (node[i$5].defaultSelected = !0);
                 return;
               }
-              null !== multiple || node[i$4].disabled || (multiple = node[i$4]);
+              null !== multiple || node[i$5].disabled || (multiple = node[i$5]);
             }
             null !== multiple && (multiple.selected = !0);
           }
@@ -6605,15 +6201,15 @@
           skipToNode = '';
           var debugInfo = node.fiber._debugInfo;
           if (debugInfo)
-            for (var i$4 = 0; i$4 < debugInfo.length; i$4++) {
-              var serverComponentName = debugInfo[i$4].name;
+            for (var i$5 = 0; i$5 < debugInfo.length; i$5++) {
+              var serverComponentName = debugInfo[i$5].name;
               'string' === typeof serverComponentName &&
                 ((skipToNode += indentation(indent) + '<' + serverComponentName + '>\n'), indent++);
             }
           debugInfo = '';
-          i$4 = node.fiber.pendingProps;
+          i$5 = node.fiber.pendingProps;
           if (6 === node.fiber.tag)
-            ((debugInfo = describeTextDiff(i$4, node.serverProps, indent)), indent++);
+            ((debugInfo = describeTextDiff(i$5, node.serverProps, indent)), indent++);
           else if (
             ((serverComponentName = describeFiberType(node.fiber)), null !== serverComponentName)
           )
@@ -6621,9 +6217,9 @@
               debugInfo = indent;
               var maxLength = 120 - 2 * debugInfo - serverComponentName.length - 2,
                 content = '';
-              for (propName in i$4)
-                if (i$4.hasOwnProperty(propName) && 'children' !== propName) {
-                  var propValue = describePropValue(i$4[propName], 15);
+              for (propName in i$5)
+                if (i$5.hasOwnProperty(propName) && 'children' !== propName) {
+                  var propValue = describePropValue(i$5[propName], 15);
                   maxLength -= propName.length + propValue.length + 2;
                   if (0 > maxLength) {
                     content += ' ...';
@@ -6635,7 +6231,7 @@
               indent++;
             } else
               null === node.serverProps
-                ? ((debugInfo = describeExpandedElement(serverComponentName, i$4, added(indent))),
+                ? ((debugInfo = describeExpandedElement(serverComponentName, i$5, added(indent))),
                   indent++)
                 : 'string' === typeof node.serverProps
                   ? console.error(
@@ -6643,24 +6239,24 @@
                     )
                   : ((debugInfo = describeElementDiff(
                       serverComponentName,
-                      i$4,
+                      i$5,
                       node.serverProps,
                       indent,
                     )),
                     indent++);
           var propName = '';
-          i$4 = node.fiber.child;
-          for (serverComponentName = 0; i$4 && serverComponentName < node.children.length; )
+          i$5 = node.fiber.child;
+          for (serverComponentName = 0; i$5 && serverComponentName < node.children.length; )
             ((maxLength = node.children[serverComponentName]),
-              maxLength.fiber === i$4
+              maxLength.fiber === i$5
                 ? ((propName += describeNode(maxLength, indent)), serverComponentName++)
-                : (propName += describeSiblingFiber(i$4, indent)),
-              (i$4 = i$4.sibling));
-          i$4 && 0 < node.children.length && (propName += indentation(indent) + '...\n');
-          i$4 = node.serverTail;
+                : (propName += describeSiblingFiber(i$5, indent)),
+              (i$5 = i$5.sibling));
+          i$5 && 0 < node.children.length && (propName += indentation(indent) + '...\n');
+          i$5 = node.serverTail;
           null === node.serverProps && indent--;
-          for (node = 0; node < i$4.length; node++)
-            ((serverComponentName = i$4[node]),
+          for (node = 0; node < i$5.length; node++)
+            ((serverComponentName = i$5[node]),
               (propName =
                 'string' === typeof serverComponentName
                   ? propName +
@@ -6678,7 +6274,7 @@
         function describeDiff(rootNode) {
           try {
             return '\n\n' + describeNode(rootNode, 0);
-          } catch (x$2) {
+          } catch (x$1) {
             return '';
           }
         }
@@ -7070,11 +6666,11 @@
                 for (var key in prevStyles)
                   if (prevStyles.hasOwnProperty(key) && !styles.hasOwnProperty(key))
                     for (
-                      var longhands = shorthandToLonghand[key] || [key], i$4 = 0;
-                      i$4 < longhands.length;
-                      i$4++
+                      var longhands = shorthandToLonghand[key] || [key], i$5 = 0;
+                      i$5 < longhands.length;
+                      i$5++
                     )
-                      expandedUpdates[longhands[i$4]] = key;
+                      expandedUpdates[longhands[i$5]] = key;
               }
               for (var _key in styles)
                 if (
@@ -7101,13 +6697,13 @@
                   ((key = expandedUpdates[_key2]),
                   (longhands = _key[_key2]) &&
                     key !== longhands &&
-                    ((i$4 = key + ',' + longhands), !key$jscomp$0[i$4]))
+                    ((i$5 = key + ',' + longhands), !key$jscomp$0[i$5]))
                 ) {
-                  key$jscomp$0[i$4] = !0;
-                  i$4 = console;
+                  key$jscomp$0[i$5] = !0;
+                  i$5 = console;
                   var value = styles[key];
-                  i$4.error.call(
-                    i$4,
+                  i$5.error.call(
+                    i$5,
                     "%s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values.",
                     null == value || 'boolean' === typeof value || '' === value
                       ? 'Removing'
@@ -7532,8 +7128,8 @@
             }
           }
         }
-        function batchedUpdates$1(fn, a$3, b$2) {
-          if (isInsideEventHandler) return fn(a$3, b$2);
+        function batchedUpdates$1(fn, a$3, b$1) {
+          if (isInsideEventHandler) return fn(a$3, b$1);
           isInsideEventHandler = !0;
           try {
             return fn(a$3);
@@ -7833,9 +7429,9 @@
           if ('input' === domEventName || 'change' === domEventName)
             return getInstIfValueChanged(targetInst);
         }
-        function is(x$2, y$2) {
+        function is(x$1, y$1) {
           return (
-            (x$2 === y$2 && (0 !== x$2 || 1 / x$2 === 1 / y$2)) || (x$2 !== x$2 && y$2 !== y$2)
+            (x$1 === y$1 && (0 !== x$1 || 1 / x$1 === 1 / y$1)) || (x$1 !== x$1 && y$1 !== y$1)
           );
         }
         function shallowEqual(objA, objB) {
@@ -8008,8 +7604,8 @@
           registerTwoPhaseEvent(reactName, [domEventName]);
         }
         function getArrayKind(array) {
-          for (var kind = EMPTY_ARRAY, i$4 = 0; i$4 < array.length; i$4++) {
-            var value = array[i$4];
+          for (var kind = EMPTY_ARRAY, i$5 = 0; i$5 < array.length; i$5++) {
+            var value = array[i$5];
             if ('object' === typeof value && null !== value)
               if (isArrayImpl(value) && 2 === value.length && 'string' === typeof value[0]) {
                 if (kind !== EMPTY_ARRAY && kind !== ENTRIES_ARRAY) return COMPLEX_ARRAY;
@@ -8339,8 +7935,8 @@
           if (supportsUserTiming) {
             var name = getComponentNameFromFiber(fiber);
             if (null !== name) {
-              for (var debugTask = null, properties = [], i$4 = 0; i$4 < errors.length; i$4++) {
-                var capturedValue = errors[i$4];
+              for (var debugTask = null, properties = [], i$5 = 0; i$5 < errors.length; i$5++) {
+                var capturedValue = errors[i$5];
                 null == debugTask &&
                   null !== capturedValue.source &&
                   (debugTask = capturedValue.source._debugTask);
@@ -8383,8 +7979,8 @@
               var name = getComponentNameFromFiber(fiber);
               if (null !== name) {
                 selfTime = [];
-                for (var i$4 = 0; i$4 < errors.length; i$4++) {
-                  var error = errors[i$4].value;
+                for (var i$5 = 0; i$5 < errors.length; i$5++) {
+                  var error = errors[i$5].value;
                   selfTime.push([
                     'Error',
                     'object' === typeof error && null !== error && 'string' === typeof error.message
@@ -8529,8 +8125,8 @@
         ) {
           if (supportsUserTiming && !(endTime <= startTime)) {
             lanes = [];
-            for (var i$4 = 0; i$4 < recoverableErrors.length; i$4++) {
-              var error = recoverableErrors[i$4].value;
+            for (var i$5 = 0; i$5 < recoverableErrors.length; i$5++) {
+              var error = recoverableErrors[i$5].value;
               lanes.push([
                 'Recoverable Error',
                 'object' === typeof error && null !== error && 'string' === typeof error.message
@@ -8606,8 +8202,8 @@
         }
         function logCommitErrored(startTime, endTime, errors, passive, debugTask) {
           if (supportsUserTiming && !(endTime <= startTime)) {
-            for (var properties = [], i$4 = 0; i$4 < errors.length; i$4++) {
-              var error = errors[i$4].value;
+            for (var properties = [], i$5 = 0; i$5 < errors.length; i$5++) {
+              var error = errors[i$5].value;
               properties.push([
                 'Error',
                 'object' === typeof error && null !== error && 'string' === typeof error.message
@@ -8660,18 +8256,18 @@
         function finishQueueingConcurrentUpdates() {
           for (
             var endIndex = concurrentQueuesIndex,
-              i$4 = (concurrentlyUpdatedLanes = concurrentQueuesIndex = 0);
-            i$4 < endIndex;
+              i$5 = (concurrentlyUpdatedLanes = concurrentQueuesIndex = 0);
+            i$5 < endIndex;
 
           ) {
-            var fiber = concurrentQueues[i$4];
-            concurrentQueues[i$4++] = null;
-            var queue = concurrentQueues[i$4];
-            concurrentQueues[i$4++] = null;
-            var update = concurrentQueues[i$4];
-            concurrentQueues[i$4++] = null;
-            var lane = concurrentQueues[i$4];
-            concurrentQueues[i$4++] = null;
+            var fiber = concurrentQueues[i$5];
+            concurrentQueues[i$5++] = null;
+            var queue = concurrentQueues[i$5];
+            concurrentQueues[i$5++] = null;
+            var update = concurrentQueues[i$5];
+            concurrentQueues[i$5++] = null;
+            var lane = concurrentQueues[i$5];
+            concurrentQueues[i$5++] = null;
             if (null !== queue && null !== update) {
               var pending = queue.pending;
               null === pending
@@ -9548,8 +9144,8 @@
               a: for (; null !== list; ) {
                 var dependency = list;
                 list = fiber;
-                for (var i$4 = 0; i$4 < contexts.length; i$4++)
-                  if (dependency.context === contexts[i$4]) {
+                for (var i$5 = 0; i$5 < contexts.length; i$5++)
+                  if (dependency.context === contexts[i$5]) {
                     list.lanes |= renderLanes$1;
                     dependency = list.alternate;
                     null !== dependency && (dependency.lanes |= renderLanes$1);
@@ -9889,7 +9485,7 @@
             currentEntangledListeners = null;
             currentEntangledLane = 0;
             currentEntangledActionThenable = null;
-            for (var i$4 = 0; i$4 < listeners.length; i$4++) (0, listeners[i$4])();
+            for (var i$5 = 0; i$5 < listeners.length; i$5++) (0, listeners[i$5])();
           }
         }
         function chainThenableValue(thenable, result) {
@@ -9906,7 +9502,7 @@
             function () {
               thenableWithOverride.status = 'fulfilled';
               thenableWithOverride.value = result;
-              for (var i$4 = 0; i$4 < listeners.length; i$4++) (0, listeners[i$4])(result);
+              for (var i$5 = 0; i$5 < listeners.length; i$5++) (0, listeners[i$5])(result);
             },
             function (error) {
               thenableWithOverride.status = 'rejected';
@@ -10031,14 +9627,14 @@
         function resolveLazy(lazyType) {
           try {
             return callLazyInitInDEV(lazyType);
-          } catch (x$2) {
-            if (null !== x$2 && 'object' === typeof x$2 && 'function' === typeof x$2.then)
+          } catch (x$1) {
+            if (null !== x$1 && 'object' === typeof x$1 && 'function' === typeof x$1.then)
               throw (
-                (suspendedThenable = x$2),
+                (suspendedThenable = x$1),
                 (needsToResetSuspendedThenableDEV = !0),
                 SuspenseException
               );
-            throw x$2;
+            throw x$1;
           }
         }
         function getSuspendedThenable() {
@@ -10067,17 +9663,17 @@
         function getCurrentDebugTask() {
           var debugInfo = currentDebugInfo;
           if (null != debugInfo) {
-            for (var i$4 = debugInfo.length - 1; 0 <= i$4; i$4--)
-              if (null != debugInfo[i$4].name) {
-                var debugTask = debugInfo[i$4].debugTask;
+            for (var i$5 = debugInfo.length - 1; 0 <= i$5; i$5--)
+              if (null != debugInfo[i$5].name) {
+                var debugTask = debugInfo[i$5].debugTask;
                 if (null != debugTask) return debugTask;
               }
           }
           return null;
         }
         function validateFragmentProps(element, fiber, returnFiber) {
-          for (var keys = Object.keys(element.props), i$4 = 0; i$4 < keys.length; i$4++) {
-            var key = keys[i$4];
+          for (var keys = Object.keys(element.props), i$5 = 0; i$5 < keys.length; i$5++) {
+            var key = keys[i$5];
             if ('children' !== key && 'key' !== key) {
               null === fiber &&
                 ((fiber = createFiberFromElement(element, returnFiber.mode, 0)),
@@ -10929,19 +10525,19 @@
               );
               thenableState$1 = null;
               return firstChildFiber;
-            } catch (x$2) {
-              if (x$2 === SuspenseException || x$2 === SuspenseActionException) throw x$2;
-              var fiber = createFiber(29, x$2, null, returnFiber.mode);
+            } catch (x$1) {
+              if (x$1 === SuspenseException || x$1 === SuspenseActionException) throw x$1;
+              var fiber = createFiber(29, x$1, null, returnFiber.mode);
               fiber.lanes = lanes;
               fiber.return = returnFiber;
               var debugInfo = (fiber._debugInfo = currentDebugInfo);
               fiber._debugOwner = returnFiber._debugOwner;
               fiber._debugTask = returnFiber._debugTask;
               if (null != debugInfo) {
-                for (var i$4 = debugInfo.length - 1; 0 <= i$4; i$4--)
-                  if ('string' === typeof debugInfo[i$4].stack) {
-                    fiber._debugOwner = debugInfo[i$4];
-                    fiber._debugTask = debugInfo[i$4].debugTask;
+                for (var i$5 = debugInfo.length - 1; 0 <= i$5; i$5--)
+                  if ('string' === typeof debugInfo[i$5].stack) {
+                    fiber._debugOwner = debugInfo[i$5];
+                    fiber._debugTask = debugInfo[i$5].debugTask;
                     break;
                   }
               }
@@ -11349,10 +10945,10 @@
               !didWarnAboutMismatchedHooksForComponent.has(componentName$1) &&
               (didWarnAboutMismatchedHooksForComponent.add(componentName$1), null !== hookTypesDev)
             ) {
-              for (var table = '', i$4 = 0; i$4 <= hookTypesUpdateIndexDev; i$4++) {
-                var oldHookName = hookTypesDev[i$4],
-                  newHookName = i$4 === hookTypesUpdateIndexDev ? hookName : oldHookName;
-                for (oldHookName = i$4 + 1 + '. ' + oldHookName; 30 > oldHookName.length; )
+              for (var table = '', i$5 = 0; i$5 <= hookTypesUpdateIndexDev; i$5++) {
+                var oldHookName = hookTypesDev[i$5],
+                  newHookName = i$5 === hookTypesUpdateIndexDev ? hookName : oldHookName;
+                for (oldHookName = i$5 + 1 + '. ' + oldHookName; 30 > oldHookName.length; )
                   oldHookName += ' ';
                 oldHookName += newHookName + '\n';
                 table += oldHookName;
@@ -11406,8 +11002,8 @@
               '[' + prevDeps.join(', ') + ']',
               '[' + nextDeps.join(', ') + ']',
             );
-          for (var i$4 = 0; i$4 < prevDeps.length && i$4 < nextDeps.length; i$4++)
-            if (!objectIs(nextDeps[i$4], prevDeps[i$4])) return !1;
+          for (var i$5 = 0; i$5 < prevDeps.length && i$5 < nextDeps.length; i$5++)
+            if (!objectIs(nextDeps[i$5], prevDeps[i$5])) return !1;
           return !0;
         }
         function renderWithHooks(
@@ -12193,7 +11789,7 @@
         }
         function notifyActionListeners(actionNode) {
           actionNode = actionNode.listeners;
-          for (var i$4 = 0; i$4 < actionNode.length; i$4++) (0, actionNode[i$4])();
+          for (var i$5 = 0; i$5 < actionNode.length; i$5++) (0, actionNode[i$5])();
         }
         function actionStateReducer(oldState, newState) {
           return newState;
@@ -12294,9 +11890,9 @@
           )
             try {
               var state = useThenable(currentStateHook);
-            } catch (x$2) {
-              if (x$2 === SuspenseException) throw SuspenseActionException;
-              throw x$2;
+            } catch (x$1) {
+              if (x$1 === SuspenseException) throw SuspenseActionException;
+              throw x$1;
             }
           else state = currentStateHook;
           currentStateHook = updateWorkInProgressHook();
@@ -13054,9 +12650,9 @@
               var onUncaughtError = root$1.onUncaughtError;
               onUncaughtError(error, { componentStack: errorInfo.stack });
             }
-          } catch (e$5) {
+          } catch (e$5$1) {
             setTimeout(function () {
-              throw e$5;
+              throw e$5$1;
             });
           }
         }
@@ -13069,9 +12665,9 @@
               componentStack: errorInfo.stack,
               errorBoundary: 1 === boundary.tag ? boundary.stateNode : null,
             });
-          } catch (e$6) {
+          } catch (e$6$1) {
             setTimeout(function () {
-              throw e$6;
+              throw e$6$1;
             });
           }
         }
@@ -16452,10 +16048,10 @@
                         : ' You returned: ' + lastEffect;
                   runWithFiberInDEV(
                     finishedWork,
-                    function (n$6, a$3) {
+                    function (n$9, a$3) {
                       console.error(
                         '%s must not return anything besides a function, which is used for clean-up.%s',
-                        n$6,
+                        n$9,
                         a$3,
                       );
                     },
@@ -17553,10 +17149,10 @@
         function recursivelyTraverseMutationEffects(root$jscomp$0, parentFiber) {
           var deletions = parentFiber.deletions;
           if (null !== deletions)
-            for (var i$4 = 0; i$4 < deletions.length; i$4++) {
+            for (var i$5 = 0; i$5 < deletions.length; i$5++) {
               var root$1 = root$jscomp$0,
                 returnFiber = parentFiber,
-                deletedFiber = deletions[i$4],
+                deletedFiber = deletions[i$5],
                 prevEffectStart = pushComponentEffectStart(),
                 parent = returnFiber;
               a: for (; null !== parent; ) {
@@ -17702,9 +17298,9 @@
                               existingHiddenCallbacks,
                             ).get(flags + (current$1.href || ''));
                             if (maybeNodes) {
-                              for (var i$4 = 0; i$4 < maybeNodes.length; i$4++)
+                              for (var i$5 = 0; i$5 < maybeNodes.length; i$5++)
                                 if (
-                                  ((currentResource = maybeNodes[i$4]),
+                                  ((currentResource = maybeNodes[i$5]),
                                   currentResource.getAttribute('href') ===
                                     (null == current$1.href || '' === current$1.href
                                       ? null
@@ -17718,7 +17314,7 @@
                                         ? null
                                         : current$1.crossOrigin))
                                 ) {
-                                  maybeNodes.splice(i$4, 1);
+                                  maybeNodes.splice(i$5, 1);
                                   break b;
                                 }
                             }
@@ -17734,9 +17330,9 @@
                                 existingHiddenCallbacks,
                               ).get(flags + (current$1.content || '')))
                             ) {
-                              for (i$4 = 0; i$4 < maybeNodes.length; i$4++)
+                              for (i$5 = 0; i$5 < maybeNodes.length; i$5++)
                                 if (
-                                  ((currentResource = maybeNodes[i$4]),
+                                  ((currentResource = maybeNodes[i$5]),
                                   checkAttributeStringCoercion(current$1.content, 'content'),
                                   currentResource.getAttribute('content') ===
                                     (null == current$1.content ? null : '' + current$1.content) &&
@@ -17749,7 +17345,7 @@
                                     currentResource.getAttribute('charset') ===
                                       (null == current$1.charSet ? null : current$1.charSet))
                                 ) {
-                                  maybeNodes.splice(i$4, 1);
+                                  maybeNodes.splice(i$5, 1);
                                   break b;
                                 }
                             }
@@ -18014,9 +17610,9 @@
                     if (null === current$1) {
                       wasHidden = root$1;
                       try {
-                        ((i$4 = wasHidden.stateNode),
+                        ((i$5 = wasHidden.stateNode),
                           existingHiddenCallbacks
-                            ? runWithFiberInDEV(wasHidden, hideDehydratedBoundary, i$4)
+                            ? runWithFiberInDEV(wasHidden, hideDehydratedBoundary, i$5)
                             : runWithFiberInDEV(
                                 wasHidden,
                                 unhideDehydratedBoundary,
@@ -18948,8 +18544,8 @@
           var deletions = parentFiber.deletions;
           if (0 !== (parentFiber.flags & 16)) {
             if (null !== deletions)
-              for (var i$4 = 0; i$4 < deletions.length; i$4++) {
-                var childToDelete = deletions[i$4],
+              for (var i$5 = 0; i$5 < deletions.length; i$5++) {
+                var childToDelete = deletions[i$5],
                   prevEffectStart = pushComponentEffectStart();
                 nextEffect = childToDelete;
                 commitPassiveUnmountEffectsInsideOfDeletedTree_begin(childToDelete, parentFiber);
@@ -19044,8 +18640,8 @@
           var deletions = parentFiber.deletions;
           if (0 !== (parentFiber.flags & 16)) {
             if (null !== deletions)
-              for (var i$4 = 0; i$4 < deletions.length; i$4++) {
-                var childToDelete = deletions[i$4],
+              for (var i$5 = 0; i$5 < deletions.length; i$5++) {
+                var childToDelete = deletions[i$5],
                   prevEffectStart = pushComponentEffectStart();
                 nextEffect = childToDelete;
                 commitPassiveUnmountEffectsInsideOfDeletedTree_begin(childToDelete, parentFiber);
@@ -19669,8 +19265,8 @@
               node.flags & 16384 &&
               ((tag = node.updateQueue), null !== tag && ((tag = tag.stores), null !== tag))
             )
-              for (var i$4 = 0; i$4 < tag.length; i$4++) {
-                var check = tag[i$4],
+              for (var i$5 = 0; i$5 < tag.length; i$5++) {
+                var check = tag[i$5],
                   getSnapshot = check.getSnapshot;
                 check = check.value;
                 try {
@@ -21722,8 +21318,8 @@
         }
         function processDispatchQueue(dispatchQueue, eventSystemFlags) {
           eventSystemFlags = 0 !== (eventSystemFlags & 4);
-          for (var i$4 = 0; i$4 < dispatchQueue.length; i$4++) {
-            var _dispatchQueue$i = dispatchQueue[i$4];
+          for (var i$5 = 0; i$5 < dispatchQueue.length; i$5++) {
+            var _dispatchQueue$i = dispatchQueue[i$5];
             a: {
               var previousInstance = void 0,
                 event = _dispatchQueue$i.event;
@@ -23441,8 +23037,8 @@
         function getStylesObjectFromElement(domElement) {
           var serverValueInObjectForm = {};
           domElement = domElement.style;
-          for (var i$4 = 0; i$4 < domElement.length; i$4++) {
-            var styleName = domElement[i$4];
+          for (var i$5 = 0; i$5 < domElement.length; i$5++) {
+            var styleName = domElement[i$5];
             serverValueInObjectForm[styleName] = domElement.getPropertyValue(styleName);
           }
           return serverValueInObjectForm;
@@ -23653,11 +23249,11 @@
             var serverDifferences = {},
               extraAttributes = /* @__PURE__ */ new Set(),
               attributes = domElement.attributes,
-              i$4 = 0;
-            i$4 < attributes.length;
-            i$4++
+              i$5 = 0;
+            i$5 < attributes.length;
+            i$5++
           )
-            switch (attributes[i$4].name.toLowerCase()) {
+            switch (attributes[i$5].name.toLowerCase()) {
               case 'value':
                 break;
               case 'checked':
@@ -23665,7 +23261,7 @@
               case 'selected':
                 break;
               default:
-                extraAttributes.add(attributes[i$4].name);
+                extraAttributes.add(attributes[i$5].name);
             }
           if (isCustomElement(tag)) {
             for (var propKey in props)
@@ -23960,12 +23556,12 @@
                     case 'capture':
                     case 'download':
                       a: {
-                        i$4 = domElement;
+                        i$5 = domElement;
                         var attributeName = (attributes = value),
                           serverDifferences$jscomp$0 = serverDifferences;
                         extraAttributes.delete(attributeName);
-                        i$4 = i$4.getAttribute(attributeName);
-                        if (null === i$4)
+                        i$5 = i$5.getAttribute(attributeName);
+                        if (null === i$5)
                           switch (typeof propKey) {
                             case 'undefined':
                             case 'function':
@@ -23980,16 +23576,16 @@
                             case 'symbol':
                               break;
                             case 'boolean':
-                              if (!0 === propKey && '' === i$4) break a;
+                              if (!0 === propKey && '' === i$5) break a;
                               break;
                             default:
                               if (
                                 (checkAttributeStringCoercion(propKey, attributes),
-                                i$4 === '' + propKey)
+                                i$5 === '' + propKey)
                               )
                                 break a;
                           }
-                        warnForPropDifference(attributes, i$4, propKey, serverDifferences$jscomp$0);
+                        warnForPropDifference(attributes, i$5, propKey, serverDifferences$jscomp$0);
                       }
                       continue;
                     case 'cols':
@@ -23997,12 +23593,12 @@
                     case 'size':
                     case 'span':
                       a: {
-                        i$4 = domElement;
+                        i$5 = domElement;
                         attributeName = attributes = value;
                         serverDifferences$jscomp$0 = serverDifferences;
                         extraAttributes.delete(attributeName);
-                        i$4 = i$4.getAttribute(attributeName);
-                        if (null === i$4)
+                        i$5 = i$5.getAttribute(attributeName);
+                        if (null === i$5)
                           switch (typeof propKey) {
                             case 'undefined':
                             case 'function':
@@ -24022,11 +23618,11 @@
                               if (
                                 !(isNaN(propKey) || 1 > propKey) &&
                                 (checkAttributeStringCoercion(propKey, attributes),
-                                i$4 === '' + propKey)
+                                i$5 === '' + propKey)
                               )
                                 break a;
                           }
-                        warnForPropDifference(attributes, i$4, propKey, serverDifferences$jscomp$0);
+                        warnForPropDifference(attributes, i$5, propKey, serverDifferences$jscomp$0);
                       }
                       continue;
                     case 'rowSpan':
@@ -24172,12 +23768,12 @@
                         ('o' !== value[0] && 'O' !== value[0]) ||
                         ('n' !== value[1] && 'N' !== value[1])
                       ) {
-                        i$4 = getAttributeAlias(value);
+                        i$5 = getAttributeAlias(value);
                         attributes = !1;
                         hostContext.context === HostContextNamespaceNone &&
                         'svg' !== tag &&
                         'math' !== tag
-                          ? extraAttributes.delete(i$4.toLowerCase())
+                          ? extraAttributes.delete(i$5.toLowerCase())
                           : ((attributeName = value.toLowerCase()),
                             (attributeName = possibleStandardNames.hasOwnProperty(attributeName)
                               ? possibleStandardNames[attributeName] || null
@@ -24185,21 +23781,21 @@
                             null !== attributeName &&
                               attributeName !== value &&
                               ((attributes = !0), extraAttributes.delete(attributeName)),
-                            extraAttributes.delete(i$4));
+                            extraAttributes.delete(i$5));
                         a: if (
                           ((attributeName = domElement),
-                          (serverDifferences$jscomp$0 = i$4),
-                          (i$4 = propKey),
+                          (serverDifferences$jscomp$0 = i$5),
+                          (i$5 = propKey),
                           isAttributeNameSafe(serverDifferences$jscomp$0))
                         )
                           if (attributeName.hasAttribute(serverDifferences$jscomp$0))
                             ((attributeName = attributeName.getAttribute(
                               serverDifferences$jscomp$0,
                             )),
-                              checkAttributeStringCoercion(i$4, serverDifferences$jscomp$0),
-                              (i$4 = attributeName === '' + i$4 ? i$4 : attributeName));
+                              checkAttributeStringCoercion(i$5, serverDifferences$jscomp$0),
+                              (i$5 = attributeName === '' + i$5 ? i$5 : attributeName));
                           else {
-                            switch (typeof i$4) {
+                            switch (typeof i$5) {
                               case 'function':
                               case 'symbol':
                                 break a;
@@ -24212,10 +23808,10 @@
                                 )
                                   break a;
                             }
-                            i$4 = void 0 === i$4 ? void 0 : null;
+                            i$5 = void 0 === i$5 ? void 0 : null;
                           }
-                        else i$4 = void 0;
-                        attributes || warnForPropDifference(value, i$4, propKey, serverDifferences);
+                        else i$5 = void 0;
+                        attributes || warnForPropDifference(value, i$5, propKey, serverDifferences);
                       }
                   }
               }
@@ -24256,19 +23852,19 @@
               var count = 0,
                 bits = 0,
                 resourceEntries = performance.getEntriesByType('resource'),
-                i$4 = 0;
-              i$4 < resourceEntries.length;
-              i$4++
+                i$5 = 0;
+              i$5 < resourceEntries.length;
+              i$5++
             ) {
-              var entry = resourceEntries[i$4],
+              var entry = resourceEntries[i$5],
                 transferSize = entry.transferSize,
                 initiatorType = entry.initiatorType,
                 duration = entry.duration;
               if (transferSize && duration && isLikelyStaticResource(initiatorType)) {
                 initiatorType = 0;
                 duration = entry.responseEnd;
-                for (i$4 += 1; i$4 < resourceEntries.length; i$4++) {
-                  var overlapEntry = resourceEntries[i$4],
+                for (i$5 += 1; i$5 < resourceEntries.length; i$5++) {
+                  var overlapEntry = resourceEntries[i$5],
                     overlapStartTime = overlapEntry.startTime;
                   if (overlapStartTime > duration) break;
                   var overlapTransferSize = overlapEntry.transferSize,
@@ -24282,7 +23878,7 @@
                         ? 1
                         : (duration - overlapStartTime) / (overlapEntry - overlapStartTime))));
                 }
-                --i$4;
+                --i$5;
                 bits += (8 * (transferSize + initiatorType)) / (entry.duration / 1e3);
                 count++;
                 if (10 < count) break;
@@ -24689,11 +24285,11 @@
               var JSCompiler_temp_const = instance.nodeName.toLowerCase(),
                 serverDifferences = {},
                 attributes = instance.attributes,
-                i$4 = 0;
-              i$4 < attributes.length;
-              i$4++
+                i$5 = 0;
+              i$5 < attributes.length;
+              i$5++
             ) {
-              var attr = attributes[i$4];
+              var attr = attributes[i$5];
               serverDifferences[getPropNameFromAttributeName(attr.name)] =
                 'style' === attr.name.toLowerCase()
                   ? getStylesObjectFromElement(instance)
@@ -25160,11 +24756,11 @@
               ),
               last = nodes.length ? nodes[nodes.length - 1] : null,
               prior = last,
-              i$4 = 0;
-            i$4 < nodes.length;
-            i$4++
+              i$5 = 0;
+            i$5 < nodes.length;
+            i$5++
           ) {
-            var node = nodes[i$4];
+            var node = nodes[i$5];
             if (node.dataset.precedence === precedence) prior = node;
             else if (prior !== last) break;
           }
@@ -25467,11 +25063,11 @@
               precedencesByRoot.set(root$1, precedences);
               for (
                 var nodes = root$1.querySelectorAll('link[data-precedence],style[data-precedence]'),
-                  i$4 = 0;
-                i$4 < nodes.length;
-                i$4++
+                  i$5 = 0;
+                i$5 < nodes.length;
+                i$5++
               ) {
-                var node = nodes[i$4];
+                var node = nodes[i$5];
                 if ('LINK' === node.nodeName || 'not all' !== node.getAttribute('media'))
                   (precedences.set(node.dataset.precedence, node), (last = node));
               }
@@ -25479,15 +25075,15 @@
             }
             nodes = resource.instance;
             node = nodes.getAttribute('data-precedence');
-            i$4 = precedences.get(node) || last;
-            i$4 === last && precedences.set(LAST_PRECEDENCE, nodes);
+            i$5 = precedences.get(node) || last;
+            i$5 === last && precedences.set(LAST_PRECEDENCE, nodes);
             precedences.set(node, nodes);
             this.count++;
             last = onUnsuspend.bind(this);
             nodes.addEventListener('load', last);
             nodes.addEventListener('error', last);
-            i$4
-              ? i$4.parentNode.insertBefore(nodes, i$4.nextSibling)
+            i$5
+              ? i$5.parentNode.insertBefore(nodes, i$5.nextSibling)
               : ((root$1 = 9 === root$1.nodeType ? root$1.head : root$1),
                 root$1.insertBefore(nodes, root$1.firstChild));
             resource.state.loading |= Inserted;
@@ -26120,17 +25716,17 @@
             ((lastScheduledReplayQueue = formReplayingQueue),
             Scheduler.unstable_scheduleCallback(Scheduler.unstable_NormalPriority, function () {
               lastScheduledReplayQueue === formReplayingQueue && (lastScheduledReplayQueue = null);
-              for (var i$4 = 0; i$4 < formReplayingQueue.length; i$4 += 3) {
-                var form = formReplayingQueue[i$4],
-                  submitterOrAction = formReplayingQueue[i$4 + 1],
-                  formData = formReplayingQueue[i$4 + 2];
+              for (var i$5 = 0; i$5 < formReplayingQueue.length; i$5 += 3) {
+                var form = formReplayingQueue[i$5],
+                  submitterOrAction = formReplayingQueue[i$5 + 1],
+                  formData = formReplayingQueue[i$5 + 2];
                 if ('function' !== typeof submitterOrAction)
                   if (null === findInstanceBlockingTarget(submitterOrAction || form)) continue;
                   else break;
                 var formInst = getInstanceFromNode(form);
                 null !== formInst &&
-                  (formReplayingQueue.splice(i$4, 3),
-                  (i$4 -= 3),
+                  (formReplayingQueue.splice(i$5, 3),
+                  (i$5 -= 3),
                   (form = {
                     pending: !0,
                     data: formData,
@@ -26151,26 +25747,26 @@
           null !== queuedMouse && scheduleCallbackIfUnblocked(queuedMouse, unblocked);
           queuedPointers.forEach(unblock);
           queuedPointerCaptures.forEach(unblock);
-          for (var i$4 = 0; i$4 < queuedExplicitHydrationTargets.length; i$4++) {
-            var queuedTarget = queuedExplicitHydrationTargets[i$4];
+          for (var i$5 = 0; i$5 < queuedExplicitHydrationTargets.length; i$5++) {
+            var queuedTarget = queuedExplicitHydrationTargets[i$5];
             queuedTarget.blockedOn === unblocked && (queuedTarget.blockedOn = null);
           }
           for (
             ;
             0 < queuedExplicitHydrationTargets.length &&
-            ((i$4 = queuedExplicitHydrationTargets[0]), null === i$4.blockedOn);
+            ((i$5 = queuedExplicitHydrationTargets[0]), null === i$5.blockedOn);
 
           )
-            (attemptExplicitHydrationTarget(i$4),
-              null === i$4.blockedOn && queuedExplicitHydrationTargets.shift());
-          i$4 = (unblocked.ownerDocument || unblocked).$$reactFormReplay;
-          if (null != i$4)
-            for (queuedTarget = 0; queuedTarget < i$4.length; queuedTarget += 3) {
-              var form = i$4[queuedTarget],
-                submitterOrAction = i$4[queuedTarget + 1],
+            (attemptExplicitHydrationTarget(i$5),
+              null === i$5.blockedOn && queuedExplicitHydrationTargets.shift());
+          i$5 = (unblocked.ownerDocument || unblocked).$$reactFormReplay;
+          if (null != i$5)
+            for (queuedTarget = 0; queuedTarget < i$5.length; queuedTarget += 3) {
+              var form = i$5[queuedTarget],
+                submitterOrAction = i$5[queuedTarget + 1],
                 formProps = form[internalPropsKey] || null;
               if ('function' === typeof submitterOrAction)
-                formProps || scheduleReplayQueueIfNeeded(i$4);
+                formProps || scheduleReplayQueueIfNeeded(i$5);
               else if (formProps) {
                 var action = null;
                 if (submitterOrAction && submitterOrAction.hasAttribute('formAction')) {
@@ -26182,9 +25778,9 @@
                   else if (null !== findInstanceBlockingTarget(form)) continue;
                 } else action = formProps.action;
                 'function' === typeof action
-                  ? (i$4[queuedTarget + 1] = action)
-                  : (i$4.splice(queuedTarget, 3), (queuedTarget -= 3));
-                scheduleReplayQueueIfNeeded(i$4);
+                  ? (i$5[queuedTarget + 1] = action)
+                  : (i$5.splice(queuedTarget, 3), (queuedTarget -= 3));
+                scheduleReplayQueueIfNeeded(i$5);
               }
             }
         }
@@ -27189,7 +26785,7 @@
             });
             window.addEventListener('test', options$jscomp$0, options$jscomp$0);
             window.removeEventListener('test', options$jscomp$0, options$jscomp$0);
-          } catch (e$4) {
+          } catch (e$7) {
             passiveBrowserEventsSupported = !1;
           }
         var root = null,
@@ -29315,8 +28911,8 @@
           currentEventTransitionLane = 0,
           fakeActCallbackNode = {};
         (function () {
-          for (var i$4 = 0; i$4 < simpleEventPluginEvents.length; i$4++) {
-            var eventName = simpleEventPluginEvents[i$4],
+          for (var i$5 = 0; i$5 < simpleEventPluginEvents.length; i$5++) {
+            var eventName = simpleEventPluginEvents[i$5],
               domEventName = eventName.toLowerCase();
             eventName = eventName[0].toUpperCase() + eventName.slice(1);
             registerSimpleEvent(domEventName, 'on' + eventName);
@@ -29832,14 +29428,14 @@
               priority: updatePriority,
             };
             for (
-              var i$4 = 0;
-              i$4 < queuedExplicitHydrationTargets.length &&
+              var i$5 = 0;
+              i$5 < queuedExplicitHydrationTargets.length &&
               0 !== updatePriority &&
-              updatePriority < queuedExplicitHydrationTargets[i$4].priority;
-              i$4++
+              updatePriority < queuedExplicitHydrationTargets[i$5].priority;
+              i$5++
             );
-            queuedExplicitHydrationTargets.splice(i$4, 0, target);
-            0 === i$4 && attemptExplicitHydrationTarget(target);
+            queuedExplicitHydrationTargets.splice(i$5, 0, target);
+            0 === i$5 && attemptExplicitHydrationTarget(target);
           }
         };
         (function () {
@@ -30029,60 +29625,394 @@
   });
 
   //#endregion
+  //#region ../../node_modules/react/cjs/react-jsx-runtime.development.js
+  var require_react_jsx_runtime_development = /* @__PURE__ */ __commonJS({
+    '../../node_modules/react/cjs/react-jsx-runtime.development.js': (exports) => {
+      (function () {
+        function getComponentNameFromType(type) {
+          if (null == type) return null;
+          if ('function' === typeof type)
+            return type.$$typeof === REACT_CLIENT_REFERENCE
+              ? null
+              : type.displayName || type.name || null;
+          if ('string' === typeof type) return type;
+          switch (type) {
+            case REACT_FRAGMENT_TYPE:
+              return 'Fragment';
+            case REACT_PROFILER_TYPE:
+              return 'Profiler';
+            case REACT_STRICT_MODE_TYPE:
+              return 'StrictMode';
+            case REACT_SUSPENSE_TYPE:
+              return 'Suspense';
+            case REACT_SUSPENSE_LIST_TYPE:
+              return 'SuspenseList';
+            case REACT_ACTIVITY_TYPE:
+              return 'Activity';
+          }
+          if ('object' === typeof type)
+            switch (
+              ('number' === typeof type.tag &&
+                console.error(
+                  'Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue.',
+                ),
+              type.$$typeof)
+            ) {
+              case REACT_PORTAL_TYPE:
+                return 'Portal';
+              case REACT_CONTEXT_TYPE:
+                return type.displayName || 'Context';
+              case REACT_CONSUMER_TYPE:
+                return (type._context.displayName || 'Context') + '.Consumer';
+              case REACT_FORWARD_REF_TYPE:
+                var innerType = type.render;
+                type = type.displayName;
+                type ||
+                  ((type = innerType.displayName || innerType.name || ''),
+                  (type = '' !== type ? 'ForwardRef(' + type + ')' : 'ForwardRef'));
+                return type;
+              case REACT_MEMO_TYPE:
+                return (
+                  (innerType = type.displayName || null),
+                  null !== innerType ? innerType : getComponentNameFromType(type.type) || 'Memo'
+                );
+              case REACT_LAZY_TYPE:
+                innerType = type._payload;
+                type = type._init;
+                try {
+                  return getComponentNameFromType(type(innerType));
+                } catch (x$1) {}
+            }
+          return null;
+        }
+        function testStringCoercion(value) {
+          return '' + value;
+        }
+        function checkKeyStringCoercion(value) {
+          try {
+            testStringCoercion(value);
+            var JSCompiler_inline_result = !1;
+          } catch (e$7) {
+            JSCompiler_inline_result = !0;
+          }
+          if (JSCompiler_inline_result) {
+            JSCompiler_inline_result = console;
+            var JSCompiler_temp_const = JSCompiler_inline_result.error;
+            var JSCompiler_inline_result$jscomp$0 =
+              ('function' === typeof Symbol && Symbol.toStringTag && value[Symbol.toStringTag]) ||
+              value.constructor.name ||
+              'Object';
+            JSCompiler_temp_const.call(
+              JSCompiler_inline_result,
+              'The provided key is an unsupported type %s. This value must be coerced to a string before using it here.',
+              JSCompiler_inline_result$jscomp$0,
+            );
+            return testStringCoercion(value);
+          }
+        }
+        function getTaskName(type) {
+          if (type === REACT_FRAGMENT_TYPE) return '<>';
+          if ('object' === typeof type && null !== type && type.$$typeof === REACT_LAZY_TYPE)
+            return '<...>';
+          try {
+            var name = getComponentNameFromType(type);
+            return name ? '<' + name + '>' : '<...>';
+          } catch (x$1) {
+            return '<...>';
+          }
+        }
+        function getOwner() {
+          var dispatcher = ReactSharedInternals.A;
+          return null === dispatcher ? null : dispatcher.getOwner();
+        }
+        function UnknownOwner() {
+          return Error('react-stack-top-frame');
+        }
+        function hasValidKey(config) {
+          if (hasOwnProperty.call(config, 'key')) {
+            var getter = Object.getOwnPropertyDescriptor(config, 'key').get;
+            if (getter && getter.isReactWarning) return !1;
+          }
+          return void 0 !== config.key;
+        }
+        function defineKeyPropWarningGetter(props, displayName) {
+          function warnAboutAccessingKey() {
+            specialPropKeyWarningShown ||
+              ((specialPropKeyWarningShown = !0),
+              console.error(
+                '%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://react.dev/link/special-props)',
+                displayName,
+              ));
+          }
+          warnAboutAccessingKey.isReactWarning = !0;
+          Object.defineProperty(props, 'key', {
+            get: warnAboutAccessingKey,
+            configurable: !0,
+          });
+        }
+        function elementRefGetterWithDeprecationWarning() {
+          var componentName = getComponentNameFromType(this.type);
+          didWarnAboutElementRef[componentName] ||
+            ((didWarnAboutElementRef[componentName] = !0),
+            console.error(
+              'Accessing element.ref was removed in React 19. ref is now a regular prop. It will be removed from the JSX Element type in a future release.',
+            ));
+          componentName = this.props.ref;
+          return void 0 !== componentName ? componentName : null;
+        }
+        function ReactElement(type, key, props, owner, debugStack, debugTask) {
+          var refProp = props.ref;
+          type = {
+            $$typeof: REACT_ELEMENT_TYPE,
+            type,
+            key,
+            props,
+            _owner: owner,
+          };
+          null !== (void 0 !== refProp ? refProp : null)
+            ? Object.defineProperty(type, 'ref', {
+                enumerable: !1,
+                get: elementRefGetterWithDeprecationWarning,
+              })
+            : Object.defineProperty(type, 'ref', {
+                enumerable: !1,
+                value: null,
+              });
+          type._store = {};
+          Object.defineProperty(type._store, 'validated', {
+            configurable: !1,
+            enumerable: !1,
+            writable: !0,
+            value: 0,
+          });
+          Object.defineProperty(type, '_debugInfo', {
+            configurable: !1,
+            enumerable: !1,
+            writable: !0,
+            value: null,
+          });
+          Object.defineProperty(type, '_debugStack', {
+            configurable: !1,
+            enumerable: !1,
+            writable: !0,
+            value: debugStack,
+          });
+          Object.defineProperty(type, '_debugTask', {
+            configurable: !1,
+            enumerable: !1,
+            writable: !0,
+            value: debugTask,
+          });
+          Object.freeze && (Object.freeze(type.props), Object.freeze(type));
+          return type;
+        }
+        function jsxDEVImpl(type, config, maybeKey, isStaticChildren, debugStack, debugTask) {
+          var children = config.children;
+          if (void 0 !== children)
+            if (isStaticChildren)
+              if (isArrayImpl(children)) {
+                for (isStaticChildren = 0; isStaticChildren < children.length; isStaticChildren++)
+                  validateChildKeys(children[isStaticChildren]);
+                Object.freeze && Object.freeze(children);
+              } else
+                console.error(
+                  'React.jsx: Static children should always be an array. You are likely explicitly calling React.jsxs or React.jsxDEV. Use the Babel transform instead.',
+                );
+            else validateChildKeys(children);
+          if (hasOwnProperty.call(config, 'key')) {
+            children = getComponentNameFromType(type);
+            var keys = Object.keys(config).filter(function (k$1) {
+              return 'key' !== k$1;
+            });
+            isStaticChildren =
+              0 < keys.length
+                ? '{key: someKey, ' + keys.join(': ..., ') + ': ...}'
+                : '{key: someKey}';
+            didWarnAboutKeySpread[children + isStaticChildren] ||
+              ((keys = 0 < keys.length ? '{' + keys.join(': ..., ') + ': ...}' : '{}'),
+              console.error(
+                'A props object containing a "key" prop is being spread into JSX:\n  let props = %s;\n  <%s {...props} />\nReact keys must be passed directly to JSX without using spread:\n  let props = %s;\n  <%s key={someKey} {...props} />',
+                isStaticChildren,
+                children,
+                keys,
+                children,
+              ),
+              (didWarnAboutKeySpread[children + isStaticChildren] = !0));
+          }
+          children = null;
+          void 0 !== maybeKey && (checkKeyStringCoercion(maybeKey), (children = '' + maybeKey));
+          hasValidKey(config) && (checkKeyStringCoercion(config.key), (children = '' + config.key));
+          if ('key' in config) {
+            maybeKey = {};
+            for (var propName in config)
+              'key' !== propName && (maybeKey[propName] = config[propName]);
+          } else maybeKey = config;
+          children &&
+            defineKeyPropWarningGetter(
+              maybeKey,
+              'function' === typeof type ? type.displayName || type.name || 'Unknown' : type,
+            );
+          return ReactElement(type, children, maybeKey, getOwner(), debugStack, debugTask);
+        }
+        function validateChildKeys(node) {
+          isValidElement(node)
+            ? node._store && (node._store.validated = 1)
+            : 'object' === typeof node &&
+              null !== node &&
+              node.$$typeof === REACT_LAZY_TYPE &&
+              ('fulfilled' === node._payload.status
+                ? isValidElement(node._payload.value) &&
+                  node._payload.value._store &&
+                  (node._payload.value._store.validated = 1)
+                : node._store && (node._store.validated = 1));
+        }
+        function isValidElement(object) {
+          return (
+            'object' === typeof object && null !== object && object.$$typeof === REACT_ELEMENT_TYPE
+          );
+        }
+        var React = require_react(),
+          REACT_ELEMENT_TYPE = Symbol.for('react.transitional.element'),
+          REACT_PORTAL_TYPE = Symbol.for('react.portal'),
+          REACT_FRAGMENT_TYPE = Symbol.for('react.fragment'),
+          REACT_STRICT_MODE_TYPE = Symbol.for('react.strict_mode'),
+          REACT_PROFILER_TYPE = Symbol.for('react.profiler'),
+          REACT_CONSUMER_TYPE = Symbol.for('react.consumer'),
+          REACT_CONTEXT_TYPE = Symbol.for('react.context'),
+          REACT_FORWARD_REF_TYPE = Symbol.for('react.forward_ref'),
+          REACT_SUSPENSE_TYPE = Symbol.for('react.suspense'),
+          REACT_SUSPENSE_LIST_TYPE = Symbol.for('react.suspense_list'),
+          REACT_MEMO_TYPE = Symbol.for('react.memo'),
+          REACT_LAZY_TYPE = Symbol.for('react.lazy'),
+          REACT_ACTIVITY_TYPE = Symbol.for('react.activity'),
+          REACT_CLIENT_REFERENCE = Symbol.for('react.client.reference'),
+          ReactSharedInternals =
+            React.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE,
+          hasOwnProperty = Object.prototype.hasOwnProperty,
+          isArrayImpl = Array.isArray,
+          createTask = console.createTask
+            ? console.createTask
+            : function () {
+                return null;
+              };
+        React = {
+          react_stack_bottom_frame: function (callStackForError) {
+            return callStackForError();
+          },
+        };
+        var specialPropKeyWarningShown;
+        var didWarnAboutElementRef = {};
+        var unknownOwnerDebugStack = React.react_stack_bottom_frame.bind(React, UnknownOwner)();
+        var unknownOwnerDebugTask = createTask(getTaskName(UnknownOwner));
+        var didWarnAboutKeySpread = {};
+        exports.Fragment = REACT_FRAGMENT_TYPE;
+        exports.jsx = function (type, config, maybeKey) {
+          var trackActualOwner = 1e4 > ReactSharedInternals.recentlyCreatedOwnerStacks++;
+          return jsxDEVImpl(
+            type,
+            config,
+            maybeKey,
+            !1,
+            trackActualOwner ? Error('react-stack-top-frame') : unknownOwnerDebugStack,
+            trackActualOwner ? createTask(getTaskName(type)) : unknownOwnerDebugTask,
+          );
+        };
+        exports.jsxs = function (type, config, maybeKey) {
+          var trackActualOwner = 1e4 > ReactSharedInternals.recentlyCreatedOwnerStacks++;
+          return jsxDEVImpl(
+            type,
+            config,
+            maybeKey,
+            !0,
+            trackActualOwner ? Error('react-stack-top-frame') : unknownOwnerDebugStack,
+            trackActualOwner ? createTask(getTaskName(type)) : unknownOwnerDebugTask,
+          );
+        };
+      })();
+    },
+  });
+
+  //#endregion
+  //#region ../../node_modules/react/jsx-runtime.js
+  var require_jsx_runtime = /* @__PURE__ */ __commonJS({
+    '../../node_modules/react/jsx-runtime.js': (exports, module) => {
+      module.exports = require_react_jsx_runtime_development();
+    },
+  });
+
+  //#endregion
   //#region react-examples/004-draggable-locked-axis/index.tsx
   var import_client = /* @__PURE__ */ __toESM(require_client());
-  function DraggableCard({ axis }) {
-    const zIndexRef = (0, import_react.useRef)(0);
-    const [pointerSensor, setPointerRef] = H();
-    const [keyboardSensor, setKeyboardRef] = B();
-    const setRefs = (node) => {
-      setPointerRef(node);
-      setKeyboardRef(node);
-    };
-    const positionModifiers = (0, import_react.useMemo)(
-      () => [
-        (change) => {
-          if (axis === 'x') change.y = 0;
-          else if (axis === 'y') change.x = 0;
-          return change;
+  var import_jsx_runtime = /* @__PURE__ */ __toESM(require_jsx_runtime());
+  const DraggableCardMemo = (0, import_react.memo)(function DraggableCard({ axis, zIndexRef }) {
+    const elementRef = (0, import_react.useRef)(null);
+    const [zIndex, setZIndex] = (0, import_react.useState)(1);
+    const [pointerSensor, setPointerSensorRef] = o$1();
+    const [keyboardSensor, setKeyboardSensorRef] = o();
+    const draggableSettings = (0, import_react.useMemo)(
+      () => ({
+        elements: () => (elementRef.current ? [elementRef.current] : []),
+        positionModifiers: [
+          (change, { item }) => {
+            const { element } = item;
+            const allowX = element.classList.contains('axis-x');
+            const allowY = element.classList.contains('axis-y');
+            if (allowX && !allowY) change.y = 0;
+            else if (allowY && !allowX) change.x = 0;
+            return change;
+          },
+        ],
+        onStart: () => {
+          setZIndex(++zIndexRef.current);
         },
-      ],
-      [axis],
+      }),
+      [zIndexRef],
     );
-    return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(j, {
-      sensors: [pointerSensor, keyboardSensor],
-      positionModifiers,
-      onStart: (drag) => {
-        drag.items[0].element.classList.add('dragging');
-        drag.items[0].element.style.zIndex = `${++zIndexRef.current}`;
+    const drag = r(c([pointerSensor, keyboardSensor], draggableSettings));
+    const setRefs = (0, import_react.useCallback)(
+      (node) => {
+        elementRef.current = node;
+        setPointerSensorRef(node);
+        setKeyboardSensorRef(node);
       },
-      onEnd: (drag) => {
-        drag.items[0].element.classList.remove('dragging');
-      },
-      children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)('div', {
-        className: `card draggable ${axis === 'xy' ? 'axis-x axis-y' : `axis-${axis}`}`,
-        tabIndex: 0,
-        ref: setRefs,
-        children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)('svg', {
-          xmlns: 'http://www.w3.org/2000/svg',
-          viewBox: '0 0 512 512',
-          children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)('path', {
-            d: 'M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z',
-          }),
-        }),
+      [setPointerSensorRef, setKeyboardSensorRef],
+    );
+    const axisClass = axis === 'x' ? 'axis-x' : 'axis-y';
+    const svgPath =
+      axis === 'x'
+        ? 'M406.6 374.6l96-96c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224l-293.5 0 41.4-41.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 288l293.5 0-41.4 41.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0z'
+        : 'M182.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L128 109.3l0 293.5L86.6 361.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 402.7l0-293.5 41.4 41.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-96-96z';
+    const svgViewBox = axis === 'x' ? '0 0 512 512' : '0 0 320 512';
+    return /* @__PURE__ */ (0, import_jsx_runtime.jsx)('div', {
+      ref: setRefs,
+      className: `card draggable ${axisClass} ${drag ? 'dragging' : ''}`,
+      style: { zIndex },
+      tabIndex: 0,
+      children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)('svg', {
+        xmlns: 'http://www.w3.org/2000/svg',
+        viewBox: svgViewBox,
+        children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)('path', { d: svgPath }),
       }),
     });
-  }
+  });
   function App() {
+    const zIndexRef = (0, import_react.useRef)(1);
     return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, {
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DraggableCard, { axis: 'x' }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DraggableCard, { axis: 'y' }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DraggableCard, { axis: 'xy' }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DraggableCardMemo, {
+          axis: 'x',
+          zIndexRef,
+        }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DraggableCardMemo, {
+          axis: 'y',
+          zIndexRef,
+        }),
       ],
     });
   }
-  (0, import_client.createRoot)(document.body).render(
+  const rootElement = document.getElementById('root');
+  if (!rootElement) throw new Error('Failed to find the root element');
+  (0, import_client.createRoot)(rootElement).render(
     /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, {
       children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(App, {}),
     }),

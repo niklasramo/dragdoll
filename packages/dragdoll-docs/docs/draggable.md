@@ -52,10 +52,19 @@ Here you can find a more in-depth explanation about the [`DraggableSettings`](#d
 ### container
 
 ```ts
-type container = Element | null;
+type container =
+  | HTMLElement
+  | null
+  | ((data: {
+      draggable: Draggable<S>;
+      drag: DraggableDrag<S>;
+      element: HTMLElement | SVGSVGElement;
+    }) => HTMLElement | null);
 ```
 
 The element the dragged elements should be appended to for the duration of the drag. If set to `null` the element's current parent element is used.
+
+You can also provide a function that returns the container element. This way you can, if you want, provide a different container element for each dragged element.
 
 Default is `null`.
 
@@ -720,7 +729,14 @@ import type { DraggableSettings } from 'dragdoll/draggable';
 
 // Interface
 export interface DraggableSettings<S extends Sensor[]> {
-  container: HTMLElement | null;
+  container:
+    | HTMLElement
+    | null
+    | ((data: {
+        draggable: Draggable<S>;
+        drag: DraggableDrag<S>;
+        element: HTMLElement | SVGSVGElement;
+      }) => HTMLElement | null);
   startPredicate: (data: {
     draggable: Draggable<S>;
     sensor: S[number];

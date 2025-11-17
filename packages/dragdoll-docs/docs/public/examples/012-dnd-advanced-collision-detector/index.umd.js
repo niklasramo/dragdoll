@@ -1204,7 +1204,7 @@ function getOffsetContainer(n$7, t$6 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-oKZ1M89x.js
+//#region ../dragdoll/dist/draggable-CUeOOVDR.js
 function s$3(e$6, t$6) {
 	return e$6.isIdentity && t$6.isIdentity ? !0 : e$6.is2D && t$6.is2D ? e$6.a === t$6.a && e$6.b === t$6.b && e$6.c === t$6.c && e$6.d === t$6.d && e$6.e === t$6.e && e$6.f === t$6.f : e$6.m11 === t$6.m11 && e$6.m12 === t$6.m12 && e$6.m13 === t$6.m13 && e$6.m14 === t$6.m14 && e$6.m21 === t$6.m21 && e$6.m22 === t$6.m22 && e$6.m23 === t$6.m23 && e$6.m24 === t$6.m24 && e$6.m31 === t$6.m31 && e$6.m32 === t$6.m32 && e$6.m33 === t$6.m33 && e$6.m34 === t$6.m34 && e$6.m41 === t$6.m41 && e$6.m42 === t$6.m42 && e$6.m43 === t$6.m43 && e$6.m44 === t$6.m44;
 }
@@ -1404,13 +1404,17 @@ var O = class {
 		let c$6 = e$6.parentElement;
 		if (!c$6) throw Error(`Dragged element does not have a parent element.`);
 		this.elementContainer = c$6;
-		let l$6 = t$6.settings.container || c$6;
-		if (this.dragContainer = l$6, c$6 !== l$6) {
+		let l$6 = t$6.settings.container, u$6 = (typeof l$6 == `function` ? l$6({
+			draggable: t$6,
+			drag: r$5,
+			element: e$6
+		}) : l$6) || c$6;
+		if (this.dragContainer = u$6, c$6 !== u$6) {
 			let { position: e$7 } = i$5;
 			if (e$7 !== `fixed` && e$7 !== `absolute`) throw Error(`Dragged element has "${e$7}" position, but only "fixed" or "absolute" are allowed when using a custom drag container.`);
 		}
-		let u$6 = getOffsetContainer(e$6) || e$6;
-		this.elementOffsetContainer = u$6, this.dragOffsetContainer = l$6 === c$6 ? u$6 : getOffsetContainer(e$6, { container: l$6 });
+		let d$3 = getOffsetContainer(e$6) || e$6;
+		this.elementOffsetContainer = d$3, this.dragOffsetContainer = u$6 === c$6 ? d$3 : getOffsetContainer(e$6, { container: u$6 });
 		{
 			let { width: e$7, height: t$7, x: n$7, y: r$6 } = a$4;
 			this.clientRect = {
@@ -1421,18 +1425,18 @@ var O = class {
 			};
 		}
 		this._updateContainerMatrices(), this._updateContainerOffset();
-		let d$3 = t$6.settings.frozenStyles({
+		let f$3 = t$6.settings.frozenStyles({
 			draggable: t$6,
 			drag: r$5,
 			item: this,
 			style: i$5
 		});
-		if (Array.isArray(d$3)) if (d$3.length) {
+		if (Array.isArray(f$3)) if (f$3.length) {
 			let e$7 = {};
-			for (let t$7 of d$3) e$7[t$7] = i$5[t$7];
+			for (let t$7 of f$3) e$7[t$7] = i$5[t$7];
 			this.frozenStyles = e$7;
 		} else this.frozenStyles = null;
-		else this.frozenStyles = d$3;
+		else this.frozenStyles = f$3;
 		if (this.frozenStyles) {
 			let t$7 = {};
 			for (let n$7 in this.frozenStyles) t$7[n$7] = e$6.style[n$7];
@@ -1795,7 +1799,7 @@ var n = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/dnd-observer-iQeg3pV4.js
+//#region ../dragdoll/dist/dnd-observer-DAFD4Pcu.js
 var s$2 = function(e$6) {
 	return e$6[e$6.Idle = 0] = `Idle`, e$6[e$6.Computing = 1] = `Computing`, e$6[e$6.Computed = 2] = `Computed`, e$6[e$6.Emitting = 3] = `Emitting`, e$6;
 }(s$2 || {});
@@ -2235,7 +2239,7 @@ var u$1 = class {
 const t = new N();
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-plugin-Coj8s496.js
+//#region ../dragdoll/dist/auto-scroll-plugin-CzQex1ax.js
 const r$2 = {
 	x: 0,
 	y: 0
