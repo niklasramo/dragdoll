@@ -33,6 +33,7 @@ const DraggableCardMemo = memo(function DraggableCard() {
 
   const setElementRef = useCallback(
     (node: HTMLDivElement | null) => {
+      elementRef.current = node;
       setKeyboardSensorRef(node);
     },
     [setKeyboardSensorRef],
