@@ -1,0 +1,35 @@
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  id-token: write # Required for OIDC
+  contents: read
+
+jobs:
+  publish:
+    if: ${{ startsWith(github.event.release.tag_name, 'dragdoll@') || startsWith(github.event.release.tag_name, 'dragdoll-react@') }}
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24.x'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Select workspace
+        run: |
+          if [[ "$RELEASE_TAG" == dragdoll@* ]]; then
+            echo "TARGET_WORKSPACE=dragdoll" >> "$GITHUB_ENV"
+          elif [[ "$RELEASE_TAG" == dragdoll-react@* ]]; then
+            echo "TARGET_WORKSPACE=dragdoll-react" >> "$GITHUB_ENV"
+          else
+            echo "Release tag must start with dragdoll@ or dragdoll-react@" >&2
+            exit 1
+          fi
+      - run: npm ci
+      - run: npm run build
+      - run: npm publish --workspace=${{ env.TARGET_WORKSPACE }}
