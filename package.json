@@ -25,8 +25,8 @@
     "ts:check": "tsc && npm run ts:check --workspaces --if-present"
   },
   "devDependencies": {
-    "@types/react": "19.2.2",
-    "@types/react-dom": "19.2.2",
+    "@types/react": "19.2.6",
+    "@types/react-dom": "19.2.3",
     "@wdio/browser-runner": "9.20.0",
     "@wdio/browserstack-service": "9.20.0",
     "@wdio/cli": "9.20.0",
@@ -37,7 +37,7 @@
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-simple-import-sort": "12.1.1",
     "eventti": "4.0.3",
-    "jsdom": "27.1.0",
+    "jsdom": "27.2.0",
     "mezr": "1.1.0",
     "prettier": "3.6.2",
     "react": "19.2.0",
@@ -48,9 +48,9 @@
     "tsdown": "0.15.12",
     "tsx": "4.20.6",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.46.2",
+    "typescript-eslint": "8.47.0",
     "vitepress": "1.6.4",
-    "vue": "3.5.22"
+    "vue": "3.5.24"
   },
   "overrides": {
     "vite": "5.4.21",
