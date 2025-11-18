@@ -1,4 +1,5 @@
 name: Run tests
+
 on:
   workflow_call:
     secrets:
@@ -6,6 +7,7 @@ on:
         required: true
       BROWSERSTACK_ACCESS_KEY:
         required: true
+
 jobs:
   run-tests:
     runs-on: ubuntu-latest

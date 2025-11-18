@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:niklasramo/dragdoll.git",
+    "url": "git+ssh://git@github.com/niklasramo/dragdoll.git",
     "directory": "packages/dragdoll"
   },
   "homepage": "https://niklasramo.github.io/dragdoll/",
