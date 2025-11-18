@@ -1,4 +1,4 @@
-[DndContext](/dnd-context) →
+[DndObserver](/dnd-observer) →
 
 # CollisionDetector
 
@@ -9,8 +9,8 @@ For more advanced collision detection, you can extend the `CollisionDetector` cl
 ## Example
 
 ```ts
-import { CollisionDetector } from 'dragdoll/dnd-context/collision-detector';
-import { DndContext } from 'dragdoll/dnd-context';
+import { CollisionDetector } from 'dragdoll/dnd-observer/collision-detector';
+import { DndObserver } from 'dragdoll/dnd-observer';
 
 interface CustomCollisionData extends CollisionData {
   foo: string;
@@ -44,7 +44,7 @@ class CustomCollisionDetector extends CollisionDetector<CustomCollisionData> {
 }
 
 // Provide a factory that returns your detector instance.
-const dndContext = new DndContext({
+const dndObserver = new DndObserver({
   collisionDetector: (ctx) => new CustomCollisionDetector(ctx),
 });
 ```
@@ -53,7 +53,7 @@ const dndContext = new DndContext({
 
 ```ts
 class CollisionDetector<T extends CollisionData = CollisionData> {
-  constructor(dndContext: DndContext<T>) {}
+  constructor(dndObserver: DndObserver<T>) {}
 }
 ```
 
@@ -65,8 +65,8 @@ class CollisionDetector<T extends CollisionData = CollisionData> {
 
 ### Constructor Parameters
 
-1. **dndContext**
-   - The [`DndContext`](/dnd-context) instance this collision detector belongs to.
+1. **dndObserver**
+   - The [`DndObserver`](/dnd-observer) instance this collision detector belongs to.
 
 ## Methods
 
@@ -80,7 +80,7 @@ type detectCollisions = (
 ) => void;
 ```
 
-Detects collisions between a draggable and a map of droppable targets. Populates the provided `collisions` array in-place with `CollisionData` objects. Each draggable is assigned an _arena_ of `CollisionData` objects to reuse between detections. That arena of collision data objects is automatically freed up for reuse when the draggable stops dragging (`DndContext` calls the `_removeCollisionDataArena` method at the end of the drag operation).
+Detects collisions between a draggable and a map of droppable targets. Populates the provided `collisions` array in-place with `CollisionData` objects. Each draggable is assigned an _arena_ of `CollisionData` objects to reuse between detections. That arena of collision data objects is automatically freed up for reuse when the draggable stops dragging (`DndObserver` calls the `_removeCollisionDataArena` method at the end of the drag operation).
 
 ### destroy
 
@@ -88,7 +88,7 @@ Detects collisions between a draggable and a map of droppable targets. Populates
 type destroy = () => void;
 ```
 
-Cleans up resources, deallocates collision data arenas and removes event listeners. Note that you don't need to call this method manually after it's connected to the `DndContext` instance as it will be called automatically when the `DndContext` instance is destroyed.
+Cleans up resources, deallocates collision data arenas and removes event listeners. Note that you don't need to call this method manually after it's connected to the `DndObserver` instance as it will be called automatically when the `DndObserver` instance is destroyed.
 
 ## Protected methods
 
@@ -151,7 +151,7 @@ The CollisionDetector class provides the following extensibility hooks for subcl
 
 ```ts
 // Import
-import type { CollisionData } from 'dragdoll/dnd-context/collision-detector';
+import type { CollisionData } from 'dragdoll/dnd-observer/collision-detector';
 
 // Interface
 interface CollisionData {

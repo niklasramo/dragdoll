@@ -1,0 +1,2 @@
+import{t as e}from"./use-isomorphic-layout-effect-D2LtpjJM.js";import{useRef as t}from"react";function n(n,r,i){let a=!!i,o=t(i);o.current=i,e(()=>{if(!n||!a)return;let e=n.on(r,((...e)=>{o.current?.(...e)}));return()=>void n.off(r,e)},[n,r,a])}export{n as t};
+//# sourceMappingURL=use-draggable-callback-Cd1g8lnj.js.map

@@ -1,6 +1,6 @@
 {
   "name": "dragdoll",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "description": "Modular and extensible drag & drop system.",
   "keywords": [
     "drag",
@@ -70,17 +70,17 @@
       "types": "./dist/draggable/plugins/auto-scroll.d.ts",
       "import": "./dist/draggable/plugins/auto-scroll.js"
     },
-    "./dnd-context": {
-      "types": "./dist/dnd-context.d.ts",
-      "import": "./dist/dnd-context.js"
+    "./dnd-observer": {
+      "types": "./dist/dnd-observer.d.ts",
+      "import": "./dist/dnd-observer.js"
     },
-    "./dnd-context/collision-detector": {
-      "types": "./dist/dnd-context/collision-detector.d.ts",
-      "import": "./dist/dnd-context/collision-detector.js"
+    "./dnd-observer/collision-detector": {
+      "types": "./dist/dnd-observer/collision-detector.d.ts",
+      "import": "./dist/dnd-observer/collision-detector.js"
     },
-    "./dnd-context/advanced-collision-detector": {
-      "types": "./dist/dnd-context/advanced-collision-detector.d.ts",
-      "import": "./dist/dnd-context/advanced-collision-detector.js"
+    "./dnd-observer/advanced-collision-detector": {
+      "types": "./dist/dnd-observer/advanced-collision-detector.d.ts",
+      "import": "./dist/dnd-observer/advanced-collision-detector.js"
     },
     "./droppable": {
       "types": "./dist/droppable.d.ts",

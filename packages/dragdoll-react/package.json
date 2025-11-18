@@ -1,0 +1,101 @@
+{
+  "name": "dragdoll-react",
+  "version": "0.1.0",
+  "description": "React wrapper for dragdoll drag and drop library.",
+  "keywords": [
+    "drag",
+    "drop",
+    "dnd",
+    "draggable",
+    "droppable",
+    "react"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Niklas Rämö",
+    "email": "inramo@gmail.com",
+    "url": "https://github.com/niklasramo"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:niklasramo/dragdoll.git"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./dnd-observer-context": {
+      "types": "./dist/dnd-observer-context.d.ts",
+      "import": "./dist/dnd-observer-context.js"
+    },
+    "./use-dnd-observer": {
+      "types": "./dist/use-dnd-observer.d.ts",
+      "import": "./dist/use-dnd-observer.js"
+    },
+    "./use-dnd-observer-callback": {
+      "types": "./dist/use-dnd-observer-callback.d.ts",
+      "import": "./dist/use-dnd-observer-callback.js"
+    },
+    "./use-dnd-observer-context": {
+      "types": "./dist/use-dnd-observer-context.d.ts",
+      "import": "./dist/use-dnd-observer-context.js"
+    },
+    "./use-draggable": {
+      "types": "./dist/use-draggable.d.ts",
+      "import": "./dist/use-draggable.js"
+    },
+    "./use-draggable-auto-scroll": {
+      "types": "./dist/use-draggable-auto-scroll.d.ts",
+      "import": "./dist/use-draggable-auto-scroll.js"
+    },
+    "./use-draggable-callback": {
+      "types": "./dist/use-draggable-callback.d.ts",
+      "import": "./dist/use-draggable-callback.js"
+    },
+    "./use-draggable-drag": {
+      "types": "./dist/use-draggable-drag.d.ts",
+      "import": "./dist/use-draggable-drag.js"
+    },
+    "./use-droppable": {
+      "types": "./dist/use-droppable.d.ts",
+      "import": "./dist/use-droppable.js"
+    },
+    "./use-keyboard-motion-sensor": {
+      "types": "./dist/use-keyboard-motion-sensor.d.ts",
+      "import": "./dist/use-keyboard-motion-sensor.js"
+    },
+    "./use-keyboard-sensor": {
+      "types": "./dist/use-keyboard-sensor.d.ts",
+      "import": "./dist/use-keyboard-sensor.js"
+    },
+    "./use-pointer-sensor": {
+      "types": "./dist/use-pointer-sensor.d.ts",
+      "import": "./dist/use-pointer-sensor.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "dist",
+    "package.json",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "scripts": {
+    "build": "tsdown --config ./tsdown.config.ts",
+    "prettier:check": "prettier --check --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,yml,yaml}\"",
+    "prettier:write": "prettier --write --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,yml,yaml}\"",
+    "ts:check": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "dragdoll": "~0.11.0",
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "devDependencies": {
+    "dragdoll": "file:../dragdoll"
+  }
+}

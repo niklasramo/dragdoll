@@ -266,3 +266,13 @@ type SensorEventListenerId = null | string | number | symbol | bigint | Function
 ```
 
 This is a type alias for [`EventListenerId`](https://github.com/niklasramo/eventti#eventlistenerid) from Eventti.
+
+### SensorsEventsType
+
+```ts
+// Import
+import type { SensorsEventsType } from 'dragdoll/sensors';
+
+// Type
+type SensorsEventsType<S extends Sensor[]> = S[number]['_events_type'];
+```

@@ -1,6 +1,8 @@
 # Droppable
 
-The `Droppable` class defines drop targets where draggable elements can be dropped. Each droppable must be associated with a DOM element and maintains a cached client rectangle for collision detection.
+The `Droppable` class defines a drop target where draggable elements can be dropped. Each droppable must be associated with a DOM element.
+
+Note that `Droppable` does not do anything by itself. You have to add it to a [`DndObserver`](/dnd-observer) instance and match it with some [`Draggable`](/draggable) instances. The `DndObserver` will then emit events when the draggable enters, leaves, or collides with the droppable.
 
 ## Example
 
@@ -45,13 +47,27 @@ Here you can find more information about the options you can provide to the cons
 
 ### id
 
-Check out the [`id`](#id-1) property docs for more information.
+```ts
+type id = DroppableId;
+```
+
+The `id` is a unique identifier for the droppable that is assigned as the droppable's [`id`](#id-1) property. It can only be provided once via the constructor options and _should not_ be changed after instantiation. Reason being that the [`DndObserver`](/dnd-observer) will use the id to store data related to the droppable.
+
+Default is a unique symbol.
 
 ### accept
+
+```ts
+type accept = Set<DraggableDndGroup> | ((draggable: AnyDraggable) => boolean);
+```
 
 Check out the [`accept`](#accept-1) property docs for more information.
 
 ### data
+
+```ts
+type data = { [key: string]: any };
+```
 
 Check out the [`data`](#data-1) property docs for more information.
 
@@ -79,13 +95,13 @@ The associated DOM element whose bounding client rectangle is used for collision
 type accept = Set<DraggableDndGroup> | ((draggable: AnyDraggable) => boolean);
 ```
 
-Controls which draggables can collide with this droppable when used in a [`DndContext`](/dnd-context).
+Controls which draggables can collide with this droppable when used in a [`DndObserver`](/dnd-observer).
 
 - Set mode: accepts a draggable when its [`dndGroups`](/draggable#dndgroups) set contains any of the identifiers in this set.
 - Function mode: called during collision detection for every candidate. Return `true` to accept, `false` to reject. You can incorporate the draggable's [`dndGroups`](/draggable#dndgroups) here or come up with any other acceptance criteria.
 
 > [!IMPORTANT]
-> In most real-world use cases you don't want the Draggable and Droppable colliding with each other if the Droppable's [`element`](#element) is contained within any of the Draggable's dragged elements. This is why [DndContext](/dnd-context) will automatically discard such matches and you don't have to worry about it yourself. In the rare case that you do want this behavior, you can override this behavior by overriding the [DndContext's](/dnd-context) protected `_isMatch` method.
+> In most real-world use cases you don't want the Draggable and Droppable colliding with each other if the Droppable's [`element`](#element) is contained within any of the Draggable's dragged elements. This is why [DndObserver](/dnd-observer) will automatically discard such matches and you don't have to worry about it yourself. In the rare case that you do want this behavior, you can override this behavior by overriding the [DndObserver's](/dnd-observer) protected `_isMatch` method.
 
 Default is `() => true` (accepts all draggables).
 
@@ -153,7 +169,7 @@ droppable.off('destroy', id);
 type getClientRect = () => Readonly<Rect>;
 ```
 
-Returns the cached bounding client rectangle of the droppable as a read-only object. This rect is updated when `updateClientRect()` is called (e.g., by `DndContext` at drag start or on scroll).
+Returns the cached bounding client rectangle of the droppable as a read-only object. This rect is updated when `updateClientRect()` is called (e.g., by `DndObserver` at drag start or on scroll).
 
 **Example**
 

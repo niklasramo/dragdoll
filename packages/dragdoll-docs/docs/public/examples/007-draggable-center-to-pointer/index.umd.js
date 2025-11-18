@@ -383,7 +383,7 @@ function getOffsetContainer(n$4, t$2 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-BM9bdNuM.js
+//#region ../dragdoll/dist/draggable-BbMg6mSD.js
 function s$1(e$3, t$2) {
 	return e$3.isIdentity && t$2.isIdentity ? !0 : e$3.is2D && t$2.is2D ? e$3.a === t$2.a && e$3.b === t$2.b && e$3.c === t$2.c && e$3.d === t$2.d && e$3.e === t$2.e && e$3.f === t$2.f : e$3.m11 === t$2.m11 && e$3.m12 === t$2.m12 && e$3.m13 === t$2.m13 && e$3.m14 === t$2.m14 && e$3.m21 === t$2.m21 && e$3.m22 === t$2.m22 && e$3.m23 === t$2.m23 && e$3.m24 === t$2.m24 && e$3.m31 === t$2.m31 && e$3.m32 === t$2.m32 && e$3.m33 === t$2.m33 && e$3.m34 === t$2.m34 && e$3.m41 === t$2.m41 && e$3.m42 === t$2.m42 && e$3.m43 === t$2.m43 && e$3.m44 === t$2.m44;
 }
@@ -406,6 +406,8 @@ function d(e$3, t$2 = 0) {
 	return Math.round((e$3 + 2 ** -52) * n$4) / n$4;
 }
 var f = class {
+	_cache;
+	_validation;
 	constructor() {
 		this._cache = /* @__PURE__ */ new Map(), this._validation = /* @__PURE__ */ new Set();
 	}
@@ -431,6 +433,15 @@ var f = class {
 		this._cache.clear(), this._validation.clear();
 	}
 }, p = class {
+	sensor;
+	startEvent;
+	prevMoveEvent;
+	moveEvent;
+	endEvent;
+	items;
+	isEnded;
+	_matrixCache;
+	_clientOffsetCache;
 	constructor(e$3, t$2) {
 		this.sensor = e$3, this.startEvent = t$2, this.prevMoveEvent = t$2, this.moveEvent = t$2, this.endEvent = null, this.items = [], this.isEnded = !1, this._matrixCache = new f(), this._clientOffsetCache = new f();
 	}
@@ -529,6 +540,25 @@ function E(e$3, t$2 = new DOMMatrix()) {
 }
 const D = e$1 ? h() : null;
 var O = class {
+	data;
+	element;
+	elementContainer;
+	elementOffsetContainer;
+	dragContainer;
+	dragOffsetContainer;
+	elementTransformOrigin;
+	elementTransformMatrix;
+	elementOffsetMatrix;
+	frozenStyles;
+	unfrozenStyles;
+	clientRect;
+	position;
+	containerOffset;
+	alignmentOffset;
+	_moveDiff;
+	_alignDiff;
+	_matrixCache;
+	_clientOffsetCache;
 	constructor(e$3, t$2) {
 		if (!e$3.isConnected) throw Error(`Element is not connected`);
 		let { drag: r$3 } = t$2;
@@ -553,13 +583,17 @@ var O = class {
 		let c$2 = e$3.parentElement;
 		if (!c$2) throw Error(`Dragged element does not have a parent element.`);
 		this.elementContainer = c$2;
-		let l$3 = t$2.settings.container || c$2;
-		if (this.dragContainer = l$3, c$2 !== l$3) {
+		let l$3 = t$2.settings.container, u$3 = (typeof l$3 == `function` ? l$3({
+			draggable: t$2,
+			drag: r$3,
+			element: e$3
+		}) : l$3) || c$2;
+		if (this.dragContainer = u$3, c$2 !== u$3) {
 			let { position: e$4 } = i$3;
 			if (e$4 !== `fixed` && e$4 !== `absolute`) throw Error(`Dragged element has "${e$4}" position, but only "fixed" or "absolute" are allowed when using a custom drag container.`);
 		}
-		let u$3 = getOffsetContainer(e$3) || e$3;
-		this.elementOffsetContainer = u$3, this.dragOffsetContainer = l$3 === c$2 ? u$3 : getOffsetContainer(e$3, { container: l$3 });
+		let d$1 = getOffsetContainer(e$3) || e$3;
+		this.elementOffsetContainer = d$1, this.dragOffsetContainer = u$3 === c$2 ? d$1 : getOffsetContainer(e$3, { container: u$3 });
 		{
 			let { width: e$4, height: t$3, x: n$4, y: r$4 } = a$2;
 			this.clientRect = {
@@ -570,18 +604,18 @@ var O = class {
 			};
 		}
 		this._updateContainerMatrices(), this._updateContainerOffset();
-		let d$1 = t$2.settings.frozenStyles({
+		let f$1 = t$2.settings.frozenStyles({
 			draggable: t$2,
 			drag: r$3,
 			item: this,
 			style: i$3
 		});
-		if (Array.isArray(d$1)) if (d$1.length) {
+		if (Array.isArray(f$1)) if (f$1.length) {
 			let e$4 = {};
-			for (let t$3 of d$1) e$4[t$3] = i$3[t$3];
+			for (let t$3 of f$1) e$4[t$3] = i$3[t$3];
 			this.frozenStyles = e$4;
 		} else this.frozenStyles = null;
-		else this.frozenStyles = d$1;
+		else this.frozenStyles = f$1;
 		if (this.frozenStyles) {
 			let t$3 = {};
 			for (let n$4 in this.frozenStyles) t$3[n$4] = e$3.style[n$4];
@@ -675,6 +709,18 @@ const F = {
 	dndGroups: /* @__PURE__ */ new Set()
 };
 var B = class {
+	id;
+	sensors;
+	settings;
+	plugins;
+	drag;
+	isDestroyed;
+	_sensorData;
+	_emitter;
+	_startPhase;
+	_startId;
+	_moveId;
+	_alignId;
 	constructor(e$3, t$2 = {}) {
 		let { id: n$4 = Symbol(),...r$3 } = t$2;
 		this.id = n$4, this.sensors = e$3, this.settings = this._parseSettings(r$3), this.plugins = {}, this.drag = null, this.isDestroyed = !1, this._sensorData = /* @__PURE__ */ new Map(), this._emitter = new v(), this._startPhase = N.None, this._startId = Symbol(), this._moveId = Symbol(), this._alignId = Symbol(), this._onMove = this._onMove.bind(this), this._onScroll = this._onScroll.bind(this), this._onEnd = this._onEnd.bind(this), this._prepareStart = this._prepareStart.bind(this), this._applyStart = this._applyStart.bind(this), this._prepareMove = this._prepareMove.bind(this), this._applyMove = this._applyMove.bind(this), this._prepareAlign = this._prepareAlign.bind(this), this._applyAlign = this._applyAlign.bind(this), this.sensors.forEach((e$4) => {
@@ -743,7 +789,7 @@ var B = class {
 		!e$3 || this._startPhase !== N.Init || (this._startPhase = N.Prepare, e$3.items = (this.settings.elements({
 			draggable: this,
 			drag: e$3
-		}) || []).map((e$4) => new O(e$4, this)), this._applyModifiers(F.Start, 0, 0), this._emit(R.PrepareStart, e$3.startEvent), this.settings.onPrepareStart?.(e$3, this), this._startPhase = N.FinishPrepare);
+		}) || []).map((e$4) => new O(e$4, this)), this._applyModifiers(F.Start, 0, 0), this._emit(R.PrepareStart, e$3, this), this.settings.onPrepareStart?.(e$3, this), this._startPhase = N.FinishPrepare);
 	}
 	_applyStart() {
 		let e$3 = this.drag;
@@ -770,14 +816,14 @@ var B = class {
 					item: t$2
 				});
 			}
-			window.addEventListener(`scroll`, this._onScroll, k), this._emit(R.Start, e$3.startEvent), this.settings.onStart?.(e$3, this), this._startPhase = N.FinishApply;
+			window.addEventListener(`scroll`, this._onScroll, k), this._emit(R.Start, e$3, this), this.settings.onStart?.(e$3, this), this._startPhase = N.FinishApply;
 		}
 	}
 	_prepareMove() {
 		let e$3 = this.drag;
 		if (!e$3 || e$3.isEnded) return;
 		let { moveEvent: t$2, prevMoveEvent: n$4 } = e$3;
-		t$2 !== n$4 && (this._applyModifiers(F.Move, t$2.x - n$4.x, t$2.y - n$4.y), this._emit(R.PrepareMove, t$2), !e$3.isEnded && (this.settings.onPrepareMove?.(e$3, this), !e$3.isEnded && (e$3.prevMoveEvent = t$2)));
+		t$2 !== n$4 && (this._applyModifiers(F.Move, t$2.x - n$4.x, t$2.y - n$4.y), this._emit(R.PrepareMove, e$3, this), !e$3.isEnded && (this.settings.onPrepareMove?.(e$3, this), !e$3.isEnded && (e$3.prevMoveEvent = t$2)));
 	}
 	_applyMove() {
 		let e$3 = this.drag;
@@ -788,7 +834,7 @@ var B = class {
 				drag: e$3,
 				item: t$2
 			});
-			this._emit(R.Move, e$3.moveEvent), !e$3.isEnded && this.settings.onMove?.(e$3, this);
+			this._emit(R.Move, e$3, this), !e$3.isEnded && this.settings.onMove?.(e$3, this);
 		}
 	}
 	_prepareAlign() {
@@ -867,7 +913,7 @@ var B = class {
 				drag: n$4,
 				item: e$3
 			});
-			this._emit(R.End, n$4.endEvent), this.settings.onEnd?.(n$4, this), this.drag = null;
+			this._emit(R.End, n$4, this), this.settings.onEnd?.(n$4, this), this.drag = null;
 		}
 	}
 	align(n$4 = !1) {
@@ -894,7 +940,7 @@ var B = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/pointer-sensor-BNmXr-6_.js
+//#region ../dragdoll/dist/pointer-sensor-D3DHn381.js
 function i$2(e$3, t$2) {
 	if (`pointerId` in e$3) return e$3.pointerId === t$2 ? e$3 : null;
 	if (`changedTouches` in e$3) {
@@ -941,6 +987,14 @@ const l = {
 	}
 };
 var u = class {
+	element;
+	drag;
+	isDestroyed;
+	_startPredicate;
+	_listenerOptions;
+	_sourceEvents;
+	_areWindowListenersBound;
+	_emitter;
 	constructor(e$3, t$2 = {}) {
 		let { listenerOptions: n$4 = {}, sourceEvents: i$3 = `auto`, startPredicate: a$2 = (e$4) => !(`button` in e$4 && e$4.button > 0) } = t$2;
 		this.element = e$3, this.drag = null, this.isDestroyed = !1, this._areWindowListenersBound = !1, this._startPredicate = a$2, this._listenerOptions = s(n$4), this._sourceEvents = c(i$3), this._emitter = new v(), this._onStart = this._onStart.bind(this), this._onMove = this._onMove.bind(this), this._onCancel = this._onCancel.bind(this), this._onEnd = this._onEnd.bind(this), e$3.addEventListener(l[this._sourceEvents].start, this._onStart, this._listenerOptions);
@@ -1049,8 +1103,11 @@ var u = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/base-sensor-CiXk6Egt.js
+//#region ../dragdoll/dist/base-sensor-DVrttP21.js
 var n$2 = class {
+	drag;
+	isDestroyed;
+	_emitter;
 	constructor() {
 		this.drag = null, this.isDestroyed = !1, this._emitter = new v();
 	}
@@ -1097,8 +1154,11 @@ var n$2 = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/base-motion-sensor-BxKMtkJL.js
+//#region ../dragdoll/dist/base-motion-sensor-QRxjT_GX.js
 var i = class extends n$2 {
+	drag;
+	_direction;
+	_speed;
 	constructor() {
 		super(), this.drag = null, this._direction = {
 			x: 0,
@@ -1141,7 +1201,7 @@ var i = class extends n$2 {
 };
 
 //#endregion
-//#region ../dragdoll/dist/keyboard-motion-sensor-B2HqNPGM.js
+//#region ../dragdoll/dist/keyboard-motion-sensor-BsMzohjd.js
 const n = [
 	`start`,
 	`cancel`,
@@ -1183,6 +1243,20 @@ const i$1 = {
 	}
 };
 var a = class extends i {
+	element;
+	_moveKeys;
+	_moveKeyTimestamps;
+	_startKeys;
+	_moveLeftKeys;
+	_moveRightKeys;
+	_moveUpKeys;
+	_moveDownKeys;
+	_cancelKeys;
+	_endKeys;
+	_cancelOnBlur;
+	_cancelOnVisibilityChange;
+	_computeSpeed;
+	_startPredicate;
 	constructor(e$3, t$2 = {}) {
 		super();
 		let { startPredicate: n$4 = i$1.startPredicate, computeSpeed: r$3 = i$1.computeSpeed, cancelOnVisibilityChange: a$2 = i$1.cancelOnVisibilityChange, cancelOnBlur: o$2 = i$1.cancelOnBlur, startKeys: s$2 = i$1.startKeys, moveLeftKeys: c$2 = i$1.moveLeftKeys, moveRightKeys: l$3 = i$1.moveRightKeys, moveUpKeys: u$3 = i$1.moveUpKeys, moveDownKeys: d$1 = i$1.moveDownKeys, cancelKeys: f$1 = i$1.cancelKeys, endKeys: p$1 = i$1.endKeys } = t$2;

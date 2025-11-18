@@ -45,4 +45,4 @@ https://niklasramo.github.io/dragdoll/
 
 ## Copyright
 
-Copyright © 2022-2024, Niklas Rämö (inramo@gmail.com). Licensed under the [MIT license](/LICENSE.md).
+Copyright © 2022-2025, Niklas Rämö (inramo@gmail.com). Licensed under the [MIT license](/LICENSE.md).

@@ -1,1 +1,1 @@
-import"../sensor-Uwz8qy61.js";import{t as e}from"../base-sensor-CiXk6Egt.js";export{e as BaseSensor};
+import"../sensor-Uwz8qy61.js";import{t as e}from"../base-sensor-DVrttP21.js";export{e as BaseSensor};

@@ -1,1 +1,1 @@
-import"../constants-CMClRu_c.js";import"../sensor-Uwz8qy61.js";import{t as e}from"../pointer-sensor-BNmXr-6_.js";export{e as PointerSensor};
+import"../constants-CMClRu_c.js";import"../sensor-Uwz8qy61.js";import{t as e}from"../pointer-sensor-D3DHn381.js";export{e as PointerSensor};
