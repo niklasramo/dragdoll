@@ -40,6 +40,7 @@ https://niklasramo.github.io/dragdoll/
 
 - [`dragdoll-root`](./) - Root package.
 - [`packages/dragdoll`](./packages/dragdoll) - The core dragdoll package.
+- [`packages/dragdoll-react`](./packages/dragdoll-react) - The React wrapper for the dragdoll package.
 - [`packages/dragdoll-docs`](./packages/dragdoll-docs) - Docs for the dragdoll package.
 - [`packages/dragdoll-tests`](./packages/dragdoll-tests) - Tests for the dragdoll package.
 
