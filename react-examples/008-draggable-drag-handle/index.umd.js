@@ -29964,6 +29964,7 @@
     const drag = r(c([pointerSensor, keyboardSensor], draggableSettings));
     const setElementRef = (0, import_react.useCallback)(
       (node) => {
+        elementRef.current = node;
         setKeyboardSensorRef(node);
       },
       [setKeyboardSensorRef],
