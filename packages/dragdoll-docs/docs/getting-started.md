@@ -36,7 +36,7 @@ It's possible to use `dragdoll` via CDN by adding an `importmap` to your HTML fi
       "mezr/getRect": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getRect.js",
       "mezr/getDistance": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getDistance.js",
       "mezr/getOffsetContainer": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getOffsetContainer.js",
-      "dragdoll": "https://cdn.jsdelivr.net/npm/dragdoll@0.11.0/dist/index.js"
+      "dragdoll": "https://cdn.jsdelivr.net/npm/dragdoll@0.11.1/dist/index.js"
     }
   }
 </script>

@@ -1,6 +1,6 @@
 {
   "name": "dragdoll",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "description": "Modular and extensible drag & drop system.",
   "keywords": [
     "drag",
@@ -17,8 +17,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:niklasramo/dragdoll.git"
+    "url": "git@github.com:niklasramo/dragdoll.git",
+    "directory": "packages/dragdoll"
   },
+  "homepage": "https://niklasramo.github.io/dragdoll/",
   "type": "module",
   "sideEffects": false,
   "exports": {

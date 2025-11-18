@@ -1,7 +1,7 @@
 {
   "name": "dragdoll-react",
-  "version": "0.1.0",
-  "description": "React wrapper for dragdoll drag and drop library.",
+  "version": "0.1.1",
+  "description": "React wrapper for DragDoll drag & drop library.",
   "keywords": [
     "drag",
     "drop",
@@ -18,8 +18,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:niklasramo/dragdoll.git"
+    "url": "git@github.com:niklasramo/dragdoll.git",
+    "directory": "packages/dragdoll-react"
   },
+  "homepage": "https://niklasramo.github.io/dragdoll/react/",
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -91,7 +93,7 @@
     "ts:check": "tsc --noEmit"
   },
   "peerDependencies": {
-    "dragdoll": "~0.11.0",
+    "dragdoll": "~0.11.1",
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
   },
