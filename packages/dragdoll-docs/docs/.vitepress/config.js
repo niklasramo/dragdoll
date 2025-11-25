@@ -1,8 +1,10 @@
 import pkg from 'dragdoll/package.json' with { type: 'json' };
 import pkgReact from 'dragdoll-react/package.json' with { type: 'json' };
+import pkgSolid from 'dragdoll-solid/package.json' with { type: 'json' };
 
 const { version } = pkg;
 const { version: versionReact } = pkgReact;
+const { version: versionSolid } = pkgSolid;
 
 const SITE_URL = 'https://niklasramo.github.io/dragdoll/';
 
@@ -53,6 +55,7 @@ export default {
     sidebar: {
       '/': sidebarMain(),
       '/react/': sidebarReact(),
+      '/solid/': sidebarSolid(),
     },
     outline: [2, 3],
     editLink: {
@@ -254,6 +257,20 @@ function sidebarReact() {
         { text: 'useDndObserver', link: '/react/use-dnd-observer' },
         { text: 'useDndObserverContext', link: '/react/use-dnd-observer-context' },
         { text: 'useDndObserverCallback', link: '/react/use-dnd-observer-callback' },
+      ],
+    },
+  ];
+}
+
+function sidebarSolid() {
+  return [
+    {
+      text: `Solid v${versionSolid}`,
+      collapsible: false,
+      items: [
+        { text: 'Introduction', link: '/solid/' },
+        { text: 'Getting Started', link: '/solid/getting-started' },
+        { text: 'Examples', link: '/solid/examples' },
       ],
     },
   ];

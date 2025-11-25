@@ -5,11 +5,14 @@
   "type": "module",
   "scripts": {
     "build": "vitepress build docs",
-    "build:examples": "node ./scripts/build-examples.mjs && node ./scripts/build-react-examples.mjs",
+    "build:examples": "node ./scripts/build-examples.mjs && node ./scripts/build-react-examples.mjs && node ./scripts/build-solid-examples.mjs",
     "dev": "vitepress dev docs --host",
     "prettier:check": "prettier --check --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,html,css,yml,yaml}\"",
     "prettier:write": "prettier --write --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,html,css,yml,yaml}\"",
     "serve": "vitepress serve docs",
     "ts:check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "esbuild-plugin-solid": "^0.6.0"
   }
 }

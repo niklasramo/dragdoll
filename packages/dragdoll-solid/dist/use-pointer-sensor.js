@@ -1,0 +1,1 @@
+import"./maybe-accessor-BJ4-BRBt.js";import{t as e}from"./use-pointer-sensor-CLTXlC2g.js";export{e as usePointerSensor};

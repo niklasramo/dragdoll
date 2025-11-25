@@ -1,0 +1,2 @@
+import{t as e}from"./maybe-accessor-BJ4-BRBt.js";import{t}from"./are-configs-equal-BG92AH-W.js";import{createEffect as n,createMemo as r}from"solid-js";import{autoScrollPlugin as i}from"dragdoll/draggable/plugins/auto-scroll";function a(a,o){let s=r(()=>e(a)),c=r(()=>e(o)),l=c();return n(()=>{let e=s();if(e){if(e.plugins.autoscroll){l=c();return}e.use(i(c())),l=c()}}),n(()=>{let e=s()?.plugins.autoscroll;if(!e)return;let n=c();t(l,n)||(e.updateSettings(e._parseSettings(n)),l=n)}),s}export{a as t};
+//# sourceMappingURL=use-draggable-auto-scroll-D5_2U1FJ.js.map

@@ -13,6 +13,7 @@ export default defineConfig([
     '**/cache/',
     '**/public/examples/',
     '**/public/react-examples/',
+    '**/public/solid-examples/',
     '**/*.cjs',
   ]),
   eslint.configs.recommended,

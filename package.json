@@ -6,12 +6,13 @@
   "workspaces": [
     "packages/dragdoll",
     "packages/dragdoll-react",
+    "packages/dragdoll-solid",
     "packages/dragdoll-docs",
     "packages/dragdoll-tests",
     "packages/dragdoll-react-tests"
   ],
   "scripts": {
-    "build": "npm run format && npm run build --workspace=dragdoll --workspace=dragdoll-react && npm run build:examples --workspace=dragdoll-docs && npm run format",
+    "build": "npm run format && npm run build --workspace=dragdoll --workspace=dragdoll-react --workspace=dragdoll-solid && npm run build:examples --workspace=dragdoll-docs && npm run format",
     "dev": "npm run docs:dev",
     "docs:build": "npm run build --workspace=dragdoll-docs",
     "docs:dev": "npm run dev --workspace=dragdoll-docs",
