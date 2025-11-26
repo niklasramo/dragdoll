@@ -1,10 +1,10 @@
 import { a as Rect, r as Point } from "./types-BaIRuLz3.js";
 import { a as AutoScrollItem, c as AutoScrollItemSpeedCallback, l as AutoScrollItemTarget, s as AutoScrollItemEventCallback } from "./auto-scroll-Bufjh6JN.js";
-import { t as Sensor } from "./sensor-C7UNOJhU.js";
-import { h as DraggablePluginMap, n as Draggable } from "./draggable-kDevCMz8.js";
+import { t as Sensor } from "./sensor-B14KhysP.js";
+import { h as DraggablePluginMap, n as Draggable } from "./draggable-B44QiNe-.js";
 
 //#region src/draggable/plugins/auto-scroll-plugin.d.ts
-declare class DraggableAutoScrollProxy<S extends Sensor[]> implements AutoScrollItem {
+declare class DraggableAutoScrollProxy<S extends Sensor> implements AutoScrollItem {
   protected _draggableAutoScroll: DraggableAutoScroll<S>;
   protected _draggable: Draggable<S>;
   protected _position: AutoScrollItem['position'];
@@ -20,7 +20,7 @@ declare class DraggableAutoScrollProxy<S extends Sensor[]> implements AutoScroll
   get onStart(): AutoScrollItemEventCallback | null;
   get onStop(): AutoScrollItemEventCallback | null;
 }
-interface DraggableAutoScrollSettings<S extends Sensor[]> {
+interface DraggableAutoScrollSettings<S extends Sensor> {
   targets: AutoScrollItemTarget[] | ((draggable: Draggable<S>) => AutoScrollItemTarget[]);
   inertAreaSize: number;
   speed: number | AutoScrollItemSpeedCallback;
@@ -30,8 +30,8 @@ interface DraggableAutoScrollSettings<S extends Sensor[]> {
   onStart: AutoScrollItemEventCallback | null;
   onStop: AutoScrollItemEventCallback | null;
 }
-type DraggableAutoScrollOptions<S extends Sensor[]> = Partial<DraggableAutoScrollSettings<S>>;
-declare class DraggableAutoScroll<S extends Sensor[] = Sensor[]> {
+type DraggableAutoScrollOptions<S extends Sensor> = Partial<DraggableAutoScrollSettings<S>>;
+declare class DraggableAutoScroll<S extends Sensor = Sensor> {
   readonly name: 'autoscroll';
   readonly version: string;
   readonly settings: DraggableAutoScrollSettings<S>;
@@ -40,11 +40,11 @@ declare class DraggableAutoScroll<S extends Sensor[] = Sensor[]> {
   protected _parseSettings(options?: Partial<this['settings']>, defaults?: this['settings']): this['settings'];
   updateSettings(options?: Partial<this['settings']>): void;
 }
-declare function autoScrollPlugin<S extends Sensor[], P extends DraggablePluginMap>(options?: DraggableAutoScrollOptions<S>): (draggable: Draggable<S, P>) => Draggable<S, P> & {
+declare function autoScrollPlugin<S extends Sensor, P extends DraggablePluginMap>(options?: DraggableAutoScrollOptions<S>): (draggable: Draggable<S, P>) => Draggable<S, P> & {
   plugins: {
     autoscroll: DraggableAutoScroll<S>;
   };
 };
 //#endregion
 export { autoScrollPlugin as i, DraggableAutoScrollOptions as n, DraggableAutoScrollSettings as r, DraggableAutoScroll as t };
-//# sourceMappingURL=auto-scroll-plugin-CTcN1cDh.d.ts.map
+//# sourceMappingURL=auto-scroll-plugin-CqKiXPe9.d.ts.map

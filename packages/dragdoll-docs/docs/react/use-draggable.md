@@ -51,8 +51,8 @@ function DraggableBox() {
 ## Signature
 
 ```ts
-function useDraggable<S extends Sensor[] = Sensor[]>(
-  sensors: (S[number] | null)[],
+function useDraggable<S extends Sensor = Sensor>(
+  sensors: (S | null)[],
   settings?: UseDraggableSettings<S>,
 ): Draggable<S> | null;
 ```
@@ -145,8 +145,8 @@ Check the [`container`](/draggable#container) core docs for more info.
 ```ts
 type startPredicate = (data: {
   draggable: Draggable<S>;
-  sensor: S[number];
-  event: SensorsEventsType<S>['start'] | SensorsEventsType<S>['move'];
+  sensor: S;
+  event: S['_events_type']['start'] | S['_events_type']['move'];
 }) => boolean | undefined;
 ```
 
@@ -341,7 +341,7 @@ Returns the [`Draggable`](/draggable) instance or `null` if there are no sensors
 import type { UseDraggableSettings } from 'dragdoll-react';
 
 // Interface
-interface UseDraggableSettings<S extends Sensor[] = Sensor[]>
-  extends Partial<DraggableOptions<S>> {
+interface UseDraggableSettings<S extends Sensor = Sensor> extends Partial<DraggableOptions<S>> {
   dndObserver?: DndObserver<any> | null;
+}
 ```

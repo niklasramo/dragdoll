@@ -41,7 +41,7 @@ function DraggableBox() {
 ## Signature
 
 ```ts
-function useDraggableDrag<S extends Sensor[] = Sensor[]>(
+function useDraggableDrag<S extends Sensor = Sensor>(
   draggable: Draggable<S> | null,
   trackMove: boolean = false,
 ): DraggableDrag<S> | null;

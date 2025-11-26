@@ -1,6 +1,6 @@
 import { r as Point } from "./types-BaIRuLz3.js";
-import { t as Sensor } from "./sensor-C7UNOJhU.js";
-import { r as BaseMotionSensorEvents, t as BaseMotionSensor } from "./base-motion-sensor-CHqcVfQM.js";
+import { t as Sensor } from "./sensor-B14KhysP.js";
+import { r as BaseMotionSensorEvents, t as BaseMotionSensor } from "./base-motion-sensor-Bo4z3WUn.js";
 
 //#region src/sensors/keyboard-motion-sensor.d.ts
 interface KeyboardMotionSensorSettings<E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents> {
@@ -48,4 +48,4 @@ declare class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboa
 }
 //#endregion
 export { keyboardMotionSensorDefaults as i, KeyboardMotionSensorEvents as n, KeyboardMotionSensorSettings as r, KeyboardMotionSensor as t };
-//# sourceMappingURL=keyboard-motion-sensor-D5hAAImK.d.ts.map
+//# sourceMappingURL=keyboard-motion-sensor-DVWdg_uc.d.ts.map

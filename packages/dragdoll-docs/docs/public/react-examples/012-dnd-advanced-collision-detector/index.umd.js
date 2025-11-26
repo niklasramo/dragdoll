@@ -1900,7 +1900,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll/dist/draggable-BbMg6mSD.js
+  //#region ../dragdoll/dist/draggable-DSb83hxn.js
   function s$4(e$10, t$13) {
     return e$10.isIdentity && t$13.isIdentity
       ? !0
@@ -2437,7 +2437,7 @@
     };
   var B = class {
     id;
-    sensors;
+    _sensors;
     settings;
     plugins;
     drag;
@@ -2451,7 +2451,7 @@
     constructor(e$10, t$13 = {}) {
       let { id: n$15 = Symbol(), ...r$10 } = t$13;
       ((this.id = n$15),
-        (this.sensors = e$10),
+        (this._sensors = e$10),
         (this.settings = this._parseSettings(r$10)),
         (this.plugins = {}),
         (this.drag = null),
@@ -2471,20 +2471,52 @@
         (this._applyMove = this._applyMove.bind(this)),
         (this._prepareAlign = this._prepareAlign.bind(this)),
         (this._applyAlign = this._applyAlign.bind(this)),
-        this.sensors.forEach((e$11) => {
-          this._sensorData.set(e$11, {
-            predicateState: P.Pending,
-            predicateEvent: null,
-            onMove: (t$15) => this._onMove(t$15, e$11),
-            onEnd: (t$15) => this._onEnd(t$15, e$11),
-          });
-          let { onMove: t$14, onEnd: n$16 } = this._sensorData.get(e$11);
-          (e$11.on(e$4.Start, t$14, t$14),
-            e$11.on(e$4.Move, t$14, t$14),
-            e$11.on(e$4.Cancel, n$16, n$16),
-            e$11.on(e$4.End, n$16, n$16),
-            e$11.on(e$4.Destroy, n$16, n$16));
+        this._sensors.forEach((e$11) => {
+          this._bindSensor(e$11);
         }));
+    }
+    get sensors() {
+      return this._sensors;
+    }
+    set sensors(e$10) {
+      let t$13 = this._sensors;
+      if (e$10 === t$13) return;
+      let n$15 = t$13.filter((t$14) => !e$10.includes(t$14)),
+        r$10 = e$10.filter((e$11) => !t$13.includes(e$11));
+      ((this._sensors = e$10),
+        n$15.forEach((e$11) => {
+          this._unbindSensor(e$11);
+        }),
+        r$10.forEach((e$11) => {
+          this._bindSensor(e$11);
+        }));
+      let i$9 = this.drag?.sensor;
+      i$9 && n$15.includes(i$9) && this.stop();
+    }
+    _bindSensor(e$10) {
+      this._sensorData.set(e$10, {
+        predicateState: P.Pending,
+        predicateEvent: null,
+        onMove: (t$14) => this._onMove(t$14, e$10),
+        onEnd: (t$14) => this._onEnd(t$14, e$10),
+      });
+      let { onMove: t$13, onEnd: n$15 } = this._sensorData.get(e$10);
+      (e$10.on(e$4.Start, t$13, t$13),
+        e$10.on(e$4.Move, t$13, t$13),
+        e$10.on(e$4.Cancel, n$15, n$15),
+        e$10.on(e$4.End, n$15, n$15),
+        e$10.on(e$4.Destroy, n$15, n$15));
+    }
+    _unbindSensor(e$10) {
+      let t$13 = this._sensorData.get(e$10);
+      if (!t$13) return;
+      let { onMove: n$15, onEnd: r$10 } = t$13;
+      (e$10.off(e$4.Start, n$15),
+        e$10.off(e$4.Move, n$15),
+        e$10.off(e$4.Cancel, r$10),
+        e$10.off(e$4.End, r$10),
+        e$10.off(e$4.Destroy, r$10),
+        this._sensorData.delete(e$10));
     }
     _parseSettings(e$10, t$13 = z) {
       let {
@@ -2805,14 +2837,9 @@
       this.isDestroyed ||
         ((this.isDestroyed = !0),
         this.stop(),
-        this._sensorData.forEach(({ onMove: e$10, onEnd: t$13 }, n$15) => {
-          (n$15.off(e$4.Start, e$10),
-            n$15.off(e$4.Move, e$10),
-            n$15.off(e$4.Cancel, t$13),
-            n$15.off(e$4.End, t$13),
-            n$15.off(e$4.Destroy, t$13));
+        this._sensors.forEach((e$10) => {
+          this._unbindSensor(e$10);
         }),
-        this._sensorData.clear(),
         this._emit(R.Destroy),
         this.settings.onDestroy?.(this),
         this._emitter.off());
@@ -2870,7 +2897,7 @@
   };
 
   //#endregion
-  //#region ../dragdoll/dist/dnd-observer-PhWGBHaN.js
+  //#region ../dragdoll/dist/dnd-observer-DqGbQ7Ag.js
   var s$3 = (function (e$10) {
     return (
       (e$10[(e$10.Idle = 0)] = `Idle`),
@@ -3519,7 +3546,7 @@
   const t$7 = new N();
 
   //#endregion
-  //#region ../dragdoll/dist/auto-scroll-plugin-Bqs6w1zt.js
+  //#region ../dragdoll/dist/auto-scroll-plugin-CIiv_IsD.js
   const r$7 = {
       x: 0,
       y: 0,
@@ -5467,16 +5494,16 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-drag-BekXfPYq.js
+  //#region ../dragdoll-react/dist/use-draggable-drag-BiYkzFGc.js
   function r(r$10, i$9 = !1) {
     let [a$7, o$7] = (0, import_react.useState)(r$10?.drag || null),
       s$7 = (0, import_react.useState)(void 0)[1];
     return (
-      n$4(r$10, R.Start, () => {
-        o$7(r$10?.drag || null);
+      n$4(r$10, R.Start, (e$10) => {
+        o$7(e$10);
       }),
       n$4(r$10, R.Move, () => {
-        i$9 && a$7 && s$7(Symbol());
+        i$9 && s$7(Symbol());
       }),
       n$4(r$10, R.End, () => {
         o$7(null);

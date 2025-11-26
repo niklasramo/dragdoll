@@ -29,7 +29,7 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
 ## Syntax
 
 ```ts
-function createSnapModifier<S extends Sensor[]>(
+function createSnapModifier<S extends Sensor>(
   cellWidth: number,
   cellHeight: number,
 ): DraggableModifier<S>;
@@ -37,7 +37,7 @@ function createSnapModifier<S extends Sensor[]>(
 
 ## Type variables
 
-1. **S** - The types of the sensors that the modifier will use.
+1. **S** - A union type representing the sensor types that the modifier will use.
 
 ## Parameters
 

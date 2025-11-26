@@ -1,6 +1,6 @@
 import { r as Point } from "./types-BaIRuLz3.js";
-import { s as SensorEvents, t as Sensor } from "./sensor-C7UNOJhU.js";
-import { n as BaseSensorDragData, t as BaseSensor } from "./base-sensor-D7hB3PcK.js";
+import { s as SensorEvents, t as Sensor } from "./sensor-B14KhysP.js";
+import { n as BaseSensorDragData, t as BaseSensor } from "./base-sensor-Du6V0Zyk.js";
 
 //#region src/sensors/base-motion-sensor.d.ts
 interface BaseMotionSensorTickEvent {
@@ -29,4 +29,4 @@ declare class BaseMotionSensor<E extends BaseMotionSensorEvents = BaseMotionSens
 }
 //#endregion
 export { BaseMotionSensorTickEvent as i, BaseMotionSensorDragData as n, BaseMotionSensorEvents as r, BaseMotionSensor as t };
-//# sourceMappingURL=base-motion-sensor-CHqcVfQM.d.ts.map
+//# sourceMappingURL=base-motion-sensor-Bo4z3WUn.d.ts.map

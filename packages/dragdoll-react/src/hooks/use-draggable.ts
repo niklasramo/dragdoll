@@ -9,19 +9,19 @@ import { useDndObserverContext } from './use-dnd-observer-context.js';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';
 import { useMemoStable } from './use-memo-stable.js';
 
-export interface UseDraggableSettings<S extends Sensor[] = Sensor[]>
+export interface UseDraggableSettings<S extends Sensor = Sensor>
   extends Partial<DraggableOptions<S>> {
   dndObserver?: DndObserver<any> | null;
 }
 
-export function useDraggable<S extends Sensor[] = Sensor[]>(
-  sensors: (S[number] | null)[],
+export function useDraggable<S extends Sensor = Sensor>(
+  sensors: (S | null)[],
   settings?: UseDraggableSettings<S>,
 ) {
   // Parse sensors. The sensors might be null when they are waiting to be
   // created.
   const resolvedSensors = useMemoStable(() => {
-    return sensors.filter((s) => Boolean(s)) as S;
+    return sensors.filter((s) => Boolean(s)) as readonly S[];
   }, [...sensors]);
 
   // Parse settings.

@@ -7,14 +7,14 @@ DraggableDragItem class instance holds all the information about a drag item. Al
 ## Class
 
 ```ts
-export class DraggableDragItem<S extends Sensor[] = Sensor[]> {
+export class DraggableDragItem<S extends Sensor = Sensor> {
   constructor(element: HTMLElement | SVGSVGElement, draggable: Draggable<S>) {}
 }
 ```
 
 The DraggableDragItem class is a generic that accepts the following type variables:
 
-1. **S** - The types of the sensors that the DraggableDragItem will use as inputs for moving the provided elements around.
+1. **S** - A union type representing the sensor types that the DraggableDragItem will use as inputs for moving the provided elements around.
 
 The constructor accepts the following arguments:
 

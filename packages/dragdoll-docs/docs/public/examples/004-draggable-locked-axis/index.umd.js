@@ -383,7 +383,7 @@ function getOffsetContainer(n$4, t$2 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-BbMg6mSD.js
+//#region ../dragdoll/dist/draggable-DSb83hxn.js
 function s$1(e$3, t$2) {
 	return e$3.isIdentity && t$2.isIdentity ? !0 : e$3.is2D && t$2.is2D ? e$3.a === t$2.a && e$3.b === t$2.b && e$3.c === t$2.c && e$3.d === t$2.d && e$3.e === t$2.e && e$3.f === t$2.f : e$3.m11 === t$2.m11 && e$3.m12 === t$2.m12 && e$3.m13 === t$2.m13 && e$3.m14 === t$2.m14 && e$3.m21 === t$2.m21 && e$3.m22 === t$2.m22 && e$3.m23 === t$2.m23 && e$3.m24 === t$2.m24 && e$3.m31 === t$2.m31 && e$3.m32 === t$2.m32 && e$3.m33 === t$2.m33 && e$3.m34 === t$2.m34 && e$3.m41 === t$2.m41 && e$3.m42 === t$2.m42 && e$3.m43 === t$2.m43 && e$3.m44 === t$2.m44;
 }
@@ -710,7 +710,7 @@ const F = {
 };
 var B = class {
 	id;
-	sensors;
+	_sensors;
 	settings;
 	plugins;
 	drag;
@@ -723,16 +723,40 @@ var B = class {
 	_alignId;
 	constructor(e$3, t$2 = {}) {
 		let { id: n$4 = Symbol(),...r$3 } = t$2;
-		this.id = n$4, this.sensors = e$3, this.settings = this._parseSettings(r$3), this.plugins = {}, this.drag = null, this.isDestroyed = !1, this._sensorData = /* @__PURE__ */ new Map(), this._emitter = new v(), this._startPhase = N.None, this._startId = Symbol(), this._moveId = Symbol(), this._alignId = Symbol(), this._onMove = this._onMove.bind(this), this._onScroll = this._onScroll.bind(this), this._onEnd = this._onEnd.bind(this), this._prepareStart = this._prepareStart.bind(this), this._applyStart = this._applyStart.bind(this), this._prepareMove = this._prepareMove.bind(this), this._applyMove = this._applyMove.bind(this), this._prepareAlign = this._prepareAlign.bind(this), this._applyAlign = this._applyAlign.bind(this), this.sensors.forEach((e$4) => {
-			this._sensorData.set(e$4, {
-				predicateState: P.Pending,
-				predicateEvent: null,
-				onMove: (t$4) => this._onMove(t$4, e$4),
-				onEnd: (t$4) => this._onEnd(t$4, e$4)
-			});
-			let { onMove: t$3, onEnd: n$5 } = this._sensorData.get(e$4);
-			e$4.on(e.Start, t$3, t$3), e$4.on(e.Move, t$3, t$3), e$4.on(e.Cancel, n$5, n$5), e$4.on(e.End, n$5, n$5), e$4.on(e.Destroy, n$5, n$5);
+		this.id = n$4, this._sensors = e$3, this.settings = this._parseSettings(r$3), this.plugins = {}, this.drag = null, this.isDestroyed = !1, this._sensorData = /* @__PURE__ */ new Map(), this._emitter = new v(), this._startPhase = N.None, this._startId = Symbol(), this._moveId = Symbol(), this._alignId = Symbol(), this._onMove = this._onMove.bind(this), this._onScroll = this._onScroll.bind(this), this._onEnd = this._onEnd.bind(this), this._prepareStart = this._prepareStart.bind(this), this._applyStart = this._applyStart.bind(this), this._prepareMove = this._prepareMove.bind(this), this._applyMove = this._applyMove.bind(this), this._prepareAlign = this._prepareAlign.bind(this), this._applyAlign = this._applyAlign.bind(this), this._sensors.forEach((e$4) => {
+			this._bindSensor(e$4);
 		});
+	}
+	get sensors() {
+		return this._sensors;
+	}
+	set sensors(e$3) {
+		let t$2 = this._sensors;
+		if (e$3 === t$2) return;
+		let n$4 = t$2.filter((t$3) => !e$3.includes(t$3)), r$3 = e$3.filter((e$4) => !t$2.includes(e$4));
+		this._sensors = e$3, n$4.forEach((e$4) => {
+			this._unbindSensor(e$4);
+		}), r$3.forEach((e$4) => {
+			this._bindSensor(e$4);
+		});
+		let i$3 = this.drag?.sensor;
+		i$3 && n$4.includes(i$3) && this.stop();
+	}
+	_bindSensor(e$3) {
+		this._sensorData.set(e$3, {
+			predicateState: P.Pending,
+			predicateEvent: null,
+			onMove: (t$3) => this._onMove(t$3, e$3),
+			onEnd: (t$3) => this._onEnd(t$3, e$3)
+		});
+		let { onMove: t$2, onEnd: n$4 } = this._sensorData.get(e$3);
+		e$3.on(e.Start, t$2, t$2), e$3.on(e.Move, t$2, t$2), e$3.on(e.Cancel, n$4, n$4), e$3.on(e.End, n$4, n$4), e$3.on(e.Destroy, n$4, n$4);
+	}
+	_unbindSensor(e$3) {
+		let t$2 = this._sensorData.get(e$3);
+		if (!t$2) return;
+		let { onMove: n$4, onEnd: r$3 } = t$2;
+		e$3.off(e.Start, n$4), e$3.off(e.Move, n$4), e$3.off(e.Cancel, r$3), e$3.off(e.End, r$3), e$3.off(e.Destroy, r$3), this._sensorData.delete(e$3);
 	}
 	_parseSettings(e$3, t$2 = z) {
 		let { container: n$4 = t$2.container, startPredicate: r$3 = t$2.startPredicate, elements: i$3 = t$2.elements, frozenStyles: a$2 = t$2.frozenStyles, positionModifiers: o$2 = t$2.positionModifiers, applyPosition: s$2 = t$2.applyPosition, computeClientRect: c$2 = t$2.computeClientRect, sensorProcessingMode: l$3 = t$2.sensorProcessingMode, dndGroups: u$3 = t$2.dndGroups, onPrepareStart: d$1 = t$2.onPrepareStart, onStart: f$1 = t$2.onStart, onPrepareMove: p$1 = t$2.onPrepareMove, onMove: m$1 = t$2.onMove, onEnd: h$1 = t$2.onEnd, onDestroy: g$1 = t$2.onDestroy } = e$3 || {};
@@ -933,9 +957,9 @@ var B = class {
 		return e$3(this);
 	}
 	destroy() {
-		this.isDestroyed || (this.isDestroyed = !0, this.stop(), this._sensorData.forEach(({ onMove: e$3, onEnd: t$2 }, n$4) => {
-			n$4.off(e.Start, e$3), n$4.off(e.Move, e$3), n$4.off(e.Cancel, t$2), n$4.off(e.End, t$2), n$4.off(e.Destroy, t$2);
-		}), this._sensorData.clear(), this._emit(R.Destroy), this.settings.onDestroy?.(this), this._emitter.off());
+		this.isDestroyed || (this.isDestroyed = !0, this.stop(), this._sensors.forEach((e$3) => {
+			this._unbindSensor(e$3);
+		}), this._emit(R.Destroy), this.settings.onDestroy?.(this), this._emitter.off());
 	}
 };
 

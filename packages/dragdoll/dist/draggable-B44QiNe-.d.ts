@@ -1,5 +1,5 @@
 import { a as Rect, r as Point, t as CSSProperties } from "./types-BaIRuLz3.js";
-import { a as SensorEventListenerId, t as Sensor, u as SensorsEventsType } from "./sensor-C7UNOJhU.js";
+import { a as SensorEventListenerId, t as Sensor } from "./sensor-B14KhysP.js";
 import { Emitter } from "eventti";
 
 //#region src/utils/object-cache.d.ts
@@ -17,7 +17,7 @@ declare class ObjectCache<Key, Value> {
 }
 //#endregion
 //#region src/draggable/draggable-drag-item.d.ts
-declare class DraggableDragItem<S extends Sensor[] = Sensor[]> {
+declare class DraggableDragItem<S extends Sensor = Sensor> {
   data: {
     [key: string]: any;
   };
@@ -55,17 +55,17 @@ declare class DraggableDragItem<S extends Sensor[] = Sensor[]> {
 }
 //#endregion
 //#region src/draggable/draggable-drag.d.ts
-declare class DraggableDrag<S extends Sensor[]> {
-  readonly sensor: S[number];
-  readonly startEvent: SensorsEventsType<S>['start'] | SensorsEventsType<S>['move'];
-  readonly prevMoveEvent: SensorsEventsType<S>['start'] | SensorsEventsType<S>['move'];
-  readonly moveEvent: SensorsEventsType<S>['start'] | SensorsEventsType<S>['move'];
-  readonly endEvent: SensorsEventsType<S>['end'] | SensorsEventsType<S>['cancel'] | SensorsEventsType<S>['destroy'] | null;
+declare class DraggableDrag<S extends Sensor> {
+  readonly sensor: S;
+  readonly startEvent: S['_events_type']['start'] | S['_events_type']['move'];
+  readonly prevMoveEvent: S['_events_type']['start'] | S['_events_type']['move'];
+  readonly moveEvent: S['_events_type']['start'] | S['_events_type']['move'];
+  readonly endEvent: S['_events_type']['end'] | S['_events_type']['cancel'] | S['_events_type']['destroy'] | null;
   readonly items: DraggableDragItem[];
   readonly isEnded: boolean;
   protected _matrixCache: ObjectCache<HTMLElement | SVGSVGElement, [DOMMatrix, DOMMatrix]>;
   protected _clientOffsetCache: ObjectCache<HTMLElement | SVGSVGElement | Window | Document, Point>;
-  constructor(sensor: S[number], startEvent: SensorsEventsType<S>['start'] | SensorsEventsType<S>['move']);
+  constructor(sensor: S, startEvent: S['_events_type']['start'] | S['_events_type']['move']);
 }
 //#endregion
 //#region src/draggable/draggable.d.ts
@@ -105,14 +105,14 @@ declare const DraggableApplyPositionPhase: {
   readonly EndAlign: "end-align";
 };
 type DraggableApplyPositionPhase = (typeof DraggableApplyPositionPhase)[keyof typeof DraggableApplyPositionPhase];
-type DraggableModifierData<S extends Sensor[]> = {
+type DraggableModifierData<S extends Sensor> = {
   draggable: Draggable<S>;
   drag: DraggableDrag<S>;
   item: DraggableDragItem<S>;
   phase: DraggableModifierPhase;
 };
-type DraggableModifier<S extends Sensor[]> = (change: Point, data: DraggableModifierData<S>) => Point;
-interface DraggableSettings<S extends Sensor[]> {
+type DraggableModifier<S extends Sensor> = (change: Point, data: DraggableModifierData<S>) => Point;
+interface DraggableSettings<S extends Sensor> {
   container: HTMLElement | null | ((data: {
     draggable: Draggable<S>;
     drag: DraggableDrag<S>;
@@ -120,8 +120,8 @@ interface DraggableSettings<S extends Sensor[]> {
   }) => HTMLElement | null);
   startPredicate: (data: {
     draggable: Draggable<S>;
-    sensor: S[number];
-    event: SensorsEventsType<S>['start'] | SensorsEventsType<S>['move'];
+    sensor: S;
+    event: S['_events_type']['start'] | S['_events_type']['move'];
   }) => boolean | undefined;
   elements: (data: {
     draggable: Draggable<S>;
@@ -153,7 +153,7 @@ interface DraggableSettings<S extends Sensor[]> {
   onEnd?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
   onDestroy?: (draggable: Draggable<S>) => void;
 }
-interface DraggableOptions<S extends Sensor[]> extends Partial<DraggableSettings<S>> {
+interface DraggableOptions<S extends Sensor> extends Partial<DraggableSettings<S>> {
   id?: DraggableId;
 }
 interface DraggablePlugin {
@@ -170,7 +170,7 @@ declare const DraggableEventType: {
   readonly Destroy: "destroy";
 };
 type DraggableEventType = (typeof DraggableEventType)[keyof typeof DraggableEventType];
-interface DraggableEventCallbacks<S extends Sensor[]> {
+interface DraggableEventCallbacks<S extends Sensor> {
   [DraggableEventType.PrepareStart]: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
   [DraggableEventType.Start]: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
   [DraggableEventType.PrepareMove]: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
@@ -178,18 +178,18 @@ interface DraggableEventCallbacks<S extends Sensor[]> {
   [DraggableEventType.End]: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
   [DraggableEventType.Destroy]: () => void;
 }
-type DraggableEventCallback<S extends Sensor[] = Sensor[], K extends keyof DraggableEventCallbacks<S> = keyof DraggableEventCallbacks<S>> = DraggableEventCallbacks<S>[K];
+type DraggableEventCallback<S extends Sensor = Sensor, K extends keyof DraggableEventCallbacks<S> = keyof DraggableEventCallbacks<S>> = DraggableEventCallbacks<S>[K];
 declare const DraggableDefaultSettings: DraggableSettings<any>;
-declare class Draggable<S extends Sensor[] = Sensor[], P extends DraggablePluginMap = {}> {
+declare class Draggable<S extends Sensor = Sensor, P extends DraggablePluginMap = {}> {
   readonly id: DraggableId;
-  readonly sensors: S;
+  protected _sensors: readonly S[];
   readonly settings: DraggableSettings<S>;
   readonly plugins: P;
   readonly drag: DraggableDrag<S> | null;
   readonly isDestroyed: boolean;
-  protected _sensorData: Map<S[number], {
+  protected _sensorData: Map<S, {
     predicateState: DraggableStartPredicateState;
-    predicateEvent: SensorsEventsType<S>['start'] | SensorsEventsType<S>['move'] | null;
+    predicateEvent: S['_events_type']['start'] | S['_events_type']['move'] | null;
     onMove: (e: Parameters<Draggable<S, P>['_onMove']>[0]) => void;
     onEnd: (e: Parameters<Draggable<S, P>['_onEnd']>[0]) => void;
   }>;
@@ -198,12 +198,16 @@ declare class Draggable<S extends Sensor[] = Sensor[], P extends DraggablePlugin
   protected _startId: symbol;
   protected _moveId: symbol;
   protected _alignId: symbol;
-  constructor(sensors: S, options?: DraggableOptions<S>);
+  constructor(sensors: readonly S[], options?: DraggableOptions<S>);
+  get sensors(): ReadonlyArray<S>;
+  set sensors(sensors: readonly S[]);
+  protected _bindSensor(sensor: S): void;
+  protected _unbindSensor(sensor: S): void;
   protected _parseSettings(options?: Partial<this['settings']>, defaults?: this['settings']): this['settings'];
   protected _emit<K extends keyof DraggableEventCallbacks<S>>(type: K, ...e: Parameters<DraggableEventCallbacks<S>[K]>): void;
-  protected _onMove(e: SensorsEventsType<S>['start'] | SensorsEventsType<S>['move'], sensor: S[number]): void;
+  protected _onMove(e: S['_events_type']['start'] | S['_events_type']['move'], sensor: S): void;
   protected _onScroll(): void;
-  protected _onEnd(e: SensorsEventsType<S>['end'] | SensorsEventsType<S>['cancel'] | SensorsEventsType<S>['destroy'], sensor: S[number]): void;
+  protected _onEnd(e: S['_events_type']['end'] | S['_events_type']['cancel'] | S['_events_type']['destroy'], sensor: S): void;
   protected _prepareStart(): void;
   protected _applyStart(): void;
   protected _prepareMove(): void;
@@ -213,8 +217,8 @@ declare class Draggable<S extends Sensor[] = Sensor[], P extends DraggablePlugin
   protected _applyModifiers(phase: DraggableModifierPhase, changeX: number, changeY: number): void;
   on<T extends keyof DraggableEventCallbacks<S>>(type: T, listener: DraggableEventCallbacks<S>[T], listenerId?: SensorEventListenerId): SensorEventListenerId;
   off<T extends keyof DraggableEventCallbacks<S>>(type: T, listenerId: SensorEventListenerId): void;
-  resolveStartPredicate(sensor: S[number], e?: SensorsEventsType<S>['start'] | SensorsEventsType<S>['move']): void;
-  rejectStartPredicate(sensor: S[number]): void;
+  resolveStartPredicate(sensor: S, e?: S['_events_type']['start'] | S['_events_type']['move']): void;
+  rejectStartPredicate(sensor: S): void;
   stop(): void;
   align(instant?: boolean): void;
   getClientRect(): Readonly<Rect> | null;
@@ -224,4 +228,4 @@ declare class Draggable<S extends Sensor[] = Sensor[], P extends DraggablePlugin
 }
 //#endregion
 export { DraggableSettings as _, DraggableDndGroup as a, DraggableEventType as c, DraggableModifierData as d, DraggableModifierPhase as f, DraggableSensorProcessingMode as g, DraggablePluginMap as h, DraggableDefaultSettings as i, DraggableId as l, DraggablePlugin as m, Draggable as n, DraggableEventCallback as o, DraggableOptions as p, DraggableApplyPositionPhase as r, DraggableEventCallbacks as s, AnyDraggable as t, DraggableModifier as u, DraggableDrag as v, DraggableDragItem as y };
-//# sourceMappingURL=draggable-kDevCMz8.d.ts.map
+//# sourceMappingURL=draggable-B44QiNe-.d.ts.map

@@ -48,7 +48,7 @@ draggable.plugins.autoscroll.updateSettings({
 ## Syntax
 
 ```ts
-function autoScrollPlugin<S extends Sensor[], P extends DraggablePluginMap>(
+function autoScrollPlugin<S extends Sensor, P extends DraggablePluginMap>(
   options?: DraggableAutoScrollOptions<S>,
 ): (draggable: Draggable<S, P>) => Draggable<S, P> & {
   plugins: {
@@ -272,7 +272,7 @@ Default is `null`.
 import { DraggableAutoScroll } from 'dragdoll/draggable/plugins/auto-scroll';
 
 // Type
-class DraggableAutoScroll<S extends Sensor[] = Sensor[]> {
+class DraggableAutoScroll<S extends Sensor = Sensor> {
   constructor(draggable: Draggable<S>, options: DraggableAutoScrollOptions<S> = {}) {}
 }
 ```
@@ -286,7 +286,7 @@ class DraggableAutoScroll<S extends Sensor[] = Sensor[]> {
 import { DraggableAutoScrollSettings } from 'dragdoll/draggable/plugins/auto-scroll';
 
 // Interface
-interface DraggableAutoScrollSettings<S extends Sensor[]> {
+interface DraggableAutoScrollSettings<S extends Sensor> {
   targets: AutoScrollItemTarget[] | ((draggable: Draggable<S>) => AutoScrollItemTarget[]);
   inertAreaSize: number;
   speed: number | AutoScrollItemSpeedCallback;
@@ -307,5 +307,5 @@ interface DraggableAutoScrollSettings<S extends Sensor[]> {
 import { DraggableAutoScrollOptions } from 'dragdoll/draggable/plugins/auto-scroll';
 
 // Type
-type DraggableAutoScrollOptions<S extends Sensor[]> = Partial<DraggableAutoScrollSettings<S>>;
+type DraggableAutoScrollOptions<S extends Sensor> = Partial<DraggableAutoScrollSettings<S>>;
 ```

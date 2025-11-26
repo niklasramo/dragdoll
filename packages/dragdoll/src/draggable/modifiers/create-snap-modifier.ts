@@ -15,7 +15,7 @@ function getAxisChange(cellSize: number, snapPosition: number, sensorPosition: n
   return 0;
 }
 
-export function createSnapModifier<S extends Sensor[]>(cellWidth: number, cellHeight: number) {
+export function createSnapModifier<S extends Sensor>(cellWidth: number, cellHeight: number) {
   return function snapModifier(change, { item }) {
     const snapState: { snapX: number; snapY: number; sensorX: number; sensorY: number } =
       item.data.__snap__ ||

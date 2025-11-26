@@ -34,7 +34,7 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
 ## Syntax
 
 ```ts
-function createContainmentModifier<S extends Sensor[]>(
+function createContainmentModifier<S extends Sensor>(
   getContainerRect: (data: DraggableModifierData<S>) => {
     x: number;
     y: number;
@@ -47,7 +47,7 @@ function createContainmentModifier<S extends Sensor[]>(
 
 ## Type variables
 
-1. **S** - The types of the sensors that the modifier will use.
+1. **S** - A union type representing the sensor types that the modifier will use.
 
 ## Parameters
 

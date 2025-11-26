@@ -1,5 +1,5 @@
 import { i as PointerType, n as ListenerOptions } from "./types-BaIRuLz3.js";
-import { a as SensorEventListenerId, c as SensorMoveEvent, i as SensorEndEvent, l as SensorStartEvent, n as SensorCancelEvent, r as SensorDestroyEvent, t as Sensor } from "./sensor-C7UNOJhU.js";
+import { a as SensorEventListenerId, c as SensorMoveEvent, i as SensorEndEvent, l as SensorStartEvent, n as SensorCancelEvent, r as SensorDestroyEvent, t as Sensor } from "./sensor-B14KhysP.js";
 import { Emitter, Events } from "eventti";
 
 //#region src/sensors/pointer-sensor.d.ts
@@ -94,4 +94,4 @@ declare class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
 }
 //#endregion
 export { PointerSensorEndEvent as a, PointerSensorSettings as c, PointerSensorDragData as i, PointerSensorStartEvent as l, PointerSensorCancelEvent as n, PointerSensorEvents as o, PointerSensorDestroyEvent as r, PointerSensorMoveEvent as s, PointerSensor as t };
-//# sourceMappingURL=pointer-sensor-ErSx5irn.d.ts.map
+//# sourceMappingURL=pointer-sensor-CQptgIih.d.ts.map

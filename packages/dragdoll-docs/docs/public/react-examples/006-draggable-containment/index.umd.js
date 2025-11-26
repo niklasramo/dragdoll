@@ -556,7 +556,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll/dist/draggable-BbMg6mSD.js
+  //#region ../dragdoll/dist/draggable-DSb83hxn.js
   function s$1(e$8, t$9) {
     return e$8.isIdentity && t$9.isIdentity
       ? !0
@@ -1089,7 +1089,7 @@
     };
   var B = class {
     id;
-    sensors;
+    _sensors;
     settings;
     plugins;
     drag;
@@ -1103,7 +1103,7 @@
     constructor(e$8, t$9 = {}) {
       let { id: n$10 = Symbol(), ...r$8 } = t$9;
       ((this.id = n$10),
-        (this.sensors = e$8),
+        (this._sensors = e$8),
         (this.settings = this._parseSettings(r$8)),
         (this.plugins = {}),
         (this.drag = null),
@@ -1123,20 +1123,52 @@
         (this._applyMove = this._applyMove.bind(this)),
         (this._prepareAlign = this._prepareAlign.bind(this)),
         (this._applyAlign = this._applyAlign.bind(this)),
-        this.sensors.forEach((e$9) => {
-          this._sensorData.set(e$9, {
-            predicateState: P.Pending,
-            predicateEvent: null,
-            onMove: (t$11) => this._onMove(t$11, e$9),
-            onEnd: (t$11) => this._onEnd(t$11, e$9),
-          });
-          let { onMove: t$10, onEnd: n$11 } = this._sensorData.get(e$9);
-          (e$9.on(e$4.Start, t$10, t$10),
-            e$9.on(e$4.Move, t$10, t$10),
-            e$9.on(e$4.Cancel, n$11, n$11),
-            e$9.on(e$4.End, n$11, n$11),
-            e$9.on(e$4.Destroy, n$11, n$11));
+        this._sensors.forEach((e$9) => {
+          this._bindSensor(e$9);
         }));
+    }
+    get sensors() {
+      return this._sensors;
+    }
+    set sensors(e$8) {
+      let t$9 = this._sensors;
+      if (e$8 === t$9) return;
+      let n$10 = t$9.filter((t$10) => !e$8.includes(t$10)),
+        r$8 = e$8.filter((e$9) => !t$9.includes(e$9));
+      ((this._sensors = e$8),
+        n$10.forEach((e$9) => {
+          this._unbindSensor(e$9);
+        }),
+        r$8.forEach((e$9) => {
+          this._bindSensor(e$9);
+        }));
+      let i$6 = this.drag?.sensor;
+      i$6 && n$10.includes(i$6) && this.stop();
+    }
+    _bindSensor(e$8) {
+      this._sensorData.set(e$8, {
+        predicateState: P.Pending,
+        predicateEvent: null,
+        onMove: (t$10) => this._onMove(t$10, e$8),
+        onEnd: (t$10) => this._onEnd(t$10, e$8),
+      });
+      let { onMove: t$9, onEnd: n$10 } = this._sensorData.get(e$8);
+      (e$8.on(e$4.Start, t$9, t$9),
+        e$8.on(e$4.Move, t$9, t$9),
+        e$8.on(e$4.Cancel, n$10, n$10),
+        e$8.on(e$4.End, n$10, n$10),
+        e$8.on(e$4.Destroy, n$10, n$10));
+    }
+    _unbindSensor(e$8) {
+      let t$9 = this._sensorData.get(e$8);
+      if (!t$9) return;
+      let { onMove: n$10, onEnd: r$8 } = t$9;
+      (e$8.off(e$4.Start, n$10),
+        e$8.off(e$4.Move, n$10),
+        e$8.off(e$4.Cancel, r$8),
+        e$8.off(e$4.End, r$8),
+        e$8.off(e$4.Destroy, r$8),
+        this._sensorData.delete(e$8));
     }
     _parseSettings(e$8, t$9 = z) {
       let {
@@ -1455,14 +1487,9 @@
       this.isDestroyed ||
         ((this.isDestroyed = !0),
         this.stop(),
-        this._sensorData.forEach(({ onMove: e$8, onEnd: t$9 }, n$10) => {
-          (n$10.off(e$4.Start, e$8),
-            n$10.off(e$4.Move, e$8),
-            n$10.off(e$4.Cancel, t$9),
-            n$10.off(e$4.End, t$9),
-            n$10.off(e$4.Destroy, t$9));
+        this._sensors.forEach((e$8) => {
+          this._unbindSensor(e$8);
         }),
-        this._sensorData.clear(),
         this._emit(R.Destroy),
         this.settings.onDestroy?.(this),
         this._emitter.off());
@@ -3454,16 +3481,16 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-drag-BekXfPYq.js
+  //#region ../dragdoll-react/dist/use-draggable-drag-BiYkzFGc.js
   function r(r$8, i$6 = !1) {
     let [a$4, o$6] = (0, import_react.useState)(r$8?.drag || null),
       s$2 = (0, import_react.useState)(void 0)[1];
     return (
-      n$2(r$8, R.Start, () => {
-        o$6(r$8?.drag || null);
+      n$2(r$8, R.Start, (e$8) => {
+        o$6(e$8);
       }),
       n$2(r$8, R.Move, () => {
-        i$6 && a$4 && s$2(Symbol());
+        i$6 && s$2(Symbol());
       }),
       n$2(r$8, R.End, () => {
         o$6(null);

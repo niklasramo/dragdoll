@@ -47,7 +47,6 @@ declare abstract class Sensor<E extends SensorEvents = SensorEvents> {
   abstract cancel(): void;
   abstract destroy(): void;
 }
-type SensorsEventsType<S extends Sensor[]> = S[number]['_events_type'];
 //#endregion
-export { SensorEventListenerId as a, SensorMoveEvent as c, SensorEndEvent as i, SensorStartEvent as l, SensorCancelEvent as n, SensorEventType as o, SensorDestroyEvent as r, SensorEvents as s, Sensor as t, SensorsEventsType as u };
-//# sourceMappingURL=sensor-C7UNOJhU.d.ts.map
+export { SensorEventListenerId as a, SensorMoveEvent as c, SensorEndEvent as i, SensorStartEvent as l, SensorCancelEvent as n, SensorEventType as o, SensorDestroyEvent as r, SensorEvents as s, Sensor as t };
+//# sourceMappingURL=sensor-B14KhysP.d.ts.map

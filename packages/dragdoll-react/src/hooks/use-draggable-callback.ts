@@ -8,7 +8,7 @@ import { useRef } from 'react';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';
 
 export function useDraggableCallback<
-  S extends Sensor[] = Sensor[],
+  S extends Sensor = Sensor,
   K extends keyof DraggableEventCallbacks<S> = keyof DraggableEventCallbacks<S>,
 >(draggable: Draggable<S> | null, eventType: K, callback?: DraggableEventCallback<S, K>) {
   const hasCallback = !!callback;

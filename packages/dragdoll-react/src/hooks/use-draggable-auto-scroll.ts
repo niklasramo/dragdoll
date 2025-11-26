@@ -7,16 +7,16 @@ import { areConfigsEqual } from '../utils/are-configs-equal.js';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';
 
 type DraggableWithAutoScroll<
-  S extends Sensor[] = Sensor[],
+  S extends Sensor = Sensor,
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   P extends DraggablePluginMap = {},
 > = ReturnType<ReturnType<typeof autoScrollPlugin<S, P>>> | null;
 
-export type UseDraggableAutoScrollSettings<S extends Sensor[] = Sensor[]> =
+export type UseDraggableAutoScrollSettings<S extends Sensor = Sensor> =
   DraggableAutoScrollOptions<S>;
 
 export function useDraggableAutoScroll<
-  S extends Sensor[] = Sensor[],
+  S extends Sensor = Sensor,
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   P extends DraggablePluginMap = {},
 >(draggable: Draggable<S, P> | null, settings?: UseDraggableAutoScrollSettings<S>) {
@@ -36,7 +36,7 @@ export function useDraggableAutoScroll<
     if (draggable.plugins.autoscroll) return;
 
     // Register the plugin.
-    draggable.use(autoScrollPlugin(settingsRef.current));
+    draggable.use(autoScrollPlugin<S, P>(settingsRef.current));
 
     // Update the applied settings.
     appliedSettingsRef.current = settingsRef.current;

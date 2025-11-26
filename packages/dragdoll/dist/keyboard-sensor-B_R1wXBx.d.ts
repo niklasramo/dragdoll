@@ -1,6 +1,6 @@
 import { r as Point } from "./types-BaIRuLz3.js";
-import { c as SensorMoveEvent, i as SensorEndEvent, l as SensorStartEvent, n as SensorCancelEvent, r as SensorDestroyEvent, t as Sensor } from "./sensor-C7UNOJhU.js";
-import { t as BaseSensor } from "./base-sensor-D7hB3PcK.js";
+import { c as SensorMoveEvent, i as SensorEndEvent, l as SensorStartEvent, n as SensorCancelEvent, r as SensorDestroyEvent, t as Sensor } from "./sensor-B14KhysP.js";
+import { t as BaseSensor } from "./base-sensor-Du6V0Zyk.js";
 
 //#region src/sensors/keyboard-sensor.d.ts
 type KeyboardSensorPredicate<E extends KeyboardSensorEvents = KeyboardSensorEvents> = (e: KeyboardEvent, sensor: KeyboardSensor<E>) => Point | null | undefined;
@@ -53,4 +53,4 @@ declare class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEven
 }
 //#endregion
 export { KeyboardSensorEvents as a, KeyboardSensorSettings as c, KeyboardSensorEndEvent as i, KeyboardSensorStartEvent as l, KeyboardSensorCancelEvent as n, KeyboardSensorMoveEvent as o, KeyboardSensorDestroyEvent as r, KeyboardSensorPredicate as s, KeyboardSensor as t, keyboardSensorDefaults as u };
-//# sourceMappingURL=keyboard-sensor-BBVd6guo.d.ts.map
+//# sourceMappingURL=keyboard-sensor-B_R1wXBx.d.ts.map

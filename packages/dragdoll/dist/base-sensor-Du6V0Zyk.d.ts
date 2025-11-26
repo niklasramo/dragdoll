@@ -1,4 +1,4 @@
-import { a as SensorEventListenerId, s as SensorEvents, t as Sensor } from "./sensor-C7UNOJhU.js";
+import { a as SensorEventListenerId, s as SensorEvents, t as Sensor } from "./sensor-B14KhysP.js";
 import { Emitter, Events } from "eventti";
 
 //#region src/sensors/base-sensor.d.ts
@@ -26,4 +26,4 @@ declare class BaseSensor<E extends SensorEvents = SensorEvents> implements Senso
 }
 //#endregion
 export { BaseSensorDragData as n, BaseSensor as t };
-//# sourceMappingURL=base-sensor-D7hB3PcK.d.ts.map
+//# sourceMappingURL=base-sensor-Du6V0Zyk.d.ts.map
