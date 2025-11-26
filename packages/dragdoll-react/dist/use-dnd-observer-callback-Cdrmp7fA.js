@@ -1,2 +1,0 @@
-import{t as e}from"./use-dnd-observer-context-BL_LF-TG.js";import{t}from"./use-isomorphic-layout-effect-D2LtpjJM.js";import{useRef as n}from"react";function r(r,i,a){let o=e(),s=a===void 0?o:a,c=!!i,l=n(i);l.current=i,t(()=>{if(!s||!c)return;let e=s.on(r,((...e)=>{l.current?.(...e)}));return()=>void s.off(r,e)},[r,s,c])}export{r as t};
-//# sourceMappingURL=use-dnd-observer-callback-Cdrmp7fA.js.map

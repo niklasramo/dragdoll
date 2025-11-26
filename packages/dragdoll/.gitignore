@@ -4,3 +4,6 @@ cache
 *.env
 *.DS_Store
 .cursorrules
+
+# Build outputs
+dist

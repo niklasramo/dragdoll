@@ -1,2 +1,0 @@
-import{t as e}from"./use-draggable-callback-Cd1g8lnj.js";import{useState as t}from"react";import{DraggableEventType as n}from"dragdoll/draggable";function r(r,i=!1){let[a,o]=t(r?.drag||null),s=t(void 0)[1];return e(r,n.Start,e=>{o(e)}),e(r,n.Move,()=>{i&&s(Symbol())}),e(r,n.End,()=>{o(null)}),a}export{r as t};
-//# sourceMappingURL=use-draggable-drag-BiYkzFGc.js.map

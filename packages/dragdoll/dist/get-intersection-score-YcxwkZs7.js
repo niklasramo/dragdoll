@@ -1,2 +1,0 @@
-function e(e,t,n={width:0,height:0,x:0,y:0}){let r=Math.max(e.x,t.x),i=Math.min(e.x+e.width,t.x+t.width);if(i<=r)return null;let a=Math.max(e.y,t.y),o=Math.min(e.y+e.height,t.y+t.height);return o<=a?null:(n.x=r,n.y=a,n.width=i-r,n.height=o-a,n)}const t={width:0,height:0,x:0,y:0};function n(n,r,i){if(i||=e(n,r,t),!i)return 0;let a=i.width*i.height;return a?a/(Math.min(n.width,r.width)*Math.min(n.height,r.height))*100:0}export{e as n,n as t};
-//# sourceMappingURL=get-intersection-score-YcxwkZs7.js.map

@@ -1,1 +1,0 @@
-import{n as e,r as t,t as n}from"../ticker-Bio34ZvT.js";export{n as setTicker,e as ticker,t as tickerPhases};

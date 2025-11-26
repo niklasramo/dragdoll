@@ -111,6 +111,7 @@
   ],
   "scripts": {
     "build": "tsdown --config ./tsdown.config.ts",
+    "prepublishOnly": "npm run build",
     "prettier:check": "prettier --check --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,yml,yaml}\"",
     "prettier:write": "prettier --write --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,yml,yaml}\"",
     "ts:check": "tsc --noEmit"

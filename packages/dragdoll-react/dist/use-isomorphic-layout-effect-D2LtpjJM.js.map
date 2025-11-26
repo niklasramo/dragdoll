@@ -1,1 +1,0 @@
-{"version":3,"file":"use-isomorphic-layout-effect-D2LtpjJM.js","names":[],"sources":["../src/hooks/use-isomorphic-layout-effect.ts"],"sourcesContent":["import { useEffect, useLayoutEffect } from 'react';\n\nexport const useIsomorphicLayoutEffect =\n  typeof window === 'undefined' ? useEffect : useLayoutEffect;\n"],"mappings":"uDAEA,MAAa,EACX,OAAO,OAAW,IAAc,EAAY"}

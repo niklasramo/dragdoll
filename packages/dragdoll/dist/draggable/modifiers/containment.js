@@ -1,1 +1,0 @@
-import"../../create-full-rect-Dd45f4o1.js";import"../../constants-CMClRu_c.js";import"../../sensor-Uwz8qy61.js";import"../../pointer-sensor-D3DHn381.js";import{t as e}from"../../create-containment-modifier-ZDpY9s7q.js";export{e as createContainmentModifier};

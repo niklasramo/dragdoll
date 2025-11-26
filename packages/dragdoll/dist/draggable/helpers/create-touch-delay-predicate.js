@@ -1,1 +1,0 @@
-import"../../ticker-Bio34ZvT.js";import"../../get-style-CC2j8jdv.js";import"../../is-document-Bkve0NGU.js";import"../../constants-CMClRu_c.js";import"../../sensor-Uwz8qy61.js";import"../../draggable-DSb83hxn.js";import"../../pointer-sensor-D3DHn381.js";import{t as e}from"../../create-touch-delay-predicate-DLWkT0vc.js";export{e as createTouchDelayPredicate};
