@@ -5384,77 +5384,59 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-CMs2hFH6.js
+  //#region ../dragdoll-react/dist/use-draggable-B8vgOq62.js
   function c(c$7, l$6) {
     let u$6 = n$1(() => c$7.filter((e$10) => !!e$10), [...c$7]),
       { id: d$3, dndObserver: f$3, ...p$3 } = l$6 || {},
-      m$3 = n$2(),
-      h$3 = f$3 === void 0 ? m$3 : f$3,
-      [g$3, _$4] = (0, import_react.useState)(null),
-      v$4 = (0, import_react.useRef)(null),
-      y$3 = (0, import_react.useRef)(u$6);
-    y$3.current = u$6;
-    let b$2 = (0, import_react.useRef)(d$3),
-      x$2 = (0, import_react.useRef)(l$6),
-      S$2 = (0, import_react.useRef)(h$3),
-      C$2 = (0, import_react.useRef)(d$3);
-    C$2.current = d$3;
-    let w$2 = (0, import_react.useRef)(h$3);
-    w$2.current = h$3;
-    let T$2 = (0, import_react.useRef)(p$3);
-    T$2.current = p$3;
-    let E$3 = r$1(() => {
-        let e$10 = v$4.current;
-        e$10 && (e$10.destroy(), (v$4.current = null), _$4(null));
-      }, []),
-      D$2 = r$1(() => {
-        E$3();
+      m$3 = n$1(() => (d$3 === void 0 ? Symbol() : d$3), [d$3]),
+      h$3 = n$2(),
+      g$3 = f$3 === void 0 ? h$3 : f$3,
+      [_$4, v$4] = (0, import_react.useState)(null),
+      y$3 = (0, import_react.useRef)(null),
+      b$2 = (0, import_react.useRef)(u$6);
+    b$2.current = u$6;
+    let x$2 = (0, import_react.useRef)(l$6),
+      S$2 = (0, import_react.useRef)(p$3);
+    S$2.current = p$3;
+    let C$2 = r$1(() => {
         let e$10 = y$3.current;
-        if (e$10.length === 0) return;
-        let t$13 = C$2.current,
-          n$15 = w$2.current,
-          r$10 = new B(e$10, {
-            id: t$13,
-            ...(T$2.current || {}),
+        e$10 && (e$10.destroy(), (y$3.current = null), v$4(null));
+      }, []),
+      w$2 = r$1(
+        (e$10) => {
+          C$2();
+          let t$13 = new B(b$2.current, {
+            id: e$10,
+            ...S$2.current,
           });
-        (n$15?.addDraggables([r$10]),
-          (v$4.current = r$10),
-          (b$2.current = t$13),
-          (x$2.current = T$2.current),
-          (S$2.current = n$15),
-          _$4(r$10));
-      }, [E$3]);
+          ((y$3.current = t$13), (x$2.current = S$2.current), v$4(t$13));
+        },
+        [C$2],
+      );
     return (
       n(() => {
-        if (!u$6.length) {
-          E$3();
-          return;
-        }
-        let e$10 = v$4.current;
-        if (!e$10) {
-          D$2();
-          return;
-        }
-        (u$6.length !== e$10.sensors.length || u$6.some((t$13) => !e$10.sensors.includes(t$13))) &&
-          D$2();
-      }, [u$6, D$2, E$3]),
+        (_$4 === null || _$4.id !== m$3) && w$2(m$3);
+      }, [m$3, _$4, w$2]),
       n(() => {
-        v$4.current && b$2.current !== d$3 && D$2();
-      }, [d$3, D$2]),
+        _$4 && _$4.sensors !== u$6 && (_$4.sensors = u$6);
+      }, [_$4, u$6]),
       n(() => {
-        let e$10 = S$2.current;
-        if (e$10 === h$3) return;
-        let t$13 = v$4.current;
-        (t$13 && (e$10?.removeDraggables([t$13]), h$3?.addDraggables([t$13])), (S$2.current = h$3));
-      }, [h$3]),
+        if (_$4)
+          return (
+            g$3?.addDraggables([_$4]),
+            () => {
+              g$3?.removeDraggables([_$4]);
+            }
+          );
+      }, [_$4, g$3]),
       n(() => {
-        let e$10 = v$4.current;
-        e$10 &&
-          (n$5(x$2.current, p$3) || e$10.updateSettings(e$10._parseSettings(p$3)),
+        _$4 &&
+          x$2.current !== p$3 &&
+          (n$5(x$2.current, p$3) || _$4.updateSettings(_$4._parseSettings(p$3)),
           (x$2.current = p$3));
-      }, [p$3]),
-      n(() => E$3, [E$3]),
-      g$3
+      }, [_$4, p$3]),
+      n(() => C$2, [C$2]),
+      _$4
     );
   }
 

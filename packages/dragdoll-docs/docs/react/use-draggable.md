@@ -61,7 +61,7 @@ function useDraggable<S extends Sensor = Sensor>(
 
 ### sensors
 
-Array of [sensor](/sensor) instances. Sensors can be `null` while initializing. The hook will instantiate immediately when it the first non-null sensor is provided, and will re-instantiate the draggable when any of the sensors change.
+Array of [sensor](/sensor) instances. Sensors can be `null` while initializing. The hook will instantiate the draggable when sensors are available. When sensors change, they are updated in-place without recreating the draggable instance.
 
 ### settings
 
@@ -77,7 +77,7 @@ Treat these as live settings that can be updated dynamically without recreating 
 type id = DraggableId;
 ```
 
-The `id` is a unique identifier for the draggable that is assigned as the draggable's [`id`](/draggable#id-1) property. It can only be provided once via the constructor options and _should not_ be changed after instantiation.
+The `id` is a unique identifier for the draggable that is assigned as the draggable's [`id`](/draggable#id-1) property.
 
 > [!IMPORTANT]  
 > The `Draggable` instance will be _automatically recreated_ when the `id` setting is explicitly provided and changed.
