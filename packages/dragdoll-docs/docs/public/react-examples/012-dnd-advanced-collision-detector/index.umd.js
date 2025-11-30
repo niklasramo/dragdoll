@@ -66,27 +66,27 @@
       }
       on(t$13, n$15, e$10) {
         let i$9 = this._events,
-          s$7 = i$9.get(t$13);
-        s$7 ||
-          ((s$7 = {
+          s$9 = i$9.get(t$13);
+        s$9 ||
+          ((s$9 = {
             m: /* @__PURE__ */ new Map(),
             l: null,
           }),
-          i$9.set(t$13, s$7));
-        let o$7 = s$7.m;
-        if (((e$10 = e$10 === r$9 ? this.getId(n$15) : e$10), o$7.has(e$10)))
+          i$9.set(t$13, s$9));
+        let o$5 = s$9.m;
+        if (((e$10 = e$10 === r$9 ? this.getId(n$15) : e$10), o$5.has(e$10)))
           switch (this.dedupe) {
             case E$2.THROW:
               throw new Error('Eventti: duplicate listener id!');
             case E$2.IGNORE:
               return e$10;
             case E$2.UPDATE:
-              s$7.l = null;
+              s$9.l = null;
               break;
             default:
-              (o$7.delete(e$10), (s$7.l = null));
+              (o$5.delete(e$10), (s$9.l = null));
           }
-        return (o$7.set(e$10, n$15), s$7.l?.push(n$15), e$10);
+        return (o$5.set(e$10, n$15), s$9.l?.push(n$15), e$10);
       }
       once(t$13, n$15, e$10) {
         let i$9 = 0;
@@ -94,8 +94,8 @@
           (e$10 = e$10 === r$9 ? this.getId(n$15) : e$10),
           this.on(
             t$13,
-            (...s$7) => {
-              i$9 || ((i$9 = 1), this.off(t$13, e$10), n$15(...s$7));
+            (...s$9) => {
+              i$9 || ((i$9 = 1), this.off(t$13, e$10), n$15(...s$9));
             },
             e$10,
           )
@@ -117,9 +117,9 @@
         let e$10 = this._getListeners(t$13);
         if (e$10) {
           let i$9 = e$10.length,
-            s$7 = 0;
-          if (n$15.length) for (; s$7 < i$9; s$7++) e$10[s$7](...n$15);
-          else for (; s$7 < i$9; s$7++) e$10[s$7]();
+            s$9 = 0;
+          if (n$15.length) for (; s$9 < i$9; s$9++) e$10[s$9](...n$15);
+          else for (; s$9 < i$9; s$9++) e$10[s$9]();
         }
       }
       listenerCount(t$13) {
@@ -139,12 +139,12 @@
   //#endregion
   //#region ../../node_modules/tikki/dist/index.js
   var _$3 = E$2,
-    o$6 = class {
+    o$4 = class {
       constructor(e$10 = {}) {
-        let { phases: t$13 = [], dedupe: r$10, getId: s$7 } = e$10;
+        let { phases: t$13 = [], dedupe: r$10, getId: s$9 } = e$10;
         ((this._phases = t$13),
           (this._emitter = new v({
-            getId: s$7,
+            getId: s$9,
             dedupe: r$10,
           })),
           (this._queue = []),
@@ -192,22 +192,22 @@
         let e$10 = this._queue,
           t$13 = this._phases,
           r$10 = this._getListeners,
-          s$7 = 0,
+          s$9 = 0,
           a$7 = t$13.length,
           n$15;
-        for (; s$7 < a$7; s$7++) ((n$15 = r$10(t$13[s$7])), n$15 && e$10.push(n$15));
+        for (; s$9 < a$7; s$9++) ((n$15 = r$10(t$13[s$9])), n$15 && e$10.push(n$15));
         return e$10;
       }
       _processQueue(...e$10) {
         let t$13 = this._queue,
           r$10 = t$13.length;
         if (!r$10) return;
-        let s$7 = 0,
+        let s$9 = 0,
           a$7 = 0,
           n$15,
           c$7;
-        for (; s$7 < r$10; s$7++)
-          for (n$15 = t$13[s$7], a$7 = 0, c$7 = n$15.length; a$7 < c$7; a$7++) n$15[a$7](...e$10);
+        for (; s$9 < r$10; s$9++)
+          for (n$15 = t$13[s$9], a$7 = 0, c$7 = n$15.length; a$7 < c$7; a$7++) n$15[a$7](...e$10);
         t$13.length = 0;
       }
     };
@@ -221,18 +221,18 @@
       let e$10 = 1e3 / i$9,
         t$13 = typeof performance > 'u' ? () => Date.now() : () => performance.now();
       return (r$10) => {
-        let s$7 = setTimeout(() => r$10(t$13()), e$10);
-        return () => clearTimeout(s$7);
+        let s$9 = setTimeout(() => r$10(t$13()), e$10);
+        return () => clearTimeout(s$9);
       };
     }
   }
-  var l$5 = class extends o$6 {
+  var l$5 = class extends o$4 {
     constructor(e$10 = {}) {
-      let { paused: t$13 = !1, onDemand: r$10 = !1, requestFrame: s$7 = u$5(), ...a$7 } = e$10;
+      let { paused: t$13 = !1, onDemand: r$10 = !1, requestFrame: s$9 = u$5(), ...a$7 } = e$10;
       (super(a$7),
         (this._paused = t$13),
         (this._onDemand = r$10),
-        (this._requestFrame = s$7),
+        (this._requestFrame = s$9),
         (this._cancelFrame = null),
         (this._empty = !0),
         !t$13 && !r$10 && this._request());
@@ -278,12 +278,12 @@
       }
     }
     on(e$10, t$13, r$10) {
-      let s$7 = super.on(e$10, t$13, r$10);
-      return ((this._empty = !1), this._request(), s$7);
+      let s$9 = super.on(e$10, t$13, r$10);
+      return ((this._empty = !1), this._request(), s$9);
     }
     once(e$10, t$13, r$10) {
-      let s$7 = super.once(e$10, t$13, r$10);
-      return ((this._empty = !1), this._request(), s$7);
+      let s$9 = super.once(e$10, t$13, r$10);
+      return ((this._empty = !1), this._request(), s$9);
     }
     _request() {
       this._paused || this._cancelFrame || (this._cancelFrame = this._requestFrame(this.tick));
@@ -349,13 +349,13 @@
       i$9 = Math.min(e$10.x + e$10.width, t$13.x + t$13.width);
     if (i$9 <= r$10) return null;
     let a$7 = Math.max(e$10.y, t$13.y),
-      o$7 = Math.min(e$10.y + e$10.height, t$13.y + t$13.height);
-    return o$7 <= a$7
+      o$5 = Math.min(e$10.y + e$10.height, t$13.y + t$13.height);
+    return o$5 <= a$7
       ? null
       : ((n$15.x = r$10),
         (n$15.y = a$7),
         (n$15.width = i$9 - r$10),
-        (n$15.height = o$7 - a$7),
+        (n$15.height = o$5 - a$7),
         n$15);
   }
   const t$12 = {
@@ -503,21 +503,21 @@
   function getElementWidth(t$13, e$10 = BOX_EDGE.border) {
     let { width: r$10 } = t$13.getBoundingClientRect();
     if (e$10 === BOX_EDGE.border) return r$10;
-    const o$7 = getStyle(t$13);
+    const o$5 = getStyle(t$13);
     return e$10 === BOX_EDGE.margin
-      ? ((r$10 += Math.max(0, parseFloat(o$7.marginLeft) || 0)),
-        (r$10 += Math.max(0, parseFloat(o$7.marginRight) || 0)),
+      ? ((r$10 += Math.max(0, parseFloat(o$5.marginLeft) || 0)),
+        (r$10 += Math.max(0, parseFloat(o$5.marginRight) || 0)),
         r$10)
-      : ((r$10 -= parseFloat(o$7.borderLeftWidth) || 0),
-        (r$10 -= parseFloat(o$7.borderRightWidth) || 0),
+      : ((r$10 -= parseFloat(o$5.borderLeftWidth) || 0),
+        (r$10 -= parseFloat(o$5.borderRightWidth) || 0),
         e$10 === BOX_EDGE.scrollbar
           ? r$10
           : (!isDocumentElement(t$13) &&
-              SCROLLABLE_OVERFLOWS.has(o$7.overflowY) &&
+              SCROLLABLE_OVERFLOWS.has(o$5.overflowY) &&
               (r$10 -= getPreciseScrollbarSize(t$13, 'y', Math.round(r$10) - t$13.clientWidth)),
             e$10 === BOX_EDGE.padding ||
-              ((r$10 -= parseFloat(o$7.paddingLeft) || 0),
-              (r$10 -= parseFloat(o$7.paddingRight) || 0)),
+              ((r$10 -= parseFloat(o$5.paddingLeft) || 0),
+              (r$10 -= parseFloat(o$5.paddingRight) || 0)),
             r$10));
   }
 
@@ -552,21 +552,21 @@
   function getElementHeight(t$13, e$10 = BOX_EDGE.border) {
     let { height: r$10 } = t$13.getBoundingClientRect();
     if (e$10 === BOX_EDGE.border) return r$10;
-    const o$7 = getStyle(t$13);
+    const o$5 = getStyle(t$13);
     return e$10 === BOX_EDGE.margin
-      ? ((r$10 += Math.max(0, parseFloat(o$7.marginTop) || 0)),
-        (r$10 += Math.max(0, parseFloat(o$7.marginBottom) || 0)),
+      ? ((r$10 += Math.max(0, parseFloat(o$5.marginTop) || 0)),
+        (r$10 += Math.max(0, parseFloat(o$5.marginBottom) || 0)),
         r$10)
-      : ((r$10 -= parseFloat(o$7.borderTopWidth) || 0),
-        (r$10 -= parseFloat(o$7.borderBottomWidth) || 0),
+      : ((r$10 -= parseFloat(o$5.borderTopWidth) || 0),
+        (r$10 -= parseFloat(o$5.borderBottomWidth) || 0),
         e$10 === BOX_EDGE.scrollbar
           ? r$10
           : (!isDocumentElement(t$13) &&
-              SCROLLABLE_OVERFLOWS.has(o$7.overflowX) &&
+              SCROLLABLE_OVERFLOWS.has(o$5.overflowX) &&
               (r$10 -= getPreciseScrollbarSize(t$13, 'x', Math.round(r$10) - t$13.clientHeight)),
             e$10 === BOX_EDGE.padding ||
-              ((r$10 -= parseFloat(o$7.paddingTop) || 0),
-              (r$10 -= parseFloat(o$7.paddingBottom) || 0)),
+              ((r$10 -= parseFloat(o$5.paddingTop) || 0),
+              (r$10 -= parseFloat(o$5.paddingBottom) || 0)),
             r$10));
   }
 
@@ -588,7 +588,7 @@
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/getOffsetFromDocument.js
-  function getOffsetFromDocument(t$13, o$7 = BOX_EDGE.border) {
+  function getOffsetFromDocument(t$13, o$5 = BOX_EDGE.border) {
     const e$10 = {
       left: 0,
       top: 0,
@@ -599,16 +599,16 @@
     const r$10 = t$13.ownerDocument.defaultView;
     r$10 && ((e$10.left += r$10.scrollX || 0), (e$10.top += r$10.scrollY || 0));
     const n$15 = t$13.getBoundingClientRect();
-    if (((e$10.left += n$15.left), (e$10.top += n$15.top), o$7 === BOX_EDGE.border)) return e$10;
+    if (((e$10.left += n$15.left), (e$10.top += n$15.top), o$5 === BOX_EDGE.border)) return e$10;
     const l$6 = getStyle(t$13);
-    return o$7 === BOX_EDGE.margin
+    return o$5 === BOX_EDGE.margin
       ? ((e$10.left -= Math.max(0, parseFloat(l$6.marginLeft) || 0)),
         (e$10.top -= Math.max(0, parseFloat(l$6.marginTop) || 0)),
         e$10)
       : ((e$10.left += parseFloat(l$6.borderLeftWidth) || 0),
         (e$10.top += parseFloat(l$6.borderTopWidth) || 0),
-        o$7 === BOX_EDGE.scrollbar ||
-          o$7 === BOX_EDGE.padding ||
+        o$5 === BOX_EDGE.scrollbar ||
+          o$5 === BOX_EDGE.padding ||
           ((e$10.left += parseFloat(l$6.paddingLeft) || 0),
           (e$10.top += parseFloat(l$6.paddingTop) || 0)),
         e$10);
@@ -617,7 +617,7 @@
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/getOffset.js
   function getOffset(t$13, e$10) {
-    const o$7 = isRectObject(t$13)
+    const o$5 = isRectObject(t$13)
       ? {
           left: t$13.left,
           top: t$13.top,
@@ -631,9 +631,9 @@
         : Array.isArray(e$10)
           ? getOffsetFromDocument(e$10[0], e$10[1])
           : getOffsetFromDocument(e$10);
-      ((o$7.left -= t$14.left), (o$7.top -= t$14.top));
+      ((o$5.left -= t$14.left), (o$5.top -= t$14.top));
     }
-    return o$7;
+    return o$5;
   }
 
   //#endregion
@@ -681,8 +681,8 @@
 
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/utils/getDistanceBetweenPoints.js
-  function getDistanceBetweenPoints(t$13, e$10, n$15, o$7) {
-    return Math.sqrt(Math.pow(n$15 - t$13, 2) + Math.pow(o$7 - e$10, 2));
+  function getDistanceBetweenPoints(t$13, e$10, n$15, o$5) {
+    return Math.sqrt(Math.pow(n$15 - t$13, 2) + Math.pow(o$5 - e$10, 2));
   }
 
   //#endregion
@@ -691,23 +691,23 @@
     if (isIntersecting(t$13, e$10)) return null;
     const n$15 = t$13.left + t$13.width,
       i$9 = t$13.top + t$13.height,
-      o$7 = e$10.left + e$10.width,
-      s$7 = e$10.top + e$10.height;
+      o$5 = e$10.left + e$10.width,
+      s$9 = e$10.top + e$10.height;
     return n$15 <= e$10.left
       ? i$9 <= e$10.top
         ? getDistanceBetweenPoints(n$15, i$9, e$10.left, e$10.top)
-        : t$13.top >= s$7
-          ? getDistanceBetweenPoints(n$15, t$13.top, e$10.left, s$7)
+        : t$13.top >= s$9
+          ? getDistanceBetweenPoints(n$15, t$13.top, e$10.left, s$9)
           : e$10.left - n$15
-      : t$13.left >= o$7
+      : t$13.left >= o$5
         ? i$9 <= e$10.top
-          ? getDistanceBetweenPoints(t$13.left, i$9, o$7, e$10.top)
-          : t$13.top >= s$7
-            ? getDistanceBetweenPoints(t$13.left, t$13.top, o$7, s$7)
-            : t$13.left - o$7
+          ? getDistanceBetweenPoints(t$13.left, i$9, o$5, e$10.top)
+          : t$13.top >= s$9
+            ? getDistanceBetweenPoints(t$13.left, t$13.top, o$5, s$9)
+            : t$13.left - o$5
         : i$9 <= e$10.top
           ? e$10.top - i$9
-          : t$13.top - s$7;
+          : t$13.top - s$9;
   }
 
   //#endregion
@@ -724,10 +724,10 @@
 
   //#endregion
   //#region ../dragdoll/dist/auto-scroll-uAZMypL4.js
-  const o$5 = e$9(),
-    s$6 = e$9();
+  const o$3 = e$9(),
+    s$8 = e$9();
   function c$6(e$10, t$13) {
-    return getDistance(e$9(e$10, o$5), e$9(t$13, s$6));
+    return getDistance(e$9(e$10, o$3), e$9(t$13, s$8));
   }
   function l$4(e$10) {
     return e$10 instanceof Window;
@@ -735,7 +735,7 @@
   function u$4(e$10) {
     return l$4(e$10) || e$10 === document.documentElement || e$10 === document.body ? window : e$10;
   }
-  function d$2(e$10) {
+  function d$3(e$10) {
     return l$4(e$10) ? e$10.scrollX : e$10.scrollLeft;
   }
   function f$2(e$10) {
@@ -772,7 +772,7 @@
         maxBatchCount: r$10 = 2 ** 53 - 1,
         initialBatchCount: i$9 = 0,
         shrinkThreshold: a$7 = 2,
-        onRelease: o$7,
+        onRelease: o$5,
       } = {},
     ) {
       ((this._batchSize = Math.floor(Math.max(t$13, 1))),
@@ -784,7 +784,7 @@
         (this._data = Array(Math.floor(Math.max(Math.max(i$9, n$15) * this._batchSize, 0)))),
         (this._index = 0),
         (this._getItem = e$10),
-        (this._onRelease = o$7));
+        (this._onRelease = o$5));
     }
     get(...e$10) {
       if (this._index > 0) return this._getItem(this._data[--this._index], ...e$10);
@@ -867,14 +867,14 @@
     }
   }
   function T$1(e$10, t$13, n$15) {
-    let { left: r$10 = 0, right: i$9 = 0, top: a$7 = 0, bottom: o$7 = 0 } = t$13;
+    let { left: r$10 = 0, right: i$9 = 0, top: a$7 = 0, bottom: o$5 = 0 } = t$13;
     return (
       (r$10 = Math.max(0, r$10)),
       (i$9 = Math.max(0, i$9)),
       (a$7 = Math.max(0, a$7)),
-      (o$7 = Math.max(0, o$7)),
+      (o$5 = Math.max(0, o$5)),
       (n$15.width = e$10.width + r$10 + i$9),
-      (n$15.height = e$10.height + a$7 + o$7),
+      (n$15.height = e$10.height + a$7 + o$5),
       (n$15.x = e$10.x - r$10),
       (n$15.y = e$10.y - a$7),
       n$15
@@ -938,7 +938,7 @@
       }
       computeScrollValues() {
         this.element &&
-          ((this.scrollLeft = this.requestX ? this.requestX.value : d$2(this.element)),
+          ((this.scrollLeft = this.requestX ? this.requestX.value : d$3(this.element)),
           (this.scrollTop = this.requestY ? this.requestY.value : p$2(this.element)));
       }
       scroll() {
@@ -1002,7 +1002,7 @@
           ? this.value === this.value
             ? Math.max(0, Math.min(this.value, this.maxValue))
             : y$2.x & this.direction
-              ? d$2(this.element)
+              ? d$3(this.element)
               : p$2(this.element)
           : 0;
       }
@@ -1059,12 +1059,12 @@
           let t$15 = n$16.threshold - Math.max(0, n$16.distance);
           a$7 = (e$10 / n$16.threshold) * t$15;
         } else a$7 = e$10;
-      let o$7 = n$16.speed;
-      if (o$7 === a$7) return a$7;
-      let s$7 = a$7;
-      return o$7 < a$7
-        ? ((s$7 = o$7 + r$10 * (n$16.deltaTime / 1e3)), Math.min(a$7, s$7))
-        : ((s$7 = o$7 - i$9 * (n$16.deltaTime / 1e3)), Math.max(a$7, s$7));
+      let o$5 = n$16.speed;
+      if (o$5 === a$7) return a$7;
+      let s$9 = a$7;
+      return o$5 < a$7
+        ? ((s$9 = o$5 + r$10 * (n$16.deltaTime / 1e3)), Math.min(a$7, s$9))
+        : ((s$9 = o$5 - i$9 * (n$16.deltaTime / 1e3)), Math.max(a$7, s$9));
     };
   }
   var N = class {
@@ -1134,18 +1134,18 @@
         r$6.off(n$10.read, this._frameRead),
         r$6.off(n$10.write, this._frameWrite));
     }
-    _requestItemScroll(e$10, t$13, n$15, r$10, i$9, a$7, o$7) {
-      let s$7 = this._requests[t$13],
-        c$7 = s$7.get(e$10);
+    _requestItemScroll(e$10, t$13, n$15, r$10, i$9, a$7, o$5) {
+      let s$9 = this._requests[t$13],
+        c$7 = s$9.get(e$10);
       (c$7
         ? (c$7.element !== n$15 || c$7.direction !== r$10) && c$7.reset()
-        : ((c$7 = this._requestPool.get()), s$7.set(e$10, c$7)),
+        : ((c$7 = this._requestPool.get()), s$9.set(e$10, c$7)),
         (c$7.item = e$10),
         (c$7.element = n$15),
         (c$7.direction = r$10),
         (c$7.threshold = i$9),
         (c$7.distance = a$7),
-        (c$7.maxValue = o$7));
+        (c$7.maxValue = o$5));
     }
     _cancelItemScroll(e$10, t$13) {
       let n$15 = this._requests[t$13],
@@ -1156,8 +1156,8 @@
         n$15.delete(e$10));
     }
     _checkItemOverlap(e$10, t$13, n$15) {
-      let { inertAreaSize: a$7, targets: o$7, clientRect: s$7 } = e$10;
-      if (!o$7.length) {
+      let { inertAreaSize: a$7, targets: o$5, clientRect: s$9 } = e$10;
+      if (!o$5.length) {
         (t$13 && this._cancelItemScroll(e$10, y$2.x), n$15 && this._cancelItemScroll(e$10, y$2.y));
         return;
       }
@@ -1183,8 +1183,8 @@
         R$1 = 0,
         z$1 = 0,
         B$1 = 0;
-      for (; B$1 < o$7.length; B$1++) {
-        let e$11 = o$7[B$1],
+      for (; B$1 < o$5.length; B$1++) {
+        let e$11 = o$5[B$1],
           l$7 = typeof e$11.threshold == `number` ? e$11.threshold : 50,
           y$3 = !!(t$13 && g$3 && e$11.axis !== `y`),
           V = !!(n$15 && v$4 && e$11.axis !== `x`),
@@ -1195,20 +1195,20 @@
           G = V ? m$2(U) : -1;
         if (W <= 0 && G <= 0) continue;
         let K = t$11([U, `padding`], window),
-          q = n$13(s$7, K) || -Infinity;
+          q = n$13(s$9, K) || -Infinity;
         if (q === -Infinity)
-          if (e$11.padding && h$2(s$7, T$1(K, e$11.padding, _$2))) q = -(c$6(s$7, K) || 0);
+          if (e$11.padding && h$2(s$9, T$1(K, e$11.padding, _$2))) q = -(c$6(s$9, K) || 0);
           else continue;
         if (y$3 && H >= x$2 && W > 0 && (H > x$2 || q > k$2)) {
           let e$12 = 0,
             t$14 = C$1.none,
             n$16 = D$1(l$7, K.width),
-            r$10 = O$1(n$16, a$7, s$7.width, K.width);
+            r$10 = O$1(n$16, a$7, s$9.width, K.width);
           (g$3 === C$1.right
-            ? ((e$12 = K.x + K.width + r$10 - (s$7.x + s$7.width)),
-              e$12 <= n$16 && !E$1(d$2(U), W) && (t$14 = C$1.right))
+            ? ((e$12 = K.x + K.width + r$10 - (s$9.x + s$9.width)),
+              e$12 <= n$16 && !E$1(d$3(U), W) && (t$14 = C$1.right))
             : g$3 === C$1.left &&
-              ((e$12 = s$7.x - (K.x - r$10)), e$12 <= n$16 && d$2(U) > 0 && (t$14 = C$1.left)),
+              ((e$12 = s$9.x - (K.x - r$10)), e$12 <= n$16 && d$3(U) > 0 && (t$14 = C$1.left)),
             t$14 &&
               ((b$2 = U),
               (x$2 = H),
@@ -1222,12 +1222,12 @@
           let e$12 = 0,
             t$14 = S$1.none,
             n$16 = D$1(l$7, K.height),
-            r$10 = O$1(n$16, a$7, s$7.height, K.height);
+            r$10 = O$1(n$16, a$7, s$9.height, K.height);
           (v$4 === C$1.down
-            ? ((e$12 = K.y + K.height + r$10 - (s$7.y + s$7.height)),
+            ? ((e$12 = K.y + K.height + r$10 - (s$9.y + s$9.height)),
               e$12 <= n$16 && !E$1(p$2(U), G) && (t$14 = C$1.down))
             : v$4 === C$1.up &&
-              ((e$12 = s$7.y - (K.y - r$10)), e$12 <= n$16 && p$2(U) > 0 && (t$14 = C$1.up)),
+              ((e$12 = s$9.y - (K.y - r$10)), e$12 <= n$16 && p$2(U) > 0 && (t$14 = C$1.up)),
             t$14 &&
               ((N$2 = U),
               (P$1 = H),
@@ -1248,8 +1248,8 @@
             : this._cancelItemScroll(e$10, y$2.y)));
     }
     _updateScrollRequest(e$10) {
-      let { inertAreaSize: t$13, smoothStop: n$15, targets: a$7, clientRect: o$7 } = e$10.item,
-        s$7 = null,
+      let { inertAreaSize: t$13, smoothStop: n$15, targets: a$7, clientRect: o$5 } = e$10.item,
+        s$9 = null,
         c$7 = 0;
       for (; c$7 < a$7.length; c$7++) {
         let n$16 = a$7[c$7],
@@ -1262,30 +1262,30 @@
         let v$4 = g$3 ? f$2(l$6) : m$2(l$6);
         if (v$4 <= 0) break;
         let x$2 = t$11([l$6, `padding`], window);
-        if ((n$13(o$7, x$2) || -Infinity) === -Infinity) {
+        if ((n$13(o$5, x$2) || -Infinity) === -Infinity) {
           let e$11 = n$16.scrollPadding || n$16.padding;
-          if (!(e$11 && h$2(o$7, T$1(x$2, e$11, _$2)))) break;
+          if (!(e$11 && h$2(o$5, T$1(x$2, e$11, _$2)))) break;
         }
         let S$2 = D$1(
             typeof n$16.threshold == `number` ? n$16.threshold : 50,
             g$3 ? x$2.width : x$2.height,
           ),
-          w$2 = O$1(S$2, t$13, g$3 ? o$7.width : o$7.height, g$3 ? x$2.width : x$2.height),
+          w$2 = O$1(S$2, t$13, g$3 ? o$5.width : o$5.height, g$3 ? x$2.width : x$2.height),
           k$2 = 0;
         if (
           ((k$2 =
             e$10.direction === C$1.left
-              ? o$7.x - (x$2.x - w$2)
+              ? o$5.x - (x$2.x - w$2)
               : e$10.direction === C$1.right
-                ? x$2.x + x$2.width + w$2 - (o$7.x + o$7.width)
+                ? x$2.x + x$2.width + w$2 - (o$5.x + o$5.width)
                 : e$10.direction === C$1.up
-                  ? o$7.y - (x$2.y - w$2)
-                  : x$2.y + x$2.height + w$2 - (o$7.y + o$7.height)),
+                  ? o$5.y - (x$2.y - w$2)
+                  : x$2.y + x$2.height + w$2 - (o$5.y + o$5.height)),
           k$2 > S$2)
         )
           break;
-        let A$2 = g$3 ? d$2(l$6) : p$2(l$6);
-        if (((s$7 = b$1.forward & e$10.direction ? E$1(A$2, v$4) : A$2 <= 0), s$7)) break;
+        let A$2 = g$3 ? d$3(l$6) : p$2(l$6);
+        if (((s$9 = b$1.forward & e$10.direction ? E$1(A$2, v$4) : A$2 <= 0), s$9)) break;
         return (
           (e$10.maxValue = v$4),
           (e$10.threshold = S$2),
@@ -1296,7 +1296,7 @@
       }
       return (
         n$15 === !0 && e$10.speed > 0
-          ? (s$7 === null && (s$7 = e$10.hasReachedEnd()), (e$10.isEnding = !s$7))
+          ? (s$9 === null && (s$9 = e$10.hasReachedEnd()), (e$10.isEnding = !s$9))
           : (e$10.isEnding = !1),
         e$10.isEnding
       );
@@ -1307,10 +1307,10 @@
           n$15 = this._itemData.get(t$13),
           { x: r$10, y: i$9 } = t$13.position,
           a$7 = n$15.positionX,
-          o$7 = n$15.positionY;
-        (r$10 === a$7 && i$9 === o$7) ||
+          o$5 = n$15.positionY;
+        (r$10 === a$7 && i$9 === o$5) ||
           ((n$15.directionX = r$10 > a$7 ? C$1.right : r$10 < a$7 ? C$1.left : n$15.directionX),
-          (n$15.directionY = i$9 > o$7 ? C$1.down : i$9 < o$7 ? C$1.up : n$15.directionY),
+          (n$15.directionY = i$9 > o$5 ? C$1.down : i$9 < o$5 ? C$1.up : n$15.directionY),
           (n$15.positionX = r$10),
           (n$15.positionY = i$9),
           n$15.overlapCheckRequestTime === 0 && (n$15.overlapCheckRequestTime = this._tickTime));
@@ -1324,21 +1324,21 @@
       for (; r$10 < e$10.length; r$10++) {
         let i$9 = e$10[r$10],
           a$7 = this._itemData.get(i$9),
-          o$7 = a$7.overlapCheckRequestTime,
-          s$7 = o$7 > 0 && this._tickTime - o$7 > this.settings.overlapCheckInterval,
+          o$5 = a$7.overlapCheckRequestTime,
+          s$9 = o$5 > 0 && this._tickTime - o$5 > this.settings.overlapCheckInterval,
           c$7 = !0,
           l$6 = t$13.get(i$9);
         l$6 &&
           l$6.isActive &&
           ((c$7 = !this._updateScrollRequest(l$6)),
-          c$7 && ((s$7 = !0), this._cancelItemScroll(i$9, y$2.x)));
+          c$7 && ((s$9 = !0), this._cancelItemScroll(i$9, y$2.x)));
         let u$6 = !0,
-          d$3 = n$15.get(i$9);
-        (d$3 &&
-          d$3.isActive &&
-          ((u$6 = !this._updateScrollRequest(d$3)),
-          u$6 && ((s$7 = !0), this._cancelItemScroll(i$9, y$2.y))),
-          s$7 && ((a$7.overlapCheckRequestTime = 0), this._checkItemOverlap(i$9, c$7, u$6)));
+          d$4 = n$15.get(i$9);
+        (d$4 &&
+          d$4.isActive &&
+          ((u$6 = !this._updateScrollRequest(d$4)),
+          u$6 && ((s$9 = !0), this._cancelItemScroll(i$9, y$2.y))),
+          s$9 && ((a$7.overlapCheckRequestTime = 0), this._checkItemOverlap(i$9, c$7, u$6)));
       }
     }
     _requestAction(e$10, t$13) {
@@ -1484,17 +1484,17 @@
         (this._cdArenaMap = /* @__PURE__ */ new Map()));
     }
     _checkCollision(r$10, i$9, a$7) {
-      let o$7 = r$10.getClientRect(),
-        s$7 = i$9.getClientRect();
-      if (!o$7) return null;
-      let c$7 = e$6(o$7, s$7, a$7.intersectionRect);
+      let o$5 = r$10.getClientRect(),
+        s$9 = i$9.getClientRect();
+      if (!o$5) return null;
+      let c$7 = e$6(o$5, s$9, a$7.intersectionRect);
       if (c$7 === null) return null;
-      let l$6 = n$13(o$7, s$7, c$7);
+      let l$6 = n$13(o$5, s$9, c$7);
       return l$6 <= 0
         ? null
         : ((a$7.droppableId = i$9.id),
-          n$14(s$7, a$7.droppableRect),
-          n$14(o$7, a$7.draggableRect),
+          n$14(s$9, a$7.droppableRect),
+          n$14(o$5, a$7.draggableRect),
           (a$7.intersectionScore = l$6),
           a$7);
     }
@@ -1570,20 +1570,20 @@
 
   //#endregion
   //#region ../dragdoll/dist/advanced-collision-detector-BRgmG7a-.js
-  const s$5 = `visible`;
+  const s$7 = `visible`;
   function c$5(e$10, t$13, n$15 = []) {
     let r$10 = t$13 ? e$10 : e$10?.parentNode;
     for (n$15.length = 0; r$10 && !e$7(r$10); )
       if (r$10 instanceof Element) {
         let e$11 = t$10(r$10);
-        (e$11.overflowY === s$5 || e$11.overflowX === s$5 || n$15.push(r$10),
+        (e$11.overflowY === s$7 || e$11.overflowX === s$7 || n$15.push(r$10),
           (r$10 = r$10.parentNode));
       } else r$10 = r$10 instanceof ShadowRoot ? r$10.host : r$10.parentNode;
     return (n$15.push(window), n$15);
   }
   let l$3;
   const u$3 = n$14(),
-    d$1 = {
+    d$2 = {
       width: 2 ** 53 - 1,
       height: 2 ** 53 - 1,
       x: (2 ** 53 - 1) * -0.5,
@@ -1603,10 +1603,10 @@
     p$1.length || c$5(e$10.element, !1, p$1);
   }
   function v$2(t$13, i$9 = n$14()) {
-    n$14(t$13.length ? t$11([t$13[0], `padding`], window) : d$1, i$9);
+    n$14(t$13.length ? t$11([t$13[0], `padding`], window) : d$2, i$9);
     for (let a$7 = 1; a$7 < t$13.length; a$7++) {
-      let o$7 = t$13[a$7];
-      if (!e$6(i$9, t$11([o$7, `padding`], window), i$9)) {
+      let o$5 = t$13[a$7];
+      if (!e$6(i$9, t$11([o$5, `padding`], window), i$9)) {
         n$14(u$3, i$9);
         break;
       }
@@ -1626,12 +1626,12 @@
         (this._clearCache = () => this.clearCache()));
     }
     _checkCollision(n$15, i$9, a$7) {
-      let o$7 = this._dragStates.get(n$15);
-      if (!o$7) return null;
-      let s$7 = n$15.getClientRect(),
+      let o$5 = this._dragStates.get(n$15);
+      if (!o$5) return null;
+      let s$9 = n$15.getClientRect(),
         c$7 = i$9.getClientRect();
-      if (!s$7 || !c$7) return null;
-      let u$6 = o$7.clipMaskKeyMap.get(i$9);
+      if (!s$9 || !c$7) return null;
+      let u$6 = o$5.clipMaskKeyMap.get(i$9);
       if (!u$6) {
         let e$10 = this._visibilityLogic === `relative`;
         if (
@@ -1640,8 +1640,8 @@
           (h$1.length = 0),
           _$1(i$9),
           (u$6 = p$1[0] || window),
-          o$7.clipMaskKeyMap.set(i$9, u$6),
-          !o$7.clipMaskMap.has(u$6))
+          o$5.clipMaskKeyMap.set(i$9, u$6),
+          !o$5.clipMaskMap.has(u$6))
         ) {
           if ((g$1(n$15), e$10)) {
             let e$11 = window;
@@ -1661,15 +1661,15 @@
           } else (m$1.push(...f$1), h$1.push(...p$1));
           let t$13 = e$10 || !l$3 ? v$2(m$1) : n$14(l$3),
             i$10 = v$2(h$1);
-          (!e$10 && !l$3 && (l$3 = t$13), o$7.clipMaskMap.set(u$6, [t$13, i$10]));
+          (!e$10 && !l$3 && (l$3 = t$13), o$5.clipMaskMap.set(u$6, [t$13, i$10]));
         }
         ((p$1.length = 0), (m$1.length = 0), (h$1.length = 0));
       }
-      let [d$3, y$3] = o$7.clipMaskMap.get(u$6) || [];
+      let [d$4, y$3] = o$5.clipMaskMap.get(u$6) || [];
       if (
-        !d$3 ||
+        !d$4 ||
         !y$3 ||
-        !e$6(s$7, d$3, a$7.draggableVisibleRect) ||
+        !e$6(s$9, d$4, a$7.draggableVisibleRect) ||
         !e$6(c$7, y$3, a$7.droppableVisibleRect) ||
         !e$6(a$7.draggableVisibleRect, a$7.droppableVisibleRect, a$7.intersectionRect)
       )
@@ -1679,7 +1679,7 @@
         ? null
         : ((a$7.droppableId = i$9.id),
           n$14(c$7, a$7.droppableRect),
-          n$14(s$7, a$7.draggableRect),
+          n$14(s$9, a$7.draggableRect),
           (a$7.intersectionScore = b$2),
           a$7);
     }
@@ -1801,8 +1801,8 @@
     if (i$9 && 'none' !== i$9) return !0;
     const { perspective: r$10 } = t$13;
     if (r$10 && 'none' !== r$10) return !0;
-    const { contentVisibility: o$7 } = t$13;
-    if (o$7 && 'auto' === o$7) return !0;
+    const { contentVisibility: o$5 } = t$13;
+    if (o$5 && 'auto' === o$5) return !0;
     const { contain: f$3 } = t$13;
     if (
       f$3 &&
@@ -1836,13 +1836,13 @@
   function getContainingBlock(e$10, t$13 = {}) {
     if (isDocumentElement(e$10)) return e$10.ownerDocument.defaultView;
     const n$15 = t$13.position || getStyle(e$10).position,
-      { skipDisplayNone: i$9, container: o$7 } = t$13;
+      { skipDisplayNone: i$9, container: o$5 } = t$13;
     switch (n$15) {
       case 'static':
       case 'relative':
       case 'sticky':
       case '-webkit-sticky': {
-        let t$14 = o$7 || e$10.parentElement;
+        let t$14 = o$5 || e$10.parentElement;
         for (; t$14; ) {
           const e$11 = isBlockElement(t$14);
           if (e$11) return t$14;
@@ -1854,7 +1854,7 @@
       case 'absolute':
       case 'fixed': {
         const t$14 = 'fixed' === n$15;
-        let l$6 = o$7 || e$10.parentElement;
+        let l$6 = o$5 || e$10.parentElement;
         for (; l$6; ) {
           const e$11 = t$14
             ? isContainingBlockForFixedElement(l$6)
@@ -1873,10 +1873,10 @@
   //#endregion
   //#region ../../node_modules/mezr/dist/esm/getOffsetContainer.js
   function getOffsetContainer(n$15, t$13 = {}) {
-    const { display: o$7 } = getStyle(n$15);
-    if ('none' === o$7 || 'contents' === o$7) return null;
+    const { display: o$5 } = getStyle(n$15);
+    if ('none' === o$5 || 'contents' === o$5) return null;
     const e$10 = t$13.position || getStyle(n$15).position,
-      { skipDisplayNone: s$7, container: r$10 } = t$13;
+      { skipDisplayNone: s$9, container: r$10 } = t$13;
     switch (e$10) {
       case 'relative':
         return n$15;
@@ -1884,13 +1884,13 @@
         return getContainingBlock(n$15, {
           container: r$10,
           position: e$10,
-          skipDisplayNone: s$7,
+          skipDisplayNone: s$9,
         });
       case 'absolute': {
         const t$14 = getContainingBlock(n$15, {
           container: r$10,
           position: e$10,
-          skipDisplayNone: s$7,
+          skipDisplayNone: s$9,
         });
         return isWindow(t$14) ? n$15.ownerDocument : t$14;
       }
@@ -1901,7 +1901,7 @@
 
   //#endregion
   //#region ../dragdoll/dist/draggable-DSb83hxn.js
-  function s$4(e$10, t$13) {
+  function s$6(e$10, t$13) {
     return e$10.isIdentity && t$13.isIdentity
       ? !0
       : e$10.is2D && t$13.is2D
@@ -1963,7 +1963,7 @@
   function u$2(e$10) {
     return e$10.setMatrixValue(`scale(1, 1)`);
   }
-  function d(e$10, t$13 = 0) {
+  function d$1(e$10, t$13 = 0) {
     let n$15 = 10 ** t$13;
     return Math.round((e$10 + 2 ** -52) * n$15) / n$15;
   }
@@ -2089,29 +2089,29 @@
         r$10);
   }
   function y$1(e$10, t$13 = !1) {
-    let { translate: r$10, rotate: i$9, scale: a$7, transform: o$7 } = t$10(e$10),
-      s$7 = ``;
+    let { translate: r$10, rotate: i$9, scale: a$7, transform: o$5 } = t$10(e$10),
+      s$9 = ``;
     if (r$10 && r$10 !== `none`) {
       let [t$14 = `0px`, n$15 = `0px`, i$10] = r$10.split(` `);
       (t$14.includes(`%`) && (t$14 = `${(parseFloat(t$14) / 100) * v$1(e$10)}px`),
         n$15.includes(`%`) && (n$15 = `${(parseFloat(n$15) / 100) * _(e$10)}px`),
         i$10
-          ? (s$7 += `translate3d(${t$14},${n$15},${i$10})`)
-          : (s$7 += `translate(${t$14},${n$15})`));
+          ? (s$9 += `translate3d(${t$14},${n$15},${i$10})`)
+          : (s$9 += `translate(${t$14},${n$15})`));
     }
     if (i$9 && i$9 !== `none`) {
       let e$11 = i$9.split(` `);
       e$11.length > 1
-        ? (s$7 += `rotate3d(${e$11.join(`,`)})`)
-        : (s$7 += `rotate(${e$11.join(`,`)})`);
+        ? (s$9 += `rotate3d(${e$11.join(`,`)})`)
+        : (s$9 += `rotate(${e$11.join(`,`)})`);
     }
     if (a$7 && a$7 !== `none`) {
       let e$11 = a$7.split(` `);
       e$11.length === 3
-        ? (s$7 += `scale3d(${e$11.join(`,`)})`)
-        : (s$7 += `scale(${e$11.join(`,`)})`);
+        ? (s$9 += `scale3d(${e$11.join(`,`)})`)
+        : (s$9 += `scale(${e$11.join(`,`)})`);
     }
-    return (!t$13 && o$7 && o$7 !== `none` && (s$7 += o$7), s$7);
+    return (!t$13 && o$5 && o$5 !== `none` && (s$9 += o$5), s$9);
   }
   function b(e$10) {
     return typeof e$10 == `object` && !!e$10 && `x` in e$10 && `y` in e$10;
@@ -2161,13 +2161,13 @@
       let e$11 = y$1(r$10);
       if (e$11 && (T.setMatrixValue(e$11), !T.isIdentity)) {
         let { transformOrigin: e$12 } = t$10(r$10),
-          { x: i$9, y: a$7, z: o$7 } = w(e$12);
-        (o$7 === 0
+          { x: i$9, y: a$7, z: o$5 } = w(e$12);
+        (o$5 === 0
           ? T.setMatrixValue(
               `translate(${i$9}px,${a$7}px) ${T} translate(${i$9 * -1}px,${a$7 * -1}px)`,
             )
           : T.setMatrixValue(
-              `translate3d(${i$9}px,${a$7}px,${o$7}px) ${T} translate3d(${i$9 * -1}px,${a$7 * -1}px,${o$7 * -1}px)`,
+              `translate3d(${i$9}px,${a$7}px,${o$5}px) ${T} translate3d(${i$9 * -1}px,${a$7 * -1}px,${o$5 * -1}px)`,
             ),
           t$13.preMultiplySelf(T));
       }
@@ -2202,12 +2202,12 @@
       if (!r$10) throw Error(`Drag is not defined`);
       let i$9 = t$10(e$10),
         a$7 = e$10.getBoundingClientRect(),
-        s$7 = y$1(e$10, !0);
+        s$9 = y$1(e$10, !0);
       ((this.data = {}),
         (this.element = e$10),
         (this.elementTransformOrigin = w(i$9.transformOrigin)),
-        (this.elementTransformMatrix = new DOMMatrix().setMatrixValue(s$7 + i$9.transform)),
-        (this.elementOffsetMatrix = new DOMMatrix(s$7).invertSelf()),
+        (this.elementTransformMatrix = new DOMMatrix().setMatrixValue(s$9 + i$9.transform)),
+        (this.elementOffsetMatrix = new DOMMatrix(s$9).invertSelf()),
         (this.frozenStyles = null),
         (this.unfrozenStyles = null),
         (this.position = {
@@ -2251,10 +2251,10 @@
             `Dragged element has "${e$11}" position, but only "fixed" or "absolute" are allowed when using a custom drag container.`,
           );
       }
-      let d$3 = getOffsetContainer(e$10) || e$10;
-      ((this.elementOffsetContainer = d$3),
+      let d$4 = getOffsetContainer(e$10) || e$10;
+      ((this.elementOffsetContainer = d$4),
         (this.dragOffsetContainer =
-          u$6 === c$7 ? d$3 : getOffsetContainer(e$10, { container: u$6 })));
+          u$6 === c$7 ? d$4 : getOffsetContainer(e$10, { container: u$6 })));
       {
         let { width: e$11, height: t$14, x: n$15, y: r$11 } = a$7;
         this.clientRect = {
@@ -2303,10 +2303,10 @@
         dragContainer: r$10,
         containerOffset: i$9,
         _clientOffsetCache: a$7,
-        _matrixCache: o$7,
+        _matrixCache: o$5,
       } = this;
       if (e$10 !== n$15) {
-        let [s$7, l$6] = [
+        let [s$9, l$6] = [
           [r$10, n$15],
           [t$13, e$10],
         ].map(([e$11, t$14]) => {
@@ -2315,7 +2315,7 @@
             y: 0,
           };
           if (!a$7.isValid(t$14)) {
-            let r$11 = o$7.get(e$11);
+            let r$11 = o$5.get(e$11);
             t$14 instanceof HTMLElement && r$11 && !r$11[0].isIdentity
               ? c$4(r$11[0])
                 ? (D.style.setProperty(`transform`, r$11[1].toString(), `important`),
@@ -2327,7 +2327,7 @@
           }
           return (a$7.set(t$14, n$16), n$16);
         });
-        C(s$7, l$6, i$9);
+        C(s$9, l$6, i$9);
       } else ((i$9.x = 0), (i$9.y = 0));
     }
     getContainerMatrix() {
@@ -2406,27 +2406,27 @@
       applyPosition: ({ item: e$10, phase: t$13 }) => {
         let n$15 = t$13 === L.End || t$13 === L.EndAlign,
           [r$10, i$9] = e$10.getContainerMatrix(),
-          [a$7, o$7] = e$10.getDragContainerMatrix(),
+          [a$7, o$5] = e$10.getDragContainerMatrix(),
           {
-            position: s$7,
+            position: s$9,
             alignmentOffset: c$7,
             containerOffset: l$6,
-            elementTransformMatrix: d$3,
+            elementTransformMatrix: d$4,
             elementTransformOrigin: f$3,
             elementOffsetMatrix: p$3,
           } = e$10,
           { x: m$3, y: h$3, z: g$3 } = f$3,
-          _$4 = !d$3.isIdentity && (m$3 !== 0 || h$3 !== 0 || g$3 !== 0),
-          v$4 = s$7.x + c$7.x + l$6.x,
-          y$3 = s$7.y + c$7.y + l$6.y;
+          _$4 = !d$4.isIdentity && (m$3 !== 0 || h$3 !== 0 || g$3 !== 0),
+          v$4 = s$9.x + c$7.x + l$6.x,
+          y$3 = s$9.y + c$7.y + l$6.y;
         (u$2(j),
           _$4 && (g$3 === 0 ? j.translateSelf(-m$3, -h$3) : j.translateSelf(-m$3, -h$3, -g$3)),
-          n$15 ? i$9.isIdentity || j.multiplySelf(i$9) : o$7.isIdentity || j.multiplySelf(o$7),
+          n$15 ? i$9.isIdentity || j.multiplySelf(i$9) : o$5.isIdentity || j.multiplySelf(o$5),
           u$2(M$1).translateSelf(v$4, y$3),
           j.multiplySelf(M$1),
           r$10.isIdentity || j.multiplySelf(r$10),
           _$4 && (u$2(M$1).translateSelf(m$3, h$3, g$3), j.multiplySelf(M$1)),
-          d$3.isIdentity || j.multiplySelf(d$3),
+          d$4.isIdentity || j.multiplySelf(d$4),
           p$3.isIdentity || j.preMultiplySelf(p$3),
           (e$10.element.style.transform = `${j}`));
       },
@@ -2524,12 +2524,12 @@
         startPredicate: r$10 = t$13.startPredicate,
         elements: i$9 = t$13.elements,
         frozenStyles: a$7 = t$13.frozenStyles,
-        positionModifiers: o$7 = t$13.positionModifiers,
-        applyPosition: s$7 = t$13.applyPosition,
+        positionModifiers: o$5 = t$13.positionModifiers,
+        applyPosition: s$9 = t$13.applyPosition,
         computeClientRect: c$7 = t$13.computeClientRect,
         sensorProcessingMode: l$6 = t$13.sensorProcessingMode,
         dndGroups: u$6 = t$13.dndGroups,
-        onPrepareStart: d$3 = t$13.onPrepareStart,
+        onPrepareStart: d$4 = t$13.onPrepareStart,
         onStart: f$3 = t$13.onStart,
         onPrepareMove: p$3 = t$13.onPrepareMove,
         onMove: m$3 = t$13.onMove,
@@ -2541,12 +2541,12 @@
         startPredicate: r$10,
         elements: i$9,
         frozenStyles: a$7,
-        positionModifiers: o$7,
-        applyPosition: s$7,
+        positionModifiers: o$5,
+        applyPosition: s$9,
         computeClientRect: c$7,
         sensorProcessingMode: l$6,
         dndGroups: u$6,
-        onPrepareStart: d$3,
+        onPrepareStart: d$4,
         onStart: f$3,
         onPrepareMove: p$3,
         onMove: m$3,
@@ -2630,11 +2630,11 @@
         for (let t$13 of e$10.items) {
           let e$11 = t$13.getContainerMatrix()[0],
             n$15 = t$13.getDragContainerMatrix()[0];
-          if (s$4(e$11, n$15) || (!c$4(e$11) && !c$4(n$15))) continue;
+          if (s$6(e$11, n$15) || (!c$4(e$11) && !c$4(n$15))) continue;
           let r$10 = t$13.element.getBoundingClientRect(),
             { alignmentOffset: i$9 } = t$13;
-          ((i$9.x += d(t$13.clientRect.x - r$10.x, 3)),
-            (i$9.y += d(t$13.clientRect.y - r$10.y, 3)));
+          ((i$9.x += d$1(t$13.clientRect.x - r$10.x, 3)),
+            (i$9.y += d$1(t$13.clientRect.y - r$10.y, 3)));
         }
         for (let t$13 of e$10.items) {
           let { alignmentOffset: n$15 } = t$13;
@@ -2709,20 +2709,20 @@
       if (!r$10) return;
       let { positionModifiers: i$9 } = this.settings;
       for (let a$7 of r$10.items) {
-        let o$7 = A;
-        ((o$7.x = t$13), (o$7.y = n$15));
+        let o$5 = A;
+        ((o$5.x = t$13), (o$5.y = n$15));
         for (let t$14 of i$9)
-          o$7 = t$14(o$7, {
+          o$5 = t$14(o$5, {
             draggable: this,
             drag: r$10,
             item: a$7,
             phase: e$10,
           });
-        ((a$7.position.x += o$7.x),
-          (a$7.position.y += o$7.y),
-          (a$7.clientRect.x += o$7.x),
-          (a$7.clientRect.y += o$7.y),
-          e$10 === `move` && ((a$7._moveDiff.x += o$7.x), (a$7._moveDiff.y += o$7.y)));
+        ((a$7.position.x += o$5.x),
+          (a$7.position.y += o$5.y),
+          (a$7.clientRect.x += o$5.x),
+          (a$7.clientRect.y += o$5.y),
+          e$10 === `move` && ((a$7._moveDiff.x += o$5.x), (a$7._moveDiff.y += o$5.y)));
       }
     }
     on(e$10, t$13, n$15) {
@@ -2793,8 +2793,8 @@
         for (let e$10 of n$15.items)
           if (e$10.elementContainer !== e$10.dragContainer) {
             let t$13 = e$10.element.getBoundingClientRect();
-            ((e$10.alignmentOffset.x = d(e$10.clientRect.x - t$13.x, 3)),
-              (e$10.alignmentOffset.y = d(e$10.clientRect.y - t$13.y, 3)));
+            ((e$10.alignmentOffset.x = d$1(e$10.clientRect.x - t$13.x, 3)),
+              (e$10.alignmentOffset.y = d$1(e$10.clientRect.y - t$13.y, 3)));
           }
         for (let e$10 of n$15.items)
           e$10.elementContainer !== e$10.dragContainer &&
@@ -2898,7 +2898,7 @@
 
   //#endregion
   //#region ../dragdoll/dist/dnd-observer-DqGbQ7Ag.js
-  var s$3 = (function (e$10) {
+  var s$5 = (function (e$10) {
     return (
       (e$10[(e$10.Idle = 0)] = `Idle`),
       (e$10[(e$10.Computing = 1)] = `Computing`),
@@ -2906,7 +2906,7 @@
       (e$10[(e$10.Emitting = 3)] = `Emitting`),
       e$10
     );
-  })(s$3 || {});
+  })(s$5 || {});
   const c$3 = {
       capture: !0,
       passive: !0,
@@ -2954,10 +2954,10 @@
           i$9 = t$13.accept;
         if (!r$10 || r$10.size === 0 || i$9.size === 0) return !1;
         let a$7 = i$9.size < r$10.size,
-          o$7 = a$7 ? i$9 : r$10,
-          s$7 = a$7 ? r$10 : i$9;
-        for (let e$11 of o$7)
-          if (s$7.has(e$11)) {
+          o$5 = a$7 ? i$9 : r$10,
+          s$9 = a$7 ? r$10 : i$9;
+        for (let e$11 of o$5)
+          if (s$9.has(e$11)) {
             n$15 = !0;
             break;
           }
@@ -2985,7 +2985,7 @@
             data: {},
             _targets: null,
             _cd: {
-              phase: s$3.Idle,
+              phase: s$5.Idle,
               tickerId: Symbol(),
               targets: /* @__PURE__ */ new Map(),
               collisions: [],
@@ -3052,16 +3052,16 @@
     _stopDrag(n$15, r$10 = !1) {
       let i$9 = this._drags.get(n$15);
       if (!i$9 || i$9.isEnded) return;
-      if (i$9._cd.phase === s$3.Emitting)
+      if (i$9._cd.phase === s$5.Emitting)
         throw Error(`Cannot stop dragging while collisions are being emitted.`);
       ((i$9.isEnded = !0), this._computeCollisions(n$15, !0), this._emitCollisions(n$15, !0));
-      let { targets: a$7, collisions: o$7, contacts: u$6 } = i$9._cd;
+      let { targets: a$7, collisions: o$5, contacts: u$6 } = i$9._cd;
       (this._emitter.listenerCount(l.End) &&
         this._emitter.emit(l.End, {
           canceled: r$10,
           draggable: n$15,
           targets: a$7,
-          collisions: o$7,
+          collisions: o$5,
           contacts: u$6,
         }),
         this._drags.delete(n$15),
@@ -3077,52 +3077,52 @@
       if (!n$15 || (!t$13 && n$15.isEnded)) return;
       let r$10 = n$15._cd;
       switch (r$10.phase) {
-        case s$3.Computing:
+        case s$5.Computing:
           throw Error(`Collisions are being computed.`);
-        case s$3.Emitting:
+        case s$5.Emitting:
           throw Error(`Collisions are being emitted.`);
         default:
           break;
       }
-      ((r$10.phase = s$3.Computing),
+      ((r$10.phase = s$5.Computing),
         (r$10.targets = this._getTargets(e$10)),
         this._collisionDetector.detectCollisions(e$10, r$10.targets, r$10.collisions),
-        (r$10.phase = s$3.Computed));
+        (r$10.phase = s$5.Computed));
     }
     _emitCollisions(e$10, t$13 = !1) {
       let n$15 = this._drags.get(e$10);
       if (!n$15 || (!t$13 && n$15.isEnded)) return;
       let r$10 = n$15._cd;
       switch (r$10.phase) {
-        case s$3.Computing:
+        case s$5.Computing:
           throw Error(`Collisions are being computed.`);
-        case s$3.Emitting:
+        case s$5.Emitting:
           throw Error(`Collisions are being emitted.`);
-        case s$3.Idle:
+        case s$5.Idle:
           return;
         default:
           break;
       }
-      r$10.phase = s$3.Emitting;
+      r$10.phase = s$5.Emitting;
       let i$9 = this._emitter,
         a$7 = r$10.collisions,
-        o$7 = r$10.targets,
+        o$5 = r$10.targets,
         c$7 = r$10.addedContacts,
         u$6 = r$10.persistedContacts,
-        d$3 = r$10.contacts,
+        d$4 = r$10.contacts,
         f$3 = r$10.prevContacts;
-      ((r$10.prevContacts = d$3), (r$10.contacts = f$3));
-      let p$3 = d$3;
+      ((r$10.prevContacts = d$4), (r$10.contacts = f$3));
+      let p$3 = d$4;
       (c$7.clear(), u$6.clear(), f$3.clear());
       for (let e$11 of a$7) {
-        let t$14 = o$7.get(e$11.droppableId);
-        t$14 && (f$3.add(t$14), d$3.has(t$14) ? (u$6.add(t$14), d$3.delete(t$14)) : c$7.add(t$14));
+        let t$14 = o$5.get(e$11.droppableId);
+        t$14 && (f$3.add(t$14), d$4.has(t$14) ? (u$6.add(t$14), d$4.delete(t$14)) : c$7.add(t$14));
       }
-      (d$3.size &&
+      (d$4.size &&
         i$9.listenerCount(l.Leave) &&
         i$9.emit(l.Leave, {
           draggable: e$10,
-          targets: o$7,
+          targets: o$5,
           collisions: a$7,
           contacts: f$3,
           removedContacts: p$3,
@@ -3131,7 +3131,7 @@
           i$9.listenerCount(l.Enter) &&
           i$9.emit(l.Enter, {
             draggable: e$10,
-            targets: o$7,
+            targets: o$5,
             collisions: a$7,
             contacts: f$3,
             addedContacts: c$7,
@@ -3140,7 +3140,7 @@
           (f$3.size || p$3.size) &&
           i$9.emit(l.Collide, {
             draggable: e$10,
-            targets: o$7,
+            targets: o$5,
             collisions: a$7,
             contacts: f$3,
             addedContacts: c$7,
@@ -3149,8 +3149,8 @@
           }),
         c$7.clear(),
         u$6.clear(),
-        d$3.clear(),
-        (r$10.phase = s$3.Idle));
+        d$4.clear(),
+        (r$10.phase = s$5.Idle));
     }
     on(e$10, t$13, n$15) {
       return this._emitter.on(e$10, t$13, n$15);
@@ -3296,7 +3296,7 @@
     }
     destroy() {
       if (this.isDestroyed) return;
-      if (Array.from(this._drags.values()).some((e$11) => e$11._cd.phase === s$3.Emitting))
+      if (Array.from(this._drags.values()).some((e$11) => e$11._cd.phase === s$5.Emitting))
         throw Error(`Cannot destroy the DndObserver while collisions are being emitted.`);
       ((this.isDestroyed = !0),
         this.draggables.forEach((e$11) => {
@@ -3321,7 +3321,7 @@
   };
 
   //#endregion
-  //#region ../dragdoll/dist/pointer-sensor-D3DHn381.js
+  //#region ../dragdoll/dist/pointer-sensor-C2e8cAmq.js
   function i$7(e$10, t$13) {
     if (`pointerId` in e$10) return e$10.pointerId === t$13 ? e$10 : null;
     if (`changedTouches` in e$10) {
@@ -3341,10 +3341,10 @@
           : null
         : -1;
   }
-  function o$4(e$10) {
+  function o$2(e$10) {
     return `pointerType` in e$10 ? e$10.pointerType : `touches` in e$10 ? `touch` : `mouse`;
   }
-  function s$2(e$10 = {}) {
+  function s$4(e$10 = {}) {
     let { capture: t$13 = !0, passive: n$15 = !0 } = e$10;
     return {
       capture: t$13,
@@ -3355,26 +3355,31 @@
     return n$15 === `auto` || n$15 === void 0 ? (n$12 ? `pointer` : t$8 ? `touch` : `mouse`) : n$15;
   }
   const l$1 = {
-    pointer: {
-      start: `pointerdown`,
-      move: `pointermove`,
-      cancel: `pointercancel`,
-      end: `pointerup`,
+      pointer: {
+        start: `pointerdown`,
+        move: `pointermove`,
+        cancel: `pointercancel`,
+        end: `pointerup`,
+      },
+      touch: {
+        start: `touchstart`,
+        move: `touchmove`,
+        cancel: `touchcancel`,
+        end: `touchend`,
+      },
+      mouse: {
+        start: `mousedown`,
+        move: `mousemove`,
+        cancel: ``,
+        end: `mouseup`,
+      },
     },
-    touch: {
-      start: `touchstart`,
-      move: `touchmove`,
-      cancel: `touchcancel`,
-      end: `touchend`,
-    },
-    mouse: {
-      start: `mousedown`,
-      move: `mousemove`,
-      cancel: ``,
-      end: `mouseup`,
-    },
-  };
-  var u = class {
+    u = {
+      listenerOptions: {},
+      sourceEvents: `auto`,
+      startPredicate: (e$10) => !(`button` in e$10 && e$10.button > 0),
+    };
+  var d = class {
     element;
     drag;
     isDestroyed;
@@ -3385,16 +3390,16 @@
     _emitter;
     constructor(e$10, t$13 = {}) {
       let {
-        listenerOptions: n$15 = {},
-        sourceEvents: i$9 = `auto`,
-        startPredicate: a$7 = (e$11) => !(`button` in e$11 && e$11.button > 0),
+        listenerOptions: n$15 = u.listenerOptions,
+        sourceEvents: i$9 = u.sourceEvents,
+        startPredicate: a$7 = u.startPredicate,
       } = t$13;
       ((this.element = e$10),
         (this.drag = null),
         (this.isDestroyed = !1),
         (this._areWindowListenersBound = !1),
         (this._startPredicate = a$7),
-        (this._listenerOptions = s$2(n$15)),
+        (this._listenerOptions = s$4(n$15)),
         (this._sourceEvents = c$2(i$9)),
         (this._emitter = new v()),
         (this._onStart = this._onStart.bind(this)),
@@ -3412,15 +3417,15 @@
       if (t$13 === null) return;
       let r$10 = i$7(e$10, t$13);
       if (r$10 === null) return;
-      let s$7 = {
+      let s$9 = {
         pointerId: t$13,
-        pointerType: o$4(e$10),
+        pointerType: o$2(e$10),
         x: r$10.clientX,
         y: r$10.clientY,
       };
-      this.drag = s$7;
+      this.drag = s$9;
       let c$7 = {
-        ...s$7,
+        ...s$9,
         type: e$4.Start,
         srcEvent: e$10,
         target: r$10.target,
@@ -3496,11 +3501,22 @@
       };
       (this._emitter.emit(e$10.type, e$10), this._resetDrag());
     }
+    updateElement(e$10) {
+      this.isDestroyed ||
+        this.element === e$10 ||
+        (this.element.removeEventListener(
+          l$1[this._sourceEvents].start,
+          this._onStart,
+          this._listenerOptions,
+        ),
+        e$10.addEventListener(l$1[this._sourceEvents].start, this._onStart, this._listenerOptions),
+        (this.element = e$10));
+    }
     updateSettings(e$10) {
       if (this.isDestroyed) return;
       let { listenerOptions: t$13, sourceEvents: n$15, startPredicate: r$10 } = e$10,
         i$9 = c$2(n$15),
-        a$7 = s$2(t$13);
+        a$7 = s$4(t$13);
       (r$10 && this._startPredicate !== r$10 && (this._startPredicate = r$10),
         ((t$13 &&
           (this._listenerOptions.capture !== a$7.capture ||
@@ -3587,7 +3603,7 @@
       onStop: null,
     };
   }
-  var o$3 = class {
+  var o$1 = class {
       _draggableAutoScroll;
       _draggable;
       _position;
@@ -3649,7 +3665,7 @@
         return this._getSettings().onStop;
       }
     },
-    s$1 = class {
+    s$3 = class {
       name;
       version;
       settings;
@@ -3661,7 +3677,7 @@
           (this._autoScrollProxy = null),
           e$10.on(R.Start, () => {
             this._autoScrollProxy ||
-              ((this._autoScrollProxy = new o$3(this, e$10)), t$7.addItem(this._autoScrollProxy));
+              ((this._autoScrollProxy = new o$1(this, e$10)), t$7.addItem(this._autoScrollProxy));
           }),
           e$10.on(R.End, () => {
             this._autoScrollProxy &&= (t$7.removeItem(this._autoScrollProxy), null);
@@ -3672,8 +3688,8 @@
           targets: n$15 = t$13.targets,
           inertAreaSize: r$10 = t$13.inertAreaSize,
           speed: i$9 = t$13.speed,
-          smoothStop: o$7 = t$13.smoothStop,
-          getPosition: s$7 = t$13.getPosition,
+          smoothStop: o$5 = t$13.smoothStop,
+          getPosition: s$9 = t$13.getPosition,
           getClientRect: c$7 = t$13.getClientRect,
           onStart: l$6 = t$13.onStart,
           onStop: u$6 = t$13.onStop,
@@ -3682,8 +3698,8 @@
           targets: n$15,
           inertAreaSize: r$10,
           speed: i$9,
-          smoothStop: o$7,
-          getPosition: s$7,
+          smoothStop: o$5,
+          getPosition: s$9,
           getClientRect: c$7,
           onStart: l$6,
           onStop: u$6,
@@ -3695,7 +3711,7 @@
     };
   function c$1(e$10) {
     return (t$13) => {
-      let n$15 = new s$1(t$13, e$10),
+      let n$15 = new s$3(t$13, e$10),
         r$10 = t$13;
       return ((r$10.plugins[n$15.name] = n$15), r$10);
     };
@@ -3763,7 +3779,7 @@
 
   //#endregion
   //#region ../dragdoll/dist/base-motion-sensor-QRxjT_GX.js
-  var i$4 = class extends n$11 {
+  var i$5 = class extends n$11 {
     drag;
     _direction;
     _speed;
@@ -3819,7 +3835,7 @@
   };
 
   //#endregion
-  //#region ../dragdoll/dist/keyboard-motion-sensor-BsMzohjd.js
+  //#region ../dragdoll/dist/keyboard-motion-sensor-CmyuVq9B.js
   const n$9 = [`start`, `cancel`, `end`, `moveLeft`, `moveRight`, `moveUp`, `moveDown`];
   function r$5(e$10, t$13) {
     if (!e$10.size || !t$13.size) return Infinity;
@@ -3830,7 +3846,7 @@
     }
     return n$15;
   }
-  const i$5 = {
+  const i$3 = {
     startKeys: [` `, `Enter`],
     moveLeftKeys: [`ArrowLeft`],
     moveRightKeys: [`ArrowRight`],
@@ -3852,7 +3868,7 @@
       return null;
     },
   };
-  var a$1 = class extends i$4 {
+  var a$1 = class extends i$5 {
     element;
     _moveKeys;
     _moveKeyTimestamps;
@@ -3870,29 +3886,29 @@
     constructor(e$10, t$13 = {}) {
       super();
       let {
-        startPredicate: n$15 = i$5.startPredicate,
-        computeSpeed: r$10 = i$5.computeSpeed,
-        cancelOnVisibilityChange: a$7 = i$5.cancelOnVisibilityChange,
-        cancelOnBlur: o$7 = i$5.cancelOnBlur,
-        startKeys: s$7 = i$5.startKeys,
-        moveLeftKeys: c$7 = i$5.moveLeftKeys,
-        moveRightKeys: l$6 = i$5.moveRightKeys,
-        moveUpKeys: u$6 = i$5.moveUpKeys,
-        moveDownKeys: d$3 = i$5.moveDownKeys,
-        cancelKeys: f$3 = i$5.cancelKeys,
-        endKeys: p$3 = i$5.endKeys,
+        startPredicate: n$15 = i$3.startPredicate,
+        computeSpeed: r$10 = i$3.computeSpeed,
+        cancelOnVisibilityChange: a$7 = i$3.cancelOnVisibilityChange,
+        cancelOnBlur: o$5 = i$3.cancelOnBlur,
+        startKeys: s$9 = i$3.startKeys,
+        moveLeftKeys: c$7 = i$3.moveLeftKeys,
+        moveRightKeys: l$6 = i$3.moveRightKeys,
+        moveUpKeys: u$6 = i$3.moveUpKeys,
+        moveDownKeys: d$4 = i$3.moveDownKeys,
+        cancelKeys: f$3 = i$3.cancelKeys,
+        endKeys: p$3 = i$3.endKeys,
       } = t$13;
       ((this.element = e$10),
-        (this._startKeys = new Set(s$7)),
+        (this._startKeys = new Set(s$9)),
         (this._cancelKeys = new Set(f$3)),
         (this._endKeys = new Set(p$3)),
         (this._moveLeftKeys = new Set(c$7)),
         (this._moveRightKeys = new Set(l$6)),
         (this._moveUpKeys = new Set(u$6)),
-        (this._moveDownKeys = new Set(d$3)),
-        (this._moveKeys = new Set([...c$7, ...l$6, ...u$6, ...d$3])),
+        (this._moveDownKeys = new Set(d$4)),
+        (this._moveKeys = new Set([...c$7, ...l$6, ...u$6, ...d$4])),
         (this._moveKeyTimestamps = /* @__PURE__ */ new Map()),
-        (this._cancelOnBlur = o$7),
+        (this._cancelOnBlur = o$5),
         (this._cancelOnVisibilityChange = a$7),
         (this._computeSpeed = r$10),
         (this._startPredicate = n$15),
@@ -3904,7 +3920,7 @@
         this.on(`tick`, this._onTick, this._onTick),
         document.addEventListener(`keydown`, this._onKeyDown),
         document.addEventListener(`keyup`, this._onKeyUp),
-        o$7 && e$10?.addEventListener(`blur`, this._blurCancelHandler),
+        o$5 && e$10?.addEventListener(`blur`, this._blurCancelHandler),
         a$7 && document.addEventListener(`visibilitychange`, this._internalCancel));
     }
     _end(e$10) {
@@ -3935,12 +3951,12 @@
         n$15 = r$5(this._moveUpKeys, this._moveKeyTimestamps),
         i$9 = r$5(this._moveDownKeys, this._moveKeyTimestamps),
         a$7 = e$10 === t$13 ? 0 : e$10 < t$13 ? -1 : 1,
-        o$7 = n$15 === i$9 ? 0 : n$15 < i$9 ? -1 : 1;
-      if (!(a$7 === 0 || o$7 === 0)) {
-        let e$11 = 1 / (Math.sqrt(a$7 * a$7 + o$7 * o$7) || 1);
-        ((a$7 *= e$11), (o$7 *= e$11));
+        o$5 = n$15 === i$9 ? 0 : n$15 < i$9 ? -1 : 1;
+      if (!(a$7 === 0 || o$5 === 0)) {
+        let e$11 = 1 / (Math.sqrt(a$7 * a$7 + o$5 * o$5) || 1);
+        ((a$7 *= e$11), (o$5 *= e$11));
       }
-      ((this._direction.x = a$7), (this._direction.y = o$7));
+      ((this._direction.x = a$7), (this._direction.y = o$5));
     }
     _onTick() {
       this._speed = this._computeSpeed(this);
@@ -3983,13 +3999,22 @@
         return;
       }
     }
+    updateElement(e$10) {
+      this.isDestroyed ||
+        this.element === e$10 ||
+        (this._cancelOnBlur &&
+          (this.element?.removeEventListener(`blur`, this._blurCancelHandler),
+          e$10?.addEventListener(`blur`, this._blurCancelHandler)),
+        (this.element = e$10));
+    }
     updateSettings(e$10) {
+      if (this.isDestroyed) return;
       let t$13 = !1,
         {
           cancelOnBlur: r$10,
           cancelOnVisibilityChange: i$9,
           startPredicate: a$7,
-          computeSpeed: o$7,
+          computeSpeed: o$5,
         } = e$10;
       if (
         (r$10 !== void 0 &&
@@ -4005,7 +4030,7 @@
             ? document.addEventListener(`visibilitychange`, this._internalCancel)
             : document.removeEventListener(`visibilitychange`, this._internalCancel)),
         a$7 !== void 0 && (this._startPredicate = a$7),
-        o$7 !== void 0 && (this._computeSpeed = o$7),
+        o$5 !== void 0 && (this._computeSpeed = o$5),
         n$9.forEach((n$15, r$11) => {
           let i$10 = `${n$15}Keys`,
             a$8 = e$10[i$10];
@@ -5266,30 +5291,30 @@
   //#endregion
   //#region ../dragdoll-react/dist/use-dnd-observer-callback-Cdrmp7fA.js
   function r$4(r$10, i$9, a$7) {
-    let o$7 = n$2(),
-      s$7 = a$7 === void 0 ? o$7 : a$7,
+    let o$5 = n$2(),
+      s$9 = a$7 === void 0 ? o$5 : a$7,
       c$7 = !!i$9,
       l$6 = (0, import_react.useRef)(i$9);
     ((l$6.current = i$9),
       n(() => {
-        if (!s$7 || !c$7) return;
-        let e$10 = s$7.on(r$10, (...e$11) => {
+        if (!s$9 || !c$7) return;
+        let e$10 = s$9.on(r$10, (...e$11) => {
           l$6.current?.(...e$11);
         });
-        return () => void s$7.off(r$10, e$10);
-      }, [r$10, s$7, c$7]));
+        return () => void s$9.off(r$10, e$10);
+      }, [r$10, s$9, c$7]));
   }
 
   //#endregion
   //#region ../dragdoll-react/dist/use-dnd-observer-B2HZwsIC.js
   function a({
     collisionDetector: a$7,
-    onStart: o$7,
-    onMove: s$7,
+    onStart: o$5,
+    onMove: s$9,
     onEnter: c$7,
     onLeave: l$6,
     onCollide: u$6,
-    onEnd: d$3,
+    onEnd: d$4,
     onAddDraggables: f$3,
     onRemoveDraggables: p$3,
     onAddDroppables: m$3,
@@ -5307,12 +5332,12 @@
           }
         );
       }, [a$7]),
-      r$4(l.Start, o$7, _$4),
-      r$4(l.Move, s$7, _$4),
+      r$4(l.Start, o$5, _$4),
+      r$4(l.Move, s$9, _$4),
       r$4(l.Enter, c$7, _$4),
       r$4(l.Leave, l$6, _$4),
       r$4(l.Collide, u$6, _$4),
-      r$4(l.End, d$3, _$4),
+      r$4(l.End, d$4, _$4),
       r$4(l.AddDraggables, f$3, _$4),
       r$4(l.RemoveDraggables, p$3, _$4),
       r$4(l.AddDroppables, m$3, _$4),
@@ -5335,17 +5360,17 @@
     if (r$10 === null || i$9 === null || typeof r$10 != `object` || typeof i$9 != `object`)
       return !1;
     let a$7 = Array.isArray(r$10),
-      o$7 = Array.isArray(i$9);
-    if (a$7 || o$7) {
-      if (!a$7 || !o$7) return !1;
+      o$5 = Array.isArray(i$9);
+    if (a$7 || o$5) {
+      if (!a$7 || !o$5) return !1;
       let e$10 = r$10.length;
       if (e$10 !== i$9.length) return !1;
       for (let t$13 = 0; t$13 < e$10; t$13++) if (!n$5(r$10[t$13], i$9[t$13])) return !1;
       return !0;
     }
-    let s$7 = r$10 instanceof Set,
+    let s$9 = r$10 instanceof Set,
       c$7 = i$9 instanceof Set;
-    if (s$7 || c$7) return !s$7 || !c$7 || r$10.size !== i$9.size ? !1 : r$10.isSubsetOf(i$9);
+    if (s$9 || c$7) return !s$9 || !c$7 || r$10.size !== i$9.size ? !1 : r$10.isSubsetOf(i$9);
     if (!t$4(r$10) || !t$4(i$9)) return !1;
     let l$6 = Object.keys(r$10),
       u$6 = Object.keys(i$9);
@@ -5387,8 +5412,8 @@
   //#region ../dragdoll-react/dist/use-draggable-B8vgOq62.js
   function c(c$7, l$6) {
     let u$6 = n$1(() => c$7.filter((e$10) => !!e$10), [...c$7]),
-      { id: d$3, dndObserver: f$3, ...p$3 } = l$6 || {},
-      m$3 = n$1(() => (d$3 === void 0 ? Symbol() : d$3), [d$3]),
+      { id: d$4, dndObserver: f$3, ...p$3 } = l$6 || {},
+      m$3 = n$1(() => (d$4 === void 0 ? Symbol() : d$4), [d$4]),
       h$3 = n$2(),
       g$3 = f$3 === void 0 ? h$3 : f$3,
       [_$4, v$4] = (0, import_react.useState)(null),
@@ -5443,18 +5468,18 @@
   //#endregion
   //#region ../dragdoll-react/dist/use-draggable-auto-scroll-BAAmpSao.js
   function i(i$9, a$7) {
-    let o$7 = (0, import_react.useRef)(a$7);
-    o$7.current = a$7;
-    let s$7 = (0, import_react.useRef)(a$7);
+    let o$5 = (0, import_react.useRef)(a$7);
+    o$5.current = a$7;
+    let s$9 = (0, import_react.useRef)(a$7);
     return (
       n(() => {
-        i$9 && (i$9.plugins.autoscroll || (i$9.use(c$1(o$7.current)), (s$7.current = o$7.current)));
+        i$9 && (i$9.plugins.autoscroll || (i$9.use(c$1(o$5.current)), (s$9.current = o$5.current)));
       }, [i$9]),
       n(() => {
         let e$10 = i$9?.plugins.autoscroll;
         e$10 &&
-          (n$5(s$7.current, a$7) || e$10.updateSettings(e$10._parseSettings(a$7)),
-          (s$7.current = a$7));
+          (n$5(s$9.current, a$7) || e$10.updateSettings(e$10._parseSettings(a$7)),
+          (s$9.current = a$7));
       }, [i$9, a$7]),
       i$9
     );
@@ -5464,12 +5489,12 @@
   //#region ../dragdoll-react/dist/use-draggable-callback-Cd1g8lnj.js
   function n$4(n$15, r$10, i$9) {
     let a$7 = !!i$9,
-      o$7 = (0, import_react.useRef)(i$9);
-    ((o$7.current = i$9),
+      o$5 = (0, import_react.useRef)(i$9);
+    ((o$5.current = i$9),
       n(() => {
         if (!n$15 || !a$7) return;
         let e$10 = n$15.on(r$10, (...e$11) => {
-          o$7.current?.(...e$11);
+          o$5.current?.(...e$11);
         });
         return () => void n$15.off(r$10, e$10);
       }, [n$15, r$10, a$7]));
@@ -5478,17 +5503,17 @@
   //#endregion
   //#region ../dragdoll-react/dist/use-draggable-drag-BiYkzFGc.js
   function r(r$10, i$9 = !1) {
-    let [a$7, o$7] = (0, import_react.useState)(r$10?.drag || null),
-      s$7 = (0, import_react.useState)(void 0)[1];
+    let [a$7, o$5] = (0, import_react.useState)(r$10?.drag || null),
+      s$9 = (0, import_react.useState)(void 0)[1];
     return (
       n$4(r$10, R.Start, (e$10) => {
-        o$7(e$10);
+        o$5(e$10);
       }),
       n$4(r$10, R.Move, () => {
-        i$9 && s$7(Symbol());
+        i$9 && s$9(Symbol());
       }),
       n$4(r$10, R.End, () => {
-        o$7(null);
+        o$5(null);
       }),
       a$7
     );
@@ -5496,18 +5521,18 @@
 
   //#endregion
   //#region ../dragdoll-react/dist/use-droppable-B1RDSPLw.js
-  function s({ id: s$7, accept: c$7, data: l$6, element: u$6, dndObserver: d$3 } = {}) {
+  function s({ id: s$9, accept: c$7, data: l$6, element: u$6, dndObserver: d$4 } = {}) {
     let f$3 = n$2(),
-      p$3 = d$3 === void 0 ? f$3 : d$3,
+      p$3 = d$4 === void 0 ? f$3 : d$4,
       [m$3, h$3] = (0, import_react.useState)(null),
       g$3 = (0, import_react.useRef)(null),
       _$4 = (0, import_react.useRef)({
-        id: s$7,
+        id: s$9,
         accept: c$7,
         data: l$6,
       });
-    ((_$4.current.id = s$7), (_$4.current.accept = c$7), (_$4.current.data = l$6));
-    let v$4 = (0, import_react.useRef)(s$7),
+    ((_$4.current.id = s$9), (_$4.current.accept = c$7), (_$4.current.data = l$6));
+    let v$4 = (0, import_react.useRef)(s$9),
       y$3 = (0, import_react.useRef)(p$3);
     y$3.current = p$3;
     let b$2 = (0, import_react.useRef)(p$3),
@@ -5542,8 +5567,8 @@
       }, [u$6, S$2, x$2]),
       n(() => {
         let e$10 = g$3.current;
-        e$10 && v$4.current !== s$7 && S$2(e$10.element);
-      }, [s$7, S$2]),
+        e$10 && v$4.current !== s$9 && S$2(e$10.element);
+      }, [s$9, S$2]),
       n(() => {
         let e$10 = b$2.current;
         if (e$10 === p$3) return;
@@ -5564,78 +5589,126 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-keyboard-motion-sensor-BtTbO_79.js
-  function o(o$7 = {}, s$7) {
-    let [c$7, l$6] = (0, import_react.useState)(null),
-      u$6 = (0, import_react.useRef)(c$7),
-      d$3 = (0, import_react.useRef)(o$7),
-      f$3 = r$1((e$10) => {
-        u$6.current?.destroy();
-        let t$13 = new a$1(e$10, d$3.current);
-        ((u$6.current = t$13), l$6(t$13));
+  //#region ../dragdoll-react/dist/use-keyboard-motion-sensor-Bg-2GbPx.js
+  function s$1(s$9, c$7) {
+    let [l$6, u$6] = (0, import_react.useState)(null),
+      d$4 = (0, import_react.useRef)(l$6),
+      f$3 = (0, import_react.useRef)(s$9);
+    f$3.current = s$9;
+    let p$3 = r$1((e$10) => {
+        let t$13 = d$4.current;
+        if (t$13) {
+          t$13.updateElement(e$10);
+          return;
+        }
+        let n$15 = new a$1(e$10, f$3.current);
+        ((d$4.current = n$15), u$6(n$15));
       }, []),
-      p$3 = r$1(() => {
-        u$6.current && (u$6.current.destroy(), (u$6.current = null), l$6(null));
+      m$3 = r$1(() => {
+        let e$10 = d$4.current;
+        e$10 && (e$10.destroy(), (d$4.current = null), u$6(null));
       }, []),
-      m$3 = r$1(
+      h$3 = r$1(
         (e$10) => {
-          if (s$7 !== void 0) return;
-          if (e$10 === null) {
-            p$3();
-            return;
+          if (c$7 === void 0) {
+            if (e$10 === null) {
+              m$3();
+              return;
+            }
+            p$3(e$10);
           }
-          let t$13 = u$6.current;
-          (!t$13 || t$13.element !== e$10) && f$3(e$10);
         },
-        [s$7, f$3, p$3],
+        [c$7, p$3, m$3],
       );
     return (
-      (d$3.current = o$7),
       n(() => {
-        if (s$7 !== void 0) return (f$3(s$7), p$3);
-      }, [s$7, f$3, p$3]),
+        if (c$7 !== void 0) return (p$3(c$7), m$3);
+      }, [c$7, p$3, m$3]),
       n(() => {
-        c$7 && c$7.updateSettings(o$7);
-      }, [c$7, o$7]),
-      n$1(() => [c$7, m$3], [c$7, m$3])
+        if (l$6) {
+          let {
+            startKeys: e$10 = i$3.startKeys,
+            moveLeftKeys: t$13 = i$3.moveLeftKeys,
+            moveRightKeys: n$15 = i$3.moveRightKeys,
+            moveUpKeys: r$10 = i$3.moveUpKeys,
+            moveDownKeys: i$9 = i$3.moveDownKeys,
+            cancelKeys: a$7 = i$3.cancelKeys,
+            endKeys: c$8 = i$3.endKeys,
+            cancelOnBlur: u$7 = i$3.cancelOnBlur,
+            cancelOnVisibilityChange: d$5 = i$3.cancelOnVisibilityChange,
+            computeSpeed: f$4 = i$3.computeSpeed,
+            startPredicate: p$4 = i$3.startPredicate,
+          } = s$9 || {};
+          l$6.updateSettings({
+            startKeys: e$10,
+            moveLeftKeys: t$13,
+            moveRightKeys: n$15,
+            moveUpKeys: r$10,
+            moveDownKeys: i$9,
+            cancelKeys: a$7,
+            endKeys: c$8,
+            cancelOnBlur: u$7,
+            cancelOnVisibilityChange: d$5,
+            computeSpeed: f$4,
+            startPredicate: p$4,
+          });
+        }
+      }, [l$6, s$9]),
+      n$1(() => [l$6, h$3], [l$6, h$3])
     );
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-pointer-sensor-BIU5uieJ.js
-  function o$1(o$7 = {}, s$7) {
-    let [c$7, l$6] = (0, import_react.useState)(null),
-      u$6 = (0, import_react.useRef)(c$7),
-      d$3 = (0, import_react.useRef)(o$7),
-      f$3 = r$1((e$10) => {
-        u$6.current?.destroy();
-        let t$13 = new u(e$10, d$3.current);
-        ((u$6.current = t$13), l$6(t$13));
+  //#region ../dragdoll-react/dist/use-pointer-sensor-CWzckD5j.js
+  function s$2(s$9, c$7) {
+    let [l$6, u$6] = (0, import_react.useState)(null),
+      d$4 = (0, import_react.useRef)(l$6),
+      f$3 = (0, import_react.useRef)(s$9);
+    f$3.current = s$9;
+    let p$3 = r$1((e$10) => {
+        let t$13 = d$4.current;
+        if (t$13) {
+          t$13.updateElement(e$10);
+          return;
+        }
+        let n$15 = new d(e$10, f$3.current);
+        ((d$4.current = n$15), u$6(n$15));
       }, []),
-      p$3 = r$1(() => {
-        u$6.current && (u$6.current.destroy(), (u$6.current = null), l$6(null));
+      m$3 = r$1(() => {
+        let e$10 = d$4.current;
+        e$10 && (e$10.destroy(), (d$4.current = null), u$6(null));
       }, []),
-      m$3 = r$1(
+      h$3 = r$1(
         (e$10) => {
-          if (s$7 !== void 0) return;
-          if (e$10 === null) {
-            p$3();
-            return;
+          if (c$7 === void 0) {
+            if (e$10 === null) {
+              m$3();
+              return;
+            }
+            p$3(e$10);
           }
-          let t$13 = u$6.current;
-          (!t$13 || t$13.element !== e$10) && f$3(e$10);
         },
-        [s$7, f$3, p$3],
+        [c$7, p$3, m$3],
       );
     return (
-      (d$3.current = o$7),
       n(() => {
-        if (s$7 !== void 0) return (f$3(s$7), p$3);
-      }, [s$7, f$3, p$3]),
+        if (c$7 !== void 0) return (p$3(c$7), m$3);
+      }, [c$7, p$3, m$3]),
       n(() => {
-        c$7 && c$7.updateSettings(o$7);
-      }, [c$7, o$7]),
-      n$1(() => [c$7, m$3], [c$7, m$3])
+        if (l$6) {
+          let {
+            listenerOptions: e$10 = u.listenerOptions,
+            sourceEvents: t$13 = u.sourceEvents,
+            startPredicate: n$15 = u.startPredicate,
+          } = s$9 || {};
+          l$6.updateSettings({
+            listenerOptions: e$10,
+            sourceEvents: t$13,
+            startPredicate: n$15,
+          });
+        }
+      }, [l$6, s$9]),
+      n$1(() => [l$6, h$3], [l$6, h$3])
     );
   }
 
@@ -32197,8 +32270,8 @@
     isHidden,
   }) {
     const elementRef = (0, import_react.useRef)(null);
-    const [pointerSensor, setPointerSensorRef] = o$1();
-    const [keyboardSensor, setKeyboardSensorRef] = o();
+    const [pointerSensor, setPointerSensorRef] = s$2();
+    const [keyboardSensor, setKeyboardSensorRef] = s$1();
     const draggableSettings = (0, import_react.useMemo)(
       () => ({
         elements: () => {

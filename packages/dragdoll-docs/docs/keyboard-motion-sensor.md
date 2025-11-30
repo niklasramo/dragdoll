@@ -249,14 +249,14 @@ KeyboardMotionSensor emits the default base motion sensor events as described in
 
 Here's a list of additional exports that are available in the `dragdoll/sensors/keyboard-motion` package.
 
-### keyboardMotionSensorDefaults
+### KeyboardMotionSensorDefaultSettings
 
 ```ts
 // Import
-import { keyboardMotionSensorDefaults } from 'dragdoll/sensors/keyboard-motion';
+import { KeyboardMotionSensorDefaultSettings } from 'dragdoll/sensors/keyboard-motion';
 
 // Constant
-const keyboardMotionSensorDefaults: KeyboardMotionSensorSettings<any>;
+const KeyboardMotionSensorDefaultSettings: KeyboardMotionSensorSettings<any>;
 ```
 
 ## Types

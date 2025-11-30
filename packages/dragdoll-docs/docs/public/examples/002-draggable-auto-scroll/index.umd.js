@@ -491,7 +491,7 @@ function l$2(e$5) {
 function u$2(e$5) {
 	return l$2(e$5) || e$5 === document.documentElement || e$5 === document.body ? window : e$5;
 }
-function d$1(e$5) {
+function d$2(e$5) {
 	return l$2(e$5) ? e$5.scrollX : e$5.scrollLeft;
 }
 function f$1(e$5) {
@@ -621,7 +621,7 @@ var k$1 = class {
 		this.requestX === e$5 ? (this.requestX = null, e$5.action = null) : this.requestY === e$5 && (this.requestY = null, e$5.action = null);
 	}
 	computeScrollValues() {
-		this.element && (this.scrollLeft = this.requestX ? this.requestX.value : d$1(this.element), this.scrollTop = this.requestY ? this.requestY.value : p$1(this.element));
+		this.element && (this.scrollLeft = this.requestX ? this.requestX.value : d$2(this.element), this.scrollTop = this.requestY ? this.requestY.value : p$1(this.element));
 	}
 	scroll() {
 		this.element && (this.element.scrollTo ? this.element.scrollTo(this.scrollLeft, this.scrollTop) : (this.element.scrollLeft = this.scrollLeft, this.element.scrollTop = this.scrollTop));
@@ -650,7 +650,7 @@ var k$1 = class {
 		return b$1.forward & this.direction ? E$1(this.value, this.maxValue) : this.value <= 0;
 	}
 	computeCurrentScrollValue() {
-		return this.element ? this.value === this.value ? Math.max(0, Math.min(this.value, this.maxValue)) : y$1.x & this.direction ? d$1(this.element) : p$1(this.element) : 0;
+		return this.element ? this.value === this.value ? Math.max(0, Math.min(this.value, this.maxValue)) : y$1.x & this.direction ? d$2(this.element) : p$1(this.element) : 0;
 	}
 	computeNextScrollValue() {
 		let e$5 = this.speed * (this.deltaTime / 1e3), t$5 = b$1.forward & this.direction ? this.value + e$5 : this.value - e$5;
@@ -759,7 +759,7 @@ var N = class {
 			else continue;
 			if (y$2 && H >= x$2 && W > 0 && (H > x$2 || q > k$2)) {
 				let e$7 = 0, t$6 = C$1.none, n$6 = D$1(l$5, K.width), r$4 = O$1(n$6, a$3, s$4.width, K.width);
-				g$2 === C$1.right ? (e$7 = K.x + K.width + r$4 - (s$4.x + s$4.width), e$7 <= n$6 && !E$1(d$1(U), W) && (t$6 = C$1.right)) : g$2 === C$1.left && (e$7 = s$4.x - (K.x - r$4), e$7 <= n$6 && d$1(U) > 0 && (t$6 = C$1.left)), t$6 && (b$2 = U, x$2 = H, w$2 = n$6, k$2 = q, A$2 = t$6, j$2 = e$7, M$2 = W);
+				g$2 === C$1.right ? (e$7 = K.x + K.width + r$4 - (s$4.x + s$4.width), e$7 <= n$6 && !E$1(d$2(U), W) && (t$6 = C$1.right)) : g$2 === C$1.left && (e$7 = s$4.x - (K.x - r$4), e$7 <= n$6 && d$2(U) > 0 && (t$6 = C$1.left)), t$6 && (b$2 = U, x$2 = H, w$2 = n$6, k$2 = q, A$2 = t$6, j$2 = e$7, M$2 = W);
 			}
 			if (V && H >= P$1 && G > 0 && (H > P$1 || q > I$1)) {
 				let e$7 = 0, t$6 = S$1.none, n$6 = D$1(l$5, K.height), r$4 = O$1(n$6, a$3, s$4.height, K.height);
@@ -786,7 +786,7 @@ var N = class {
 			}
 			let S$2 = D$1(typeof n$6.threshold == `number` ? n$6.threshold : 50, g$2 ? x$2.width : x$2.height), w$2 = O$1(S$2, t$5, g$2 ? o$4.width : o$4.height, g$2 ? x$2.width : x$2.height), k$2 = 0;
 			if (k$2 = e$5.direction === C$1.left ? o$4.x - (x$2.x - w$2) : e$5.direction === C$1.right ? x$2.x + x$2.width + w$2 - (o$4.x + o$4.width) : e$5.direction === C$1.up ? o$4.y - (x$2.y - w$2) : x$2.y + x$2.height + w$2 - (o$4.y + o$4.height), k$2 > S$2) break;
-			let A$2 = g$2 ? d$1(l$4) : p$1(l$4);
+			let A$2 = g$2 ? d$2(l$4) : p$1(l$4);
 			if (s$4 = b$1.forward & e$5.direction ? E$1(A$2, v$3) : A$2 <= 0, s$4) break;
 			return e$5.maxValue = v$3, e$5.threshold = S$2, e$5.distance = k$2, e$5.isEnding = !1, !0;
 		}
@@ -803,8 +803,8 @@ var N = class {
 		for (; r$4 < e$5.length; r$4++) {
 			let i$4 = e$5[r$4], a$3 = this._itemData.get(i$4), o$4 = a$3.overlapCheckRequestTime, s$4 = o$4 > 0 && this._tickTime - o$4 > this.settings.overlapCheckInterval, c$4 = !0, l$4 = t$5.get(i$4);
 			l$4 && l$4.isActive && (c$4 = !this._updateScrollRequest(l$4), c$4 && (s$4 = !0, this._cancelItemScroll(i$4, y$1.x)));
-			let u$4 = !0, d$2 = n$5.get(i$4);
-			d$2 && d$2.isActive && (u$4 = !this._updateScrollRequest(d$2), u$4 && (s$4 = !0, this._cancelItemScroll(i$4, y$1.y))), s$4 && (a$3.overlapCheckRequestTime = 0, this._checkItemOverlap(i$4, c$4, u$4));
+			let u$4 = !0, d$3 = n$5.get(i$4);
+			d$3 && d$3.isActive && (u$4 = !this._updateScrollRequest(d$3), u$4 && (s$4 = !0, this._cancelItemScroll(i$4, y$1.y))), s$4 && (a$3.overlapCheckRequestTime = 0, this._checkItemOverlap(i$4, c$4, u$4));
 		}
 	}
 	_requestAction(e$5, t$5) {
@@ -1012,7 +1012,7 @@ function l$1(e$5, t$5, n$5 = null) {
 function u$1(e$5) {
 	return e$5.setMatrixValue(`scale(1, 1)`);
 }
-function d(e$5, t$5 = 0) {
+function d$1(e$5, t$5 = 0) {
 	let n$5 = 10 ** t$5;
 	return Math.round((e$5 + 2 ** -52) * n$5) / n$5;
 }
@@ -1203,8 +1203,8 @@ var O = class {
 			let { position: e$6 } = i$4;
 			if (e$6 !== `fixed` && e$6 !== `absolute`) throw Error(`Dragged element has "${e$6}" position, but only "fixed" or "absolute" are allowed when using a custom drag container.`);
 		}
-		let d$2 = getOffsetContainer(e$5) || e$5;
-		this.elementOffsetContainer = d$2, this.dragOffsetContainer = u$4 === c$4 ? d$2 : getOffsetContainer(e$5, { container: u$4 });
+		let d$3 = getOffsetContainer(e$5) || e$5;
+		this.elementOffsetContainer = d$3, this.dragOffsetContainer = u$4 === c$4 ? d$3 : getOffsetContainer(e$5, { container: u$4 });
 		{
 			let { width: e$6, height: t$6, x: n$5, y: r$5 } = a$3;
 			this.clientRect = {
@@ -1311,8 +1311,8 @@ const F = {
 	elements: () => null,
 	frozenStyles: () => null,
 	applyPosition: ({ item: e$5, phase: t$5 }) => {
-		let n$5 = t$5 === L.End || t$5 === L.EndAlign, [r$4, i$4] = e$5.getContainerMatrix(), [a$3, o$4] = e$5.getDragContainerMatrix(), { position: s$4, alignmentOffset: c$4, containerOffset: l$4, elementTransformMatrix: d$2, elementTransformOrigin: f$2, elementOffsetMatrix: p$2 } = e$5, { x: m$2, y: h$2, z: g$2 } = f$2, _$3 = !d$2.isIdentity && (m$2 !== 0 || h$2 !== 0 || g$2 !== 0), v$3 = s$4.x + c$4.x + l$4.x, y$2 = s$4.y + c$4.y + l$4.y;
-		u$1(j), _$3 && (g$2 === 0 ? j.translateSelf(-m$2, -h$2) : j.translateSelf(-m$2, -h$2, -g$2)), n$5 ? i$4.isIdentity || j.multiplySelf(i$4) : o$4.isIdentity || j.multiplySelf(o$4), u$1(M$1).translateSelf(v$3, y$2), j.multiplySelf(M$1), r$4.isIdentity || j.multiplySelf(r$4), _$3 && (u$1(M$1).translateSelf(m$2, h$2, g$2), j.multiplySelf(M$1)), d$2.isIdentity || j.multiplySelf(d$2), p$2.isIdentity || j.preMultiplySelf(p$2), e$5.element.style.transform = `${j}`;
+		let n$5 = t$5 === L.End || t$5 === L.EndAlign, [r$4, i$4] = e$5.getContainerMatrix(), [a$3, o$4] = e$5.getDragContainerMatrix(), { position: s$4, alignmentOffset: c$4, containerOffset: l$4, elementTransformMatrix: d$3, elementTransformOrigin: f$2, elementOffsetMatrix: p$2 } = e$5, { x: m$2, y: h$2, z: g$2 } = f$2, _$3 = !d$3.isIdentity && (m$2 !== 0 || h$2 !== 0 || g$2 !== 0), v$3 = s$4.x + c$4.x + l$4.x, y$2 = s$4.y + c$4.y + l$4.y;
+		u$1(j), _$3 && (g$2 === 0 ? j.translateSelf(-m$2, -h$2) : j.translateSelf(-m$2, -h$2, -g$2)), n$5 ? i$4.isIdentity || j.multiplySelf(i$4) : o$4.isIdentity || j.multiplySelf(o$4), u$1(M$1).translateSelf(v$3, y$2), j.multiplySelf(M$1), r$4.isIdentity || j.multiplySelf(r$4), _$3 && (u$1(M$1).translateSelf(m$2, h$2, g$2), j.multiplySelf(M$1)), d$3.isIdentity || j.multiplySelf(d$3), p$2.isIdentity || j.preMultiplySelf(p$2), e$5.element.style.transform = `${j}`;
 	},
 	computeClientRect: ({ drag: e$5 }) => e$5.items[0].clientRect || null,
 	positionModifiers: [],
@@ -1370,7 +1370,7 @@ var B = class {
 		e$5.off(e.Start, n$5), e$5.off(e.Move, n$5), e$5.off(e.Cancel, r$4), e$5.off(e.End, r$4), e$5.off(e.Destroy, r$4), this._sensorData.delete(e$5);
 	}
 	_parseSettings(e$5, t$5 = z) {
-		let { container: n$5 = t$5.container, startPredicate: r$4 = t$5.startPredicate, elements: i$4 = t$5.elements, frozenStyles: a$3 = t$5.frozenStyles, positionModifiers: o$4 = t$5.positionModifiers, applyPosition: s$4 = t$5.applyPosition, computeClientRect: c$4 = t$5.computeClientRect, sensorProcessingMode: l$4 = t$5.sensorProcessingMode, dndGroups: u$4 = t$5.dndGroups, onPrepareStart: d$2 = t$5.onPrepareStart, onStart: f$2 = t$5.onStart, onPrepareMove: p$2 = t$5.onPrepareMove, onMove: m$2 = t$5.onMove, onEnd: h$2 = t$5.onEnd, onDestroy: g$2 = t$5.onDestroy } = e$5 || {};
+		let { container: n$5 = t$5.container, startPredicate: r$4 = t$5.startPredicate, elements: i$4 = t$5.elements, frozenStyles: a$3 = t$5.frozenStyles, positionModifiers: o$4 = t$5.positionModifiers, applyPosition: s$4 = t$5.applyPosition, computeClientRect: c$4 = t$5.computeClientRect, sensorProcessingMode: l$4 = t$5.sensorProcessingMode, dndGroups: u$4 = t$5.dndGroups, onPrepareStart: d$3 = t$5.onPrepareStart, onStart: f$2 = t$5.onStart, onPrepareMove: p$2 = t$5.onPrepareMove, onMove: m$2 = t$5.onMove, onEnd: h$2 = t$5.onEnd, onDestroy: g$2 = t$5.onDestroy } = e$5 || {};
 		return {
 			container: n$5,
 			startPredicate: r$4,
@@ -1381,7 +1381,7 @@ var B = class {
 			computeClientRect: c$4,
 			sensorProcessingMode: l$4,
 			dndGroups: u$4,
-			onPrepareStart: d$2,
+			onPrepareStart: d$3,
 			onStart: f$2,
 			onPrepareMove: p$2,
 			onMove: m$2,
@@ -1440,7 +1440,7 @@ var B = class {
 				let e$6 = t$5.getContainerMatrix()[0], n$5 = t$5.getDragContainerMatrix()[0];
 				if (s$2(e$6, n$5) || !c$2(e$6) && !c$2(n$5)) continue;
 				let r$4 = t$5.element.getBoundingClientRect(), { alignmentOffset: i$4 } = t$5;
-				i$4.x += d(t$5.clientRect.x - r$4.x, 3), i$4.y += d(t$5.clientRect.y - r$4.y, 3);
+				i$4.x += d$1(t$5.clientRect.x - r$4.x, 3), i$4.y += d$1(t$5.clientRect.y - r$4.y, 3);
 			}
 			for (let t$5 of e$5.items) {
 				let { alignmentOffset: n$5 } = t$5;
@@ -1540,7 +1540,7 @@ var B = class {
 			}
 			for (let e$5 of n$5.items) if (e$5.elementContainer !== e$5.dragContainer) {
 				let t$5 = e$5.element.getBoundingClientRect();
-				e$5.alignmentOffset.x = d(e$5.clientRect.x - t$5.x, 3), e$5.alignmentOffset.y = d(e$5.clientRect.y - t$5.y, 3);
+				e$5.alignmentOffset.x = d$1(e$5.clientRect.x - t$5.x, 3), e$5.alignmentOffset.y = d$1(e$5.clientRect.y - t$5.y, 3);
 			}
 			for (let e$5 of n$5.items) e$5.elementContainer !== e$5.dragContainer && (e$5.alignmentOffset.x !== 0 || e$5.alignmentOffset.y !== 0) && this.settings.applyPosition({
 				phase: L.EndAlign,
@@ -1575,7 +1575,7 @@ var B = class {
 };
 
 //#endregion
-//#region ../dragdoll/dist/pointer-sensor-D3DHn381.js
+//#region ../dragdoll/dist/pointer-sensor-C2e8cAmq.js
 function i$3(e$5, t$5) {
 	if (`pointerId` in e$5) return e$5.pointerId === t$5 ? e$5 : null;
 	if (`changedTouches` in e$5) {
@@ -1620,8 +1620,12 @@ const l = {
 		cancel: ``,
 		end: `mouseup`
 	}
+}, u = {
+	listenerOptions: {},
+	sourceEvents: `auto`,
+	startPredicate: (e$5) => !(`button` in e$5 && e$5.button > 0)
 };
-var u = class {
+var d = class {
 	element;
 	drag;
 	isDestroyed;
@@ -1631,7 +1635,7 @@ var u = class {
 	_areWindowListenersBound;
 	_emitter;
 	constructor(e$5, t$5 = {}) {
-		let { listenerOptions: n$5 = {}, sourceEvents: i$4 = `auto`, startPredicate: a$3 = (e$6) => !(`button` in e$6 && e$6.button > 0) } = t$5;
+		let { listenerOptions: n$5 = u.listenerOptions, sourceEvents: i$4 = u.sourceEvents, startPredicate: a$3 = u.startPredicate } = t$5;
 		this.element = e$5, this.drag = null, this.isDestroyed = !1, this._areWindowListenersBound = !1, this._startPredicate = a$3, this._listenerOptions = s$1(n$5), this._sourceEvents = c$1(i$4), this._emitter = new v(), this._onStart = this._onStart.bind(this), this._onMove = this._onMove.bind(this), this._onCancel = this._onCancel.bind(this), this._onEnd = this._onEnd.bind(this), e$5.addEventListener(l[this._sourceEvents].start, this._onStart, this._listenerOptions);
 	}
 	_getTrackedPointerEventData(e$5) {
@@ -1720,6 +1724,9 @@ var u = class {
 			...this.drag
 		};
 		this._emitter.emit(e$5.type, e$5), this._resetDrag();
+	}
+	updateElement(e$5) {
+		this.isDestroyed || this.element === e$5 || (this.element.removeEventListener(l[this._sourceEvents].start, this._onStart, this._listenerOptions), e$5.addEventListener(l[this._sourceEvents].start, this._onStart, this._listenerOptions), this.element = e$5);
 	}
 	updateSettings(e$5) {
 		if (this.isDestroyed) return;
@@ -1955,7 +1962,7 @@ var i = class extends n$2 {
 };
 
 //#endregion
-//#region ../dragdoll/dist/keyboard-motion-sensor-BsMzohjd.js
+//#region ../dragdoll/dist/keyboard-motion-sensor-CmyuVq9B.js
 const n = [
 	`start`,
 	`cancel`,
@@ -2013,12 +2020,12 @@ var a = class extends i {
 	_startPredicate;
 	constructor(e$5, t$5 = {}) {
 		super();
-		let { startPredicate: n$5 = i$1.startPredicate, computeSpeed: r$4 = i$1.computeSpeed, cancelOnVisibilityChange: a$3 = i$1.cancelOnVisibilityChange, cancelOnBlur: o$4 = i$1.cancelOnBlur, startKeys: s$4 = i$1.startKeys, moveLeftKeys: c$4 = i$1.moveLeftKeys, moveRightKeys: l$4 = i$1.moveRightKeys, moveUpKeys: u$4 = i$1.moveUpKeys, moveDownKeys: d$2 = i$1.moveDownKeys, cancelKeys: f$2 = i$1.cancelKeys, endKeys: p$2 = i$1.endKeys } = t$5;
-		this.element = e$5, this._startKeys = new Set(s$4), this._cancelKeys = new Set(f$2), this._endKeys = new Set(p$2), this._moveLeftKeys = new Set(c$4), this._moveRightKeys = new Set(l$4), this._moveUpKeys = new Set(u$4), this._moveDownKeys = new Set(d$2), this._moveKeys = new Set([
+		let { startPredicate: n$5 = i$1.startPredicate, computeSpeed: r$4 = i$1.computeSpeed, cancelOnVisibilityChange: a$3 = i$1.cancelOnVisibilityChange, cancelOnBlur: o$4 = i$1.cancelOnBlur, startKeys: s$4 = i$1.startKeys, moveLeftKeys: c$4 = i$1.moveLeftKeys, moveRightKeys: l$4 = i$1.moveRightKeys, moveUpKeys: u$4 = i$1.moveUpKeys, moveDownKeys: d$3 = i$1.moveDownKeys, cancelKeys: f$2 = i$1.cancelKeys, endKeys: p$2 = i$1.endKeys } = t$5;
+		this.element = e$5, this._startKeys = new Set(s$4), this._cancelKeys = new Set(f$2), this._endKeys = new Set(p$2), this._moveLeftKeys = new Set(c$4), this._moveRightKeys = new Set(l$4), this._moveUpKeys = new Set(u$4), this._moveDownKeys = new Set(d$3), this._moveKeys = new Set([
 			...c$4,
 			...l$4,
 			...u$4,
-			...d$2
+			...d$3
 		]), this._moveKeyTimestamps = /* @__PURE__ */ new Map(), this._cancelOnBlur = o$4, this._cancelOnVisibilityChange = a$3, this._computeSpeed = r$4, this._startPredicate = n$5, this._onKeyDown = this._onKeyDown.bind(this), this._onKeyUp = this._onKeyUp.bind(this), this._onTick = this._onTick.bind(this), this._internalCancel = this._internalCancel.bind(this), this._blurCancelHandler = this._blurCancelHandler.bind(this), this.on(`tick`, this._onTick, this._onTick), document.addEventListener(`keydown`, this._onKeyDown), document.addEventListener(`keyup`, this._onKeyUp), o$4 && e$5?.addEventListener(`blur`, this._blurCancelHandler), a$3 && document.addEventListener(`visibilitychange`, this._internalCancel);
 	}
 	_end(e$5) {
@@ -2078,7 +2085,11 @@ var a = class extends i {
 			return;
 		}
 	}
+	updateElement(e$5) {
+		this.isDestroyed || this.element === e$5 || (this._cancelOnBlur && (this.element?.removeEventListener(`blur`, this._blurCancelHandler), e$5?.addEventListener(`blur`, this._blurCancelHandler)), this.element = e$5);
+	}
 	updateSettings(e$5) {
+		if (this.isDestroyed) return;
 		let t$5 = !1, { cancelOnBlur: r$4, cancelOnVisibilityChange: i$4, startPredicate: a$3, computeSpeed: o$4 } = e$5;
 		if (r$4 !== void 0 && this._cancelOnBlur !== r$4 && (this._cancelOnBlur = r$4, r$4 ? this.element?.addEventListener(`blur`, this._blurCancelHandler) : this.element?.removeEventListener(`blur`, this._blurCancelHandler)), i$4 !== void 0 && this._cancelOnVisibilityChange !== i$4 && (this._cancelOnVisibilityChange = i$4, i$4 ? document.addEventListener(`visibilitychange`, this._internalCancel) : document.removeEventListener(`visibilitychange`, this._internalCancel)), a$3 !== void 0 && (this._startPredicate = a$3), o$4 !== void 0 && (this._computeSpeed = o$4), n.forEach((n$5, r$5) => {
 			let i$5 = `${n$5}Keys`, a$4 = e$5[i$5];
@@ -2102,7 +2113,7 @@ var a = class extends i {
 //#region examples/002-draggable-auto-scroll/index.ts
 const element = document.querySelector(".draggable");
 const dragContainer = document.querySelector(".drag-container");
-new B([new u(element), new a(element, { computeSpeed: () => 100 })], {
+new B([new d(element), new a(element, { computeSpeed: () => 100 })], {
 	container: dragContainer,
 	elements: () => [element],
 	frozenStyles: () => ["left", "top"],

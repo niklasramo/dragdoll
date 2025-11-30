@@ -233,6 +233,20 @@ Emitted when the sensor is destroyed.
 
 Payload follows the [`PointerSensorDestroyEvent`](#pointersensordestroyevent) interface.
 
+## Exports
+
+Here's a list of additional exports that are available in the `dragdoll/sensors/pointer` package.
+
+### PointerSensorDefaultSettings
+
+```ts
+// Import
+import { PointerSensorDefaultSettings } from 'dragdoll/sensors/pointer';
+
+// Constant
+const PointerSensorDefaultSettings: PointerSensorSettings;
+```
+
 ## Types
 
 ### PointerSensorDragData

@@ -87,3 +87,16 @@ Returns a read-only array with two elements:
 - If the element changes, the sensor is recreated with the new element.
 - The sensor will be `null` initially until an element is attached.
 - Make sure the element is focusable (e.g. with `tabIndex={0}`).
+
+## Types
+
+### UseKeyboardSensorSettings
+
+```ts
+// Import
+import type { UseKeyboardSensorSettings } from 'dragdoll-react';
+
+// Interface
+interface UseKeyboardSensorSettings<E extends KeyboardSensorEvents = KeyboardSensorEvents>
+  extends Partial<KeyboardSensorSettings<E>> {}
+```

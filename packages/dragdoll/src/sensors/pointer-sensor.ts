@@ -46,6 +46,12 @@ const SOURCE_EVENTS = {
 
 type PointerSensorSourceEvent = PointerEvent | TouchEvent | MouseEvent;
 
+export const PointerSensorDefaultSettings: PointerSensorSettings = {
+  listenerOptions: {},
+  sourceEvents: 'auto',
+  startPredicate: (e) => ('button' in e && e.button > 0 ? false : true),
+} as const;
+
 export type PointerSensorDragData = {
   readonly pointerId: number;
   readonly pointerType: PointerType;
@@ -144,9 +150,9 @@ export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
 
   constructor(element: Element | Window, options: Partial<PointerSensorSettings> = {}) {
     const {
-      listenerOptions = {},
-      sourceEvents = 'auto',
-      startPredicate = (e) => ('button' in e && e.button > 0 ? false : true),
+      listenerOptions = PointerSensorDefaultSettings.listenerOptions,
+      sourceEvents = PointerSensorDefaultSettings.sourceEvents,
+      startPredicate = PointerSensorDefaultSettings.startPredicate,
     } = options;
 
     this.element = element;
@@ -350,6 +356,30 @@ export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
     this._emitter.emit(eventData.type, eventData);
 
     this._resetDrag();
+  }
+
+  /**
+   * Update the element to be tracked.
+   */
+  updateElement(element: Element | Window) {
+    if (this.isDestroyed || this.element === element) return;
+
+    // Unbind start event listeners for the old element.
+    this.element.removeEventListener(
+      SOURCE_EVENTS[this._sourceEvents].start,
+      this._onStart as EventListener,
+      this._listenerOptions,
+    );
+
+    // Bind start event listeners for the new element.
+    element.addEventListener(
+      SOURCE_EVENTS[this._sourceEvents].start,
+      this._onStart as EventListener,
+      this._listenerOptions,
+    );
+
+    // Update the element.
+    (this as Writeable<this>).element = element;
   }
 
   /**
