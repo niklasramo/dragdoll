@@ -1,14 +1,16 @@
 import type { DndObserver } from 'dragdoll/dnd-observer';
 import type { DroppableOptions } from 'dragdoll/droppable';
-import { Droppable as DroppableCore } from 'dragdoll/droppable';
+import { Droppable, DroppableDefaultSettings } from 'dragdoll/droppable';
 import { useRef, useState } from 'react';
 import { useCallbackStable } from './use-callback-stable.js';
 import { useDndObserverContext } from './use-dnd-observer-context.js';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';
 import { useMemoStable } from './use-memo-stable.js';
 
+const UNAPPLIED_ID = Symbol();
+
 export interface UseDroppableSettings extends DroppableOptions {
-  element?: HTMLElement | SVGSVGElement;
+  element?: HTMLElement | SVGSVGElement | null;
   dndObserver?: DndObserver<any> | null;
 }
 
@@ -16,6 +18,7 @@ export function useDroppable({
   id,
   accept,
   data,
+  computeClientRect,
   element,
   dndObserver,
 }: UseDroppableSettings = {}) {
@@ -26,27 +29,25 @@ export function useDroppable({
   const effectiveDndObserver = dndObserver === undefined ? dndObserverFromContext : dndObserver;
 
   // Droppable instance state.
-  const [droppable, setDroppable] = useState<DroppableCore | null>(null);
+  const [droppable, setDroppable] = useState<Droppable | null>(null);
 
   // Keep track of the droppable instance in a ref.
-  const droppableRef = useRef<DroppableCore | null>(null);
+  const droppableRef = useRef<Droppable | null>(null);
 
   // Keep track of the current settings.
-  const settingsRef = useRef({ id, accept, data });
+  const settingsRef = useRef({ id, accept, data, computeClientRect });
   settingsRef.current.id = id;
   settingsRef.current.accept = accept;
   settingsRef.current.data = data;
+  settingsRef.current.computeClientRect = computeClientRect;
 
   // Keep track of the currently applied id in a ref. We need this to check if
   // the id has changed since the last time the draggable was created.
-  const appliedIdRef = useRef(id);
+  const appliedIdRef = useRef<typeof id>(UNAPPLIED_ID);
 
   // Keep track of the current effective dnd observer.
   const dndObserverRef = useRef(effectiveDndObserver);
   dndObserverRef.current = effectiveDndObserver;
-
-  // Keep track of the applied dnd observer.
-  const appliedDndObserverRef = useRef(effectiveDndObserver);
 
   // Destroy the droppable.
   const destroyDroppable = useCallbackStable(() => {
@@ -54,32 +55,37 @@ export function useDroppable({
     if (!droppable) return;
     droppable.destroy();
     droppableRef.current = null;
+    appliedIdRef.current = UNAPPLIED_ID;
     setDroppable(null);
   }, []);
 
   // Create the droppable.
-  const createDroppable = useCallbackStable(
-    (node: HTMLElement | SVGSVGElement) => {
-      destroyDroppable();
+  const createDroppable = useCallbackStable((node: HTMLElement | SVGSVGElement | null) => {
+    let droppable = droppableRef.current;
+    if (droppable) {
+      // If the droppable already exists with the same node and the id has not
+      // changed, do not create a new one.
+      if (droppable.element === node && appliedIdRef.current === settingsRef.current.id) {
+        return;
+      }
 
-      // Create the droppable.
-      const effectiveDndObserver = dndObserverRef.current;
-      const droppable = new DroppableCore(node, settingsRef.current);
+      // Destroy the existing droppable.
+      droppable.destroy();
+    }
 
-      // Update refs and state.
-      droppableRef.current = droppable;
-      appliedIdRef.current = settingsRef.current.id;
-      appliedDndObserverRef.current = effectiveDndObserver;
-      setDroppable(droppable);
-    },
-    [destroyDroppable],
-  );
+    // Create the droppable.
+    droppable = new Droppable(node, settingsRef.current);
+
+    // Update refs and state.
+    droppableRef.current = droppable;
+    appliedIdRef.current = settingsRef.current.id;
+    setDroppable(droppable);
+  }, []);
 
   // Ref callback when element is not explicitly provided.
   const setRef = useCallbackStable(
     (node: HTMLElement | SVGSVGElement | null) => {
       // If user provides an explicit element, do not create a new droppable.
-      // sensor.
       if (element !== undefined) return;
 
       // Destroy the droppable if the node is null.
@@ -88,12 +94,8 @@ export function useDroppable({
         return;
       }
 
-      // Create a new droppable if there is no droppable or the node has
-      // changed.
-      const currentDroppable = droppableRef.current;
-      if (!currentDroppable || currentDroppable.element !== node) {
-        createDroppable(node);
-      }
+      // Create a new droppable.
+      createDroppable(node);
     },
     [element, createDroppable, destroyDroppable],
   );
@@ -108,43 +110,41 @@ export function useDroppable({
   // Handle id change. Any time id is updated while there is a droppable, we
   // need to recreate the droppable with the new id.
   useIsomorphicLayoutEffect(() => {
-    const droppable = droppableRef.current;
-    if (!droppable) return;
-    if (appliedIdRef.current === id) return;
-    createDroppable(droppable.element);
-  }, [id, createDroppable]);
+    if (droppable && appliedIdRef.current !== id) {
+      createDroppable(droppable.element);
+    }
+  }, [droppable, id, createDroppable]);
 
   // Handle observer change.
   useIsomorphicLayoutEffect(() => {
-    // Do nothing if the effective dnd observer hasn't changed.
-    const appliedDndObserver = appliedDndObserverRef.current;
-    if (appliedDndObserver === effectiveDndObserver) return;
-
-    // If the droppable exists, remove it from the applied dnd observer and add
-    // it to the effective dnd observer.
-    const droppable = droppableRef.current;
-    if (droppable) {
-      appliedDndObserver?.removeDroppables([droppable]);
-      effectiveDndObserver?.addDroppables([droppable]);
-    }
-
-    // Update the applied dnd observer ref.
-    appliedDndObserverRef.current = effectiveDndObserver;
-  }, [effectiveDndObserver]);
+    if (!droppable || !effectiveDndObserver) return;
+    effectiveDndObserver.addDroppables([droppable]);
+    return () => {
+      effectiveDndObserver.removeDroppables([droppable]);
+    };
+  }, [droppable, effectiveDndObserver]);
 
   // Handle accept change.
   useIsomorphicLayoutEffect(() => {
-    const droppable = droppableRef.current;
     if (!droppable) return;
-    droppable.accept = accept || (() => true);
-  }, [accept]);
+    droppable.accept = accept || DroppableDefaultSettings.accept;
+    dndObserverRef.current?.clearTargets();
+    dndObserverRef.current?.detectCollisions();
+  }, [droppable, accept]);
 
   // Handle data change.
   useIsomorphicLayoutEffect(() => {
-    const droppable = droppableRef.current;
     if (!droppable) return;
     droppable.data = data || {};
-  }, [data]);
+  }, [droppable, data]);
+
+  // Handle computeClientRect change.
+  useIsomorphicLayoutEffect(() => {
+    if (!droppable) return;
+    droppable.computeClientRect = computeClientRect || DroppableDefaultSettings.computeClientRect;
+    droppable.updateClientRect();
+    dndObserverRef.current?.detectCollisions();
+  }, [droppable, computeClientRect]);
 
   // Cleanup on unmount.
   useIsomorphicLayoutEffect(() => {

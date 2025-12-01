@@ -69,7 +69,7 @@ Configuration settings for the [`Draggable`](/draggable) instance. Extends core 
 
 As per React's declarative nature, these settings are always merged with the [default settings](/draggable#settings) and then provided to the [`Draggable`](/draggable) instance. This way there will be no cumulative effect of settings changes over time meaning that the old settings will be completely overridden by the new settings.
 
-Treat these as live settings that can be updated dynamically without recreating the draggable (except for `id`, which will cause the draggable to be recreated).
+Treat these as live settings that can be updated dynamically without recreating the draggable (except for `id`, which will cause the draggable to be recreated). When `dndGroups` or `computeClientRect` change, the hook will automatically trigger collision detection updates in the associated `DndObserver`.
 
 #### id
 
@@ -250,13 +250,13 @@ Check the [`sensorProcessingMode`](/draggable#sensorprocessingmode) core docs fo
 #### dndGroups
 
 ```ts
-type dndGroups = Set<DraggableDndGroup>;
+type dndGroups = Set<DraggableDndGroup> | undefined;
 ```
 
 Check the [`dndGroups`](/draggable#dndgroups) core docs for more info.
 
 - Optional.
-- Default is `new Set()`.
+- Default is `undefined` (no groups, meaning the draggable won't match any droppables that use Set-based matching).
 
 #### onPrepareStart
 

@@ -39,9 +39,10 @@ function useDroppable({
   id,
   accept,
   data,
+  computeClientRect,
   element,
   dndObserver,
-}?: UseDroppableOptions): readonly [
+}?: UseDroppableSettings): readonly [
   Droppable | null,
   (node: HTMLElement | SVGSVGElement | null) => void,
 ];
@@ -55,7 +56,7 @@ Configuration settings for the [`Droppable`](/droppable) instance. Extends core 
 
 As per React's declarative nature, these settings are always merged with the default settings and then provided to the [`Droppable`](/droppable) instance. This way there will be no cumulative effect of settings changes over time meaning that the old settings will be completely overridden by the new settings.
 
-Treat these as live settings that can be updated dynamically without recreating the droppable (except for `id`, which will cause the droppable to be recreated).
+Treat these as live settings that can be updated dynamically without recreating the droppable (except for `id`, which will cause the droppable to be recreated). When `accept` or `computeClientRect` change, the hook will automatically trigger collision detection updates.
 
 #### id
 
@@ -99,13 +100,26 @@ Check the [`data`](/droppable#data-1) core docs for more info.
 - Optional.
 - Default is `{}`.
 
+#### computeClientRect
+
+```ts
+type computeClientRect = (droppable: Droppable) => Rect;
+```
+
+A function that should return the current bounding client rectangle of the droppable. This rectangle is used for collision detection.
+
+Check the [`computeClientRect`](/droppable#computeclientrect) core docs for more info.
+
+- Optional.
+- Default uses `element.getBoundingClientRect()` if `element` is not `null`, otherwise returns the cached client rect.
+
 #### element
 
 ```ts
-type element = HTMLElement | SVGSVGElement;
+type element = HTMLElement | SVGSVGElement | null;
 ```
 
-The element to use as the drop zone. If not provided, use the returned ref callback to attach to an element.
+The element to use as the drop zone. If not provided, use the returned ref callback to attach to an element. Can be `null` if you're using a custom `computeClientRect` function.
 
 - Optional.
 - Default is `undefined`.
@@ -144,7 +158,7 @@ import type { UseDroppableSettings } from 'dragdoll-react';
 
 // Interface
 interface UseDroppableSettings extends DroppableOptions {
-  element?: HTMLElement | SVGSVGElement;
+  element?: HTMLElement | SVGSVGElement | null;
   dndObserver?: DndObserver<any> | null;
 }
 ```

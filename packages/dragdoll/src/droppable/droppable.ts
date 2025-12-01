@@ -9,6 +9,12 @@ export const DroppableEventType = {
   Destroy: 'destroy',
 } as const;
 
+export const DroppableDefaultSettings = {
+  accept: () => true,
+  computeClientRect: (droppable: Droppable) =>
+    droppable.element?.getBoundingClientRect() || droppable.getClientRect(),
+};
+
 export type DroppableEventType = (typeof DroppableEventType)[keyof typeof DroppableEventType];
 
 export interface DroppableEventCallbacks {
@@ -19,27 +25,35 @@ export interface DroppableOptions {
   id?: DroppableId;
   accept?: Set<DraggableDndGroup> | ((draggable: AnyDraggable) => boolean);
   data?: { [key: string]: any };
+  computeClientRect?: (droppable: Droppable) => Rect;
 }
 
 export class Droppable {
   readonly id: DroppableId;
-  readonly element: HTMLElement | SVGSVGElement;
+  readonly element: HTMLElement | SVGSVGElement | null;
   readonly isDestroyed: boolean;
   accept: Set<DraggableDndGroup> | ((draggable: AnyDraggable) => boolean);
   data: { [key: string]: any };
+  computeClientRect: (droppable: Droppable) => Rect;
   protected _clientRect: Rect;
   protected _emitter: Emitter<{
     [K in keyof DroppableEventCallbacks]: DroppableEventCallbacks[K];
   }>;
 
-  constructor(element: HTMLElement | SVGSVGElement, options: DroppableOptions = {}) {
-    const { id = Symbol(), accept = () => true, data = {} } = options;
+  constructor(element: HTMLElement | SVGSVGElement | null, options: DroppableOptions = {}) {
+    const {
+      id = Symbol(),
+      accept = DroppableDefaultSettings.accept,
+      data = {},
+      computeClientRect = DroppableDefaultSettings.computeClientRect,
+    } = options;
 
     this.id = id;
     this.element = element;
     this.isDestroyed = false;
     this.accept = accept;
     this.data = data;
+    this.computeClientRect = computeClientRect;
     this._clientRect = { x: 0, y: 0, width: 0, height: 0 };
     this._emitter = new Emitter();
 
@@ -62,13 +76,13 @@ export class Droppable {
     return this._clientRect as Readonly<Rect>;
   }
 
-  updateClientRect(rect?: Rect) {
-    const bcr = rect || this.element.getBoundingClientRect();
-    const { _clientRect } = this;
-    _clientRect.x = bcr.x;
-    _clientRect.y = bcr.y;
-    _clientRect.width = bcr.width;
-    _clientRect.height = bcr.height;
+  updateClientRect() {
+    const computedRect = this.computeClientRect(this);
+    const clientRect = this._clientRect;
+    clientRect.x = computedRect.x;
+    clientRect.y = computedRect.y;
+    clientRect.width = computedRect.width;
+    clientRect.height = computedRect.height;
   }
 
   destroy() {

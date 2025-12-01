@@ -28,14 +28,14 @@ droppable.destroy();
 
 ```ts
 class Droppable {
-  constructor(element: HTMLElement | SVGSVGElement, options: DroppableOptions = {}) {}
+  constructor(element: HTMLElement | SVGSVGElement | null, options: DroppableOptions = {}) {}
 }
 ```
 
 ### Constructor Parameters
 
 1. **element**
-   - The target DOM element that represents the drop zone.
+   - The target DOM element that represents the drop zone. Can be `null` if you want to set it later or use a custom `computeClientRect` function.
 2. **options**
    - An optional options object following the [`DroppableOptions`](#droppableoptions) interface.
    - Check out the [Options](#options) section for more information.
@@ -71,6 +71,56 @@ type data = { [key: string]: any };
 
 Check out the [`data`](#data-1) property docs for more information.
 
+### computeClientRect
+
+```ts
+type computeClientRect = (droppable: Droppable) => Rect;
+```
+
+A function that should return the current bounding client rectangle of the droppable. This rectangle is used for collision detection.
+
+The returned rectangle should have the following properties:
+
+- `x`: The x-coordinate of the rectangle's left edge
+- `y`: The y-coordinate of the rectangle's top edge
+- `width`: The width of the rectangle
+- `height`: The height of the rectangle
+
+**When to customize:** You might want to customize this function when:
+
+- The droppable's `element` is `null` and you need to provide a custom rectangle
+- You want to use a custom bounding area (e.g., smaller or larger than the actual element)
+- You're implementing custom collision detection logic
+- You need to account for transforms or scaling that affect the visual bounds
+
+**Example:**
+
+```ts
+const droppable = new Droppable(null, {
+  computeClientRect: (droppable) => {
+    // Return a custom rectangle when element is null
+    return { x: 100, y: 100, width: 200, height: 200 };
+  },
+});
+
+// Or use a custom rectangle even when element exists
+const droppable = new Droppable(element, {
+  computeClientRect: (droppable) => {
+    const rect = droppable.element?.getBoundingClientRect();
+    if (!rect) return droppable.getClientRect();
+    // Return a slightly larger rectangle for easier dropping
+    return {
+      x: rect.x - 10,
+      y: rect.y - 10,
+      width: rect.width + 20,
+      height: rect.height + 20,
+    };
+  },
+});
+```
+
+**Default behavior:** By default, this returns `element.getBoundingClientRect()` if `element` is not `null`, otherwise returns the cached client rect from `getClientRect()`.
+
 ## Properties
 
 ### id
@@ -84,10 +134,10 @@ The unique identifier for this droppable. Default is a unique symbol. Read-only.
 ### element
 
 ```ts
-type element = HTMLElement | SVGSVGElement;
+type element = HTMLElement | SVGSVGElement | null;
 ```
 
-The associated DOM element whose bounding client rectangle is used for collision detection. Read-only.
+The associated DOM element whose bounding client rectangle is used for collision detection. Can be `null` if you're using a custom `computeClientRect` function. Read-only.
 
 ### accept
 
@@ -100,9 +150,6 @@ Controls which draggables can collide with this droppable when used in a [`DndOb
 - Set mode: accepts a draggable when its [`dndGroups`](/draggable#dndgroups) set contains any of the identifiers in this set.
 - Function mode: called during collision detection for every candidate. Return `true` to accept, `false` to reject. You can incorporate the draggable's [`dndGroups`](/draggable#dndgroups) here or come up with any other acceptance criteria.
 
-> [!IMPORTANT]
-> In most real-world use cases you don't want the Draggable and Droppable colliding with each other if the Droppable's [`element`](#element) is contained within any of the Draggable's dragged elements. This is why [DndObserver](/dnd-observer) will automatically discard such matches and you don't have to worry about it yourself. In the rare case that you do want this behavior, you can override this behavior by overriding the [DndObserver's](/dnd-observer) protected `_isMatch` method.
-
 Default is `() => true` (accepts all draggables).
 
 ### data
@@ -112,6 +159,14 @@ type data = { [key: string]: any };
 ```
 
 Custom data associated with this droppable. This data is persisted until manually overridden. You can directly modify the object at any time.
+
+### computeClientRect
+
+```ts
+type computeClientRect = (droppable: Droppable) => Rect;
+```
+
+A function that should return the current bounding client rectangle of the droppable. This rectangle is used for collision detection. Check out the [`computeClientRect`](#computeclientrect-1) option docs for more information.
 
 ### isDestroyed
 
@@ -181,24 +236,16 @@ console.log(rect.x, rect.y, rect.width, rect.height);
 ### updateClientRect
 
 ```ts
-type updateClientRect = (rect?: Rect) => void;
+type updateClientRect = () => void;
 ```
 
-Updates the cached client rectangle by reading the current bounding client rectangle of the element, or by using a provided `Rect`.
+Updates the cached client rectangle by calling the `computeClientRect` function. This is typically called automatically by `DndObserver` at drag start or on scroll, but can be manually triggered if needed.
 
 **Example**
 
 ```ts
-// Read from the DOM.
+// Update the cached client rectangle.
 droppable.updateClientRect();
-
-// Provide a custom bounding client rectangle.
-droppable.updateClientRect({
-  x: 100,
-  y: 100,
-  width: 200,
-  height: 200,
-});
 ```
 
 ### destroy
@@ -269,5 +316,22 @@ interface DroppableOptions {
   id?: DroppableId;
   accept?: Set<DraggableDndGroup> | ((draggable: AnyDraggable) => boolean);
   data?: { [key: string]: any };
+  computeClientRect?: (droppable: Droppable) => Rect;
 }
 ```
+
+### DroppableDefaultSettings
+
+```ts
+// Import
+import { DroppableDefaultSettings } from 'dragdoll/droppable';
+
+// Object
+const DroppableDefaultSettings = {
+  accept: () => true,
+  computeClientRect: (droppable: Droppable) =>
+    droppable.element?.getBoundingClientRect() || droppable.getClientRect(),
+};
+```
+
+The default settings object used by `Droppable` when options are not provided.

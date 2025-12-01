@@ -527,7 +527,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll/dist/draggable-DSb83hxn.js
+  //#region ../dragdoll/dist/draggable-B0Bgows3.js
   function s$3(e$8, t$10) {
     return e$8.isIdentity && t$10.isIdentity
       ? !0
@@ -1056,7 +1056,7 @@
       computeClientRect: ({ drag: e$8 }) => e$8.items[0].clientRect || null,
       positionModifiers: [],
       sensorProcessingMode: I.Sampled,
-      dndGroups: /* @__PURE__ */ new Set(),
+      dndGroups: void 0,
     };
   var B = class {
     id;
@@ -3296,7 +3296,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-B8vgOq62.js
+  //#region ../dragdoll-react/dist/use-draggable-B39qKO-n.js
   function c(c$3, l$3) {
     let u$3 = n$2(() => c$3.filter((e$8) => !!e$8), [...c$3]),
       { id: d$2, dndObserver: f$1, ...p$1 } = l$3 || {},
@@ -3307,28 +3307,30 @@
       y$1 = (0, import_react.useRef)(null),
       b$1 = (0, import_react.useRef)(u$3);
     b$1.current = u$3;
-    let x$1 = (0, import_react.useRef)(l$3),
-      S$1 = (0, import_react.useRef)(p$1);
-    S$1.current = p$1;
-    let C$1 = r$1(() => {
+    let x$1 = (0, import_react.useRef)(p$1);
+    x$1.current = p$1;
+    let S$1 = (0, import_react.useRef)(g$1);
+    S$1.current = g$1;
+    let C$1 = (0, import_react.useRef)(void 0),
+      w$1 = r$1(() => {
         let e$8 = y$1.current;
-        e$8 && (e$8.destroy(), (y$1.current = null), v$2(null));
+        e$8 && (e$8.destroy(), (y$1.current = null), (C$1.current = void 0), v$2(null));
       }, []),
-      w$1 = r$1(
+      T$1 = r$1(
         (e$8) => {
-          C$1();
+          w$1();
           let t$10 = new B(b$1.current, {
             id: e$8,
-            ...S$1.current,
+            ...x$1.current,
           });
-          ((y$1.current = t$10), (x$1.current = S$1.current), v$2(t$10));
+          ((y$1.current = t$10), (C$1.current = x$1.current), v$2(t$10));
         },
-        [C$1],
+        [w$1],
       );
     return (
       n$1(() => {
-        (_$2 === null || _$2.id !== m$1) && w$1(m$1);
-      }, [m$1, _$2, w$1]),
+        (_$2 === null || _$2.id !== m$1) && T$1(m$1);
+      }, [_$2, m$1, T$1]),
       n$1(() => {
         _$2 && _$2.sensors !== u$3 && (_$2.sensors = u$3);
       }, [_$2, u$3]),
@@ -3342,12 +3344,19 @@
           );
       }, [_$2, g$1]),
       n$1(() => {
-        _$2 &&
-          x$1.current !== p$1 &&
-          (n$6(x$1.current, p$1) || _$2.updateSettings(_$2._parseSettings(p$1)),
-          (x$1.current = p$1));
-      }, [_$2, p$1]),
-      n$1(() => C$1, [C$1]),
+        if (!_$2) return;
+        let e$8 = x$1.current;
+        C$1.current !== e$8 &&
+          (n$6(C$1.current, e$8) ||
+            (_$2.updateSettings(_$2._parseSettings(e$8)),
+            C$1.current &&
+              (e$8.dndGroups === C$1.current.dndGroups
+                ? e$8.computeClientRect !== C$1.current.computeClientRect &&
+                  S$1.current?.detectCollisions()
+                : (S$1.current?.clearTargets(_$2), S$1.current?.detectCollisions()))),
+          (C$1.current = e$8));
+      }, [_$2, l$3]),
+      n$1(() => w$1, [w$1]),
       _$2
     );
   }

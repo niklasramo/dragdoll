@@ -226,14 +226,14 @@ Default is `'sampled'`.
 ### dndGroups
 
 ```ts
-type dndGroups = Set<DraggableDndGroup>;
+type dndGroups = Set<DraggableDndGroup> | undefined;
 ```
 
 A set of [`DraggableDndGroup`](#draggabledndgroup) identifiers used by [`DndObserver`](/dnd-observer) when matching a `Draggable` to [`Droppable`](/droppable).
 
 If a `Droppable` includes any of these identifiers in its [`accept`](/droppable#accept) set, the `Draggable` will be matched to the `Droppable` and there will be collision detection enabled between the two.
 
-Default is an empty set.
+Default is `undefined` (no groups, meaning the draggable won't match any droppables that use Set-based matching).
 
 ### onPrepareStart
 

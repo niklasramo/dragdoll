@@ -47,12 +47,15 @@ export function useDraggable<S extends Sensor = Sensor>(
   const resolvedSensorsRef = useRef(resolvedSensors);
   resolvedSensorsRef.current = resolvedSensors;
 
-  // Keep track of the currently applied options.
-  const appliedSettingsRef = useRef(settings);
-
   // Keep track of the current draggable settings.
   const draggableSettingsRef = useRef(draggableSettings);
   draggableSettingsRef.current = draggableSettings;
+
+  const effectiveDndObserverRef = useRef(effectiveDndObserver);
+  effectiveDndObserverRef.current = effectiveDndObserver;
+
+  // Keep track of the currently applied draggable settings.
+  const appliedSettingsRef = useRef<typeof draggableSettings | undefined>(undefined);
 
   // Handle draggable destruction.
   const destroyDraggable = useCallbackStable(() => {
@@ -62,6 +65,7 @@ export function useDraggable<S extends Sensor = Sensor>(
     // it when the draggable is destroyed.
     draggable.destroy();
     draggableRef.current = null;
+    appliedSettingsRef.current = undefined;
     setDraggable(null);
   }, []);
 
@@ -89,7 +93,7 @@ export function useDraggable<S extends Sensor = Sensor>(
     if (draggable === null || draggable.id !== computedId) {
       createDraggable(computedId);
     }
-  }, [computedId, draggable, createDraggable]);
+  }, [draggable, computedId, createDraggable]);
 
   // Handle sensors change.
   useIsomorphicLayoutEffect(() => {
@@ -112,6 +116,9 @@ export function useDraggable<S extends Sensor = Sensor>(
     // Make sure the draggable exists.
     if (!draggable) return;
 
+    // Get the current draggable settings.
+    const draggableSettings = draggableSettingsRef.current;
+
     // If the settings have not changed, do nothing.
     if (appliedSettingsRef.current === draggableSettings) return;
 
@@ -123,11 +130,24 @@ export function useDraggable<S extends Sensor = Sensor>(
       // use the default settings for the ones that are not provided. This is
       // the expected behavior in React's declarative nature.
       draggable.updateSettings(draggable['_parseSettings'](draggableSettings));
+
+      // If dndGroups or computeClientRect changed we need to update the
+      // effective dnd observer's matches and queue a collision check.
+      if (appliedSettingsRef.current) {
+        if (draggableSettings.dndGroups !== appliedSettingsRef.current.dndGroups) {
+          effectiveDndObserverRef.current?.clearTargets(draggable);
+          effectiveDndObserverRef.current?.detectCollisions();
+        } else if (
+          draggableSettings.computeClientRect !== appliedSettingsRef.current.computeClientRect
+        ) {
+          effectiveDndObserverRef.current?.detectCollisions();
+        }
+      }
     }
 
     // Update the applied settings.
     appliedSettingsRef.current = draggableSettings;
-  }, [draggable, draggableSettings]);
+  }, [draggable, settings]);
 
   // Cleanup on unmount.
   useIsomorphicLayoutEffect(() => {

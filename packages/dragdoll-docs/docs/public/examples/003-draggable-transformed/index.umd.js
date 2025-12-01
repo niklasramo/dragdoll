@@ -994,7 +994,7 @@ function getOffsetContainer(n$5, t$5 = {}) {
 }
 
 //#endregion
-//#region ../dragdoll/dist/draggable-DSb83hxn.js
+//#region ../dragdoll/dist/draggable-B0Bgows3.js
 function s$2(e$5, t$5) {
 	return e$5.isIdentity && t$5.isIdentity ? !0 : e$5.is2D && t$5.is2D ? e$5.a === t$5.a && e$5.b === t$5.b && e$5.c === t$5.c && e$5.d === t$5.d && e$5.e === t$5.e && e$5.f === t$5.f : e$5.m11 === t$5.m11 && e$5.m12 === t$5.m12 && e$5.m13 === t$5.m13 && e$5.m14 === t$5.m14 && e$5.m21 === t$5.m21 && e$5.m22 === t$5.m22 && e$5.m23 === t$5.m23 && e$5.m24 === t$5.m24 && e$5.m31 === t$5.m31 && e$5.m32 === t$5.m32 && e$5.m33 === t$5.m33 && e$5.m34 === t$5.m34 && e$5.m41 === t$5.m41 && e$5.m42 === t$5.m42 && e$5.m43 === t$5.m43 && e$5.m44 === t$5.m44;
 }
@@ -1317,7 +1317,7 @@ const F = {
 	computeClientRect: ({ drag: e$5 }) => e$5.items[0].clientRect || null,
 	positionModifiers: [],
 	sensorProcessingMode: I.Sampled,
-	dndGroups: /* @__PURE__ */ new Set()
+	dndGroups: void 0
 };
 var B = class {
 	id;
@@ -1749,7 +1749,7 @@ var d = class {
 const t = new N();
 
 //#endregion
-//#region ../dragdoll/dist/auto-scroll-plugin-CIiv_IsD.js
+//#region ../dragdoll/dist/auto-scroll-plugin-DJyDwKAE.js
 const r$2 = {
 	x: 0,
 	y: 0

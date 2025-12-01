@@ -1789,7 +1789,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll/dist/draggable-DSb83hxn.js
+  //#region ../dragdoll/dist/draggable-B0Bgows3.js
   function s$5(e$9, t$12) {
     return e$9.isIdentity && t$12.isIdentity
       ? !0
@@ -2322,7 +2322,7 @@
       computeClientRect: ({ drag: e$9 }) => e$9.items[0].clientRect || null,
       positionModifiers: [],
       sensorProcessingMode: I.Sampled,
-      dndGroups: /* @__PURE__ */ new Set(),
+      dndGroups: void 0,
     };
   var B = class {
     id;
@@ -2794,7 +2794,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-B8vgOq62.js
+  //#region ../dragdoll-react/dist/use-draggable-B39qKO-n.js
   function c(c$5, l$4) {
     let u$4 = n$1(() => c$5.filter((e$9) => !!e$9), [...c$5]),
       { id: d$3, dndObserver: f$2, ...p$2 } = l$4 || {},
@@ -2805,28 +2805,30 @@
       y$2 = (0, import_react.useRef)(null),
       b$2 = (0, import_react.useRef)(u$4);
     b$2.current = u$4;
-    let x$2 = (0, import_react.useRef)(l$4),
-      S$2 = (0, import_react.useRef)(p$2);
-    S$2.current = p$2;
-    let C$2 = r$1(() => {
+    let x$2 = (0, import_react.useRef)(p$2);
+    x$2.current = p$2;
+    let S$2 = (0, import_react.useRef)(g$2);
+    S$2.current = g$2;
+    let C$2 = (0, import_react.useRef)(void 0),
+      w$2 = r$1(() => {
         let e$9 = y$2.current;
-        e$9 && (e$9.destroy(), (y$2.current = null), v$3(null));
+        e$9 && (e$9.destroy(), (y$2.current = null), (C$2.current = void 0), v$3(null));
       }, []),
-      w$2 = r$1(
+      T$2 = r$1(
         (e$9) => {
-          C$2();
+          w$2();
           let t$12 = new B(b$2.current, {
             id: e$9,
-            ...S$2.current,
+            ...x$2.current,
           });
-          ((y$2.current = t$12), (x$2.current = S$2.current), v$3(t$12));
+          ((y$2.current = t$12), (C$2.current = x$2.current), v$3(t$12));
         },
-        [C$2],
+        [w$2],
       );
     return (
       n(() => {
-        (_$3 === null || _$3.id !== m$2) && w$2(m$2);
-      }, [m$2, _$3, w$2]),
+        (_$3 === null || _$3.id !== m$2) && T$2(m$2);
+      }, [_$3, m$2, T$2]),
       n(() => {
         _$3 && _$3.sensors !== u$4 && (_$3.sensors = u$4);
       }, [_$3, u$4]),
@@ -2840,12 +2842,19 @@
           );
       }, [_$3, g$2]),
       n(() => {
-        _$3 &&
-          x$2.current !== p$2 &&
-          (n$7(x$2.current, p$2) || _$3.updateSettings(_$3._parseSettings(p$2)),
-          (x$2.current = p$2));
-      }, [_$3, p$2]),
-      n(() => C$2, [C$2]),
+        if (!_$3) return;
+        let e$9 = x$2.current;
+        C$2.current !== e$9 &&
+          (n$7(C$2.current, e$9) ||
+            (_$3.updateSettings(_$3._parseSettings(e$9)),
+            C$2.current &&
+              (e$9.dndGroups === C$2.current.dndGroups
+                ? e$9.computeClientRect !== C$2.current.computeClientRect &&
+                  S$2.current?.detectCollisions()
+                : (S$2.current?.clearTargets(_$3), S$2.current?.detectCollisions()))),
+          (C$2.current = e$9));
+      }, [_$3, l$4]),
+      n(() => w$2, [w$2]),
       _$3
     );
   }
@@ -3882,7 +3891,7 @@
   const t$3 = new N();
 
   //#endregion
-  //#region ../dragdoll/dist/auto-scroll-plugin-CIiv_IsD.js
+  //#region ../dragdoll/dist/auto-scroll-plugin-DJyDwKAE.js
   const r$6 = {
       x: 0,
       y: 0,

@@ -253,7 +253,7 @@ export const DraggableDefaultSettings: DraggableSettings<any> = {
   },
   positionModifiers: [],
   sensorProcessingMode: DraggableSensorProcessingMode.Sampled,
-  dndGroups: new Set(),
+  dndGroups: undefined,
 } as const;
 
 export class Draggable<
