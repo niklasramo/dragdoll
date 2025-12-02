@@ -87,7 +87,7 @@ function App() {
       targets.forEach((droppable) => {
         droppable.data.droppedIds.delete(draggable.id);
         if (droppable.data.droppedIds.size === 0) {
-          droppable.element.classList.remove('draggable-dropped');
+          droppable.element?.classList.remove('draggable-dropped');
         }
       });
     },
@@ -103,7 +103,7 @@ function App() {
       removedContacts.forEach((target) => {
         target.data.overIds.delete(draggable.id);
         if (target.data.overIds.size === 0) {
-          target.element.classList.remove('draggable-over');
+          target.element?.classList.remove('draggable-over');
         }
       });
 
@@ -114,11 +114,11 @@ function App() {
       for (const droppable of contacts) {
         if (i === 0) {
           droppable.data.overIds.add(draggable.id);
-          droppable.element.classList.add('draggable-over');
+          droppable.element?.classList.add('draggable-over');
         } else {
           droppable.data.overIds.delete(draggable.id);
           if (droppable.data.overIds.size === 0) {
-            droppable.element.classList.remove('draggable-over');
+            droppable.element?.classList.remove('draggable-over');
           }
         }
         ++i;
@@ -133,10 +133,10 @@ function App() {
       const { draggable, contacts } = data;
       for (const droppable of contacts) {
         droppable.data.droppedIds.add(draggable.id);
-        droppable.element.classList.add('draggable-dropped');
+        droppable.element?.classList.add('draggable-dropped');
         droppable.data.overIds.delete(draggable.id);
         if (droppable.data.overIds.size === 0) {
-          droppable.element.classList.remove('draggable-over');
+          droppable.element?.classList.remove('draggable-over');
         }
         return;
       }
