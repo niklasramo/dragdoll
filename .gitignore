@@ -9,3 +9,7 @@ logs
 
 # Build outputs
 dist
+
+# Generated example files
+packages/dragdoll-docs/docs/public/examples
+packages/dragdoll-docs/docs/public/react-examples

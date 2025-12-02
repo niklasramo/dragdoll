@@ -1,6 +1,8 @@
 node_modules
 cache
 logs
+docs/public/examples
+docs/public/react-examples
 *.log
 *.err
 *.env
