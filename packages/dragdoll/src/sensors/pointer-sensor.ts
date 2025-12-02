@@ -103,9 +103,9 @@ export interface PointerSensorEvents {
   destroy: PointerSensorDestroyEvent;
 }
 
-export class PointerSensor<E extends PointerSensorEvents = PointerSensorEvents>
-  implements Sensor<E>
-{
+export class PointerSensor<
+  E extends PointerSensorEvents = PointerSensorEvents,
+> implements Sensor<E> {
   declare _events_type: E;
 
   /**

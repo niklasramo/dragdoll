@@ -5,8 +5,9 @@ import { useCallbackStable } from './use-callback-stable.js';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';
 import { useMemoStable } from './use-memo-stable.js';
 
-export interface UseKeyboardSensorSettings<E extends KeyboardSensorEvents = KeyboardSensorEvents>
-  extends Partial<KeyboardSensorSettings<E>> {}
+export interface UseKeyboardSensorSettings<
+  E extends KeyboardSensorEvents = KeyboardSensorEvents,
+> extends Partial<KeyboardSensorSettings<E>> {}
 
 export function useKeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvents>(
   settings?: UseKeyboardSensorSettings<E>,

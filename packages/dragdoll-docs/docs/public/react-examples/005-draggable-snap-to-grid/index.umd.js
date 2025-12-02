@@ -2400,7 +2400,6 @@
                 children = i$3.call(children),
                 i$3 = 0;
               !(nameSoFar = children.next()).done;
-
             )
               ((nameSoFar = nameSoFar.value),
                 (type = childKey + getElementKey(nameSoFar, i$3++)),
@@ -3536,7 +3535,6 @@
                       currentTask = peek(taskQueue);
                       null !== currentTask &&
                       !(currentTask.expirationTime > currentTime && shouldYieldToHost());
-
                     ) {
                       var callback = currentTask.callback;
                       if ('function' === typeof callback) {
@@ -3601,7 +3599,6 @@
             a: for (
               var index = 0, length = heap.length, halfLength = length >>> 1;
               index < halfLength;
-
             ) {
               var leftIndex = 2 * (index + 1) - 1,
                 left = heap[leftIndex],
@@ -4816,14 +4813,12 @@
                 _RunInRootFrame$Deter = namePropDescriptor = 0;
                 namePropDescriptor < sampleLines.length &&
                 !sampleLines[namePropDescriptor].includes('DetermineComponentFrameRoot');
-
               )
                 namePropDescriptor++;
               for (
                 ;
                 _RunInRootFrame$Deter < controlLines.length &&
                 !controlLines[_RunInRootFrame$Deter].includes('DetermineComponentFrameRoot');
-
               )
                 _RunInRootFrame$Deter++;
               if (
@@ -4836,7 +4831,6 @@
                   1 <= namePropDescriptor &&
                   0 <= _RunInRootFrame$Deter &&
                   sampleLines[namePropDescriptor] !== controlLines[_RunInRootFrame$Deter];
-
                 )
                   _RunInRootFrame$Deter--;
               for (
@@ -5397,7 +5391,6 @@
               var pendingUpdatersLaneMap = root$1.pendingUpdatersLaneMap,
                 memoizedUpdaters = root$1.memoizedUpdaters;
               0 < lanes;
-
             ) {
               var index = 31 - clz32(lanes);
               root$1 = 1 << index;
@@ -7559,7 +7552,6 @@
           for (
             var element = getActiveElement(containerInfo.document);
             element instanceof containerInfo.HTMLIFrameElement;
-
           ) {
             try {
               var JSCompiler_inline_result =
@@ -8306,7 +8298,6 @@
             var endIndex = concurrentQueuesIndex,
               i$3 = (concurrentlyUpdatedLanes = concurrentQueuesIndex = 0);
             i$3 < endIndex;
-
           ) {
             var fiber = concurrentQueues[i$3];
             concurrentQueues[i$3++] = null;
@@ -9279,7 +9270,6 @@
           for (
             currentDependencies = currentDependencies.firstContext;
             null !== currentDependencies;
-
           ) {
             if (
               !objectIs(
@@ -11855,7 +11845,6 @@
                       for (
                         var inRootOrSingleton = rootOrSingletonContext;
                         8 !== markerInstance.nodeType;
-
                       ) {
                         if (!inRootOrSingleton) {
                           markerInstance = null;
@@ -15290,7 +15279,6 @@
                 var _treeBaseDuration = completedWork.selfBaseDuration,
                   _child2 = completedWork.child;
                 null !== _child2;
-
               )
                 ((newChildLanes |= _child2.lanes | _child2.childLanes),
                   (subtreeFlags |= _child2.subtreeFlags & 65011712),
@@ -15503,7 +15491,6 @@
                   a: for (
                     _currentHostContext = workInProgress$1.child;
                     null !== _currentHostContext;
-
                   ) {
                     if (5 === _currentHostContext.tag || 6 === _currentHostContext.tag)
                       nextResource.appendChild(_currentHostContext.stateNode);
@@ -16446,7 +16433,6 @@
             for (
               insertOrAppendPlacementNodeIntoContainer(node, before, parent), node = node.sibling;
               null !== node;
-
             )
               (insertOrAppendPlacementNodeIntoContainer(node, before, parent),
                 (node = node.sibling));
@@ -16465,7 +16451,6 @@
             for (
               insertOrAppendPlacementNode(node, before, parent), node = node.sibling;
               null !== node;
-
             )
               (insertOrAppendPlacementNode(node, before, parent), (node = node.sibling));
         }
@@ -17618,7 +17603,6 @@
                     current$1 = null,
                     root$1 = finishedWork;
                   ;
-
                 ) {
                   if (5 === root$1.tag || 26 === root$1.tag) {
                     if (null === current$1) {
@@ -21117,7 +21101,6 @@
           for (
             var currentTime = now$1(), prev = null, root$1 = firstScheduledRoot;
             null !== root$1;
-
           ) {
             var next = root$1.next,
               nextLanes = scheduleTaskForRootDuringMicrotask(root$1, currentTime);
@@ -21141,7 +21124,6 @@
               expirationTimes = root$1.expirationTimes,
               lanes = root$1.pendingLanes & -62914561;
             0 < lanes;
-
           ) {
             var index = 31 - clz32(lanes),
               lane = 1 << index,
@@ -21981,7 +21963,6 @@
           for (
             var registrationName = event._reactName, listeners = [];
             null !== target && target !== common;
-
           ) {
             var _instance4 = target,
               alternate = _instance4.alternate,
@@ -25803,7 +25784,6 @@
             ;
             0 < queuedExplicitHydrationTargets.length &&
             ((i$3 = queuedExplicitHydrationTargets[0]), null === i$3.blockedOn);
-
           )
             (attemptExplicitHydrationTarget(i$3),
               null === i$3.blockedOn && queuedExplicitHydrationTargets.shift());

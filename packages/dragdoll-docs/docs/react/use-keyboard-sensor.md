@@ -97,6 +97,7 @@ Returns a read-only array with two elements:
 import type { UseKeyboardSensorSettings } from 'dragdoll-react';
 
 // Interface
-interface UseKeyboardSensorSettings<E extends KeyboardSensorEvents = KeyboardSensorEvents>
-  extends Partial<KeyboardSensorSettings<E>> {}
+interface UseKeyboardSensorSettings<
+  E extends KeyboardSensorEvents = KeyboardSensorEvents,
+> extends Partial<KeyboardSensorSettings<E>> {}
 ```

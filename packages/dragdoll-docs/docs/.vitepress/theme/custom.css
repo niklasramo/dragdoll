@@ -79,8 +79,7 @@
     & a {
       width: 50px !important;
 
-      &[href="https://github.com/sponsors/niklasramo"]
-      {
+      &[href='https://github.com/sponsors/niklasramo'] {
         color: #1da344;
         transition:
           color 0.2s ease-out,

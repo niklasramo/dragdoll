@@ -9,8 +9,9 @@ import { useDndObserverContext } from './use-dnd-observer-context.js';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';
 import { useMemoStable } from './use-memo-stable.js';
 
-export interface UseDraggableSettings<S extends Sensor = Sensor>
-  extends Partial<DraggableOptions<S>> {
+export interface UseDraggableSettings<S extends Sensor = Sensor> extends Partial<
+  DraggableOptions<S>
+> {
   dndObserver?: DndObserver<any> | null;
 }
 
