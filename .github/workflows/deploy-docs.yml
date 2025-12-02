@@ -9,12 +9,17 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v6
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v6
         with:
           node-version: '24.x'
           cache: npm
-      - run: npm ci
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
       - name: Build docs
         run: npm run docs:build
       - name: Deploy docs
