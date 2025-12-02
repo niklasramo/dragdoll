@@ -248,7 +248,7 @@ export default () => {
       dropElement.remove();
     });
 
-    it('should not accept draggable when its element matches droppable element', async () => {
+    it('should accept draggable when its element matches droppable element', async () => {
       const events: any[] = [];
 
       // Use the same element for both draggable and droppable
@@ -281,8 +281,8 @@ export default () => {
       // Start dragging
       await startDrag(element);
 
-      // Should not accept itself as target
-      expect(events.length).toBe(0);
+      // Should accept itself as target (containment check was removed)
+      expect(events.length).toBe(1);
 
       // End dragging
       await endDrag();

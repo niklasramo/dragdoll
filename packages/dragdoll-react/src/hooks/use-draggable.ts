@@ -1,5 +1,5 @@
 import type { DndObserver } from 'dragdoll/dnd-observer';
-import type { DraggableOptions } from 'dragdoll/draggable';
+import type { DraggableId, DraggableOptions } from 'dragdoll/draggable';
 import { Draggable } from 'dragdoll/draggable';
 import type { Sensor } from 'dragdoll/sensors';
 import { useRef, useState } from 'react';
@@ -9,23 +9,28 @@ import { useDndObserverContext } from './use-dnd-observer-context.js';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';
 import { useMemoStable } from './use-memo-stable.js';
 
-export interface UseDraggableSettings<S extends Sensor[] = Sensor[]>
-  extends Partial<DraggableOptions<S>> {
+export interface UseDraggableSettings<S extends Sensor = Sensor> extends Partial<
+  DraggableOptions<S>
+> {
   dndObserver?: DndObserver<any> | null;
 }
 
-export function useDraggable<S extends Sensor[] = Sensor[]>(
-  sensors: (S[number] | null)[],
+export function useDraggable<S extends Sensor = Sensor>(
+  sensors: (S | null)[],
   settings?: UseDraggableSettings<S>,
 ) {
   // Parse sensors. The sensors might be null when they are waiting to be
   // created.
   const resolvedSensors = useMemoStable(() => {
-    return sensors.filter((s) => Boolean(s)) as S;
+    return sensors.filter((s) => Boolean(s)) as readonly S[];
   }, [...sensors]);
 
   // Parse settings.
   const { id, dndObserver, ...draggableSettings } = settings || {};
+
+  const computedId = useMemoStable(() => {
+    return id === undefined ? Symbol() : id;
+  }, [id]);
 
   // Dnd observer from context.
   const dndObserverFromContext = useDndObserverContext<any>();
@@ -43,27 +48,15 @@ export function useDraggable<S extends Sensor[] = Sensor[]>(
   const resolvedSensorsRef = useRef(resolvedSensors);
   resolvedSensorsRef.current = resolvedSensors;
 
-  // Keep track of the currently applied id in a ref. We need this to check if
-  // the id has changed since the last time the draggable was created.
-  const appliedIdRef = useRef(id);
-
-  // Keep track of the currently applied options.
-  const appliedSettingsRef = useRef(settings);
-
-  // Keep track of the applied dnd observer.
-  const appliedDndObserverRef = useRef(effectiveDndObserver);
-
-  // Keep track of the current id.
-  const idRef = useRef(id);
-  idRef.current = id;
-
-  // Keep track of the current dnd observer.
-  const dndObserverRef = useRef(effectiveDndObserver);
-  dndObserverRef.current = effectiveDndObserver;
-
   // Keep track of the current draggable settings.
   const draggableSettingsRef = useRef(draggableSettings);
   draggableSettingsRef.current = draggableSettings;
+
+  const effectiveDndObserverRef = useRef(effectiveDndObserver);
+  effectiveDndObserverRef.current = effectiveDndObserver;
+
+  // Keep track of the currently applied draggable settings.
+  const appliedSettingsRef = useRef<typeof draggableSettings | undefined>(undefined);
 
   // Handle draggable destruction.
   const destroyDraggable = useCallbackStable(() => {
@@ -73,91 +66,62 @@ export function useDraggable<S extends Sensor[] = Sensor[]>(
     // it when the draggable is destroyed.
     draggable.destroy();
     draggableRef.current = null;
+    appliedSettingsRef.current = undefined;
     setDraggable(null);
   }, []);
 
   // Handle draggable creation.
-  const createDraggable = useCallbackStable(() => {
-    destroyDraggable();
-    const resolvedSensors = resolvedSensorsRef.current;
-    if (resolvedSensors.length === 0) return;
-    const id = idRef.current;
-    const effectiveDndObserver = dndObserverRef.current;
-    const currentDraggableSettings = draggableSettingsRef.current || {};
-
-    // Create the draggable.
-    const draggable = new Draggable<S>(resolvedSensors, {
-      id,
-      ...currentDraggableSettings,
-    });
-
-    // Add the draggable to the effective dnd observer.
-    effectiveDndObserver?.addDraggables([draggable]);
-
-    // Update refs and state.
-    draggableRef.current = draggable;
-    appliedIdRef.current = id;
-    appliedSettingsRef.current = draggableSettingsRef.current;
-    appliedDndObserverRef.current = effectiveDndObserver;
-    setDraggable(draggable);
-  }, [destroyDraggable]);
-
-  // Handle sensors or id change.
-  useIsomorphicLayoutEffect(() => {
-    // No sensors? Destroy the draggable (if it exists).
-    if (!resolvedSensors.length) {
+  const createDraggable = useCallbackStable(
+    (id: DraggableId) => {
       destroyDraggable();
-      return;
-    }
 
-    // No draggable? Create a new one.
-    const draggable = draggableRef.current;
-    if (!draggable) {
-      createDraggable();
-      return;
-    }
+      // Create the draggable.
+      const draggable = new Draggable<S>(resolvedSensorsRef.current, {
+        id,
+        ...draggableSettingsRef.current,
+      });
 
-    // If the sensors have changed, recreate the draggable.
-    if (
-      resolvedSensors.length !== draggable.sensors.length ||
-      resolvedSensors.some((sensor) => !draggable.sensors.includes(sensor))
-    ) {
-      createDraggable();
-    }
-  }, [resolvedSensors, createDraggable, destroyDraggable]);
+      // Update refs and state.
+      draggableRef.current = draggable;
+      appliedSettingsRef.current = draggableSettingsRef.current;
+      setDraggable(draggable);
+    },
+    [destroyDraggable],
+  );
 
-  // Handle id change. Any time id is updated while there is a draggable, we
-  // need to recreate the draggable with the new id.
+  // Handle draggable creation. Happens on init and on id change.
   useIsomorphicLayoutEffect(() => {
-    const draggable = draggableRef.current;
+    if (draggable === null || draggable.id !== computedId) {
+      createDraggable(computedId);
+    }
+  }, [draggable, computedId, createDraggable]);
+
+  // Handle sensors change.
+  useIsomorphicLayoutEffect(() => {
+    if (draggable && draggable.sensors !== resolvedSensors) {
+      draggable.sensors = resolvedSensors;
+    }
+  }, [draggable, resolvedSensors]);
+
+  // Handle effective dndObserver change.
+  useIsomorphicLayoutEffect(() => {
     if (!draggable) return;
-    if (appliedIdRef.current === id) return;
-    createDraggable();
-  }, [id, createDraggable]);
-
-  // Handle dndObserver change.
-  useIsomorphicLayoutEffect(() => {
-    // Do nothing if the observer hasn't changed.
-    const appliedDndObserver = appliedDndObserverRef.current;
-    if (appliedDndObserver === effectiveDndObserver) return;
-
-    // If the draggable exists, remove it from the applied dnd observer and add
-    // it to the effective dnd observer.
-    const draggable = draggableRef.current;
-    if (draggable) {
-      appliedDndObserver?.removeDraggables([draggable]);
-      effectiveDndObserver?.addDraggables([draggable]);
-    }
-
-    // Update the applied dnd observer ref.
-    appliedDndObserverRef.current = effectiveDndObserver;
-  }, [effectiveDndObserver]);
+    effectiveDndObserver?.addDraggables([draggable]);
+    return () => {
+      effectiveDndObserver?.removeDraggables([draggable]);
+    };
+  }, [draggable, effectiveDndObserver]);
 
   // Handle settings change.
   useIsomorphicLayoutEffect(() => {
     // Make sure the draggable exists.
-    const draggable = draggableRef.current;
     if (!draggable) return;
+
+    // Get the current draggable settings.
+    const draggableSettings = draggableSettingsRef.current;
+
+    // If the settings have not changed, do nothing.
+    if (appliedSettingsRef.current === draggableSettings) return;
 
     // Only update if settings have actually changed (deep equality check).
     // This prevents unnecessary updates when settings object reference changes
@@ -167,11 +131,19 @@ export function useDraggable<S extends Sensor[] = Sensor[]>(
       // use the default settings for the ones that are not provided. This is
       // the expected behavior in React's declarative nature.
       draggable.updateSettings(draggable['_parseSettings'](draggableSettings));
+
+      // If dndGroups or computeClientRect changed we need to update the
+      // effective dnd observer's matches and queue a collision check.
+      if (appliedSettingsRef.current) {
+        if (draggableSettings.dndGroups !== appliedSettingsRef.current.dndGroups) {
+          effectiveDndObserverRef.current?.clearTargets(draggable);
+        }
+      }
     }
 
     // Update the applied settings.
     appliedSettingsRef.current = draggableSettings;
-  }, [draggableSettings]);
+  }, [draggable, settings]);
 
   // Cleanup on unmount.
   useIsomorphicLayoutEffect(() => {

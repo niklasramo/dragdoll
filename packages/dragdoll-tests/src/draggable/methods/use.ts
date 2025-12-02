@@ -13,7 +13,7 @@ export default () => {
       const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
       const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
 
-      function testPlugin<S extends Sensor[]>() {
+      function testPlugin<S extends Sensor>() {
         return (_draggable: Draggable<S>) => {
           // Create the plugin instance.
           const pluginInstance = {

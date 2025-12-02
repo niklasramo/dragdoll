@@ -2555,7 +2555,7 @@ function App() {
       targets.forEach((droppable) => {
         droppable.data.droppedIds.delete(draggable.id);
         if (droppable.data.droppedIds.size === 0) {
-          droppable.element.classList.remove('draggable-dropped');
+          droppable.element?.classList.remove('draggable-dropped');
         }
       });
     },
@@ -2571,7 +2571,7 @@ function App() {
       removedContacts.forEach((target) => {
         target.data.overIds.delete(draggable.id);
         if (target.data.overIds.size === 0) {
-          target.element.classList.remove('draggable-over');
+          target.element?.classList.remove('draggable-over');
         }
       });
 
@@ -2582,11 +2582,11 @@ function App() {
       for (const droppable of contacts) {
         if (i === 0) {
           droppable.data.overIds.add(draggable.id);
-          droppable.element.classList.add('draggable-over');
+          droppable.element?.classList.add('draggable-over');
         } else {
           droppable.data.overIds.delete(draggable.id);
           if (droppable.data.overIds.size === 0) {
-            droppable.element.classList.remove('draggable-over');
+            droppable.element?.classList.remove('draggable-over');
           }
         }
         ++i;
@@ -2601,10 +2601,10 @@ function App() {
       const { draggable, contacts } = data;
       for (const droppable of contacts) {
         droppable.data.droppedIds.add(draggable.id);
-        droppable.element.classList.add('draggable-dropped');
+        droppable.element?.classList.add('draggable-dropped');
         droppable.data.overIds.delete(draggable.id);
         if (droppable.data.overIds.size === 0) {
-          droppable.element.classList.remove('draggable-over');
+          droppable.element?.classList.remove('draggable-over');
         }
         return;
       }
@@ -2921,17 +2921,17 @@ function cleanupDrag(
     next.delete(draggableId);
     return next;
   });
-  bestMatch?.element.removeAttribute('data-draggable-over');
+  bestMatch?.element?.removeAttribute('data-draggable-over');
   bestMatchMap.delete(draggable);
 }
 
 // Helper to find the best matching droppable from contacts
 function findBestMatch(contacts: ReadonlySet<Droppable>, draggableId: string): Droppable | null {
   for (const droppable of contacts) {
-    const containedId = droppable.element.getAttribute('data-draggable-contained') || '';
+    const containedId = droppable.element?.getAttribute('data-draggable-contained') || '';
     if (containedId && containedId !== draggableId) continue;
 
-    const overId = droppable.element.getAttribute('data-draggable-over') || '';
+    const overId = droppable.element?.getAttribute('data-draggable-over') || '';
     if (overId && overId !== draggableId) continue;
 
     return droppable;
@@ -3153,8 +3153,8 @@ function App() {
       const currentBestMatch = bestMatchMapRef.current.get(draggable);
 
       if (nextBestMatch && nextBestMatch !== currentBestMatch) {
-        currentBestMatch?.element.removeAttribute('data-draggable-over');
-        nextBestMatch.element.setAttribute('data-draggable-over', draggableId);
+        currentBestMatch?.element?.removeAttribute('data-draggable-over');
+        nextBestMatch?.element?.setAttribute('data-draggable-over', draggableId);
         bestMatchMapRef.current.set(draggable, nextBestMatch);
       }
     },

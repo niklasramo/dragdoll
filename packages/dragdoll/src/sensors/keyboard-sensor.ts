@@ -1,4 +1,4 @@
-import type { Point } from '../types.js';
+import type { Point, Writeable } from '../types.js';
 import { BaseSensor } from './base-sensor.js';
 import type {
   Sensor,
@@ -51,7 +51,7 @@ export interface KeyboardSensorEvents {
   destroy: KeyboardSensorDestroyEvent;
 }
 
-export const keyboardSensorDefaults: KeyboardSensorSettings<any> = {
+export const KeyboardSensorDefaultSettings: KeyboardSensorSettings<any> = {
   moveDistance: 25,
   cancelOnBlur: true,
   cancelOnVisibilityChange: true,
@@ -131,13 +131,13 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
     super();
 
     const {
-      moveDistance = keyboardSensorDefaults.moveDistance,
-      cancelOnBlur = keyboardSensorDefaults.cancelOnBlur,
-      cancelOnVisibilityChange = keyboardSensorDefaults.cancelOnVisibilityChange,
-      startPredicate = keyboardSensorDefaults.startPredicate,
-      movePredicate = keyboardSensorDefaults.movePredicate,
-      cancelPredicate = keyboardSensorDefaults.cancelPredicate,
-      endPredicate = keyboardSensorDefaults.endPredicate,
+      moveDistance = KeyboardSensorDefaultSettings.moveDistance,
+      cancelOnBlur = KeyboardSensorDefaultSettings.cancelOnBlur,
+      cancelOnVisibilityChange = KeyboardSensorDefaultSettings.cancelOnVisibilityChange,
+      startPredicate = KeyboardSensorDefaultSettings.startPredicate,
+      movePredicate = KeyboardSensorDefaultSettings.movePredicate,
+      cancelPredicate = KeyboardSensorDefaultSettings.cancelPredicate,
+      endPredicate = KeyboardSensorDefaultSettings.endPredicate,
     } = options;
 
     this.element = element;
@@ -238,7 +238,20 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
     }
   }
 
+  updateElement(element: Element | null) {
+    if (this.isDestroyed || this.element === element) return;
+
+    if (this._cancelOnBlur) {
+      this.element?.removeEventListener('blur', this._blurCancelHandler);
+      element?.addEventListener('blur', this._blurCancelHandler);
+    }
+
+    (this as Writeable<this>).element = element;
+  }
+
   updateSettings(options: Partial<KeyboardSensorSettings<E>>) {
+    if (this.isDestroyed) return;
+
     const {
       moveDistance,
       cancelOnBlur,

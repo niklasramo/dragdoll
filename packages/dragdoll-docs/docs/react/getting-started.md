@@ -16,7 +16,7 @@ npm install dragdoll-react dragdoll eventti tikki mezr react react-dom
 
 ## Peer Dependencies
 
-- [`dragdoll`](https://github.com/niklasramo/dragdoll) (~0.11.1)
+- [`dragdoll`](https://github.com/niklasramo/dragdoll) (~0.12.0)
   - Core library for drag and drop functionality.
 - [`eventti`](https://github.com/niklasramo/eventti) (^4.0.3)
   - Used for emitting all the events.

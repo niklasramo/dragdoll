@@ -47,17 +47,14 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
 
 ```ts
 function createTouchDelayPredicate<
-  S extends (Sensor | PointerSensor)[] = (
-    | Sensor<SensorEvents>
-    | PointerSensor<PointerSensorEvents>
-  )[],
+  S extends Sensor | PointerSensor = Sensor | PointerSensor,
 >(options?: {
   touchDelay?: number;
   fallback?: Draggable<S>['settings']['startPredicate'];
 }): (data: {
   draggable: Draggable<S, {}>;
-  sensor: S[number];
-  event: S[number]['_events_type']['start'] | S[number]['_events_type']['move'];
+  sensor: S;
+  event: S['_events_type']['start'] | S['_events_type']['move'];
 }) => boolean | undefined;
 ```
 

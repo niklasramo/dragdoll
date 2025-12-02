@@ -2042,7 +2042,7 @@ dndObserver.on(DndObserverEventType.Start, (data) => {
   targets.forEach((droppable) => {
     droppable.data.droppedIds.delete(draggable.id);
     if (droppable.data.droppedIds.size === 0) {
-      droppable.element.classList.remove('draggable-dropped');
+      droppable.element?.classList.remove('draggable-dropped');
     }
   });
 });
@@ -2058,7 +2058,7 @@ dndObserver.on(DndObserverEventType.Collide, (data) => {
   removedContacts.forEach((target) => {
     target.data.overIds.delete(draggable.id);
     if (target.data.overIds.size === 0) {
-      target.element.classList.remove('draggable-over');
+      target.element?.classList.remove('draggable-over');
     }
   });
 
@@ -2069,11 +2069,11 @@ dndObserver.on(DndObserverEventType.Collide, (data) => {
   for (const droppable of contacts) {
     if (i === 0) {
       droppable.data.overIds.add(draggable.id);
-      droppable.element.classList.add('draggable-over');
+      droppable.element?.classList.add('draggable-over');
     } else {
       droppable.data.overIds.delete(draggable.id);
       if (droppable.data.overIds.size === 0) {
-        droppable.element.classList.remove('draggable-over');
+        droppable.element?.classList.remove('draggable-over');
       }
     }
     ++i;
@@ -2089,10 +2089,10 @@ dndObserver.on(DndObserverEventType.End, (data) => {
   // set is empty, remove the "draggable-over" class from the droppable element.
   for (const droppable of contacts) {
     droppable.data.droppedIds.add(draggable.id);
-    droppable.element.classList.add('draggable-dropped');
+    droppable.element?.classList.add('draggable-dropped');
     droppable.data.overIds.delete(draggable.id);
     if (droppable.data.overIds.size === 0) {
-      droppable.element.classList.remove('draggable-over');
+      droppable.element?.classList.remove('draggable-over');
     }
     return;
   }
@@ -2421,13 +2421,13 @@ dndObserver.on(DndObserverEventType.Collide, ({ draggable, contacts }) => {
   let nextBestMatch: Droppable | null = null;
   for (const droppable of contacts) {
     // Skip if the droppable contains a different draggable.
-    const containedDraggableId = droppable.element.getAttribute('data-draggable-contained') || '';
+    const containedDraggableId = droppable.element?.getAttribute('data-draggable-contained') || '';
     if (containedDraggableId && containedDraggableId !== draggableId) {
       continue;
     }
 
     // Skip if a different draggable is over the droppable.
-    const overDraggableId = droppable.element.getAttribute('data-draggable-over') || '';
+    const overDraggableId = droppable.element?.getAttribute('data-draggable-over') || '';
     if (overDraggableId && overDraggableId !== draggableId) {
       continue;
     }
@@ -2440,8 +2440,8 @@ dndObserver.on(DndObserverEventType.Collide, ({ draggable, contacts }) => {
   // Update the best match droppable if it's changed.
   const bestMatch = bestMatchMap.get(draggable);
   if (nextBestMatch !== null && nextBestMatch !== bestMatch) {
-    bestMatch?.element.removeAttribute('data-draggable-over');
-    nextBestMatch.element.setAttribute('data-draggable-over', draggableId);
+    bestMatch?.element?.removeAttribute('data-draggable-over');
+    nextBestMatch?.element?.setAttribute('data-draggable-over', draggableId);
     bestMatchMap.set(draggable, nextBestMatch);
   }
 });
@@ -2492,7 +2492,7 @@ dndObserver.on(DndObserverEventType.End, ({ draggable, canceled }) => {
   }
 
   // Reset the best match droppable.
-  bestMatch?.element.removeAttribute('data-draggable-over');
+  bestMatch?.element?.removeAttribute('data-draggable-over');
   bestMatchMap.delete(draggable);
 });
 ```

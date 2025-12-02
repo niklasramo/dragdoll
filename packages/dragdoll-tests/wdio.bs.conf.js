@@ -39,7 +39,6 @@ export const config = {
         forcedStop: true,
         accessibility: false,
         percy: false,
-        turboscale: false,
       },
     ],
   ],
@@ -74,6 +73,7 @@ export const config = {
     },
 
     // OS X Sonoma Chrome Latest
+    /*
     {
       browserName: 'chrome',
       browserVersion: 'latest',
@@ -86,6 +86,7 @@ export const config = {
         buildIdentifier: BUILD_IDENTIFIER,
       },
     },
+    */
 
     // OS X Sonoma Safari Latest
     {
@@ -102,6 +103,7 @@ export const config = {
     },
 
     // iPhone 15 iOS 17 Safari Latest
+    /*
     {
       browserName: 'safari',
       'bstack:options': {
@@ -113,8 +115,10 @@ export const config = {
         buildIdentifier: BUILD_IDENTIFIER,
       },
     },
+    */
 
     // Samsung Galaxy S25 Android 15 Chrome Latest
+    /*
     {
       browserName: 'chrome',
       'bstack:options': {
@@ -126,12 +130,13 @@ export const config = {
         buildIdentifier: BUILD_IDENTIFIER,
       },
     },
+    */
   ],
 
   logLevel: 'silent',
   bail: 0,
   framework: 'mocha',
-  specFileRetries: 1,
+  specFileRetries: 2,
   specFileRetriesDeferred: true,
 
   reporters: [

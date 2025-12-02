@@ -51,8 +51,8 @@ function DraggableBox() {
 ## Signature
 
 ```ts
-function useDraggable<S extends Sensor[] = Sensor[]>(
-  sensors: (S[number] | null)[],
+function useDraggable<S extends Sensor = Sensor>(
+  sensors: (S | null)[],
   settings?: UseDraggableSettings<S>,
 ): Draggable<S> | null;
 ```
@@ -61,7 +61,7 @@ function useDraggable<S extends Sensor[] = Sensor[]>(
 
 ### sensors
 
-Array of [sensor](/sensor) instances. Sensors can be `null` while initializing. The hook will instantiate immediately when it the first non-null sensor is provided, and will re-instantiate the draggable when any of the sensors change.
+Array of [sensor](/sensor) instances. Sensors can be `null` while initializing. The hook will instantiate the draggable when sensors are available. When sensors change, they are updated in-place without recreating the draggable instance.
 
 ### settings
 
@@ -69,7 +69,7 @@ Configuration settings for the [`Draggable`](/draggable) instance. Extends core 
 
 As per React's declarative nature, these settings are always merged with the [default settings](/draggable#settings) and then provided to the [`Draggable`](/draggable) instance. This way there will be no cumulative effect of settings changes over time meaning that the old settings will be completely overridden by the new settings.
 
-Treat these as live settings that can be updated dynamically without recreating the draggable (except for `id`, which will cause the draggable to be recreated).
+Treat these as live settings that can be updated dynamically without recreating the draggable (except for `id`, which will cause the draggable to be recreated). When `dndGroups` or `computeClientRect` change, the hook will automatically trigger collision detection updates in the associated `DndObserver`.
 
 #### id
 
@@ -77,7 +77,7 @@ Treat these as live settings that can be updated dynamically without recreating 
 type id = DraggableId;
 ```
 
-The `id` is a unique identifier for the draggable that is assigned as the draggable's [`id`](/draggable#id-1) property. It can only be provided once via the constructor options and _should not_ be changed after instantiation.
+The `id` is a unique identifier for the draggable that is assigned as the draggable's [`id`](/draggable#id-1) property.
 
 > [!IMPORTANT]  
 > The `Draggable` instance will be _automatically recreated_ when the `id` setting is explicitly provided and changed.
@@ -145,8 +145,8 @@ Check the [`container`](/draggable#container) core docs for more info.
 ```ts
 type startPredicate = (data: {
   draggable: Draggable<S>;
-  sensor: S[number];
-  event: SensorsEventsType<S>['start'] | SensorsEventsType<S>['move'];
+  sensor: S;
+  event: S['_events_type']['start'] | S['_events_type']['move'];
 }) => boolean | undefined;
 ```
 
@@ -250,13 +250,13 @@ Check the [`sensorProcessingMode`](/draggable#sensorprocessingmode) core docs fo
 #### dndGroups
 
 ```ts
-type dndGroups = Set<DraggableDndGroup>;
+type dndGroups = Set<DraggableDndGroup> | undefined;
 ```
 
 Check the [`dndGroups`](/draggable#dndgroups) core docs for more info.
 
 - Optional.
-- Default is `new Set()`.
+- Default is `undefined` (no groups, meaning the draggable won't match any droppables that use Set-based matching).
 
 #### onPrepareStart
 
@@ -341,7 +341,7 @@ Returns the [`Draggable`](/draggable) instance or `null` if there are no sensors
 import type { UseDraggableSettings } from 'dragdoll-react';
 
 // Interface
-interface UseDraggableSettings<S extends Sensor[] = Sensor[]>
-  extends Partial<DraggableOptions<S>> {
+interface UseDraggableSettings<S extends Sensor = Sensor> extends Partial<DraggableOptions<S>> {
   dndObserver?: DndObserver<any> | null;
+}
 ```

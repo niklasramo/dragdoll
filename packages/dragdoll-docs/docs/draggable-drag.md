@@ -7,17 +7,14 @@ DraggableDrag class instance holds all the information about the current drag pr
 ## Class
 
 ```ts
-export class DraggableDrag<S extends Sensor[]> {
-  constructor(
-    sensor: S[number],
-    startEvent: S[number]['_events_type']['start'] | S[number]['_events_type']['move'],
-  ) {}
+export class DraggableDrag<S extends Sensor> {
+  constructor(sensor: S, startEvent: S['_events_type']['start'] | S['_events_type']['move']) {}
 }
 ```
 
 The DraggableDrag class is a generic that accepts the following type variables:
 
-1. **S** - The types of the sensors that the DraggableDrag will use as inputs for moving the provided elements around.
+1. **S** - A union type representing the sensor types that the DraggableDrag will use as inputs for moving the provided elements around.
 
 The constructor accepts the following arguments:
 
@@ -33,7 +30,7 @@ All the properties are read-only.
 ### sensor
 
 ```ts
-type sensor = S[number];
+type sensor = S;
 ```
 
 The sensor that is tracked for this drag process. Read-only.
@@ -41,7 +38,7 @@ The sensor that is tracked for this drag process. Read-only.
 ### startEvent
 
 ```ts
-type startEvent = S[number]['_events_type']['start'] | S[number]['_events_type']['move'];
+type startEvent = S['_events_type']['start'] | S['_events_type']['move'];
 ```
 
 The sensor event that initiated the drag. Read-only.
@@ -49,7 +46,7 @@ The sensor event that initiated the drag. Read-only.
 ### prevMoveEvent
 
 ```ts
-type prevMoveEvent = S[number]['_events_type']['start'] | S[number]['_events_type']['move'];
+type prevMoveEvent = S['_events_type']['start'] | S['_events_type']['move'];
 ```
 
 The previous sensor move event. When drag starts this will be the start event. Read-only.
@@ -57,7 +54,7 @@ The previous sensor move event. When drag starts this will be the start event. R
 ### moveEvent
 
 ```ts
-type moveEvent = S[number]['_events_type']['start'] | S[number]['_events_type']['move'];
+type moveEvent = S['_events_type']['start'] | S['_events_type']['move'];
 ```
 
 The current sensor move event. When drag starts this will be the start event. Read-only.
@@ -66,9 +63,9 @@ The current sensor move event. When drag starts this will be the start event. Re
 
 ```ts
 type endEvent =
-  | S[number]['_events_type']['end']
-  | S[number]['_events_type']['cancel']
-  | S[number]['_events_type']['destroy']
+  | S['_events_type']['end']
+  | S['_events_type']['cancel']
+  | S['_events_type']['destroy']
   | null;
 ```
 

@@ -87,3 +87,15 @@ Returns a read-only array with two elements:
 - Settings can be updated dynamically and will be applied to the sensor.
 - If the element changes, the sensor is recreated with the new element.
 - The sensor will be `null` initially until an element is attached.
+
+## Types
+
+### UsePointerSensorSettings
+
+```ts
+// Import
+import type { UsePointerSensorSettings } from 'dragdoll-react';
+
+// Interface
+interface UsePointerSensorSettings extends Partial<PointerSensorSettings> {}
+```

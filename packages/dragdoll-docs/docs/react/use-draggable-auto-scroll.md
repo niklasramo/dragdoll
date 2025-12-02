@@ -55,10 +55,10 @@ function DraggableBox() {
 ## Signature
 
 ```ts
-function useDraggableAutoScroll<S extends Sensor[] = Sensor[], P extends DraggablePluginMap = {}>(
+function useDraggableAutoScroll<S extends Sensor = Sensor, P extends DraggablePluginMap = {}>(
   draggable: Draggable<S, P> | null,
-  options?: UseDraggableAutoScrollSettings<S>,
-): Draggable<S, P & { autoscroll: AutoScrollPlugin }> | null;
+  settings?: UseDraggableAutoScrollSettings<S>,
+): ReturnType<ReturnType<typeof autoScrollPlugin<S, P>>> | null;
 ```
 
 ## Parameters
@@ -89,7 +89,7 @@ As per React's declarative nature, these settings are always merged with the def
 ## Return Value
 
 ```ts
-type returnValue = Draggable<S, P & { autoscroll: AutoScrollPlugin }> | null;
+type returnValue = ReturnType<ReturnType<typeof autoScrollPlugin<S, P>>> | null;
 ```
 
 Returns the [`Draggable`](/draggable) instance with the auto-scroll plugin attached (which also extends the `Draggable` instance's types).
@@ -105,5 +105,5 @@ Returns `null` if the `draggable` parameter is `null`.
 import type { UseDraggableAutoScrollSettings } from 'dragdoll-react';
 
 // Type
-type UseDraggableAutoScrollSettings<S extends Sensor[] = Sensor[]> = DraggableAutoScrollOptions<S>;
+type UseDraggableAutoScrollSettings<S extends Sensor = Sensor> = DraggableAutoScrollOptions<S>;
 ```

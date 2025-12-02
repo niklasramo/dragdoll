@@ -20,7 +20,7 @@ const AUTOSCROLL_CLIENT_RECT: Rect = {
   y: 0,
 };
 
-function getDefaultSettings<S extends Sensor[]>() {
+function getDefaultSettings<S extends Sensor>() {
   return {
     targets: [],
     inertAreaSize: 0.2,
@@ -62,7 +62,7 @@ function getDefaultSettings<S extends Sensor[]>() {
   };
 }
 
-class DraggableAutoScrollProxy<S extends Sensor[]> implements AutoScrollItem {
+class DraggableAutoScrollProxy<S extends Sensor> implements AutoScrollItem {
   protected _draggableAutoScroll: DraggableAutoScroll<S>;
   protected _draggable: Draggable<S>;
   protected _position: AutoScrollItem['position'];
@@ -134,7 +134,7 @@ class DraggableAutoScrollProxy<S extends Sensor[]> implements AutoScrollItem {
   }
 }
 
-export interface DraggableAutoScrollSettings<S extends Sensor[]> {
+export interface DraggableAutoScrollSettings<S extends Sensor> {
   targets: AutoScrollItemTarget[] | ((draggable: Draggable<S>) => AutoScrollItemTarget[]);
   inertAreaSize: number;
   speed: number | AutoScrollItemSpeedCallback;
@@ -145,11 +145,9 @@ export interface DraggableAutoScrollSettings<S extends Sensor[]> {
   onStop: AutoScrollItemEventCallback | null;
 }
 
-export type DraggableAutoScrollOptions<S extends Sensor[]> = Partial<
-  DraggableAutoScrollSettings<S>
->;
+export type DraggableAutoScrollOptions<S extends Sensor> = Partial<DraggableAutoScrollSettings<S>>;
 
-export class DraggableAutoScroll<S extends Sensor[] = Sensor[]> {
+export class DraggableAutoScroll<S extends Sensor = Sensor> {
   readonly name: 'autoscroll';
   readonly version: string;
   readonly settings: DraggableAutoScrollSettings<S>;
@@ -208,7 +206,7 @@ export class DraggableAutoScroll<S extends Sensor[] = Sensor[]> {
   }
 }
 
-export function autoScrollPlugin<S extends Sensor[], P extends DraggablePluginMap>(
+export function autoScrollPlugin<S extends Sensor, P extends DraggablePluginMap>(
   options?: DraggableAutoScrollOptions<S>,
 ) {
   return (draggable: Draggable<S, P>) => {

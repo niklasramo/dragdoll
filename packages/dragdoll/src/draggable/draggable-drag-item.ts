@@ -15,7 +15,7 @@ import type { Draggable } from './draggable.js';
 
 const MEASURE_ELEMENT = IS_BROWSER ? createMeasureElement() : null;
 
-export class DraggableDragItem<S extends Sensor[] = Sensor[]> {
+export class DraggableDragItem<S extends Sensor = Sensor> {
   data: { [key: string]: any };
   readonly element: HTMLElement | SVGSVGElement;
   readonly elementContainer: HTMLElement;

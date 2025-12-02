@@ -185,20 +185,6 @@ export class DndObserver<T extends CollisionData = CollisionData> {
       }
     }
 
-    // Make sure that none of the draggable's elements contain the droppable's
-    // element. If we allowed this the draggable would _probably_ be constantly
-    // colliding with this droppable, which is probably not what is wanted in
-    // most cases. If the user _really_ wants to allow this they can always
-    // override this method.
-    if (isMatch && draggable.drag) {
-      const items = draggable.drag.items;
-      for (let i = 0; i < items.length; i++) {
-        if (items[i].element.contains(droppable.element)) {
-          return false;
-        }
-      }
-    }
-
     return isMatch;
   }
 

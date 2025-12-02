@@ -50,7 +50,7 @@ function adjustAxisChange(
   ADJUSTMENT_DATA.drift = nextDrift;
 }
 
-export function createContainmentModifier<S extends Sensor[]>(
+export function createContainmentModifier<S extends Sensor>(
   getContainerRect: (data: DraggableModifierData<S>) => Rect,
   trackSensorDrift: boolean | ((data: DraggableModifierData<S>) => boolean) = ({ drag }) => {
     return drag.sensor instanceof PointerSensor;

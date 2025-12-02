@@ -1,21 +1,32 @@
 import type { PointerSensorEvents, PointerSensorSettings } from 'dragdoll/sensors/pointer';
-import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { PointerSensor, PointerSensorDefaultSettings } from 'dragdoll/sensors/pointer';
 import { useRef, useState } from 'react';
 import { useCallbackStable } from './use-callback-stable.js';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';
 import { useMemoStable } from './use-memo-stable.js';
 
+export interface UsePointerSensorSettings extends Partial<PointerSensorSettings> {}
+
 export function usePointerSensor<E extends PointerSensorEvents = PointerSensorEvents>(
-  settings: Partial<PointerSensorSettings> = {},
+  settings?: UsePointerSensorSettings,
   element?: Element | Window,
 ) {
   const [sensor, setSensor] = useState<PointerSensor<E> | null>(null);
-  const sensorRef = useRef<PointerSensor<E> | null>(sensor);
-  const settingsRef = useRef(settings);
 
-  // Helper function to create a new pointer sensor.
+  const sensorRef = useRef<PointerSensor<E> | null>(sensor);
+
+  const settingsRef = useRef(settings);
+  settingsRef.current = settings;
+
+  // Helper function to create a new pointer sensor or update the existing
+  // sensor's element if it already exists.
   const createSensor = useCallbackStable((node: Element | Window) => {
-    sensorRef.current?.destroy();
+    const currentSensor = sensorRef.current;
+    if (currentSensor) {
+      currentSensor.updateElement(node);
+      return;
+    }
+
     const newSensor = new PointerSensor<E>(node, settingsRef.current);
     sensorRef.current = newSensor;
     setSensor(newSensor);
@@ -23,8 +34,9 @@ export function usePointerSensor<E extends PointerSensorEvents = PointerSensorEv
 
   // Helper function to destroy the pointer sensor.
   const destroySensor = useCallbackStable(() => {
-    if (!sensorRef.current) return;
-    sensorRef.current.destroy();
+    const currentSensor = sensorRef.current;
+    if (!currentSensor) return;
+    currentSensor.destroy();
     sensorRef.current = null;
     setSensor(null);
   }, []);
@@ -43,18 +55,12 @@ export function usePointerSensor<E extends PointerSensorEvents = PointerSensorEv
         return;
       }
 
-      // Create a new pointer sensor if there is no sensor or the node has
-      // changed.
-      const currentSensor = sensorRef.current;
-      if (!currentSensor || currentSensor.element !== node) {
-        createSensor(node);
-      }
+      // Otherwise, create a new pointer sensor or update the existing sensor's
+      // element if it already exists.
+      createSensor(node);
     },
     [element, createSensor, destroySensor],
   );
-
-  // Keep settings up to date.
-  settingsRef.current = settings;
 
   // Handle explicit element change.
   useIsomorphicLayoutEffect(() => {
@@ -65,7 +71,19 @@ export function usePointerSensor<E extends PointerSensorEvents = PointerSensorEv
 
   // Handle settings change.
   useIsomorphicLayoutEffect(() => {
-    if (sensor) sensor.updateSettings(settings);
+    if (sensor) {
+      const {
+        listenerOptions = PointerSensorDefaultSettings.listenerOptions,
+        sourceEvents = PointerSensorDefaultSettings.sourceEvents,
+        startPredicate = PointerSensorDefaultSettings.startPredicate,
+      } = settings || {};
+
+      sensor.updateSettings({
+        listenerOptions,
+        sourceEvents,
+        startPredicate,
+      });
+    }
   }, [sensor, settings]);
 
   return useMemoStable(() => {

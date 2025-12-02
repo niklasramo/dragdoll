@@ -1,1 +1,0 @@
-{"version":3,"file":"is-document-Bkve0NGU.js","names":[],"sources":["../src/utils/is-document.ts"],"sourcesContent":["/**\n * Check if the current value is a document.\n */\nexport function isDocument(value: any): value is Document {\n  return value instanceof Document;\n}\n"],"mappings":"AAGA,SAAgB,EAAW,EAA+B,CACxD,OAAO,aAAiB"}

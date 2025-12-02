@@ -51,7 +51,7 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
 import type { DraggableModifier } from 'dragdoll/draggable';
 
 // Type
-type DraggableModifier<S extends Sensor[]> = (
+type DraggableModifier<S extends Sensor> = (
   change: { x: number; y: number },
   data: DraggableModifierData<S>,
 ) => { x: number; y: number };

@@ -2,61 +2,72 @@ import type {
   KeyboardMotionSensorEvents,
   KeyboardMotionSensorSettings,
 } from 'dragdoll/sensors/keyboard-motion';
-import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
+import {
+  KeyboardMotionSensor,
+  KeyboardMotionSensorDefaultSettings,
+} from 'dragdoll/sensors/keyboard-motion';
 import { useRef, useState } from 'react';
 import { useCallbackStable } from './use-callback-stable.js';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';
 import { useMemoStable } from './use-memo-stable.js';
 
+export interface UseKeyboardMotionSensorSettings<
+  E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents,
+> extends Partial<KeyboardMotionSensorSettings<E>> {}
+
 export function useKeyboardMotionSensor<
   E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents,
->(settings: Partial<KeyboardMotionSensorSettings<E>> = {}, element?: Element | null) {
+>(settings?: UseKeyboardMotionSensorSettings<E>, element?: Element | null) {
   const [sensor, setSensor] = useState<KeyboardMotionSensor<E> | null>(null);
-  const sensorRef = useRef<KeyboardMotionSensor<E> | null>(sensor);
-  const settingsRef = useRef(settings);
 
-  // Helper function to create a new keyboard sensor.
+  const sensorRef = useRef<KeyboardMotionSensor<E> | null>(sensor);
+
+  const settingsRef = useRef(settings);
+  settingsRef.current = settings;
+
+  // Helper function to create a new keyboard motion sensor or update the existing
+  // sensor's element if it already exists.
   const createSensor = useCallbackStable((node: Element | null) => {
-    sensorRef.current?.destroy();
+    const currentSensor = sensorRef.current;
+    if (currentSensor) {
+      currentSensor.updateElement(node);
+      return;
+    }
+
     const newSensor = new KeyboardMotionSensor<E>(node, settingsRef.current);
     sensorRef.current = newSensor;
     setSensor(newSensor);
   }, []);
 
-  // Helper function to destroy the keyboard sensor.
+  // Helper function to destroy the keyboard motion sensor.
   const destroySensor = useCallbackStable(() => {
-    if (!sensorRef.current) return;
-    sensorRef.current.destroy();
+    const currentSensor = sensorRef.current;
+    if (!currentSensor) return;
+    currentSensor.destroy();
     sensorRef.current = null;
     setSensor(null);
   }, []);
 
-  // Ref callback for the keyboard sensor element IF user does not provide an
+  // Ref callback for the keyboard motion sensor element IF user does not provide an
   // explicit element.
   const setRef = useCallbackStable(
     (node: Element | null) => {
-      // If user provides an explicit element or null, do not create a new
-      // keyboard sensor.
+      // If user provides an explicit element, do not create a new keyboard motion
+      // sensor.
       if (element !== undefined) return;
 
-      // Destroy the keyboard sensor if the node is null.
+      // Destroy the keyboard motion sensor if the node is null.
       if (node === null) {
         destroySensor();
         return;
       }
 
-      // Create a new keyboard sensor if there is no sensor or the node has
-      // changed.
-      const currentSensor = sensorRef.current;
-      if (!currentSensor || currentSensor.element !== node) {
-        createSensor(node);
-      }
+      // Otherwise, create a new keyboard motion sensor or update the existing sensor's
+      // element if it already exists.
+      createSensor(node);
     },
     [element, createSensor, destroySensor],
   );
-
-  // Keep the settings up to date.
-  settingsRef.current = settings;
 
   // Handle explicit element change.
   useIsomorphicLayoutEffect(() => {
@@ -67,7 +78,35 @@ export function useKeyboardMotionSensor<
 
   // Handle settings change.
   useIsomorphicLayoutEffect(() => {
-    if (sensor) sensor.updateSettings(settings);
+    if (sensor) {
+      const {
+        startKeys = KeyboardMotionSensorDefaultSettings.startKeys,
+        moveLeftKeys = KeyboardMotionSensorDefaultSettings.moveLeftKeys,
+        moveRightKeys = KeyboardMotionSensorDefaultSettings.moveRightKeys,
+        moveUpKeys = KeyboardMotionSensorDefaultSettings.moveUpKeys,
+        moveDownKeys = KeyboardMotionSensorDefaultSettings.moveDownKeys,
+        cancelKeys = KeyboardMotionSensorDefaultSettings.cancelKeys,
+        endKeys = KeyboardMotionSensorDefaultSettings.endKeys,
+        cancelOnBlur = KeyboardMotionSensorDefaultSettings.cancelOnBlur,
+        cancelOnVisibilityChange = KeyboardMotionSensorDefaultSettings.cancelOnVisibilityChange,
+        computeSpeed = KeyboardMotionSensorDefaultSettings.computeSpeed,
+        startPredicate = KeyboardMotionSensorDefaultSettings.startPredicate,
+      } = settings || {};
+
+      sensor.updateSettings({
+        startKeys,
+        moveLeftKeys,
+        moveRightKeys,
+        moveUpKeys,
+        moveDownKeys,
+        cancelKeys,
+        endKeys,
+        cancelOnBlur,
+        cancelOnVisibilityChange,
+        computeSpeed,
+        startPredicate,
+      });
+    }
   }, [sensor, settings]);
 
   return useMemoStable(() => {

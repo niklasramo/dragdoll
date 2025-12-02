@@ -20,17 +20,18 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
 ## Class
 
 ```ts
-class Draggable<S extends Sensor[] = Sensor[], P extends DraggablePluginMap = {}> {
-  constructor(sensors: S, options: DraggableOptions<S> = {}) {}
+class Draggable<S extends Sensor = Sensor, P extends DraggablePluginMap = {}> {
+  constructor(sensors: readonly S[], options: DraggableOptions<S> = {}) {}
 }
 ```
 
 ### Type Variables
 
 1. **S**
-   - The types of the sensors that the Draggable will use as inputs for moving the provided elements around.
+   - A union type representing the sensor types that the Draggable will use as inputs for moving the provided elements around.
    - This is inferred from the constructor's `sensors` argument, so you don't have to manually specify this, unless you use this as a type constraint.
-   - Default: `Sensor[]`.
+   - The order of sensors in the array is insignificant for type inference - `[PointerSensor, KeyboardSensor]` and `[KeyboardSensor, PointerSensor]` will both infer `S` as `PointerSensor | KeyboardSensor`.
+   - Default: `Sensor`.
 2. **P**
    - The types of the plugins that the Draggable will use.
    - This is mainly used for automatic type inference so you don't have to manually specify this, unless you use this as a type constraint.
@@ -39,7 +40,7 @@ class Draggable<S extends Sensor[] = Sensor[], P extends DraggablePluginMap = {}
 ### Constructor Parameters
 
 1. **sensors**
-   - An array of [sensors](/sensor) that the Draggable will use as inputs for moving the provided elements around. The sensors are required and can't be changed after instantiation.
+   - An array of [sensors](/sensor) that the Draggable will use as inputs for moving the provided elements around. The sensors can be dynamically modified after instantiation by setting the [`sensors`](#sensors) property.
 2. **options**
    - An optional [`DraggableOptions`](#draggableoptions) object. The provided options (except for `id`) will be merged with the default options and the result will be used as the draggable's [`settings`](#settings) property.
    - The `id` option is special as it's not part of the `settings` object unlike all the other options. It's a unique identifier for the draggable that is assigned as the draggable's [`id`](#id) property and _should not_ be changed after instantiation. Default is a unique symbol.
@@ -77,8 +78,8 @@ When using a custom container, the dragged element must be either `absolute` or 
 ```ts
 type startPredicate = (data: {
   draggable: Draggable<S>;
-  sensor: S[number];
-  event: SensorsEventsType<S>['start'] | SensorsEventsType<S>['move'];
+  sensor: S;
+  event: S['_events_type']['start'] | S['_events_type']['move'];
 }) => boolean | undefined;
 ```
 
@@ -225,14 +226,14 @@ Default is `'sampled'`.
 ### dndGroups
 
 ```ts
-type dndGroups = Set<DraggableDndGroup>;
+type dndGroups = Set<DraggableDndGroup> | undefined;
 ```
 
 A set of [`DraggableDndGroup`](#draggabledndgroup) identifiers used by [`DndObserver`](/dnd-observer) when matching a `Draggable` to [`Droppable`](/droppable).
 
 If a `Droppable` includes any of these identifiers in its [`accept`](/droppable#accept) set, the `Draggable` will be matched to the `Droppable` and there will be collision detection enabled between the two.
 
-Default is an empty set.
+Default is `undefined` (no groups, meaning the draggable won't match any droppables that use Set-based matching).
 
 ### onPrepareStart
 
@@ -307,10 +308,47 @@ The unique identifier for this draggable. Default is a unique symbol. Read-only.
 ### sensors
 
 ```ts
-type sensors = Sensor[];
+type sensors = ReadonlyArray<Sensor>;
 ```
 
-An array of all the sensors attached to the Draggable instance. Read-only.
+An array of all the sensors attached to the Draggable instance. The getter returns a readonly array that cannot be mutated directly. To modify sensors, use the setter with a new array.
+
+When you set this property, the draggable will automatically:
+
+- Unbind event listeners from sensors that are being removed
+- Bind event listeners to sensors that are being added
+- Stop any active drag if the sensor that initiated the drag is being removed
+
+**Example:**
+
+```ts
+import { PointerSensor } from 'dragdoll/sensors/pointer';
+import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
+import { Draggable } from 'dragdoll/draggable';
+
+const pointerSensor = new PointerSensor(document.body);
+const keyboardSensor = new KeyboardSensor(document.body);
+
+// Allow providing pointer and keyboard sensors to the draggable, start with
+// only the pointer sensor. If we are going to add/remove sensors dynamically,
+// we need to let the draggable know about the possible sensor types.
+const draggable = new Draggable<PointerSensor | KeyboardSensor>([pointerSensor]);
+
+// Add a keyboard sensor dynamically.
+draggable.sensors = [...draggable.sensors, keyboardSensor];
+
+// Remove the pointer sensor.
+draggable.sensors = [keyboardSensor];
+
+// ❌ This will cause a TypeScript error - the array is readonly
+draggable.sensors.push(pointerSensor);
+
+// ✅ Instead, create a new array
+draggable.sensors = [...draggable.sensors, pointerSensor];
+```
+
+> [!NOTE]
+> The sensors array returned from the getter is readonly and cannot be mutated. The setter compares arrays by reference, so if you set the same array reference, no changes will be made. To modify sensors, always provide a new array with the desired sensors.
 
 ### settings
 
@@ -715,7 +753,7 @@ type DraggableApplyPositionPhase = 'start' | 'start-align' | 'move' | 'align' | 
 import type { DraggableModifierData } from 'dragdoll/draggable';
 
 // Type
-type DraggableModifierData<S extends Sensor[]> = {
+type DraggableModifierData<S extends Sensor> = {
   draggable: Draggable<S>;
   drag: DraggableDrag<S>;
   item: DraggableDragItem<S>;
@@ -730,7 +768,7 @@ type DraggableModifierData<S extends Sensor[]> = {
 import type { DraggableModifier } from 'dragdoll/draggable';
 
 // Type
-type DraggableModifier<S extends Sensor[]> = (
+type DraggableModifier<S extends Sensor> = (
   change: { x: number; y: number },
   data: DraggableModifierData<S>,
 ) => { x: number; y: number };
@@ -743,7 +781,7 @@ type DraggableModifier<S extends Sensor[]> = (
 import type { DraggableSettings } from 'dragdoll/draggable';
 
 // Interface
-export interface DraggableSettings<S extends Sensor[]> {
+export interface DraggableSettings<S extends Sensor> {
   container:
     | HTMLElement
     | null
@@ -754,8 +792,8 @@ export interface DraggableSettings<S extends Sensor[]> {
       }) => HTMLElement | null);
   startPredicate: (data: {
     draggable: Draggable<S>;
-    sensor: S[number];
-    event: SensorsEventsType<S>['start'] | SensorsEventsType<S>['move'];
+    sensor: S;
+    event: S['_events_type']['start'] | S['_events_type']['move'];
   }) => boolean | undefined;
   elements: (data: {
     draggable: Draggable<S>;
@@ -796,7 +834,7 @@ export interface DraggableSettings<S extends Sensor[]> {
 import type { DraggableOptions } from 'dragdoll/draggable';
 
 // Interface
-export interface DraggableOptions<S extends Sensor[]> extends Partial<DraggableSettings<S>> {
+export interface DraggableOptions<S extends Sensor> extends Partial<DraggableSettings<S>> {
   id?: DraggableId;
 }
 ```
@@ -841,7 +879,7 @@ type DraggableEventType = 'preparestart' | 'start' | 'preparemove' | 'move' | 'e
 import type { DraggableEventCallbacks } from 'dragdoll/draggable';
 
 // Interface
-interface DraggableEventCallbacks<S extends Sensor[]> {
+interface DraggableEventCallbacks<S extends Sensor> {
   [DraggableEventType.PrepareStart]: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
   [DraggableEventType.Start]: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
   [DraggableEventType.PrepareMove]: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
@@ -859,7 +897,7 @@ import type { DraggableEventCallback } from 'dragdoll/draggable';
 
 // Type
 type DraggableEventCallback<
-  S extends Sensor[] = Sensor[],
+  S extends Sensor = Sensor,
   K extends keyof DraggableEventCallbacks<S> = keyof DraggableEventCallbacks<S>,
 > = DraggableEventCallbacks<S>[K];
 ```

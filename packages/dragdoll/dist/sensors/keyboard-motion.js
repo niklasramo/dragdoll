@@ -1,1 +1,0 @@
-import"../ticker-Bio34ZvT.js";import"../sensor-Uwz8qy61.js";import"../base-sensor-DVrttP21.js";import"../base-motion-sensor-QRxjT_GX.js";import{n as e,t}from"../keyboard-motion-sensor-BsMzohjd.js";export{t as KeyboardMotionSensor,e as keyboardMotionSensorDefaults};

@@ -19,7 +19,7 @@ function getScrollables(element: Element) {
 }
 
 export function createTouchDelayPredicate<
-  S extends (Sensor | PointerSensor)[] = (Sensor | PointerSensor)[],
+  S extends Sensor | PointerSensor = Sensor | PointerSensor,
 >(
   options: {
     touchDelay?: number;

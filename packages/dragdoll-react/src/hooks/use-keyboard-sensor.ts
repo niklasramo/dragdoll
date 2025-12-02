@@ -1,21 +1,34 @@
 import type { KeyboardSensorEvents, KeyboardSensorSettings } from 'dragdoll/sensors/keyboard';
-import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
+import { KeyboardSensor, KeyboardSensorDefaultSettings } from 'dragdoll/sensors/keyboard';
 import { useRef, useState } from 'react';
 import { useCallbackStable } from './use-callback-stable.js';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';
 import { useMemoStable } from './use-memo-stable.js';
 
+export interface UseKeyboardSensorSettings<
+  E extends KeyboardSensorEvents = KeyboardSensorEvents,
+> extends Partial<KeyboardSensorSettings<E>> {}
+
 export function useKeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvents>(
-  settings: Partial<KeyboardSensorSettings<E>> = {},
+  settings?: UseKeyboardSensorSettings<E>,
   element?: Element | null,
 ) {
   const [sensor, setSensor] = useState<KeyboardSensor<E> | null>(null);
-  const sensorRef = useRef<KeyboardSensor<E> | null>(sensor);
-  const settingsRef = useRef(settings);
 
-  // Helper function to create a new keyboard sensor.
+  const sensorRef = useRef<KeyboardSensor<E> | null>(sensor);
+
+  const settingsRef = useRef(settings);
+  settingsRef.current = settings;
+
+  // Helper function to create a new keyboard sensor or update the existing
+  // sensor's element if it already exists.
   const createSensor = useCallbackStable((node: Element | null) => {
-    sensorRef.current?.destroy();
+    const currentSensor = sensorRef.current;
+    if (currentSensor) {
+      currentSensor.updateElement(node);
+      return;
+    }
+
     const newSensor = new KeyboardSensor<E>(node, settingsRef.current);
     sensorRef.current = newSensor;
     setSensor(newSensor);
@@ -23,8 +36,9 @@ export function useKeyboardSensor<E extends KeyboardSensorEvents = KeyboardSenso
 
   // Helper function to destroy the keyboard sensor.
   const destroySensor = useCallbackStable(() => {
-    if (!sensorRef.current) return;
-    sensorRef.current.destroy();
+    const currentSensor = sensorRef.current;
+    if (!currentSensor) return;
+    currentSensor.destroy();
     sensorRef.current = null;
     setSensor(null);
   }, []);
@@ -33,8 +47,8 @@ export function useKeyboardSensor<E extends KeyboardSensorEvents = KeyboardSenso
   // explicit element.
   const setRef = useCallbackStable(
     (node: Element | null) => {
-      // If user provides an explicit element or null, do not create a new
-      // keyboard sensor.
+      // If user provides an explicit element, do not create a new keyboard
+      // sensor.
       if (element !== undefined) return;
 
       // Destroy the keyboard sensor if the node is null.
@@ -43,18 +57,12 @@ export function useKeyboardSensor<E extends KeyboardSensorEvents = KeyboardSenso
         return;
       }
 
-      // Create a new keyboard sensor if there is no sensor or the node has
-      // changed.
-      const currentSensor = sensorRef.current;
-      if (!currentSensor || currentSensor.element !== node) {
-        createSensor(node);
-      }
+      // Otherwise, create a new keyboard sensor or update the existing sensor's
+      // element if it already exists.
+      createSensor(node);
     },
     [element, createSensor, destroySensor],
   );
-
-  // Keep the settings up to date.
-  settingsRef.current = settings;
 
   // Handle explicit element change.
   useIsomorphicLayoutEffect(() => {
@@ -65,7 +73,27 @@ export function useKeyboardSensor<E extends KeyboardSensorEvents = KeyboardSenso
 
   // Handle settings change.
   useIsomorphicLayoutEffect(() => {
-    if (sensor) sensor.updateSettings(settings);
+    if (sensor) {
+      const {
+        moveDistance = KeyboardSensorDefaultSettings.moveDistance,
+        cancelOnBlur = KeyboardSensorDefaultSettings.cancelOnBlur,
+        cancelOnVisibilityChange = KeyboardSensorDefaultSettings.cancelOnVisibilityChange,
+        startPredicate = KeyboardSensorDefaultSettings.startPredicate,
+        movePredicate = KeyboardSensorDefaultSettings.movePredicate,
+        cancelPredicate = KeyboardSensorDefaultSettings.cancelPredicate,
+        endPredicate = KeyboardSensorDefaultSettings.endPredicate,
+      } = settings || {};
+
+      sensor.updateSettings({
+        moveDistance,
+        cancelOnBlur,
+        cancelOnVisibilityChange,
+        startPredicate,
+        movePredicate,
+        cancelPredicate,
+        endPredicate,
+      });
+    }
   }, [sensor, settings]);
 
   return useMemoStable(() => {

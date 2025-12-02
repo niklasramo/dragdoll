@@ -1,1 +1,0 @@
-{"version":3,"file":"dnd-observer-context-DpsKiq2G.js","names":[],"sources":["../src/contexts/dnd-observer-context.ts"],"sourcesContent":["import type { DndObserver } from 'dragdoll/dnd-observer';\nimport { createContext } from 'react';\n\nexport const DndObserverContext = createContext<DndObserver<any> | null>(null);\n"],"mappings":"sCAGA,MAAa,EAAqB,EAAuC,KAAK"}

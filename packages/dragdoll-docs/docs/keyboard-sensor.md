@@ -247,14 +247,14 @@ Payload follows the [`KeyboardSensorDestroyEvent`](#keyboardsensordestroyevent) 
 
 Here's a list of additional exports that are available in the `dragdoll/sensors/keyboard` package.
 
-### keyboardSensorDefaults
+### KeyboardSensorDefaultSettings
 
 ```ts
 // Import
-import { keyboardSensorDefaults } from 'dragdoll/sensors/keyboard';
+import { KeyboardSensorDefaultSettings } from 'dragdoll/sensors/keyboard';
 
 // Constant
-const keyboardSensorDefaults: KeyboardSensorSettings<any>;
+const KeyboardSensorDefaultSettings: KeyboardSensorSettings<any>;
 ```
 
 ## Types

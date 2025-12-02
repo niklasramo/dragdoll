@@ -53,7 +53,7 @@ function DraggableBox() {
 
 ```ts
 function useDraggableCallback<
-  S extends Sensor[] = Sensor[],
+  S extends Sensor = Sensor,
   K extends keyof DraggableEventCallbacks<S> = keyof DraggableEventCallbacks<S>,
 >(draggable: Draggable<S> | null, eventType: K, callback?: DraggableEventCallback<S, K>): void;
 ```

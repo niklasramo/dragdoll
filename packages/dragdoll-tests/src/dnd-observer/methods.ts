@@ -190,7 +190,7 @@ export default () => {
   });
 
   describe('protected methods', () => {
-    it('_isMatch should return false when dragged element equals droppable.element', async () => {
+    it('_isMatch should return true when dragged element equals droppable.element', async () => {
       const el = createTestElement({ left: '0px', top: '0px', width: '40px', height: '40px' });
       const sensor = new KeyboardSensor(el, { moveDistance: 10 });
       const draggable = new Draggable([sensor], {
@@ -205,7 +205,8 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
       await waitNextFrame();
 
-      expect(dndObserver['_isMatch'](draggable, droppable)).toBe(false);
+      // Containment check was removed, so same element can match
+      expect(dndObserver['_isMatch'](draggable, droppable)).toBe(true);
 
       dndObserver.destroy();
       draggable.destroy();

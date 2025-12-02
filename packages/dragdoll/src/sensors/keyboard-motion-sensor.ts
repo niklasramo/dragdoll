@@ -1,4 +1,4 @@
-import type { Point } from '../types.js';
+import type { Point, Writeable } from '../types.js';
 import { BaseMotionSensor, BaseMotionSensorEvents } from './base-motion-sensor.js';
 import type { Sensor } from './sensor.js';
 import { SensorEventType } from './sensor.js';
@@ -43,7 +43,7 @@ function getEarliestTimestamp(keys: Set<string>, timestamps: Map<string, number>
   return result;
 }
 
-export const keyboardMotionSensorDefaults: KeyboardMotionSensorSettings<any> = {
+export const KeyboardMotionSensorDefaultSettings: KeyboardMotionSensorSettings<any> = {
   startKeys: [' ', 'Enter'],
   moveLeftKeys: ['ArrowLeft'],
   moveRightKeys: ['ArrowRight'],
@@ -87,17 +87,17 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
     super();
 
     const {
-      startPredicate = keyboardMotionSensorDefaults.startPredicate,
-      computeSpeed = keyboardMotionSensorDefaults.computeSpeed,
-      cancelOnVisibilityChange = keyboardMotionSensorDefaults.cancelOnVisibilityChange,
-      cancelOnBlur = keyboardMotionSensorDefaults.cancelOnBlur,
-      startKeys = keyboardMotionSensorDefaults.startKeys,
-      moveLeftKeys = keyboardMotionSensorDefaults.moveLeftKeys,
-      moveRightKeys = keyboardMotionSensorDefaults.moveRightKeys,
-      moveUpKeys = keyboardMotionSensorDefaults.moveUpKeys,
-      moveDownKeys = keyboardMotionSensorDefaults.moveDownKeys,
-      cancelKeys = keyboardMotionSensorDefaults.cancelKeys,
-      endKeys = keyboardMotionSensorDefaults.endKeys,
+      startPredicate = KeyboardMotionSensorDefaultSettings.startPredicate,
+      computeSpeed = KeyboardMotionSensorDefaultSettings.computeSpeed,
+      cancelOnVisibilityChange = KeyboardMotionSensorDefaultSettings.cancelOnVisibilityChange,
+      cancelOnBlur = KeyboardMotionSensorDefaultSettings.cancelOnBlur,
+      startKeys = KeyboardMotionSensorDefaultSettings.startKeys,
+      moveLeftKeys = KeyboardMotionSensorDefaultSettings.moveLeftKeys,
+      moveRightKeys = KeyboardMotionSensorDefaultSettings.moveRightKeys,
+      moveUpKeys = KeyboardMotionSensorDefaultSettings.moveUpKeys,
+      moveDownKeys = KeyboardMotionSensorDefaultSettings.moveDownKeys,
+      cancelKeys = KeyboardMotionSensorDefaultSettings.cancelKeys,
+      endKeys = KeyboardMotionSensorDefaultSettings.endKeys,
     } = options;
 
     this.element = element;
@@ -245,7 +245,20 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
     }
   }
 
+  updateElement(element: Element | null) {
+    if (this.isDestroyed || this.element === element) return;
+
+    if (this._cancelOnBlur) {
+      this.element?.removeEventListener('blur', this._blurCancelHandler);
+      element?.addEventListener('blur', this._blurCancelHandler);
+    }
+
+    (this as Writeable<this>).element = element;
+  }
+
   updateSettings(options: Partial<KeyboardMotionSensorSettings<E>>) {
+    if (this.isDestroyed) return;
+
     let moveKeysMayNeedUpdate = false;
 
     const { cancelOnBlur, cancelOnVisibilityChange, startPredicate, computeSpeed } = options;
