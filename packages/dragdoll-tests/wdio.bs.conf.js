@@ -36,10 +36,8 @@ export const config = {
       {
         testReporting: false,
         browserstackLocal: true,
-        forcedStop: true,
         accessibility: false,
         percy: false,
-        turboscale: false,
       },
     ],
   ],
