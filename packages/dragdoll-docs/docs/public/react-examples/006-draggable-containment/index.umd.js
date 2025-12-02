@@ -3417,7 +3417,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-B39qKO-n.js
+  //#region ../dragdoll-react/dist/use-draggable-CFype_A8.js
   function c(c$3, l$3) {
     let u$3 = n$1(() => c$3.filter((e$8) => !!e$8), [...c$3]),
       { id: d$2, dndObserver: f$1, ...p$1 } = l$3 || {},
@@ -3471,10 +3471,8 @@
           (n$4(C$1.current, e$8) ||
             (_$2.updateSettings(_$2._parseSettings(e$8)),
             C$1.current &&
-              (e$8.dndGroups === C$1.current.dndGroups
-                ? e$8.computeClientRect !== C$1.current.computeClientRect &&
-                  S$1.current?.detectCollisions()
-                : (S$1.current?.clearTargets(_$2), S$1.current?.detectCollisions()))),
+              e$8.dndGroups !== C$1.current.dndGroups &&
+              S$1.current?.clearTargets(_$2)),
           (C$1.current = e$8));
       }, [_$2, l$3]),
       n(() => w$1, [w$1]),

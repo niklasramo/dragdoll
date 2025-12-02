@@ -3447,7 +3447,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-B39qKO-n.js
+  //#region ../dragdoll-react/dist/use-draggable-CFype_A8.js
   function c(c$5, l$5) {
     let u$4 = n$1(() => c$5.filter((e$8) => !!e$8), [...c$5]),
       { id: d$2, dndObserver: f$1, ...p$1 } = l$5 || {},
@@ -3501,10 +3501,8 @@
           (n$9(C$1.current, e$8) ||
             (_$2.updateSettings(_$2._parseSettings(e$8)),
             C$1.current &&
-              (e$8.dndGroups === C$1.current.dndGroups
-                ? e$8.computeClientRect !== C$1.current.computeClientRect &&
-                  S$1.current?.detectCollisions()
-                : (S$1.current?.clearTargets(_$2), S$1.current?.detectCollisions()))),
+              e$8.dndGroups !== C$1.current.dndGroups &&
+              S$1.current?.clearTargets(_$2)),
           (C$1.current = e$8));
       }, [_$2, l$5]),
       n(() => w$1, [w$1]),
@@ -3547,7 +3545,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-droppable-CEjri4o_.js
+  //#region ../dragdoll-react/dist/use-droppable-BuFmfVwY.js
   const c$2 = Symbol();
   function l({
     id: l$5,
@@ -3618,10 +3616,7 @@
           );
       }, [_$2, g$1]),
       n(() => {
-        _$2 &&
-          ((_$2.accept = u$4 || n$7.accept),
-          S$1.current?.clearTargets(),
-          S$1.current?.detectCollisions());
+        _$2 && ((_$2.accept = u$4 || n$7.accept), S$1.current?.clearTargets());
       }, [_$2, u$4]),
       n(() => {
         _$2 && (_$2.data = d$2 || {});

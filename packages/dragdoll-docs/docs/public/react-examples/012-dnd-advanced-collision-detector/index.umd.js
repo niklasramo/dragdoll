@@ -5415,7 +5415,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-draggable-B39qKO-n.js
+  //#region ../dragdoll-react/dist/use-draggable-CFype_A8.js
   function c(c$8, l$7) {
     let u$6 = n$1(() => c$8.filter((e$10) => !!e$10), [...c$8]),
       { id: d$4, dndObserver: f$3, ...p$3 } = l$7 || {},
@@ -5469,10 +5469,8 @@
           (n$5(C$2.current, e$10) ||
             (_$4.updateSettings(_$4._parseSettings(e$10)),
             C$2.current &&
-              (e$10.dndGroups === C$2.current.dndGroups
-                ? e$10.computeClientRect !== C$2.current.computeClientRect &&
-                  S$2.current?.detectCollisions()
-                : (S$2.current?.clearTargets(_$4), S$2.current?.detectCollisions()))),
+              e$10.dndGroups !== C$2.current.dndGroups &&
+              S$2.current?.clearTargets(_$4)),
           (C$2.current = e$10));
       }, [_$4, l$7]),
       n(() => w$2, [w$2]),
@@ -5535,7 +5533,7 @@
   }
 
   //#endregion
-  //#region ../dragdoll-react/dist/use-droppable-CEjri4o_.js
+  //#region ../dragdoll-react/dist/use-droppable-BuFmfVwY.js
   const c$1 = Symbol();
   function l({
     id: l$7,
@@ -5606,10 +5604,7 @@
           );
       }, [_$4, g$3]),
       n(() => {
-        _$4 &&
-          ((_$4.accept = u$6 || n$3.accept),
-          S$2.current?.clearTargets(),
-          S$2.current?.detectCollisions());
+        _$4 && ((_$4.accept = u$6 || n$3.accept), S$2.current?.clearTargets());
       }, [_$4, u$6]),
       n(() => {
         _$4 && (_$4.data = d$4 || {});

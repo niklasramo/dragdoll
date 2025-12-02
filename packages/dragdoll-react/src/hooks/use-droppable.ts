@@ -129,7 +129,6 @@ export function useDroppable({
     if (!droppable) return;
     droppable.accept = accept || DroppableDefaultSettings.accept;
     dndObserverRef.current?.clearTargets();
-    dndObserverRef.current?.detectCollisions();
   }, [droppable, accept]);
 
   // Handle data change.

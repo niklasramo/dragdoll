@@ -136,11 +136,6 @@ export function useDraggable<S extends Sensor = Sensor>(
       if (appliedSettingsRef.current) {
         if (draggableSettings.dndGroups !== appliedSettingsRef.current.dndGroups) {
           effectiveDndObserverRef.current?.clearTargets(draggable);
-          effectiveDndObserverRef.current?.detectCollisions();
-        } else if (
-          draggableSettings.computeClientRect !== appliedSettingsRef.current.computeClientRect
-        ) {
-          effectiveDndObserverRef.current?.detectCollisions();
         }
       }
     }
