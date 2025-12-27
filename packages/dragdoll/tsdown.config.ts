@@ -24,9 +24,11 @@ export default defineConfig({
     'singletons/ticker': 'src/singletons/ticker.ts',
   },
   outDir: './dist',
+  platform: 'browser',
   format: 'esm',
   target: false,
   minify: true,
   sourcemap: true,
   dts: true,
+  exports: true,
 });
