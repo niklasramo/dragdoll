@@ -17,9 +17,11 @@ export default defineConfig({
     'use-pointer-sensor': 'src/hooks/use-pointer-sensor.ts',
   },
   outDir: './dist',
+  platform: 'browser',
   format: 'esm',
   target: false,
   minify: true,
   sourcemap: true,
   dts: true,
+  exports: true,
 });

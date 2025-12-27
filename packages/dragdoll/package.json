@@ -23,83 +23,29 @@
   "homepage": "https://niklasramo.github.io/dragdoll/",
   "type": "module",
   "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./sensors": {
-      "types": "./dist/sensors.d.ts",
-      "import": "./dist/sensors.js"
-    },
-    "./sensors/base": {
-      "types": "./dist/sensors/base.d.ts",
-      "import": "./dist/sensors/base.js"
-    },
-    "./sensors/base-motion": {
-      "types": "./dist/sensors/base-motion.d.ts",
-      "import": "./dist/sensors/base-motion.js"
-    },
-    "./sensors/pointer": {
-      "types": "./dist/sensors/pointer.d.ts",
-      "import": "./dist/sensors/pointer.js"
-    },
-    "./sensors/keyboard": {
-      "types": "./dist/sensors/keyboard.d.ts",
-      "import": "./dist/sensors/keyboard.js"
-    },
-    "./sensors/keyboard-motion": {
-      "types": "./dist/sensors/keyboard-motion.d.ts",
-      "import": "./dist/sensors/keyboard-motion.js"
-    },
-    "./draggable": {
-      "types": "./dist/draggable.d.ts",
-      "import": "./dist/draggable.js"
-    },
-    "./draggable/helpers/create-touch-delay-predicate": {
-      "types": "./dist/draggable/helpers/create-touch-delay-predicate.d.ts",
-      "import": "./dist/draggable/helpers/create-touch-delay-predicate.js"
-    },
-    "./draggable/modifiers/snap": {
-      "types": "./dist/draggable/modifiers/snap.d.ts",
-      "import": "./dist/draggable/modifiers/snap.js"
-    },
-    "./draggable/modifiers/containment": {
-      "types": "./dist/draggable/modifiers/containment.d.ts",
-      "import": "./dist/draggable/modifiers/containment.js"
-    },
-    "./draggable/plugins/auto-scroll": {
-      "types": "./dist/draggable/plugins/auto-scroll.d.ts",
-      "import": "./dist/draggable/plugins/auto-scroll.js"
-    },
-    "./dnd-observer": {
-      "types": "./dist/dnd-observer.d.ts",
-      "import": "./dist/dnd-observer.js"
-    },
-    "./dnd-observer/collision-detector": {
-      "types": "./dist/dnd-observer/collision-detector.d.ts",
-      "import": "./dist/dnd-observer/collision-detector.js"
-    },
-    "./dnd-observer/advanced-collision-detector": {
-      "types": "./dist/dnd-observer/advanced-collision-detector.d.ts",
-      "import": "./dist/dnd-observer/advanced-collision-detector.js"
-    },
-    "./droppable": {
-      "types": "./dist/droppable.d.ts",
-      "import": "./dist/droppable.js"
-    },
-    "./auto-scroll": {
-      "types": "./dist/auto-scroll.d.ts",
-      "import": "./dist/auto-scroll.js"
-    },
-    "./singletons/auto-scroll": {
-      "types": "./dist/singletons/auto-scroll.d.ts",
-      "import": "./dist/singletons/auto-scroll.js"
-    },
-    "./singletons/ticker": {
-      "types": "./dist/singletons/ticker.d.ts",
-      "import": "./dist/singletons/ticker.js"
-    },
+    ".": "./dist/index.js",
+    "./auto-scroll": "./dist/auto-scroll.js",
+    "./dnd-observer": "./dist/dnd-observer.js",
+    "./dnd-observer/advanced-collision-detector": "./dist/dnd-observer/advanced-collision-detector.js",
+    "./dnd-observer/collision-detector": "./dist/dnd-observer/collision-detector.js",
+    "./draggable": "./dist/draggable.js",
+    "./draggable/helpers/create-touch-delay-predicate": "./dist/draggable/helpers/create-touch-delay-predicate.js",
+    "./draggable/modifiers/containment": "./dist/draggable/modifiers/containment.js",
+    "./draggable/modifiers/snap": "./dist/draggable/modifiers/snap.js",
+    "./draggable/plugins/auto-scroll": "./dist/draggable/plugins/auto-scroll.js",
+    "./droppable": "./dist/droppable.js",
+    "./sensors": "./dist/sensors.js",
+    "./sensors/base": "./dist/sensors/base.js",
+    "./sensors/base-motion": "./dist/sensors/base-motion.js",
+    "./sensors/keyboard": "./dist/sensors/keyboard.js",
+    "./sensors/keyboard-motion": "./dist/sensors/keyboard-motion.js",
+    "./sensors/pointer": "./dist/sensors/pointer.js",
+    "./singletons/auto-scroll": "./dist/singletons/auto-scroll.js",
+    "./singletons/ticker": "./dist/singletons/ticker.js",
     "./package.json": "./package.json"
   },
   "files": [
