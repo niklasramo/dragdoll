@@ -205,5 +205,38 @@ export default () => {
       keyboardSensor.destroy();
       el.remove();
     });
+
+    it('should update the preventClickOnEnd setting', () => {
+      const el = createTestElement();
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
+
+      draggable.updateSettings({ preventClickOnEnd: false });
+
+      expectWithContext(draggable.settings.preventClickOnEnd, 'preventClickOnEnd updated').toBe(
+        false,
+      );
+
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+    });
+
+    it('should update the preventTextSelection setting', () => {
+      const el = createTestElement();
+      const keyboardSensor = new KeyboardSensor(el, { moveDistance: 1 });
+      const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
+
+      draggable.updateSettings({ preventTextSelection: false });
+
+      expectWithContext(
+        draggable.settings.preventTextSelection,
+        'preventTextSelection updated',
+      ).toBe(false);
+
+      draggable.destroy();
+      keyboardSensor.destroy();
+      el.remove();
+    });
   });
 };

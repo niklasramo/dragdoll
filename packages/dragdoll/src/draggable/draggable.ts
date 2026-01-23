@@ -119,6 +119,8 @@ export interface DraggableSettings<S extends Sensor> {
   }) => Readonly<Rect> | null;
   sensorProcessingMode?: DraggableSensorProcessingMode;
   dndGroups?: Set<DraggableDndGroup>;
+  preventClickOnEnd?: boolean;
+  preventTextSelection?: boolean;
   onPrepareStart?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
   onStart?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
   onPrepareMove?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
@@ -254,6 +256,8 @@ export const DraggableDefaultSettings: DraggableSettings<any> = {
   positionModifiers: [],
   sensorProcessingMode: DraggableSensorProcessingMode.Sampled,
   dndGroups: undefined,
+  preventClickOnEnd: true,
+  preventTextSelection: true,
 } as const;
 
 export class Draggable<
@@ -283,6 +287,7 @@ export class Draggable<
   protected _startId: symbol;
   protected _moveId: symbol;
   protected _alignId: symbol;
+  protected _selectionChangeHandler: (() => void) | null = null;
 
   constructor(sensors: readonly S[], options: DraggableOptions<S> = {}) {
     const { id = Symbol(), ...restOptions } = options;
@@ -397,6 +402,8 @@ export class Draggable<
       computeClientRect = defaults.computeClientRect,
       sensorProcessingMode = defaults.sensorProcessingMode,
       dndGroups = defaults.dndGroups,
+      preventClickOnEnd = defaults.preventClickOnEnd,
+      preventTextSelection = defaults.preventTextSelection,
       onPrepareStart = defaults.onPrepareStart,
       onStart = defaults.onStart,
       onPrepareMove = defaults.onPrepareMove,
@@ -415,6 +422,8 @@ export class Draggable<
       computeClientRect,
       sensorProcessingMode,
       dndGroups,
+      preventClickOnEnd,
+      preventTextSelection,
       onPrepareStart,
       onStart,
       onPrepareMove,
@@ -542,6 +551,22 @@ export class Draggable<
 
     // Update start phase.
     this._startPhase = DragStartPhase.Apply;
+
+    // Prevent click events after drag ends if enabled and sensor supports it.
+    if (this.settings.preventClickOnEnd) {
+      const sensor = drag.sensor;
+      if ('preventClickOnEnd' in sensor && typeof sensor.preventClickOnEnd === 'function') {
+        sensor.preventClickOnEnd();
+      }
+    }
+
+    // Prevent text selection during drag if enabled.
+    if (this.settings.preventTextSelection) {
+      const doc = drag.items[0]?.element?.ownerDocument ?? document;
+      doc.getSelection()?.removeAllRanges();
+      this._selectionChangeHandler = () => doc.getSelection()?.removeAllRanges();
+      doc.addEventListener('selectionchange', this._selectionChangeHandler);
+    }
 
     for (const item of drag.items) {
       // Append element within the container element if such is provided.
@@ -831,6 +856,12 @@ export class Draggable<
 
     // Unbind scroll listener.
     window.removeEventListener('scroll', this._onScroll, SCROLL_LISTENER_OPTIONS);
+
+    if (this._selectionChangeHandler) {
+      const doc = drag.items[0]?.element?.ownerDocument ?? document;
+      doc.removeEventListener('selectionchange', this._selectionChangeHandler);
+      this._selectionChangeHandler = null;
+    }
 
     // Apply modifiers for the end phase.
     this._applyModifiers(DraggableModifierPhase.End, 0, 0);

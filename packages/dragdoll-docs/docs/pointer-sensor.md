@@ -92,6 +92,46 @@ This function is called when drag process is starting up with the initial event 
 
 Default: `(e) => ('button' in e && e.button > 0 ? false : true)`
 
+### cancelOnVisibilityChange
+
+```ts
+type cancelOnVisibilityChange = boolean;
+```
+
+Cancel the drag when the document becomes hidden (e.g. user switches tabs).
+
+Default: `true`
+
+### cancelOnEscape
+
+```ts
+type cancelOnEscape = boolean;
+```
+
+Cancel the drag when the Escape key is pressed.
+
+Default: `true`
+
+### preventNativeDrag
+
+```ts
+type preventNativeDrag = boolean;
+```
+
+Prevent the browser's native HTML5 drag behavior (e.g. for images and links) by calling `preventDefault()` on the window's `dragstart` event when a pointer interaction starts. This lets you avoid setting `draggable="false"` on individual elements.
+
+Default: `true`
+
+### preventContextMenu
+
+```ts
+type preventContextMenu = boolean;
+```
+
+Prevent the browser's context menu (right-click menu) from appearing during an active drag by calling `preventDefault()` on the window's `contextmenu` event. Useful to avoid jarring UX when the user right-clicks while dragging.
+
+Default: `false`
+
 ## Properties
 
 ### element
@@ -191,6 +231,34 @@ Forcibly cancel the sensor's current drag process. The purpose of this method is
 pointerSensor.cancel();
 ```
 
+### preventClickOnEnd
+
+```ts
+type preventClickOnEnd = () => void;
+```
+
+Prevents the next click event from propagating and performing its default action. This is useful for blocking clicks after a drag ends to avoid triggering click handlers on draggable elements (e.g., links, buttons).
+
+The blocker automatically removes itself after blocking a click or when a new pointer interaction starts on this sensor.
+
+**Features:**
+
+- Only blocks native browser-generated clicks (`e.isTrusted`). Programmatic clicks (e.g., `element.click()`) are not blocked.
+- Uses both `preventDefault()` and `stopPropagation()` in the capture phase.
+- Self-cleaning: no arbitrary timeouts needed.
+
+> [!NOTE]
+> This method is typically called automatically by [`Draggable`](/draggable) when the [`preventClickOnEnd`](/draggable#preventclickonend) setting is enabled (which is the default). You usually don't need to call this manually unless you're using PointerSensor without Draggable.
+
+**Example**
+
+```ts
+// Manual usage (rare - usually handled by Draggable)
+pointerSensor.on('end', () => {
+  pointerSensor.preventClickOnEnd();
+});
+```
+
 ### destroy
 
 ```ts
@@ -283,6 +351,10 @@ interface PointerSensorSettings {
   listenerOptions: { capture?: boolean; passive?: boolean };
   sourceEvents: 'pointer' | 'touch' | 'mouse' | 'auto';
   startPredicate: (e: PointerEvent | TouchEvent | MouseEvent) => boolean;
+  cancelOnVisibilityChange?: boolean;
+  cancelOnEscape?: boolean;
+  preventNativeDrag?: boolean;
+  preventContextMenu?: boolean;
 }
 ```
 

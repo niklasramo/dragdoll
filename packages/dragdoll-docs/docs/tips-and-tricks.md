@@ -6,7 +6,76 @@ DragDoll is designed to work only in a browser environment, but it can be _impor
 
 ## Handling Natively Draggable Elements
 
-Some elements, such as images and links, are natively draggable in the browser. This behavior might interfere with the custom dragging functionality you want to implement with DragDoll. To prevent this, you can use the [`draggable`](https://developer.mozilla.org/en-US/Web/HTML/Global_attributes/draggable) attribute and set `draggable="false"` on the elements where you want to disable native dragging.
+Image (`<img>`) and anchor (`<a>`) elements are natively draggable in the browser, meaning that their [`draggable`](https://developer.mozilla.org/en-US/Web/HTML/Global_attributes/draggable) attribute is set to `true` by default. This behavior _will_ interfere with any custom dragging behavior.
+
+PointerSensor handles this automatically via the [`preventNativeDrag`](/pointer-sensor#preventnativedrag) setting, which is **enabled by default**. It prevents native drag by calling `preventDefault()` on the window's `dragstart` event when a pointer interaction starts.
+
+**Alternative:** If you prefer to use the HTML attribute instead, set `preventNativeDrag: false` on the PointerSensor and add `draggable="false"` to the image and link elements that use it.
+
+## Dragging clickable elements
+
+When dragging an anchor (`<a>`) element or any other element that is clickable (e.g. has a click handler), a click event would normally fire after the drag ends, triggering unintended navigation or actions.
+
+DragDoll handles this automatically via the [`preventClickOnEnd`](/draggable#preventclickonend) setting, which is **enabled by default**. When a drag ends, the next click event on the sensor element is blocked using both `preventDefault()` and `stopPropagation()` in the capture phase.
+
+**Key features:**
+
+- **Event-driven cleanup**: The click blocker removes itself immediately after blocking a click, or when a new pointer interaction starts. No arbitrary timeouts.
+- **Programmatic clicks allowed**: Only native browser-generated clicks (`e.isTrusted`) are blocked. Programmatic clicks (e.g., from testing frameworks) still work.
+- **Works with start thresholds**: When using a [start threshold](/examples#draggable-start-threshold), clicking without exceeding the threshold works normally, while dragging blocks the subsequent click.
+
+**Disabling click prevention:**
+
+If you need clicks to fire after drag (rare), you can disable this behavior:
+
+```ts
+new Draggable([pointerSensor], {
+  elements: () => [element],
+  preventClickOnEnd: false,
+});
+```
+
+## Text selection during dragging
+
+DragDoll prevents text selection during drag by default via the [`preventTextSelection`](/draggable#preventtextselection) setting (enabled by default). When a drag starts, it clears any existing selection and listens to `selectionchange` during drag to clear any new selection. This works with iframes by using the dragged element's owner document.
+
+**Disabling text selection prevention:**
+
+```ts
+new Draggable([pointerSensor], {
+  elements: () => [element],
+  preventTextSelection: false,
+});
+```
+
+**Alternatives using CSS:**
+
+You can use the CSS property [`user-select: none`](https://developer.mozilla.org/en-US/docs/Web/CSS/user-select) on the draggable element to prevent selection visually. Note that CSS alone does not clear existing selection when a drag starts — it only prevents new selection. Apply it to the draggable element, or to `document.body` if you want to disable selection across the whole page.
+
+**Alternative manual approach:**
+
+If you disable `preventTextSelection` but still want to prevent selection for specific cases (e.g. only when using PointerSensor), you can use the [`start`](/draggable#start) and [`end`](/draggable#end) events:
+
+```ts
+import { PointerSensor } from 'dragdoll';
+
+let pointerSensorDragCounter = 0;
+
+draggable.on('start', (drag) => {
+  if (drag.sensor instanceof PointerSensor) {
+    if (++pointerSensorDragCounter === 1) {
+      document.body.style.userSelect = 'none';
+    }
+  }
+});
+draggable.on('end', (drag) => {
+  if (drag.sensor instanceof PointerSensor) {
+    if (--pointerSensorDragCounter <= 0) {
+      document.body.style.userSelect = '';
+    }
+  }
+});
+```
 
 ## Dragging on Touch Devices
 

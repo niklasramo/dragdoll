@@ -312,9 +312,9 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
       ];
 
       // Check if the next move keys are equal to the current ones.
-      const areMoveKeysEqual = [...this._moveKeys].every(
-        (key, index) => nextMoveKeys[index] === key,
-      );
+      const areMoveKeysEqual =
+        this._moveKeys.size === nextMoveKeys.length &&
+        [...this._moveKeys].every((key, index) => nextMoveKeys[index] === key);
 
       // Update move keys if needed.
       if (!areMoveKeysEqual) {
