@@ -20,7 +20,14 @@ export default () => {
         y: 0,
       });
 
-      expect(s.drag).toStrictEqual({ x: 0, y: 0 });
+      expect(s.drag).toStrictEqual({
+        startX: 0,
+        startY: 0,
+        x: 0,
+        y: 0,
+        deltaX: 0,
+        deltaY: 0,
+      });
 
       s.destroy();
     });

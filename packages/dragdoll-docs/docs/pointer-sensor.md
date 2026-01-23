@@ -108,7 +108,11 @@ The observed element or window. Read-only.
 type drag = PointerSensorDragData | null;
 ```
 
-Current drag data or `null` when drag is inactive. The drag data follows the [`PointerSensorDragData`](#pointersensordragdata) interface. Read-only.
+Current drag data or `null` when drag is inactive. The drag data follows the
+[`PointerSensorDragData`](#pointersensordragdata) interface. Read-only.
+
+`deltaX`/`deltaY` represent the difference between the previous and current
+position, not the start and current position.
 
 ### isDestroyed
 
@@ -259,8 +263,12 @@ import type { PointerSensorDragData } from 'dragdoll/sensors/pointer';
 type PointerSensorDragData = {
   readonly pointerId: number;
   readonly pointerType: 'mouse' | 'pen' | 'touch';
+  readonly startX: number;
+  readonly startY: number;
   readonly x: number;
   readonly y: number;
+  readonly deltaX: number;
+  readonly deltaY: number;
 };
 ```
 
@@ -287,8 +295,12 @@ import type { PointerSensorStartEvent } from 'dragdoll/sensors/pointer';
 // Interface
 interface PointerSensorStartEvent {
   type: 'start';
+  startX: number;
+  startY: number;
   x: number;
   y: number;
+  deltaX: number;
+  deltaY: number;
   pointerId: number;
   pointerType: 'mouse' | 'pen' | 'touch';
   srcEvent: PointerEvent | TouchEvent | MouseEvent;
@@ -305,8 +317,12 @@ import type { PointerSensorMoveEvent } from 'dragdoll/sensors/pointer';
 // Interface
 interface PointerSensorMoveEvent {
   type: 'move';
+  startX: number;
+  startY: number;
   x: number;
   y: number;
+  deltaX: number;
+  deltaY: number;
   pointerId: number;
   pointerType: 'mouse' | 'pen' | 'touch';
   srcEvent: PointerEvent | TouchEvent | MouseEvent;
@@ -323,8 +339,12 @@ import type { PointerSensorCancelEvent } from 'dragdoll/sensors/pointer';
 // Interface
 interface PointerSensorCancelEvent {
   type: 'cancel';
+  startX: number;
+  startY: number;
   x: number;
   y: number;
+  deltaX: number;
+  deltaY: number;
   pointerId: number;
   pointerType: 'mouse' | 'pen' | 'touch';
   srcEvent: PointerEvent | TouchEvent | MouseEvent | null;
@@ -341,8 +361,12 @@ import type { PointerSensorEndEvent } from 'dragdoll/sensors/pointer';
 // Interface
 interface PointerSensorEndEvent {
   type: 'end';
+  startX: number;
+  startY: number;
   x: number;
   y: number;
+  deltaX: number;
+  deltaY: number;
   pointerId: number;
   pointerType: 'mouse' | 'pen' | 'touch';
   srcEvent: PointerEvent | TouchEvent | MouseEvent | null;

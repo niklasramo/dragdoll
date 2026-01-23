@@ -38,15 +38,20 @@ export default () => {
         },
       );
 
-      expect(endEvent).toStrictEqual({
+      const { srcEvent, ...restOfEndEvent } = endEvent!;
+      expect(restOfEndEvent).toStrictEqual({
         type: 'end',
-        srcEvent: sourceEvent,
         target: el,
         pointerId: -1,
         pointerType: 'mouse',
+        startX: 1,
+        startY: 1,
         x: 2,
         y: 2,
+        deltaX: 0,
+        deltaY: 0,
       });
+      expect(srcEvent).toBe(sourceEvent);
 
       s.destroy();
       el.remove();
@@ -83,15 +88,20 @@ export default () => {
         },
       );
 
-      expect(endEvent).toStrictEqual({
+      const { srcEvent, ...restOfEndEvent } = endEvent!;
+      expect(restOfEndEvent).toStrictEqual({
         type: 'end',
-        srcEvent: sourceEvent,
         target: el,
         pointerId: sourceEvent.pointerId,
         pointerType: sourceEvent.pointerType,
+        startX: 1,
+        startY: 1,
         x: 2,
         y: 2,
+        deltaX: 0,
+        deltaY: 0,
       });
+      expect(srcEvent).toBe(sourceEvent);
 
       s.destroy();
       el.remove();
@@ -128,15 +138,20 @@ export default () => {
         },
       );
 
-      expect(endEvent).toStrictEqual({
+      const { srcEvent, ...restOfEndEvent } = endEvent!;
+      expect(restOfEndEvent).toStrictEqual({
         type: 'end',
-        srcEvent: sourceEvent,
         target: el,
         pointerId: sourceEvent.changedTouches[0].identifier,
         pointerType: 'touch',
+        startX: 1,
+        startY: 1,
         x: 2,
         y: 2,
+        deltaX: 0,
+        deltaY: 0,
       });
+      expect(srcEvent).toBe(sourceEvent);
 
       s.destroy();
       el.remove();

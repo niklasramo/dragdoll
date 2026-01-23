@@ -12,8 +12,12 @@ export default () => {
       const s = new KeyboardSensor(el);
       const cancelEvent = {
         type: 'cancel',
+        startX: 0,
+        startY: 0,
         x: 0,
         y: 0,
+        deltaX: 0,
+        deltaY: 0,
         srcEvent: new KeyboardEvent('keydown', { key: 'Escape' }),
       } as const;
 

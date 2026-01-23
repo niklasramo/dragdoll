@@ -1,13 +1,14 @@
 import type { Point, Writeable } from '../types.js';
-import { BaseSensor } from './base-sensor.js';
-import type {
-  Sensor,
-  SensorCancelEvent,
-  SensorDestroyEvent,
-  SensorEndEvent,
-  SensorMoveEvent,
-  SensorStartEvent,
-} from './sensor.js';
+import {
+  BaseSensor,
+  BaseSensorCancelEvent,
+  BaseSensorDataArg,
+  BaseSensorDestroyEvent,
+  BaseSensorEndEvent,
+  BaseSensorMoveEvent,
+  BaseSensorStartEvent,
+} from './base-sensor.js';
+import type { Sensor } from './sensor.js';
 import { SensorEventType } from './sensor.js';
 
 export type KeyboardSensorPredicate<E extends KeyboardSensorEvents = KeyboardSensorEvents> = (
@@ -25,23 +26,23 @@ export interface KeyboardSensorSettings<E extends KeyboardSensorEvents = Keyboar
   endPredicate: KeyboardSensorPredicate<E>;
 }
 
-export interface KeyboardSensorStartEvent extends SensorStartEvent {
+export interface KeyboardSensorStartEvent extends BaseSensorStartEvent {
   srcEvent: KeyboardEvent;
 }
 
-export interface KeyboardSensorMoveEvent extends SensorMoveEvent {
+export interface KeyboardSensorMoveEvent extends BaseSensorMoveEvent {
   srcEvent: KeyboardEvent;
 }
 
-export interface KeyboardSensorCancelEvent extends SensorCancelEvent {
+export interface KeyboardSensorCancelEvent extends BaseSensorCancelEvent {
   srcEvent?: KeyboardEvent;
 }
 
-export interface KeyboardSensorEndEvent extends SensorEndEvent {
+export interface KeyboardSensorEndEvent extends BaseSensorEndEvent {
   srcEvent: KeyboardEvent;
 }
 
-export interface KeyboardSensorDestroyEvent extends SensorDestroyEvent {}
+export interface KeyboardSensorDestroyEvent extends BaseSensorDestroyEvent {}
 
 export interface KeyboardSensorEvents {
   start: KeyboardSensorStartEvent;
@@ -193,7 +194,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
           x: startPosition.x,
           y: startPosition.y,
           srcEvent: e,
-        });
+        } as BaseSensorDataArg<E['start']>);
       }
       return;
     }
@@ -207,7 +208,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
         x: cancelPosition.x,
         y: cancelPosition.y,
         srcEvent: e,
-      });
+      } as BaseSensorDataArg<E['cancel']>);
       return;
     }
 
@@ -220,7 +221,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
         x: endPosition.x,
         y: endPosition.y,
         srcEvent: e,
-      });
+      } as BaseSensorDataArg<E['end']>);
       return;
     }
 
@@ -233,7 +234,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
         x: movePosition.x,
         y: movePosition.y,
         srcEvent: e,
-      });
+      } as BaseSensorDataArg<E['move']>);
       return;
     }
   }

@@ -27,9 +27,22 @@ export default () => {
       const cancelArgs = { type: 'cancel', x: 5, y: 6 } as const;
       let emitCount = 0;
       s.on('cancel', (data) => {
-        expect(s.drag).toStrictEqual({ x: data.x, y: data.y });
+        expect(s.drag).toStrictEqual({
+          startX: data.startX,
+          startY: data.startY,
+          x: data.x,
+          y: data.y,
+          deltaX: data.deltaX,
+          deltaY: data.deltaY,
+        });
         expect(s.isDestroyed).toBe(false);
-        expect(data).toStrictEqual(cancelArgs);
+        expect(data).toStrictEqual({
+          ...cancelArgs,
+          startX: 1,
+          startY: 2,
+          deltaX: 4,
+          deltaY: 4,
+        });
         ++emitCount;
       });
       s['_start']({ type: 'start', x: 1, y: 2 });

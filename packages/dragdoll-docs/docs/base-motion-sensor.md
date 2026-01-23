@@ -194,31 +194,31 @@ baseMotionSensor.off('start', id);
 
 Emitted when the sensor starts dragging.
 
-Payload follows the [`SensorStartEvent`](/sensor#sensorstartevent) interface.
+Payload follows the [`BaseSensorStartEvent`](/base-sensor#basesensorstartevent) interface.
 
 ### move
 
 Emitted when the sensor is moved during the drag.
 
-Payload follows the [`SensorMoveEvent`](/sensor#sensormoveevent) interface.
+Payload follows the [`BaseSensorMoveEvent`](/base-sensor#basesensormoveevent) interface.
 
 ### cancel
 
 Emitted when the drag is canceled.
 
-Payload follows the [`SensorCancelEvent`](/sensor#sensorcancelevent) interface.
+Payload follows the [`BaseSensorCancelEvent`](/base-sensor#basesensorcancelevent) interface.
 
 ### end
 
 Emitted when the drag ends without being canceled.
 
-Payload follows the [`SensorEndEvent`](/sensor#sensorendevent) interface.
+Payload follows the [`BaseSensorEndEvent`](/base-sensor#basesensorendevent) interface.
 
 ### destroy
 
 Emitted when the sensor is destroyed.
 
-Payload follows the [`SensorDestroyEvent`](/sensor#sensordestroyevent) interface.
+Payload follows the [`BaseSensorDestroyEvent`](/base-sensor#basesensordestroyevent) interface.
 
 ### tick
 
@@ -249,7 +249,7 @@ interface BaseMotionSensorTickEvent {
 import type { BaseMotionSensorEvents } from 'dragdoll/sensors/base-motion';
 
 // Interface
-interface BaseMotionSensorEvents extends SensorEvents {
+interface BaseMotionSensorEvents extends BaseSensorEvents {
   tick: BaseMotionSensorTickEvent;
 }
 ```
@@ -262,8 +262,12 @@ import type { BaseMotionSensorDragData } from 'dragdoll/sensors/base-motion';
 
 // Interface
 interface BaseMotionSensorDragData {
+  readonly startX: number;
+  readonly startY: number;
   readonly x: number;
   readonly y: number;
+  readonly deltaX: number;
+  readonly deltaY: number;
   readonly time: number;
   readonly deltaTime: number;
 }

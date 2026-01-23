@@ -213,6 +213,10 @@ keyboardSensor.updateSettings({
 
 ## Events
 
+Keyboard sensor events include `startX`, `startY`, `deltaX`, and `deltaY`.
+`deltaX`/`deltaY` represent the difference between the previous and current
+position, not the start and current position.
+
 ### start
 
 Emitted when the sensor starts dragging.
@@ -299,8 +303,12 @@ import type { KeyboardSensorStartEvent } from 'dragdoll/sensors/keyboard';
 // Interface
 interface KeyboardSensorStartEvent {
   type: 'start';
+  startX: number;
+  startY: number;
   x: number;
   y: number;
+  deltaX: number;
+  deltaY: number;
   srcEvent: KeyboardEvent;
 }
 ```
@@ -314,8 +322,12 @@ import type { KeyboardSensorMoveEvent } from 'dragdoll/sensors/keyboard';
 // Interface
 interface KeyboardSensorMoveEvent {
   type: 'move';
+  startX: number;
+  startY: number;
   x: number;
   y: number;
+  deltaX: number;
+  deltaY: number;
   srcEvent: KeyboardEvent;
 }
 ```
@@ -329,8 +341,12 @@ import type { KeyboardSensorCancelEvent } from 'dragdoll/sensors/keyboard';
 // Interface
 interface KeyboardSensorCancelEvent {
   type: 'cancel';
+  startX: number;
+  startY: number;
   x: number;
   y: number;
+  deltaX: number;
+  deltaY: number;
   srcEvent?: KeyboardEvent;
 }
 ```
@@ -344,8 +360,12 @@ import type { KeyboardSensorEndEvent } from 'dragdoll/sensors/keyboard';
 // Interface
 interface KeyboardSensorEndEvent {
   type: 'end';
+  startX: number;
+  startY: number;
   x: number;
   y: number;
+  deltaX: number;
+  deltaY: number;
   srcEvent: KeyboardEvent;
 }
 ```

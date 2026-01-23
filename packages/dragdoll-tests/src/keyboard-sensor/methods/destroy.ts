@@ -42,8 +42,12 @@ export default () => {
           expect(s.isDestroyed).toBe(true);
           expect(data).toStrictEqual({
             type: 'cancel',
+            startX: s.drag!.startX,
+            startY: s.drag!.startY,
             x: s.drag!.x,
             y: s.drag!.y,
+            deltaX: s.drag!.deltaX,
+            deltaY: s.drag!.deltaY,
           });
           events.push(data.type);
         });

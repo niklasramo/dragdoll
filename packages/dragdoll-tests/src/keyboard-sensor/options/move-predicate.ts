@@ -25,17 +25,37 @@ export default () => {
       // Make sure the drag does not move if the predicate returns null.
       returnValue = null;
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-      expect(s.drag).toStrictEqual({ x: 0, y: 0 });
+      expect(s.drag).toStrictEqual({
+        startX: 0,
+        startY: 0,
+        x: 0,
+        y: 0,
+        deltaX: 0,
+        deltaY: 0,
+      });
 
       // Make sure the drag does not move if the predicate returns undefined.
       returnValue = undefined;
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-      expect(s.drag).toStrictEqual({ x: 0, y: 0 });
+      expect(s.drag).toStrictEqual({
+        startX: 0,
+        startY: 0,
+        x: 0,
+        y: 0,
+        deltaX: 0,
+        deltaY: 0,
+      });
 
       // Make sure the drag moves if the predicate returns a point.
       returnValue = { x: 1, y: 1 };
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-      expect(s.drag).toStrictEqual(returnValue);
+      expect(s.drag).toStrictEqual({
+        startX: 0,
+        startY: 0,
+        ...returnValue,
+        deltaX: returnValue.x,
+        deltaY: returnValue.y,
+      });
 
       el.remove();
       s.destroy();
@@ -53,16 +73,44 @@ export default () => {
 
         switch (key) {
           case 'ArrowLeft':
-            expect(s.drag).toStrictEqual({ x: -1, y: 0 });
+            expect(s.drag).toStrictEqual({
+              startX: 0,
+              startY: 0,
+              x: -1,
+              y: 0,
+              deltaX: -1,
+              deltaY: 0,
+            });
             break;
           case 'ArrowRight':
-            expect(s.drag).toStrictEqual({ x: 1, y: 0 });
+            expect(s.drag).toStrictEqual({
+              startX: 0,
+              startY: 0,
+              x: 1,
+              y: 0,
+              deltaX: 1,
+              deltaY: 0,
+            });
             break;
           case 'ArrowUp':
-            expect(s.drag).toStrictEqual({ x: 0, y: -1 });
+            expect(s.drag).toStrictEqual({
+              startX: 0,
+              startY: 0,
+              x: 0,
+              y: -1,
+              deltaX: 0,
+              deltaY: -1,
+            });
             break;
           case 'ArrowDown':
-            expect(s.drag).toStrictEqual({ x: 0, y: 1 });
+            expect(s.drag).toStrictEqual({
+              startX: 0,
+              startY: 0,
+              x: 0,
+              y: 1,
+              deltaX: 0,
+              deltaY: 1,
+            });
             break;
         }
 

@@ -7,14 +7,13 @@ import { getPointerType } from '../utils/get-pointer-type.js';
 import { parseListenerOptions } from '../utils/parse-listener-options.js';
 import { parseSourceEvents } from '../utils/parse-source-events.js';
 import type {
-  Sensor,
-  SensorCancelEvent,
-  SensorDestroyEvent,
-  SensorEndEvent,
-  SensorEventListenerId,
-  SensorMoveEvent,
-  SensorStartEvent,
-} from './sensor.js';
+  BaseSensorCancelEvent,
+  BaseSensorDestroyEvent,
+  BaseSensorEndEvent,
+  BaseSensorMoveEvent,
+  BaseSensorStartEvent,
+} from './base-sensor.js';
+import type { Sensor, SensorEventListenerId } from './sensor.js';
 import { SensorEventType } from './sensor.js';
 
 const POINTER_EVENTS = {
@@ -55,8 +54,12 @@ export const PointerSensorDefaultSettings: PointerSensorSettings = {
 export type PointerSensorDragData = {
   readonly pointerId: number;
   readonly pointerType: PointerType;
+  readonly startX: number;
+  readonly startY: number;
   readonly x: number;
   readonly y: number;
+  readonly deltaX: number;
+  readonly deltaY: number;
 };
 
 export interface PointerSensorSettings {
@@ -65,35 +68,35 @@ export interface PointerSensorSettings {
   startPredicate: (e: PointerSensorSourceEvent) => boolean;
 }
 
-export interface PointerSensorStartEvent extends SensorStartEvent {
+export interface PointerSensorStartEvent extends BaseSensorStartEvent {
   pointerId: number;
   pointerType: PointerType;
   srcEvent: PointerSensorSourceEvent;
   target: EventTarget | null;
 }
 
-export interface PointerSensorMoveEvent extends SensorMoveEvent {
+export interface PointerSensorMoveEvent extends BaseSensorMoveEvent {
   pointerId: number;
   pointerType: PointerType;
   srcEvent: PointerSensorSourceEvent;
   target: EventTarget | null;
 }
 
-export interface PointerSensorCancelEvent extends SensorCancelEvent {
+export interface PointerSensorCancelEvent extends BaseSensorCancelEvent {
   pointerId: number;
   pointerType: PointerType;
   srcEvent: PointerSensorSourceEvent | null;
   target: EventTarget | null;
 }
 
-export interface PointerSensorEndEvent extends SensorEndEvent {
+export interface PointerSensorEndEvent extends BaseSensorEndEvent {
   pointerId: number;
   pointerType: PointerType;
   srcEvent: PointerSensorSourceEvent | null;
   target: EventTarget | null;
 }
 
-export interface PointerSensorDestroyEvent extends SensorDestroyEvent {}
+export interface PointerSensorDestroyEvent extends BaseSensorDestroyEvent {}
 
 export interface PointerSensorEvents {
   start: PointerSensorStartEvent;
@@ -210,8 +213,12 @@ export class PointerSensor<
     const dragData: PointerSensorDragData = {
       pointerId,
       pointerType: getPointerType(e),
+      startX: pointerEventData.clientX,
+      startY: pointerEventData.clientY,
       x: pointerEventData.clientX,
       y: pointerEventData.clientY,
+      deltaX: 0,
+      deltaY: 0,
     };
 
     // Set drag data.
@@ -242,6 +249,8 @@ export class PointerSensor<
     const pointerEventData = this._getTrackedPointerEventData(e);
     if (!pointerEventData) return;
 
+    (this.drag.deltaX as Writeable<number>) = pointerEventData.clientX - this.drag.x;
+    (this.drag.deltaY as Writeable<number>) = pointerEventData.clientY - this.drag.y;
     (this.drag.x as Writeable<number>) = pointerEventData.clientX;
     (this.drag.y as Writeable<number>) = pointerEventData.clientY;
 
@@ -264,6 +273,8 @@ export class PointerSensor<
     const pointerEventData = this._getTrackedPointerEventData(e);
     if (!pointerEventData) return;
 
+    (this.drag.deltaX as Writeable<number>) = pointerEventData.clientX - this.drag.x;
+    (this.drag.deltaY as Writeable<number>) = pointerEventData.clientY - this.drag.y;
     (this.drag.x as Writeable<number>) = pointerEventData.clientX;
     (this.drag.y as Writeable<number>) = pointerEventData.clientY;
 
@@ -288,6 +299,8 @@ export class PointerSensor<
     const pointerEventData = this._getTrackedPointerEventData(e);
     if (!pointerEventData) return;
 
+    (this.drag.deltaX as Writeable<number>) = pointerEventData.clientX - this.drag.x;
+    (this.drag.deltaY as Writeable<number>) = pointerEventData.clientY - this.drag.y;
     (this.drag.x as Writeable<number>) = pointerEventData.clientX;
     (this.drag.y as Writeable<number>) = pointerEventData.clientY;
 

@@ -31,7 +31,14 @@ export default () => {
       // Make sure the drag starts if the predicate returns a point.
       returnValue = { x: 10, y: 20 };
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-      expect(s.drag).toStrictEqual({ x: 10, y: 20 });
+      expect(s.drag).toStrictEqual({
+        startX: 10,
+        startY: 20,
+        x: 10,
+        y: 20,
+        deltaX: 0,
+        deltaY: 0,
+      });
 
       el.remove();
       s.destroy();
@@ -57,7 +64,14 @@ export default () => {
         // Drag should start if the sensor element is focused.
         focusElement(el);
         document.dispatchEvent(srcEvent);
-        expect(s.drag).toStrictEqual({ x: 0, y: 0 });
+        expect(s.drag).toStrictEqual({
+          startX: 0,
+          startY: 0,
+          x: 0,
+          y: 0,
+          deltaX: 0,
+          deltaY: 0,
+        });
 
         s.destroy();
         el.remove();
