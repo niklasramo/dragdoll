@@ -49,6 +49,10 @@ export const PointerSensorDefaultSettings: PointerSensorSettings = {
   listenerOptions: {},
   sourceEvents: 'auto',
   startPredicate: (e) => ('button' in e && e.button > 0 ? false : true),
+  cancelOnVisibilityChange: true,
+  cancelOnEscape: true,
+  preventNativeDrag: true,
+  preventContextMenu: false,
 } as const;
 
 export type PointerSensorDragData = {
@@ -66,6 +70,10 @@ export interface PointerSensorSettings {
   listenerOptions: ListenerOptions;
   sourceEvents: keyof typeof SOURCE_EVENTS | 'auto';
   startPredicate: (e: PointerSensorSourceEvent) => boolean;
+  cancelOnVisibilityChange?: boolean;
+  cancelOnEscape?: boolean;
+  preventNativeDrag?: boolean;
+  preventContextMenu?: boolean;
 }
 
 export interface PointerSensorStartEvent extends BaseSensorStartEvent {
@@ -151,11 +159,43 @@ export class PointerSensor<
    */
   protected _emitter: Emitter<Events>;
 
+  /**
+   * Cleanup function for the click blocker, null if not active.
+   */
+  protected _removeClickBlocker: (() => void) | null = null;
+
+  protected _cancelOnVisibilityChange: boolean;
+
+  protected _cancelOnEscape: boolean;
+
+  protected _preventNativeDrag: boolean;
+
+  protected _preventContextMenu: boolean;
+
+  protected _preventNativeDragHandler = (e: Event) => e.preventDefault();
+
+  protected _preventContextMenuHandler = (e: Event) => e.preventDefault();
+
+  protected _visibilityChangeHandler = () => {
+    this.cancel();
+  };
+
+  protected _onKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && this.drag) {
+      e.preventDefault();
+      this.cancel();
+    }
+  };
+
   constructor(element: Element | Window, options: Partial<PointerSensorSettings> = {}) {
     const {
       listenerOptions = PointerSensorDefaultSettings.listenerOptions,
       sourceEvents = PointerSensorDefaultSettings.sourceEvents,
       startPredicate = PointerSensorDefaultSettings.startPredicate,
+      cancelOnVisibilityChange = PointerSensorDefaultSettings.cancelOnVisibilityChange,
+      cancelOnEscape = PointerSensorDefaultSettings.cancelOnEscape,
+      preventNativeDrag = PointerSensorDefaultSettings.preventNativeDrag,
+      preventContextMenu = PointerSensorDefaultSettings.preventContextMenu,
     } = options;
 
     this.element = element;
@@ -163,6 +203,10 @@ export class PointerSensor<
     this.isDestroyed = false;
 
     this._areWindowListenersBound = false;
+    this._cancelOnVisibilityChange = cancelOnVisibilityChange ?? true;
+    this._cancelOnEscape = cancelOnEscape ?? true;
+    this._preventNativeDrag = preventNativeDrag ?? true;
+    this._preventContextMenu = preventContextMenu ?? false;
     this._startPredicate = startPredicate;
     this._listenerOptions = parseListenerOptions(listenerOptions);
     this._sourceEvents = parseSourceEvents(sourceEvents);
@@ -179,6 +223,10 @@ export class PointerSensor<
       this._onStart as EventListener,
       this._listenerOptions,
     );
+
+    if (cancelOnVisibilityChange) {
+      document.addEventListener('visibilitychange', this._visibilityChangeHandler);
+    }
   }
 
   /**
@@ -196,6 +244,9 @@ export class PointerSensor<
    * Listener for start event.
    */
   protected _onStart(e: PointerSensorSourceEvent) {
+    // Clear any existing click blocker from a previous interaction.
+    this._removeClickBlocker?.();
+
     if (this.isDestroyed || this.drag) return;
 
     // Make sure start predicate is fulfilled.
@@ -327,6 +378,15 @@ export class PointerSensor<
     if (cancel) {
       window.addEventListener(cancel, this._onCancel, this._listenerOptions);
     }
+    if (this._cancelOnEscape) {
+      document.addEventListener('keydown', this._onKeyDown);
+    }
+    if (this._preventNativeDrag) {
+      window.addEventListener('dragstart', this._preventNativeDragHandler);
+    }
+    if (this._preventContextMenu) {
+      window.addEventListener('contextmenu', this._preventContextMenuHandler);
+    }
     this._areWindowListenersBound = true;
   }
 
@@ -340,6 +400,15 @@ export class PointerSensor<
       window.removeEventListener(end, this._onEnd, this._listenerOptions);
       if (cancel) {
         window.removeEventListener(cancel, this._onCancel, this._listenerOptions);
+      }
+      if (this._cancelOnEscape) {
+        document.removeEventListener('keydown', this._onKeyDown);
+      }
+      if (this._preventNativeDrag) {
+        window.removeEventListener('dragstart', this._preventNativeDragHandler);
+      }
+      if (this._preventContextMenu) {
+        window.removeEventListener('contextmenu', this._preventContextMenuHandler);
       }
       this._areWindowListenersBound = false;
     }
@@ -401,7 +470,15 @@ export class PointerSensor<
   updateSettings(options: Partial<PointerSensorSettings>) {
     if (this.isDestroyed) return;
 
-    const { listenerOptions, sourceEvents, startPredicate } = options;
+    const {
+      listenerOptions,
+      sourceEvents,
+      startPredicate,
+      cancelOnVisibilityChange,
+      cancelOnEscape,
+      preventNativeDrag,
+      preventContextMenu,
+    } = options;
     const nextSourceEvents = parseSourceEvents(sourceEvents);
     const nextListenerOptions = parseListenerOptions(listenerOptions);
 
@@ -410,11 +487,56 @@ export class PointerSensor<
       this._startPredicate = startPredicate;
     }
 
+    if (
+      cancelOnVisibilityChange !== undefined &&
+      this._cancelOnVisibilityChange !== cancelOnVisibilityChange
+    ) {
+      this._cancelOnVisibilityChange = cancelOnVisibilityChange;
+      if (cancelOnVisibilityChange) {
+        document.addEventListener('visibilitychange', this._visibilityChangeHandler);
+      } else {
+        document.removeEventListener('visibilitychange', this._visibilityChangeHandler);
+      }
+    }
+
+    if (cancelOnEscape !== undefined && this._cancelOnEscape !== cancelOnEscape) {
+      this._cancelOnEscape = cancelOnEscape;
+      if (this._areWindowListenersBound) {
+        if (cancelOnEscape) {
+          document.addEventListener('keydown', this._onKeyDown);
+        } else {
+          document.removeEventListener('keydown', this._onKeyDown);
+        }
+      }
+    }
+
+    if (preventNativeDrag !== undefined && this._preventNativeDrag !== preventNativeDrag) {
+      this._preventNativeDrag = preventNativeDrag;
+      if (this._areWindowListenersBound) {
+        if (preventNativeDrag) {
+          window.addEventListener('dragstart', this._preventNativeDragHandler);
+        } else {
+          window.removeEventListener('dragstart', this._preventNativeDragHandler);
+        }
+      }
+    }
+
+    if (preventContextMenu !== undefined && this._preventContextMenu !== preventContextMenu) {
+      this._preventContextMenu = preventContextMenu;
+      if (this._areWindowListenersBound) {
+        if (preventContextMenu) {
+          window.addEventListener('contextmenu', this._preventContextMenuHandler);
+        } else {
+          window.removeEventListener('contextmenu', this._preventContextMenuHandler);
+        }
+      }
+    }
+
     // Update listener options and/or source events if needed.
     if (
       (listenerOptions &&
         (this._listenerOptions.capture !== nextListenerOptions.capture ||
-          this._listenerOptions.passive === nextListenerOptions.passive)) ||
+          this._listenerOptions.passive !== nextListenerOptions.passive)) ||
       (sourceEvents && this._sourceEvents !== nextSourceEvents)
     ) {
       // Unbind start listener.
@@ -466,6 +588,36 @@ export class PointerSensor<
   }
 
   /**
+   * Prevent the next click event from propagating and performing default action.
+   * This is useful for blocking clicks after a drag ends to avoid triggering
+   * click handlers on draggable elements (e.g., links, buttons).
+   *
+   * The blocker automatically removes itself after blocking a click or when
+   * a new pointer interaction starts on this sensor.
+   */
+  preventClickOnEnd(): void {
+    // Clean up any existing blocker first.
+    this._removeClickBlocker?.();
+
+    const blockClick = (e: Event) => {
+      // Only block native browser-generated clicks, not programmatic ones.
+      // This allows testing frameworks and accessibility tools to work.
+      if (e.isTrusted) {
+        e.preventDefault();
+        e.stopPropagation();
+        this._removeClickBlocker?.();
+      }
+    };
+
+    this.element.addEventListener('click', blockClick, { capture: true });
+
+    this._removeClickBlocker = () => {
+      this.element.removeEventListener('click', blockClick, true);
+      this._removeClickBlocker = null;
+    };
+  }
+
+  /**
    * Destroy the instance and unbind all drag event listeners.
    */
   destroy() {
@@ -473,6 +625,9 @@ export class PointerSensor<
 
     // Mark as destroyed.
     (this as Writeable<this>).isDestroyed = true;
+
+    // Clean up click blocker if present.
+    this._removeClickBlocker?.();
 
     // Cancel any ongoing drag process.
     this.cancel();
@@ -491,5 +646,9 @@ export class PointerSensor<
       this._onStart as EventListener,
       this._listenerOptions,
     );
+
+    if (this._cancelOnVisibilityChange) {
+      document.removeEventListener('visibilitychange', this._visibilityChangeHandler);
+    }
   }
 }

@@ -295,6 +295,34 @@ A callback that is called when the draggable is destroyed via [`destroy`](#destr
 
 This callback is called immediately after any `destroy` events that are added via [`on`](#on) method.
 
+### preventClickOnEnd
+
+```ts
+type preventClickOnEnd = boolean;
+```
+
+When enabled, prevents the click event from firing after a drag ends. This is useful when dragging clickable elements like anchors (`<a>`) or buttons (`<button>`) to avoid triggering unintended navigation or actions.
+
+The click is blocked by adding a capture-phase listener on the sensor element that calls both `preventDefault()` and `stopPropagation()` on the next click event. The blocker automatically removes itself after blocking a click or when a new pointer interaction starts.
+
+**Features:**
+
+- Only blocks native browser-generated clicks (`e.isTrusted`). Programmatic clicks (e.g., from testing frameworks or `element.click()`) are not blocked.
+- Works with [`PointerSensor`](/pointer-sensor) only. Other sensor types that don't generate click events are unaffected.
+- Event-driven cleanup with no arbitrary timeouts.
+
+Default is `true`.
+
+### preventTextSelection
+
+```ts
+type preventTextSelection = boolean;
+```
+
+When enabled, clears text selection on drag start and prevents new selection during drag by listening to `selectionchange` on the document. Uses the dragged element's owner document for iframe support.
+
+Default is `true`.
+
 ## Properties
 
 ### id
@@ -824,6 +852,8 @@ export interface DraggableSettings<S extends Sensor> {
   onMove?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
   onEnd?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
   onDestroy?: (draggable: Draggable<S>) => void;
+  preventClickOnEnd?: boolean;
+  preventTextSelection?: boolean;
 }
 ```
 
