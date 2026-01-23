@@ -35,19 +35,54 @@ export default () => {
 
       focusElement(el);
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-      expect(s.drag).toStrictEqual({ x: 0, y: 0 });
+      expect(s.drag).toStrictEqual({
+        startX: 0,
+        startY: 0,
+        x: 0,
+        y: 0,
+        deltaX: 0,
+        deltaY: 0,
+      });
 
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-      expect(s.drag).toStrictEqual({ x: 1, y: 0 });
+      expect(s.drag).toStrictEqual({
+        startX: 0,
+        startY: 0,
+        x: 1,
+        y: 0,
+        deltaX: 1,
+        deltaY: 0,
+      });
 
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
-      expect(s.drag).toStrictEqual({ x: 1, y: 1 });
+      expect(s.drag).toStrictEqual({
+        startX: 0,
+        startY: 0,
+        x: 1,
+        y: 1,
+        deltaX: 0,
+        deltaY: 1,
+      });
 
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
-      expect(s.drag).toStrictEqual({ x: 0, y: 1 });
+      expect(s.drag).toStrictEqual({
+        startX: 0,
+        startY: 0,
+        x: 0,
+        y: 1,
+        deltaX: -1,
+        deltaY: 0,
+      });
 
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp' }));
-      expect(s.drag).toStrictEqual({ x: 0, y: 0 });
+      expect(s.drag).toStrictEqual({
+        startX: 0,
+        startY: 0,
+        x: 0,
+        y: 0,
+        deltaX: 0,
+        deltaY: -1,
+      });
 
       s.destroy();
       el.remove();

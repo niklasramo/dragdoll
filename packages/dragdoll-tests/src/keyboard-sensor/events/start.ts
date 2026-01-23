@@ -12,8 +12,12 @@ export default () => {
       const s = new KeyboardSensor(el);
       const expectedEvent = {
         type: 'start',
+        startX: 10,
+        startY: 20,
         x: 10,
         y: 20,
+        deltaX: 0,
+        deltaY: 0,
         srcEvent: new KeyboardEvent('keydown', { key: 'Enter' }),
       };
 

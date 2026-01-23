@@ -1,5 +1,6 @@
 import type { Point, Writeable } from '../types.js';
 import { BaseMotionSensor, BaseMotionSensorEvents } from './base-motion-sensor.js';
+import type { BaseSensorDataArg } from './base-sensor.js';
 import type { Sensor } from './sensor.js';
 import { SensorEventType } from './sensor.js';
 
@@ -132,7 +133,7 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
     }
   }
 
-  protected _end(data: E['end']) {
+  protected _end(data: BaseSensorDataArg<E['end']>) {
     if (!this.drag) return;
     this._moveKeyTimestamps.clear();
     this._direction.x = 0;
@@ -140,7 +141,7 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
     super._end(data);
   }
 
-  protected _cancel(data: E['cancel']) {
+  protected _cancel(data: BaseSensorDataArg<E['cancel']>) {
     if (!this.drag) return;
     this._moveKeyTimestamps.clear();
     this._direction.x = 0;
@@ -210,7 +211,7 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
             type: SensorEventType.Start,
             x: startPosition.x,
             y: startPosition.y,
-          });
+          } as BaseSensorDataArg<E['start']>);
         }
       }
       return;
@@ -230,7 +231,7 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
         type: SensorEventType.End,
         x: this.drag.x,
         y: this.drag.y,
-      });
+      } as BaseSensorDataArg<E['end']>);
       return;
     }
 

@@ -59,7 +59,7 @@ hopSensor.on('end', (e) => console.log('end', e.x, e.y));
 ## Class
 
 ```ts
-class BaseSensor<E extends SensorEvents = SensorEvents> implements Sensor<E> {
+class BaseSensor<E extends BaseSensorEvents = BaseSensorEvents> implements Sensor<E> {
   constructor() {}
 }
 ```
@@ -70,7 +70,7 @@ The BaseSensor class is a generic that implements the [`Sensor`](/sensor) interf
 
 1. **E**
    - The type of the events that the sensor will emit.
-   - Default: [`SensorEvents`](/sensor#sensorevents).
+   - Default: [`BaseSensorEvents`](#basesensorevents).
 
 ## Properties
 
@@ -80,7 +80,11 @@ The BaseSensor class is a generic that implements the [`Sensor`](/sensor) interf
 type drag = BaseSensorDragData | null;
 ```
 
-Current drag data or `null` when drag is inactive. The drag data follows the [`BaseSensorDragData`](#basesensordragdata) interface. Read-only.
+Current drag data or `null` when drag is inactive. The drag data follows the
+[`BaseSensorDragData`](#basesensordragdata) interface. Read-only.
+
+`deltaX`/`deltaY` represent the difference between the previous and current
+position, not the start and current position.
 
 ### isDestroyed
 
@@ -237,7 +241,111 @@ import type { BaseSensorDragData } from 'dragdoll/sensors/base';
 
 // Interface
 interface BaseSensorDragData {
+  readonly startX: number;
+  readonly startY: number;
   readonly x: number;
   readonly y: number;
+  readonly deltaX: number;
+  readonly deltaY: number;
+}
+```
+
+### BaseSensorStartEvent
+
+```ts
+// Import
+import type { BaseSensorStartEvent } from 'dragdoll/sensors/base';
+
+// Interface
+interface BaseSensorStartEvent {
+  type: 'start';
+  startX: number;
+  startY: number;
+  x: number;
+  y: number;
+  deltaX: number;
+  deltaY: number;
+}
+```
+
+### BaseSensorMoveEvent
+
+```ts
+// Import
+import type { BaseSensorMoveEvent } from 'dragdoll/sensors/base';
+
+// Interface
+interface BaseSensorMoveEvent {
+  type: 'move';
+  startX: number;
+  startY: number;
+  x: number;
+  y: number;
+  deltaX: number;
+  deltaY: number;
+}
+```
+
+### BaseSensorCancelEvent
+
+```ts
+// Import
+import type { BaseSensorCancelEvent } from 'dragdoll/sensors/base';
+
+// Interface
+interface BaseSensorCancelEvent {
+  type: 'cancel';
+  startX: number;
+  startY: number;
+  x: number;
+  y: number;
+  deltaX: number;
+  deltaY: number;
+}
+```
+
+### BaseSensorEndEvent
+
+```ts
+// Import
+import type { BaseSensorEndEvent } from 'dragdoll/sensors/base';
+
+// Interface
+interface BaseSensorEndEvent {
+  type: 'end';
+  startX: number;
+  startY: number;
+  x: number;
+  y: number;
+  deltaX: number;
+  deltaY: number;
+}
+```
+
+### BaseSensorDestroyEvent
+
+```ts
+// Import
+import type { BaseSensorDestroyEvent } from 'dragdoll/sensors/base';
+
+// Interface
+interface BaseSensorDestroyEvent {
+  type: 'destroy';
+}
+```
+
+### BaseSensorEvents
+
+```ts
+// Import
+import type { BaseSensorEvents } from 'dragdoll/sensors/base';
+
+// Interface
+interface BaseSensorEvents {
+  start: BaseSensorStartEvent;
+  move: BaseSensorMoveEvent;
+  cancel: BaseSensorCancelEvent;
+  end: BaseSensorEndEvent;
+  destroy: BaseSensorDestroyEvent;
 }
 ```

@@ -48,7 +48,14 @@ export default () => {
 
         focusElement(el);
         document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-        expect(s.drag).toStrictEqual({ x: 0, y: 0 });
+        expect(s.drag).toStrictEqual({
+          startX: 0,
+          startY: 0,
+          x: 0,
+          y: 0,
+          deltaX: 0,
+          deltaY: 0,
+        });
 
         document.dispatchEvent(new KeyboardEvent('keydown', { key }));
         expect(s.drag).toBe(null);

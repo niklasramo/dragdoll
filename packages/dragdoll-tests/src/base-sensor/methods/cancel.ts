@@ -26,12 +26,23 @@ export default () => {
       const s = new BaseSensor();
       let emitCount = 0;
       s.on('cancel', (data) => {
-        expect(s.drag).toStrictEqual({ x: data.x, y: data.y });
+        expect(s.drag).toStrictEqual({
+          startX: data.startX,
+          startY: data.startY,
+          x: data.x,
+          y: data.y,
+          deltaX: data.deltaX,
+          deltaY: data.deltaY,
+        });
         expect(s.isDestroyed).toBe(false);
         expect(data).toStrictEqual({
           type: 'cancel',
+          startX: 1,
+          startY: 2,
           x: 1,
           y: 2,
+          deltaX: 0,
+          deltaY: 0,
         });
         ++emitCount;
       });

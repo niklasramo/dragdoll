@@ -9,7 +9,14 @@ export default () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
       s['_move']({ type: 'move', x: 3, y: 4 });
-      expect(s.drag).toStrictEqual({ x: 3, y: 4 });
+      expect(s.drag).toStrictEqual({
+        startX: 1,
+        startY: 2,
+        x: 3,
+        y: 4,
+        deltaX: 2,
+        deltaY: 2,
+      });
       s.destroy();
     });
 
@@ -27,9 +34,22 @@ export default () => {
       const moveArgs = { type: 'move', x: 3, y: 4 } as const;
       let emitCount = 0;
       s.on('move', (data) => {
-        expect(s.drag).toStrictEqual({ x: data.x, y: data.y });
+        expect(s.drag).toStrictEqual({
+          startX: data.startX,
+          startY: data.startY,
+          x: data.x,
+          y: data.y,
+          deltaX: data.deltaX,
+          deltaY: data.deltaY,
+        });
         expect(s.isDestroyed).toBe(false);
-        expect(data).toStrictEqual(moveArgs);
+        expect(data).toStrictEqual({
+          ...moveArgs,
+          startX: 1,
+          startY: 2,
+          deltaX: 2,
+          deltaY: 2,
+        });
         ++emitCount;
       });
       s['_start']({ type: 'start', x: 1, y: 2 });

@@ -1,8 +1,8 @@
 import { ticker, tickerPhases } from '../singletons/ticker.js';
 import type { Point, Writeable } from '../types.js';
-import type { BaseSensorDragData } from './base-sensor.js';
-import { BaseSensor } from './base-sensor.js';
-import type { Sensor, SensorEvents } from './sensor.js';
+import type { BaseSensorDataArg, BaseSensorDragData } from './base-sensor.js';
+import { BaseSensor, BaseSensorEvents } from './base-sensor.js';
+import type { Sensor } from './sensor.js';
 import { SensorEventType } from './sensor.js';
 
 export interface BaseMotionSensorTickEvent {
@@ -11,7 +11,7 @@ export interface BaseMotionSensorTickEvent {
   deltaTime: number;
 }
 
-export interface BaseMotionSensorEvents extends SensorEvents {
+export interface BaseMotionSensorEvents extends BaseSensorEvents {
   tick: BaseMotionSensorTickEvent;
 }
 
@@ -38,7 +38,7 @@ export class BaseMotionSensor<E extends BaseMotionSensorEvents = BaseMotionSenso
     this._tick = this._tick.bind(this);
   }
 
-  protected _createDragData(data: E['start']): BaseMotionSensorDragData {
+  protected _createDragData(data: BaseSensorDataArg<E['start']>): BaseMotionSensorDragData {
     return {
       ...super._createDragData(data),
       time: 0,
@@ -46,19 +46,19 @@ export class BaseMotionSensor<E extends BaseMotionSensorEvents = BaseMotionSenso
     };
   }
 
-  protected _start(data: E['start']) {
+  protected _start(data: BaseSensorDataArg<E['start']>) {
     if (this.isDestroyed || this.drag) return;
     super._start(data);
     ticker.on(tickerPhases.read, this._tick, this._tick);
   }
 
-  protected _end(data: E['end']) {
+  protected _end(data: BaseSensorDataArg<E['end']>) {
     if (!this.drag) return;
     ticker.off(tickerPhases.read, this._tick);
     super._end(data);
   }
 
-  protected _cancel(data: E['cancel']) {
+  protected _cancel(data: BaseSensorDataArg<E['cancel']>) {
     if (!this.drag) return;
     ticker.off(tickerPhases.read, this._tick);
     super._cancel(data);
@@ -96,7 +96,7 @@ export class BaseMotionSensor<E extends BaseMotionSensorEvents = BaseMotionSenso
           type: SensorEventType.Move,
           x: this.drag.x + deltaX,
           y: this.drag.y + deltaY,
-        });
+        } as Omit<E['move'], 'startX' | 'startY' | 'deltaX' | 'deltaY'>);
       }
     } else {
       (this.drag.time as Writeable<number>) = time;

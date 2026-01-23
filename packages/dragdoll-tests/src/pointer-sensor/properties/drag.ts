@@ -36,15 +36,23 @@ export default () => {
               expect(s.drag).toStrictEqual({
                 pointerId: 1,
                 pointerType: 'touch',
+                startX: 1,
+                startY: 1,
                 x: 1,
                 y: 1,
+                deltaX: 0,
+                deltaY: 0,
               });
             } else if (e.type === 'move') {
               expect(s.drag).toStrictEqual({
                 pointerId: 1,
                 pointerType: 'touch',
+                startX: 1,
+                startY: 1,
                 x: 2,
                 y: 2,
+                deltaX: 1,
+                deltaY: 1,
               });
             } else if (e.type === 'end') {
               expect(s.drag).toBe(null);
