@@ -1,6 +1,7 @@
 import { PointerSensor } from 'dragdoll/sensors/pointer';
 import { createTestElement } from '../utils/create-test-element.js';
 import { defaultSetup } from '../utils/default-setup.js';
+import { expectWithContext } from '../utils/expect-with-context.js';
 
 export default () => {
   describe('misc', () => {
@@ -10,14 +11,14 @@ export default () => {
       it('should accept document.documentElement', () => {
         const s = new PointerSensor(document.documentElement, { sourceEvents: 'mouse' });
         document.documentElement.dispatchEvent(new MouseEvent('mousedown'));
-        expect(s.drag).not.toBe(null);
+        expectWithContext(s.drag, 'drag on documentElement').not.toBe(null);
         s.destroy();
       });
 
       it('should accept document.body', () => {
         const s = new PointerSensor(document.body, { sourceEvents: 'mouse' });
         document.body.dispatchEvent(new MouseEvent('mousedown'));
-        expect(s.drag).not.toBe(null);
+        expectWithContext(s.drag, 'drag on body').not.toBe(null);
         s.destroy();
       });
 
@@ -25,9 +26,9 @@ export default () => {
         const el = createTestElement();
         const s = new PointerSensor(el, { sourceEvents: 'mouse' });
         el.dispatchEvent(new MouseEvent('mousedown'));
-        expect(s.drag).not.toBe(null);
-        el.remove();
+        expectWithContext(s.drag, 'drag on descendant').not.toBe(null);
         s.destroy();
+        el.remove();
       });
     });
   });

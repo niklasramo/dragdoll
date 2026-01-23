@@ -2,6 +2,7 @@ import { PointerSensor, type PointerSensorEndEvent } from 'dragdoll/sensors/poin
 import { createFakeDrag } from '../../utils/create-fake-drag.js';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 
 export default () => {
   describe('end', () => {
@@ -17,7 +18,7 @@ export default () => {
         if (endEvent === null) {
           endEvent = e;
         } else {
-          expect(false).toBe(true);
+          expectWithContext(false, 'end triggered multiple times').toBe(true);
         }
       });
 
@@ -39,7 +40,7 @@ export default () => {
       );
 
       const { srcEvent, ...restOfEndEvent } = endEvent!;
-      expect(restOfEndEvent).toStrictEqual({
+      expectWithContext(restOfEndEvent, 'mouseup end event data').toStrictEqual({
         type: 'end',
         target: el,
         pointerId: -1,
@@ -51,7 +52,7 @@ export default () => {
         deltaX: 0,
         deltaY: 0,
       });
-      expect(srcEvent).toBe(sourceEvent);
+      expectWithContext(srcEvent, 'mouseup srcEvent').toBe(sourceEvent);
 
       s.destroy();
       el.remove();
@@ -67,7 +68,7 @@ export default () => {
         if (endEvent === null) {
           endEvent = e;
         } else {
-          expect(false).toBe(true);
+          expectWithContext(false, 'end triggered multiple times').toBe(true);
         }
       });
 
@@ -89,7 +90,7 @@ export default () => {
       );
 
       const { srcEvent, ...restOfEndEvent } = endEvent!;
-      expect(restOfEndEvent).toStrictEqual({
+      expectWithContext(restOfEndEvent, 'pointerup end event data').toStrictEqual({
         type: 'end',
         target: el,
         pointerId: sourceEvent.pointerId,
@@ -101,7 +102,7 @@ export default () => {
         deltaX: 0,
         deltaY: 0,
       });
-      expect(srcEvent).toBe(sourceEvent);
+      expectWithContext(srcEvent, 'pointerup srcEvent').toBe(sourceEvent);
 
       s.destroy();
       el.remove();
@@ -117,7 +118,7 @@ export default () => {
         if (endEvent === null) {
           endEvent = e;
         } else {
-          expect(false).toBe(true);
+          expectWithContext(false, 'end triggered multiple times').toBe(true);
         }
       });
 
@@ -139,7 +140,7 @@ export default () => {
       );
 
       const { srcEvent, ...restOfEndEvent } = endEvent!;
-      expect(restOfEndEvent).toStrictEqual({
+      expectWithContext(restOfEndEvent, 'touchend end event data').toStrictEqual({
         type: 'end',
         target: el,
         pointerId: sourceEvent.changedTouches[0].identifier,
@@ -151,7 +152,7 @@ export default () => {
         deltaX: 0,
         deltaY: 0,
       });
-      expect(srcEvent).toBe(sourceEvent);
+      expectWithContext(srcEvent, 'touchend srcEvent').toBe(sourceEvent);
 
       s.destroy();
       el.remove();

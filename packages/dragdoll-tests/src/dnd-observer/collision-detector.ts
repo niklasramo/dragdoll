@@ -6,6 +6,7 @@ import { Droppable } from 'dragdoll/droppable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../utils/create-test-element.js';
 import { defaultSetup } from '../utils/default-setup.js';
+import { expectWithContext } from '../utils/expect-with-context.js';
 import { focusElement } from '../utils/focus-element.js';
 import { waitNextFrame } from '../utils/wait-next-frame.js';
 
@@ -60,16 +61,20 @@ export default () => {
       await waitNextFrame();
 
       // Should detect collision on start
-      expect(collisionEvents.length).toBe(1);
-      expect(collisionEvents[0].type).toBe('enter');
-      expect(collisionEvents[0].collisions.length).toBe(1);
-      expect(collisionEvents[0].collisions[0].droppableId).toBe(droppable.id);
+      expectWithContext(collisionEvents.length, 'collision events count').toBe(1);
+      expectWithContext(collisionEvents[0].type, 'event type').toBe('enter');
+      expectWithContext(collisionEvents[0].collisions.length, 'collisions count').toBe(1);
+      expectWithContext(collisionEvents[0].collisions[0].droppableId, 'droppable id').toBe(
+        droppable.id,
+      );
 
       const collisionData = collisionEvents[0].collisions[0];
-      expect(typeof collisionData).toBe('object');
-      expect(collisionData.droppableId).toBe(droppable.id);
-      expect(typeof collisionData.intersectionScore).toBe('number');
-      expect(collisionData.intersectionScore > 0).toBe(true);
+      expectWithContext(typeof collisionData, 'collision data is object').toBe('object');
+      expectWithContext(collisionData.droppableId, 'collision droppableId').toBe(droppable.id);
+      expectWithContext(typeof collisionData.intersectionScore, 'intersectionScore type').toBe(
+        'number',
+      );
+      expectWithContext(collisionData.intersectionScore > 0, 'intersectionScore > 0').toBe(true);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -130,7 +135,7 @@ export default () => {
       await waitNextFrame();
 
       // Should not detect any collisions
-      expect(collisionEvents.length).toBe(0);
+      expectWithContext(collisionEvents.length, 'no collision events').toBe(0);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -201,11 +206,11 @@ export default () => {
       await waitNextFrame();
 
       // Should have enter and leave events
-      expect(collisionEvents.length).toBe(2);
-      expect(collisionEvents[0].type).toBe('enter');
-      expect(collisionEvents[0].collisions).toBe(1);
-      expect(collisionEvents[1].type).toBe('leave');
-      expect(collisionEvents[1].collisions).toBe(0);
+      expectWithContext(collisionEvents.length, 'collision events count').toBe(2);
+      expectWithContext(collisionEvents[0].type, 'first event type').toBe('enter');
+      expectWithContext(collisionEvents[0].collisions, 'enter collisions').toBe(1);
+      expectWithContext(collisionEvents[1].type, 'second event type').toBe('leave');
+      expectWithContext(collisionEvents[1].collisions, 'leave collisions').toBe(0);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -286,12 +291,13 @@ export default () => {
       await waitNextFrame();
 
       // Should enter droppable1
-      expect(collisionEvents.length).toBe(1);
-      expect(collisionEvents[0].type).toBe('enter');
-      expect(collisionEvents[0].collisions.length).toBe(1);
-      expect(collisionEvents[0].collisions.some((c: any) => c.droppableId === droppable1.id)).toBe(
-        true,
-      );
+      expectWithContext(collisionEvents.length, 'initial collision events').toBe(1);
+      expectWithContext(collisionEvents[0].type, 'first event type').toBe('enter');
+      expectWithContext(collisionEvents[0].collisions.length, 'first collisions count').toBe(1);
+      expectWithContext(
+        collisionEvents[0].collisions.some((c: any) => c.droppableId === droppable1.id),
+        'has droppable1 collision',
+      ).toBe(true);
 
       // Move right to transition from droppable1 to droppable2
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
@@ -299,7 +305,7 @@ export default () => {
       await waitNextFrame();
 
       // Should have leave and enter events
-      expect(collisionEvents.length >= 2).toBe(true);
+      expectWithContext(collisionEvents.length >= 2, 'at least 2 events after move').toBe(true);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -360,7 +366,7 @@ export default () => {
       await waitNextFrame();
 
       // Should not detect collision due to accept criteria
-      expect(collisionEvents.length).toBe(0);
+      expectWithContext(collisionEvents.length, 'no collisions due to accept').toBe(0);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -448,9 +454,11 @@ export default () => {
       await waitNextFrame();
 
       // Custom collision detector should have been called
-      expect(customDetectorCalled).toBe(true);
-      expect(customCollisionEvents.length).toBe(1);
-      expect(customCollisionEvents[0].customProp).toBe('test-value');
+      expectWithContext(customDetectorCalled, 'custom detector called').toBe(true);
+      expectWithContext(customCollisionEvents.length, 'custom collision events').toBe(1);
+      expectWithContext(customCollisionEvents[0].customProp, 'custom prop value').toBe(
+        'test-value',
+      );
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -513,9 +521,9 @@ export default () => {
 
       // Client rect should be updated (even if values are the same, the update should happen)
       const updatedRect = droppable.getClientRect();
-      expect(typeof updatedRect).toBe('object');
-      expect(updatedRect.x).toBe(initialRect.x);
-      expect(updatedRect.y).toBe(initialRect.y);
+      expectWithContext(typeof updatedRect, 'updated rect is object').toBe('object');
+      expectWithContext(updatedRect.x, 'updated rect.x').toBe(initialRect.x);
+      expectWithContext(updatedRect.y, 'updated rect.y').toBe(initialRect.y);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -577,14 +585,25 @@ export default () => {
       await new Promise((resolve) => setTimeout(resolve, 50));
 
       // Check collision data properties
-      expect(typeof collisionData).toBe('object');
-      expect(collisionData.droppableId).toBe(droppable.id);
-      expect(typeof collisionData.droppableRect.x).toBe('number');
-      expect(typeof collisionData.droppableRect.y).toBe('number');
-      expect(typeof collisionData.droppableRect.width).toBe('number');
-      expect(typeof collisionData.droppableRect.height).toBe('number');
-      expect(typeof collisionData.intersectionScore).toBe('number');
-      expect(collisionData.intersectionScore > 0).toBe(true);
+      expectWithContext(typeof collisionData, 'collision data is object').toBe('object');
+      expectWithContext(collisionData.droppableId, 'collision droppableId').toBe(droppable.id);
+      expectWithContext(typeof collisionData.droppableRect.x, 'droppableRect.x type').toBe(
+        'number',
+      );
+      expectWithContext(typeof collisionData.droppableRect.y, 'droppableRect.y type').toBe(
+        'number',
+      );
+      expectWithContext(typeof collisionData.droppableRect.width, 'droppableRect.width type').toBe(
+        'number',
+      );
+      expectWithContext(
+        typeof collisionData.droppableRect.height,
+        'droppableRect.height type',
+      ).toBe('number');
+      expectWithContext(typeof collisionData.intersectionScore, 'intersectionScore type').toBe(
+        'number',
+      );
+      expectWithContext(collisionData.intersectionScore > 0, 'intersectionScore > 0').toBe(true);
 
       // End dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));

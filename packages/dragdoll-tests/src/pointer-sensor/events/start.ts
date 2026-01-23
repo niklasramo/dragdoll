@@ -2,6 +2,7 @@ import { PointerSensor, type PointerSensorStartEvent } from 'dragdoll/sensors/po
 import { createFakeDrag } from '../../utils/create-fake-drag.js';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 
 export default () => {
   describe('start', () => {
@@ -17,7 +18,7 @@ export default () => {
         if (startEvent === null) {
           startEvent = e;
         } else {
-          expect(false).toBe(true);
+          expectWithContext(false, 'start triggered multiple times').toBe(true);
         }
       });
 
@@ -39,7 +40,7 @@ export default () => {
       );
 
       const { srcEvent, ...restOfStartEvent } = startEvent!;
-      expect(restOfStartEvent).toStrictEqual({
+      expectWithContext(restOfStartEvent, 'mousedown start event data').toStrictEqual({
         type: 'start',
         target: el,
         pointerId: -1,
@@ -51,7 +52,7 @@ export default () => {
         deltaX: 0,
         deltaY: 0,
       });
-      expect(srcEvent).toBe(sourceEvent);
+      expectWithContext(srcEvent, 'mousedown srcEvent').toBe(sourceEvent);
 
       s.destroy();
       el.remove();
@@ -67,7 +68,7 @@ export default () => {
         if (startEvent === null) {
           startEvent = e;
         } else {
-          expect(false).toBe(true);
+          expectWithContext(false, 'start triggered multiple times').toBe(true);
         }
       });
 
@@ -89,7 +90,7 @@ export default () => {
       );
 
       const { srcEvent, ...restOfStartEvent } = startEvent!;
-      expect(restOfStartEvent).toStrictEqual({
+      expectWithContext(restOfStartEvent, 'pointerdown start event data').toStrictEqual({
         type: 'start',
         target: el,
         pointerId: sourceEvent.pointerId,
@@ -101,7 +102,7 @@ export default () => {
         deltaX: 0,
         deltaY: 0,
       });
-      expect(srcEvent).toBe(sourceEvent);
+      expectWithContext(srcEvent, 'pointerdown srcEvent').toBe(sourceEvent);
 
       s.destroy();
       el.remove();
@@ -117,7 +118,7 @@ export default () => {
         if (startEvent === null) {
           startEvent = e;
         } else {
-          expect(false).toBe(true);
+          expectWithContext(false, 'start triggered multiple times').toBe(true);
         }
       });
 
@@ -139,7 +140,7 @@ export default () => {
       );
 
       const { srcEvent, ...restOfStartEvent } = startEvent!;
-      expect(restOfStartEvent).toStrictEqual({
+      expectWithContext(restOfStartEvent, 'touchstart start event data').toStrictEqual({
         type: 'start',
         target: el,
         pointerId: sourceEvent.changedTouches[0].identifier,
@@ -151,7 +152,7 @@ export default () => {
         deltaX: 0,
         deltaY: 0,
       });
-      expect(srcEvent).toBe(sourceEvent);
+      expectWithContext(srcEvent, 'touchstart srcEvent').toBe(sourceEvent);
 
       s.destroy();
       el.remove();

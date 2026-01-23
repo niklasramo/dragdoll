@@ -1,6 +1,7 @@
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 import { focusElement } from '../../utils/focus-element.js';
 
 export default () => {
@@ -12,8 +13,8 @@ export default () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el, {
         endPredicate: (e, sensor) => {
-          expect(e.type).toBe('keydown');
-          expect(sensor).toBe(s);
+          expectWithContext(e.type, 'event type').toBe('keydown');
+          expectWithContext(sensor, 'sensor reference').toBe(s);
           return returnValue;
         },
       });
@@ -25,17 +26,17 @@ export default () => {
       // Make sure the drag is not ended if the predicate returns null.
       returnValue = null;
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-      expect(s.drag).not.toBe(null);
+      expectWithContext(s.drag, 'drag active when predicate returns null').not.toBe(null);
 
       // Make sure the drag is not ended if the predicate returns undefined.
       returnValue = undefined;
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-      expect(s.drag).not.toBe(null);
+      expectWithContext(s.drag, 'drag active when predicate returns undefined').not.toBe(null);
 
       // Make sure the drag is ended if the predicate returns a point.
       returnValue = { x: 1, y: 1 };
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-      expect(s.drag).toBe(null);
+      expectWithContext(s.drag, 'drag ended when predicate returns point').toBe(null);
 
       el.remove();
       s.destroy();
@@ -48,7 +49,7 @@ export default () => {
 
         focusElement(el);
         document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-        expect(s.drag).toStrictEqual({
+        expectWithContext(s.drag, `drag started (${key})`).toStrictEqual({
           startX: 0,
           startY: 0,
           x: 0,
@@ -58,7 +59,7 @@ export default () => {
         });
 
         document.dispatchEvent(new KeyboardEvent('keydown', { key }));
-        expect(s.drag).toBe(null);
+        expectWithContext(s.drag, `drag ended with ${key}`).toBe(null);
 
         s.destroy();
         el.remove();

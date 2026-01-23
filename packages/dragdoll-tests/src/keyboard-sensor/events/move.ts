@@ -1,6 +1,7 @@
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 import { focusElement } from '../../utils/focus-element.js';
 
 export default () => {
@@ -24,7 +25,7 @@ export default () => {
       let moveEventCount = 0;
 
       s.on('move', (e) => {
-        expect(e).toStrictEqual(expectedEvent);
+        expectWithContext(e, `move event ${moveEventCount + 1}`).toStrictEqual(expectedEvent);
         ++moveEventCount;
         return;
       });
@@ -80,7 +81,7 @@ export default () => {
       };
       document.dispatchEvent(expectedEvent.srcEvent);
 
-      expect(moveEventCount).toBe(4);
+      expectWithContext(moveEventCount, 'move event count').toBe(4);
 
       el.remove();
       s.destroy();

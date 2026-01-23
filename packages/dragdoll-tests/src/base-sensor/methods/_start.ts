@@ -1,5 +1,6 @@
 import { BaseSensor } from 'dragdoll/sensors/base';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 
 export default () => {
   describe('_start', () => {
@@ -8,7 +9,7 @@ export default () => {
     it(`should create drag data`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
-      expect(s.drag).toStrictEqual({
+      expectWithContext(s.drag, 'drag data created').toStrictEqual({
         startX: 1,
         startY: 2,
         x: 1,
@@ -21,9 +22,9 @@ export default () => {
 
     it(`should not modify isDestroyed property`, () => {
       const s = new BaseSensor();
-      expect(s.isDestroyed).toBe(false);
+      expectWithContext(s.isDestroyed, 'isDestroyed before start').toBe(false);
       s['_start']({ type: 'start', x: 1, y: 2 });
-      expect(s.isDestroyed).toBe(false);
+      expectWithContext(s.isDestroyed, 'isDestroyed after start').toBe(false);
       s.destroy();
     });
 
@@ -32,7 +33,7 @@ export default () => {
       const startArgs = { type: 'start', x: 1, y: 2 } as const;
       let emitCount = 0;
       s.on('start', (data) => {
-        expect(s.drag).toStrictEqual({
+        expectWithContext(s.drag, 'drag matches event data').toStrictEqual({
           startX: data.startX,
           startY: data.startY,
           x: data.x,
@@ -40,8 +41,8 @@ export default () => {
           deltaX: data.deltaX,
           deltaY: data.deltaY,
         });
-        expect(s.isDestroyed).toBe(false);
-        expect(data).toStrictEqual({
+        expectWithContext(s.isDestroyed, 'isDestroyed in callback').toBe(false);
+        expectWithContext(data, 'event data').toStrictEqual({
           ...startArgs,
           startX: startArgs.x,
           startY: startArgs.y,
@@ -51,7 +52,7 @@ export default () => {
         ++emitCount;
       });
       s['_start'](startArgs);
-      expect(emitCount).toBe(1);
+      expectWithContext(emitCount, 'emit count').toBe(1);
       s.destroy();
     });
 
@@ -63,9 +64,9 @@ export default () => {
       const isDestroyed = s.isDestroyed;
       const { drag } = s;
       s['_start']({ type: 'start', x: 3, y: 4 });
-      expect(s.drag).toStrictEqual(drag);
-      expect(s.isDestroyed).toBe(isDestroyed);
-      expect(emitCount).toBe(1);
+      expectWithContext(s.drag, 'drag unchanged').toStrictEqual(drag);
+      expectWithContext(s.isDestroyed, 'isDestroyed unchanged').toBe(isDestroyed);
+      expectWithContext(emitCount, 'emit count still 1').toBe(1);
       s.destroy();
     });
 
@@ -76,9 +77,9 @@ export default () => {
       s.destroy();
       const { drag, isDestroyed } = s;
       s['_start']({ type: 'start', x: 3, y: 4 });
-      expect(s.drag).toStrictEqual(drag);
-      expect(s.isDestroyed).toBe(isDestroyed);
-      expect(emitCount).toBe(0);
+      expectWithContext(s.drag, 'drag unchanged after destroy').toStrictEqual(drag);
+      expectWithContext(s.isDestroyed, 'isDestroyed still true').toBe(isDestroyed);
+      expectWithContext(emitCount, 'no events emitted').toBe(0);
       s.destroy();
     });
   });

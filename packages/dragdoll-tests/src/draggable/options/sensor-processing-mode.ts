@@ -2,6 +2,7 @@ import { Draggable } from 'dragdoll/draggable';
 import { BaseSensor } from 'dragdoll/sensors/base';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 
 export default () => {
   describe('sensorProcessingMode', () => {
@@ -32,7 +33,11 @@ export default () => {
 
       sensor.run();
 
-      expect(events).toStrictEqual(['preparestart', 'start', 'end']);
+      expectWithContext(events, 'sampled mode events').toStrictEqual([
+        'preparestart',
+        'start',
+        'end',
+      ]);
 
       draggable.destroy();
       sensor.destroy();
@@ -56,7 +61,13 @@ export default () => {
 
       sensor.run();
 
-      expect(events).toStrictEqual(['preparestart', 'start', 'preparemove', 'move', 'end']);
+      expectWithContext(events, 'immediate mode events').toStrictEqual([
+        'preparestart',
+        'start',
+        'preparemove',
+        'move',
+        'end',
+      ]);
 
       draggable.destroy();
       sensor.destroy();

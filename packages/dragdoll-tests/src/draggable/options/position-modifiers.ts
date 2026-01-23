@@ -2,6 +2,7 @@ import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
 
@@ -17,9 +18,9 @@ export default () => {
         elements: () => [el],
         positionModifiers: [
           (position, args) => {
-            expect(args.draggable).toBe(draggable);
-            expect(args.drag).toBe(draggable.drag);
-            expect(args.item).toBe(draggable.drag?.items[0]);
+            expectWithContext(args.draggable, 'args.draggable').toBe(draggable);
+            expectWithContext(args.drag, 'args.drag').toBe(draggable.drag);
+            expectWithContext(args.item, 'args.item').toBe(draggable.drag?.items[0]);
             switch (args.phase) {
               case 'start': {
                 ++phaseCounter.start;
@@ -46,8 +47,8 @@ export default () => {
       });
 
       let rect = el.getBoundingClientRect();
-      expect(rect.x).toBe(0);
-      expect(rect.y).toBe(0);
+      expectWithContext(rect.x, 'initial rect.x').toBe(0);
+      expectWithContext(rect.y, 'initial rect.y').toBe(0);
 
       // Start dragging the element with keyboard.
       focusElement(el);
@@ -57,8 +58,8 @@ export default () => {
 
       // Make sure the start modifiers have been called.
       rect = el.getBoundingClientRect();
-      expect(rect.x).toBe(1);
-      expect(rect.y).toBe(1);
+      expectWithContext(rect.x, 'rect.x after start').toBe(1);
+      expectWithContext(rect.y, 'rect.y after start').toBe(1);
 
       // Move the element to the right.
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
@@ -67,8 +68,8 @@ export default () => {
 
       // Make sure the move modifiers have been called.
       rect = el.getBoundingClientRect();
-      expect(rect.x).toBe(4);
-      expect(rect.y).toBe(3);
+      expectWithContext(rect.x, 'rect.x after move 1').toBe(4);
+      expectWithContext(rect.y, 'rect.y after move 1').toBe(3);
 
       // Move the element down.
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
@@ -77,22 +78,22 @@ export default () => {
 
       // Make sure the move modifiers have been called.
       rect = el.getBoundingClientRect();
-      expect(rect.x).toBe(6);
-      expect(rect.y).toBe(6);
+      expectWithContext(rect.x, 'rect.x after move 2').toBe(6);
+      expectWithContext(rect.y, 'rect.y after move 2').toBe(6);
 
       // End the drag.
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Make sure the end modifiers have been called.
       rect = el.getBoundingClientRect();
-      expect(rect.x).toBe(9);
-      expect(rect.y).toBe(9);
+      expectWithContext(rect.x, 'rect.x after end').toBe(9);
+      expectWithContext(rect.y, 'rect.y after end').toBe(9);
 
       // Make sure each phase modifier has been called the correct number of
       // times.
-      expect(phaseCounter.start).toBe(1);
-      expect(phaseCounter.move).toBe(2);
-      expect(phaseCounter.end).toBe(1);
+      expectWithContext(phaseCounter.start, 'start phase count').toBe(1);
+      expectWithContext(phaseCounter.move, 'move phase count').toBe(2);
+      expectWithContext(phaseCounter.end, 'end phase count').toBe(1);
 
       // Reset stuff.
       draggable.destroy();

@@ -1,5 +1,6 @@
 import { BaseSensor } from 'dragdoll/sensors/base';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 
 export default () => {
   describe('cancel', () => {
@@ -9,16 +10,16 @@ export default () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
       s.cancel();
-      expect(s.drag).toBe(null);
+      expectWithContext(s.drag, 'drag reset to null').toBe(null);
       s.destroy();
     });
 
     it(`should not modify isDestroyed property`, () => {
       const s = new BaseSensor();
       s['_start']({ type: 'start', x: 1, y: 2 });
-      expect(s.isDestroyed).toBe(false);
+      expectWithContext(s.isDestroyed, 'isDestroyed before cancel').toBe(false);
       s.cancel();
-      expect(s.isDestroyed).toBe(false);
+      expectWithContext(s.isDestroyed, 'isDestroyed after cancel').toBe(false);
       s.destroy();
     });
 
@@ -26,7 +27,7 @@ export default () => {
       const s = new BaseSensor();
       let emitCount = 0;
       s.on('cancel', (data) => {
-        expect(s.drag).toStrictEqual({
+        expectWithContext(s.drag, 'drag matches event data').toStrictEqual({
           startX: data.startX,
           startY: data.startY,
           x: data.x,
@@ -34,8 +35,8 @@ export default () => {
           deltaX: data.deltaX,
           deltaY: data.deltaY,
         });
-        expect(s.isDestroyed).toBe(false);
-        expect(data).toStrictEqual({
+        expectWithContext(s.isDestroyed, 'isDestroyed in callback').toBe(false);
+        expectWithContext(data, 'event data').toStrictEqual({
           type: 'cancel',
           startX: 1,
           startY: 2,
@@ -48,7 +49,7 @@ export default () => {
       });
       s['_start']({ type: 'start', x: 1, y: 2 });
       s.cancel();
-      expect(emitCount).toBe(1);
+      expectWithContext(emitCount, 'emit count').toBe(1);
       s.destroy();
     });
 
@@ -58,9 +59,9 @@ export default () => {
       let emitCount = 0;
       s.on('cancel', () => void ++emitCount);
       s.cancel();
-      expect(s.drag).toStrictEqual(drag);
-      expect(s.isDestroyed).toBe(isDestroyed);
-      expect(emitCount).toBe(0);
+      expectWithContext(s.drag, 'drag unchanged').toStrictEqual(drag);
+      expectWithContext(s.isDestroyed, 'isDestroyed unchanged').toBe(isDestroyed);
+      expectWithContext(emitCount, 'no events emitted').toBe(0);
       s.destroy();
     });
   });

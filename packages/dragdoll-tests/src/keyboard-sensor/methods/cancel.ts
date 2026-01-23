@@ -1,6 +1,7 @@
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 import { focusElement } from '../../utils/focus-element.js';
 
 export default () => {
@@ -17,7 +18,7 @@ export default () => {
       s.on('end', (data) => void events.push(data.type));
       s.on('destroy', (data) => void events.push(data.type));
       s.on('cancel', (data) => {
-        expect(data).toStrictEqual({
+        expectWithContext(data, 'cancel event data').toStrictEqual({
           type: 'cancel',
           startX: s.drag!.startX,
           startY: s.drag!.startY,
@@ -34,16 +35,16 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Make sure drag started.
-      expect(s.drag).not.toBe(null);
+      expectWithContext(s.drag, 'drag started').not.toBe(null);
 
       // Cancel dragging.
       s.cancel();
 
       // Make sure drag stopped.
-      expect(s.drag).toBe(null);
+      expectWithContext(s.drag, 'drag stopped').toBe(null);
 
       // Assert events.
-      expect(events).toStrictEqual(['start', 'cancel']);
+      expectWithContext(events, 'events emitted').toStrictEqual(['start', 'cancel']);
 
       // Destroy sensor and element.
       s.destroy();
@@ -65,7 +66,7 @@ export default () => {
       s.cancel();
 
       // Assert events.
-      expect(events).toStrictEqual([]);
+      expectWithContext(events, 'no events emitted').toStrictEqual([]);
 
       // Destroy sensor and element.
       s.destroy();

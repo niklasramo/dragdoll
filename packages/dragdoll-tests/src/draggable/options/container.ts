@@ -2,6 +2,7 @@ import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { roundNumber } from '../../utils/round-number.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
@@ -22,24 +23,24 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Make sure the drag started.
-      expect(draggable.drag).not.toBe(null);
+      expectWithContext(draggable.drag, 'drag started').not.toBe(null);
 
       await waitNextFrame();
 
       // Make sure the element has been moved within the container.
-      expect(container.contains(el)).toBe(true);
+      expectWithContext(container.contains(el), 'el in container').toBe(true);
 
       // Make sure the element's current parent is the container.
-      expect(el.parentElement).toBe(container);
+      expectWithContext(el.parentElement, 'el parent is container').toBe(container);
 
       // End the drag.
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Make sure the drag has stopped.
-      expect(draggable.drag).toBe(null);
+      expectWithContext(draggable.drag, 'drag stopped').toBe(null);
 
       // Make sure the element was moved back to it's original container.
-      expect(el.parentNode).toBe(originalContainer);
+      expectWithContext(el.parentNode, 'el back in original').toBe(originalContainer);
 
       // Reset stuff.
       draggable.destroy();
@@ -53,7 +54,7 @@ export default () => {
       const elPositions = ['fixed', 'absolute'];
       for (const containerPosition of containerPositions) {
         for (const elPosition of elPositions) {
-          // const assertMsg = `element ${elPosition} - container ${containerPosition}`;
+          const ctx = `el:${elPosition}/container:${containerPosition}`;
           const container = createTestElement({
             position: containerPosition,
             left: '0px',
@@ -78,10 +79,8 @@ export default () => {
           // Make sure the element and container are not at the same position.
           const containerRect = container.getBoundingClientRect();
           const elRect = el.getBoundingClientRect();
-          // console.log(`1: ${assertMsg}`);
-          expect(elRect.x).not.toBe(containerRect.x);
-          // console.log(`2: ${assertMsg}`);
-          expect(elRect.y).not.toBe(containerRect.y);
+          expectWithContext(elRect.x, `${ctx} el.x != container.x`).not.toBe(containerRect.x);
+          expectWithContext(elRect.y, `${ctx} el.y != container.y`).not.toBe(containerRect.y);
 
           // Start dragging the element with keyboard.
           focusElement(el);
@@ -90,15 +89,12 @@ export default () => {
           await waitNextFrame();
 
           // Make sure the element has been moved within the container.
-          // console.log(`3: ${assertMsg}`)
-          expect(container.contains(el)).toBe(true);
+          expectWithContext(container.contains(el), `${ctx} el in container`).toBe(true);
 
           // Make sure the element's client position has not changed.
           let rect = el.getBoundingClientRect();
-          // console.log(`4: ${assertMsg}`);
-          expect(rect.x).toBe(elRect.x);
-          // console.log(`5: ${assertMsg}`);
-          expect(rect.y).toBe(elRect.y);
+          expectWithContext(rect.x, `${ctx} client x unchanged`).toBe(elRect.x);
+          expectWithContext(rect.y, `${ctx} client y unchanged`).toBe(elRect.y);
 
           // Move the element to the right.
           document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
@@ -107,10 +103,8 @@ export default () => {
 
           // Make sure the element has moved.
           rect = el.getBoundingClientRect();
-          // console.log(`6: ${assertMsg}`);
-          expect(rect.x).toBe(elRect.x + 1);
-          // console.log(`7: ${assertMsg}`);
-          expect(rect.y).toBe(elRect.y);
+          expectWithContext(rect.x, `${ctx} moved x`).toBe(elRect.x + 1);
+          expectWithContext(rect.y, `${ctx} moved y unchanged`).toBe(elRect.y);
 
           // End the drag.
           document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -118,12 +112,9 @@ export default () => {
           // Make sure the element was moved back to it's original container
           // and client position is correct.
           rect = el.getBoundingClientRect();
-          // console.log(`8: ${assertMsg}`);
-          expect(rect.x).toBe(elRect.x + 1);
-          // console.log(`9: ${assertMsg}`);
-          expect(rect.y).toBe(elRect.y);
-          // console.log(`10: ${assertMsg}`);
-          expect(el.parentNode).toBe(originalContainer);
+          expectWithContext(rect.x, `${ctx} end x`).toBe(elRect.x + 1);
+          expectWithContext(rect.y, `${ctx} end y`).toBe(elRect.y);
+          expectWithContext(el.parentNode, `${ctx} back in original`).toBe(originalContainer);
 
           // Reset stuff.
           draggable.destroy();
@@ -206,10 +197,13 @@ export default () => {
 
       // Make sure the element has moved 1px, approximately.
       const moveRect = el.getBoundingClientRect();
-      expect({
-        x: roundNumber(moveRect.x - startRect.x, 3),
-        y: roundNumber(moveRect.y - startRect.y, 3),
-      }).toStrictEqual({ x: 1, y: 1 });
+      expectWithContext(
+        {
+          x: roundNumber(moveRect.x - startRect.x, 3),
+          y: roundNumber(moveRect.y - startRect.y, 3),
+        },
+        'move delta with transforms',
+      ).toStrictEqual({ x: 1, y: 1 });
 
       // Drop the element.
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -218,10 +212,13 @@ export default () => {
       // element is dropped (and moved back to the original container), the
       // element should maintain it's client position.
       const endRect = el.getBoundingClientRect();
-      expect({
-        x: roundNumber(endRect.x - startRect.x, 3),
-        y: roundNumber(endRect.y - startRect.y, 3),
-      }).toStrictEqual({ x: 1, y: 1 });
+      expectWithContext(
+        {
+          x: roundNumber(endRect.x - startRect.x, 3),
+          y: roundNumber(endRect.y - startRect.y, 3),
+        },
+        'end delta with transforms',
+      ).toStrictEqual({ x: 1, y: 1 });
 
       // Reset stuff.
       draggable.destroy();

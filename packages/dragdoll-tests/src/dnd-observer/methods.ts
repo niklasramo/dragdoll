@@ -4,6 +4,7 @@ import { Droppable } from 'dragdoll/droppable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../utils/create-test-element.js';
 import { defaultSetup } from '../utils/default-setup.js';
+import { expectWithContext } from '../utils/expect-with-context.js';
 import { focusElement } from '../utils/focus-element.js';
 import { startDrag } from '../utils/keyboard-helpers.js';
 import { waitNextFrame } from '../utils/wait-next-frame.js';
@@ -42,7 +43,7 @@ export default () => {
 
       await startDrag(dragElement);
 
-      expect(calls).toStrictEqual(['b']);
+      expectWithContext(calls, 'only b listener called').toStrictEqual(['b']);
 
       dndObserver.destroy();
       draggable.destroy();
@@ -90,7 +91,7 @@ export default () => {
       dndObserver.detectCollisions(draggable);
       await waitNextFrame();
 
-      expect(events.includes('collide')).toBe(true);
+      expectWithContext(events.includes('collide'), 'collide event emitted').toBe(true);
 
       dndObserver.destroy();
       draggable.destroy();
@@ -144,7 +145,7 @@ export default () => {
       await waitNextFrame();
 
       // We should observe collide for at least one, commonly both if overlapping
-      expect(events.length >= 1).toBe(true);
+      expectWithContext(events.length >= 1, 'at least one collide event').toBe(true);
 
       dndObserver.destroy();
       dr1.destroy();
@@ -178,10 +179,10 @@ export default () => {
       const after = droppable.getClientRect();
 
       // Validate updated values match the DOM
-      expect(after.x).toBe(expected.x);
-      expect(after.y).toBe(expected.y);
-      expect(after.width).toBe(before.width);
-      expect(after.height).toBe(before.height);
+      expectWithContext(after.x, 'updated rect.x').toBe(expected.x);
+      expectWithContext(after.y, 'updated rect.y').toBe(expected.y);
+      expectWithContext(after.width, 'rect.width unchanged').toBe(before.width);
+      expectWithContext(after.height, 'rect.height unchanged').toBe(before.height);
 
       dndObserver.destroy();
       droppable.destroy();
@@ -206,7 +207,9 @@ export default () => {
       await waitNextFrame();
 
       // Containment check was removed, so same element can match
-      expect(dndObserver['_isMatch'](draggable, droppable)).toBe(true);
+      expectWithContext(dndObserver['_isMatch'](draggable, droppable), 'same element matches').toBe(
+        true,
+      );
 
       dndObserver.destroy();
       draggable.destroy();
@@ -226,10 +229,16 @@ export default () => {
       const droppable = new Droppable(dropEl, { accept: () => false });
       const dndObserver = new DndObserver();
 
-      expect(dndObserver['_isMatch'](draggable, droppable)).toBe(false);
+      expectWithContext(
+        dndObserver['_isMatch'](draggable, droppable),
+        'reject when accept returns false',
+      ).toBe(false);
 
       droppable.accept = () => true;
-      expect(dndObserver['_isMatch'](draggable, droppable)).toBe(true);
+      expectWithContext(
+        dndObserver['_isMatch'](draggable, droppable),
+        'accept when accept returns true',
+      ).toBe(true);
 
       dndObserver.destroy();
       draggable.destroy();

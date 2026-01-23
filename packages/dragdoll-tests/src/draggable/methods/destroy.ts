@@ -2,6 +2,7 @@ import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
 
@@ -23,10 +24,10 @@ export default () => {
       draggable.destroy();
 
       // draggable.isDestroyed should be true.
-      expect(draggable.isDestroyed).toBe(true);
+      expectWithContext(draggable.isDestroyed, 'isDestroyed after destroy').toBe(true);
 
       // Destroy event should be emitted once.
-      expect(destroyEventCount).toBe(1);
+      expectWithContext(destroyEventCount, 'destroy event count').toBe(1);
 
       // Try start dragging the element with keyboard.
       focusElement(el);
@@ -37,15 +38,15 @@ export default () => {
 
       // Dragging should not work.
       const rect = el.getBoundingClientRect();
-      expect(draggable.drag).toBe(null);
-      expect(rect.x).toBe(0);
-      expect(rect.y).toBe(0);
+      expectWithContext(draggable.drag, 'drag null after destroy').toBe(null);
+      expectWithContext(rect.x, 'rect.x unchanged').toBe(0);
+      expectWithContext(rect.y, 'rect.y unchanged').toBe(0);
 
       // Try destroy again.
       draggable.destroy();
 
       // Destroy event should not be emitted again.
-      expect(destroyEventCount).toBe(1);
+      expectWithContext(destroyEventCount, 'destroy event count after double destroy').toBe(1);
 
       // Reset stuff.
       keyboardSensor.destroy();

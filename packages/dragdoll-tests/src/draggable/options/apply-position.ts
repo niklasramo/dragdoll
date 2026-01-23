@@ -2,6 +2,7 @@ import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
 
@@ -18,11 +19,11 @@ export default () => {
         elements: () => [el],
         applyPosition: (args) => {
           ++callCount;
-          expect(Object.keys(args).length).toBe(4);
-          expect(args.draggable).toBe(draggable);
-          expect(args.drag).toBe(draggable.drag);
-          expect(args.item).toBe(draggable.drag?.items[0]);
-          expect(args.phase).toBe(expectedPhase);
+          expectWithContext(Object.keys(args).length, 'args key count').toBe(4);
+          expectWithContext(args.draggable, 'args.draggable').toBe(draggable);
+          expectWithContext(args.drag, 'args.drag').toBe(draggable.drag);
+          expectWithContext(args.item, 'args.item').toBe(draggable.drag?.items[0]);
+          expectWithContext(args.phase, 'args.phase').toBe(expectedPhase);
         },
       });
 
@@ -33,7 +34,7 @@ export default () => {
 
       await waitNextFrame();
 
-      expect(callCount).toBe(1);
+      expectWithContext(callCount, 'callCount after start').toBe(1);
 
       // Move the element to the right.
       expectedPhase = 'move';
@@ -41,14 +42,14 @@ export default () => {
 
       await waitNextFrame();
 
-      expect(callCount).toBe(2);
+      expectWithContext(callCount, 'callCount after move').toBe(2);
 
       // End the drag.
       expectedPhase = 'end';
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Make sure the callback is not called again.
-      expect(callCount).toBe(3);
+      expectWithContext(callCount, 'callCount after end').toBe(3);
 
       // Reset stuff.
       draggable.destroy();

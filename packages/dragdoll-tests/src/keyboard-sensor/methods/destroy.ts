@@ -1,6 +1,7 @@
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 import { focusElement } from '../../utils/focus-element.js';
 
 export default () => {
@@ -22,7 +23,7 @@ export default () => {
       s.destroy();
 
       // There should be no events.
-      expect(events).toStrictEqual([]);
+      expectWithContext(events, 'no events on double destroy').toStrictEqual([]);
 
       // Delete the element
       el.remove();
@@ -38,9 +39,9 @@ export default () => {
         s.on('move', (data) => void events.push(data.type));
         s.on('end', (data) => void events.push(data.type));
         s.on('cancel', (data) => {
-          expect(s.drag).not.toBe(null);
-          expect(s.isDestroyed).toBe(true);
-          expect(data).toStrictEqual({
+          expectWithContext(s.drag, 'drag exists in cancel callback').not.toBe(null);
+          expectWithContext(s.isDestroyed, 'isDestroyed in cancel callback').toBe(true);
+          expectWithContext(data, 'cancel event data').toStrictEqual({
             type: 'cancel',
             startX: s.drag!.startX,
             startY: s.drag!.startY,
@@ -52,14 +53,14 @@ export default () => {
           events.push(data.type);
         });
         s.on('destroy', (data) => {
-          expect(s.drag).toBe(null);
-          expect(s.isDestroyed).toBe(true);
-          expect(data).toStrictEqual({ type: 'destroy' });
+          expectWithContext(s.drag, 'drag null in destroy callback').toBe(null);
+          expectWithContext(s.isDestroyed, 'isDestroyed in destroy callback').toBe(true);
+          expectWithContext(data, 'destroy event data').toStrictEqual({ type: 'destroy' });
           events.push(data.type);
         });
 
         // Make sure all listeners are set.
-        expect(s['_emitter'].listenerCount()).toBe(5);
+        expectWithContext(s['_emitter'].listenerCount(), 'listener count before').toBe(5);
 
         // Start dragging
         focusElement(el);
@@ -72,16 +73,16 @@ export default () => {
         el.remove();
 
         // Drag data should be reset.
-        expect(s.drag).toBe(null);
+        expectWithContext(s.drag, 'drag null after destroy').toBe(null);
 
         // isDestroyed should be true.
-        expect(s.isDestroyed).toBe(true);
+        expectWithContext(s.isDestroyed, 'isDestroyed after destroy').toBe(true);
 
         // Only the "start", "cancel" and "destroy" events should be emitted.
-        expect(events).toStrictEqual(['start', 'cancel', 'destroy']);
+        expectWithContext(events, 'events emitted').toStrictEqual(['start', 'cancel', 'destroy']);
 
         // All listeners should be removed.
-        expect(s['_emitter'].listenerCount()).toBe(0);
+        expectWithContext(s['_emitter'].listenerCount(), 'listener count after').toBe(0);
       });
     });
 
@@ -96,14 +97,14 @@ export default () => {
         s.on('end', (data) => void events.push(data.type));
         s.on('cancel', (data) => void events.push(data.type));
         s.on('destroy', (data) => {
-          expect(s.drag).toBe(null);
-          expect(s.isDestroyed).toBe(true);
-          expect(data).toStrictEqual({ type: 'destroy' });
+          expectWithContext(s.drag, 'drag null in destroy callback').toBe(null);
+          expectWithContext(s.isDestroyed, 'isDestroyed in destroy callback').toBe(true);
+          expectWithContext(data, 'destroy event data').toStrictEqual({ type: 'destroy' });
           events.push(data.type);
         });
 
         // Make sure all listeners are set.
-        expect(s['_emitter'].listenerCount()).toBe(5);
+        expectWithContext(s['_emitter'].listenerCount(), 'listener count before').toBe(5);
 
         // Destroy the sensor
         s.destroy();
@@ -112,16 +113,16 @@ export default () => {
         el.remove();
 
         // Drag data should be reset.
-        expect(s.drag).toBe(null);
+        expectWithContext(s.drag, 'drag null after destroy').toBe(null);
 
         // isDestroyed should be true.
-        expect(s.isDestroyed).toBe(true);
+        expectWithContext(s.isDestroyed, 'isDestroyed after destroy').toBe(true);
 
         // Only the "destroy" event should be emitted.
-        expect(events).toStrictEqual(['destroy']);
+        expectWithContext(events, 'events emitted').toStrictEqual(['destroy']);
 
         // All listeners should be removed.
-        expect(s['_emitter'].listenerCount()).toBe(0);
+        expectWithContext(s['_emitter'].listenerCount(), 'listener count after').toBe(0);
       });
     });
   });

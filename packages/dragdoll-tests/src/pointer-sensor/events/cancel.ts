@@ -2,6 +2,7 @@ import { PointerSensor, type PointerSensorCancelEvent } from 'dragdoll/sensors/p
 import { createFakeDrag } from '../../utils/create-fake-drag.js';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 
 export default () => {
   describe('cancel', () => {
@@ -17,7 +18,7 @@ export default () => {
         if (cancelEvent === null) {
           cancelEvent = e;
         } else {
-          expect(false).toBe(true);
+          expectWithContext(false, 'cancel triggered multiple times').toBe(true);
         }
       });
 
@@ -40,7 +41,7 @@ export default () => {
       );
 
       const { srcEvent, ...restOfCancelEvent } = cancelEvent!;
-      expect(restOfCancelEvent).toStrictEqual({
+      expectWithContext(restOfCancelEvent, 'pointercancel event data').toStrictEqual({
         type: 'cancel',
         target: el,
         pointerId: sourceEvent.pointerId,
@@ -52,7 +53,7 @@ export default () => {
         deltaX: 0,
         deltaY: 0,
       });
-      expect(srcEvent).toBe(sourceEvent);
+      expectWithContext(srcEvent, 'pointercancel srcEvent').toBe(sourceEvent);
 
       s.destroy();
       el.remove();
@@ -68,7 +69,7 @@ export default () => {
         if (cancelEvent === null) {
           cancelEvent = e;
         } else {
-          expect(false).toBe(true);
+          expectWithContext(false, 'cancel triggered multiple times').toBe(true);
         }
       });
 
@@ -91,7 +92,7 @@ export default () => {
       );
 
       const { srcEvent, ...restOfCancelEvent } = cancelEvent!;
-      expect(restOfCancelEvent).toStrictEqual({
+      expectWithContext(restOfCancelEvent, 'touchcancel event data').toStrictEqual({
         type: 'cancel',
         target: el,
         pointerId: sourceEvent.changedTouches[0].identifier,
@@ -103,7 +104,7 @@ export default () => {
         deltaX: 0,
         deltaY: 0,
       });
-      expect(srcEvent).toBe(sourceEvent);
+      expectWithContext(srcEvent, 'touchcancel srcEvent').toBe(sourceEvent);
 
       s.destroy();
       el.remove();

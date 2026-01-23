@@ -1,6 +1,7 @@
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 import { focusElement } from '../../utils/focus-element.js';
 
 export default () => {
@@ -12,14 +13,14 @@ export default () => {
       const s = new KeyboardSensor(el, { moveDistance: { x: 7, y: 9 } });
 
       // Make sure the moveDistance property is set correctly.
-      expect(s.moveDistance).toStrictEqual({ x: 7, y: 9 });
+      expectWithContext(s.moveDistance, 'moveDistance property').toStrictEqual({ x: 7, y: 9 });
 
       // Start drag.
       focusElement(el);
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Make sure drag position is at 0,0.
-      expect(s.drag).toStrictEqual({
+      expectWithContext(s.drag, 'drag at start').toStrictEqual({
         startX: 0,
         startY: 0,
         x: 0,
@@ -32,7 +33,7 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
 
       // Make sure drag position is at 7,0.
-      expect(s.drag).toStrictEqual({
+      expectWithContext(s.drag, 'drag at 7,0').toStrictEqual({
         startX: 0,
         startY: 0,
         x: 7,
@@ -45,7 +46,7 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
 
       // Make sure drag position is at 7,9.
-      expect(s.drag).toStrictEqual({
+      expectWithContext(s.drag, 'drag at 7,9').toStrictEqual({
         startX: 0,
         startY: 0,
         x: 7,
@@ -58,7 +59,7 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
 
       // Make sure drag position is at 0,9.
-      expect(s.drag).toStrictEqual({
+      expectWithContext(s.drag, 'drag at 0,9').toStrictEqual({
         startX: 0,
         startY: 0,
         x: 0,
@@ -71,7 +72,7 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp' }));
 
       // Make sure drag position is at 0,0.
-      expect(s.drag).toStrictEqual({
+      expectWithContext(s.drag, 'drag back at 0,0').toStrictEqual({
         startX: 0,
         startY: 0,
         x: 0,
@@ -89,14 +90,14 @@ export default () => {
       const s = new KeyboardSensor(el, { moveDistance: 5 });
 
       // Make sure the moveDistance property is set correctly.
-      expect(s.moveDistance).toStrictEqual({ x: 5, y: 5 });
+      expectWithContext(s.moveDistance, 'moveDistance property').toStrictEqual({ x: 5, y: 5 });
 
       // Start drag.
       focusElement(el);
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Make sure drag position is at 0,0.
-      expect(s.drag).toStrictEqual({
+      expectWithContext(s.drag, 'drag at start').toStrictEqual({
         startX: 0,
         startY: 0,
         x: 0,
@@ -109,7 +110,7 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
 
       // Make sure drag position is at 5,0.
-      expect(s.drag).toStrictEqual({
+      expectWithContext(s.drag, 'drag at 5,0').toStrictEqual({
         startX: 0,
         startY: 0,
         x: 5,
@@ -122,7 +123,7 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
 
       // Make sure drag position is at 5,5.
-      expect(s.drag).toStrictEqual({
+      expectWithContext(s.drag, 'drag at 5,5').toStrictEqual({
         startX: 0,
         startY: 0,
         x: 5,
@@ -135,7 +136,7 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
 
       // Make sure drag position is at 0,5.
-      expect(s.drag).toStrictEqual({
+      expectWithContext(s.drag, 'drag at 0,5').toStrictEqual({
         startX: 0,
         startY: 0,
         x: 0,
@@ -148,7 +149,7 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp' }));
 
       // Make sure drag position is at 0,0.
-      expect(s.drag).toStrictEqual({
+      expectWithContext(s.drag, 'drag back at 0,0').toStrictEqual({
         startX: 0,
         startY: 0,
         x: 0,

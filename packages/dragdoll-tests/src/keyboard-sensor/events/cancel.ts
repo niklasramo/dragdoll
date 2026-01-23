@@ -1,6 +1,7 @@
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 import { focusElement } from '../../utils/focus-element.js';
 
 export default () => {
@@ -24,7 +25,7 @@ export default () => {
       let cancelEventCount = 0;
 
       s.on('cancel', (e) => {
-        expect(e).toStrictEqual(cancelEvent);
+        expectWithContext(e, 'cancel event data').toStrictEqual(cancelEvent);
         ++cancelEventCount;
       });
 
@@ -32,7 +33,7 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
       document.dispatchEvent(cancelEvent.srcEvent);
 
-      expect(cancelEventCount).toBe(1);
+      expectWithContext(cancelEventCount, 'cancel event count').toBe(1);
 
       el.remove();
       s.destroy();
