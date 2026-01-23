@@ -4,6 +4,7 @@ import { Droppable } from 'dragdoll/droppable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../utils/create-test-element.js';
 import { defaultSetup } from '../utils/default-setup.js';
+import { expectWithContext } from '../utils/expect-with-context.js';
 import { endDrag, move, startDrag } from '../utils/keyboard-helpers.js';
 import { waitNextFrame } from '../utils/wait-next-frame.js';
 
@@ -30,18 +31,18 @@ export default () => {
       const dndObserver = new DndObserver();
 
       dndObserver.on('start', (data) => {
-        expect(data.draggable).toBe(draggable);
-        expect(data.targets).toBeInstanceOf(Map);
-        expect(data.targets.size).toBe(1);
-        expect(data.targets.has(droppable.id)).toBe(true);
+        expectWithContext(data.draggable, 'start data.draggable').toBe(draggable);
+        expectWithContext(data.targets instanceof Map, 'start targets is Map').toBe(true);
+        expectWithContext(data.targets.size, 'start targets size').toBe(1);
+        expectWithContext(data.targets.has(droppable.id), 'start has droppable').toBe(true);
         events.push('start');
       });
 
       dndObserver.on('end', (data) => {
-        expect(data.draggable).toBe(draggable);
-        expect(data.targets).toBeInstanceOf(Map);
-        expect(data.targets.size).toBe(1);
-        expect(data.targets.has(droppable.id)).toBe(true);
+        expectWithContext(data.draggable, 'end data.draggable').toBe(draggable);
+        expectWithContext(data.targets instanceof Map, 'end targets is Map').toBe(true);
+        expectWithContext(data.targets.size, 'end targets size').toBe(1);
+        expectWithContext(data.targets.has(droppable.id), 'end has droppable').toBe(true);
         events.push('end');
       });
 
@@ -50,12 +51,12 @@ export default () => {
 
       await startDrag(dragElement);
 
-      expect(events).toEqual(['start']);
+      expectWithContext(events, 'events after start').toStrictEqual(['start']);
       events.length = 0;
 
       await endDrag();
 
-      expect(events).toEqual(['end']);
+      expectWithContext(events, 'events after end').toStrictEqual(['end']);
 
       // Cleanup
       dndObserver.destroy();
@@ -84,8 +85,8 @@ export default () => {
       const dndObserver = new DndObserver();
 
       dndObserver.on('move', (data) => {
-        expect(data.draggable).toBe(draggable);
-        expect(data.targets).toBeInstanceOf(Map);
+        expectWithContext(data.draggable, 'move data.draggable').toBe(draggable);
+        expectWithContext(data.targets instanceof Map, 'move targets is Map').toBe(true);
         events.push('move');
       });
 
@@ -96,8 +97,8 @@ export default () => {
 
       await move('Right');
 
-      expect(events.length).toBe(1);
-      expect(events[0]).toBe('move');
+      expectWithContext(events.length, 'move events count').toBe(1);
+      expectWithContext(events[0], 'first event is move').toBe('move');
 
       await endDrag();
 
@@ -172,19 +173,19 @@ export default () => {
       await move('Right');
 
       // Should have enter event
-      expect(events.length).toBe(1);
-      expect(events[0].type).toBe('enter');
-      expect(events[0].collisions).toBe(1);
-      expect(events[0].addedContacts).toBe(1);
+      expectWithContext(events.length, 'events after enter').toBe(1);
+      expectWithContext(events[0].type, 'enter event type').toBe('enter');
+      expectWithContext(events[0].collisions, 'enter collisions').toBe(1);
+      expectWithContext(events[0].addedContacts, 'enter addedContacts').toBe(1);
 
       // Move right again to leave droppable area
       await move('Right');
 
       // Should have leave event
-      expect(events.length).toBe(2);
-      expect(events[1].type).toBe('leave');
-      expect(events[1].collisions).toBe(0);
-      expect(events[1].removedContacts).toBe(1);
+      expectWithContext(events.length, 'events after leave').toBe(2);
+      expectWithContext(events[1].type, 'leave event type').toBe('leave');
+      expectWithContext(events[1].collisions, 'leave collisions').toBe(0);
+      expectWithContext(events[1].removedContacts, 'leave removedContacts').toBe(1);
 
       await endDrag();
 
@@ -228,9 +229,12 @@ export default () => {
       const dndObserver = new DndObserver();
 
       dndObserver.on('end', (data) => {
-        expect(data.draggable).toBe(draggable);
-        expect(data.collisions.length).toBe(1);
-        expect(data.collisions.some((c) => c.droppableId === droppable.id)).toBe(true);
+        expectWithContext(data.draggable, 'end draggable').toBe(draggable);
+        expectWithContext(data.collisions.length, 'end collisions count').toBe(1);
+        expectWithContext(
+          data.collisions.some((c) => c.droppableId === droppable.id),
+          'has droppable collision',
+        ).toBe(true);
         events.push('end');
       });
 
@@ -243,8 +247,8 @@ export default () => {
       // End dragging (should include collisions in end)
       await endDrag();
 
-      expect(events.length).toBe(1);
-      expect(events[0]).toBe('end');
+      expectWithContext(events.length, 'end events count').toBe(1);
+      expectWithContext(events[0], 'end event').toBe('end');
 
       // Cleanup
       dndObserver.destroy();
@@ -278,16 +282,16 @@ export default () => {
       // Add draggable
       dndObserver.addDraggables([draggable]);
 
-      expect(events.length).toBe(1);
-      expect(events[0].type).toBe('addDraggables');
-      expect(events[0].draggables.has(draggable)).toBe(true);
+      expectWithContext(events.length, 'events after add').toBe(1);
+      expectWithContext(events[0].type, 'add event type').toBe('addDraggables');
+      expectWithContext(events[0].draggables.has(draggable), 'has added draggable').toBe(true);
 
       // Remove draggable
       dndObserver.removeDraggables([draggable]);
 
-      expect(events.length).toBe(2);
-      expect(events[1].type).toBe('removeDraggables');
-      expect(events[1].draggables.has(draggable)).toBe(true);
+      expectWithContext(events.length, 'events after remove').toBe(2);
+      expectWithContext(events[1].type, 'remove event type').toBe('removeDraggables');
+      expectWithContext(events[1].draggables.has(draggable), 'has removed draggable').toBe(true);
 
       // Cleanup
       dndObserver.destroy();
@@ -321,16 +325,16 @@ export default () => {
       // Add droppable
       dndObserver.addDroppables([droppable]);
 
-      expect(events.length).toBe(1);
-      expect(events[0].type).toBe('addDroppable');
-      expect(events[0].droppable).toBe(droppable);
+      expectWithContext(events.length, 'events after add').toBe(1);
+      expectWithContext(events[0].type, 'add event type').toBe('addDroppable');
+      expectWithContext(events[0].droppable, 'added droppable').toBe(droppable);
 
       // Remove droppable
       dndObserver.removeDroppables([droppable]);
 
-      expect(events.length).toBe(2);
-      expect(events[1].type).toBe('removeDroppable');
-      expect(events[1].droppable).toBe(droppable);
+      expectWithContext(events.length, 'events after remove').toBe(2);
+      expectWithContext(events[1].type, 'remove event type').toBe('removeDroppable');
+      expectWithContext(events[1].droppable, 'removed droppable').toBe(droppable);
 
       // Cleanup
       dndObserver.destroy();
@@ -351,8 +355,8 @@ export default () => {
       const dndObserver = new DndObserver();
 
       dndObserver.on('end', (data) => {
-        expect(data.draggable).toBe(draggable);
-        expect(data.canceled).toBe(true);
+        expectWithContext(data.draggable, 'end draggable').toBe(draggable);
+        expectWithContext(data.canceled, 'end canceled').toBe(true);
         events.push('end');
       });
 
@@ -364,8 +368,8 @@ export default () => {
       // Cancel dragging
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
 
-      expect(events.length).toBe(1);
-      expect(events[0]).toBe('end');
+      expectWithContext(events.length, 'end events count').toBe(1);
+      expectWithContext(events[0], 'end event').toBe('end');
 
       // Cleanup
       dndObserver.destroy();
@@ -384,8 +388,8 @@ export default () => {
 
       dndObserver.destroy();
 
-      expect(events.length).toBe(1);
-      expect(events[0]).toBe('destroy');
+      expectWithContext(events.length, 'destroy events count').toBe(1);
+      expectWithContext(events[0], 'destroy event').toBe('destroy');
     });
   });
 
@@ -417,9 +421,12 @@ export default () => {
       order.length = 0; // capture only transition events
       await move('Right');
 
-      expect(order.includes('enter')).toBe(true);
+      expectWithContext(order.includes('enter'), 'has enter event').toBe(true);
       if (order.includes('leave')) {
-        expect(order.indexOf('leave')).toBeLessThan(order.indexOf('enter'));
+        expectWithContext(
+          order.indexOf('leave') < order.indexOf('enter'),
+          'leave before enter',
+        ).toBe(true);
       }
 
       ctx.destroy();
@@ -450,13 +457,13 @@ export default () => {
       ctx.on('enter', ({ collisions }) => {
         events.push('enter');
         gotEnter = true;
-        expect(collisions.length).toBeGreaterThanOrEqual(1);
+        expectWithContext(collisions.length >= 1, 'enter has collisions').toBe(true);
       });
 
       ctx.on('end', ({ canceled, collisions }) => {
         events.push('end');
-        expect(canceled).toBe(false);
-        expect(collisions.length).toBeGreaterThanOrEqual(1);
+        expectWithContext(canceled, 'end not canceled').toBe(false);
+        expectWithContext(collisions.length >= 1, 'end has collisions').toBe(true);
       });
 
       ctx.addDraggables([draggable]);
@@ -464,9 +471,9 @@ export default () => {
 
       await startDrag(dragEl);
       await waitNextFrame();
-      expect(gotEnter).toBe(true);
+      expectWithContext(gotEnter, 'got enter event').toBe(true);
       await endDrag();
-      expect(events).toEqual(['enter', 'end']);
+      expectWithContext(events, 'event order').toStrictEqual(['enter', 'end']);
 
       ctx.destroy();
       draggable.destroy();
@@ -497,14 +504,14 @@ export default () => {
       ctx.addDroppables([droppable]);
 
       await startDrag(dragEl);
-      expect(events.length).toBe(0);
+      expectWithContext(events.length, 'no enter when not accepting').toBe(0);
 
       accepts = true;
       ctx.clearTargets(draggable);
       ctx.detectCollisions(draggable);
       await waitNextFrame();
 
-      expect(events).toEqual(['enter']);
+      expectWithContext(events, 'enter after accept change').toStrictEqual(['enter']);
 
       ctx.destroy();
       draggable.destroy();
@@ -546,8 +553,8 @@ export default () => {
       await waitNextFrame();
       await endDrag();
 
-      expect(events).toStrictEqual(['enter', 'end']);
-      expect(ctx.droppables.has(droppable.id)).toBe(false);
+      expectWithContext(events, 'events order').toStrictEqual(['enter', 'end']);
+      expectWithContext(ctx.droppables.has(droppable.id), 'droppable removed').toBe(false);
 
       ctx.destroy();
       draggable.destroy();
@@ -585,7 +592,7 @@ export default () => {
 
       ctx.on('end', () => {
         const data = ctx.drags.get(draggable);
-        expect(data).not.toBeNull();
+        expectWithContext(data, 'drag data exists on end').not.toBe(null);
         seen.push({ phase: 'end', value: data!.data.counter });
       });
 
@@ -596,8 +603,14 @@ export default () => {
       await move('Right');
       await endDrag();
 
-      expect(seen.map((s) => s.phase)).toStrictEqual(['start', 'move', 'end']);
-      expect(seen.map((s) => s.value)).toStrictEqual([1, 2, 2]);
+      expectWithContext(
+        seen.map((s) => s.phase),
+        'phases',
+      ).toStrictEqual(['start', 'move', 'end']);
+      expectWithContext(
+        seen.map((s) => s.value),
+        'values',
+      ).toStrictEqual([1, 2, 2]);
 
       ctx.destroy();
       draggable.destroy();

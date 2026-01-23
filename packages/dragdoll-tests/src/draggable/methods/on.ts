@@ -2,6 +2,7 @@ import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
 
@@ -16,8 +17,8 @@ export default () => {
       const idA = draggable.on('start', () => {});
       const idB = draggable.on('start', () => {});
 
-      expect(typeof idA).toBe('symbol');
-      expect(idA).not.toBe(idB);
+      expectWithContext(typeof idA, 'idA is symbol').toBe('symbol');
+      expectWithContext(idA, 'idA != idB').not.toBe(idB);
 
       keyboardSensor.destroy();
       draggable.destroy();
@@ -41,7 +42,7 @@ export default () => {
 
       await waitNextFrame();
 
-      expect(counter).toBe(2);
+      expectWithContext(counter, 'counter called twice').toBe(2);
 
       keyboardSensor.destroy();
       draggable.destroy();
@@ -63,7 +64,7 @@ export default () => {
 
       await waitNextFrame();
 
-      expect(msg).toBe('bc');
+      expectWithContext(msg, 'msg order').toBe('bc');
 
       keyboardSensor.destroy();
       draggable.destroy();
@@ -76,13 +77,22 @@ export default () => {
       const draggable = new Draggable([keyboardSensor], { elements: () => [el] });
 
       const idA = Symbol();
-      expect(draggable.on('start', () => {}, idA)).toBe(idA);
+      expectWithContext(
+        draggable.on('start', () => {}, idA),
+        'returns symbol id',
+      ).toBe(idA);
 
       const idB = 1;
-      expect(draggable.on('start', () => {}, idB)).toBe(idB);
+      expectWithContext(
+        draggable.on('start', () => {}, idB),
+        'returns number id',
+      ).toBe(idB);
 
       const idC = 'foo';
-      expect(draggable.on('start', () => {}, idC)).toBe(idC);
+      expectWithContext(
+        draggable.on('start', () => {}, idC),
+        'returns string id',
+      ).toBe(idC);
 
       keyboardSensor.destroy();
       draggable.destroy();

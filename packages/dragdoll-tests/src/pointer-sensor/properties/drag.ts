@@ -2,6 +2,7 @@ import { PointerSensor } from 'dragdoll/sensors/pointer';
 import { createFakeDrag } from '../../utils/create-fake-drag.js';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 
 export default () => {
   describe('drag', () => {
@@ -9,7 +10,7 @@ export default () => {
 
     it(`should be null on init`, () => {
       const s = new PointerSensor(document.body);
-      expect(s.drag).toBe(null);
+      expectWithContext(s.drag, 'drag null on init').toBe(null);
       s.destroy();
     });
 
@@ -33,7 +34,7 @@ export default () => {
           onAfterStep: (e) => {
             ++dragEventCount;
             if (e.type === 'start') {
-              expect(s.drag).toStrictEqual({
+              expectWithContext(s.drag, 'drag data on start').toStrictEqual({
                 pointerId: 1,
                 pointerType: 'touch',
                 startX: 1,
@@ -44,7 +45,7 @@ export default () => {
                 deltaY: 0,
               });
             } else if (e.type === 'move') {
-              expect(s.drag).toStrictEqual({
+              expectWithContext(s.drag, 'drag data on move').toStrictEqual({
                 pointerId: 1,
                 pointerType: 'touch',
                 startX: 1,
@@ -55,13 +56,13 @@ export default () => {
                 deltaY: 1,
               });
             } else if (e.type === 'end') {
-              expect(s.drag).toBe(null);
+              expectWithContext(s.drag, 'drag null on end').toBe(null);
             }
           },
         },
       );
 
-      expect(dragEventCount).toBe(3);
+      expectWithContext(dragEventCount, 'drag event count').toBe(3);
 
       s.destroy();
       el.remove();

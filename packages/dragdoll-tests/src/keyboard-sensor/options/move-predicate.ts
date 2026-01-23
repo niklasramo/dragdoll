@@ -1,6 +1,7 @@
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 import { focusElement } from '../../utils/focus-element.js';
 
 export default () => {
@@ -12,8 +13,8 @@ export default () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el, {
         movePredicate: (e, sensor) => {
-          expect(e.type).toBe('keydown');
-          expect(sensor).toBe(s);
+          expectWithContext(e.type, 'event type').toBe('keydown');
+          expectWithContext(sensor, 'sensor reference').toBe(s);
           return returnValue;
         },
       });
@@ -25,7 +26,7 @@ export default () => {
       // Make sure the drag does not move if the predicate returns null.
       returnValue = null;
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-      expect(s.drag).toStrictEqual({
+      expectWithContext(s.drag, 'drag unchanged when predicate returns null').toStrictEqual({
         startX: 0,
         startY: 0,
         x: 0,
@@ -37,7 +38,7 @@ export default () => {
       // Make sure the drag does not move if the predicate returns undefined.
       returnValue = undefined;
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-      expect(s.drag).toStrictEqual({
+      expectWithContext(s.drag, 'drag unchanged when predicate returns undefined').toStrictEqual({
         startX: 0,
         startY: 0,
         x: 0,
@@ -49,7 +50,7 @@ export default () => {
       // Make sure the drag moves if the predicate returns a point.
       returnValue = { x: 1, y: 1 };
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-      expect(s.drag).toStrictEqual({
+      expectWithContext(s.drag, 'drag moved with custom point').toStrictEqual({
         startX: 0,
         startY: 0,
         ...returnValue,
@@ -73,7 +74,7 @@ export default () => {
 
         switch (key) {
           case 'ArrowLeft':
-            expect(s.drag).toStrictEqual({
+            expectWithContext(s.drag, 'drag after ArrowLeft').toStrictEqual({
               startX: 0,
               startY: 0,
               x: -1,
@@ -83,7 +84,7 @@ export default () => {
             });
             break;
           case 'ArrowRight':
-            expect(s.drag).toStrictEqual({
+            expectWithContext(s.drag, 'drag after ArrowRight').toStrictEqual({
               startX: 0,
               startY: 0,
               x: 1,
@@ -93,7 +94,7 @@ export default () => {
             });
             break;
           case 'ArrowUp':
-            expect(s.drag).toStrictEqual({
+            expectWithContext(s.drag, 'drag after ArrowUp').toStrictEqual({
               startX: 0,
               startY: 0,
               x: 0,
@@ -103,7 +104,7 @@ export default () => {
             });
             break;
           case 'ArrowDown':
-            expect(s.drag).toStrictEqual({
+            expectWithContext(s.drag, 'drag after ArrowDown').toStrictEqual({
               startX: 0,
               startY: 0,
               x: 0,

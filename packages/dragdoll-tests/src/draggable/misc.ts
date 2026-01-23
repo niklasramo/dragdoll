@@ -4,6 +4,7 @@ import { PointerSensor } from 'dragdoll/sensors/pointer';
 import { createFakeDrag } from '../utils/create-fake-drag.js';
 import { createTestElement } from '../utils/create-test-element.js';
 import { defaultSetup } from '../utils/default-setup.js';
+import { expectWithContext } from '../utils/expect-with-context.js';
 import { focusElement } from '../utils/focus-element.js';
 import { roundNumber } from '../utils/round-number.js';
 import { waitNextFrame } from '../utils/wait-next-frame.js';
@@ -20,8 +21,8 @@ export default () => {
 
       // Make sure the element is at the top left corner.
       let rect = el.getBoundingClientRect();
-      expect(rect.x).toBe(0);
-      expect(rect.y).toBe(0);
+      expectWithContext(rect.x, 'initial rect.x').toBe(0);
+      expectWithContext(rect.y, 'initial rect.y').toBe(0);
 
       // Start dragging the element with keyboard.
       focusElement(el);
@@ -32,14 +33,14 @@ export default () => {
 
       // Make sure the element has moved.
       rect = el.getBoundingClientRect();
-      expect(rect.x).toBe(1);
-      expect(rect.y).toBe(0);
+      expectWithContext(rect.x, 'rect.x after keyboard move').toBe(1);
+      expectWithContext(rect.y, 'rect.y after keyboard move').toBe(0);
 
       // Stop dragging the element with keyboard.
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Make sure the drag has stopped.
-      expect(draggable.drag).toBe(null);
+      expectWithContext(draggable.drag, 'drag null after keyboard end').toBe(null);
 
       // Fake drag the element with mouse.
       await createFakeDrag(
@@ -58,12 +59,12 @@ export default () => {
       await waitNextFrame();
 
       // Make sure the drag has stopped.
-      expect(draggable.drag).toBe(null);
+      expectWithContext(draggable.drag, 'drag null after mouse end').toBe(null);
 
       // Make sure the element has moved correctly.
       rect = el.getBoundingClientRect();
-      expect(rect.x).toBe(3);
-      expect(rect.y).toBe(2);
+      expectWithContext(rect.x, 'rect.x after mouse drag').toBe(3);
+      expectWithContext(rect.y, 'rect.y after mouse drag').toBe(2);
 
       // Reset stuff.
       draggable.destroy();
@@ -109,10 +110,13 @@ export default () => {
 
       // Make sure the element has moved 1px, approximately.
       const endRect = el.getBoundingClientRect();
-      expect({
-        x: roundNumber(endRect.x - startRect.x, 3),
-        y: roundNumber(endRect.y - startRect.y, 3),
-      }).toStrictEqual({ x: 1, y: 1 });
+      expectWithContext(
+        {
+          x: roundNumber(endRect.x - startRect.x, 3),
+          y: roundNumber(endRect.y - startRect.y, 3),
+        },
+        'transformed element movement',
+      ).toStrictEqual({ x: 1, y: 1 });
 
       // Reset stuff.
       draggable.destroy();
@@ -172,10 +176,13 @@ export default () => {
 
       // Make sure the element has moved 1px, approximately.
       const endRect = el.getBoundingClientRect();
-      expect({
-        x: roundNumber(endRect.x - startRect.x, 3),
-        y: roundNumber(endRect.y - startRect.y, 3),
-      }).toStrictEqual({ x: 1, y: 1 });
+      expectWithContext(
+        {
+          x: roundNumber(endRect.x - startRect.x, 3),
+          y: roundNumber(endRect.y - startRect.y, 3),
+        },
+        'individual transforms movement',
+      ).toStrictEqual({ x: 1, y: 1 });
 
       // Reset stuff.
       draggable.destroy();

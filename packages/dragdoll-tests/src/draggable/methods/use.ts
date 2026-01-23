@@ -3,6 +3,7 @@ import { Sensor } from 'dragdoll/sensors';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 
 export default () => {
   describe('use', () => {
@@ -36,8 +37,8 @@ export default () => {
 
       const draggableWithPlugin = draggable.use(testPlugin());
 
-      expect(draggableWithPlugin.plugins.test.name).toBe('test');
-      expect(draggableWithPlugin.plugins.test.version).toBe('1.0.0');
+      expectWithContext(draggableWithPlugin.plugins.test.name, 'plugin name').toBe('test');
+      expectWithContext(draggableWithPlugin.plugins.test.version, 'plugin version').toBe('1.0.0');
 
       draggable.destroy();
       keyboardSensor.destroy();

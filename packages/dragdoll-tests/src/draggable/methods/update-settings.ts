@@ -2,6 +2,7 @@ import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 
 export default () => {
   describe('updateSettings', () => {
@@ -15,7 +16,7 @@ export default () => {
       const newContainer = createTestElement();
       draggable.updateSettings({ container: newContainer });
 
-      expect(draggable.settings.container).toBe(newContainer);
+      expectWithContext(draggable.settings.container, 'container updated').toBe(newContainer);
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -31,7 +32,9 @@ export default () => {
       const newStartPredicate = () => false;
       draggable.updateSettings({ startPredicate: newStartPredicate });
 
-      expect(draggable.settings.startPredicate).toBe(newStartPredicate);
+      expectWithContext(draggable.settings.startPredicate, 'startPredicate updated').toBe(
+        newStartPredicate,
+      );
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -47,7 +50,7 @@ export default () => {
       const newElements = () => [elB];
       draggable.updateSettings({ elements: newElements });
 
-      expect(draggable.settings.elements).toBe(newElements);
+      expectWithContext(draggable.settings.elements, 'elements updated').toBe(newElements);
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -63,7 +66,9 @@ export default () => {
       const newFrozenStyles = () => ({ position: 'absolute' });
       draggable.updateSettings({ frozenStyles: newFrozenStyles });
 
-      expect(draggable.settings.frozenStyles).toBe(newFrozenStyles);
+      expectWithContext(draggable.settings.frozenStyles, 'frozenStyles updated').toBe(
+        newFrozenStyles,
+      );
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -80,7 +85,10 @@ export default () => {
       ];
       draggable.updateSettings({ positionModifiers: newPositionModifiers });
 
-      expect(draggable.settings.positionModifiers).toStrictEqual(newPositionModifiers);
+      expectWithContext(
+        draggable.settings.positionModifiers,
+        'positionModifiers updated',
+      ).toStrictEqual(newPositionModifiers);
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -95,7 +103,9 @@ export default () => {
       const newApplyPosition = () => {};
       draggable.updateSettings({ applyPosition: newApplyPosition });
 
-      expect(draggable.settings.applyPosition).toBe(newApplyPosition);
+      expectWithContext(draggable.settings.applyPosition, 'applyPosition updated').toBe(
+        newApplyPosition,
+      );
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -110,7 +120,9 @@ export default () => {
       const newOnPrepareStart = () => {};
       draggable.updateSettings({ onPrepareStart: newOnPrepareStart });
 
-      expect(draggable.settings.onPrepareStart).toBe(newOnPrepareStart);
+      expectWithContext(draggable.settings.onPrepareStart, 'onPrepareStart updated').toBe(
+        newOnPrepareStart,
+      );
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -125,7 +137,7 @@ export default () => {
       const newOnStart = () => {};
       draggable.updateSettings({ onStart: newOnStart });
 
-      expect(draggable.settings.onStart).toBe(newOnStart);
+      expectWithContext(draggable.settings.onStart, 'onStart updated').toBe(newOnStart);
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -140,7 +152,9 @@ export default () => {
       const newOnPrepareMove = () => {};
       draggable.updateSettings({ onPrepareMove: newOnPrepareMove });
 
-      expect(draggable.settings.onPrepareMove).toBe(newOnPrepareMove);
+      expectWithContext(draggable.settings.onPrepareMove, 'onPrepareMove updated').toBe(
+        newOnPrepareMove,
+      );
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -155,7 +169,7 @@ export default () => {
       const newOnMove = () => {};
       draggable.updateSettings({ onMove: newOnMove });
 
-      expect(draggable.settings.onMove).toBe(newOnMove);
+      expectWithContext(draggable.settings.onMove, 'onMove updated').toBe(newOnMove);
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -170,7 +184,7 @@ export default () => {
       const newOnEnd = () => {};
       draggable.updateSettings({ onEnd: newOnEnd });
 
-      expect(draggable.settings.onEnd).toBe(newOnEnd);
+      expectWithContext(draggable.settings.onEnd, 'onEnd updated').toBe(newOnEnd);
 
       draggable.destroy();
       keyboardSensor.destroy();
@@ -185,7 +199,7 @@ export default () => {
       const newOnDestroy = () => {};
       draggable.updateSettings({ onDestroy: newOnDestroy });
 
-      expect(draggable.settings.onDestroy).toBe(newOnDestroy);
+      expectWithContext(draggable.settings.onDestroy, 'onDestroy updated').toBe(newOnDestroy);
 
       draggable.destroy();
       keyboardSensor.destroy();

@@ -2,6 +2,7 @@ import { PointerSensor, type PointerSensorMoveEvent } from 'dragdoll/sensors/poi
 import { createFakeDrag } from '../../utils/create-fake-drag.js';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 
 export default () => {
   describe('move', () => {
@@ -17,7 +18,7 @@ export default () => {
         if (moveEvent === null) {
           moveEvent = e;
         } else {
-          expect(false).toBe(true);
+          expectWithContext(false, 'move triggered multiple times').toBe(true);
         }
       });
 
@@ -39,7 +40,7 @@ export default () => {
       );
 
       const { srcEvent, ...restOfMoveEvent } = moveEvent!;
-      expect(restOfMoveEvent).toStrictEqual({
+      expectWithContext(restOfMoveEvent, 'mousemove event data').toStrictEqual({
         type: 'move',
         target: el,
         pointerId: -1,
@@ -51,7 +52,7 @@ export default () => {
         deltaX: 1,
         deltaY: 1,
       });
-      expect(srcEvent).toBe(sourceEvent);
+      expectWithContext(srcEvent, 'mousemove srcEvent').toBe(sourceEvent);
 
       s.destroy();
       el.remove();
@@ -67,7 +68,7 @@ export default () => {
         if (moveEvent === null) {
           moveEvent = e;
         } else {
-          expect(false).toBe(true);
+          expectWithContext(false, 'move triggered multiple times').toBe(true);
         }
       });
 
@@ -89,7 +90,7 @@ export default () => {
       );
 
       const { srcEvent, ...restOfMoveEvent } = moveEvent!;
-      expect(restOfMoveEvent).toStrictEqual({
+      expectWithContext(restOfMoveEvent, 'pointermove event data').toStrictEqual({
         type: 'move',
         target: el,
         pointerId: sourceEvent.pointerId,
@@ -101,7 +102,7 @@ export default () => {
         deltaX: 1,
         deltaY: 1,
       });
-      expect(srcEvent).toBe(sourceEvent);
+      expectWithContext(srcEvent, 'pointermove srcEvent').toBe(sourceEvent);
 
       s.destroy();
       el.remove();
@@ -117,7 +118,7 @@ export default () => {
         if (moveEvent === null) {
           moveEvent = e;
         } else {
-          expect(false).toBe(true);
+          expectWithContext(false, 'move triggered multiple times').toBe(true);
         }
       });
 
@@ -139,7 +140,7 @@ export default () => {
       );
 
       const { srcEvent, ...restOfMoveEvent } = moveEvent!;
-      expect(restOfMoveEvent).toStrictEqual({
+      expectWithContext(restOfMoveEvent, 'touchmove event data').toStrictEqual({
         type: 'move',
         target: el,
         pointerId: sourceEvent.changedTouches[0].identifier,
@@ -151,7 +152,7 @@ export default () => {
         deltaX: 1,
         deltaY: 1,
       });
-      expect(srcEvent).toBe(sourceEvent);
+      expectWithContext(srcEvent, 'touchmove srcEvent').toBe(sourceEvent);
 
       s.destroy();
       el.remove();

@@ -1,5 +1,6 @@
 import { BaseSensor } from 'dragdoll/sensors/base';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 
 export default () => {
   describe('drag', () => {
@@ -7,7 +8,7 @@ export default () => {
 
     it(`should be null on init`, () => {
       const s = new BaseSensor();
-      expect(s.drag).toBe(null);
+      expectWithContext(s.drag, 'drag is null on init').toBe(null);
       s.destroy();
     });
 
@@ -20,7 +21,7 @@ export default () => {
         y: 0,
       });
 
-      expect(s.drag).toStrictEqual({
+      expectWithContext(s.drag, 'drag data during drag').toStrictEqual({
         startX: 0,
         startY: 0,
         x: 0,

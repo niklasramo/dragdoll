@@ -2,6 +2,7 @@ import { Draggable } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 import { focusElement } from '../../utils/focus-element.js';
 import { waitNextFrame } from '../../utils/wait-next-frame.js';
 
@@ -17,7 +18,7 @@ export default () => {
         elements: () => [el],
         onEnd: (drag) => {
           onEndCalled = true;
-          expect(drag.isEnded).toBe(true);
+          expectWithContext(drag.isEnded, 'isEnded in onEnd').toBe(true);
         },
       });
       let endEventTriggered = false;
@@ -33,22 +34,22 @@ export default () => {
       await waitNextFrame();
 
       // Verify that the drag started.
-      expect(draggable.drag).not.toBe(null);
+      expectWithContext(draggable.drag, 'drag started').not.toBe(null);
 
       // Stop dragging.
       draggable.stop();
 
       // Verify that the drag has stopped instantly.
-      expect(draggable.drag).toBe(null);
+      expectWithContext(draggable.drag, 'drag stopped').toBe(null);
 
       // Verify that the end event is triggered.
-      expect(endEventTriggered).toBe(true);
+      expectWithContext(endEventTriggered, 'end event triggered').toBe(true);
 
       // Verify that the onEnd callback is called.
-      expect(onEndCalled).toBe(true);
+      expectWithContext(onEndCalled, 'onEnd callback called').toBe(true);
 
       // Verify that the element's bounding client rect did not change.
-      expect(elRect).toStrictEqual(el.getBoundingClientRect());
+      expectWithContext(elRect, 'element rect unchanged').toStrictEqual(el.getBoundingClientRect());
 
       // Clean up.
       draggable.destroy();
@@ -64,7 +65,7 @@ export default () => {
         elements: () => [el],
         onEnd: (drag) => {
           onEndCalled = true;
-          expect(drag.isEnded).toBe(true);
+          expectWithContext(drag.isEnded, 'isEnded in onEnd').toBe(true);
         },
       });
       let endEventTriggered = false;
@@ -79,22 +80,24 @@ export default () => {
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
       // Verify that the drag started.
-      expect(draggable.drag).not.toBe(null);
+      expectWithContext(draggable.drag, 'drag started sync').not.toBe(null);
 
       // Stop dragging.
       draggable.stop();
 
       // Verify that the drag has stopped instantly.
-      expect(draggable.drag).toBe(null);
+      expectWithContext(draggable.drag, 'drag stopped sync').toBe(null);
 
       // Verify that the end event is triggered.
-      expect(endEventTriggered).toBe(true);
+      expectWithContext(endEventTriggered, 'end event triggered sync').toBe(true);
 
       // Verify that the onEnd callback is called.
-      expect(onEndCalled).toBe(true);
+      expectWithContext(onEndCalled, 'onEnd callback called sync').toBe(true);
 
       // Verify that the element's bounding client rect did not change.
-      expect(elRect).toStrictEqual(el.getBoundingClientRect());
+      expectWithContext(elRect, 'element rect unchanged sync').toStrictEqual(
+        el.getBoundingClientRect(),
+      );
 
       // Clean up.
       draggable.destroy();

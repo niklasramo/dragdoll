@@ -8,6 +8,7 @@ import { Droppable } from 'dragdoll/droppable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../utils/create-test-element.js';
 import { defaultSetup } from '../utils/default-setup.js';
+import { expectWithContext } from '../utils/expect-with-context.js';
 import { focusElement } from '../utils/focus-element.js';
 import { waitNextFrame } from '../utils/wait-next-frame.js';
 
@@ -69,18 +70,24 @@ export default () => {
         await waitNextFrame();
 
         // Assert that a single collision was detected.
-        expect(collisionEvents.length).toBe(1);
-        expect(collisionEvents[0].collisions.length).toBe(1);
+        expectWithContext(collisionEvents.length, 'collision events count').toBe(1);
+        expectWithContext(collisionEvents[0].collisions.length, 'collisions count').toBe(1);
 
         // Assert that the visible rectangles are correct.
         const firstCollision = collisionEvents[0].collisions[0];
-        expect(firstCollision.draggableVisibleRect).toStrictEqual({
+        expectWithContext(
+          firstCollision.draggableVisibleRect,
+          'draggable visible rect',
+        ).toStrictEqual({
           x: -100,
           y: -100,
           width: 100,
           height: 100,
         });
-        expect(firstCollision.droppableVisibleRect).toStrictEqual({
+        expectWithContext(
+          firstCollision.droppableVisibleRect,
+          'droppable visible rect',
+        ).toStrictEqual({
           x: -100,
           y: -100,
           width: 100,
@@ -144,18 +151,24 @@ export default () => {
         await waitNextFrame();
 
         // Assert that a single collision was detected.
-        expect(collisionEvents.length).toBe(1);
-        expect(collisionEvents[0].collisions.length).toBe(1);
+        expectWithContext(collisionEvents.length, 'collision events count').toBe(1);
+        expectWithContext(collisionEvents[0].collisions.length, 'collisions count').toBe(1);
 
         // Assert that the visible rectangles are correct.
         const firstCollision = collisionEvents[0].collisions[0];
-        expect(firstCollision.draggableVisibleRect).toStrictEqual({
+        expectWithContext(
+          firstCollision.draggableVisibleRect,
+          'draggable visible rect clipped',
+        ).toStrictEqual({
           x: 0,
           y: 0,
           width: 100,
           height: 100,
         });
-        expect(firstCollision.droppableVisibleRect).toStrictEqual({
+        expectWithContext(
+          firstCollision.droppableVisibleRect,
+          'droppable visible rect clipped',
+        ).toStrictEqual({
           x: 0,
           y: 0,
           width: 50,
@@ -223,18 +236,24 @@ export default () => {
         await waitNextFrame();
 
         // Assert that a single collision was detected.
-        expect(collisionEvents.length).toBe(1);
-        expect(collisionEvents[0].collisions.length).toBe(1);
+        expectWithContext(collisionEvents.length, 'collision events count').toBe(1);
+        expectWithContext(collisionEvents[0].collisions.length, 'collisions count').toBe(1);
 
         // Assert that the visible rectangles are correct.
         const firstCollision = collisionEvents[0].collisions[0];
-        expect(firstCollision.draggableVisibleRect).toStrictEqual({
+        expectWithContext(
+          firstCollision.draggableVisibleRect,
+          'draggable visible rect absolute',
+        ).toStrictEqual({
           x: 0,
           y: 0,
           width: 50,
           height: 50,
         });
-        expect(firstCollision.droppableVisibleRect).toStrictEqual({
+        expectWithContext(
+          firstCollision.droppableVisibleRect,
+          'droppable visible rect absolute',
+        ).toStrictEqual({
           x: 0,
           y: 0,
           width: 50,

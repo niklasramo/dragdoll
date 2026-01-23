@@ -1,6 +1,7 @@
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
+import { expectWithContext } from '../../utils/expect-with-context.js';
 import { focusElement } from '../../utils/focus-element.js';
 
 export default () => {
@@ -12,8 +13,8 @@ export default () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el, {
         startPredicate: (e, sensor) => {
-          expect(e.type).toBe('keydown');
-          expect(sensor).toBe(s);
+          expectWithContext(e.type, 'event type').toBe('keydown');
+          expectWithContext(sensor, 'sensor reference').toBe(s);
           return returnValue;
         },
       });
@@ -21,17 +22,17 @@ export default () => {
       // Make sure the drag does not start if the predicate returns null.
       returnValue = null;
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-      expect(s.drag).toBe(null);
+      expectWithContext(s.drag, 'drag null when predicate returns null').toBe(null);
 
       // Make sure the drag does not start if the predicate returns undefined.
       returnValue = undefined;
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-      expect(s.drag).toBe(null);
+      expectWithContext(s.drag, 'drag null when predicate returns undefined').toBe(null);
 
       // Make sure the drag starts if the predicate returns a point.
       returnValue = { x: 10, y: 20 };
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-      expect(s.drag).toStrictEqual({
+      expectWithContext(s.drag, 'drag started with custom point').toStrictEqual({
         startX: 10,
         startY: 20,
         x: 10,
@@ -53,18 +54,18 @@ export default () => {
 
         // Drag should not start if there is no focused element.
         document.dispatchEvent(srcEvent);
-        expect(s.drag).toBe(null);
+        expectWithContext(s.drag, `drag null without focus (${key})`).toBe(null);
 
         // Drag should not start if any other element than sensor element is
         // focused.
         focusElement(elDecoy);
         document.dispatchEvent(srcEvent);
-        expect(s.drag).toBe(null);
+        expectWithContext(s.drag, `drag null with decoy focus (${key})`).toBe(null);
 
         // Drag should start if the sensor element is focused.
         focusElement(el);
         document.dispatchEvent(srcEvent);
-        expect(s.drag).toStrictEqual({
+        expectWithContext(s.drag, `drag started with ${key}`).toStrictEqual({
           startX: 0,
           startY: 0,
           x: 0,
