@@ -4,17 +4,48 @@ import pkgReact from 'dragdoll-react/package.json' with { type: 'json' };
 const { version } = pkg;
 const { version: versionReact } = pkgReact;
 
+const SITE_URL = 'https://niklasramo.github.io/dragdoll/';
+
 export default {
   base: '/dragdoll/',
   lang: 'en-US',
   title: 'DragDoll',
   description: 'Modular and extensible drag system.',
   appearance: 'force-dark',
-  head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/dragdoll/dragdoll-favicon.svg' }]],
+  cleanUrls: true,
+  head: [
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/dragdoll/dragdoll-favicon.svg' }],
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:site_name', content: 'DragDoll' }],
+    ['meta', { property: 'og:title', content: 'DragDoll' }],
+    ['meta', { property: 'og:description', content: 'Modular and extensible drag system.' }],
+    ['meta', { property: 'og:url', content: SITE_URL }],
+    ['meta', { name: 'twitter:card', content: 'summary' }],
+    ['meta', { name: 'twitter:title', content: 'DragDoll' }],
+    ['meta', { name: 'twitter:description', content: 'Modular and extensible drag system.' }],
+  ],
   markdown: {
     lineNumbers: true,
   },
   lastUpdated: true,
+  sitemap: {
+    hostname: SITE_URL,
+  },
+  transformPageData(pageData) {
+    // Build canonical URL for the page.
+    const canonicalUrl = `${SITE_URL}${pageData.relativePath}`
+      .replace(/index\.md$/, '')
+      .replace(/\.md$/, '');
+
+    // Initialize head array if it doesn't exist.
+    pageData.frontmatter.head ??= [];
+
+    // Add canonical link.
+    pageData.frontmatter.head.push(['link', { rel: 'canonical', href: canonicalUrl }]);
+
+    // Add page-specific Open Graph URL.
+    pageData.frontmatter.head.push(['meta', { property: 'og:url', content: canonicalUrl }]);
+  },
   themeConfig: {
     logo: '/dragdoll-logo.svg',
     siteTitle: '',
@@ -25,7 +56,7 @@ export default {
     },
     outline: [2, 3],
     editLink: {
-      pattern: 'https://github.com/niklasramo/dragdoll/edit/main/:path',
+      pattern: 'https://github.com/niklasramo/dragdoll/edit/main/packages/dragdoll-docs/:path',
       text: 'Edit this page on GitHub',
     },
     socialLinks: [
@@ -40,13 +71,14 @@ export default {
     ],
     footer: {
       message: 'DragDoll is released under the MIT License.',
-      copyright: 'Copyright © 2022-2025 Niklas Rämö',
+      copyright: `Copyright © 2022-${new Date().getFullYear()} Niklas Rämö`,
     },
     search: {
       provider: 'local',
     },
-    sitemap: {
-      hostname: 'https://niklasramo.github.io/dragdoll/',
+    docFooter: {
+      prev: 'Previous',
+      next: 'Next',
     },
     /*
     algolia: {
@@ -75,7 +107,6 @@ function sidebarMain() {
   return [
     {
       text: `Core v${version}`,
-      collapsible: false,
       items: [
         { text: 'Introduction', link: '/' },
         { text: 'Getting Started', link: '/getting-started' },
@@ -85,7 +116,6 @@ function sidebarMain() {
     },
     {
       text: 'Sensors',
-      collapsible: false,
       items: [
         { text: 'Sensor', link: '/sensor' },
         { text: 'BaseSensor', link: '/base-sensor' },
@@ -97,12 +127,10 @@ function sidebarMain() {
     },
     {
       text: 'Draggable',
-      collapsible: false,
       items: [
         {
           text: 'Draggable',
           link: '/draggable',
-          collapsible: false,
           items: [
             { text: 'DraggableDrag', link: '/draggable-drag' },
             { text: 'DraggableDragItem', link: '/draggable-drag-item' },
@@ -111,12 +139,10 @@ function sidebarMain() {
         {
           text: 'Helpers',
           link: '/draggable-helpers',
-          collapsible: false,
         },
         {
           text: 'Modifiers',
           link: '/draggable-modifiers',
-          collapsible: false,
           items: [
             { text: 'Containment', link: '/draggable-containment-modifier' },
             { text: 'Snap', link: '/draggable-snap-modifier' },
@@ -125,24 +151,20 @@ function sidebarMain() {
         {
           text: 'Plugins',
           link: '/draggable-plugins',
-          collapsible: false,
           items: [{ text: 'AutoScroll', link: '/draggable-auto-scroll-plugin' }],
         },
       ],
     },
     {
       text: 'Droppable',
-      collapsible: false,
       items: [{ text: 'Droppable', link: '/droppable' }],
     },
     {
       text: 'DndObserver',
-      collapsible: false,
       items: [
         {
           text: 'DndObserver',
           link: '/dnd-observer',
-          collapsible: false,
           items: [
             { text: 'CollisionDetector', link: '/collision-detector' },
             { text: 'AdvancedCollisionDetector', link: '/advanced-collision-detector' },
@@ -152,7 +174,6 @@ function sidebarMain() {
     },
     {
       text: 'Links',
-      collapsible: false,
       items: [
         { text: 'Releases', link: 'https://github.com/niklasramo/dragdoll/releases' },
         {
@@ -169,7 +190,6 @@ function sidebarReact() {
   return [
     {
       text: `React v${versionReact}`,
-      collapsible: false,
       items: [
         { text: 'Introduction', link: '/react/' },
         { text: 'Getting Started', link: '/react/getting-started' },
@@ -178,7 +198,6 @@ function sidebarReact() {
     },
     {
       text: 'Sensors',
-      collapsible: false,
       items: [
         { text: 'useKeyboardSensor', link: '/react/use-keyboard-sensor' },
         { text: 'useKeyboardMotionSensor', link: '/react/use-keyboard-motion-sensor' },
@@ -187,7 +206,6 @@ function sidebarReact() {
     },
     {
       text: 'Draggable',
-      collapsible: false,
       items: [
         { text: 'useDraggable', link: '/react/use-draggable' },
         { text: 'useDraggableCallback', link: '/react/use-draggable-callback' },
@@ -197,12 +215,10 @@ function sidebarReact() {
     },
     {
       text: 'Droppable',
-      collapsible: false,
       items: [{ text: 'useDroppable', link: '/react/use-droppable' }],
     },
     {
       text: 'DndObserver',
-      collapsible: false,
       items: [
         { text: 'DndObserverContext', link: '/react/dnd-observer-context' },
         { text: 'useDndObserver', link: '/react/use-dnd-observer' },

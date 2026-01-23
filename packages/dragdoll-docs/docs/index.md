@@ -1,3 +1,8 @@
+---
+title: DragDoll - Modular Drag and Drop Library
+description: A modular and highly extensible drag and drop system written in TypeScript. Build sophisticated drag and drop interfaces with sensors, draggables, and droppables.
+---
+
 # What is DragDoll?
 
 DragDoll is a modular and highly extensible drag and drop system written in TypeScript. Originally based on [Muuri](https://muuri.dev/)'s internal drag system, it has been fully redesigned to serve as a general-purpose drag and drop system.
@@ -28,4 +33,4 @@ For complete drag and drop experiences, DragDoll also provides [`DndObserver`](/
 
 - **Utilizing Native Drag and Drop**: By not using the native HTML Drag and Drop API, DragDoll misses out on crucial features like file drag-and-drop and dragging items between different windows. It's still a bit unclear how to integrate the native API with DragDoll in a clear and ergonomic way, but figuring this out is a high priority for us.
 
-- **Support for other Frameworks**: Expect support for frontend frameworks like React, Vue, Svelte, etc. in the future.
+- **Support for More Frameworks**: [React integration](/react/) is now available! Support for other frontend frameworks like Vue, Svelte, etc. is planned for the future.
