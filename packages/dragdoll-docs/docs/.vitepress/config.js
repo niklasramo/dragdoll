@@ -146,6 +146,7 @@ function sidebarMain() {
           items: [
             { text: 'Containment', link: '/draggable-containment-modifier' },
             { text: 'Snap', link: '/draggable-snap-modifier' },
+            { text: 'Start Offset', link: '/draggable-start-offset-modifier' },
           ],
         },
         {
