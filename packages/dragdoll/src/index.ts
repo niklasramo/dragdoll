@@ -8,6 +8,7 @@ export * from './draggable/draggable-drag-item.js';
 export * from './draggable/helpers/create-touch-delay-predicate.js';
 export * from './draggable/modifiers/create-containment-modifier.js';
 export * from './draggable/modifiers/create-snap-modifier.js';
+export * from './draggable/modifiers/start-offset-modifier.js';
 export * from './draggable/plugins/auto-scroll-plugin.js';
 export * from './droppable/droppable.js';
 export * from './sensors/base-motion-sensor.js';

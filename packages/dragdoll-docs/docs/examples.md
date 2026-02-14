@@ -1992,7 +1992,7 @@ A draggable link element that requires 5px of movement before the drag starts. C
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable, PointerSensor } from 'dragdoll';
+import { Draggable, PointerSensor, startOffsetModifier } from 'dragdoll';
 
 const THRESHOLD = 5;
 
@@ -2011,16 +2011,7 @@ new Draggable([pointerSensor], {
     return Math.sqrt(dx * dx + dy * dy) >= THRESHOLD ? true : undefined;
   },
   // Offset position on start to account for the threshold distance moved.
-  positionModifiers: [
-    (change, { phase, drag }) => {
-      if (phase === 'start' && drag.sensor.drag) {
-        const { x, y, startX, startY } = drag.sensor.drag;
-        change.x += x - startX;
-        change.y += y - startY;
-      }
-      return change;
-    },
-  ],
+  positionModifiers: [startOffsetModifier],
   // preventClickOnEnd is enabled by default, so the link click is
   // automatically blocked after dragging. No manual workaround needed!
   onStart: () => {
