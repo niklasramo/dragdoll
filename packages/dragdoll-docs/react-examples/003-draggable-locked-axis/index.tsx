@@ -24,15 +24,9 @@ const DraggableCardMemo = memo(function DraggableCard({
     () => ({
       elements: () => (elementRef.current ? [elementRef.current] : []),
       positionModifiers: [
-        (change, { item }) => {
-          const { element } = item;
-          const allowX = element.classList.contains('axis-x');
-          const allowY = element.classList.contains('axis-y');
-          if (allowX && !allowY) {
-            change.y = 0;
-          } else if (allowY && !allowX) {
-            change.x = 0;
-          }
+        (change) => {
+          if (axis === 'x') change.y = 0;
+          else change.x = 0;
           return change;
         },
       ],

@@ -4,21 +4,37 @@ import { useRef, useState } from 'react';
 import { useCallbackStable } from './use-callback-stable.js';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';
 import { useMemoStable } from './use-memo-stable.js';
+import { useSensorCallback } from './use-sensor-callback.js';
 
 export interface UseKeyboardSensorSettings<
   E extends KeyboardSensorEvents = KeyboardSensorEvents,
-> extends Partial<KeyboardSensorSettings<E>> {}
+> extends Partial<KeyboardSensorSettings<E>> {
+  onStart?: (e: E['start']) => void;
+  onMove?: (e: E['move']) => void;
+  onCancel?: (e: E['cancel']) => void;
+  onEnd?: (e: E['end']) => void;
+  onDestroy?: (e: E['destroy']) => void;
+}
 
 export function useKeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvents>(
   settings?: UseKeyboardSensorSettings<E>,
   element?: Element | null,
 ) {
+  const { onStart, onMove, onCancel, onEnd, onDestroy, ...sensorSettings } =
+    settings || ({} as UseKeyboardSensorSettings<E>);
+
   const [sensor, setSensor] = useState<KeyboardSensor<E> | null>(null);
 
   const sensorRef = useRef<KeyboardSensor<E> | null>(sensor);
 
-  const settingsRef = useRef(settings);
-  settingsRef.current = settings;
+  const settingsRef = useRef(sensorSettings as Partial<KeyboardSensorSettings<E>> | undefined);
+  settingsRef.current = sensorSettings as Partial<KeyboardSensorSettings<E>> | undefined;
+
+  useSensorCallback(sensor, 'start', onStart);
+  useSensorCallback(sensor, 'move', onMove);
+  useSensorCallback(sensor, 'cancel', onCancel);
+  useSensorCallback(sensor, 'end', onEnd);
+  useSensorCallback(sensor, 'destroy', onDestroy);
 
   // Helper function to create a new keyboard sensor or update the existing
   // sensor's element if it already exists.
@@ -82,7 +98,7 @@ export function useKeyboardSensor<E extends KeyboardSensorEvents = KeyboardSenso
         movePredicate = KeyboardSensorDefaultSettings.movePredicate,
         cancelPredicate = KeyboardSensorDefaultSettings.cancelPredicate,
         endPredicate = KeyboardSensorDefaultSettings.endPredicate,
-      } = settings || {};
+      } = sensorSettings;
 
       sensor.updateSettings({
         moveDistance,
@@ -94,7 +110,7 @@ export function useKeyboardSensor<E extends KeyboardSensorEvents = KeyboardSenso
         endPredicate,
       });
     }
-  }, [sensor, settings]);
+  }, [sensor, sensorSettings]);
 
   return useMemoStable(() => {
     return [sensor, setRef] as const;

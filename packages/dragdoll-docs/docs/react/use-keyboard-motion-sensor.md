@@ -53,6 +53,59 @@ type settings = Partial<KeyboardMotionSensorSettings<E>>;
 
 Configuration settings for the keyboard motion sensor. See core [KeyboardMotionSensor settings](/keyboard-motion-sensor#settings) for all available settings.
 
+In addition to the core settings, the following event callback props are supported:
+
+#### onStart
+
+```ts
+type onStart = (e: E['start']) => void;
+```
+
+A callback function that is called when the sensor starts. Optional.
+
+#### onMove
+
+```ts
+type onMove = (e: E['move']) => void;
+```
+
+A callback function that is called when the sensor moves. Optional.
+
+#### onCancel
+
+```ts
+type onCancel = (e: E['cancel']) => void;
+```
+
+A callback function that is called when the sensor is cancelled. Optional.
+
+#### onEnd
+
+```ts
+type onEnd = (e: E['end']) => void;
+```
+
+A callback function that is called when the sensor ends. Optional.
+
+#### onDestroy
+
+```ts
+type onDestroy = (e: E['destroy']) => void;
+```
+
+A callback function that is called when the sensor is destroyed. Optional.
+
+#### onTick
+
+```ts
+type onTick = (e: E['tick']) => void;
+```
+
+A callback function that is called on each tick during continuous motion. This is specific to motion sensors. Optional.
+
+> [!IMPORTANT]
+> The callbacks do not have to be memoized, you can pass new functions every time. Internally, the hook will store the latest callback in a ref and bind a proxy callback to the event listener, which in turn will call the latest callback.
+
 - Optional.
 - Default: `{}`.
 
@@ -99,5 +152,12 @@ import type { UseKeyboardMotionSensorSettings } from 'dragdoll-react';
 // Interface
 interface UseKeyboardMotionSensorSettings<
   E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents,
-> extends Partial<KeyboardMotionSensorSettings<E>> {}
+> extends Partial<KeyboardMotionSensorSettings<E>> {
+  onStart?: (e: E['start']) => void;
+  onMove?: (e: E['move']) => void;
+  onCancel?: (e: E['cancel']) => void;
+  onEnd?: (e: E['end']) => void;
+  onDestroy?: (e: E['destroy']) => void;
+  onTick?: (e: E['tick']) => void;
+}
 ```

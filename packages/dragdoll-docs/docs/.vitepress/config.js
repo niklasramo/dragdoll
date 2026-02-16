@@ -203,6 +203,7 @@ function sidebarReact() {
         { text: 'useKeyboardSensor', link: '/react/use-keyboard-sensor' },
         { text: 'useKeyboardMotionSensor', link: '/react/use-keyboard-motion-sensor' },
         { text: 'usePointerSensor', link: '/react/use-pointer-sensor' },
+        { text: 'useSensorCallback', link: '/react/use-sensor-callback' },
       ],
     },
     {

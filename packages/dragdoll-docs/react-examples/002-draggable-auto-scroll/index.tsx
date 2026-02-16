@@ -77,9 +77,13 @@ function App() {
   const dragContainerRef = useRef<HTMLDivElement | null>(null);
   return (
     <>
-      <div ref={dragContainerRef} className="drag-container" />
-      <div className="card-container">
-        <DraggableCardMemo key="card" dragContainerRef={dragContainerRef} />
+      <div className="drag-container-outer">
+        <div ref={dragContainerRef} className="drag-container" />
+      </div>
+      <div className="card-container-outer">
+        <div className="card-container">
+          <DraggableCardMemo key="card" dragContainerRef={dragContainerRef} />
+        </div>
       </div>
     </>
   );
