@@ -229,263 +229,11 @@ body {
 
 :::
 
-## Draggable - Auto Scroll
+## Draggable - Auto Scroll & Transforms
 
-This example demonstrates quite a lot of things. We use a drag container and freeze `left` and `top` values before we move the dragged element into the drag container. The draggable element has percentage based left and top values, which would not be correct when the element is moved to the drag container, which has different dimensions. Lastly we use the auto scroll plugin and configure it to scroll the viewport on y-axis when the dragged element is close to its edges. Note that we also set auto scroll target's `padding.top` and `padding.bottom` to `Infinity` to allow the scrolling to continue even if you drag the element past the edges.
+Demonstrates auto-scrolling during drag and transparent CSS transform handling. The draggable element is always guaranteed to move in sync with the active sensor, regardless of any CSS transforms or zoom in the document. Auto-scroll kicks in when you drag near the window edges.
 
 <div class="example"><iframe src="/dragdoll/react-examples/002-draggable-auto-scroll/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/react-examples/002-draggable-auto-scroll/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
-
-::: code-group
-
-```tsx [index.tsx]
-import {
-  useDraggable,
-  useDraggableAutoScroll,
-  UseDraggableAutoScrollSettings,
-  useDraggableDrag,
-  UseDraggableSettings,
-  useKeyboardMotionSensor,
-  usePointerSensor,
-} from 'dragdoll-react';
-import { memo, RefObject, StrictMode, useCallback, useMemo, useRef } from 'react';
-import { createRoot } from 'react-dom/client';
-
-const DraggableCardMemo = memo(function DraggableCard({
-  dragContainerRef,
-}: {
-  dragContainerRef: RefObject<HTMLElement | null>;
-}) {
-  const elementRef = useRef<HTMLDivElement>(null);
-  const [pointerSensor, setPointerSensorRef] = usePointerSensor();
-  const [keyboardSensor, setKeyboardSensorRef] = useKeyboardMotionSensor({
-    computeSpeed: () => 100,
-  });
-
-  const draggableSettings: UseDraggableSettings = useMemo(
-    () => ({
-      // We are doing the very thing here we advise against in the docs. We use
-      // the container option and provide a React controlled element to the
-      // elements option. However, in this case this will work without any
-      // issues because we are making sure React has no reason to move the
-      // dragged element in the DOM during the drag.
-      container: () => dragContainerRef.current || null,
-      elements: () => (elementRef.current ? [elementRef.current] : []),
-      frozenStyles: () => ['left', 'top'],
-    }),
-    [dragContainerRef],
-  );
-
-  const autoScrollSettings: UseDraggableAutoScrollSettings = useMemo(
-    () => ({
-      targets: [
-        {
-          element: window,
-          axis: 'y',
-          padding: { top: Infinity, bottom: Infinity },
-        },
-      ],
-    }),
-    [],
-  );
-
-  const draggable = useDraggableAutoScroll(
-    useDraggable([pointerSensor, keyboardSensor], draggableSettings),
-    autoScrollSettings,
-  );
-
-  const drag = useDraggableDrag(draggable);
-
-  const setRefs = useCallback(
-    (node: HTMLDivElement | null) => {
-      elementRef.current = node;
-      setPointerSensorRef(node);
-      setKeyboardSensorRef(node);
-    },
-    [setPointerSensorRef, setKeyboardSensorRef],
-  );
-
-  return (
-    <div ref={setRefs} className={`card draggable ${drag ? 'dragging' : ''}`} tabIndex={0}>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-        <path d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z" />
-      </svg>
-    </div>
-  );
-});
-
-function App() {
-  const dragContainerRef = useRef<HTMLDivElement | null>(null);
-  return (
-    <>
-      <div ref={dragContainerRef} className="drag-container" />
-      <div className="card-container">
-        <DraggableCardMemo key="card" dragContainerRef={dragContainerRef} />
-      </div>
-    </>
-  );
-}
-
-const rootElement = document.getElementById('root');
-if (!rootElement) {
-  throw new Error('Failed to find the root element');
-}
-
-const root = createRoot(rootElement);
-root.render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
-```
-
-```html [index.html]
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Draggable - Auto Scroll</title>
-    <meta
-      name="description"
-      content="This example demonstrates quite a lot of things. We use a drag container and freeze `left` and `top` values before we move the dragged element into the drag container. The draggable element has percentage based left and top values, which would not be correct when the element is moved to the drag container, which has different dimensions. Lastly we use the auto scroll plugin and configure it to scroll the viewport on y-axis when the dragged element is close to its edges. Note that we also set auto scroll target's `padding.top` and `padding.bottom` to `Infinity` to allow the scrolling to continue even if you drag the element past the edges."
-    />
-    <meta
-      name="viewport"
-      content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
-    />
-    <link rel="stylesheet" href="base.css" />
-    <link rel="stylesheet" href="index.css" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="index.tsx"></script>
-  </body>
-</html>
-```
-
-```css [index.css]
-body {
-  height: 300%;
-  overflow-y: auto;
-}
-
-.drag-container {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 0px;
-  height: 0px;
-}
-
-.card-container {
-  position: absolute;
-  inset: 0;
-}
-
-.card.draggable {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translateX(-50%) translateY(-50%);
-}
-```
-
-```css [base.css]
-:root {
-  --bg-color: #111;
-  --color: rgba(255, 255, 245, 0.86);
-  --theme-color: #ff5555;
-  --card-color: rgba(0, 0, 0, 0.7);
-  --card-bgColor: var(--theme-color);
-  --card-color--focus: var(--card-color);
-  --card-bgColor--focus: #db55ff;
-  --card-color--drag: var(--card-color);
-  --card-bgColor--drag: #55ff9c;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html {
-  height: 100%;
-  background: var(--bg-color);
-  color: var(--color);
-  background-size: 40px 40px;
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-}
-
-body {
-  margin: 0;
-  overflow: hidden;
-}
-
-.card {
-  display: flex;
-  justify-content: safe center;
-  align-items: safe center;
-  width: 100px;
-  height: 100px;
-  background-color: var(--card-bgColor);
-  color: var(--card-color);
-  border-radius: 7px;
-  border: 1.5px solid var(--bg-color);
-  font-size: 30px;
-
-  & svg {
-    width: 1em;
-    height: 1em;
-    fill: var(--card-color);
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover,
-    &:focus-visible {
-      background-color: var(--card-bgColor--focus);
-      color: var(--card-color--focus);
-
-      & svg {
-        fill: var(--card-color--focus);
-      }
-    }
-
-    &:focus-visible {
-      outline-offset: 4px;
-      outline: 1px solid var(--card-bgColor--focus);
-    }
-  }
-
-  &.draggable {
-    cursor: grab;
-    touch-action: none;
-  }
-
-  &.dragging {
-    cursor: grabbing;
-    background-color: var(--card-bgColor--drag);
-    color: var(--card-color--drag);
-
-    & svg {
-      fill: var(--card-color--drag);
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      &:focus-visible {
-        outline: 1px solid var(--card-bgColor--drag);
-      }
-    }
-  }
-}
-```
-
-:::
-
-## Draggable - Transformed
-
-Draggable automagically handles (2D) transformed ancestors and the dragged element itself, out of the box, performantly. The draggable element is always guaranteed to move in sync with the active sensor, to the same direction and the same distance, regardless of any CSS transforms or zoom in any part of the document. In this example we showcase a scenario where the draggable element is within two differently transformed containers with different transform origins and uses a differently transformed drag container that's also wrapped in an extra transformed container. The draggable element itself also has transforms applied.
-
-<div class="example"><iframe src="/dragdoll/react-examples/003-draggable-transformed/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/react-examples/003-draggable-transformed/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -599,10 +347,10 @@ root.render(
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Draggable - Transformed</title>
+    <title>Draggable - Auto Scroll &amp; Transforms</title>
     <meta
       name="description"
-      content="Draggable automagically handles (2D) transformed ancestors and the dragged element itself, out of the box, performantly. The draggable element is always guaranteed to move in sync with the active sensor, to the same direction and the same distance, regardless of any CSS transforms or zoom in any part of the document. In this example we showcase a scenario where the draggable element is within two differently transformed containers with different transform origins and uses a differently transformed drag container that's also wrapped in an extra transformed container. The draggable element itself also has transforms applied."
+      content="Demonstrates auto-scrolling during drag and transparent CSS transform handling. The draggable element is always guaranteed to move in sync with the active sensor, regardless of any CSS transforms or zoom in the document. Auto-scroll kicks in when you drag near the window edges."
     />
     <meta
       name="viewport"
@@ -761,7 +509,7 @@ body {
 
 Here we have two elements which can be dragged on one axis only. You can use this example as the basis of building your own custom position modifiers (a powerful feature that allows you to control a dragged element's position at every step of the drag process).
 
-<div class="example"><iframe src="/dragdoll/react-examples/004-draggable-locked-axis/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/react-examples/004-draggable-locked-axis/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/react-examples/003-draggable-locked-axis/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/react-examples/003-draggable-locked-axis/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -792,15 +540,9 @@ const DraggableCardMemo = memo(function DraggableCard({
     () => ({
       elements: () => (elementRef.current ? [elementRef.current] : []),
       positionModifiers: [
-        (change, { item }) => {
-          const { element } = item;
-          const allowX = element.classList.contains('axis-x');
-          const allowY = element.classList.contains('axis-y');
-          if (allowX && !allowY) {
-            change.y = 0;
-          } else if (allowY && !allowX) {
-            change.x = 0;
-          }
+        (change) => {
+          if (axis === 'x') change.y = 0;
+          else change.x = 0;
           return change;
         },
       ],
@@ -1020,7 +762,7 @@ body {
 
 A simple demo on how to use the built-in snap modifier.
 
-<div class="example"><iframe src="/dragdoll/react-examples/005-draggable-snap-to-grid/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/react-examples/005-draggable-snap-to-grid/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/react-examples/004-draggable-snap-to-grid/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/react-examples/004-draggable-snap-to-grid/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -1229,7 +971,7 @@ body {
 
 A simple demo on how to use the built-in containment modifier. The first argument of `createContainmentModifier` should be a function that returns the client rect of the containment area. That function is called on every drag 'move' event and also on 'start' and 'end' events. The second argument is a boolean whose value is cached on start event to define if the modifier should track drifting of the sensor when the dragged element hits an edge of the containment area and the sensor keeps on moving away. If the drift is being tracked the draggable element will not be moved to the opposing direction until the sensor is back inside the containment area. By default the drift is tracked only for `PointerSensor`.
 
-<div class="example"><iframe src="/dragdoll/react-examples/006-draggable-containment/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/react-examples/006-draggable-containment/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/react-examples/005-draggable-containment/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/react-examples/005-draggable-containment/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -1446,6 +1188,223 @@ body {
 
 :::
 
+## Draggable - Combined Modifiers
+
+Demonstrates grid-aware containment. The element has a distance threshold, snaps to a 40px grid, and is contained within the viewport without partial grid cells at the edges.
+
+<div class="example"><iframe src="/dragdoll/react-examples/006-draggable-combined-modifiers/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/react-examples/006-draggable-combined-modifiers/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+
+::: code-group
+
+```tsx [index.tsx]
+import { createContainmentModifier } from 'dragdoll';
+import {
+  useDraggable,
+  useDraggableDrag,
+  UseDraggableSettings,
+  usePointerSensor,
+} from 'dragdoll-react';
+import { memo, StrictMode, useCallback, useMemo, useRef } from 'react';
+import { createRoot } from 'react-dom/client';
+
+const THRESHOLD = 5;
+const GRID = 40;
+
+const DraggableCardMemo = memo(function DraggableCard() {
+  const elementRef = useRef<HTMLDivElement>(null);
+  const [pointerSensor, setPointerSensorRef] = usePointerSensor();
+
+  const draggableSettings: UseDraggableSettings = useMemo(
+    () => ({
+      elements: () => (elementRef.current ? [elementRef.current] : []),
+      startPredicate: ({ event }) => {
+        const dx = event.x - event.startX;
+        const dy = event.y - event.startY;
+        return Math.sqrt(dx * dx + dy * dy) >= THRESHOLD ? true : undefined;
+      },
+      positionModifiers: [
+        createContainmentModifier(
+          () => ({
+            x: 0,
+            y: 0,
+            width: window.innerWidth,
+            height: window.innerHeight,
+          }),
+          { snapX: GRID, snapY: GRID },
+        ),
+      ],
+    }),
+    [],
+  );
+
+  const draggable = useDraggable([pointerSensor], draggableSettings);
+  const drag = useDraggableDrag(draggable);
+
+  const setRefs = useCallback(
+    (node: HTMLDivElement | null) => {
+      elementRef.current = node;
+      setPointerSensorRef(node);
+    },
+    [setPointerSensorRef],
+  );
+
+  return (
+    <div ref={setRefs} className={`card draggable ${drag ? 'dragging' : ''}`} tabIndex={0}>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+        <path d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z" />
+      </svg>
+    </div>
+  );
+});
+
+function App() {
+  return <DraggableCardMemo />;
+}
+
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  throw new Error('Failed to find the root element');
+}
+
+const root = createRoot(rootElement);
+root.render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
+```
+
+```html [index.html]
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Draggable - Combined Modifiers</title>
+    <meta
+      name="description"
+      content="Demonstrates grid-aware containment. The element has a distance threshold, snaps to a 40px grid, and is contained within the viewport without partial grid cells at the edges."
+    />
+    <meta
+      name="viewport"
+      content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="index.tsx"></script>
+  </body>
+</html>
+```
+
+```css [index.css]
+body {
+  width: 100%;
+  height: 100%;
+}
+
+.card.draggable {
+  position: relative;
+  left: 0;
+  top: 0;
+  width: 80px;
+  height: 80px;
+}
+```
+
+```css [base.css]
+:root {
+  --bg-color: #111;
+  --color: rgba(255, 255, 245, 0.86);
+  --theme-color: #ff5555;
+  --card-color: rgba(0, 0, 0, 0.7);
+  --card-bgColor: var(--theme-color);
+  --card-color--focus: var(--card-color);
+  --card-bgColor--focus: #db55ff;
+  --card-color--drag: var(--card-color);
+  --card-bgColor--drag: #55ff9c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  background: var(--bg-color);
+  color: var(--color);
+  background-size: 40px 40px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+.card {
+  display: flex;
+  justify-content: safe center;
+  align-items: safe center;
+  width: 100px;
+  height: 100px;
+  background-color: var(--card-bgColor);
+  color: var(--card-color);
+  border-radius: 7px;
+  border: 1.5px solid var(--bg-color);
+  font-size: 30px;
+
+  & svg {
+    width: 1em;
+    height: 1em;
+    fill: var(--card-color);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover,
+    &:focus-visible {
+      background-color: var(--card-bgColor--focus);
+      color: var(--card-color--focus);
+
+      & svg {
+        fill: var(--card-color--focus);
+      }
+    }
+
+    &:focus-visible {
+      outline-offset: 4px;
+      outline: 1px solid var(--card-bgColor--focus);
+    }
+  }
+
+  &.draggable {
+    cursor: grab;
+    touch-action: none;
+  }
+
+  &.dragging {
+    cursor: grabbing;
+    background-color: var(--card-bgColor--drag);
+    color: var(--card-color--drag);
+
+    & svg {
+      fill: var(--card-color--drag);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:focus-visible {
+        outline: 1px solid var(--card-bgColor--drag);
+      }
+    }
+  }
+}
+```
+
+:::
+
 ## Draggable - Center To Pointer
 
 Here we use a custom position modifier to align the dragged element's center with the pointer sensor's position on drag start.
@@ -1478,14 +1437,7 @@ const DraggableCardMemo = memo(function DraggableCard() {
         (change, { drag, item, phase }) => {
           // Align the dragged element so that the pointer
           // is in the center of the element.
-          if (
-            // Only apply the alignment on the start phase.
-            phase === 'start' &&
-            // Only apply the alignment for the pointer sensor.
-            drag.sensor instanceof PointerSensor &&
-            // Only apply the alignment for the primary drag element.
-            drag.items[0].element === item.element
-          ) {
+          if (phase === 'start' && drag.sensor instanceof PointerSensor) {
             const { clientRect } = item;
             const { x, y } = drag.startEvent;
             const targetX = clientRect.x + clientRect.width / 2;
@@ -2457,11 +2409,478 @@ body {
 
 :::
 
+## Draggable - Start Threshold
+
+A draggable link element that requires 5px of movement before the drag starts. Clicking the link works normally. When drag starts, the element position is offset so the pointer stays at the original position relative to the element.
+
+<div class="example"><iframe src="/dragdoll/react-examples/011-draggable-start-threshold/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/react-examples/011-draggable-start-threshold/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+
+::: code-group
+
+```tsx [index.tsx]
+import { startOffsetModifier } from 'dragdoll';
+import {
+  useDraggable,
+  useDraggableDrag,
+  UseDraggableSettings,
+  usePointerSensor,
+} from 'dragdoll-react';
+import { memo, StrictMode, useCallback, useMemo, useRef, useState } from 'react';
+import { createRoot } from 'react-dom/client';
+
+const THRESHOLD = 5;
+
+const DraggableCardMemo = memo(function DraggableCard() {
+  const elementRef = useRef<HTMLAnchorElement>(null);
+  const [zIndex, setZIndex] = useState(1);
+  const zIndexRef = useRef(1);
+  const [pointerSensor, setPointerSensorRef] = usePointerSensor();
+
+  const draggableSettings: UseDraggableSettings = useMemo(
+    () => ({
+      elements: () => (elementRef.current ? [elementRef.current] : []),
+      startPredicate: ({ event }) => {
+        const dx = event.x - event.startX;
+        const dy = event.y - event.startY;
+        return Math.sqrt(dx * dx + dy * dy) >= THRESHOLD ? true : undefined;
+      },
+      positionModifiers: [startOffsetModifier],
+      onStart: () => {
+        setZIndex(++zIndexRef.current);
+      },
+    }),
+    [],
+  );
+
+  const draggable = useDraggable([pointerSensor], draggableSettings);
+  const drag = useDraggableDrag(draggable);
+
+  const setRefs = useCallback(
+    (node: HTMLAnchorElement | null) => {
+      elementRef.current = node;
+      setPointerSensorRef(node);
+    },
+    [setPointerSensorRef],
+  );
+
+  return (
+    <a
+      ref={setRefs}
+      href="https://muuri.dev"
+      className={`card draggable ${drag ? 'dragging' : ''}`}
+      style={{ zIndex }}
+      target="_blank"
+      rel="noopener noreferrer"
+      draggable={false}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+        <path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C680.8 251.2 170.6 330 220.6 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372.1 74 321.1 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C540.8 260.8 470.6 182 420.6 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z" />
+      </svg>
+      <span>muuri.dev</span>
+    </a>
+  );
+});
+
+function App() {
+  return <DraggableCardMemo />;
+}
+
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  throw new Error('Failed to find the root element');
+}
+
+const root = createRoot(rootElement);
+root.render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
+```
+
+```html [index.html]
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Draggable - Start Threshold</title>
+    <meta
+      name="description"
+      content="A draggable link element that requires 5px of movement before the drag starts. Clicking the link works normally. When drag starts, the element position is offset so the pointer stays at the original position relative to the element."
+    />
+    <meta
+      name="viewport"
+      content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="index.tsx"></script>
+  </body>
+</html>
+```
+
+```css [index.css]
+body {
+  width: 100%;
+  height: 100%;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: safe center;
+  align-items: safe center;
+  align-content: safe center;
+}
+
+.card.draggable {
+  position: relative;
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: 8px;
+  width: 120px;
+  height: 120px;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+
+  /* Prevent touch scrolling - REQUIRED for touch dragging */
+  touch-action: none;
+
+  /* Prevent tap highlight on mobile */
+  -webkit-tap-highlight-color: transparent;
+
+  /* Prevent long-press context menu on mobile */
+  -webkit-touch-callout: none;
+
+  & svg {
+    width: 2em;
+    height: 2em;
+  }
+
+  & span {
+    color: inherit;
+  }
+}
+```
+
+```css [base.css]
+:root {
+  --bg-color: #111;
+  --color: rgba(255, 255, 245, 0.86);
+  --theme-color: #ff5555;
+  --card-color: rgba(0, 0, 0, 0.7);
+  --card-bgColor: var(--theme-color);
+  --card-color--focus: var(--card-color);
+  --card-bgColor--focus: #db55ff;
+  --card-color--drag: var(--card-color);
+  --card-bgColor--drag: #55ff9c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  background: var(--bg-color);
+  color: var(--color);
+  background-size: 40px 40px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+.card {
+  display: flex;
+  justify-content: safe center;
+  align-items: safe center;
+  width: 100px;
+  height: 100px;
+  background-color: var(--card-bgColor);
+  color: var(--card-color);
+  border-radius: 7px;
+  border: 1.5px solid var(--bg-color);
+  font-size: 30px;
+
+  & svg {
+    width: 1em;
+    height: 1em;
+    fill: var(--card-color);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover,
+    &:focus-visible {
+      background-color: var(--card-bgColor--focus);
+      color: var(--card-color--focus);
+
+      & svg {
+        fill: var(--card-color--focus);
+      }
+    }
+
+    &:focus-visible {
+      outline-offset: 4px;
+      outline: 1px solid var(--card-bgColor--focus);
+    }
+  }
+
+  &.draggable {
+    cursor: grab;
+    touch-action: none;
+  }
+
+  &.dragging {
+    cursor: grabbing;
+    background-color: var(--card-bgColor--drag);
+    color: var(--card-color--drag);
+
+    & svg {
+      fill: var(--card-color--drag);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:focus-visible {
+        outline: 1px solid var(--card-bgColor--drag);
+      }
+    }
+  }
+}
+```
+
+:::
+
+## Draggable - Touch Delay
+
+A draggable element with a 1 second touch delay. On touch devices, you must hold the element for 1 second before dragging starts, allowing normal scrolling. Mouse and pen input start dragging immediately.
+
+<div class="example"><iframe src="/dragdoll/react-examples/012-draggable-touch-delay/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/react-examples/012-draggable-touch-delay/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+
+::: code-group
+
+```tsx [index.tsx]
+import { createTouchDelayPredicate, startOffsetModifier } from 'dragdoll';
+import {
+  useDraggable,
+  useDraggableDrag,
+  UseDraggableSettings,
+  usePointerSensor,
+} from 'dragdoll-react';
+import { memo, StrictMode, useCallback, useMemo, useRef } from 'react';
+import { createRoot } from 'react-dom/client';
+
+const DraggableCardMemo = memo(function DraggableCard() {
+  const elementRef = useRef<HTMLDivElement>(null);
+  const [pointerSensor, setPointerSensorRef] = usePointerSensor();
+
+  const draggableSettings: UseDraggableSettings = useMemo(
+    () => ({
+      elements: () => (elementRef.current ? [elementRef.current] : []),
+      startPredicate: createTouchDelayPredicate({ touchDelay: 1000 }),
+      positionModifiers: [startOffsetModifier],
+    }),
+    [],
+  );
+
+  const draggable = useDraggable([pointerSensor], draggableSettings);
+  const drag = useDraggableDrag(draggable);
+
+  const setRefs = useCallback(
+    (node: HTMLDivElement | null) => {
+      elementRef.current = node;
+      setPointerSensorRef(node);
+    },
+    [setPointerSensorRef],
+  );
+
+  return (
+    <div ref={setRefs} className={`card draggable ${drag ? 'dragging' : ''}`} tabIndex={0}>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+        <path d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4L224 224l-114.7 0 9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4L224 288l0 114.7-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4L288 288l114.7 0-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4L288 224l0-114.7 9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z" />
+      </svg>
+    </div>
+  );
+});
+
+function App() {
+  return <DraggableCardMemo />;
+}
+
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  throw new Error('Failed to find the root element');
+}
+
+const root = createRoot(rootElement);
+root.render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
+```
+
+```html [index.html]
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Draggable - Touch Delay</title>
+    <meta
+      name="description"
+      content="A draggable element with a 1 second touch delay. On touch devices, you must hold the element for 1 second before dragging starts, allowing normal scrolling. Mouse and pen input start dragging immediately."
+    />
+    <meta
+      name="viewport"
+      content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="index.tsx"></script>
+  </body>
+</html>
+```
+
+```css [index.css]
+body {
+  width: 100%;
+  height: 100%;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: safe center;
+  align-items: safe center;
+}
+
+.card.draggable {
+  position: relative;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+```
+
+```css [base.css]
+:root {
+  --bg-color: #111;
+  --color: rgba(255, 255, 245, 0.86);
+  --theme-color: #ff5555;
+  --card-color: rgba(0, 0, 0, 0.7);
+  --card-bgColor: var(--theme-color);
+  --card-color--focus: var(--card-color);
+  --card-bgColor--focus: #db55ff;
+  --card-color--drag: var(--card-color);
+  --card-bgColor--drag: #55ff9c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  background: var(--bg-color);
+  color: var(--color);
+  background-size: 40px 40px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+.card {
+  display: flex;
+  justify-content: safe center;
+  align-items: safe center;
+  width: 100px;
+  height: 100px;
+  background-color: var(--card-bgColor);
+  color: var(--card-color);
+  border-radius: 7px;
+  border: 1.5px solid var(--bg-color);
+  font-size: 30px;
+
+  & svg {
+    width: 1em;
+    height: 1em;
+    fill: var(--card-color);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover,
+    &:focus-visible {
+      background-color: var(--card-bgColor--focus);
+      color: var(--card-color--focus);
+
+      & svg {
+        fill: var(--card-color--focus);
+      }
+    }
+
+    &:focus-visible {
+      outline-offset: 4px;
+      outline: 1px solid var(--card-bgColor--focus);
+    }
+  }
+
+  &.draggable {
+    cursor: grab;
+    touch-action: none;
+  }
+
+  &.dragging {
+    cursor: grabbing;
+    background-color: var(--card-bgColor--drag);
+    color: var(--card-color--drag);
+
+    & svg {
+      fill: var(--card-color--drag);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:focus-visible {
+        outline: 1px solid var(--card-bgColor--drag);
+      }
+    }
+  }
+}
+```
+
+:::
+
 ## DndObserver - Basic
 
 A basic example of using DndObserver with Draggable and Droppable elements. Here we highlight the dropzone element that overlaps most with the dragged element.
 
-<div class="example"><iframe src="/dragdoll/react-examples/011-dnd-basic/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/react-examples/011-dnd-basic/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/react-examples/013-dnd-basic/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/react-examples/013-dnd-basic/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -2832,7 +3251,7 @@ body {
 
 Advanced collision detection with scrollable droppable lists. Here we can see how the advanced collision detector respects the visibility of the droppables. Only the visible parts of the droppables (as seen from the perspective of the draggable) are considered for collisions.
 
-<div class="example"><iframe src="/dragdoll/react-examples/012-dnd-advanced-collision-detector/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/react-examples/012-dnd-advanced-collision-detector/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/react-examples/014-dnd-advanced-collision-detector/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/react-examples/014-dnd-advanced-collision-detector/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 

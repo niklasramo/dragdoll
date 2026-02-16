@@ -4,19 +4,34 @@ import { useRef, useState } from 'react';
 import { useCallbackStable } from './use-callback-stable.js';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';
 import { useMemoStable } from './use-memo-stable.js';
+import { useSensorCallback } from './use-sensor-callback.js';
 
-export interface UsePointerSensorSettings extends Partial<PointerSensorSettings> {}
+export interface UsePointerSensorSettings extends Partial<PointerSensorSettings> {
+  onStart?: (e: PointerSensorEvents['start']) => void;
+  onMove?: (e: PointerSensorEvents['move']) => void;
+  onCancel?: (e: PointerSensorEvents['cancel']) => void;
+  onEnd?: (e: PointerSensorEvents['end']) => void;
+  onDestroy?: (e: PointerSensorEvents['destroy']) => void;
+}
 
 export function usePointerSensor<E extends PointerSensorEvents = PointerSensorEvents>(
   settings?: UsePointerSensorSettings,
   element?: Element | Window,
 ) {
+  const { onStart, onMove, onCancel, onEnd, onDestroy, ...sensorSettings } = settings || {};
+
   const [sensor, setSensor] = useState<PointerSensor<E> | null>(null);
 
   const sensorRef = useRef<PointerSensor<E> | null>(sensor);
 
-  const settingsRef = useRef(settings);
-  settingsRef.current = settings;
+  const settingsRef = useRef(sensorSettings as Partial<PointerSensorSettings> | undefined);
+  settingsRef.current = sensorSettings as Partial<PointerSensorSettings> | undefined;
+
+  useSensorCallback(sensor, 'start', onStart as ((e: E['start']) => void) | undefined);
+  useSensorCallback(sensor, 'move', onMove as ((e: E['move']) => void) | undefined);
+  useSensorCallback(sensor, 'cancel', onCancel as ((e: E['cancel']) => void) | undefined);
+  useSensorCallback(sensor, 'end', onEnd as ((e: E['end']) => void) | undefined);
+  useSensorCallback(sensor, 'destroy', onDestroy as ((e: E['destroy']) => void) | undefined);
 
   // Helper function to create a new pointer sensor or update the existing
   // sensor's element if it already exists.
@@ -76,7 +91,7 @@ export function usePointerSensor<E extends PointerSensorEvents = PointerSensorEv
         listenerOptions = PointerSensorDefaultSettings.listenerOptions,
         sourceEvents = PointerSensorDefaultSettings.sourceEvents,
         startPredicate = PointerSensorDefaultSettings.startPredicate,
-      } = settings || {};
+      } = sensorSettings;
 
       sensor.updateSettings({
         listenerOptions,
@@ -84,7 +99,7 @@ export function usePointerSensor<E extends PointerSensorEvents = PointerSensorEv
         startPredicate,
       });
     }
-  }, [sensor, settings]);
+  }, [sensor, sensorSettings]);
 
   return useMemoStable(() => {
     return [sensor, setRef] as const;

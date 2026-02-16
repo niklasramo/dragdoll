@@ -9,14 +9,7 @@ new Draggable([pointerSensor, keyboardSensor], {
     (change, { drag, item, phase }) => {
       // Align the dragged element so that the pointer
       // is in the center of the element.
-      if (
-        // Only apply the alignment on the start phase.
-        phase === 'start' &&
-        // Only apply the alignment for the pointer sensor.
-        drag.sensor instanceof PointerSensor &&
-        // Only apply the alignment for the primary drag element.
-        drag.items[0].element === item.element
-      ) {
+      if (phase === 'start' && drag.sensor instanceof PointerSensor) {
         const { clientRect } = item;
         const { x, y } = drag.startEvent;
         const targetX = clientRect.x + clientRect.width / 2;

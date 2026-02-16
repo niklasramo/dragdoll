@@ -1,67 +1,52 @@
+import { createContainmentModifier } from 'dragdoll';
 import {
   useDraggable,
-  useDraggableAutoScroll,
-  UseDraggableAutoScrollSettings,
   useDraggableDrag,
   UseDraggableSettings,
-  useKeyboardMotionSensor,
   usePointerSensor,
 } from 'dragdoll-react';
-import { memo, RefObject, StrictMode, useCallback, useMemo, useRef } from 'react';
+import { memo, StrictMode, useCallback, useMemo, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 
-const DraggableCardMemo = memo(function DraggableCard({
-  dragContainerRef,
-}: {
-  dragContainerRef: RefObject<HTMLElement | null>;
-}) {
+const THRESHOLD = 5;
+const GRID = 40;
+
+const DraggableCardMemo = memo(function DraggableCard() {
   const elementRef = useRef<HTMLDivElement>(null);
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
-  const [keyboardSensor, setKeyboardSensorRef] = useKeyboardMotionSensor({
-    computeSpeed: () => 100,
-  });
 
   const draggableSettings: UseDraggableSettings = useMemo(
     () => ({
-      // We are doing the very thing here we advise against in the docs. We use
-      // the container option and provide a React controlled element to the
-      // elements option. However, in this case this will work without any
-      // issues because we are making sure React has no reason to move the
-      // dragged element in the DOM during the drag.
-      container: () => dragContainerRef.current || null,
       elements: () => (elementRef.current ? [elementRef.current] : []),
-      frozenStyles: () => ['left', 'top'],
-    }),
-    [dragContainerRef],
-  );
-
-  const autoScrollSettings: UseDraggableAutoScrollSettings = useMemo(
-    () => ({
-      targets: [
-        {
-          element: window,
-          axis: 'y',
-          padding: { top: Infinity, bottom: Infinity },
-        },
+      startPredicate: ({ event }) => {
+        const dx = event.x - event.startX;
+        const dy = event.y - event.startY;
+        return Math.sqrt(dx * dx + dy * dy) >= THRESHOLD ? true : undefined;
+      },
+      positionModifiers: [
+        createContainmentModifier(
+          () => ({
+            x: 0,
+            y: 0,
+            width: window.innerWidth,
+            height: window.innerHeight,
+          }),
+          { snapX: GRID, snapY: GRID },
+        ),
       ],
     }),
     [],
   );
 
-  const draggable = useDraggableAutoScroll(
-    useDraggable([pointerSensor, keyboardSensor], draggableSettings),
-    autoScrollSettings,
-  );
-
+  const draggable = useDraggable([pointerSensor], draggableSettings);
   const drag = useDraggableDrag(draggable);
 
   const setRefs = useCallback(
     (node: HTMLDivElement | null) => {
       elementRef.current = node;
       setPointerSensorRef(node);
-      setKeyboardSensorRef(node);
     },
-    [setPointerSensorRef, setKeyboardSensorRef],
+    [setPointerSensorRef],
   );
 
   return (
@@ -74,19 +59,7 @@ const DraggableCardMemo = memo(function DraggableCard({
 });
 
 function App() {
-  const dragContainerRef = useRef<HTMLDivElement | null>(null);
-  return (
-    <>
-      <div className="drag-container-outer">
-        <div ref={dragContainerRef} className="drag-container" />
-      </div>
-      <div className="card-container-outer">
-        <div className="card-container">
-          <DraggableCardMemo key="card" dragContainerRef={dragContainerRef} />
-        </div>
-      </div>
-    </>
-  );
+  return <DraggableCardMemo />;
 }
 
 const rootElement = document.getElementById('root');

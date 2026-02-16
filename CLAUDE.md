@@ -10,7 +10,7 @@ This is a vanilla TypeScript library for drag and drop functionality called "dra
 
 ## React Integration
 
-The library has a React integration package called "dragdoll-react". The React integration package is a wrapper around the core library that provides React hooks for the core library. The React integration package is built with Vite and React.
+The library has a React integration package called "dragdoll-react". The React integration package is a wrapper around the core library that provides React hooks for the core library. The React integration package is built with tsdown.
 
 ## Architecture
 
@@ -57,10 +57,22 @@ The library has a React integration package called "dragdoll-react". The React i
   - `src/` - Source code.
     - `sensors/` - Input event handlers
     - `draggable/` - Draggable implementation
+      - `modifiers/` - Position modifier functions
+      - `plugins/` - Draggable plugins (e.g., snap, scroll)
+      - `helpers/` - Internal helper utilities
     - `droppable/` - Droppable implementation
     - `dnd-observer/` - DndObserver implementation
+    - `auto-scroll/` - Auto-scroll functionality during drag
+    - `singletons/` - Shared singleton instances
     - `utils/` - Utility functions
     - `types.ts` - Common type definitions
+    - `constants.ts` - Shared constants
+  - `dist/` - Built library files.
+- `packages/dragdoll-react/` - React integration package.
+  - `src/` - Source code.
+    - `hooks/` - React hooks wrapping core library
+    - `contexts/` - React context providers
+    - `utils/` - React-specific utility functions
   - `dist/` - Built library files.
 - `packages/dragdoll-docs/` - VitePress documentation site and examples.
   - `docs/` - VitePress docs content.
@@ -69,13 +81,13 @@ The library has a React integration package called "dragdoll-react". The React i
   - `examples/` - Core library examples used in the docs.
   - `react-examples/` - React integration examples used in the docs.
   - `scripts/` - Docs/example build scripts.
-- `packages/dragdoll-tests/` - Internal tests (Mocha + Chai via Karma).
+- `packages/dragdoll-tests/` - Internal tests (WebDriver.io with Mocha).
   - `src/` - Test sources.
   - `dist/` - Bundled tests.
 
 ## Root Commands
 
-- `npm run build` - Builds `dragdoll` library, `dragdoll-tests` test suite, and `dragdoll-docs` examples, in that order.
+- `npm run build` - Runs format, builds `dragdoll` and `dragdoll-react` libraries, builds `dragdoll-docs` examples, then formats again.
 - `npm run test:local` - Runs tests (from `dragdoll-tests`) locally in Chrome and Firefox.
 - `npm run test:bs` - Runs tests (from `dragdoll-tests`) in BrowserStack.
 - `npm run docs:dev` - Runs VitePress docs site in development mode.
@@ -89,22 +101,25 @@ The library has a React integration package called "dragdoll-react". The React i
 - `npm run lint` - Runs TypeScript checks, Prettier formatting and ESLint errors across workspaces.
 - `npm run format` - Formats Prettier formatting and ESLint errors across workspaces.
 
-## Response Format
+## Key Dependencies
 
-When responding to questions:
-
-1. Use the Chain of Thought method
-2. Outline a detailed pseudocode plan step by step
-3. Confirm the approach
-4. Proceed to write the code
-5. Explain any performance considerations or trade-offs
+- `eventti` - Event emitter library used for all event handling.
+- `mezr` - DOM measurement library used for element dimensions and positions.
+- `tikki` - Animation ticker used for frame-based updates with read/write phase batching.
 
 ## Common Patterns
 
-- Use the Emitter pattern for event handling
-- Leverage TypeScript for strong typing
-- Implement modifiers for customizing behavior
-- Maintain separation of concerns between components
+- Use the Emitter pattern (via `eventti`) for event handling.
+- Leverage TypeScript for strong typing.
+- Implement modifiers for customizing behavior (e.g., position modifiers are pure functions: `(position, data) => position`).
+- Maintain separation of concerns between components.
+- Use object pooling and caching to minimize allocations during drag operations.
+- Batch DOM reads and writes using `tikki`'s read/write phases to avoid layout thrashing.
+- Use the plugin architecture in Draggable for extensible functionality.
+
+## Git
+
+- Do NOT add `Co-Authored-By` lines in commit messages.
 
 ## Testing
 

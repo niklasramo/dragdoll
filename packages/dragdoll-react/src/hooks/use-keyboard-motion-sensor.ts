@@ -10,20 +10,40 @@ import { useRef, useState } from 'react';
 import { useCallbackStable } from './use-callback-stable.js';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';
 import { useMemoStable } from './use-memo-stable.js';
+import { useSensorCallback } from './use-sensor-callback.js';
 
 export interface UseKeyboardMotionSensorSettings<
   E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents,
-> extends Partial<KeyboardMotionSensorSettings<E>> {}
+> extends Partial<KeyboardMotionSensorSettings<E>> {
+  onStart?: (e: E['start']) => void;
+  onMove?: (e: E['move']) => void;
+  onCancel?: (e: E['cancel']) => void;
+  onEnd?: (e: E['end']) => void;
+  onDestroy?: (e: E['destroy']) => void;
+  onTick?: (e: E['tick']) => void;
+}
 
 export function useKeyboardMotionSensor<
   E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents,
 >(settings?: UseKeyboardMotionSensorSettings<E>, element?: Element | null) {
+  const { onStart, onMove, onCancel, onEnd, onDestroy, onTick, ...sensorSettings } =
+    settings || ({} as UseKeyboardMotionSensorSettings<E>);
+
   const [sensor, setSensor] = useState<KeyboardMotionSensor<E> | null>(null);
 
   const sensorRef = useRef<KeyboardMotionSensor<E> | null>(sensor);
 
-  const settingsRef = useRef(settings);
-  settingsRef.current = settings;
+  const settingsRef = useRef(
+    sensorSettings as Partial<KeyboardMotionSensorSettings<E>> | undefined,
+  );
+  settingsRef.current = sensorSettings as Partial<KeyboardMotionSensorSettings<E>> | undefined;
+
+  useSensorCallback(sensor, 'start', onStart);
+  useSensorCallback(sensor, 'move', onMove);
+  useSensorCallback(sensor, 'cancel', onCancel);
+  useSensorCallback(sensor, 'end', onEnd);
+  useSensorCallback(sensor, 'destroy', onDestroy);
+  useSensorCallback(sensor, 'tick', onTick);
 
   // Helper function to create a new keyboard motion sensor or update the existing
   // sensor's element if it already exists.
@@ -91,7 +111,7 @@ export function useKeyboardMotionSensor<
         cancelOnVisibilityChange = KeyboardMotionSensorDefaultSettings.cancelOnVisibilityChange,
         computeSpeed = KeyboardMotionSensorDefaultSettings.computeSpeed,
         startPredicate = KeyboardMotionSensorDefaultSettings.startPredicate,
-      } = settings || {};
+      } = sensorSettings;
 
       sensor.updateSettings({
         startKeys,
@@ -107,7 +127,7 @@ export function useKeyboardMotionSensor<
         startPredicate,
       });
     }
-  }, [sensor, settings]);
+  }, [sensor, sensorSettings]);
 
   return useMemoStable(() => {
     return [sensor, setRef] as const;

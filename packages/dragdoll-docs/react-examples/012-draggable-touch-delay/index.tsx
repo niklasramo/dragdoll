@@ -1,9 +1,8 @@
-import { PointerSensor } from 'dragdoll';
+import { createTouchDelayPredicate, startOffsetModifier } from 'dragdoll';
 import {
   useDraggable,
   useDraggableDrag,
   UseDraggableSettings,
-  useKeyboardMotionSensor,
   usePointerSensor,
 } from 'dragdoll-react';
 import { memo, StrictMode, useCallback, useMemo, useRef } from 'react';
@@ -12,40 +11,25 @@ import { createRoot } from 'react-dom/client';
 const DraggableCardMemo = memo(function DraggableCard() {
   const elementRef = useRef<HTMLDivElement>(null);
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
-  const [keyboardSensor, setKeyboardSensorRef] = useKeyboardMotionSensor();
 
   const draggableSettings: UseDraggableSettings = useMemo(
     () => ({
       elements: () => (elementRef.current ? [elementRef.current] : []),
-      positionModifiers: [
-        (change, { drag, item, phase }) => {
-          // Align the dragged element so that the pointer
-          // is in the center of the element.
-          if (phase === 'start' && drag.sensor instanceof PointerSensor) {
-            const { clientRect } = item;
-            const { x, y } = drag.startEvent;
-            const targetX = clientRect.x + clientRect.width / 2;
-            const targetY = clientRect.y + clientRect.height / 2;
-            change.x = x - targetX;
-            change.y = y - targetY;
-          }
-          return change;
-        },
-      ],
+      startPredicate: createTouchDelayPredicate({ touchDelay: 1000 }),
+      positionModifiers: [startOffsetModifier],
     }),
     [],
   );
 
-  const draggable = useDraggable([pointerSensor, keyboardSensor], draggableSettings);
+  const draggable = useDraggable([pointerSensor], draggableSettings);
   const drag = useDraggableDrag(draggable);
 
   const setRefs = useCallback(
     (node: HTMLDivElement | null) => {
       elementRef.current = node;
       setPointerSensorRef(node);
-      setKeyboardSensorRef(node);
     },
-    [setPointerSensorRef, setKeyboardSensorRef],
+    [setPointerSensorRef],
   );
 
   return (
