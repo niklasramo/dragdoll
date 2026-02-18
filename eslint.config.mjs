@@ -28,6 +28,7 @@ export default defineConfig([
       'simple-import-sort': simpleImportSort,
     },
     rules: {
+      'no-useless-assignment': 'off',
       'prefer-const': [
         'error',
         {

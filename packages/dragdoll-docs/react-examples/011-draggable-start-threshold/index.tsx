@@ -1,4 +1,4 @@
-import { startOffsetModifier } from 'dragdoll';
+import { DraggableModifier, PointerSensor, startOffsetModifier } from 'dragdoll';
 import {
   useDraggable,
   useDraggableDrag,
@@ -16,7 +16,7 @@ const DraggableCardMemo = memo(function DraggableCard() {
   const zIndexRef = useRef(1);
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
 
-  const draggableSettings: UseDraggableSettings = useMemo(
+  const draggableSettings: UseDraggableSettings<PointerSensor> = useMemo(
     () => ({
       elements: () => (elementRef.current ? [elementRef.current] : []),
       startPredicate: ({ event }) => {
@@ -24,7 +24,7 @@ const DraggableCardMemo = memo(function DraggableCard() {
         const dy = event.y - event.startY;
         return Math.sqrt(dx * dx + dy * dy) >= THRESHOLD ? true : undefined;
       },
-      positionModifiers: [startOffsetModifier],
+      positionModifiers: [startOffsetModifier as unknown as DraggableModifier<PointerSensor>],
       onStart: () => {
         setZIndex(++zIndexRef.current);
       },

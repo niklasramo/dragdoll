@@ -1,4 +1,4 @@
-import { createContainmentModifier } from 'dragdoll';
+import { createContainmentModifier, PointerSensor } from 'dragdoll';
 import {
   useDraggable,
   useDraggableDrag,
@@ -15,7 +15,7 @@ const DraggableCardMemo = memo(function DraggableCard() {
   const elementRef = useRef<HTMLDivElement>(null);
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
 
-  const draggableSettings: UseDraggableSettings = useMemo(
+  const draggableSettings: UseDraggableSettings<PointerSensor> = useMemo(
     () => ({
       elements: () => (elementRef.current ? [elementRef.current] : []),
       startPredicate: ({ event }) => {

@@ -592,7 +592,7 @@ export default () => {
 
       ctx.on('end', () => {
         const data = ctx.drags.get(draggable);
-        expectWithContext(data, 'drag data exists on end').not.toBe(null);
+        expectWithContext(data, 'drag data exists on end').not.toBe(undefined);
         seen.push({ phase: 'end', value: data!.data.counter });
       });
 

@@ -1197,7 +1197,7 @@ Demonstrates grid-aware containment. The element has a distance threshold, snaps
 ::: code-group
 
 ```tsx [index.tsx]
-import { createContainmentModifier } from 'dragdoll';
+import { createContainmentModifier, PointerSensor } from 'dragdoll';
 import {
   useDraggable,
   useDraggableDrag,
@@ -1214,7 +1214,7 @@ const DraggableCardMemo = memo(function DraggableCard() {
   const elementRef = useRef<HTMLDivElement>(null);
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
 
-  const draggableSettings: UseDraggableSettings = useMemo(
+  const draggableSettings: UseDraggableSettings<PointerSensor> = useMemo(
     () => ({
       elements: () => (elementRef.current ? [elementRef.current] : []),
       startPredicate: ({ event }) => {
@@ -2418,7 +2418,7 @@ A draggable link element that requires 5px of movement before the drag starts. C
 ::: code-group
 
 ```tsx [index.tsx]
-import { startOffsetModifier } from 'dragdoll';
+import { DraggableModifier, PointerSensor, startOffsetModifier } from 'dragdoll';
 import {
   useDraggable,
   useDraggableDrag,
@@ -2436,7 +2436,7 @@ const DraggableCardMemo = memo(function DraggableCard() {
   const zIndexRef = useRef(1);
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
 
-  const draggableSettings: UseDraggableSettings = useMemo(
+  const draggableSettings: UseDraggableSettings<PointerSensor> = useMemo(
     () => ({
       elements: () => (elementRef.current ? [elementRef.current] : []),
       startPredicate: ({ event }) => {
@@ -2444,7 +2444,7 @@ const DraggableCardMemo = memo(function DraggableCard() {
         const dy = event.y - event.startY;
         return Math.sqrt(dx * dx + dy * dy) >= THRESHOLD ? true : undefined;
       },
-      positionModifiers: [startOffsetModifier],
+      positionModifiers: [startOffsetModifier as unknown as DraggableModifier<PointerSensor>],
       onStart: () => {
         setZIndex(++zIndexRef.current);
       },
@@ -2679,7 +2679,12 @@ A draggable element with a 1 second touch delay. On touch devices, you must hold
 ::: code-group
 
 ```tsx [index.tsx]
-import { createTouchDelayPredicate, startOffsetModifier } from 'dragdoll';
+import {
+  createTouchDelayPredicate,
+  DraggableModifier,
+  PointerSensor,
+  startOffsetModifier,
+} from 'dragdoll';
 import {
   useDraggable,
   useDraggableDrag,
@@ -2693,11 +2698,11 @@ const DraggableCardMemo = memo(function DraggableCard() {
   const elementRef = useRef<HTMLDivElement>(null);
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
 
-  const draggableSettings: UseDraggableSettings = useMemo(
+  const draggableSettings: UseDraggableSettings<PointerSensor> = useMemo(
     () => ({
       elements: () => (elementRef.current ? [elementRef.current] : []),
       startPredicate: createTouchDelayPredicate({ touchDelay: 1000 }),
-      positionModifiers: [startOffsetModifier],
+      positionModifiers: [startOffsetModifier as unknown as DraggableModifier<PointerSensor>],
     }),
     [],
   );

@@ -1,4 +1,4 @@
-import { Draggable } from 'dragdoll/draggable';
+import { Draggable, DraggableApplyPositionPhase } from 'dragdoll/draggable';
 import { KeyboardSensor } from 'dragdoll/sensors/keyboard';
 import { createTestElement } from '../../utils/create-test-element.js';
 import { defaultSetup } from '../../utils/default-setup.js';
@@ -21,9 +21,11 @@ export default () => {
           ++callCount;
           expectWithContext(Object.keys(args).length, 'args key count').toBe(4);
           expectWithContext(args.draggable, 'args.draggable').toBe(draggable);
-          expectWithContext(args.drag, 'args.drag').toBe(draggable.drag);
-          expectWithContext(args.item, 'args.item').toBe(draggable.drag?.items[0]);
-          expectWithContext(args.phase, 'args.phase').toBe(expectedPhase);
+          expectWithContext(args.drag, 'args.drag').toBe(draggable.drag!);
+          expectWithContext(args.item, 'args.item').toBe(draggable.drag!.items[0]);
+          expectWithContext(args.phase, 'args.phase').toBe(
+            expectedPhase as DraggableApplyPositionPhase,
+          );
         },
       });
 

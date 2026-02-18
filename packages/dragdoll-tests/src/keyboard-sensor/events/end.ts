@@ -12,7 +12,7 @@ export default () => {
       const el = createTestElement();
       const s = new KeyboardSensor(el);
       const endEvent = {
-        type: 'end',
+        type: 'end' as const,
         startX: 0,
         startY: 0,
         x: 0,

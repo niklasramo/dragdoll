@@ -19,55 +19,55 @@ export default () => {
         elements: () => [el],
         onPrepareStart(...args) {
           expectWithContext(args.length, 'onPrepareStart args.length').toBe(2);
-          expectWithContext(args[0], 'onPrepareStart args[0]').toBe(draggable.drag);
+          expectWithContext(args[0], 'onPrepareStart args[0]').toBe(draggable.drag!);
           expectWithContext(args[1], 'onPrepareStart args[1]').toBe(draggable);
           expectWithContext(args[0].startEvent.srcEvent, 'onPrepareStart startEvent').toBe(
-            currentKeyboardEvent,
+            currentKeyboardEvent!,
           );
           expectWithContext(args[0].prevMoveEvent.srcEvent, 'onPrepareStart prevMoveEvent').toBe(
-            currentKeyboardEvent,
+            currentKeyboardEvent!,
           );
           expectWithContext(args[0].moveEvent.srcEvent, 'onPrepareStart moveEvent').toBe(
-            currentKeyboardEvent,
+            currentKeyboardEvent!,
           );
           events.push('onPrepareStart');
         },
         onStart(...args) {
           expectWithContext(args.length, 'onStart args.length').toBe(2);
-          expectWithContext(args[0], 'onStart args[0]').toBe(draggable.drag);
+          expectWithContext(args[0], 'onStart args[0]').toBe(draggable.drag!);
           expectWithContext(args[1], 'onStart args[1]').toBe(draggable);
           expectWithContext(args[0].startEvent.srcEvent, 'onStart startEvent').toBe(
-            currentKeyboardEvent,
+            currentKeyboardEvent!,
           );
           expectWithContext(args[0].prevMoveEvent.srcEvent, 'onStart prevMoveEvent').toBe(
-            currentKeyboardEvent,
+            currentKeyboardEvent!,
           );
           expectWithContext(args[0].moveEvent.srcEvent, 'onStart moveEvent').toBe(
-            currentKeyboardEvent,
+            currentKeyboardEvent!,
           );
           events.push('onStart');
         },
         onPrepareMove(...args) {
           expectWithContext(args.length, 'onPrepareMove args.length').toBe(2);
-          expectWithContext(args[0], 'onPrepareMove args[0]').toBe(draggable.drag);
+          expectWithContext(args[0], 'onPrepareMove args[0]').toBe(draggable.drag!);
           expectWithContext(args[1], 'onPrepareMove args[1]').toBe(draggable);
           expectWithContext(args[0].moveEvent.srcEvent, 'onPrepareMove moveEvent').toBe(
-            currentKeyboardEvent,
+            currentKeyboardEvent!,
           );
           events.push('onPrepareMove');
         },
         onMove(...args) {
           expectWithContext(args.length, 'onMove args.length').toBe(2);
-          expectWithContext(args[0], 'onMove args[0]').toBe(draggable.drag);
+          expectWithContext(args[0], 'onMove args[0]').toBe(draggable.drag!);
           expectWithContext(args[1], 'onMove args[1]').toBe(draggable);
           expectWithContext(args[0].moveEvent.srcEvent, 'onMove moveEvent').toBe(
-            currentKeyboardEvent,
+            currentKeyboardEvent!,
           );
           events.push('onMove');
         },
         onEnd(...args) {
           expectWithContext(args.length, 'onEnd args.length').toBe(2);
-          expectWithContext(args[0], 'onEnd args[0]').toBe(draggable.drag);
+          expectWithContext(args[0], 'onEnd args[0]').toBe(draggable.drag!);
           expectWithContext(args[1], 'onEnd args[1]').toBe(draggable);
           // @ts-expect-error - srcEvent is optional.
           expectWithContext(args[0].endEvent?.srcEvent, 'onEnd endEvent').toBe(

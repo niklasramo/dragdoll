@@ -1,4 +1,9 @@
-import { createTouchDelayPredicate, startOffsetModifier } from 'dragdoll';
+import {
+  createTouchDelayPredicate,
+  DraggableModifier,
+  PointerSensor,
+  startOffsetModifier,
+} from 'dragdoll';
 import {
   useDraggable,
   useDraggableDrag,
@@ -12,11 +17,11 @@ const DraggableCardMemo = memo(function DraggableCard() {
   const elementRef = useRef<HTMLDivElement>(null);
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
 
-  const draggableSettings: UseDraggableSettings = useMemo(
+  const draggableSettings: UseDraggableSettings<PointerSensor> = useMemo(
     () => ({
       elements: () => (elementRef.current ? [elementRef.current] : []),
       startPredicate: createTouchDelayPredicate({ touchDelay: 1000 }),
-      positionModifiers: [startOffsetModifier],
+      positionModifiers: [startOffsetModifier as unknown as DraggableModifier<PointerSensor>],
     }),
     [],
   );

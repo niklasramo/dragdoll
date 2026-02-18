@@ -12,7 +12,7 @@ export default () => {
       const el = createTestElement({ left: '10px', top: '20px' });
       const s = new KeyboardSensor(el);
       const expectedEvent = {
-        type: 'start',
+        type: 'start' as const,
         startX: 10,
         startY: 20,
         x: 10,

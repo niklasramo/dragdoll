@@ -20,7 +20,7 @@ export default () => {
           ++callCount;
           expectWithContext(Object.keys(args).length, 'args key count').toBe(4);
           expectWithContext(args.draggable, 'args.draggable').toBe(draggable);
-          expectWithContext(args.drag, 'args.drag').toBe(draggable.drag);
+          expectWithContext(args.drag, 'args.drag').toBe(draggable.drag!);
           expectWithContext(args.item.element, 'args.item.element').toBe(el);
           expectWithContext(args.style, 'args.style').toStrictEqual(window.getComputedStyle(el));
           return null;

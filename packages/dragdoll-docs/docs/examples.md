@@ -1969,7 +1969,7 @@ A draggable link element that requires 5px of movement before the drag starts. C
 ::: code-group
 
 ```ts [index.ts]
-import { Draggable, PointerSensor, startOffsetModifier } from 'dragdoll';
+import { Draggable, DraggableModifier, PointerSensor, startOffsetModifier } from 'dragdoll';
 
 const THRESHOLD = 5;
 
@@ -1978,7 +1978,7 @@ let zIndex = 0;
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
 
-new Draggable([pointerSensor], {
+new Draggable<PointerSensor>([pointerSensor], {
   elements: () => [element],
   // Require 5px of movement before drag starts.
   // This allows clicking the link to work normally.
@@ -1988,7 +1988,7 @@ new Draggable([pointerSensor], {
     return Math.sqrt(dx * dx + dy * dy) >= THRESHOLD ? true : undefined;
   },
   // Offset position on start to account for the threshold distance moved.
-  positionModifiers: [startOffsetModifier],
+  positionModifiers: [startOffsetModifier as unknown as DraggableModifier<PointerSensor>],
   // preventClickOnEnd is enabled by default, so the link click is
   // automatically blocked after dragging. No manual workaround needed!
   onStart: () => {
@@ -2191,15 +2191,21 @@ A draggable element with a 1 second touch delay. On touch devices, you must hold
 ::: code-group
 
 ```ts [index.ts]
-import { createTouchDelayPredicate, Draggable, PointerSensor, startOffsetModifier } from 'dragdoll';
+import {
+  createTouchDelayPredicate,
+  Draggable,
+  DraggableModifier,
+  PointerSensor,
+  startOffsetModifier,
+} from 'dragdoll';
 
 const element = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(element);
 
-new Draggable([pointerSensor], {
+new Draggable<PointerSensor>([pointerSensor], {
   elements: () => [element],
   startPredicate: createTouchDelayPredicate({ touchDelay: 1000 }),
-  positionModifiers: [startOffsetModifier],
+  positionModifiers: [startOffsetModifier as unknown as DraggableModifier<PointerSensor>],
   onStart: () => {
     element.classList.add('dragging');
   },
