@@ -19,8 +19,8 @@ export default () => {
         positionModifiers: [
           (position, args) => {
             expectWithContext(args.draggable, 'args.draggable').toBe(draggable);
-            expectWithContext(args.drag, 'args.drag').toBe(draggable.drag);
-            expectWithContext(args.item, 'args.item').toBe(draggable.drag?.items[0]);
+            expectWithContext(args.drag, 'args.drag').toBe(draggable.drag!);
+            expectWithContext(args.item, 'args.item').toBe(draggable.drag!.items[0]);
             switch (args.phase) {
               case 'start': {
                 ++phaseCounter.start;

@@ -61,7 +61,7 @@
     "ts:check": "tsc --noEmit"
   },
   "peerDependencies": {
-    "eventti": "^4.0.3",
+    "eventti": "^4.0.4",
     "mezr": "^1.1.0",
     "tikki": "^3.0.2"
   }

@@ -427,12 +427,11 @@ export function autoScrollSmoothSpeed(
     const currentSpeed = data.speed;
     if (currentSpeed === targetSpeed) return targetSpeed;
 
-    let nextSpeed = targetSpeed;
     if (currentSpeed < targetSpeed) {
-      nextSpeed = currentSpeed + acceleration * (data.deltaTime / 1000);
+      const nextSpeed = currentSpeed + acceleration * (data.deltaTime / 1000);
       return Math.min(targetSpeed, nextSpeed);
     } else {
-      nextSpeed = currentSpeed - deceleration * (data.deltaTime / 1000);
+      const nextSpeed = currentSpeed - deceleration * (data.deltaTime / 1000);
       return Math.max(targetSpeed, nextSpeed);
     }
   };

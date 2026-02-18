@@ -21,35 +21,35 @@ export default () => {
 
       draggable.on('preparestart', (...args) => {
         expectWithContext(args.length, 'preparestart args length').toBe(2);
-        expectWithContext(args[0], 'preparestart arg[0]').toBe(draggable.drag);
+        expectWithContext(args[0], 'preparestart arg[0]').toBe(draggable.drag!);
         expectWithContext(args[1], 'preparestart arg[1]').toBe(draggable);
         events.push('preparestart');
       });
 
       draggable.on('start', (...args) => {
         expectWithContext(args.length, 'start args length').toBe(2);
-        expectWithContext(args[0], 'start arg[0]').toBe(draggable.drag);
+        expectWithContext(args[0], 'start arg[0]').toBe(draggable.drag!);
         expectWithContext(args[1], 'start arg[1]').toBe(draggable);
         events.push('start');
       });
 
       draggable.on('preparemove', (...args) => {
         expectWithContext(args.length, 'preparemove args length').toBe(2);
-        expectWithContext(args[0], 'preparemove arg[0]').toBe(draggable.drag);
+        expectWithContext(args[0], 'preparemove arg[0]').toBe(draggable.drag!);
         expectWithContext(args[1], 'preparemove arg[1]').toBe(draggable);
         events.push('preparemove');
       });
 
       draggable.on('move', (...args) => {
         expectWithContext(args.length, 'move args length').toBe(2);
-        expectWithContext(args[0], 'move arg[0]').toBe(draggable.drag);
+        expectWithContext(args[0], 'move arg[0]').toBe(draggable.drag!);
         expectWithContext(args[1], 'move arg[1]').toBe(draggable);
         events.push('move');
       });
 
       draggable.on('end', (...args) => {
         expectWithContext(args.length, 'end args length').toBe(2);
-        expectWithContext(args[0], 'end arg[0]').toBe(draggable.drag);
+        expectWithContext(args[0], 'end arg[0]').toBe(draggable.drag!);
         expectWithContext(args[1], 'end arg[1]').toBe(draggable);
         events.push('end');
       });
