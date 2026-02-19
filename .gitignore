@@ -6,9 +6,14 @@ logs
 *.env
 *.DS_Store
 .cursorrules
+.claude
 
 # Build outputs
 dist
+
+# Vitest browser mode artifacts
+__screenshots__
+__diff_output__
 
 # Generated example files
 packages/dragdoll-docs/docs/public/examples
