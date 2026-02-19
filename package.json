@@ -7,7 +7,8 @@
     "packages/dragdoll",
     "packages/dragdoll-react",
     "packages/dragdoll-docs",
-    "packages/dragdoll-tests"
+    "packages/dragdoll-tests",
+    "packages/dragdoll-react-tests"
   ],
   "scripts": {
     "build": "npm run format && npm run build --workspace=dragdoll --workspace=dragdoll-react && npm run build:examples --workspace=dragdoll-docs && npm run format",
@@ -22,9 +23,14 @@
     "prettier:write": "prettier --write --no-error-on-unmatched-pattern \"./*.{js,ts,md,json,yml}\" \"./.github/**/*.yml\" && npm run prettier:write --workspaces --if-present",
     "test:bs": "npm run test:bs --workspace=dragdoll-tests",
     "test:local": "npm run test:local --workspace=dragdoll-tests",
+    "test:react:bs": "npm run test:bs --workspace=dragdoll-react-tests",
+    "test:react:local": "npm run test:local --workspace=dragdoll-react-tests",
     "ts:check": "tsc && npm run ts:check --workspaces --if-present"
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "5.1.4",
+    "@vitest/browser-webdriverio": "4.0.18",
+    "browserstack-local": "1.5.10",
     "@eslint/js": "10.0.1",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
@@ -45,13 +51,15 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "rimraf": "6.1.3",
-    "rolldown": "1.0.0-rc.4",
+    "rolldown": "1.0.0-rc.5",
     "tikki": "3.0.2",
     "tsdown": "0.20.3",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
     "typescript-eslint": "8.56.0",
     "vitepress": "1.6.4",
+    "vitest": "4.0.18",
+    "vitest-browser-react": "2.0.5",
     "vue": "3.5.28"
   },
   "overrides": {
