@@ -5,7 +5,6 @@ logs
 *.err
 *.env
 *.DS_Store
-.cursorrules
 .claude
 
 # Build outputs

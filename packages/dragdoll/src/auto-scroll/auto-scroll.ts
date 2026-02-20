@@ -2,7 +2,7 @@ import { ticker, tickerPhases } from '../singletons/ticker.js';
 import type { Point, Rect } from '../types.js';
 import { getDistance } from '../utils/get-distance.js';
 import { getIntersectionScore } from '../utils/get-intersection-score.js';
-import { getRect } from '../utils/get-rect.js';
+import { getClientPaddingRect } from '../utils/get-rect.js';
 import { getScrollElement } from '../utils/get-scroll-element.js';
 import { getScrollLeft } from '../utils/get-scroll-left.js';
 import { getScrollLeftMax } from '../utils/get-scroll-left-max.js';
@@ -16,6 +16,13 @@ import { ObjectPool } from '../utils/object-pool.js';
 //
 
 const TEMP_RECT: Rect = {
+  width: 0,
+  height: 0,
+  x: 0,
+  y: 0,
+};
+
+const TARGET_RECT: Rect = {
   width: 0,
   height: 0,
   x: 0,
@@ -626,7 +633,7 @@ export class AutoScroll {
       // Ignore this item if there is no possibility to scroll.
       if (testMaxScrollX <= 0 && testMaxScrollY <= 0) continue;
 
-      const testRect = getRect([testElement, 'padding'], window);
+      const testRect = getClientPaddingRect(testElement, TARGET_RECT);
       let testScore = getIntersectionScore(clientRect, testRect) || -Infinity;
 
       // If the item has no overlap with the target.
@@ -799,7 +806,7 @@ export class AutoScroll {
         break;
       }
 
-      const testRect = getRect([testElement, 'padding'], window);
+      const testRect = getClientPaddingRect(testElement, TARGET_RECT);
       const testScore = getIntersectionScore(clientRect, testRect) || -Infinity;
 
       // If the item has no overlap with the target nor the padded target rect

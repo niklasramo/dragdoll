@@ -2,7 +2,6 @@ import type { Point, Writeable } from '../types.js';
 import {
   BaseSensor,
   BaseSensorCancelEvent,
-  BaseSensorDataArg,
   BaseSensorDestroyEvent,
   BaseSensorEndEvent,
   BaseSensorMoveEvent,
@@ -127,6 +126,7 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
   protected _movePredicate: KeyboardSensorPredicate<E>;
   protected _cancelPredicate: KeyboardSensorPredicate<E>;
   protected _endPredicate: KeyboardSensorPredicate<E>;
+  protected _eventData: any | null = null;
 
   constructor(element: Element | null, options: Partial<KeyboardSensorSettings<E>> = {}) {
     super();
@@ -184,17 +184,20 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
   }
 
   protected _onKeyDown(e: KeyboardEvent) {
+    const eventData = this._eventData;
+
     // Handle start.
     if (!this.drag) {
       const startPosition = this._startPredicate(e, this);
       if (startPosition) {
         e.preventDefault();
-        this._start({
+        this._eventData = {
           type: SensorEventType.Start,
           x: startPosition.x,
           y: startPosition.y,
           srcEvent: e,
-        } as BaseSensorDataArg<E['start']>);
+        };
+        this._start(this._eventData);
       }
       return;
     }
@@ -203,12 +206,11 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
     const cancelPosition = this._cancelPredicate(e, this);
     if (cancelPosition) {
       e.preventDefault();
-      this._cancel({
-        type: SensorEventType.Cancel,
-        x: cancelPosition.x,
-        y: cancelPosition.y,
-        srcEvent: e,
-      } as BaseSensorDataArg<E['cancel']>);
+      eventData.type = SensorEventType.Cancel;
+      eventData.x = cancelPosition.x;
+      eventData.y = cancelPosition.y;
+      eventData.srcEvent = e;
+      this._cancel(eventData);
       return;
     }
 
@@ -216,12 +218,11 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
     const endPosition = this._endPredicate(e, this);
     if (endPosition) {
       e.preventDefault();
-      this._end({
-        type: SensorEventType.End,
-        x: endPosition.x,
-        y: endPosition.y,
-        srcEvent: e,
-      } as BaseSensorDataArg<E['end']>);
+      eventData.type = SensorEventType.End;
+      eventData.x = endPosition.x;
+      eventData.y = endPosition.y;
+      eventData.srcEvent = e;
+      this._end(eventData);
       return;
     }
 
@@ -229,12 +230,11 @@ export class KeyboardSensor<E extends KeyboardSensorEvents = KeyboardSensorEvent
     const movePosition = this._movePredicate(e, this);
     if (movePosition) {
       e.preventDefault();
-      this._move({
-        type: SensorEventType.Move,
-        x: movePosition.x,
-        y: movePosition.y,
-        srcEvent: e,
-      } as BaseSensorDataArg<E['move']>);
+      eventData.type = SensorEventType.Move;
+      eventData.x = movePosition.x;
+      eventData.y = movePosition.y;
+      eventData.srcEvent = e;
+      this._move(eventData);
       return;
     }
   }

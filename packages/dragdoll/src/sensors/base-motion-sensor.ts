@@ -28,12 +28,26 @@ export class BaseMotionSensor<E extends BaseMotionSensorEvents = BaseMotionSenso
   readonly drag: BaseMotionSensorDragData | null;
   protected _direction: Point;
   protected _speed: number;
+  protected _tickEvent: BaseMotionSensorTickEvent;
+  protected _moveEvent: any;
 
   constructor() {
     super();
     this.drag = null;
     this._direction = { x: 0, y: 0 };
     this._speed = 0;
+    this._tickEvent = { type: 'tick', time: 0, deltaTime: 0 };
+    this._moveEvent = {
+      type: SensorEventType.Move,
+      x: 0,
+      y: 0,
+      srcEvent: null,
+      target: null,
+      startX: 0,
+      startY: 0,
+      deltaX: 0,
+      deltaY: 0,
+    };
 
     this._tick = this._tick.bind(this);
   }
@@ -72,11 +86,9 @@ export class BaseMotionSensor<E extends BaseMotionSensorEvents = BaseMotionSenso
       (this.drag.time as Writeable<number>) = time;
 
       // Emit tick event.
-      const tickEvent: BaseMotionSensorTickEvent = {
-        type: 'tick',
-        time: this.drag.time,
-        deltaTime: this.drag.deltaTime,
-      };
+      const tickEvent = this._tickEvent;
+      tickEvent.time = this.drag.time;
+      tickEvent.deltaTime = this.drag.deltaTime;
       this._emitter.emit('tick', tickEvent);
 
       // Make sure the sensor is still active.
@@ -92,11 +104,10 @@ export class BaseMotionSensor<E extends BaseMotionSensorEvents = BaseMotionSenso
       // this._move() automatically updates clientX/Y values also so we don't
       // need to do it here.
       if (deltaX || deltaY) {
-        this._move({
-          type: SensorEventType.Move,
-          x: this.drag.x + deltaX,
-          y: this.drag.y + deltaY,
-        } as Omit<E['move'], 'startX' | 'startY' | 'deltaX' | 'deltaY'>);
+        const moveEvent = this._moveEvent;
+        moveEvent.x = this.drag.x + deltaX;
+        moveEvent.y = this.drag.y + deltaY;
+        this._move(moveEvent);
       }
     } else {
       (this.drag.time as Writeable<number>) = time;
