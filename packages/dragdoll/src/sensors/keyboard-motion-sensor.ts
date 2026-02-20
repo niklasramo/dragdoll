@@ -70,6 +70,7 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
 {
   declare _events_type: E;
   readonly element: Element | null;
+  protected _eventData: any = { type: '', x: 0, y: 0, srcEvent: null };
   protected _moveKeys: Set<string>;
   protected _moveKeyTimestamps: Map<string, number>;
   protected _startKeys: Set<string>;
@@ -207,11 +208,12 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
         const startPosition = this._startPredicate(e, this);
         if (startPosition) {
           e.preventDefault();
-          this._start({
-            type: SensorEventType.Start,
-            x: startPosition.x,
-            y: startPosition.y,
-          } as BaseSensorDataArg<E['start']>);
+          const eventData = this._eventData;
+          eventData.type = SensorEventType.Start;
+          eventData.x = startPosition.x;
+          eventData.y = startPosition.y;
+          eventData.srcEvent = e;
+          this._start(eventData);
         }
       }
       return;
@@ -227,11 +229,12 @@ export class KeyboardMotionSensor<E extends KeyboardMotionSensorEvents = Keyboar
     // Handle end.
     if (this._endKeys.has(e.key)) {
       e.preventDefault();
-      this._end({
-        type: SensorEventType.End,
-        x: this.drag.x,
-        y: this.drag.y,
-      } as BaseSensorDataArg<E['end']>);
+      const eventData = this._eventData;
+      eventData.type = SensorEventType.End;
+      eventData.x = this.drag.x;
+      eventData.y = this.drag.y;
+      eventData.srcEvent = e;
+      this._end(eventData);
       return;
     }
 

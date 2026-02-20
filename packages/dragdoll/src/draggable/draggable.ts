@@ -287,6 +287,7 @@ export class Draggable<
   protected _startId: symbol;
   protected _moveId: symbol;
   protected _alignId: symbol;
+  protected _modifierData: DraggableModifierData<S>;
   protected _selectionChangeHandler: (() => void) | null = null;
 
   constructor(sensors: readonly S[], options: DraggableOptions<S> = {}) {
@@ -304,6 +305,12 @@ export class Draggable<
     this._startId = Symbol();
     this._moveId = Symbol();
     this._alignId = Symbol();
+    this._modifierData = {
+      draggable: this,
+      drag: null!,
+      item: null!,
+      phase: DraggableModifierPhase.Start,
+    };
 
     // Bind methods (that need binding).
     this._onMove = this._onMove.bind(this);
@@ -743,18 +750,18 @@ export class Draggable<
     const { drag } = this;
     if (!drag) return;
 
-    const { positionModifiers } = this.settings;
+    const positionModifiers = this.settings.positionModifiers;
+    const modifierData = this._modifierData;
+    modifierData.drag = drag;
+
     for (const item of drag.items) {
       let positionChange = POSITION_CHANGE;
       positionChange.x = changeX;
       positionChange.y = changeY;
+      modifierData.item = item;
+      modifierData.phase = phase;
       for (const modifier of positionModifiers) {
-        positionChange = modifier(positionChange, {
-          draggable: this,
-          drag,
-          item,
-          phase,
-        });
+        positionChange = modifier(positionChange, modifierData);
       }
       item.position.x += positionChange.x;
       item.position.y += positionChange.y;
@@ -933,6 +940,11 @@ export class Draggable<
 
     // Reset drag data.
     (this as Writeable<this>).drag = null;
+
+    // Reset modifier data.
+    const modifierData = this._modifierData;
+    modifierData.drag = null!;
+    modifierData.item = null!;
   }
 
   align(instant = false) {

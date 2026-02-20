@@ -32,6 +32,15 @@ interface DndObserverInternalDragData<T extends CollisionData = CollisionData> {
     prevContacts: Set<Droppable>;
     addedContacts: Set<Droppable>;
     persistedContacts: Set<Droppable>;
+    _compute: () => void;
+    _emit: () => void;
+  };
+  _events: {
+    base: any;
+    enter: any;
+    leave: any;
+    collide: any;
+    end: any;
   };
 }
 
@@ -142,6 +151,7 @@ export class DndObserver<T extends CollisionData = CollisionData> {
 
     // Bind methods.
     this._onScroll = this._onScroll.bind(this);
+    this.updateDroppableClientRects = this.updateDroppableClientRects.bind(this);
 
     // Create the collision detector.
     this._collisionDetector = collisionDetector
@@ -225,6 +235,29 @@ export class DndObserver<T extends CollisionData = CollisionData> {
         prevContacts: new Set(),
         addedContacts: new Set(),
         persistedContacts: new Set(),
+        _compute: () => this._computeCollisions(draggable),
+        _emit: () => this._emitCollisions(draggable),
+      },
+      _events: {
+        base: { draggable, targets: null },
+        enter: { draggable, targets: null, collisions: null, contacts: null, addedContacts: null },
+        leave: {
+          draggable,
+          targets: null,
+          collisions: null,
+          contacts: null,
+          removedContacts: null,
+        },
+        collide: {
+          draggable,
+          targets: null,
+          collisions: null,
+          contacts: null,
+          addedContacts: null,
+          removedContacts: null,
+          persistedContacts: null,
+        },
+        end: { canceled: false, draggable, targets: null, collisions: null, contacts: null },
       },
     });
 
@@ -255,11 +288,9 @@ export class DndObserver<T extends CollisionData = CollisionData> {
 
     // Emit "start" event.
     if (this._emitter.listenerCount(DndObserverEventType.Start)) {
-      const targets = this._getTargets(draggable);
-      this._emitter.emit(DndObserverEventType.Start, {
-        draggable,
-        targets,
-      });
+      const e = drag._events.base;
+      e.targets = this._getTargets(draggable);
+      this._emitter.emit(DndObserverEventType.Start, e);
     }
 
     // Lastly, emit collisions events.
@@ -282,11 +313,9 @@ export class DndObserver<T extends CollisionData = CollisionData> {
 
     // Emit "move" event.
     if (this._emitter.listenerCount(DndObserverEventType.Move)) {
-      const targets = this._getTargets(draggable);
-      this._emitter.emit(DndObserverEventType.Move, {
-        draggable,
-        targets,
-      });
+      const e = drag._events.base;
+      e.targets = this._getTargets(draggable);
+      this._emitter.emit(DndObserverEventType.Move, e);
     }
 
     // Lastly, emit collisions events.
@@ -309,13 +338,7 @@ export class DndObserver<T extends CollisionData = CollisionData> {
     if (this._drags.size === 0) return;
 
     // Queue droppable client rects update.
-    ticker.once(
-      tickerPhases.read,
-      () => {
-        this.updateDroppableClientRects();
-      },
-      this._listenerId,
-    );
+    ticker.once(tickerPhases.read, this.updateDroppableClientRects, this._listenerId);
 
     // Queue collision detection for all active draggables.
     this.detectCollisions();
@@ -351,13 +374,12 @@ export class DndObserver<T extends CollisionData = CollisionData> {
 
     // Emit "end" event.
     if (this._emitter.listenerCount(DndObserverEventType.End)) {
-      this._emitter.emit(DndObserverEventType.End, {
-        canceled,
-        draggable,
-        targets,
-        collisions,
-        contacts,
-      });
+      const e = drag._events.end;
+      e.canceled = canceled;
+      e.targets = targets;
+      e.collisions = collisions;
+      e.contacts = contacts;
+      this._emitter.emit(DndObserverEventType.End, e);
     }
 
     // Remove the drag data.
@@ -478,24 +500,22 @@ export class DndObserver<T extends CollisionData = CollisionData> {
 
     // Emit "leave" events.
     if (prevContacts.size && emitter.listenerCount(DndObserverEventType.Leave)) {
-      emitter.emit(DndObserverEventType.Leave, {
-        draggable,
-        targets,
-        collisions,
-        contacts,
-        removedContacts,
-      });
+      const e = drag._events.leave;
+      e.targets = targets;
+      e.collisions = collisions;
+      e.contacts = contacts;
+      e.removedContacts = removedContacts;
+      emitter.emit(DndObserverEventType.Leave, e);
     }
 
     // Emit "enter" events.
     if (addedContacts.size && emitter.listenerCount(DndObserverEventType.Enter)) {
-      emitter.emit(DndObserverEventType.Enter, {
-        draggable,
-        targets,
-        collisions,
-        contacts,
-        addedContacts,
-      });
+      const e = drag._events.enter;
+      e.targets = targets;
+      e.collisions = collisions;
+      e.contacts = contacts;
+      e.addedContacts = addedContacts;
+      emitter.emit(DndObserverEventType.Enter, e);
     }
 
     // Emit "collide" events if we have any contacts or removed contacts.
@@ -503,15 +523,14 @@ export class DndObserver<T extends CollisionData = CollisionData> {
       emitter.listenerCount(DndObserverEventType.Collide) &&
       (contacts.size || removedContacts.size)
     ) {
-      emitter.emit(DndObserverEventType.Collide, {
-        draggable,
-        targets,
-        collisions,
-        contacts,
-        addedContacts,
-        removedContacts,
-        persistedContacts,
-      });
+      const e = drag._events.collide;
+      e.targets = targets;
+      e.collisions = collisions;
+      e.contacts = contacts;
+      e.addedContacts = addedContacts;
+      e.removedContacts = removedContacts;
+      e.persistedContacts = persistedContacts;
+      emitter.emit(DndObserverEventType.Collide, e);
     }
 
     // Clear reusable sets.
@@ -561,13 +580,13 @@ export class DndObserver<T extends CollisionData = CollisionData> {
     if (draggable) {
       const drag = this._drags.get(draggable);
       if (!drag || drag.isEnded) return;
-      ticker.once(tickerPhases.read, () => this._computeCollisions(draggable), drag._cd.tickerId);
-      ticker.once(tickerPhases.write, () => this._emitCollisions(draggable), drag._cd.tickerId);
+      ticker.once(tickerPhases.read, drag._cd._compute, drag._cd.tickerId);
+      ticker.once(tickerPhases.write, drag._cd._emit, drag._cd.tickerId);
     } else {
-      for (const [d, drag] of this._drags) {
+      for (const [, drag] of this._drags) {
         if (drag.isEnded) continue;
-        ticker.once(tickerPhases.read, () => this._computeCollisions(d), drag._cd.tickerId);
-        ticker.once(tickerPhases.write, () => this._emitCollisions(d), drag._cd.tickerId);
+        ticker.once(tickerPhases.read, drag._cd._compute, drag._cd.tickerId);
+        ticker.once(tickerPhases.write, drag._cd._emit, drag._cd.tickerId);
       }
     }
   }

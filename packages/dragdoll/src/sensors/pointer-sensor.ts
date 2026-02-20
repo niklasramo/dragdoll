@@ -160,6 +160,11 @@ export class PointerSensor<
   protected _emitter: Emitter<Events>;
 
   /**
+   * Internal event payload for pooled emitting.
+   */
+  protected _eventData: any | null = null;
+
+  /**
    * Cleanup function for the click blocker, null if not active.
    */
   protected _removeClickBlocker: (() => void) | null = null;
@@ -275,14 +280,16 @@ export class PointerSensor<
     // Set drag data.
     (this as Writeable<this>).drag = dragData;
 
-    // Emit start event.
-    const eventData: PointerSensorStartEvent = {
+    // Create a separate event payload object to avoid polluting drag data with extra properties.
+    this._eventData = {
       ...dragData,
       type: SensorEventType.Start,
       srcEvent: e,
       target: pointerEventData.target,
     };
-    this._emitter.emit(eventData.type, eventData);
+
+    // Emit start event.
+    this._emitter.emit(this._eventData.type, this._eventData);
 
     // If the drag procedure was not reset within the start procedure let's
     // activate the instance (start listening to move/cancel/end events).
@@ -295,22 +302,28 @@ export class PointerSensor<
    * Listener for move event.
    */
   protected _onMove(e: PointerSensorSourceEvent) {
-    if (!this.drag) return;
+    const drag = this.drag;
+    const eventData = this._eventData;
+    if (!drag || !eventData) return;
 
     const pointerEventData = this._getTrackedPointerEventData(e);
     if (!pointerEventData) return;
 
-    (this.drag.deltaX as Writeable<number>) = pointerEventData.clientX - this.drag.x;
-    (this.drag.deltaY as Writeable<number>) = pointerEventData.clientY - this.drag.y;
-    (this.drag.x as Writeable<number>) = pointerEventData.clientX;
-    (this.drag.y as Writeable<number>) = pointerEventData.clientY;
+    const clientX = pointerEventData.clientX;
+    const clientY = pointerEventData.clientY;
 
-    const eventData: PointerSensorMoveEvent = {
-      type: SensorEventType.Move,
-      srcEvent: e,
-      target: pointerEventData.target,
-      ...this.drag,
-    };
+    (drag.deltaX as Writeable<number>) = clientX - drag.x;
+    (drag.deltaY as Writeable<number>) = clientY - drag.y;
+    (drag.x as Writeable<number>) = clientX;
+    (drag.y as Writeable<number>) = clientY;
+
+    eventData.type = SensorEventType.Move;
+    eventData.srcEvent = e;
+    eventData.target = pointerEventData.target;
+    eventData.x = clientX;
+    eventData.y = clientY;
+    eventData.deltaX = drag.deltaX;
+    eventData.deltaY = drag.deltaY;
 
     this._emitter.emit(eventData.type, eventData);
   }
@@ -319,22 +332,28 @@ export class PointerSensor<
    * Listener for cancel event.
    */
   protected _onCancel(e: PointerEvent | TouchEvent) {
-    if (!this.drag) return;
+    const drag = this.drag;
+    const eventData = this._eventData;
+    if (!drag || !eventData) return;
 
     const pointerEventData = this._getTrackedPointerEventData(e);
     if (!pointerEventData) return;
 
-    (this.drag.deltaX as Writeable<number>) = pointerEventData.clientX - this.drag.x;
-    (this.drag.deltaY as Writeable<number>) = pointerEventData.clientY - this.drag.y;
-    (this.drag.x as Writeable<number>) = pointerEventData.clientX;
-    (this.drag.y as Writeable<number>) = pointerEventData.clientY;
+    const clientX = pointerEventData.clientX;
+    const clientY = pointerEventData.clientY;
 
-    const eventData: PointerSensorCancelEvent = {
-      type: SensorEventType.Cancel,
-      srcEvent: e,
-      target: pointerEventData.target,
-      ...this.drag,
-    };
+    (drag.deltaX as Writeable<number>) = clientX - drag.x;
+    (drag.deltaY as Writeable<number>) = clientY - drag.y;
+    (drag.x as Writeable<number>) = clientX;
+    (drag.y as Writeable<number>) = clientY;
+
+    eventData.type = SensorEventType.Cancel;
+    eventData.srcEvent = e;
+    eventData.target = pointerEventData.target;
+    eventData.x = clientX;
+    eventData.y = clientY;
+    eventData.deltaX = drag.deltaX;
+    eventData.deltaY = drag.deltaY;
 
     this._emitter.emit(eventData.type, eventData);
 
@@ -345,22 +364,28 @@ export class PointerSensor<
    * Listener for end event.
    */
   protected _onEnd(e: PointerSensorSourceEvent) {
-    if (!this.drag) return;
+    const drag = this.drag;
+    const eventData = this._eventData;
+    if (!drag || !eventData) return;
 
     const pointerEventData = this._getTrackedPointerEventData(e);
     if (!pointerEventData) return;
 
-    (this.drag.deltaX as Writeable<number>) = pointerEventData.clientX - this.drag.x;
-    (this.drag.deltaY as Writeable<number>) = pointerEventData.clientY - this.drag.y;
-    (this.drag.x as Writeable<number>) = pointerEventData.clientX;
-    (this.drag.y as Writeable<number>) = pointerEventData.clientY;
+    const clientX = pointerEventData.clientX;
+    const clientY = pointerEventData.clientY;
 
-    const eventData: PointerSensorEndEvent = {
-      type: SensorEventType.End,
-      srcEvent: e,
-      target: pointerEventData.target,
-      ...this.drag,
-    };
+    (drag.deltaX as Writeable<number>) = clientX - drag.x;
+    (drag.deltaY as Writeable<number>) = clientY - drag.y;
+    (drag.x as Writeable<number>) = clientX;
+    (drag.y as Writeable<number>) = clientY;
+
+    eventData.type = SensorEventType.End;
+    eventData.srcEvent = e;
+    eventData.target = pointerEventData.target;
+    eventData.x = clientX;
+    eventData.y = clientY;
+    eventData.deltaX = drag.deltaX;
+    eventData.deltaY = drag.deltaY;
 
     this._emitter.emit(eventData.type, eventData);
 
@@ -419,6 +444,7 @@ export class PointerSensor<
    */
   protected _resetDrag() {
     (this as Writeable<this>).drag = null;
+    this._eventData = null;
     this._unbindWindowListeners();
   }
 
@@ -428,14 +454,15 @@ export class PointerSensor<
   cancel() {
     if (!this.drag) return;
 
-    const eventData: PointerSensorCancelEvent = {
-      type: SensorEventType.Cancel,
-      srcEvent: null,
-      target: null,
-      ...this.drag,
-    };
+    this._eventData.type = SensorEventType.Cancel;
+    this._eventData.srcEvent = null;
+    this._eventData.target = null;
+    this._eventData.x = this.drag.x;
+    this._eventData.y = this.drag.y;
+    this._eventData.deltaX = this.drag.deltaX;
+    this._eventData.deltaY = this.drag.deltaY;
 
-    this._emitter.emit(eventData.type, eventData);
+    this._emitter.emit(this._eventData.type, this._eventData);
 
     this._resetDrag();
   }

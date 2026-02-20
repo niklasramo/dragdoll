@@ -33,7 +33,6 @@ It's possible to use `dragdoll` via CDN by adding an `importmap` to your HTML fi
     "imports": {
       "eventti": "https://cdn.jsdelivr.net/npm/eventti@4.0.3/dist/eventti.js",
       "tikki": "https://cdn.jsdelivr.net/npm/tikki@3.0.2/dist/tikki.js",
-      "mezr/getRect": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getRect.js",
       "mezr/getDistance": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getDistance.js",
       "mezr/getOffsetContainer": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getOffsetContainer.js",
       "dragdoll": "https://cdn.jsdelivr.net/npm/dragdoll@0.12.0/dist/index.js"

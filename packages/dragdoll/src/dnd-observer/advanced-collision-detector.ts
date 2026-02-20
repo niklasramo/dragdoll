@@ -5,7 +5,7 @@ import { createRect } from '../utils/create-rect.js';
 import { getClipAncestors } from '../utils/get-clip-ancestors.js';
 import { getIntersectionRect } from '../utils/get-intersection-rect.js';
 import { getIntersectionScore } from '../utils/get-intersection-score.js';
-import { getRect } from '../utils/get-rect.js';
+import { getClientPaddingRect } from '../utils/get-rect.js';
 import type { CollisionData } from './collision-detector.js';
 import { CollisionDetector } from './collision-detector.js';
 import type { DndObserver } from './dnd-observer.js';
@@ -29,6 +29,7 @@ const DRAGGABLE_CLIP_ANCESTORS: (Element | Window)[] = [];
 const DROPPABLE_CLIP_ANCESTORS: (Element | Window)[] = [];
 const DRAGGABLE_CLIP_CHAIN: (Element | Window)[] = [];
 const DROPPABLE_CLIP_CHAIN: (Element | Window)[] = [];
+const CLIP_RECT: Rect = createRect();
 
 function computeDraggableClipAncestors(draggable: AnyDraggable) {
   if (!DRAGGABLE_CLIP_ANCESTORS.length) {
@@ -49,12 +50,11 @@ function computeDroppableClipAncestors(droppable: Droppable) {
 
 function getRecursiveIntersectionRect(elements: (Element | Window)[], result: Rect = createRect()) {
   // Initialize with first element or empty rect.
-  createRect(elements.length ? getRect([elements[0], 'padding'], window) : MAX_RECT, result);
+  createRect(elements.length ? getClientPaddingRect(elements[0], CLIP_RECT) : MAX_RECT, result);
 
   // Compute intersection with remaining elements.
   for (let i = 1; i < elements.length; i++) {
-    const el = elements[i];
-    const rect = getRect([el, 'padding'], window);
+    const rect = getClientPaddingRect(elements[i], CLIP_RECT);
     if (!getIntersectionRect(result, rect, result)) {
       createRect(EMPTY_RECT, result);
       break;
