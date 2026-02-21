@@ -74,7 +74,9 @@ export default () => {
           expectWithContext(['move', 'start'].includes(args.event.type), 'event type valid').toBe(
             true,
           );
-          expectWithContext(args.event.srcEvent, 'args.event.srcEvent').toBe(keyboardEvent);
+          expectWithContext(args.event.srcEvent === keyboardEvent, 'args.event.srcEvent').toBe(
+            true,
+          );
           return undefined;
         },
       });

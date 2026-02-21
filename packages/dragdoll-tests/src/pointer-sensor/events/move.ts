@@ -16,7 +16,7 @@ export default () => {
 
       s.on('move', (e) => {
         if (moveEvent === null) {
-          moveEvent = e;
+          moveEvent = { ...e };
         } else {
           expectWithContext(false, 'move triggered multiple times').toBe(true);
         }
@@ -52,7 +52,7 @@ export default () => {
         deltaX: 1,
         deltaY: 1,
       });
-      expectWithContext(srcEvent, 'mousemove srcEvent').toBe(sourceEvent);
+      expectWithContext(srcEvent === sourceEvent, 'mousemove srcEvent').toBe(true);
 
       s.destroy();
       el.remove();
@@ -66,7 +66,7 @@ export default () => {
 
       s.on('move', (e) => {
         if (moveEvent === null) {
-          moveEvent = e;
+          moveEvent = { ...e };
         } else {
           expectWithContext(false, 'move triggered multiple times').toBe(true);
         }
@@ -102,7 +102,7 @@ export default () => {
         deltaX: 1,
         deltaY: 1,
       });
-      expectWithContext(srcEvent, 'pointermove srcEvent').toBe(sourceEvent);
+      expectWithContext(srcEvent === sourceEvent, 'pointermove srcEvent').toBe(true);
 
       s.destroy();
       el.remove();
@@ -116,7 +116,7 @@ export default () => {
 
       s.on('move', (e) => {
         if (moveEvent === null) {
-          moveEvent = e;
+          moveEvent = { ...e };
         } else {
           expectWithContext(false, 'move triggered multiple times').toBe(true);
         }
@@ -152,7 +152,7 @@ export default () => {
         deltaX: 1,
         deltaY: 1,
       });
-      expectWithContext(srcEvent, 'touchmove srcEvent').toBe(sourceEvent);
+      expectWithContext(srcEvent === sourceEvent, 'touchmove srcEvent').toBe(true);
 
       s.destroy();
       el.remove();

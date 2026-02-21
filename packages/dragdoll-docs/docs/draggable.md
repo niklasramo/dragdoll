@@ -544,6 +544,9 @@ Destroy the draggable. Disposes all allocated memory and removes all bound event
 
 ## Events
 
+> [!NOTE]
+> To minimize memory allocations, event data objects are pooled and mutated between events. Treat them as read-only and do not store them for later use. If you need to persist the data, extract the specific values you need or clone the object.
+
 These are all the events that the Draggable instance can emit via the [`on`](#on) method.
 
 The listener functions receive the sensor event that triggered the Draggable event. See the [Sensor](/sensor) docs for the exact event shapes.

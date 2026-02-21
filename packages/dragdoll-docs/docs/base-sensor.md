@@ -229,6 +229,9 @@ baseSensor._cancel({ type: 'cancel', x: 100, y: 200 });
 
 ## Events
 
+> [!NOTE]
+> To minimize memory allocations, event data objects are pooled and mutated between events. Treat them as read-only and do not store them for later use. If you need to persist the data, extract the specific values you need or clone the object.
+
 BaseSensor emits the default sensor events as described in the [Sensor Events](/sensor#events) documentation.
 
 ## Types

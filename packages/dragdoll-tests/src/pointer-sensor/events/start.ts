@@ -16,7 +16,7 @@ export default () => {
 
       s.on('start', (e) => {
         if (startEvent === null) {
-          startEvent = e;
+          startEvent = { ...e };
         } else {
           expectWithContext(false, 'start triggered multiple times').toBe(true);
         }
@@ -52,7 +52,7 @@ export default () => {
         deltaX: 0,
         deltaY: 0,
       });
-      expectWithContext(srcEvent, 'mousedown srcEvent').toBe(sourceEvent);
+      expectWithContext(srcEvent === sourceEvent, 'mousedown srcEvent').toBe(true);
 
       s.destroy();
       el.remove();
@@ -66,7 +66,7 @@ export default () => {
 
       s.on('start', (e) => {
         if (startEvent === null) {
-          startEvent = e;
+          startEvent = { ...e };
         } else {
           expectWithContext(false, 'start triggered multiple times').toBe(true);
         }
@@ -102,7 +102,7 @@ export default () => {
         deltaX: 0,
         deltaY: 0,
       });
-      expectWithContext(srcEvent, 'pointerdown srcEvent').toBe(sourceEvent);
+      expectWithContext(srcEvent === sourceEvent, 'pointerdown srcEvent').toBe(true);
 
       s.destroy();
       el.remove();
@@ -116,7 +116,7 @@ export default () => {
 
       s.on('start', (e) => {
         if (startEvent === null) {
-          startEvent = e;
+          startEvent = { ...e };
         } else {
           expectWithContext(false, 'start triggered multiple times').toBe(true);
         }
@@ -152,7 +152,7 @@ export default () => {
         deltaX: 0,
         deltaY: 0,
       });
-      expectWithContext(srcEvent, 'touchstart srcEvent').toBe(sourceEvent);
+      expectWithContext(srcEvent === sourceEvent, 'touchstart srcEvent').toBe(true);
 
       s.destroy();
       el.remove();

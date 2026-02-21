@@ -213,6 +213,9 @@ keyboardSensor.updateSettings({
 
 ## Events
 
+> [!NOTE]
+> To minimize memory allocations, event data objects are pooled and mutated between events. Treat them as read-only and do not store them for later use. If you need to persist the data, extract the specific values you need or clone the object.
+
 Keyboard sensor events include `startX`, `startY`, `deltaX`, and `deltaY`.
 `deltaX`/`deltaY` represent the difference between the previous and current
 position, not the start and current position.

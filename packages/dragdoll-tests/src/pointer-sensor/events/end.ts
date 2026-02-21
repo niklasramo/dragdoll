@@ -16,7 +16,7 @@ export default () => {
 
       s.on('end', (e) => {
         if (endEvent === null) {
-          endEvent = e;
+          endEvent = { ...e };
         } else {
           expectWithContext(false, 'end triggered multiple times').toBe(true);
         }
@@ -52,7 +52,7 @@ export default () => {
         deltaX: 0,
         deltaY: 0,
       });
-      expectWithContext(srcEvent, 'mouseup srcEvent').toBe(sourceEvent);
+      expectWithContext(srcEvent === sourceEvent, 'mouseup srcEvent').toBe(true);
 
       s.destroy();
       el.remove();
@@ -66,7 +66,7 @@ export default () => {
 
       s.on('end', (e) => {
         if (endEvent === null) {
-          endEvent = e;
+          endEvent = { ...e };
         } else {
           expectWithContext(false, 'end triggered multiple times').toBe(true);
         }
@@ -102,7 +102,7 @@ export default () => {
         deltaX: 0,
         deltaY: 0,
       });
-      expectWithContext(srcEvent, 'pointerup srcEvent').toBe(sourceEvent);
+      expectWithContext(srcEvent === sourceEvent, 'pointerup srcEvent').toBe(true);
 
       s.destroy();
       el.remove();
@@ -116,7 +116,7 @@ export default () => {
 
       s.on('end', (e) => {
         if (endEvent === null) {
-          endEvent = e;
+          endEvent = { ...e };
         } else {
           expectWithContext(false, 'end triggered multiple times').toBe(true);
         }
@@ -152,7 +152,7 @@ export default () => {
         deltaX: 0,
         deltaY: 0,
       });
-      expectWithContext(srcEvent, 'touchend srcEvent').toBe(sourceEvent);
+      expectWithContext(srcEvent === sourceEvent, 'touchend srcEvent').toBe(true);
 
       s.destroy();
       el.remove();

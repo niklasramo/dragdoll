@@ -378,7 +378,6 @@ export class Draggable<
     sensor.on(SensorEventType.Move, onMove, onMove);
     sensor.on(SensorEventType.Cancel, onEnd, onEnd);
     sensor.on(SensorEventType.End, onEnd, onEnd);
-    sensor.on(SensorEventType.Destroy, onEnd, onEnd);
   }
 
   protected _unbindSensor(sensor: S) {
@@ -390,7 +389,6 @@ export class Draggable<
     sensor.off(SensorEventType.Move, onMove);
     sensor.off(SensorEventType.Cancel, onEnd);
     sensor.off(SensorEventType.End, onEnd);
-    sensor.off(SensorEventType.Destroy, onEnd);
 
     this._sensorData.delete(sensor);
   }
@@ -475,7 +473,7 @@ export class Draggable<
       case DraggableStartPredicateState.Resolved: {
         // Move the element if dragging is active.
         if (this.drag) {
-          (this.drag as Writeable<typeof this.drag>).moveEvent = e;
+          Object.assign(this.drag.moveEvent, e);
           if (this.settings.sensorProcessingMode === DraggableSensorProcessingMode.Immediate) {
             this._prepareMove();
             this._applyMove();
@@ -493,10 +491,7 @@ export class Draggable<
     this.align();
   }
 
-  protected _onEnd(
-    e: S['_events_type']['end'] | S['_events_type']['cancel'] | S['_events_type']['destroy'],
-    sensor: S,
-  ) {
+  protected _onEnd(e: S['_events_type']['end'] | S['_events_type']['cancel'], sensor: S) {
     const sensorData = this._sensorData.get(sensor);
     if (!sensorData) return;
 
@@ -509,7 +504,7 @@ export class Draggable<
     // Otherwise, if drag is active AND the sensor is the one that triggered the
     // drag process, let's reset all sensors' start predicate states.
     else if (sensorData.predicateState === DraggableStartPredicateState.Resolved) {
-      (this.drag as Writeable<typeof this.drag>).endEvent = e;
+      (this.drag as Writeable<typeof this.drag>).endEvent = { ...e };
       this._sensorData.forEach((data) => {
         data.predicateState = DraggableStartPredicateState.Pending;
         data.predicateEvent = null;
@@ -653,14 +648,13 @@ export class Draggable<
     // Get next event and previous event so we can compute the movement
     // difference between the clientX/Y values.
     const { moveEvent, prevMoveEvent } = drag;
-    if (moveEvent === prevMoveEvent) return;
+    const diffX = moveEvent.x - prevMoveEvent.x;
+    const diffY = moveEvent.y - prevMoveEvent.y;
+
+    if (!diffX && !diffY) return;
 
     // Apply modifiers for the move phase.
-    this._applyModifiers(
-      DraggableModifierPhase.Move,
-      moveEvent.x - prevMoveEvent.x,
-      moveEvent.y - prevMoveEvent.y,
-    );
+    this._applyModifiers(DraggableModifierPhase.Move, diffX, diffY);
 
     // Emit preparemove event.
     this._emit(DraggableEventType.PrepareMove, drag, this);
@@ -674,8 +668,8 @@ export class Draggable<
     // Make sure that the drag is still active.
     if (drag.isEnded) return;
 
-    // Store next move event as previous move event.
-    (drag as Writeable<typeof drag>).prevMoveEvent = moveEvent;
+    // Store next move event values as previous move event.
+    Object.assign(prevMoveEvent, moveEvent);
   }
 
   protected _applyMove() {

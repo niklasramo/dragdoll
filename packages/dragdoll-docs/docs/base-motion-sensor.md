@@ -190,6 +190,9 @@ baseMotionSensor.off('start', id);
 
 ## Events
 
+> [!NOTE]
+> To minimize memory allocations, event data objects are pooled and mutated between events. Treat them as read-only and do not store them for later use. If you need to persist the data, extract the specific values you need or clone the object.
+
 ### start
 
 Emitted when the sensor starts dragging.
