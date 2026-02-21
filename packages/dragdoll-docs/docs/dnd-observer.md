@@ -301,9 +301,8 @@ dndObserver.destroy();
 
 ## Events
 
-To keep memory allocations to a minimum most of the event data objects are reused/pooled between events. Treat all event data objects as read-only and assume that they are mutated between events.
-
-In practice this means that you should not store the event data objects in your own variables for later use, but rather use them directly in your event or store the specific primitive values that you need. You can also clone the event data objects if you need to store them for later use.
+> [!NOTE]
+> To minimize memory allocations, event data objects are pooled and mutated between events. Treat them as read-only and do not store them for later use. If you need to persist the data, extract the specific values you need or clone the object.
 
 For a quick reference of all events and their listener function signatures you can glance at the [DndObserverEventCallbacks](#dndobservereventcallbacks) interface. Below you will find a more detailed description of each event.
 

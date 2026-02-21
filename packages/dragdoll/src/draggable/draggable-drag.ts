@@ -20,9 +20,9 @@ export class DraggableDrag<S extends Sensor> {
 
   constructor(sensor: S, startEvent: S['_events_type']['start'] | S['_events_type']['move']) {
     this.sensor = sensor;
-    this.startEvent = startEvent;
-    this.prevMoveEvent = startEvent;
-    this.moveEvent = startEvent;
+    this.startEvent = { ...startEvent };
+    this.prevMoveEvent = { ...startEvent };
+    this.moveEvent = { ...startEvent };
     this.endEvent = null;
     this.items = [];
     this.isEnded = false;

@@ -16,7 +16,7 @@ export default () => {
 
       s.on('cancel', (e) => {
         if (cancelEvent === null) {
-          cancelEvent = e;
+          cancelEvent = { ...e };
         } else {
           expectWithContext(false, 'cancel triggered multiple times').toBe(true);
         }
@@ -53,7 +53,7 @@ export default () => {
         deltaX: 0,
         deltaY: 0,
       });
-      expectWithContext(srcEvent, 'pointercancel srcEvent').toBe(sourceEvent);
+      expectWithContext(srcEvent === sourceEvent, 'pointercancel srcEvent').toBe(true);
 
       s.destroy();
       el.remove();
@@ -67,7 +67,7 @@ export default () => {
 
       s.on('cancel', (e) => {
         if (cancelEvent === null) {
-          cancelEvent = e;
+          cancelEvent = { ...e };
         } else {
           expectWithContext(false, 'cancel triggered multiple times').toBe(true);
         }
@@ -104,7 +104,7 @@ export default () => {
         deltaX: 0,
         deltaY: 0,
       });
-      expectWithContext(srcEvent, 'touchcancel srcEvent').toBe(sourceEvent);
+      expectWithContext(srcEvent === sourceEvent, 'touchcancel srcEvent').toBe(true);
 
       s.destroy();
       el.remove();
