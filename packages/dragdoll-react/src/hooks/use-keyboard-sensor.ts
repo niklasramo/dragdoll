@@ -20,15 +20,14 @@ export function useKeyboardSensor<E extends KeyboardSensorEvents = KeyboardSenso
   settings?: UseKeyboardSensorSettings<E>,
   element?: Element | null,
 ) {
-  const { onStart, onMove, onCancel, onEnd, onDestroy, ...sensorSettings } =
-    settings || ({} as UseKeyboardSensorSettings<E>);
+  const { onStart, onMove, onCancel, onEnd, onDestroy } = settings || {};
 
   const [sensor, setSensor] = useState<KeyboardSensor<E> | null>(null);
 
   const sensorRef = useRef<KeyboardSensor<E> | null>(sensor);
 
-  const settingsRef = useRef(sensorSettings as Partial<KeyboardSensorSettings<E>> | undefined);
-  settingsRef.current = sensorSettings as Partial<KeyboardSensorSettings<E>> | undefined;
+  const settingsRef = useRef(settings as Partial<KeyboardSensorSettings<E>> | undefined);
+  settingsRef.current = settings as Partial<KeyboardSensorSettings<E>> | undefined;
 
   useSensorCallback(sensor, 'start', onStart);
   useSensorCallback(sensor, 'move', onMove);
@@ -89,28 +88,20 @@ export function useKeyboardSensor<E extends KeyboardSensorEvents = KeyboardSenso
 
   // Handle settings change.
   useIsomorphicLayoutEffect(() => {
-    if (sensor) {
-      const {
-        moveDistance = KeyboardSensorDefaultSettings.moveDistance,
-        cancelOnBlur = KeyboardSensorDefaultSettings.cancelOnBlur,
-        cancelOnVisibilityChange = KeyboardSensorDefaultSettings.cancelOnVisibilityChange,
-        startPredicate = KeyboardSensorDefaultSettings.startPredicate,
-        movePredicate = KeyboardSensorDefaultSettings.movePredicate,
-        cancelPredicate = KeyboardSensorDefaultSettings.cancelPredicate,
-        endPredicate = KeyboardSensorDefaultSettings.endPredicate,
-      } = sensorSettings;
+    if (!sensor) return;
 
-      sensor.updateSettings({
-        moveDistance,
-        cancelOnBlur,
-        cancelOnVisibilityChange,
-        startPredicate,
-        movePredicate,
-        cancelPredicate,
-        endPredicate,
-      });
-    }
-  }, [sensor, sensorSettings]);
+    sensor.updateSettings({
+      moveDistance: settings?.moveDistance ?? KeyboardSensorDefaultSettings.moveDistance,
+      cancelOnBlur: settings?.cancelOnBlur ?? KeyboardSensorDefaultSettings.cancelOnBlur,
+      cancelOnVisibilityChange:
+        settings?.cancelOnVisibilityChange ??
+        KeyboardSensorDefaultSettings.cancelOnVisibilityChange,
+      startPredicate: settings?.startPredicate ?? KeyboardSensorDefaultSettings.startPredicate,
+      movePredicate: settings?.movePredicate ?? KeyboardSensorDefaultSettings.movePredicate,
+      cancelPredicate: settings?.cancelPredicate ?? KeyboardSensorDefaultSettings.cancelPredicate,
+      endPredicate: settings?.endPredicate ?? KeyboardSensorDefaultSettings.endPredicate,
+    });
+  }, [sensor, settings]);
 
   return useMemoStable(() => {
     return [sensor, setRef] as const;

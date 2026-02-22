@@ -53,6 +53,9 @@ type settings = Partial<PointerSensorSettings>;
 
 Configuration settings for the pointer sensor. See core [PointerSensor settings](/pointer-sensor#settings) for all available settings.
 
+> [!WARNING]
+> You **MUST** memoize the settings object (e.g. with `useMemo`) to prevent unnecessary re-evaluations and performance issues.
+
 In addition to the core settings, the following event callback props are supported:
 
 #### onStart

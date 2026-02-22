@@ -45,6 +45,9 @@ type settings = UseDndObserverSettings<T>;
 
 Configuration settings for the `DndObserver`.
 
+> [!WARNING]
+> You **MUST** memoize the settings object (e.g. with `useMemo`) to prevent unnecessary re-evaluations and performance issues.
+
 #### collisionDetector
 
 ```ts

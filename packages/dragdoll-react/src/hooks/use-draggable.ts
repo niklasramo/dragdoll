@@ -3,7 +3,6 @@ import type { DraggableId, DraggableOptions } from 'dragdoll/draggable';
 import { Draggable } from 'dragdoll/draggable';
 import type { Sensor } from 'dragdoll/sensors';
 import { useRef, useState } from 'react';
-import { areConfigsEqual } from '../utils/are-configs-equal.js';
 import { useCallbackStable } from './use-callback-stable.js';
 import { useDndObserverContext } from './use-dnd-observer-context.js';
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';
@@ -123,21 +122,24 @@ export function useDraggable<S extends Sensor = Sensor>(
     // If the settings have not changed, do nothing.
     if (appliedSettingsRef.current === draggableSettings) return;
 
-    // Only update if settings have actually changed (deep equality check).
-    // This prevents unnecessary updates when settings object reference changes
-    // but values remain the same.
-    if (!areConfigsEqual(appliedSettingsRef.current, draggableSettings)) {
-      // Here we use the protected method to parse the settings so that we can
-      // use the default settings for the ones that are not provided. This is
-      // the expected behavior in React's declarative nature.
-      draggable.updateSettings(draggable['_parseSettings'](draggableSettings));
+    // Here we use the protected method to parse the settings so that we can
+    // use the default settings for the ones that are not provided. This is
+    // the expected behavior in React's declarative nature.
+    draggable.updateSettings(draggable['_parseSettings'](draggableSettings));
 
-      // If dndGroups or computeClientRect changed we need to update the
-      // effective dnd observer's matches and queue a collision check.
-      if (appliedSettingsRef.current) {
-        if (draggableSettings.dndGroups !== appliedSettingsRef.current.dndGroups) {
-          effectiveDndObserverRef.current?.clearTargets(draggable);
-        }
+    // If dndGroups or computeClientRect changed we need to update the
+    // effective dnd observer's matches and queue a collision check.
+    if (appliedSettingsRef.current) {
+      const dndGroupsChanged = draggableSettings.dndGroups !== appliedSettingsRef.current.dndGroups;
+      const computeClientRectChanged =
+        draggableSettings.computeClientRect !== appliedSettingsRef.current.computeClientRect;
+
+      if (dndGroupsChanged) {
+        effectiveDndObserverRef.current?.clearTargets(draggable);
+      }
+
+      if (dndGroupsChanged || computeClientRectChanged) {
+        effectiveDndObserverRef.current?.detectCollisions(draggable);
       }
     }
 

@@ -26,17 +26,14 @@ export interface UseKeyboardMotionSensorSettings<
 export function useKeyboardMotionSensor<
   E extends KeyboardMotionSensorEvents = KeyboardMotionSensorEvents,
 >(settings?: UseKeyboardMotionSensorSettings<E>, element?: Element | null) {
-  const { onStart, onMove, onCancel, onEnd, onDestroy, onTick, ...sensorSettings } =
-    settings || ({} as UseKeyboardMotionSensorSettings<E>);
+  const { onStart, onMove, onCancel, onEnd, onDestroy, onTick } = settings || {};
 
   const [sensor, setSensor] = useState<KeyboardMotionSensor<E> | null>(null);
 
   const sensorRef = useRef<KeyboardMotionSensor<E> | null>(sensor);
 
-  const settingsRef = useRef(
-    sensorSettings as Partial<KeyboardMotionSensorSettings<E>> | undefined,
-  );
-  settingsRef.current = sensorSettings as Partial<KeyboardMotionSensorSettings<E>> | undefined;
+  const settingsRef = useRef(settings as Partial<KeyboardMotionSensorSettings<E>> | undefined);
+  settingsRef.current = settings as Partial<KeyboardMotionSensorSettings<E>> | undefined;
 
   useSensorCallback(sensor, 'start', onStart);
   useSensorCallback(sensor, 'move', onMove);
@@ -98,36 +95,25 @@ export function useKeyboardMotionSensor<
 
   // Handle settings change.
   useIsomorphicLayoutEffect(() => {
-    if (sensor) {
-      const {
-        startKeys = KeyboardMotionSensorDefaultSettings.startKeys,
-        moveLeftKeys = KeyboardMotionSensorDefaultSettings.moveLeftKeys,
-        moveRightKeys = KeyboardMotionSensorDefaultSettings.moveRightKeys,
-        moveUpKeys = KeyboardMotionSensorDefaultSettings.moveUpKeys,
-        moveDownKeys = KeyboardMotionSensorDefaultSettings.moveDownKeys,
-        cancelKeys = KeyboardMotionSensorDefaultSettings.cancelKeys,
-        endKeys = KeyboardMotionSensorDefaultSettings.endKeys,
-        cancelOnBlur = KeyboardMotionSensorDefaultSettings.cancelOnBlur,
-        cancelOnVisibilityChange = KeyboardMotionSensorDefaultSettings.cancelOnVisibilityChange,
-        computeSpeed = KeyboardMotionSensorDefaultSettings.computeSpeed,
-        startPredicate = KeyboardMotionSensorDefaultSettings.startPredicate,
-      } = sensorSettings;
+    if (!sensor) return;
 
-      sensor.updateSettings({
-        startKeys,
-        moveLeftKeys,
-        moveRightKeys,
-        moveUpKeys,
-        moveDownKeys,
-        cancelKeys,
-        endKeys,
-        cancelOnBlur,
-        cancelOnVisibilityChange,
-        computeSpeed,
-        startPredicate,
-      });
-    }
-  }, [sensor, sensorSettings]);
+    sensor.updateSettings({
+      startKeys: settings?.startKeys ?? KeyboardMotionSensorDefaultSettings.startKeys,
+      moveLeftKeys: settings?.moveLeftKeys ?? KeyboardMotionSensorDefaultSettings.moveLeftKeys,
+      moveRightKeys: settings?.moveRightKeys ?? KeyboardMotionSensorDefaultSettings.moveRightKeys,
+      moveUpKeys: settings?.moveUpKeys ?? KeyboardMotionSensorDefaultSettings.moveUpKeys,
+      moveDownKeys: settings?.moveDownKeys ?? KeyboardMotionSensorDefaultSettings.moveDownKeys,
+      cancelKeys: settings?.cancelKeys ?? KeyboardMotionSensorDefaultSettings.cancelKeys,
+      endKeys: settings?.endKeys ?? KeyboardMotionSensorDefaultSettings.endKeys,
+      cancelOnBlur: settings?.cancelOnBlur ?? KeyboardMotionSensorDefaultSettings.cancelOnBlur,
+      cancelOnVisibilityChange:
+        settings?.cancelOnVisibilityChange ??
+        KeyboardMotionSensorDefaultSettings.cancelOnVisibilityChange,
+      computeSpeed: settings?.computeSpeed ?? KeyboardMotionSensorDefaultSettings.computeSpeed,
+      startPredicate:
+        settings?.startPredicate ?? KeyboardMotionSensorDefaultSettings.startPredicate,
+    });
+  }, [sensor, settings]);
 
   return useMemoStable(() => {
     return [sensor, setRef] as const;
