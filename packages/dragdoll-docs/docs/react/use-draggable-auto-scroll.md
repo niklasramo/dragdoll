@@ -81,6 +81,9 @@ type settings = UseDraggableAutoScrollSettings<S>;
 
 Configuration options for auto-scrolling. See the auto-scroll plugin [settings](/draggable-auto-scroll-plugin#settings) for all the available options.
 
+> [!WARNING]
+> You **MUST** memoize the settings object (e.g. with `useMemo`) to prevent unnecessary re-evaluations and performance issues.
+
 As per React's declarative nature, these settings are always merged with the default settings and then provided to the [`DraggableAutoScroll`](/draggable-auto-scroll-plugin) instance. This way there will be no cumulative effect of settings changes over time meaning that the old settings will be completely overridden by the new settings.
 
 - Optional.

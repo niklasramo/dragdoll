@@ -54,6 +54,9 @@ function useDroppable({
 
 Configuration settings for the [`Droppable`](/droppable) instance. Extends core [`DroppableOptions`](/droppable#droppableoptions) with an optional `dndObserver` setting.
 
+> [!WARNING]
+> You **MUST** memoize the settings object (e.g. with `useMemo`) to prevent unnecessary re-evaluations and performance issues.
+
 As per React's declarative nature, these settings are always merged with the default settings and then provided to the [`Droppable`](/droppable) instance. This way there will be no cumulative effect of settings changes over time meaning that the old settings will be completely overridden by the new settings.
 
 Treat these as live settings that can be updated dynamically without recreating the droppable (except for `id`, which will cause the droppable to be recreated). When `accept` or `computeClientRect` change, the hook will automatically trigger collision detection updates.

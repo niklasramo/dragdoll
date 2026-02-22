@@ -18,14 +18,14 @@ export function usePointerSensor<E extends PointerSensorEvents = PointerSensorEv
   settings?: UsePointerSensorSettings,
   element?: Element | Window,
 ) {
-  const { onStart, onMove, onCancel, onEnd, onDestroy, ...sensorSettings } = settings || {};
+  const { onStart, onMove, onCancel, onEnd, onDestroy } = settings || {};
 
   const [sensor, setSensor] = useState<PointerSensor<E> | null>(null);
 
   const sensorRef = useRef<PointerSensor<E> | null>(sensor);
 
-  const settingsRef = useRef(sensorSettings as Partial<PointerSensorSettings> | undefined);
-  settingsRef.current = sensorSettings as Partial<PointerSensorSettings> | undefined;
+  const settingsRef = useRef(settings as Partial<PointerSensorSettings> | undefined);
+  settingsRef.current = settings as Partial<PointerSensorSettings> | undefined;
 
   useSensorCallback(sensor, 'start', onStart as ((e: E['start']) => void) | undefined);
   useSensorCallback(sensor, 'move', onMove as ((e: E['move']) => void) | undefined);
@@ -86,20 +86,21 @@ export function usePointerSensor<E extends PointerSensorEvents = PointerSensorEv
 
   // Handle settings change.
   useIsomorphicLayoutEffect(() => {
-    if (sensor) {
-      const {
-        listenerOptions = PointerSensorDefaultSettings.listenerOptions,
-        sourceEvents = PointerSensorDefaultSettings.sourceEvents,
-        startPredicate = PointerSensorDefaultSettings.startPredicate,
-      } = sensorSettings;
+    if (!sensor) return;
 
-      sensor.updateSettings({
-        listenerOptions,
-        sourceEvents,
-        startPredicate,
-      });
-    }
-  }, [sensor, sensorSettings]);
+    sensor.updateSettings({
+      listenerOptions: settings?.listenerOptions ?? PointerSensorDefaultSettings.listenerOptions,
+      sourceEvents: settings?.sourceEvents ?? PointerSensorDefaultSettings.sourceEvents,
+      startPredicate: settings?.startPredicate ?? PointerSensorDefaultSettings.startPredicate,
+      cancelOnVisibilityChange:
+        settings?.cancelOnVisibilityChange ?? PointerSensorDefaultSettings.cancelOnVisibilityChange,
+      cancelOnEscape: settings?.cancelOnEscape ?? PointerSensorDefaultSettings.cancelOnEscape,
+      preventNativeDrag:
+        settings?.preventNativeDrag ?? PointerSensorDefaultSettings.preventNativeDrag,
+      preventContextMenu:
+        settings?.preventContextMenu ?? PointerSensorDefaultSettings.preventContextMenu,
+    });
+  }, [sensor, settings]);
 
   return useMemoStable(() => {
     return [sensor, setRef] as const;
