@@ -3,26 +3,6 @@ body {
   overflow-y: auto;
 }
 
-.drag-container-outer {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 0px;
-  height: 0px;
-  transform: scale(0.3) skew(10deg, 10deg);
-  transform-origin: 17px 37px;
-}
-
-.drag-container {
-  position: absolute;
-  left: 10px;
-  top: 10px;
-  width: 0px;
-  height: 0px;
-  transform: scale(0.7) skew(10deg, 10deg);
-  transform-origin: 27px 47px;
-}
-
 .card-container-outer {
   position: absolute;
   inset: 0;

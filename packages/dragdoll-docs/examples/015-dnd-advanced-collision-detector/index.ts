@@ -7,10 +7,10 @@ import {
   DndObserverEventType,
   Draggable,
   Droppable,
+  getLocalOffset,
   KeyboardMotionSensor,
   PointerSensor,
 } from 'dragdoll';
-import { getOffset } from 'mezr';
 
 // Keep track of the best match droppable.
 const bestMatchMap: Map<AnyDraggable, Droppable> = new Map();
@@ -126,14 +126,15 @@ dndObserver.on(DndObserverEventType.End, ({ draggable, canceled }) => {
   const targetContainer =
     !canceled && bestMatch ? (bestMatch.element as HTMLElement) : originalContainer;
 
+  // Record the element's current viewport position before any DOM changes.
+  const rect = draggableElement.getBoundingClientRect();
+
+  // Clear the drag-applied transform so the element returns to its natural
+  // CSS position within whichever container it ends up in.
+  draggableElement.style.transform = '';
+
   // If draggable moved into a different container.
   if (originalContainer !== targetContainer) {
-    // Move the draggable to the target container. While doing that, let's add
-    // the offset between the original container and the target container to the
-    // draggable's transform so its visual position does not change.
-    const offsetData = getOffset(originalContainer, targetContainer);
-    const transformString = `translate(${offsetData.left}px, ${offsetData.top}px) ${draggableElement.style.transform}`;
-    draggableElement.style.transform = transformString;
     targetContainer.appendChild(draggableElement);
 
     // Move the data-draggable-contained attribute to the target container.
@@ -144,20 +145,38 @@ dndObserver.on(DndObserverEventType.End, ({ draggable, canceled }) => {
     );
   }
 
-  // Animate the draggable's transform back to "zero" (no transform).
-  const transformMatrix = new DOMMatrix().setMatrixValue(draggableElement.style.transform);
-  if (!transformMatrix.isIdentity) {
-    draggableElement.classList.add('animate');
-    const onTransitionEnd = (e: TransitionEvent) => {
-      if (e.target === draggableElement && e.propertyName === 'transform') {
-        draggableElement.classList.remove('animate');
-        document.body.removeEventListener('transitionend', onTransitionEnd);
-      }
-    };
-    document.body.addEventListener('transitionend', onTransitionEnd);
-    draggableElement.clientHeight; // Force a reflow.
-    draggableElement.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
+  // Compute the CSS offset delta that maintains the element's viewport
+  // position. getLocalOffset accounts for any ancestor transforms (scale,
+  // rotation, skew) on the container.
+  const delta = getLocalOffset(draggableElement, rect.x, rect.y);
+
+  // Skip animation if the element is already at its target position.
+  if (Math.abs(delta.x) < 0.5 && Math.abs(delta.y) < 0.5) {
+    bestMatch?.element?.removeAttribute('data-draggable-over');
+    bestMatchMap.delete(draggable);
+    return;
   }
+
+  // Apply transform to hold the element at its drag-end viewport position.
+  draggableElement.style.transform = `translate(${delta.x}px, ${delta.y}px)`;
+
+  // Force a reflow to commit the starting transform BEFORE adding the
+  // transition. Without this the browser's last committed state for transform
+  // is "none" (from the getLocalOffset reflow), and the transition has no
+  // starting point to animate from.
+  draggableElement.clientHeight;
+
+  // Now enable the transition and animate to identity.
+  draggableElement.classList.add('animate');
+  const onTransitionEnd = (e: TransitionEvent) => {
+    if (e.target === draggableElement && e.propertyName === 'transform') {
+      draggableElement.classList.remove('animate');
+      draggableElement.style.transform = '';
+      document.body.removeEventListener('transitionend', onTransitionEnd);
+    }
+  };
+  document.body.addEventListener('transitionend', onTransitionEnd);
+  draggableElement.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
 
   // Reset the best match droppable.
   bestMatch?.element?.removeAttribute('data-draggable-over');

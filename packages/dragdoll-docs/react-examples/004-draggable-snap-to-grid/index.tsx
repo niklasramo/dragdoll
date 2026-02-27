@@ -2,7 +2,6 @@ import { createSnapModifier } from 'dragdoll';
 import {
   useDraggable,
   useDraggableDrag,
-  UseDraggableSettings,
   useKeyboardSensor,
   usePointerSensor,
 } from 'dragdoll-react';
@@ -19,7 +18,7 @@ const DraggableCardMemo = memo(function DraggableCard() {
     moveDistance: { x: GRID_WIDTH, y: GRID_HEIGHT },
   });
 
-  const draggableSettings: UseDraggableSettings = useMemo(
+  const draggableSettings = useMemo(
     () => ({
       elements: () => (elementRef.current ? [elementRef.current] : []),
       positionModifiers: [createSnapModifier(GRID_WIDTH, GRID_HEIGHT)],

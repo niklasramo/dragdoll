@@ -3,11 +3,13 @@ import dndObserver from './dnd-observer/index.js';
 import draggable from './draggable/index.js';
 import keyboardSensor from './keyboard-sensor/index.js';
 import pointerSensor from './pointer-sensor/index.js';
+import getLocalOffset from './get-local-offset.js';
 
 describe('dragdoll', () => {
   baseSensor();
   dndObserver();
   draggable();
+  getLocalOffset();
   keyboardSensor();
   pointerSensor();
 });

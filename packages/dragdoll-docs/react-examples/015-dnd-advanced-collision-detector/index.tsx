@@ -2,6 +2,7 @@ import {
   AdvancedCollisionData,
   AdvancedCollisionDetector,
   AnyDraggable,
+  DndObserver,
   Droppable,
 } from 'dragdoll';
 import {
@@ -9,9 +10,7 @@ import {
   useDndObserver,
   useDraggable,
   useDraggableAutoScroll,
-  UseDraggableAutoScrollSettings,
   useDraggableDrag,
-  UseDraggableSettings,
   useDroppable,
   useKeyboardMotionSensor,
   usePointerSensor,
@@ -38,8 +37,8 @@ function getContainerInfo(container: HTMLElement): { listId: ListId; index: numb
   };
 }
 
-// Helper to create a ghost/preview element
-function createGhostElement(element: HTMLElement, draggableId: string): HTMLElement {
+// Helper to create a drag preview element
+function createDragPreviewElement(element: HTMLElement, draggableId: string): HTMLElement {
   const rect = element.getBoundingClientRect();
   const clone = element.cloneNode(true) as HTMLElement;
   clone.style.position = 'fixed';
@@ -48,7 +47,7 @@ function createGhostElement(element: HTMLElement, draggableId: string): HTMLElem
   clone.style.left = `${rect.left}px`;
   clone.style.top = `${rect.top}px`;
   clone.style.transform = '';
-  clone.classList.add('ghost', 'dragging');
+  clone.classList.add('drag-preview', 'dragging');
   clone.setAttribute('data-id', draggableId);
   document.body.appendChild(clone);
   return clone;
@@ -113,7 +112,8 @@ function getTargetPosition(container: HTMLElement) {
 }
 
 // Collision detector factory
-const collisionDetector = (ctx: any) => new AdvancedCollisionDetector(ctx);
+const collisionDetector = (ctx: DndObserver<AdvancedCollisionData>) =>
+  new AdvancedCollisionDetector(ctx);
 
 // Constants
 const ANIMATION_EPSILON = 0.5; // Minimum distance to trigger animation
@@ -133,15 +133,14 @@ const DraggableCardMemo = memo(function DraggableCard({
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
   const [keyboardSensor, setKeyboardSensorRef] = useKeyboardMotionSensor();
 
-  const draggableSettings: UseDraggableSettings = useMemo(
+  const draggableSettings = useMemo(
     () => ({
       elements: () => {
         const element = elementRef.current;
         if (!element) return [];
-        return [createGhostElement(element, draggableId)];
+        return [createDragPreviewElement(element, draggableId)];
       },
-      container: document.body,
-      frozenStyles: () => ['width', 'height'],
+      frozenStyles: (): ('width' | 'height')[] => ['width', 'height'],
       startPredicate: () => !elementRef.current?.classList.contains('animate'),
       onStart: () => {
         elementRef.current?.classList.add('dragging', 'hidden');
@@ -151,12 +150,12 @@ const DraggableCardMemo = memo(function DraggableCard({
     [draggableId, onDragStart],
   );
 
-  const autoScrollSettings: UseDraggableAutoScrollSettings = useMemo(
+  const autoScrollSettings = useMemo(
     () => ({
       targets: () =>
         (scrollContainerRefs.current || []).map((scrollContainer) => ({
           element: scrollContainer,
-          axis: 'y',
+          axis: 'y' as const,
           padding: { top: 0, bottom: 0 },
         })),
     }),

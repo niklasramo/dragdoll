@@ -2,7 +2,6 @@ import { createContainmentModifier } from 'dragdoll';
 import {
   useDraggable,
   useDraggableDrag,
-  UseDraggableSettings,
   useKeyboardMotionSensor,
   usePointerSensor,
 } from 'dragdoll-react';
@@ -14,7 +13,7 @@ const DraggableCardMemo = memo(function DraggableCard() {
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
   const [keyboardSensor, setKeyboardSensorRef] = useKeyboardMotionSensor();
 
-  const draggableSettings: UseDraggableSettings = useMemo(
+  const draggableSettings = useMemo(
     () => ({
       elements: () => (elementRef.current ? [elementRef.current] : []),
       positionModifiers: [

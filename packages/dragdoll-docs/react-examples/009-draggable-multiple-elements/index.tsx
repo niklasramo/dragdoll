@@ -37,7 +37,7 @@ const DraggableCardMemo = memo(function DraggableCard({
         });
       },
     }),
-    [elementRefsMap],
+    [],
   );
 
   useDraggable([pointerSensor, keyboardSensor], draggableSettings);
