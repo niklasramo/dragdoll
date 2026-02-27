@@ -34,7 +34,7 @@ const DraggableCardMemo = memo(function DraggableCard({
         setZIndex(++zIndexRef.current);
       },
     }),
-    [zIndexRef],
+    [axis],
   );
 
   const draggable = useDraggable([pointerSensor, keyboardSensor], draggableSettings);

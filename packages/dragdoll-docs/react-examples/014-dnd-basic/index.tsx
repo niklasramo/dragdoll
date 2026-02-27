@@ -3,9 +3,7 @@ import {
   useDndObserver,
   useDraggable,
   useDraggableDrag,
-  UseDraggableSettings,
   useDroppable,
-  UseDroppableSettings,
   useKeyboardMotionSensor,
   usePointerSensor,
 } from 'dragdoll-react';
@@ -22,7 +20,7 @@ const DraggableCardMemo = memo(function DraggableCard({
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
   const [keyboardSensor, setKeyboardSensorRef] = useKeyboardMotionSensor();
 
-  const draggableSettings: UseDraggableSettings = useMemo(
+  const draggableSettings = useMemo(
     () => ({
       elements: () => (elementRef.current ? [elementRef.current] : []),
       startPredicate: () => !elementRef.current?.classList.contains('dragging'),
@@ -30,7 +28,7 @@ const DraggableCardMemo = memo(function DraggableCard({
         setZIndex(++zIndexRef.current);
       },
     }),
-    [zIndexRef],
+    [],
   );
 
   const draggable = useDraggable([pointerSensor, keyboardSensor], draggableSettings);
@@ -61,7 +59,7 @@ const DraggableCardMemo = memo(function DraggableCard({
 });
 
 const DropZoneMemo = memo(function DropZone() {
-  const droppableSettings: UseDroppableSettings = useMemo(
+  const droppableSettings = useMemo(
     () => ({
       data: {
         overIds: new Set<number>(),

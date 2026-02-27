@@ -65,7 +65,7 @@ Array of [sensor](/sensor) instances. Sensors can be `null` while initializing. 
 
 ### settings
 
-Configuration settings for the [`Draggable`](/draggable) instance. Extends core [`DraggableOptions`](/draggable#draggableoptions) with an optional `dndObserver` setting.
+Configuration settings for the [`Draggable`](/draggable) instance. Extends core [`DraggableOptions`](/draggable#draggableoptions) (excluding [`container`](/draggable#container)) with additional React-specific settings.
 
 > [!WARNING]
 > You **MUST** memoize the settings object (e.g. with `useMemo`) to prevent unnecessary re-evaluations and performance issues.
@@ -73,6 +73,47 @@ Configuration settings for the [`Draggable`](/draggable) instance. Extends core 
 As per React's declarative nature, these settings are always merged with the [default settings](/draggable#settings) and then provided to the [`Draggable`](/draggable) instance. This way there will be no cumulative effect of settings changes over time meaning that the old settings will be completely overridden by the new settings.
 
 Treat these as live settings that can be updated dynamically without recreating the draggable (except for `id`, which will cause the draggable to be recreated). When `dndGroups` or `computeClientRect` change, the hook will automatically trigger collision detection updates in the associated `DndObserver`.
+
+#### dragPreview
+
+```ts
+type dragPreview = boolean | undefined;
+```
+
+If true, generates a high-performance proxy element in `document.body` that receives all drag movements instead of your original elements. Your original elements stay perfectly in place.
+
+You should use the [`<DragPreview>`](/react/drag-preview) component to render dynamic visuals directly into this proxy element. By using proxies, you completely bypass React's virtual DOM reparenting limits while preserving 60-120fps hardware-accelerated transforms.
+
+- Optional.
+- Default is `undefined`.
+
+#### dragPreviewContainer
+
+```ts
+type dragPreviewContainer = HTMLElement | (() => HTMLElement);
+```
+
+The container element to reparent drag preview proxy elements into during drag. Only used when [`dragPreview`](#dragpreview) is `true`.
+
+This is useful when you need the proxy to live in a specific stacking context, shadow DOM, or iframe.
+
+- Optional.
+- Default is `document.body`.
+
+#### dragPreviewExitTimeout
+
+```ts
+type dragPreviewExitTimeout = number | undefined;
+```
+
+If set to a positive number, enables exit animation for drag previews. When the drag ends, the proxy element stays alive in an "exiting" state instead of being removed immediately. The [`<DragPreview>`](/react/drag-preview) render function receives `exiting: true` and a `done()` callback. Call `done()` when your animation finishes to remove the proxy.
+
+If `done()` is not called within this many milliseconds, the proxy is removed automatically as a safety fallback.
+
+Only used when [`dragPreview`](#dragpreview) is `true`.
+
+- Optional.
+- Default is `undefined` (no exit animation, proxy removed immediately on drag end).
 
 #### id
 
@@ -105,43 +146,10 @@ Set to `null` to explicitly opt out of the automatic context observer registrati
 
 #### container
 
-```ts
-type container =
-  | HTMLElement
-  | null
-  | ((data: {
-      draggable: Draggable<S>;
-      drag: DraggableDrag<S>;
-      element: HTMLElement | SVGSVGElement;
-    }) => HTMLElement | null);
-```
-
-The element the dragged elements should be appended to for the duration of the drag. If set to `null` the element's current parent element is used.
-
-> [!IMPORTANT]  
-> The `container` setting is not fully supported in React because it will make the core library move DOM nodes under a different node for the duration of the drag. React has it's own [portal API](https://react.dev/reference/react-dom/createPortal) for moving DOM nodes around, which is very hard to support in a wrapper library.
-
-However, all is not lost. The `container` option can be used to a quite large extent. As long as you don't give React any reason to _move_ the dragged element (provided via the [`elements`](#elements) setting) in the DOM during the drag, you should be mostly fine.
-
-If you follow these rules, you should be mostly fine:
-
-1. The dragged element should not be moved in the DOM during the drag.
-2. The dragged element should not be removed from the DOM during the drag.
-3. The dragged element should not be recreated during the drag, e.g. React creating a new DOM node for the dragged element during the drag.
-4. The container element should not be removed from the DOM during the drag.
-5. The container element should not be recreated during the drag, e.g. React creating a new DOM node for the container element during the drag.
-
-To really play it safe, it's recommended to do the following:
-
-1. Use a non-React controlled element as the `container`, e.g. `document.body`.
-2. Create a non-React controlled drag preview element (e.g. clone the actual draggable element) and provide it as the dragged element via the [`elements`](#elements) setting.
-
-If you do both, React should have no reason to throw an error about the DOM manipulations by the core library.
-
-Check the [`container`](/draggable#container) core docs for more info.
-
-- Optional.
-- Default is `null`.
+> [!WARNING]
+> The core [`container`](/draggable#container) setting is **not available** in `useDraggable`. It has been removed to prevent React unmount errors caused by the core library reparenting React-controlled DOM nodes during drag.
+>
+> If you need to reparent elements during drag, use [`dragPreview: true`](#dragpreview) combined with [`dragPreviewContainer`](#dragpreviewcontainer) instead. The drag preview system creates non-React proxy elements that can be safely reparented without conflicting with React's virtual DOM.
 
 #### startPredicate
 
@@ -344,7 +352,13 @@ Returns the [`Draggable`](/draggable) instance or `null` if there are no sensors
 import type { UseDraggableSettings } from 'dragdoll-react';
 
 // Interface
-interface UseDraggableSettings<S extends Sensor = Sensor> extends Partial<DraggableOptions<S>> {
+interface UseDraggableSettings<S extends Sensor = Sensor> extends Omit<
+  Partial<DraggableOptions<S>>,
+  'container'
+> {
   dndObserver?: DndObserver<any> | null;
+  dragPreview?: boolean;
+  dragPreviewContainer?: HTMLElement | (() => HTMLElement);
+  dragPreviewExitTimeout?: number;
 }
 ```

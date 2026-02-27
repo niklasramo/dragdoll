@@ -1,46 +1,33 @@
 import {
   useDraggable,
   useDraggableAutoScroll,
-  UseDraggableAutoScrollSettings,
   useDraggableDrag,
-  UseDraggableSettings,
   useKeyboardMotionSensor,
   usePointerSensor,
 } from 'dragdoll-react';
-import { memo, RefObject, StrictMode, useCallback, useMemo, useRef } from 'react';
+import { memo, StrictMode, useCallback, useMemo, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 
-const DraggableCardMemo = memo(function DraggableCard({
-  dragContainerRef,
-}: {
-  dragContainerRef: RefObject<HTMLElement | null>;
-}) {
+const DraggableCardMemo = memo(function DraggableCard() {
   const elementRef = useRef<HTMLDivElement>(null);
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
   const [keyboardSensor, setKeyboardSensorRef] = useKeyboardMotionSensor({
     computeSpeed: () => 100,
   });
 
-  const draggableSettings: UseDraggableSettings = useMemo(
+  const draggableSettings = useMemo(
     () => ({
-      // We are doing the very thing here we advise against in the docs. We use
-      // the container option and provide a React controlled element to the
-      // elements option. However, in this case this will work without any
-      // issues because we are making sure React has no reason to move the
-      // dragged element in the DOM during the drag.
-      container: () => dragContainerRef.current || null,
       elements: () => (elementRef.current ? [elementRef.current] : []),
-      frozenStyles: () => ['left', 'top'],
     }),
-    [dragContainerRef],
+    [],
   );
 
-  const autoScrollSettings: UseDraggableAutoScrollSettings = useMemo(
+  const autoScrollSettings = useMemo(
     () => ({
       targets: [
         {
           element: window,
-          axis: 'y',
+          axis: 'y' as const,
           padding: { top: Infinity, bottom: Infinity },
         },
       ],
@@ -74,18 +61,12 @@ const DraggableCardMemo = memo(function DraggableCard({
 });
 
 function App() {
-  const dragContainerRef = useRef<HTMLDivElement | null>(null);
   return (
-    <>
-      <div className="drag-container-outer">
-        <div ref={dragContainerRef} className="drag-container" />
+    <div className="card-container-outer">
+      <div className="card-container">
+        <DraggableCardMemo key="card" />
       </div>
-      <div className="card-container-outer">
-        <div className="card-container">
-          <DraggableCardMemo key="card" dragContainerRef={dragContainerRef} />
-        </div>
-      </div>
-    </>
+    </div>
   );
 }
 

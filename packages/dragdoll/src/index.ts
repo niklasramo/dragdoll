@@ -19,3 +19,7 @@ export * from './sensors/pointer-sensor.js';
 export * from './sensors/sensor.js';
 export * from './singletons/auto-scroll.js';
 export * from './singletons/ticker.js';
+export * from './utils/get-element-transform-string.js';
+export * from './utils/get-local-offset.js';
+export * from './utils/get-style.js';
+export * from './utils/get-world-transform-matrix.js';

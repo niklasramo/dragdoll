@@ -44,6 +44,10 @@
     "./sensors/pointer": "./dist/sensors/pointer.js",
     "./singletons/auto-scroll": "./dist/singletons/auto-scroll.js",
     "./singletons/ticker": "./dist/singletons/ticker.js",
+    "./utils/get-element-transform-string": "./dist/utils/get-element-transform-string.js",
+    "./utils/get-local-offset": "./dist/utils/get-local-offset.js",
+    "./utils/get-style": "./dist/utils/get-style.js",
+    "./utils/get-world-transform-matrix": "./dist/utils/get-world-transform-matrix.js",
     "./package.json": "./package.json"
   },
   "files": [

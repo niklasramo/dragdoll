@@ -111,6 +111,7 @@ function sidebarMain() {
         { text: 'Introduction', link: '/' },
         { text: 'Getting Started', link: '/getting-started' },
         { text: 'Tips and Tricks', link: '/tips-and-tricks' },
+        { text: 'Drag Patterns', link: '/drag-patterns' },
         { text: 'Examples', link: '/examples' },
       ],
     },
@@ -174,6 +175,15 @@ function sidebarMain() {
       ],
     },
     {
+      text: 'Utils',
+      items: [
+        { text: 'getElementTransformString', link: '/get-element-transform-string' },
+        { text: 'getLocalOffset', link: '/get-local-offset' },
+        { text: 'getStyle', link: '/get-style' },
+        { text: 'getWorldTransformMatrix', link: '/get-world-transform-matrix' },
+      ],
+    },
+    {
       text: 'Links',
       items: [
         { text: 'Releases', link: 'https://github.com/niklasramo/dragdoll/releases' },
@@ -194,6 +204,7 @@ function sidebarReact() {
       items: [
         { text: 'Introduction', link: '/react/' },
         { text: 'Getting Started', link: '/react/getting-started' },
+        { text: 'Drag Patterns', link: '/react/drag-patterns' },
         { text: 'Examples', link: '/react/examples' },
       ],
     },
@@ -213,6 +224,8 @@ function sidebarReact() {
         { text: 'useDraggableCallback', link: '/react/use-draggable-callback' },
         { text: 'useDraggableDrag', link: '/react/use-draggable-drag' },
         { text: 'useDraggableAutoScroll', link: '/react/use-draggable-auto-scroll' },
+        { text: 'useDragPreview', link: '/react/use-drag-preview' },
+        { text: 'DragPreview', link: '/react/drag-preview' },
       ],
     },
     {

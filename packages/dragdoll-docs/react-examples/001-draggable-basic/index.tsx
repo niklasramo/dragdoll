@@ -23,7 +23,7 @@ const DraggableCardMemo = memo(function DraggableCard({
         setZIndex(++zIndexRef.current);
       },
     }),
-    [elementRef, zIndexRef],
+    [],
   );
   const draggable = useDraggable([pointerSensor, keyboardSensor], draggableSettings);
   const drag = useDraggableDrag(draggable);
