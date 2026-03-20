@@ -111,6 +111,7 @@ function sidebarMain() {
         { text: 'Introduction', link: '/' },
         { text: 'Getting Started', link: '/getting-started' },
         { text: 'Tips and Tricks', link: '/tips-and-tricks' },
+        { text: 'Accessibility', link: '/accessibility' },
         { text: 'Drag Patterns', link: '/drag-patterns' },
         { text: 'Examples', link: '/examples' },
       ],

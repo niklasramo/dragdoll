@@ -241,12 +241,26 @@ dndObserver.removeDroppables([droppable]);
 type updateDroppableClientRects = () => void;
 ```
 
-Updates the cached client rectangles for all registered droppables. This is automatically called on scroll events and when drag starts, but can be manually triggered if needed.
+Updates the cached client rectangles for all registered droppables.
+
+Droppable rects are recomputed automatically on each collision detection cycle (every drag move). However, if you provide a custom [`computeClientRect`](/droppable#computeclientrect) on your droppables whose output depends on external state (e.g., computing rects arithmetically from item indices), you must call this method whenever that state changes — for example, after reordering DOM elements or when the layout shifts due to scrolling.
+
+**When you must call this manually:**
+
+- After any DOM mutation that changes a droppable's layout position (e.g., reordering list items in a sortable)
+- After scroll events if your custom `computeClientRect` depends on viewport-relative positions
 
 **Example**
 
 ```ts
+// After reordering items in a sortable list:
+moveItemAnimated(currentIdx, targetIdx);
 dndObserver.updateDroppableClientRects();
+
+// During scroll if droppable rects depend on scroll position:
+window.addEventListener('scroll', () => {
+  dndObserver.updateDroppableClientRects();
+});
 ```
 
 ### detectCollisions
@@ -418,7 +432,7 @@ type collide = (data: {
 }) => void;
 ```
 
-Emitted each collision cycle if there are any current collisions or removed collisions. Use this event to process all contact changes transactionally in one hook.
+Emitted each collision cycle if there are any current collisions or removed collisions. Use this event to process all contact changes transactionally in one hook. A final collision pass also runs during drag end (before the `end` event) to ensure collision state is up-to-date — your handler should work correctly regardless of whether the drag is active or ending.
 
 **Parameters:**
 
@@ -651,6 +665,9 @@ type DndObserverDragData = Readonly<{
   data: { [key: string]: any };
 }>;
 ```
+
+- **`isEnded`**: `true` when the drag is ending (set before the final collision pass and the `end` event).
+- **`data`**: A mutable object for storing custom data associated with this drag. Useful for passing state between event handlers.
 
 ### DndObserverOptions
 
