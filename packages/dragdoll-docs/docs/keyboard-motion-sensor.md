@@ -4,6 +4,8 @@
 
 KeyboardMotionSensor uses keyboard as the input for controlling drag movement smoothly. The keyboard keys, start condition and speed are configurable.
 
+> **Note:** `KeyboardMotionSensor` provides visual keyboard-driven movement. It is not an accessibility tool. See [Accessibility](/accessibility) for guidance on building accessible keyboard interactions.
+
 ## Example
 
 ```ts

@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "build": "npm run format && npm run build --workspace=dragdoll --workspace=dragdoll-react && npm run build:examples --workspace=dragdoll-docs && npm run format",
+    "dev": "npm run docs:dev",
     "docs:build": "npm run build --workspace=dragdoll-docs",
     "docs:dev": "npm run dev --workspace=dragdoll-docs",
     "docs:serve": "npm run serve --workspace=dragdoll-docs",

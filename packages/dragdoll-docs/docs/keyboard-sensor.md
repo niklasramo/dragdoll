@@ -4,6 +4,8 @@
 
 KeyboardSensor listens to keyboard events and normalizes them into unified drag events. This sensor is designed to be as simple and as customizable as possible with minimal API interface.
 
+> **Note:** `KeyboardSensor` provides visual keyboard-driven movement. It is not an accessibility tool. See [Accessibility](/accessibility) for guidance on building accessible keyboard interactions.
+
 ## Example
 
 ```ts
