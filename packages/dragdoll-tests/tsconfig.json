@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["src/**/*.ts", "wdio.bs.conf.js", "wdio.local.conf.js"],
+  "include": ["src/**/*.ts", "*.ts"],
   "compilerOptions": {
-    "types": ["node", "@wdio/globals/types", "@wdio/mocha-framework"]
+    "types": ["vitest/globals"]
   }
 }

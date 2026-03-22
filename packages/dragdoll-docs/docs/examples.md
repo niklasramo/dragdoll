@@ -3579,7 +3579,7 @@ body {
 
 ## Sortable List - Accessible
 
-A sortable list with pointer drag and an accessible keyboard reordering flow with live region announcements.
+A sortable list with two interaction modes. (1) Pointer drag: drag items via mouse or touch — a fixed-position clone follows the pointer while the original stays in-flow as a translucent placeholder; DndObserver detects collisions to trigger reorder. (2) Keyboard reorder: focus an item and press Shift+Space or Shift+Enter to pick up, arrow keys to move, Space/Enter to drop, Escape to cancel — items animate with FLIP transitions and a live region announces every position change for screen readers.
 
 <div class="example"><iframe src="/dragdoll/examples/016-sortable-accessible/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/016-sortable-accessible/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
@@ -3605,8 +3605,10 @@ import {
   DndObserver,
   DndObserverEventType,
   Draggable,
+  DraggableModifier,
   Droppable,
   PointerSensor,
+  startOffsetModifier,
 } from 'dragdoll';
 
 //
@@ -3762,7 +3764,6 @@ let pointerDrag: {
   originalIndex: number;
   startLeft: number;
   startTop: number;
-  startPointerY: number;
 } | null = null;
 
 // During auto-scroll the pointer stays still while the page moves, which
@@ -3997,7 +3998,7 @@ document.addEventListener('keydown', (e) => {
 //
 
 const droppables: Droppable[] = [];
-const draggables: Draggable[] = [];
+const draggables: Draggable<PointerSensor>[] = [];
 
 for (let i = 0; i < ITEM_COUNT; i++) {
   const label = `Item ${i + 1}`;
@@ -4042,8 +4043,9 @@ for (let i = 0; i < ITEM_COUNT; i++) {
   itemData.droppable = droppable;
 
   // The element (li) stays in-flow as a placeholder during drag. We
-  // disable applyPosition (which would transform the li) and override
+  // override applyPosition to move the preview clone (not the li) and
   // computeClientRect to return the preview's rect for collision detection.
+  // startOffsetModifier compensates for the start threshold distance.
   const draggable = new Draggable<PointerSensor>([pointerSensor], {
     elements: () => [li],
     startPredicate: ({ event }) => {
@@ -4058,13 +4060,20 @@ for (let i = 0; i < ITEM_COUNT; i++) {
         ? true
         : undefined;
     },
-    applyPosition: () => {},
+    positionModifiers: [startOffsetModifier as unknown as DraggableModifier<PointerSensor>],
+    applyPosition: ({ item, phase }) => {
+      if (!pointerDrag || phase === 'end' || phase === 'end-align') return;
+      const drag = pointerDrag;
+      const x = drag.startLeft + item.position.x;
+      const y = drag.startTop + item.position.y;
+      drag.preview.style.transform = `translate(${x}px, ${y}px)`;
+    },
     computeClientRect: () => {
       if (!pointerDrag) return null;
       const rect = pointerDrag.preview.getBoundingClientRect();
       return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
     },
-    onStart: ({ startEvent }) => {
+    onStart: () => {
       const rect = li.getBoundingClientRect();
       const preview = cloneAsFixedPreview(li, 'drag-preview');
       li.classList.add('placeholder');
@@ -4075,16 +4084,11 @@ for (let i = 0; i < ITEM_COUNT; i++) {
         originalIndex: getItemIndex(itemData),
         startLeft: rect.left,
         startTop: rect.top,
-        startPointerY: startEvent.y,
       };
       listEl.classList.add('is-dragging');
       window.addEventListener('scroll', onScrollDuringDrag);
     },
-    onMove: ({ moveEvent }) => {
-      const drag = pointerDrag;
-      if (!drag) return;
-      const y = drag.startTop + (moveEvent.y - drag.startPointerY);
-      drag.preview.style.transform = `translate(${drag.startLeft}px, ${y}px)`;
+    onMove: () => {
       lastSwapFromIdx = -1;
     },
     onEnd: ({ endEvent }) => {
@@ -4158,7 +4162,7 @@ itemStride =
     <title>Sortable List - Accessible</title>
     <meta
       name="description"
-      content="A sortable list with pointer drag and an accessible keyboard reordering flow with live region announcements."
+      content="A sortable list with two interaction modes. (1) Pointer drag: drag items via mouse or touch — a fixed-position clone follows the pointer while the original stays in-flow as a translucent placeholder; DndObserver detects collisions to trigger reorder. (2) Keyboard reorder: focus an item and press Shift+Space or Shift+Enter to pick up, arrow keys to move, Space/Enter to drop, Escape to cancel — items animate with FLIP transitions and a live region announces every position change for screen readers."
     />
     <meta
       name="viewport"

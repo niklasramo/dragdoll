@@ -29,41 +29,33 @@
     "ts:check": "tsc && npm run ts:check --workspaces --if-present"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "5.1.4",
-    "@vitest/browser-webdriverio": "4.0.18",
-    "browserstack-local": "1.5.10",
+    "@vitejs/plugin-react": "5.2.0",
+    "@vitest/browser-webdriverio": "4.1.0",
+    "browserstack-local": "1.5.12",
     "@eslint/js": "10.0.1",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
-    "@wdio/browser-runner": "9.20.0",
-    "@wdio/browserstack-service": "9.20.0",
-    "@wdio/cli": "9.20.0",
-    "@wdio/globals": "9.17.0",
-    "@wdio/mocha-framework": "9.20.0",
-    "@wdio/spec-reporter": "9.20.0",
     "dotenv": "17.3.1",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-simple-import-sort": "12.1.1",
     "eventti": "4.0.4",
-    "globals": "17.3.0",
-    "jsdom": "28.1.0",
+    "globals": "17.4.0",
+    "jsdom": "29.0.1",
     "mezr": "1.1.0",
     "prettier": "3.8.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "rimraf": "6.1.3",
-    "rolldown": "1.0.0-rc.5",
+    "rolldown": "1.0.0-rc.10",
     "tikki": "3.0.2",
-    "tsdown": "0.20.3",
-    "tsx": "4.21.0",
+    "tsdown": "0.21.4",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.56.0",
+    "typescript-eslint": "8.57.1",
     "vitepress": "1.6.4",
-    "vitest": "4.0.18",
-    "vitest-browser-react": "2.0.5",
-    "vue": "3.5.28"
+    "vitest": "4.1.0",
+    "vitest-browser-react": "2.1.0",
+    "vue": "3.5.30"
   },
   "overrides": {
-    "esbuild": "0.27.2"
+    "esbuild": "0.27.4"
   }
 }

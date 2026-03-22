@@ -17,8 +17,10 @@ import {
   DndObserver,
   DndObserverEventType,
   Draggable,
+  DraggableModifier,
   Droppable,
   PointerSensor,
+  startOffsetModifier,
 } from 'dragdoll';
 
 //
@@ -174,7 +176,6 @@ let pointerDrag: {
   originalIndex: number;
   startLeft: number;
   startTop: number;
-  startPointerY: number;
 } | null = null;
 
 // During auto-scroll the pointer stays still while the page moves, which
@@ -409,7 +410,7 @@ document.addEventListener('keydown', (e) => {
 //
 
 const droppables: Droppable[] = [];
-const draggables: Draggable[] = [];
+const draggables: Draggable<PointerSensor>[] = [];
 
 for (let i = 0; i < ITEM_COUNT; i++) {
   const label = `Item ${i + 1}`;
@@ -454,8 +455,9 @@ for (let i = 0; i < ITEM_COUNT; i++) {
   itemData.droppable = droppable;
 
   // The element (li) stays in-flow as a placeholder during drag. We
-  // disable applyPosition (which would transform the li) and override
+  // override applyPosition to move the preview clone (not the li) and
   // computeClientRect to return the preview's rect for collision detection.
+  // startOffsetModifier compensates for the start threshold distance.
   const draggable = new Draggable<PointerSensor>([pointerSensor], {
     elements: () => [li],
     startPredicate: ({ event }) => {
@@ -470,13 +472,20 @@ for (let i = 0; i < ITEM_COUNT; i++) {
         ? true
         : undefined;
     },
-    applyPosition: () => {},
+    positionModifiers: [startOffsetModifier as unknown as DraggableModifier<PointerSensor>],
+    applyPosition: ({ item, phase }) => {
+      if (!pointerDrag || phase === 'end' || phase === 'end-align') return;
+      const drag = pointerDrag;
+      const x = drag.startLeft + item.position.x;
+      const y = drag.startTop + item.position.y;
+      drag.preview.style.transform = `translate(${x}px, ${y}px)`;
+    },
     computeClientRect: () => {
       if (!pointerDrag) return null;
       const rect = pointerDrag.preview.getBoundingClientRect();
       return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
     },
-    onStart: ({ startEvent }) => {
+    onStart: () => {
       const rect = li.getBoundingClientRect();
       const preview = cloneAsFixedPreview(li, 'drag-preview');
       li.classList.add('placeholder');
@@ -487,16 +496,11 @@ for (let i = 0; i < ITEM_COUNT; i++) {
         originalIndex: getItemIndex(itemData),
         startLeft: rect.left,
         startTop: rect.top,
-        startPointerY: startEvent.y,
       };
       listEl.classList.add('is-dragging');
       window.addEventListener('scroll', onScrollDuringDrag);
     },
-    onMove: ({ moveEvent }) => {
-      const drag = pointerDrag;
-      if (!drag) return;
-      const y = drag.startTop + (moveEvent.y - drag.startPointerY);
-      drag.preview.style.transform = `translate(${drag.startLeft}px, ${y}px)`;
+    onMove: () => {
       lastSwapFromIdx = -1;
     },
     onEnd: ({ endEvent }) => {

@@ -1,4 +1,3 @@
-import react from '@vitejs/plugin-react';
 import { webdriverio } from '@vitest/browser-webdriverio';
 import { defineConfig } from 'vitest/config';
 import 'dotenv/config';
@@ -23,16 +22,15 @@ const bsBase = {
 const bsCapabilities = {
   local: true,
   idleTimeout: 300,
-  buildName: 'dragdoll-react-tests',
+  buildName: 'dragdoll-tests',
 };
 
 export default defineConfig({
-  plugins: [react()],
   server: {
     allowedHosts: ['localhost', 'bs-local.com'],
   },
   test: {
-    setupFiles: ['./setup.ts'],
+    globals: true,
     testTimeout: 60000,
     slowTestThreshold: Infinity,
     hookTimeout: 30000,

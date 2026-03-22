@@ -25,7 +25,7 @@ Please [create an issue](https://github.com/niklasramo/dragdoll/issues/new) and 
        - Lints all files in all workspaces with Prettier and validates TS types.
      - `npm run test:bs`
        - Runs tests (from `dragdoll-tests`) in Browserstack.
-       - To make this work you need to create an `.env` file the `dragdoll-tests` workspace, which should contain `BROWSERSTACK_USERNAME` and `BROWSERSTACK_ACCESS_KEY` variables.
+       - To make this work you need to create an `.env` file in the project root with `BROWSERSTACK_USERNAME` and `BROWSERSTACK_ACCESS_KEY` variables.
      - `npm run test:local`
        - Runs tests (from `dragdoll-tests`) locally in Chrome and Firefox. You have to have them both installed.
 4. **Do the updates.**
