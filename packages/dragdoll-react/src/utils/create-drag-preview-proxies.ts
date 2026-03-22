@@ -85,11 +85,7 @@ export function createDragPreviewProxies(
     // Apply basic styles to the proxy element.
     const proxyStyle = proxy.style;
 
-    if (sourceComputedStyle.position === 'fixed') {
-      proxyStyle.position = 'fixed';
-    } else {
-      proxyStyle.position = 'absolute';
-    }
+    proxyStyle.position = 'absolute';
     proxyStyle.left = '0px';
     proxyStyle.top = '0px';
     proxyStyle.margin = '0';

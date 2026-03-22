@@ -13,6 +13,7 @@ dist
 # Vitest browser mode artifacts
 __screenshots__
 __diff_output__
+.vitest-attachments
 
 # Generated example files
 packages/dragdoll-docs/docs/public/examples

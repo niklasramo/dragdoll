@@ -6,8 +6,8 @@
   "scripts": {
     "prettier:check": "prettier --check --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,yml,yaml}\"",
     "prettier:write": "prettier --write --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,yml,yaml}\"",
-    "test:bs": "wdio run ./wdio.bs.conf.js",
-    "test:local": "wdio run ./wdio.local.conf.js",
+    "test:bs": "vitest run --config vitest.bs.config.ts",
+    "test:local": "vitest run --config vitest.config.ts",
     "ts:check": "tsc --noEmit"
   }
 }
