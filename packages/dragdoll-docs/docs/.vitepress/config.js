@@ -97,18 +97,16 @@ export default {
 };
 
 function nav() {
-  return [
-    { text: 'Core', link: '/', activeMatch: '^(?!/react/).*', ariaLabel: 'Core documentation' },
-    { text: 'React', link: '/react', activeMatch: '^/react/', ariaLabel: 'React documentation' },
-  ];
+  return [];
 }
 
 function sidebarMain() {
   return [
     {
       text: `Core v${version}`,
+      collapsible: false,
       items: [
-        { text: 'Introduction', link: '/' },
+        { text: 'Introduction', link: '/introduction' },
         { text: 'Getting Started', link: '/getting-started' },
         { text: 'Tips and Tricks', link: '/tips-and-tricks' },
         { text: 'Accessibility', link: '/accessibility' },
@@ -118,6 +116,7 @@ function sidebarMain() {
     },
     {
       text: 'Sensors',
+      collapsible: false,
       items: [
         { text: 'Sensor', link: '/sensor' },
         { text: 'BaseSensor', link: '/base-sensor' },
@@ -129,10 +128,12 @@ function sidebarMain() {
     },
     {
       text: 'Draggable',
+      collapsible: false,
       items: [
         {
           text: 'Draggable',
           link: '/draggable',
+          collapsible: false,
           items: [
             { text: 'DraggableDrag', link: '/draggable-drag' },
             { text: 'DraggableDragItem', link: '/draggable-drag-item' },
@@ -141,10 +142,12 @@ function sidebarMain() {
         {
           text: 'Helpers',
           link: '/draggable-helpers',
+          collapsible: false,
         },
         {
           text: 'Modifiers',
           link: '/draggable-modifiers',
+          collapsible: false,
           items: [
             { text: 'Containment', link: '/draggable-containment-modifier' },
             { text: 'Snap', link: '/draggable-snap-modifier' },
@@ -154,20 +157,24 @@ function sidebarMain() {
         {
           text: 'Plugins',
           link: '/draggable-plugins',
+          collapsible: false,
           items: [{ text: 'AutoScroll', link: '/draggable-auto-scroll-plugin' }],
         },
       ],
     },
     {
       text: 'Droppable',
+      collapsible: false,
       items: [{ text: 'Droppable', link: '/droppable' }],
     },
     {
       text: 'DndObserver',
+      collapsible: false,
       items: [
         {
           text: 'DndObserver',
           link: '/dnd-observer',
+          collapsible: false,
           items: [
             { text: 'CollisionDetector', link: '/collision-detector' },
             { text: 'AdvancedCollisionDetector', link: '/advanced-collision-detector' },
@@ -177,6 +184,7 @@ function sidebarMain() {
     },
     {
       text: 'Utils',
+      collapsible: false,
       items: [
         { text: 'getElementTransformString', link: '/get-element-transform-string' },
         { text: 'getLocalOffset', link: '/get-local-offset' },
@@ -186,6 +194,7 @@ function sidebarMain() {
     },
     {
       text: 'Links',
+      collapsible: false,
       items: [
         { text: 'Releases', link: 'https://github.com/niklasramo/dragdoll/releases' },
         {
@@ -202,6 +211,7 @@ function sidebarReact() {
   return [
     {
       text: `React v${versionReact}`,
+      collapsible: false,
       items: [
         { text: 'Introduction', link: '/react/' },
         { text: 'Getting Started', link: '/react/getting-started' },
@@ -211,6 +221,7 @@ function sidebarReact() {
     },
     {
       text: 'Sensors',
+      collapsible: false,
       items: [
         { text: 'useKeyboardSensor', link: '/react/use-keyboard-sensor' },
         { text: 'useKeyboardMotionSensor', link: '/react/use-keyboard-motion-sensor' },
@@ -220,6 +231,7 @@ function sidebarReact() {
     },
     {
       text: 'Draggable',
+      collapsible: false,
       items: [
         { text: 'useDraggable', link: '/react/use-draggable' },
         { text: 'useDraggableCallback', link: '/react/use-draggable-callback' },
@@ -231,10 +243,12 @@ function sidebarReact() {
     },
     {
       text: 'Droppable',
+      collapsible: false,
       items: [{ text: 'useDroppable', link: '/react/use-droppable' }],
     },
     {
       text: 'DndObserver',
+      collapsible: false,
       items: [
         { text: 'DndObserverContext', link: '/react/dnd-observer-context' },
         { text: 'useDndObserver', link: '/react/use-dnd-observer' },

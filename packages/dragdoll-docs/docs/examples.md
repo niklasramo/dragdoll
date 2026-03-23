@@ -3579,7 +3579,7 @@ body {
 
 ## Sortable List - Accessible
 
-A sortable list with two interaction modes. (1) Pointer drag: drag items via mouse or touch — a fixed-position clone follows the pointer while the original stays in-flow as a translucent placeholder; DndObserver detects collisions to trigger reorder. (2) Keyboard reorder: focus an item and press Shift+Space or Shift+Enter to pick up, arrow keys to move, Space/Enter to drop, Escape to cancel — items animate with FLIP transitions and a live region announces every position change for screen readers.
+A sortable list with two interaction modes. (1) Pointer drag: drag items via mouse or touch — a fixed-position clone follows the pointer while the original stays in-flow as a translucent placeholder; DndObserver detects collisions to trigger reorder. (2) Keyboard reorder: focus an item and press Shift+Space or Shift+Enter to pick up, arrow keys to move, Space/Enter to drop, Escape to cancel. During either interaction, items are repositioned visually with CSS transforms while the DOM order stays fixed. The final DOM reorder only happens on drop. A live region announces every position change for screen readers.
 
 <div class="example"><iframe src="/dragdoll/examples/016-sortable-accessible/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/016-sortable-accessible/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
@@ -3595,8 +3595,9 @@ A sortable list with two interaction modes. (1) Pointer drag: drag items via mou
 //
 // 2. KEYBOARD REORDER — Shift+Space/Enter to pick up, arrow keys to
 //    move one position at a time, Space/Enter to drop, Escape to cancel.
-//    Items reorder with FLIP animations and the live region announces
-//    every position change for screen readers.
+//
+// During either interaction, items are repositioned using CSS transforms
+// (DOM order stays fixed). The final DOM reorder only happens on drop.
 
 import {
   AdvancedCollisionData,
@@ -3637,59 +3638,6 @@ interface ItemData {
 // Pure helpers
 //
 
-function insertElementAtIndex(
-  parent: HTMLElement,
-  element: HTMLElement,
-  allItems: ItemData[],
-  index: number,
-) {
-  if (index < allItems.length - 1) {
-    parent.insertBefore(element, allItems[index + 1].element);
-  } else {
-    parent.appendChild(element);
-  }
-}
-
-function spliceItem(allItems: ItemData[], fromIndex: number, toIndex: number): ItemData {
-  const [item] = allItems.splice(fromIndex, 1);
-  allItems.splice(toIndex, 0, item);
-  return item;
-}
-
-function cancelElementAnimations(allItems: ItemData[], lo: number, hi: number) {
-  for (let i = lo; i <= hi; i++) {
-    const anims = allItems[i].element.getAnimations();
-    for (let j = 0; j < anims.length; j++) anims[j].cancel();
-  }
-}
-
-function capturePositions(allItems: ItemData[], lo: number, hi: number): Map<HTMLElement, number> {
-  const positions = new Map<HTMLElement, number>();
-  for (let i = lo; i <= hi; i++) {
-    const el = allItems[i].element;
-    positions.set(el, el.getBoundingClientRect().top);
-  }
-  return positions;
-}
-
-function animatePositionDeltas(
-  allItems: ItemData[],
-  oldPositions: Map<HTMLElement, number>,
-  lo: number,
-  hi: number,
-  duration: number,
-) {
-  for (let i = lo; i <= hi; i++) {
-    const el = allItems[i].element;
-    const delta = oldPositions.get(el)! - el.getBoundingClientRect().top;
-    if (delta === 0) continue;
-    el.animate([{ transform: `translateY(${delta}px)` }, { transform: 'translateY(0)' }], {
-      duration,
-      easing: 'ease',
-    });
-  }
-}
-
 function cloneAsFixedPreview(element: HTMLLIElement, className: string): HTMLLIElement {
   const preview = element.cloneNode(true) as HTMLLIElement;
   const rect = element.getBoundingClientRect();
@@ -3701,6 +3649,7 @@ function cloneAsFixedPreview(element: HTMLLIElement, className: string): HTMLLIE
   style.willChange = 'transform';
   style.transform = `translate(${rect.left}px, ${rect.top}px)`;
   preview.classList.add(className);
+  preview.setAttribute('aria-hidden', 'true');
   document.body.appendChild(preview);
   return preview;
 }
@@ -3711,30 +3660,15 @@ function animatePreviewDrop(
   duration: number,
   onDone: () => void,
 ) {
+  const anims = target.getAnimations();
+  for (let i = 0; i < anims.length; i++) anims[i].finish();
+
   const targetRect = target.getBoundingClientRect();
   const anim = preview.animate(
     [{ transform: `translate(${targetRect.left}px, ${targetRect.top}px)` }],
     { duration, easing: 'ease', fill: 'forwards' },
   );
   anim.onfinish = onDone;
-}
-
-function computeItemPosition(
-  listEl: HTMLElement,
-  index: number,
-  itemStride: number,
-): { top: number; bottom: number } {
-  const listTop = listEl.getBoundingClientRect().top;
-  const top = listTop + index * itemStride;
-  return { top, bottom: top + itemHeight };
-}
-
-function scrollIntoViewport(top: number, bottom: number) {
-  if (top < 0) {
-    window.scrollBy(0, top);
-  } else if (bottom > window.innerHeight) {
-    window.scrollBy(0, bottom - window.innerHeight);
-  }
 }
 
 function isPointerDistanceAboveThreshold(
@@ -3747,6 +3681,105 @@ function isPointerDistanceAboveThreshold(
   const dx = x - startX;
   const dy = y - startY;
   return dx * dx + dy * dy >= thresholdSq;
+}
+
+//
+// Virtual layout helpers
+//
+// During drag, items stay in their original DOM positions. Visual reordering
+// is done with translateY transforms based on each item's virtual index vs
+// its DOM index. The DOM is only reordered on drop.
+//
+
+// The virtual order (item indices into the `items` array). null when idle.
+let virtualOrder: number[] | null = null;
+
+function initVirtualOrder() {
+  virtualOrder = items.map((_, i) => i);
+}
+
+function getVirtualIndex(itemIndex: number): number {
+  return virtualOrder ? virtualOrder.indexOf(itemIndex) : itemIndex;
+}
+
+function virtualSwap(fromVirtualIdx: number, toVirtualIdx: number) {
+  if (!virtualOrder || fromVirtualIdx === toVirtualIdx) return;
+
+  const lo = Math.min(fromVirtualIdx, toVirtualIdx);
+  const hi = Math.max(fromVirtualIdx, toVirtualIdx);
+
+  // Splice the item in the virtual order.
+  const [moved] = virtualOrder.splice(fromVirtualIdx, 1);
+  virtualOrder.splice(toVirtualIdx, 0, moved);
+
+  // Apply transforms to affected items.
+  for (let vi = lo; vi <= hi; vi++) {
+    const domIdx = virtualOrder[vi];
+    const el = items[domIdx].element;
+    const newY = (vi - domIdx) * itemStride;
+
+    const prevY = parseFloat(el.style.transform?.match(/translateY\((.+?)px\)/)?.[1] || '0');
+    if (prevY === newY) continue;
+
+    el.style.transform = newY === 0 ? '' : `translateY(${newY}px)`;
+
+    const anims = el.getAnimations();
+    for (let j = 0; j < anims.length; j++) anims[j].cancel();
+
+    el.animate(
+      [
+        { transform: `translateY(${prevY}px)` },
+        { transform: newY === 0 ? 'translateY(0px)' : `translateY(${newY}px)` },
+      ],
+      { duration: SWAP_ANIM_DURATION, easing: 'ease' },
+    );
+  }
+}
+
+function commitOrder() {
+  if (!virtualOrder) return;
+
+  // Build the new items array from virtual order.
+  const newItems = virtualOrder.map((domIdx) => items[domIdx]);
+
+  // Reorder DOM to match.
+  for (const item of newItems) {
+    listEl.appendChild(item.element);
+  }
+
+  // Replace items array contents.
+  items.length = 0;
+  items.push(...newItems);
+
+  // Clear all transforms (DOM now matches visual order).
+  clearAllTransforms();
+
+  virtualOrder = null;
+}
+
+function clearAllTransforms() {
+  for (const item of items) {
+    const anims = item.element.getAnimations();
+    for (let i = 0; i < anims.length; i++) anims[i].cancel();
+    item.element.style.transform = '';
+  }
+}
+
+function animateTransformsToZero(duration: number) {
+  for (const item of items) {
+    const el = item.element;
+    const currentTransform = el.style.transform;
+    if (!currentTransform || currentTransform === 'translateY(0px)') continue;
+
+    const anims = el.getAnimations();
+    for (let i = 0; i < anims.length; i++) anims[i].cancel();
+
+    el.style.transform = '';
+    el.animate([{ transform: currentTransform }, { transform: 'translateY(0px)' }], {
+      duration,
+      easing: 'ease',
+    });
+  }
 }
 
 //
@@ -3803,55 +3836,11 @@ function announce(message: string) {
   liveRegion.textContent = message;
 }
 
-function getItemIndex(item: ItemData): number {
-  return items.indexOf(item);
-}
-
-//
-// Reorder with FLIP animation
-//
-// FLIP (First, Last, Invert, Play): capture each element's position
-// before the DOM change, apply the change, then animate from the old
-// position to the new one.
-//
-
-// Reorder without animation (used when the item is fully off-screen).
-function moveItem(fromIndex: number, toIndex: number) {
-  if (fromIndex === toIndex) return;
-  cancelElementAnimations(items, Math.min(fromIndex, toIndex), Math.max(fromIndex, toIndex));
-  const item = spliceItem(items, fromIndex, toIndex);
-  insertElementAtIndex(listEl, item.element, items, toIndex);
-}
-
-// Reorder with FLIP animation (used when items are visible).
-function moveItemAnimated(fromIndex: number, toIndex: number) {
-  if (fromIndex === toIndex) return;
-
-  const lo = Math.min(fromIndex, toIndex);
-  const hi = Math.max(fromIndex, toIndex);
-
-  // Cancel running animations so getBoundingClientRect() returns the
-  // final layout position, not a mid-animation position.
-  cancelElementAnimations(items, lo, hi);
-
-  // FIRST: capture current positions.
-  const oldPositions = capturePositions(items, lo, hi);
-
-  // Mutate array + DOM.
-  const item = spliceItem(items, fromIndex, toIndex);
-  insertElementAtIndex(listEl, item.element, items, toIndex);
-
-  // LAST + INVERT + PLAY: animate from old positions to new ones.
-  animatePositionDeltas(items, oldPositions, lo, hi, SWAP_ANIM_DURATION);
-}
-
 //
 // Pointer drag — start, move, reorder, end
 //
 
 function onScrollDuringDrag() {
-  // When the page scrolls, droppable positions change. Tell DndObserver
-  // to recompute them so collision detection stays accurate.
   dndObserver.updateDroppableClientRects();
 }
 
@@ -3861,42 +3850,49 @@ function pointerDragEnd(cancelled: boolean) {
   const drag = pointerDrag!;
   const li = drag.item.element;
   const preview = drag.preview;
-  const currentIndex = getItemIndex(drag.item);
 
   // Null out immediately so the collision handler becomes a no-op.
   pointerDrag = null;
 
-  const cleanup = () => {
-    preview.remove();
-    li.classList.remove('placeholder');
-    listEl.classList.remove('is-dragging');
-  };
+  if (cancelled) {
+    // Animate items back to their DOM positions, then clean up.
+    animateTransformsToZero(CANCEL_ANIM_DURATION);
+    virtualOrder = null;
 
-  if (cancelled && currentIndex !== drag.originalIndex) {
-    moveItemAnimated(currentIndex, drag.originalIndex);
+    const cleanup = () => {
+      preview.remove();
+      li.classList.remove('placeholder');
+      listEl.classList.remove('is-dragging');
+    };
+
+    animatePreviewDrop(preview, li, CANCEL_ANIM_DURATION, cleanup);
+  } else {
+    // Commit: reorder DOM to match virtual order, then animate preview
+    // to the item's final position.
+    const cleanup = () => {
+      preview.remove();
+      li.classList.remove('placeholder');
+      listEl.classList.remove('is-dragging');
+    };
+
+    // Commit must happen before the preview animation reads the target
+    // rect, so the target is at its final DOM position.
+    commitOrder();
+    animatePreviewDrop(preview, li, DROP_ANIM_DURATION, cleanup);
   }
-
-  // Finish any running FLIP animation on the placeholder so
-  // getBoundingClientRect() returns the final layout position. This
-  // matters when the user releases fast — the last swap's FLIP animation
-  // may still be in progress.
-  const anims = li.getAnimations();
-  for (let i = 0; i < anims.length; i++) anims[i].finish();
-
-  const duration = cancelled ? CANCEL_ANIM_DURATION : DROP_ANIM_DURATION;
-  animatePreviewDrop(preview, li, duration, cleanup);
 }
 
 //
 // Keyboard reorder — start, move, end
 //
 // A separate interaction mode for keyboard/screen reader users. Not
-// driven by DragDoll's sensors — it directly manipulates the items
-// array and announces changes via the live region.
+// driven by DragDoll's sensors — it directly manipulates the virtual
+// order and announces changes via the live region.
 //
 
 function a11yStart(item: ItemData) {
-  const index = getItemIndex(item);
+  const index = items.indexOf(item);
+  initVirtualOrder();
   a11yDrag = { item, originalIndex: index, currentIndex: index };
   item.element.classList.add('a11y-dragging');
   announce(
@@ -3912,30 +3908,13 @@ function a11yMove(direction: -1 | 1) {
   const newIndex = drag.currentIndex + direction;
   if (newIndex < 0 || newIndex >= items.length) return;
 
-  // Check if the item's target position is outside the viewport.
-  const pos = computeItemPosition(listEl, newIndex, itemStride);
-  const isOffScreen = pos.bottom <= 0 || pos.top >= window.innerHeight;
-
-  // Off-screen items snap instantly (no point animating what's not
-  // visible). Visible items get a FLIP animation.
-  if (isOffScreen) {
-    moveItem(drag.currentIndex, newIndex);
-  } else {
-    moveItemAnimated(drag.currentIndex, newIndex);
-  }
+  virtualSwap(drag.currentIndex, newIndex);
   drag.currentIndex = newIndex;
 
-  // Scroll the item into view.
-  if (isOffScreen) {
-    // For non-animated moves, read the actual element rect (it's
-    // accurate since there's no FLIP transform offset).
-    const rect = drag.item.element.getBoundingClientRect();
-    scrollIntoViewport(rect.top, rect.bottom);
-  } else {
-    // For animated moves, use the computed position (the element's
-    // actual rect includes the FLIP transform offset).
-    scrollIntoViewport(pos.top, pos.bottom);
-  }
+  // Scroll the item into view (getBoundingClientRect respects transforms).
+  requestAnimationFrame(() => {
+    drag.item.element.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  });
 
   announce(`${drag.item.label}, position ${newIndex + 1} of ${items.length}.`);
 }
@@ -3947,8 +3926,11 @@ function a11yEnd(cancel: boolean) {
   a11yDrag = null;
   drag.item.element.classList.remove('a11y-dragging');
 
-  if (cancel && drag.currentIndex !== drag.originalIndex) {
-    moveItemAnimated(drag.currentIndex, drag.originalIndex);
+  if (cancel) {
+    animateTransformsToZero(CANCEL_ANIM_DURATION);
+    virtualOrder = null;
+  } else {
+    commitOrder();
   }
 
   announce(
@@ -3965,18 +3947,22 @@ function a11yEnd(cancel: boolean) {
 //
 
 document.addEventListener('keydown', (e) => {
-  // While a keyboard reorder is active, consume all relevant keys.
+  // While a keyboard reorder is active, handle reorder keys.
+  // Unrecognized keys (Tab, Ctrl+shortcuts, etc.) pass through.
   if (a11yDrag) {
-    e.preventDefault();
     switch (e.key) {
       case 'ArrowUp':
+        e.preventDefault();
         return a11yMove(-1);
       case 'ArrowDown':
+        e.preventDefault();
         return a11yMove(1);
       case ' ':
       case 'Enter':
+        e.preventDefault();
         return a11yEnd(false);
       case 'Escape':
+        e.preventDefault();
         return a11yEnd(true);
     }
     return;
@@ -4013,24 +3999,23 @@ for (let i = 0; i < ITEM_COUNT; i++) {
   link.rel = 'noopener noreferrer';
   link.draggable = false;
   link.textContent = label;
-  link.setAttribute('aria-roledescription', 'sortable link');
+  link.setAttribute('aria-roledescription', 'sortable item');
   link.setAttribute('aria-describedby', 'dnd-instructions');
   li.appendChild(link);
   listEl.appendChild(li);
 
-  // Item data. The droppable field is assigned after creation because
-  // itemData and droppable reference each other.
   const pointerSensor = new PointerSensor(link);
   const itemData: ItemData = { label, element: li, link } as ItemData;
   items.push(itemData);
 
-  // Each item is a droppable for collision detection. The rect is
-  // computed arithmetically from (listTop + index * stride) instead of
-  // reading the DOM — this avoids getting mid-FLIP-animation rects.
+  // Each item is a droppable for collision detection. The rect is computed
+  // arithmetically using the virtual index during drag, falling back to
+  // the DOM index when idle.
   const droppable = new Droppable(li, {
     data: { item: itemData },
     computeClientRect: () => {
-      const idx = items.indexOf(itemData);
+      const domIdx = items.indexOf(itemData);
+      const idx = getVirtualIndex(domIdx);
       const listRect = listEl.getBoundingClientRect();
       return {
         x: listRect.left,
@@ -4045,7 +4030,6 @@ for (let i = 0; i < ITEM_COUNT; i++) {
   // The element (li) stays in-flow as a placeholder during drag. We
   // override applyPosition to move the preview clone (not the li) and
   // computeClientRect to return the preview's rect for collision detection.
-  // startOffsetModifier compensates for the start threshold distance.
   const draggable = new Draggable<PointerSensor>([pointerSensor], {
     elements: () => [li],
     startPredicate: ({ event }) => {
@@ -4060,7 +4044,13 @@ for (let i = 0; i < ITEM_COUNT; i++) {
         ? true
         : undefined;
     },
-    positionModifiers: [startOffsetModifier as unknown as DraggableModifier<PointerSensor>],
+    positionModifiers: [
+      startOffsetModifier as unknown as DraggableModifier<PointerSensor>,
+      (change) => {
+        change.x = 0;
+        return change;
+      },
+    ],
     applyPosition: ({ item, phase }) => {
       if (!pointerDrag || phase === 'end' || phase === 'end-align') return;
       const drag = pointerDrag;
@@ -4078,10 +4068,11 @@ for (let i = 0; i < ITEM_COUNT; i++) {
       const preview = cloneAsFixedPreview(li, 'drag-preview');
       li.classList.add('placeholder');
       lastSwapFromIdx = -1;
+      initVirtualOrder();
       pointerDrag = {
         item: itemData,
         preview,
-        originalIndex: getItemIndex(itemData),
+        originalIndex: items.indexOf(itemData),
         startLeft: rect.left,
         startTop: rect.top,
       };
@@ -4118,12 +4109,13 @@ dndObserver.addDraggables(draggables);
 // Collision-based reorder
 //
 // When the preview overlaps a droppable by more than 51%, swap the
-// dragged item with the target.
+// dragged item with the target in the virtual order.
 //
 
 dndObserver.on(DndObserverEventType.Collide, ({ collisions }) => {
-  if (!pointerDrag) return;
+  if (!pointerDrag || !virtualOrder) return;
   const draggedItem = pointerDrag.item;
+  const draggedDomIdx = items.indexOf(draggedItem);
 
   for (const collision of collisions) {
     if (collision.intersectionScore < SWAP_OVERLAP_THRESHOLD) break;
@@ -4132,14 +4124,12 @@ dndObserver.on(DndObserverEventType.Collide, ({ collisions }) => {
     const targetItem = targetDroppable.data.item as ItemData;
     if (targetItem === draggedItem) continue;
 
-    const currentIdx = getItemIndex(draggedItem);
-    const targetIdx = getItemIndex(targetItem);
-    if (currentIdx === targetIdx || targetIdx === lastSwapFromIdx) continue;
+    const currentVIdx = getVirtualIndex(draggedDomIdx);
+    const targetVIdx = getVirtualIndex(items.indexOf(targetItem));
+    if (currentVIdx === targetVIdx || targetVIdx === lastSwapFromIdx) continue;
 
-    lastSwapFromIdx = currentIdx;
-    moveItemAnimated(currentIdx, targetIdx);
-
-    // Droppable rects depend on item indices, which just changed.
+    lastSwapFromIdx = currentVIdx;
+    virtualSwap(currentVIdx, targetVIdx);
     dndObserver.updateDroppableClientRects();
     break;
   }
@@ -4162,12 +4152,9 @@ itemStride =
     <title>Sortable List - Accessible</title>
     <meta
       name="description"
-      content="A sortable list with two interaction modes. (1) Pointer drag: drag items via mouse or touch — a fixed-position clone follows the pointer while the original stays in-flow as a translucent placeholder; DndObserver detects collisions to trigger reorder. (2) Keyboard reorder: focus an item and press Shift+Space or Shift+Enter to pick up, arrow keys to move, Space/Enter to drop, Escape to cancel — items animate with FLIP transitions and a live region announces every position change for screen readers."
+      content="A sortable list with two interaction modes. (1) Pointer drag: drag items via mouse or touch — a fixed-position clone follows the pointer while the original stays in-flow as a translucent placeholder; DndObserver detects collisions to trigger reorder. (2) Keyboard reorder: focus an item and press Shift+Space or Shift+Enter to pick up, arrow keys to move, Space/Enter to drop, Escape to cancel. During either interaction, items are repositioned visually with CSS transforms while the DOM order stays fixed. The final DOM reorder only happens on drop. A live region announces every position change for screen readers."
     />
-    <meta
-      name="viewport"
-      content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
@@ -4175,13 +4162,7 @@ itemStride =
       Press Shift plus Space or Shift plus Enter to reorder. Use arrow keys to move. Press Space or
       Enter to drop, or Escape to cancel.
     </div>
-    <div
-      id="dnd-live-region"
-      class="sr-only"
-      role="status"
-      aria-live="assertive"
-      aria-atomic="true"
-    ></div>
+    <div id="dnd-live-region" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
     <ul id="sortable-list" role="list" aria-label="Sortable items"></ul>
     <script type="module" src="index.ts"></script>
   </body>
@@ -4254,7 +4235,7 @@ body {
 #sortable-list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 20px 0;
   width: 100%;
   max-width: 400px;
   margin-inline: auto;
@@ -4326,6 +4307,7 @@ body {
       color: var(--item-color-focus);
       background: var(--item-bg-color-focus);
       border-color: var(--item-border-color-focus);
+      box-shadow: 0 0 0 2px var(--item-border-color-focus);
     }
 
     .sortable-item.drag-preview & {

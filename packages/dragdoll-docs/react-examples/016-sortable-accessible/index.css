@@ -38,6 +38,7 @@ html {
 
 body {
   margin: 0;
+  overflow: auto;
   font-family:
     system-ui,
     -apple-system,
@@ -72,6 +73,10 @@ body {
   gap: var(--list-gap);
 }
 
+[data-drag-preview-proxy] {
+  z-index: 1000;
+}
+
 .sortable-item {
   list-style: none;
   overflow-anchor: none;
@@ -90,7 +95,6 @@ body {
 
   &.drag-preview {
     pointer-events: none;
-    z-index: 1000;
   }
 
   & a {
