@@ -323,6 +323,21 @@ When enabled, clears text selection on drag start and prevents new selection dur
 
 Default is `true`.
 
+### capturePointer
+
+```ts
+type capturePointer = boolean;
+```
+
+Captures the pointer on `ownerDocument.body` when a drag is confirmed. This is enabled by default for two reasons:
+
+1. **Iframe protection** — without capture, pointer events are swallowed when the pointer moves over an iframe, which breaks the drag. Capturing on `document.body` ensures pointer events keep firing regardless of what is under the pointer.
+2. **Framework interoperability** — UI frameworks (React, Vue, etc.) may remount or move the source element in the DOM during drag (e.g. when reordering a sortable list). Capturing on `document.body` prevents the drag from being cancelled by these DOM mutations.
+
+Only applies when the active sensor is a [`PointerSensor`](/pointer-sensor) (or subclass) using pointer events. When capture is active, `pointerenter`/`pointerleave` events on other elements are suppressed per the [Pointer Events spec](https://www.w3.org/TR/pointerevents3/#dfn-pointer-capture). This does not affect DragDoll's collision detection, which is rect-based.
+
+Default is `true`.
+
 ## Properties
 
 ### id
@@ -857,6 +872,7 @@ export interface DraggableSettings<S extends Sensor> {
   onDestroy?: (draggable: Draggable<S>) => void;
   preventClickOnEnd?: boolean;
   preventTextSelection?: boolean;
+  capturePointer?: boolean;
 }
 ```
 

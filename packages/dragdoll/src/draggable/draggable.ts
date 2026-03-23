@@ -1,5 +1,6 @@
 import { Emitter } from 'eventti';
 import { IS_BROWSER } from '../constants.js';
+import { PointerSensor } from '../sensors/pointer-sensor.js';
 import type { Sensor, SensorEventListenerId } from '../sensors/sensor.js';
 import { SensorEventType } from '../sensors/sensor.js';
 import { ticker, tickerPhases } from '../singletons/ticker.js';
@@ -121,6 +122,22 @@ export interface DraggableSettings<S extends Sensor> {
   dndGroups?: Set<DraggableDndGroup>;
   preventClickOnEnd?: boolean;
   preventTextSelection?: boolean;
+  /**
+   * If true (default), captures the pointer on `ownerDocument.body` when a
+   * drag is confirmed. This provides two key benefits:
+   *
+   * 1. **Iframe protection** — pointer events keep firing even when the
+   *    pointer moves over iframes, which would otherwise swallow the events.
+   * 2. **Framework interoperability** — UI frameworks (React, Vue, etc.) may
+   *    remount or move the source element during drag (e.g. list reordering).
+   *    Capturing on `document.body` prevents accidental drag cancellation.
+   *
+   * Only applies when the active sensor is a {@link PointerSensor} (or a
+   * subclass) using pointer events. When capture is active,
+   * `pointerenter`/`pointerleave` events on other elements are suppressed
+   * per the Pointer Events spec.
+   */
+  capturePointer?: boolean;
   onPrepareStart?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
   onStart?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
   onPrepareMove?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
@@ -258,6 +275,7 @@ export const DraggableDefaultSettings: DraggableSettings<any> = {
   dndGroups: undefined,
   preventClickOnEnd: true,
   preventTextSelection: true,
+  capturePointer: true,
 } as const;
 
 export class Draggable<
@@ -289,6 +307,10 @@ export class Draggable<
   protected _alignId: symbol;
   protected _modifierData: DraggableModifierData<S>;
   protected _selectionChangeHandler: (() => void) | null = null;
+
+  protected _pointerCaptureTarget: Element | null = null;
+
+  protected _pointerCapturePointerId: number | null = null;
 
   constructor(sensors: readonly S[], options: DraggableOptions<S> = {}) {
     const { id = Symbol(), ...restOptions } = options;
@@ -409,6 +431,7 @@ export class Draggable<
       dndGroups = defaults.dndGroups,
       preventClickOnEnd = defaults.preventClickOnEnd,
       preventTextSelection = defaults.preventTextSelection,
+      capturePointer = defaults.capturePointer,
       onPrepareStart = defaults.onPrepareStart,
       onStart = defaults.onStart,
       onPrepareMove = defaults.onPrepareMove,
@@ -429,6 +452,7 @@ export class Draggable<
       dndGroups,
       preventClickOnEnd,
       preventTextSelection,
+      capturePointer,
       onPrepareStart,
       onStart,
       onPrepareMove,
@@ -568,6 +592,25 @@ export class Draggable<
       doc.getSelection()?.removeAllRanges();
       this._selectionChangeHandler = () => doc.getSelection()?.removeAllRanges();
       doc.addEventListener('selectionchange', this._selectionChangeHandler);
+    }
+
+    // Capture the pointer on the document body if the sensor is a
+    // PointerSensor (or subclass). This prevents iframes from swallowing
+    // events and keeps the drag alive if the source element is moved in DOM.
+    if (this.settings.capturePointer) {
+      const sensor = drag.sensor;
+      if (sensor instanceof PointerSensor && sensor.drag) {
+        const body = drag.items[0]?.element?.ownerDocument?.body;
+        if (body) {
+          try {
+            body.setPointerCapture(sensor.drag.pointerId);
+            this._pointerCaptureTarget = body;
+            this._pointerCapturePointerId = sensor.drag.pointerId;
+          } catch {
+            // Silently ignore if capture fails (e.g., invalid pointer id).
+          }
+        }
+      }
     }
 
     for (const item of drag.items) {
@@ -864,6 +907,17 @@ export class Draggable<
       this._selectionChangeHandler = null;
     }
 
+    // Release pointer capture if it was set.
+    if (this._pointerCaptureTarget && this._pointerCapturePointerId !== null) {
+      try {
+        this._pointerCaptureTarget.releasePointerCapture(this._pointerCapturePointerId);
+      } catch {
+        // Silently ignore if release fails (e.g., pointer already released).
+      }
+      this._pointerCaptureTarget = null;
+      this._pointerCapturePointerId = null;
+    }
+
     // Apply modifiers for the end phase.
     this._applyModifiers(DraggableModifierPhase.End, 0, 0);
 
@@ -959,7 +1013,21 @@ export class Draggable<
   }
 
   updateSettings(options: Partial<this['settings']>) {
+    const prevCapturePointer = this.settings.capturePointer;
     (this as Writeable<this>).settings = this._parseSettings(options, this.settings);
+
+    // If capturePointer was disabled during an active drag, release immediately.
+    if (prevCapturePointer && !this.settings.capturePointer && this._pointerCaptureTarget) {
+      if (this._pointerCapturePointerId !== null) {
+        try {
+          this._pointerCaptureTarget.releasePointerCapture(this._pointerCapturePointerId);
+        } catch {
+          // Silently ignore.
+        }
+      }
+      this._pointerCaptureTarget = null;
+      this._pointerCapturePointerId = null;
+    }
   }
 
   use<SS extends S, PP extends P>(plugin: (draggable: this) => Draggable<SS, PP>) {
