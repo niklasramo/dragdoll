@@ -43,7 +43,8 @@ https://niklasramo.github.io/dragdoll/
 - [`packages/dragdoll-react`](./packages/dragdoll-react) - The React wrapper for the dragdoll package.
 - [`packages/dragdoll-docs`](./packages/dragdoll-docs) - Docs for the dragdoll package.
 - [`packages/dragdoll-tests`](./packages/dragdoll-tests) - Tests for the dragdoll package.
+- [`packages/dragdoll-react-tests`](./packages/dragdoll-react-tests) - Tests for the dragdoll-react package.
 
 ## Copyright
 
-Copyright © 2022-2025, Niklas Rämö (inramo@gmail.com). Licensed under the [MIT license](/LICENSE.md).
+Copyright © 2022-2026, Niklas Rämö (inramo@gmail.com). Licensed under the [MIT license](/LICENSE.md).

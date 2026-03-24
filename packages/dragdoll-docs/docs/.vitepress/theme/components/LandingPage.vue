@@ -1,6 +1,7 @@
 <script setup>
 import { useData } from 'vitepress';
 import LandingDemo from './LandingDemo.vue';
+import HeroGlow from './HeroGlow.vue';
 
 const { site } = useData();
 const base = site.value.base || '/';
@@ -16,7 +17,7 @@ const base = site.value.base || '/';
           <p class="hero-tagline">The drag and drop library that doesn't hold you back.</p>
           <p class="hero-description">
             A modular, high-performance drag &amp; drop system built in TypeScript. Sensors,
-            draggables, droppables, and collision detection &mdash; all composable, all
+            draggables, droppables, and collision detection &mdash; all modular, all
             framework-agnostic, all fast.
           </p>
           <div class="hero-actions">
@@ -40,7 +41,7 @@ const base = site.value.base || '/';
           <LandingDemo />
         </div>
       </div>
-      <div class="hero-glow"></div>
+      <HeroGlow />
     </section>
 
     <!-- Features -->
@@ -61,17 +62,15 @@ const base = site.value.base || '/';
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <path d="M2 20h.01" />
-                <path d="M7 20v-4" />
-                <path d="M12 20v-8" />
-                <path d="M17 20V8" />
-                <path d="M22 20V4" />
+                <path d="M2 12a10 10 0 0 1 18-6" />
+                <path d="M22 12a10 10 0 0 1-18 6" />
+                <circle cx="12" cy="12" r="2" />
               </svg>
             </div>
-            <h3>Sensor System</h3>
+            <h3>Sweet Sensors</h3>
             <p>
-              Pluggable sensors normalize any input &mdash; pointer, keyboard, or custom &mdash;
-              into unified drag events.
+              Pointer, keyboard, or roll your own. Sensors normalize any input into unified drag
+              events, giving you complete control over interactions.
             </p>
           </div>
           <div class="feature-card">
@@ -84,13 +83,16 @@ const base = site.value.base || '/';
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                <path d="M14 4h4v4" />
+                <path d="M10 20H6v-4" />
+                <path d="m18 4-7 7" />
+                <path d="m6 20 7-7" />
               </svg>
             </div>
-            <h3>Blazing Performance</h3>
+            <h3>Dynamic Draggables</h3>
             <p>
-              Pooled events, batched DOM reads/writes, cached measurements. Designed for 60fps from
-              day one.
+              A highly customizable Draggable system with autoscrolling superpowers, drag previews,
+              and position modifiers. Complex scenarios made effortless.
             </p>
           </div>
           <div class="feature-card">
@@ -109,7 +111,11 @@ const base = site.value.base || '/';
               </svg>
             </div>
             <h3>Collision Detection</h3>
-            <p>Advanced and composable collision detectors for precise drop target resolution.</p>
+            <p>
+              An extendable, cache-optimized collision detection system you can build on. Ships with
+              a visibility-aware detector that handles overflow clipping and scroll containers for
+              you.
+            </p>
           </div>
           <div class="feature-card">
             <div class="feature-icon" style="--accent: #7cbdff">
@@ -121,17 +127,16 @@ const base = site.value.base || '/';
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <path
-                  d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
-                />
-                <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-                <line x1="12" y1="22.08" x2="12" y2="12" />
+                <circle cx="12" cy="12" r="10" />
+                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                <path d="M8 9.5c.4-.5 1.2-.5 1.6 0" />
+                <path d="M14.4 9.5c.4-.5 1.2-.5 1.6 0" />
               </svg>
             </div>
-            <h3>Fully Modular</h3>
+            <h3>Blissful DX</h3>
             <p>
-              Use only what you need. Sensors, draggables, droppables, and observers are independent
-              building blocks.
+              Smart defaults get you moving fast. Rich events and extension points give you full
+              control when you need it.
             </p>
           </div>
           <div class="feature-card">
@@ -144,13 +149,17 @@ const base = site.value.base || '/';
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                <path d="M3 9h18" />
-                <path d="M9 21V9" />
+                <path d="m21 21-6-6m6 6v-4.8m0 4.8h-4.8" />
+                <path d="M3 16.2V21m0 0h4.8M3 21l6-6" />
+                <path d="M21 7.8V3m0 0h-4.8M21 3l-6 6" />
+                <path d="M3 7.8V3m0 0h4.8M3 3l6 6" />
               </svg>
             </div>
-            <h3>Transform Support</h3>
-            <p>Drag rotated, scaled, and skewed elements naturally. CSS transforms just work.</p>
+            <h3>Magical Transforms</h3>
+            <p>
+              Finally, transformed elements can be dragged normally. Rotate, scale, skew to your
+              heart's content.
+            </p>
           </div>
           <div class="feature-card">
             <div class="feature-icon" style="--accent: #ff9555">
@@ -162,11 +171,14 @@ const base = site.value.base || '/';
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
               </svg>
             </div>
-            <h3>Type-Safe</h3>
-            <p>Written in TypeScript with comprehensive types. Your IDE knows everything.</p>
+            <h3>Uncompromising Performance</h3>
+            <p>
+              Pooled events, batched DOM reads/writes, cached measurements. Your users won't notice
+              the performance. That's the point.
+            </p>
           </div>
         </div>
       </div>
@@ -180,18 +192,13 @@ const base = site.value.base || '/';
         <div class="frameworks-grid">
           <a :href="`${base}getting-started`" class="framework-card framework-card-available">
             <div class="framework-icon">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M1.125 0C.502 0 0 .502 0 1.125v21.75C0 23.498.502 24 1.125 24h21.75c.623 0 1.125-.502 1.125-1.125V1.125C24 .502 23.498 0 22.875 0zm17.363 9.75c.612 0 1.154.037 1.627.111a6.38 6.38 0 0 1 1.306.34v2.458a3.95 3.95 0 0 0-.643-.361 5.093 5.093 0 0 0-.717-.26 5.453 5.453 0 0 0-1.426-.2c-.3 0-.573.028-.819.086a2.1 2.1 0 0 0-.623.242c-.17.104-.3.229-.393.374a.888.888 0 0 0-.14.49c0 .196.053.373.156.529.104.156.252.304.443.444s.423.276.696.41c.273.135.582.274.926.416.47.197.892.407 1.266.628.374.222.695.473.963.753.268.279.472.598.614.957.142.359.214.776.214 1.253 0 .657-.125 1.21-.373 1.656a3.033 3.033 0 0 1-1.012 1.085 4.38 4.38 0 0 1-1.487.596c-.566.12-1.163.18-1.79.18a9.916 9.916 0 0 1-1.84-.164 5.544 5.544 0 0 1-1.512-.493v-2.63a5.033 5.033 0 0 0 3.237 1.2c.333 0 .624-.03.872-.09.249-.06.456-.144.623-.25.166-.108.29-.234.373-.38a1.023 1.023 0 0 0-.074-1.089 2.12 2.12 0 0 0-.537-.5 5.597 5.597 0 0 0-.807-.444 27.72 27.72 0 0 0-1.007-.436c-.918-.383-1.602-.852-2.053-1.405-.45-.553-.676-1.222-.676-2.005 0-.614.123-1.141.369-1.582.246-.441.58-.804 1.004-1.089a4.494 4.494 0 0 1 1.47-.629 7.536 7.536 0 0 1 1.77-.201zm-15.113.188h9.563v2.166H9.506v9.646H6.789v-9.646H3.375z"
+                />
               </svg>
             </div>
-            <div class="framework-name">Vanilla / Core</div>
+            <div class="framework-name">Core</div>
             <div class="framework-status available">Available</div>
           </a>
           <a :href="`${base}react/`" class="framework-card framework-card-available">
@@ -234,19 +241,10 @@ const base = site.value.base || '/';
           </a>
           <div class="framework-card framework-card-soon">
             <div class="framework-icon">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
-                <line x1="12" y1="22" x2="12" y2="15.5" />
-                <polyline points="22 8.5 12 15.5 2 8.5" />
-                <polyline points="2 15.5 12 8.5 22 15.5" />
-                <line x1="12" y1="2" x2="12" y2="8.5" />
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M24,1.61H14.06L12,5.16,9.94,1.61H0L12,22.39ZM12,14.08,5.16,2.23H9.59L12,6.41l2.41-4.18h4.43Z"
+                />
               </svg>
             </div>
             <div class="framework-name">Vue</div>
@@ -256,7 +254,7 @@ const base = site.value.base || '/';
             <div class="framework-icon">
               <svg viewBox="0 0 24 24" fill="currentColor">
                 <path
-                  d="M10.354 21.125a4.44 4.44 0 0 0 4.765-1.765 4.109 4.109 0 0 0 .3-3.32 4.15 4.15 0 0 0 1.6-.825 4.225 4.225 0 0 0 1.35-3.34 4.37 4.37 0 0 0-2.36-3.9 4.43 4.43 0 0 0-.71-4.89A4.37 4.37 0 0 0 11.39 2a4.44 4.44 0 0 0-4.765 1.765 4.109 4.109 0 0 0-.3 3.32 4.15 4.15 0 0 0-1.6.825 4.225 4.225 0 0 0-1.35 3.34 4.37 4.37 0 0 0 2.36 3.9 4.43 4.43 0 0 0 .71 4.89 4.37 4.37 0 0 0 3.91 1.085z"
+                  d="M10.354 21.125a4.44 4.44 0 0 1-4.765-1.767 4.109 4.109 0 0 1-.703-3.107 3.898 3.898 0 0 1 .134-.522l.105-.321.287.21a7.21 7.21 0 0 0 2.186 1.092l.208.063-.02.208a1.253 1.253 0 0 0 .226.83 1.337 1.337 0 0 0 1.435.533 1.231 1.231 0 0 0 .343-.15l5.59-3.562a1.164 1.164 0 0 0 .524-.778 1.242 1.242 0 0 0-.211-.937 1.338 1.338 0 0 0-1.435-.533 1.23 1.23 0 0 0-.343.15l-2.133 1.36a4.078 4.078 0 0 1-1.135.499 4.44 4.44 0 0 1-4.765-1.766 4.108 4.108 0 0 1-.702-3.108 3.855 3.855 0 0 1 1.742-2.582l5.589-3.563a4.072 4.072 0 0 1 1.135-.499 4.44 4.44 0 0 1 4.765 1.767 4.109 4.109 0 0 1 .703 3.107 3.943 3.943 0 0 1-.134.522l-.105.321-.286-.21a7.204 7.204 0 0 0-2.187-1.093l-.208-.063.02-.207a1.255 1.255 0 0 0-.226-.831 1.337 1.337 0 0 0-1.435-.532 1.231 1.231 0 0 0-.343.15L8.62 9.368a1.162 1.162 0 0 0-.524.778 1.24 1.24 0 0 0 .211.937 1.338 1.338 0 0 0 1.435.533 1.235 1.235 0 0 0 .344-.151l2.132-1.36a4.067 4.067 0 0 1 1.135-.498 4.44 4.44 0 0 1 4.765 1.766 4.108 4.108 0 0 1 .702 3.108 3.857 3.857 0 0 1-1.742 2.583l-5.589 3.562a4.072 4.072 0 0 1-1.135.499m10.358-17.95C18.484-.015 14.082-.96 10.9 1.068L5.31 4.63a6.412 6.412 0 0 0-2.896 4.295 6.753 6.753 0 0 0 .666 4.336 6.43 6.43 0 0 0-.96 2.396 6.833 6.833 0 0 0 1.168 5.167c2.229 3.19 6.63 4.135 9.812 2.108l5.59-3.562a6.41 6.41 0 0 0 2.896-4.295 6.756 6.756 0 0 0-.665-4.336 6.429 6.429 0 0 0 .958-2.396 6.831 6.831 0 0 0-1.167-5.168Z"
                 />
               </svg>
             </div>
@@ -275,7 +273,7 @@ const base = site.value.base || '/';
         <code>npm install dragdoll</code>
       </div>
       <div class="hero-actions" style="margin-top: 24px; justify-content: center">
-        <a :href="`${base}getting-started`" class="btn btn-primary">Read the Docs</a>
+        <a :href="`${base}getting-started`" class="btn btn-primary">Get Started</a>
       </div>
     </section>
   </div>
@@ -312,6 +310,7 @@ const base = site.value.base || '/';
   font-weight: 700;
   color: var(--vp-c-brand-1);
   margin: 0;
+  text-wrap: balance;
 }
 
 .hero-demo {
@@ -346,6 +345,7 @@ const base = site.value.base || '/';
   margin: 16px 0 12px;
   font-weight: 500;
   line-height: 1.4;
+  text-wrap: balance;
 }
 
 .hero-description {
@@ -354,6 +354,7 @@ const base = site.value.base || '/';
   line-height: 1.7;
   margin-bottom: 28px;
   max-width: 500px;
+  text-wrap: pretty;
 }
 
 @media (max-width: 768px) {
@@ -366,18 +367,6 @@ const base = site.value.base || '/';
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-}
-
-.hero-glow {
-  position: absolute;
-  top: -200px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 800px;
-  height: 600px;
-  background: radial-gradient(ellipse at center, rgba(255, 85, 85, 0.08) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: -1;
 }
 
 /* ===== Buttons ===== */
@@ -397,26 +386,24 @@ const base = site.value.base || '/';
 }
 
 .btn-primary {
-  background: #ff5555;
+  background: var(--vp-c-brand-1);
   color: #000;
 }
 
 .btn-primary:hover {
   background: #ff7070;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(255, 85, 85, 0.3);
+  box-shadow: 0 4px 20px var(--dd-c-brand-a30);
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--dd-c-white-a5);
   color: var(--vp-c-text-1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--dd-c-white-a10);
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
+  background: var(--dd-c-white-a10);
+  border-color: var(--dd-c-white-a20);
 }
 
 .btn-icon {
@@ -441,6 +428,7 @@ const base = site.value.base || '/';
   font-weight: 700;
   color: var(--vp-c-text-1);
   margin-bottom: 8px;
+  text-wrap: balance;
 }
 
 .section-subtitle {
@@ -448,6 +436,7 @@ const base = site.value.base || '/';
   font-size: 16px;
   color: var(--vp-c-text-2);
   margin-bottom: 48px;
+  text-wrap: balance;
 }
 
 .features-grid {
@@ -471,15 +460,8 @@ const base = site.value.base || '/';
 .feature-card {
   padding: 28px 24px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  transition: all 0.25s ease;
-}
-
-.feature-card:hover {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.04);
-  transform: translateY(-2px);
+  background: transparent;
+  border: 1px solid var(--dd-c-white-a10);
 }
 
 .feature-icon {
@@ -504,12 +486,14 @@ const base = site.value.base || '/';
   font-weight: 600;
   color: var(--vp-c-text-1);
   margin-bottom: 8px;
+  text-wrap: balance;
 }
 
 .feature-card p {
   font-size: 14px;
   color: var(--vp-c-text-2);
   line-height: 1.6;
+  text-wrap: pretty;
 }
 
 /* ===== Frameworks ===== */
@@ -542,17 +526,16 @@ const base = site.value.base || '/';
   gap: 12px;
   padding: 28px 16px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--dd-c-white-a10);
+  background: transparent;
   transition: all 0.25s ease;
   text-decoration: none;
   color: inherit;
 }
 
 .framework-card-available:hover {
-  border-color: rgba(255, 85, 85, 0.3);
-  background: rgba(255, 85, 85, 0.04);
-  transform: translateY(-2px);
+  border-color: var(--dd-c-white-a30);
+  background: transparent;
 }
 
 .framework-card-soon {
@@ -584,13 +567,13 @@ const base = site.value.base || '/';
 }
 
 .framework-status.available {
-  color: #55ff9c;
+  color: var(--dd-c-success);
   background: rgba(85, 255, 156, 0.1);
 }
 
 .framework-status.soon {
   color: var(--vp-c-text-3);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--dd-c-white-a5);
 }
 
 /* ===== Bottom CTA ===== */
@@ -605,25 +588,27 @@ const base = site.value.base || '/';
   font-weight: 700;
   color: var(--vp-c-text-1);
   margin-bottom: 8px;
+  text-wrap: balance;
 }
 
 .bottom-cta p {
   font-size: 16px;
   color: var(--vp-c-text-2);
   margin-bottom: 20px;
+  text-wrap: pretty;
 }
 
 .install-snippet {
   display: inline-block;
   padding: 10px 24px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  border: 1px solid var(--dd-c-white-a10);
 }
 
 .install-snippet code {
   font-size: 14px;
-  color: #7cbdff;
+  color: var(--dd-c-code);
   font-family: var(--vp-font-family-mono);
 }
 </style>

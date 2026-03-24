@@ -301,7 +301,7 @@ onUnmounted(() => {
 
 .puzzle-label.solved {
   opacity: 1;
-  color: #55ff9c;
+  color: var(--dd-c-success);
 }
 
 .puzzle-grid {
@@ -395,7 +395,7 @@ onUnmounted(() => {
 
 .puzzle-tile:hover {
   box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.4),
     0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
@@ -405,7 +405,7 @@ onUnmounted(() => {
   transition: none;
   z-index: 10;
   box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+    inset 0 0 0 1px var(--vp-c-brand-1),
     0 6px 20px rgba(0, 0, 0, 0.6),
     0 0 15px rgba(255, 85, 85, 0.1);
 }
