@@ -2,7 +2,7 @@
 import { onMounted, onBeforeUnmount } from 'vue';
 
 const SPRING_EASING =
-  'linear(0, 0.05 1.5%, 0.54 8%, 0.88 14%, 1.04 18%, 1.15 21%, 1.07 25%, 0.96 30%, 1.02 36%, 1.01 45%, 0.99 55%, 1 70%, 1)';
+  'linear(0, 0.012, 0.049 1.1%, 0.199 2.4%, 0.981 6.5%, 1.232 8.2%, 1.383 9.7%, 1.424, 1.443 11.2% 11.8%, 1.429 12.4%, 1.364 13.7%, 1.004 18%, 0.892 19.7%, 0.829 21.1%, 0.812, 0.803, 0.803, 0.809 23.8%, 0.838 25.2%, 0.998 29.5%, 1.048, 1.076, 1.087 34%, 1.086, 1.077 36.2%, 0.984 42.1%, 0.968, 0.961 45.4%, 0.962, 0.966 47.7%, 1.007 53.5%, 1.014, 1.017 56.8%, 1.015 59.1%, 0.997 64.9%, 0.992 68.1%, 1.003, 0.999 90.5%, 1)';
 
 let link = null;
 let pulseInterval = null;
@@ -26,7 +26,7 @@ function pulse() {
   link.style.animation = 'none';
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      if (link) link.style.animation = `heart-pulse 1400ms ${SPRING_EASING}`;
+      if (link) link.style.animation = `heart-pulse 4000ms ${SPRING_EASING}`;
     });
   });
 }

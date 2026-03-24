@@ -389,8 +389,8 @@ html:has(.VPDoc) .VPFooter {
   0% {
     transform: scale(1);
   }
-  10% {
-    transform: scale(1.4);
+  30% {
+    transform: scale(1.2);
   }
   100% {
     transform: scale(1);
