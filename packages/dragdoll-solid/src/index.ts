@@ -1,7 +1,9 @@
+export * from './components/drag-preview.js';
 export * from './contexts/dnd-observer-context.js';
 export * from './hooks/use-dnd-observer.js';
 export * from './hooks/use-dnd-observer-callback.js';
 export * from './hooks/use-dnd-observer-context.js';
+export * from './hooks/use-drag-preview.js';
 export * from './hooks/use-draggable.js';
 export * from './hooks/use-draggable-auto-scroll.js';
 export * from './hooks/use-draggable-callback.js';
@@ -10,3 +12,4 @@ export * from './hooks/use-droppable.js';
 export * from './hooks/use-keyboard-motion-sensor.js';
 export * from './hooks/use-keyboard-sensor.js';
 export * from './hooks/use-pointer-sensor.js';
+export * from './hooks/use-sensor-callback.js';

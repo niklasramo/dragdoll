@@ -32,6 +32,7 @@ draggableElements.forEach((element) => {
     },
   });
 });
+
 ```
 
 ```html [index.html]
@@ -87,6 +88,7 @@ draggableElements.forEach((element) => {
     <script type="module" src="index.ts"></script>
   </body>
 </html>
+
 ```
 
 ```css [index.css]
@@ -115,6 +117,7 @@ body {
     height: auto;
   }
 }
+
 ```
 
 ```css [base.css]
@@ -205,6 +208,7 @@ body {
     }
   }
 }
+
 ```
 
 :::
@@ -247,6 +251,7 @@ new Draggable([pointerSensor, keyboardSensor], {
     ],
   }),
 );
+
 ```
 
 ```html [index.html]
@@ -285,6 +290,7 @@ new Draggable([pointerSensor, keyboardSensor], {
     <script type="module" src="index.ts"></script>
   </body>
 </html>
+
 ```
 
 ```css [index.css]
@@ -332,6 +338,7 @@ body {
   transform: translateX(-50%) translateY(-50%) scale(1.2);
   transform-origin: 50% 50%;
 }
+
 ```
 
 ```css [base.css]
@@ -422,6 +429,7 @@ body {
     }
   }
 }
+
 ```
 
 :::
@@ -463,6 +471,7 @@ draggableElements.forEach((element) => {
     },
   });
 });
+
 ```
 
 ```html [index.html]
@@ -502,6 +511,7 @@ draggableElements.forEach((element) => {
     <script type="module" src="index.ts"></script>
   </body>
 </html>
+
 ```
 
 ```css [index.css]
@@ -529,6 +539,7 @@ body {
     cursor: ns-resize;
   }
 }
+
 ```
 
 ```css [base.css]
@@ -619,6 +630,7 @@ body {
     }
   }
 }
+
 ```
 
 :::
@@ -653,6 +665,7 @@ new Draggable([pointerSensor, keyboardSensor], {
     element.classList.remove('dragging');
   },
 });
+
 ```
 
 ```html [index.html]
@@ -681,6 +694,7 @@ new Draggable([pointerSensor, keyboardSensor], {
     <script type="module" src="index.ts"></script>
   </body>
 </html>
+
 ```
 
 ```css [index.css]
@@ -691,6 +705,7 @@ new Draggable([pointerSensor, keyboardSensor], {
   width: 80px;
   height: 80px;
 }
+
 ```
 
 ```css [base.css]
@@ -781,6 +796,7 @@ body {
     }
   }
 }
+
 ```
 
 :::
@@ -823,6 +839,7 @@ new Draggable([pointerSensor, keyboardSensor], {
     element.classList.remove('dragging');
   },
 });
+
 ```
 
 ```html [index.html]
@@ -854,6 +871,7 @@ new Draggable([pointerSensor, keyboardSensor], {
     <script type="module" src="index.ts"></script>
   </body>
 </html>
+
 ```
 
 ```css [index.css]
@@ -873,6 +891,7 @@ body {
   flex-grow: 0;
   flex-shrink: 0;
 }
+
 ```
 
 ```css [base.css]
@@ -963,6 +982,7 @@ body {
     }
   }
 }
+
 ```
 
 :::
@@ -1009,6 +1029,7 @@ new Draggable([pointerSensor], {
     element.classList.remove('dragging');
   },
 });
+
 ```
 
 ```html [index.html]
@@ -1040,6 +1061,7 @@ new Draggable([pointerSensor], {
     <script type="module" src="index.ts"></script>
   </body>
 </html>
+
 ```
 
 ```css [index.css]
@@ -1055,6 +1077,7 @@ body {
   width: 80px;
   height: 80px;
 }
+
 ```
 
 ```css [base.css]
@@ -1145,6 +1168,7 @@ body {
     }
   }
 }
+
 ```
 
 :::
@@ -1187,6 +1211,7 @@ new Draggable([pointerSensor, keyboardSensor], {
     element.classList.remove('dragging');
   },
 });
+
 ```
 
 ```html [index.html]
@@ -1218,6 +1243,7 @@ new Draggable([pointerSensor, keyboardSensor], {
     <script type="module" src="index.ts"></script>
   </body>
 </html>
+
 ```
 
 ```css [index.css]
@@ -1237,6 +1263,7 @@ body {
   flex-grow: 0;
   flex-shrink: 0;
 }
+
 ```
 
 ```css [base.css]
@@ -1327,6 +1354,7 @@ body {
     }
   }
 }
+
 ```
 
 :::
@@ -1360,6 +1388,7 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
     element.classList.remove('dragging', 'pointer-dragging', 'keyboard-dragging');
   },
 });
+
 ```
 
 ```html [index.html]
@@ -1393,6 +1422,7 @@ const draggable = new Draggable([pointerSensor, keyboardSensor], {
     <script type="module" src="index.ts"></script>
   </body>
 </html>
+
 ```
 
 ```css [index.css]
@@ -1449,6 +1479,7 @@ body {
     }
   }
 }
+
 ```
 
 ```css [base.css]
@@ -1539,6 +1570,7 @@ body {
     }
   }
 }
+
 ```
 
 :::
@@ -1579,6 +1611,7 @@ draggableElements.forEach((element) => {
     },
   });
 });
+
 ```
 
 ```html [index.html]
@@ -1634,6 +1667,7 @@ draggableElements.forEach((element) => {
     <script type="module" src="index.ts"></script>
   </body>
 </html>
+
 ```
 
 ```css [index.css]
@@ -1662,6 +1696,7 @@ body {
     height: auto;
   }
 }
+
 ```
 
 ```css [base.css]
@@ -1752,6 +1787,7 @@ body {
     }
   }
 }
+
 ```
 
 :::
@@ -1795,6 +1831,7 @@ new Draggable<PointerSensor>([pointerSensor], {
     element.classList.remove('dragging');
   },
 });
+
 ```
 
 ```html [index.html]
@@ -1833,6 +1870,7 @@ new Draggable<PointerSensor>([pointerSensor], {
     <script type="module" src="index.ts"></script>
   </body>
 </html>
+
 ```
 
 ```css [index.css]
@@ -1877,6 +1915,7 @@ body {
     color: inherit;
   }
 }
+
 ```
 
 ```css [base.css]
@@ -1967,6 +2006,7 @@ body {
     }
   }
 }
+
 ```
 
 :::
@@ -2002,6 +2042,7 @@ new Draggable<PointerSensor>([pointerSensor], {
     element.classList.remove('dragging');
   },
 });
+
 ```
 
 ```html [index.html]
@@ -2033,6 +2074,7 @@ new Draggable<PointerSensor>([pointerSensor], {
     <script type="module" src="index.ts"></script>
   </body>
 </html>
+
 ```
 
 ```css [index.css]
@@ -2049,6 +2091,7 @@ body {
   flex-grow: 0;
   flex-shrink: 0;
 }
+
 ```
 
 ```css [base.css]
@@ -2139,6 +2182,7 @@ body {
     }
   }
 }
+
 ```
 
 :::
@@ -2239,6 +2283,7 @@ cards.forEach((card) => {
     }),
   );
 });
+
 ```
 
 ```html [index.html]
@@ -2311,6 +2356,7 @@ cards.forEach((card) => {
     <script type="module" src="index.ts"></script>
   </body>
 </html>
+
 ```
 
 ```css [index.css]
@@ -2349,6 +2395,7 @@ cards.forEach((card) => {
 .scroll-content > .card.draggable.dragging {
   opacity: 0.3;
 }
+
 ```
 
 ```css [base.css]
@@ -2439,6 +2486,7 @@ body {
     }
   }
 }
+
 ```
 
 :::
@@ -2578,6 +2626,7 @@ new Draggable([pointerSensor, keyboardSensor], {
     }
   },
 });
+
 ```
 
 ```html [index.html]
@@ -2638,6 +2687,7 @@ new Draggable([pointerSensor, keyboardSensor], {
     <script type="module" src="index.ts"></script>
   </body>
 </html>
+
 ```
 
 ```css [index.css]
@@ -2701,6 +2751,7 @@ body {
   color: rgba(255, 255, 255, 0.3);
   pointer-events: none;
 }
+
 ```
 
 ```css [base.css]
@@ -2791,6 +2842,7 @@ body {
     }
   }
 }
+
 ```
 
 :::
@@ -2909,6 +2961,7 @@ dndObserver.on(DndObserverEventType.End, (data) => {
     return;
   }
 });
+
 ```
 
 ```html [index.html]
@@ -2972,6 +3025,7 @@ dndObserver.on(DndObserverEventType.End, (data) => {
     <script type="module" src="index.ts"></script>
   </body>
 </html>
+
 ```
 
 ```css [index.css]
@@ -3039,6 +3093,7 @@ body {
     height: auto;
   }
 }
+
 ```
 
 ```css [base.css]
@@ -3129,6 +3184,7 @@ body {
     }
   }
 }
+
 ```
 
 :::
@@ -3326,6 +3382,7 @@ dndObserver.on(DndObserverEventType.End, ({ draggable, canceled }) => {
   bestMatch?.element?.removeAttribute('data-draggable-over');
   bestMatchMap.delete(draggable);
 });
+
 ```
 
 ```html [index.html]
@@ -3404,6 +3461,7 @@ dndObserver.on(DndObserverEventType.End, ({ draggable, canceled }) => {
     <script type="module" src="index.ts"></script>
   </body>
 </html>
+
 ```
 
 ```css [index.css]
@@ -3483,6 +3541,7 @@ body {
     justify-content: safe center;
   }
 }
+
 ```
 
 ```css [base.css]
@@ -3573,6 +3632,7 @@ body {
     }
   }
 }
+
 ```
 
 :::
@@ -3586,18 +3646,17 @@ A sortable list with two interaction modes. (1) Pointer drag: drag items via mou
 ::: code-group
 
 ```ts [index.ts]
-// Sortable list with two interaction modes:
+// Sortable list with pointer drag and keyboard reorder.
 //
-// 1. POINTER DRAG — drag items via mouse/touch. A fixed-position clone
-//    ("preview") follows the pointer while the original element stays
-//    in-flow as a translucent placeholder. DndObserver detects collisions
-//    between the preview and other items to trigger reorder.
+// Pointer: drag items via mouse/touch. A clone follows the pointer while the
+// original stays in-flow as a placeholder. DndObserver handles collision-based
+// reorder.
 //
-// 2. KEYBOARD REORDER — Shift+Space/Enter to pick up, arrow keys to
-//    move one position at a time, Space/Enter to drop, Escape to cancel.
+// Keyboard: Shift+Space/Enter to pick up, arrows to move, Space/Enter to
+// drop, Escape to cancel.
 //
-// During either interaction, items are repositioned using CSS transforms
-// (DOM order stays fixed). The final DOM reorder only happens on drop.
+// Items are visually repositioned with CSS transforms during drag. DOM order
+// only changes on drop.
 
 import {
   AdvancedCollisionData,
@@ -3612,9 +3671,9 @@ import {
   startOffsetModifier,
 } from 'dragdoll';
 
-//
+// ---------------------------------------------------------------------------
 // Constants
-//
+// ---------------------------------------------------------------------------
 
 const ITEM_COUNT = 100;
 const POINTER_START_THRESHOLD_SQ = 8 * 8;
@@ -3623,138 +3682,140 @@ const DROP_ANIM_DURATION = 150;
 const CANCEL_ANIM_DURATION = 200;
 const SWAP_OVERLAP_THRESHOLD = 51;
 
-//
+// ---------------------------------------------------------------------------
 // Types
-//
+// ---------------------------------------------------------------------------
 
 interface ItemData {
   label: string;
   element: HTMLLIElement;
   link: HTMLAnchorElement;
   droppable: Droppable;
+  domIndex: number;
 }
 
-//
-// Pure helpers
-//
+// ---------------------------------------------------------------------------
+// DOM references
+// ---------------------------------------------------------------------------
 
-function cloneAsFixedPreview(element: HTMLLIElement, className: string): HTMLLIElement {
-  const preview = element.cloneNode(true) as HTMLLIElement;
-  const rect = element.getBoundingClientRect();
-  const style = preview.style;
-  style.position = 'fixed';
-  style.top = '0';
-  style.left = '0';
-  style.width = `${rect.width}px`;
-  style.willChange = 'transform';
-  style.transform = `translate(${rect.left}px, ${rect.top}px)`;
-  preview.classList.add(className);
-  preview.setAttribute('aria-hidden', 'true');
-  document.body.appendChild(preview);
-  return preview;
-}
+const listEl = document.getElementById('sortable-list') as HTMLUListElement;
+const liveRegion = document.getElementById('dnd-live-region') as HTMLDivElement;
+const dragContainer = document.getElementById('drag-container') as HTMLDivElement;
 
-function animatePreviewDrop(
-  preview: HTMLLIElement,
-  target: HTMLLIElement,
-  duration: number,
-  onDone: () => void,
-) {
-  const anims = target.getAnimations();
-  for (let i = 0; i < anims.length; i++) anims[i].finish();
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
 
-  const targetRect = target.getBoundingClientRect();
-  const anim = preview.animate(
-    [{ transform: `translate(${targetRect.left}px, ${targetRect.top}px)` }],
-    { duration, easing: 'ease', fill: 'forwards' },
-  );
-  anim.onfinish = onDone;
-}
+const items: ItemData[] = [];
+const itemsByElement = new Map<HTMLLIElement, ItemData>();
 
-function isPointerDistanceAboveThreshold(
-  x: number,
-  y: number,
-  startX: number,
-  startY: number,
-  thresholdSq: number,
-): boolean {
-  const dx = x - startX;
-  const dy = y - startY;
-  return dx * dx + dy * dy >= thresholdSq;
-}
+let itemHeight = 0;
+let itemStride = 0;
+let listOffsetTop = 0;
 
-//
-// Virtual layout helpers
-//
-// During drag, items stay in their original DOM positions. Visual reordering
-// is done with translateY transforms based on each item's virtual index vs
-// its DOM index. The DOM is only reordered on drop.
-//
-
-// The virtual order (item indices into the `items` array). null when idle.
 let virtualOrder: number[] | null = null;
+let virtualIndexOf: number[] | null = null;
+
+let pointerDrag: {
+  item: ItemData;
+  preview: HTMLLIElement;
+  originalIndex: number;
+} | null = null;
+
+let lastSwapFromIdx = -1;
+
+let a11yDrag: {
+  item: ItemData;
+  originalIndex: number;
+  currentIndex: number;
+} | null = null;
+
+let cachedListRect: DOMRect | null = null;
+
+// ---------------------------------------------------------------------------
+// Measurement
+// ---------------------------------------------------------------------------
+
+function measureItemDimensions() {
+  const firstRect = items[0].element.getBoundingClientRect();
+  const secondRect = items[1].element.getBoundingClientRect();
+  itemHeight = firstRect.height;
+  itemStride = secondRect.top - firstRect.top;
+  listOffsetTop = firstRect.top - listEl.getBoundingClientRect().top;
+}
+
+function invalidateListRectCache() {
+  cachedListRect = null;
+}
+
+function getListRect(): DOMRect {
+  return (cachedListRect ??= listEl.getBoundingClientRect());
+}
+
+// ---------------------------------------------------------------------------
+// Virtual layout
+// ---------------------------------------------------------------------------
 
 function initVirtualOrder() {
+  measureItemDimensions();
   virtualOrder = items.map((_, i) => i);
+  virtualIndexOf = items.map((_, i) => i);
 }
 
-function getVirtualIndex(itemIndex: number): number {
-  return virtualOrder ? virtualOrder.indexOf(itemIndex) : itemIndex;
+function getVirtualIndex(domIndex: number): number {
+  return virtualIndexOf ? virtualIndexOf[domIndex] : domIndex;
 }
 
-function virtualSwap(fromVirtualIdx: number, toVirtualIdx: number) {
-  if (!virtualOrder || fromVirtualIdx === toVirtualIdx) return;
+function virtualSwap(fromIdx: number, toIdx: number, animate = true) {
+  if (!virtualOrder || !virtualIndexOf || fromIdx === toIdx) return;
 
-  const lo = Math.min(fromVirtualIdx, toVirtualIdx);
-  const hi = Math.max(fromVirtualIdx, toVirtualIdx);
+  const lo = Math.min(fromIdx, toIdx);
+  const hi = Math.max(fromIdx, toIdx);
 
-  // Splice the item in the virtual order.
-  const [moved] = virtualOrder.splice(fromVirtualIdx, 1);
-  virtualOrder.splice(toVirtualIdx, 0, moved);
+  const [moved] = virtualOrder.splice(fromIdx, 1);
+  virtualOrder.splice(toIdx, 0, moved);
 
-  // Apply transforms to affected items.
+  for (let vi = lo; vi <= hi; vi++) {
+    virtualIndexOf[virtualOrder[vi]] = vi;
+  }
+
   for (let vi = lo; vi <= hi; vi++) {
     const domIdx = virtualOrder[vi];
     const el = items[domIdx].element;
     const newY = (vi - domIdx) * itemStride;
-
     const prevY = parseFloat(el.style.transform?.match(/translateY\((.+?)px\)/)?.[1] || '0');
     if (prevY === newY) continue;
 
     el.style.transform = newY === 0 ? '' : `translateY(${newY}px)`;
 
-    const anims = el.getAnimations();
-    for (let j = 0; j < anims.length; j++) anims[j].cancel();
-
-    el.animate(
-      [
-        { transform: `translateY(${prevY}px)` },
-        { transform: newY === 0 ? 'translateY(0px)' : `translateY(${newY}px)` },
-      ],
-      { duration: SWAP_ANIM_DURATION, easing: 'ease' },
-    );
+    if (animate) {
+      const anims = el.getAnimations();
+      for (let j = 0; j < anims.length; j++) anims[j].cancel();
+      el.animate(
+        [
+          { transform: `translateY(${prevY}px)` },
+          { transform: newY === 0 ? 'translateY(0px)' : `translateY(${newY}px)` },
+        ],
+        { duration: SWAP_ANIM_DURATION, easing: 'ease' },
+      );
+    }
   }
 }
 
 function commitOrder() {
   if (!virtualOrder) return;
 
-  // Build the new items array from virtual order.
   const newItems = virtualOrder.map((domIdx) => items[domIdx]);
-
-  // Reorder DOM to match.
-  for (const item of newItems) {
-    listEl.appendChild(item.element);
+  for (let i = 0; i < newItems.length; i++) {
+    newItems[i].domIndex = i;
+    listEl.appendChild(newItems[i].element);
   }
 
-  // Replace items array contents.
   items.length = 0;
   items.push(...newItems);
-
-  // Clear all transforms (DOM now matches visual order).
   clearAllTransforms();
-
   virtualOrder = null;
+  virtualIndexOf = null;
 }
 
 function clearAllTransforms() {
@@ -3768,79 +3829,103 @@ function clearAllTransforms() {
 function animateTransformsToZero(duration: number) {
   for (const item of items) {
     const el = item.element;
-    const currentTransform = el.style.transform;
-    if (!currentTransform || currentTransform === 'translateY(0px)') continue;
+    const t = el.style.transform;
+    if (!t || t === 'translateY(0px)') continue;
 
     const anims = el.getAnimations();
     for (let i = 0; i < anims.length; i++) anims[i].cancel();
 
     el.style.transform = '';
-    el.animate([{ transform: currentTransform }, { transform: 'translateY(0px)' }], {
-      duration,
-      easing: 'ease',
-    });
+    el.animate([{ transform: t }, { transform: 'translateY(0px)' }], { duration, easing: 'ease' });
   }
 }
 
-//
-// State
-//
+// ---------------------------------------------------------------------------
+// Preview helpers
+// ---------------------------------------------------------------------------
 
-const items: ItemData[] = [];
-let itemHeight = 0;
-let itemStride = 0;
+function createPreviewClone(element: HTMLLIElement): HTMLLIElement {
+  const preview = element.cloneNode(true) as HTMLLIElement;
+  const rect = element.getBoundingClientRect();
+  const parentRect = element.parentElement!.getBoundingClientRect();
 
-// Active while a pointer drag is in progress, null otherwise.
-let pointerDrag: {
-  item: ItemData;
-  preview: HTMLLIElement;
-  originalIndex: number;
-  startLeft: number;
-  startTop: number;
-} | null = null;
+  const s = preview.style;
+  s.position = 'absolute';
+  s.left = `${rect.left - parentRect.left}px`;
+  s.top = `${rect.top - parentRect.top}px`;
+  s.width = `${rect.width}px`;
+  s.margin = '0';
+  s.boxSizing = 'border-box';
+  s.contain = 'layout';
 
-// During auto-scroll the pointer stays still while the page moves, which
-// can cause rapid back-and-forth swaps between two items. This guard
-// stores the index the dragged item came FROM in the last swap so we
-// don't immediately swap back. It resets on every pointer move so the
-// user can still freely move items in either direction.
-let lastSwapFromIdx = -1;
+  preview.classList.add('drag-preview');
+  preview.setAttribute('aria-hidden', 'true');
+  element.parentElement!.appendChild(preview);
+  return preview;
+}
 
-// Active while a keyboard reorder is in progress.
-let a11yDrag: {
-  item: ItemData;
-  originalIndex: number;
-  currentIndex: number;
-} | null = null;
+function animatePreviewToTarget(
+  preview: HTMLLIElement,
+  target: HTMLLIElement,
+  duration: number,
+  onDone: () => void,
+) {
+  const anims = target.getAnimations();
+  for (let i = 0; i < anims.length; i++) anims[i].finish();
 
-//
-// DOM references
-//
+  const pRect = preview.getBoundingClientRect();
+  const tRect = target.getBoundingClientRect();
+  const dx = tRect.left - pRect.left;
+  const dy = tRect.top - pRect.top;
 
-const listEl = document.getElementById('sortable-list') as HTMLUListElement;
-const liveRegion = document.getElementById('dnd-live-region') as HTMLDivElement;
+  if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
+    onDone();
+    return;
+  }
 
-//
-// DndObserver — tracks collisions between draggables and droppables.
-//
+  const anim = preview.animate([{ translate: '0px 0px' }, { translate: `${dx}px ${dy}px` }], {
+    duration,
+    easing: 'ease',
+    fill: 'forwards',
+    composite: 'add',
+  });
+  anim.onfinish = onDone;
+}
 
-const dndObserver = new DndObserver<AdvancedCollisionData>({
-  collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx),
-});
-
-//
+// ---------------------------------------------------------------------------
 // Utilities
-//
+// ---------------------------------------------------------------------------
+
+function isPointerDistanceAboveThreshold(
+  x: number,
+  y: number,
+  startX: number,
+  startY: number,
+  thresholdSq: number,
+): boolean {
+  const dx = x - startX;
+  const dy = y - startY;
+  return dx * dx + dy * dy >= thresholdSq;
+}
 
 function announce(message: string) {
   liveRegion.textContent = message;
 }
 
-//
-// Pointer drag — start, move, reorder, end
-//
+// ---------------------------------------------------------------------------
+// DndObserver
+// ---------------------------------------------------------------------------
+
+const dndObserver = new DndObserver<AdvancedCollisionData>({
+  collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx),
+});
+
+// ---------------------------------------------------------------------------
+// Pointer drag
+// ---------------------------------------------------------------------------
 
 function onScrollDuringDrag() {
+  invalidateListRectCache();
   dndObserver.updateDroppableClientRects();
 }
 
@@ -3850,53 +3935,37 @@ function pointerDragEnd(cancelled: boolean) {
   const drag = pointerDrag!;
   const li = drag.item.element;
   const preview = drag.preview;
-
-  // Null out immediately so the collision handler becomes a no-op.
   pointerDrag = null;
 
+  const cleanup = () => {
+    preview.remove();
+    li.classList.remove('placeholder');
+    listEl.classList.remove('is-dragging');
+  };
+
   if (cancelled) {
-    // Animate items back to their DOM positions, then clean up.
     animateTransformsToZero(CANCEL_ANIM_DURATION);
     virtualOrder = null;
-
-    const cleanup = () => {
-      preview.remove();
-      li.classList.remove('placeholder');
-      listEl.classList.remove('is-dragging');
-    };
-
-    animatePreviewDrop(preview, li, CANCEL_ANIM_DURATION, cleanup);
+    virtualIndexOf = null;
+    animatePreviewToTarget(preview, li, CANCEL_ANIM_DURATION, cleanup);
   } else {
-    // Commit: reorder DOM to match virtual order, then animate preview
-    // to the item's final position.
-    const cleanup = () => {
-      preview.remove();
-      li.classList.remove('placeholder');
-      listEl.classList.remove('is-dragging');
-    };
-
-    // Commit must happen before the preview animation reads the target
-    // rect, so the target is at its final DOM position.
     commitOrder();
-    animatePreviewDrop(preview, li, DROP_ANIM_DURATION, cleanup);
+    animatePreviewToTarget(preview, li, DROP_ANIM_DURATION, cleanup);
   }
 }
 
-//
-// Keyboard reorder — start, move, end
-//
-// A separate interaction mode for keyboard/screen reader users. Not
-// driven by DragDoll's sensors — it directly manipulates the virtual
-// order and announces changes via the live region.
-//
+// ---------------------------------------------------------------------------
+// Keyboard reorder
+// ---------------------------------------------------------------------------
 
 function a11yStart(item: ItemData) {
-  const index = items.indexOf(item);
   initVirtualOrder();
-  a11yDrag = { item, originalIndex: index, currentIndex: index };
+  a11yDrag = { item, originalIndex: item.domIndex, currentIndex: item.domIndex };
   item.element.classList.add('a11y-dragging');
+  item.element.scrollIntoView({ block: 'nearest' });
+
   announce(
-    `Picked up ${item.label}. Position ${index + 1} of ${items.length}. ` +
+    `Picked up ${item.label}. Position ${item.domIndex + 1} of ${items.length}. ` +
       `Use arrow keys to move, Space or Enter to drop, Escape to cancel.`,
   );
 }
@@ -3908,13 +3977,19 @@ function a11yMove(direction: -1 | 1) {
   const newIndex = drag.currentIndex + direction;
   if (newIndex < 0 || newIndex >= items.length) return;
 
-  virtualSwap(drag.currentIndex, newIndex);
+  virtualSwap(drag.currentIndex, newIndex, false);
   drag.currentIndex = newIndex;
 
-  // Scroll the item into view (getBoundingClientRect respects transforms).
-  requestAnimationFrame(() => {
-    drag.item.element.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  });
+  // Scroll using computed position — no DOM read per item needed.
+  const freshListRect = listEl.getBoundingClientRect();
+  const gap = itemStride - itemHeight;
+  const targetTop = freshListRect.top + listOffsetTop + newIndex * itemStride;
+  const targetBottom = targetTop + itemHeight;
+  if (targetTop - gap < 0) {
+    window.scrollBy(0, targetTop - gap);
+  } else if (targetBottom + gap > window.innerHeight) {
+    window.scrollBy(0, targetBottom + gap - window.innerHeight);
+  }
 
   announce(`${drag.item.label}, position ${newIndex + 1} of ${items.length}.`);
 }
@@ -3929,6 +4004,7 @@ function a11yEnd(cancel: boolean) {
   if (cancel) {
     animateTransformsToZero(CANCEL_ANIM_DURATION);
     virtualOrder = null;
+    virtualIndexOf = null;
   } else {
     commitOrder();
   }
@@ -3942,13 +4018,11 @@ function a11yEnd(cancel: boolean) {
   drag.item.link.focus({ preventScroll: true });
 }
 
-//
-// Keyboard event handler
-//
+// ---------------------------------------------------------------------------
+// Keyboard handler
+// ---------------------------------------------------------------------------
 
 document.addEventListener('keydown', (e) => {
-  // While a keyboard reorder is active, handle reorder keys.
-  // Unrecognized keys (Tab, Ctrl+shortcuts, etc.) pass through.
   if (a11yDrag) {
     switch (e.key) {
       case 'ArrowUp':
@@ -3968,10 +4042,9 @@ document.addEventListener('keydown', (e) => {
     return;
   }
 
-  // Shift+Space or Shift+Enter on a sortable item starts keyboard reorder.
   if (e.shiftKey && (e.key === ' ' || e.key === 'Enter')) {
     const li = (e.target as Element).closest('.sortable-item') as HTMLLIElement | null;
-    const item = li && items.find((it) => it.element === li);
+    const item = li && itemsByElement.get(li);
     if (item) {
       e.preventDefault();
       a11yStart(item);
@@ -3979,9 +4052,9 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-//
-// Build the list
-//
+// ---------------------------------------------------------------------------
+// Build list
+// ---------------------------------------------------------------------------
 
 const droppables: Droppable[] = [];
 const draggables: Draggable<PointerSensor>[] = [];
@@ -3989,7 +4062,6 @@ const draggables: Draggable<PointerSensor>[] = [];
 for (let i = 0; i < ITEM_COUNT; i++) {
   const label = `Item ${i + 1}`;
 
-  // Create the list item element.
   const li = document.createElement('li');
   li.className = 'sortable-item';
 
@@ -4005,21 +4077,18 @@ for (let i = 0; i < ITEM_COUNT; i++) {
   listEl.appendChild(li);
 
   const pointerSensor = new PointerSensor(link);
-  const itemData: ItemData = { label, element: li, link } as ItemData;
+  const itemData: ItemData = { label, element: li, link, domIndex: i } as ItemData;
   items.push(itemData);
+  itemsByElement.set(li, itemData);
 
-  // Each item is a droppable for collision detection. The rect is computed
-  // arithmetically using the virtual index during drag, falling back to
-  // the DOM index when idle.
   const droppable = new Droppable(li, {
     data: { item: itemData },
     computeClientRect: () => {
-      const domIdx = items.indexOf(itemData);
-      const idx = getVirtualIndex(domIdx);
-      const listRect = listEl.getBoundingClientRect();
+      const idx = getVirtualIndex(itemData.domIndex);
+      const listRect = getListRect();
       return {
         x: listRect.left,
-        y: listRect.top + idx * itemStride,
+        y: listRect.top + listOffsetTop + idx * itemStride,
         width: listRect.width,
         height: itemHeight,
       };
@@ -4027,11 +4096,15 @@ for (let i = 0; i < ITEM_COUNT; i++) {
   });
   itemData.droppable = droppable;
 
-  // The element (li) stays in-flow as a placeholder during drag. We
-  // override applyPosition to move the preview clone (not the li) and
-  // computeClientRect to return the preview's rect for collision detection.
   const draggable = new Draggable<PointerSensor>([pointerSensor], {
-    elements: () => [li],
+    elements: () => {
+      initVirtualOrder();
+      invalidateListRectCache();
+      const preview = createPreviewClone(li);
+      pointerDrag = { item: itemData, preview, originalIndex: itemData.domIndex };
+      return [preview];
+    },
+    container: () => dragContainer,
     startPredicate: ({ event }) => {
       if (a11yDrag) return false;
       return isPointerDistanceAboveThreshold(
@@ -4051,31 +4124,10 @@ for (let i = 0; i < ITEM_COUNT; i++) {
         return change;
       },
     ],
-    applyPosition: ({ item, phase }) => {
-      if (!pointerDrag || phase === 'end' || phase === 'end-align') return;
-      const drag = pointerDrag;
-      const x = drag.startLeft + item.position.x;
-      const y = drag.startTop + item.position.y;
-      drag.preview.style.transform = `translate(${x}px, ${y}px)`;
-    },
-    computeClientRect: () => {
-      if (!pointerDrag) return null;
-      const rect = pointerDrag.preview.getBoundingClientRect();
-      return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
-    },
+    frozenStyles: () => ['width', 'height'],
     onStart: () => {
-      const rect = li.getBoundingClientRect();
-      const preview = cloneAsFixedPreview(li, 'drag-preview');
       li.classList.add('placeholder');
       lastSwapFromIdx = -1;
-      initVirtualOrder();
-      pointerDrag = {
-        item: itemData,
-        preview,
-        originalIndex: items.indexOf(itemData),
-        startLeft: rect.left,
-        startTop: rect.top,
-      };
       listEl.classList.add('is-dragging');
       window.addEventListener('scroll', onScrollDuringDrag);
     },
@@ -4087,13 +4139,7 @@ for (let i = 0; i < ITEM_COUNT; i++) {
     },
   }).use(
     autoScrollPlugin({
-      targets: [
-        {
-          element: window,
-          axis: 'y',
-          padding: { top: Infinity, bottom: Infinity },
-        },
-      ],
+      targets: [{ element: window, axis: 'y', padding: { top: Infinity, bottom: Infinity } }],
     }),
   );
 
@@ -4101,47 +4147,46 @@ for (let i = 0; i < ITEM_COUNT; i++) {
   draggables.push(draggable);
 }
 
-// Register all items with DndObserver.
 dndObserver.addDroppables(droppables);
 dndObserver.addDraggables(draggables);
 
-//
+// ---------------------------------------------------------------------------
 // Collision-based reorder
-//
-// When the preview overlaps a droppable by more than 51%, swap the
-// dragged item with the target in the virtual order.
-//
+// ---------------------------------------------------------------------------
 
 dndObserver.on(DndObserverEventType.Collide, ({ collisions }) => {
   if (!pointerDrag || !virtualOrder) return;
+
   const draggedItem = pointerDrag.item;
-  const draggedDomIdx = items.indexOf(draggedItem);
+  const draggedDomIdx = draggedItem.domIndex;
 
   for (const collision of collisions) {
     if (collision.intersectionScore < SWAP_OVERLAP_THRESHOLD) break;
+
     const targetDroppable = dndObserver.droppables.get(collision.droppableId);
     if (!targetDroppable) continue;
+
     const targetItem = targetDroppable.data.item as ItemData;
     if (targetItem === draggedItem) continue;
 
     const currentVIdx = getVirtualIndex(draggedDomIdx);
-    const targetVIdx = getVirtualIndex(items.indexOf(targetItem));
+    const targetVIdx = getVirtualIndex(targetItem.domIndex);
     if (currentVIdx === targetVIdx || targetVIdx === lastSwapFromIdx) continue;
 
     lastSwapFromIdx = currentVIdx;
     virtualSwap(currentVIdx, targetVIdx);
+    invalidateListRectCache();
     dndObserver.updateDroppableClientRects();
     break;
   }
 });
 
-//
-// Measure item dimensions (must happen after the list is built).
-//
+// ---------------------------------------------------------------------------
+// Initial measurement
+// ---------------------------------------------------------------------------
 
-itemHeight = items[0].element.getBoundingClientRect().height;
-itemStride =
-  items[1].element.getBoundingClientRect().top - items[0].element.getBoundingClientRect().top;
+measureItemDimensions();
+
 ```
 
 ```html [index.html]
@@ -4164,9 +4209,11 @@ itemStride =
     </div>
     <div id="dnd-live-region" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
     <ul id="sortable-list" role="list" aria-label="Sortable items"></ul>
+    <div id="drag-container"></div>
     <script type="module" src="index.ts"></script>
   </body>
 </html>
+
 ```
 
 ```css [index.css]
@@ -4232,7 +4279,16 @@ body {
   white-space: nowrap;
 }
 
+#drag-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  contain: layout;
+  z-index: 9999;
+}
+
 #sortable-list {
+  position: relative;
   list-style: none;
   margin: 0;
   padding: 20px 0;
@@ -4325,6 +4381,7 @@ body {
     }
   }
 }
+
 ```
 
 ```css [base.css]
@@ -4415,6 +4472,8 @@ body {
     }
   }
 }
+
 ```
 
 :::
+

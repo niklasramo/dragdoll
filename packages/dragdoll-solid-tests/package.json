@@ -1,0 +1,12 @@
+{
+  "name": "dragdoll-solid-tests",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test:local": "vitest run --config vitest.config.ts",
+    "test:bs": "vitest run --config vitest.bs.config.ts",
+    "prettier:check": "prettier --check --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,yml,yaml}\"",
+    "prettier:write": "prettier --write --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,yml,yaml}\""
+  }
+}

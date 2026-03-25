@@ -50,6 +50,9 @@ async function buildExampleDirectories() {
       minify: true,
       logLevel: 'silent',
       globalName: createUmdName(exampleName),
+      alias: {
+        'dragdoll-solid': path.resolve(process.cwd(), '../dragdoll-solid/src/index.ts'),
+      },
       plugins: [
         solidPlugin({
           dev: false,

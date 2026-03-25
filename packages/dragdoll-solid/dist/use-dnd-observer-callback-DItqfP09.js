@@ -1,2 +1,0 @@
-import{t as e}from"./maybe-accessor-BJ4-BRBt.js";import{createEffect as t,onCleanup as n}from"solid-js";function r(r,i,a){t(()=>{let t=e(a),o=e(i);if(!t||!o)return;let s=t.on(r,o);n(()=>t.off(r,s))})}export{r as t};
-//# sourceMappingURL=use-dnd-observer-callback-DItqfP09.js.map

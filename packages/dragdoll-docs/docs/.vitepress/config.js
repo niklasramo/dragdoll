@@ -270,7 +270,45 @@ function sidebarSolid() {
       items: [
         { text: 'Introduction', link: '/solid/' },
         { text: 'Getting Started', link: '/solid/getting-started' },
+        { text: 'Drag Patterns', link: '/solid/drag-patterns' },
         { text: 'Examples', link: '/solid/examples' },
+      ],
+    },
+    {
+      text: 'Sensors',
+      collapsible: false,
+      items: [
+        { text: 'useKeyboardSensor', link: '/solid/use-keyboard-sensor' },
+        { text: 'useKeyboardMotionSensor', link: '/solid/use-keyboard-motion-sensor' },
+        { text: 'usePointerSensor', link: '/solid/use-pointer-sensor' },
+        { text: 'useSensorCallback', link: '/solid/use-sensor-callback' },
+      ],
+    },
+    {
+      text: 'Draggable',
+      collapsible: false,
+      items: [
+        { text: 'useDraggable', link: '/solid/use-draggable' },
+        { text: 'useDraggableCallback', link: '/solid/use-draggable-callback' },
+        { text: 'useDraggableDrag', link: '/solid/use-draggable-drag' },
+        { text: 'useDraggableAutoScroll', link: '/solid/use-draggable-auto-scroll' },
+        { text: 'useDragPreview', link: '/solid/use-drag-preview' },
+        { text: 'DragPreview', link: '/solid/drag-preview' },
+      ],
+    },
+    {
+      text: 'Droppable',
+      collapsible: false,
+      items: [{ text: 'useDroppable', link: '/solid/use-droppable' }],
+    },
+    {
+      text: 'DnD Observer',
+      collapsible: false,
+      items: [
+        { text: 'DndObserverContext', link: '/solid/dnd-observer-context' },
+        { text: 'useDndObserver', link: '/solid/use-dnd-observer' },
+        { text: 'useDndObserverContext', link: '/solid/use-dnd-observer-context' },
+        { text: 'useDndObserverCallback', link: '/solid/use-dnd-observer-callback' },
       ],
     },
   ];

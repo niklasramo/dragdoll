@@ -513,6 +513,7 @@ function App() {
   // Pointer drag state (imperative — not React state, too hot-path).
   const pointerDragRef = useRef<PointerDragState | null>(null);
   const lastSwapFromIdxRef = useRef(-1);
+  const swapCooldownRef = useRef(false);
 
   // Keyboard reorder state.
   const [a11yDrag, setA11yDrag] = useState<A11yDragState | null>(null);
@@ -552,6 +553,12 @@ function App() {
     const [moved] = order.splice(fromIndex, 1);
     order.splice(toIndex, 0, moved);
 
+    // Prevent rapid cascading swaps — wait for the animation to settle.
+    swapCooldownRef.current = true;
+    setTimeout(() => {
+      swapCooldownRef.current = false;
+    }, SWAP_ANIM_DURATION);
+
     // Animate affected items to their new visual positions.
     applyVirtualTransforms(
       itemElementsRef.current,
@@ -584,7 +591,7 @@ function App() {
     onCollide: ({ collisions }) => {
       const drag = pointerDragRef.current;
       const order = virtualOrderRef.current;
-      if (!drag || !order) return;
+      if (!drag || !order || swapCooldownRef.current) return;
 
       const observer = dndObserverRef.current;
 

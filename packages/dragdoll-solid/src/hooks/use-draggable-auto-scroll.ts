@@ -9,16 +9,16 @@ import type { MaybeAccessor } from '../utils/maybe-accessor.js';
 import { resolveMaybeAccessor } from '../utils/maybe-accessor.js';
 
 type DraggableWithAutoScroll<
-  S extends Sensor[] = Sensor[],
+  S extends Sensor = Sensor,
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   P extends DraggablePluginMap = {},
 > = ReturnType<ReturnType<typeof autoScrollPlugin<S, P>>> | null;
 
-export type UseDraggableAutoScrollSettings<S extends Sensor[] = Sensor[]> =
+export type UseDraggableAutoScrollSettings<S extends Sensor = Sensor> =
   DraggableAutoScrollOptions<S>;
 
 export function useDraggableAutoScroll<
-  S extends Sensor[] = Sensor[],
+  S extends Sensor = Sensor,
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   P extends DraggablePluginMap = {},
 >(

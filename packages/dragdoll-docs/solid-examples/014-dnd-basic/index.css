@@ -1,0 +1,69 @@
+body {
+  width: 100%;
+  height: 100%;
+}
+
+#root {
+  flex-flow: column nowrap;
+  align-items: normal;
+  justify-content: safe center;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  display: flex;
+}
+
+.draggables,
+.droppables {
+  width: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: safe center;
+  align-items: safe center;
+  align-content: safe center;
+  gap: 10px;
+}
+
+.card.draggable {
+  position: relative;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+.droppable {
+  width: 100px;
+  height: 100px;
+  background-color: var(--bg-color);
+  border-radius: 7px;
+  border: 1.5px solid var(--theme-color);
+  transition:
+    border-color 0.2s ease-out,
+    box-shadow 0.2s ease-out;
+  box-shadow:
+    0 0 0 2px transparent,
+    0 0 0 3.5px transparent;
+
+  &.draggable-dropped {
+    border-color: var(--card-bgColor--drag);
+    box-shadow:
+      0 0 0 2px transparent,
+      0 0 0 3.5px transparent;
+  }
+
+  &.draggable-over {
+    border-color: var(--card-bgColor--focus);
+    box-shadow:
+      0 0 0 2px var(--bg-color),
+      0 0 0 3.5px var(--card-bgColor--focus);
+  }
+}
+
+@media (width < 430px) {
+  .card.draggable,
+  .droppable {
+    width: calc((100% - 50px) / 4);
+    aspect-ratio: 1 / 1;
+    height: auto;
+  }
+}

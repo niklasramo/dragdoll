@@ -9,7 +9,7 @@ import type { MaybeAccessor } from '../utils/maybe-accessor.js';
 import { resolveMaybeAccessor } from '../utils/maybe-accessor.js';
 
 export function useDraggableCallback<
-  S extends Sensor[] = Sensor[],
+  S extends Sensor = Sensor,
   K extends keyof DraggableEventCallbacks<S> = keyof DraggableEventCallbacks<S>,
 >(
   draggableInput: MaybeAccessor<Draggable<S> | null>,

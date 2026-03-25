@@ -5,6 +5,7 @@ import type {
 import { KeyboardMotionSensor } from 'dragdoll/sensors/keyboard-motion';
 import type { Accessor } from 'solid-js';
 import { createEffect, createMemo, createSignal, onCleanup } from 'solid-js';
+import { isServer } from 'solid-js/web';
 import type { MaybeAccessor } from '../utils/maybe-accessor.js';
 import { resolveMaybeAccessor } from '../utils/maybe-accessor.js';
 
@@ -14,6 +15,8 @@ export function useKeyboardMotionSensor<
   settings: MaybeAccessor<Partial<KeyboardMotionSensorSettings<E>> | undefined> = {},
   element?: MaybeAccessor<Element | null>,
 ): readonly [Accessor<KeyboardMotionSensor<E> | null>, (node: Element | null) => void] {
+  if (isServer) return [() => null, () => {}] as const;
+
   const resolvedSettings = createMemo(() => resolveMaybeAccessor(settings, {}) || {});
   const resolvedElement = createMemo(() =>
     element === undefined ? undefined : resolveMaybeAccessor(element),
@@ -30,6 +33,10 @@ export function useKeyboardMotionSensor<
   };
 
   const createSensor = (node: Element | null) => {
+    if (node === null) {
+      destroySensor();
+      return;
+    }
     sensorRef?.destroy();
     const newSensor = new KeyboardMotionSensor<E>(node, resolvedSettings());
     sensorRef = newSensor;

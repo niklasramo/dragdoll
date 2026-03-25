@@ -2,6 +2,7 @@ import type { DndObserver } from 'dragdoll/dnd-observer';
 import type { DroppableOptions } from 'dragdoll/droppable';
 import { Droppable as DroppableCore } from 'dragdoll/droppable';
 import { createEffect, createMemo, createSignal, onCleanup } from 'solid-js';
+import { isServer } from 'solid-js/web';
 import type { MaybeAccessor } from '../utils/maybe-accessor.js';
 import { resolveMaybeAccessor } from '../utils/maybe-accessor.js';
 import { useDndObserverContext } from './use-dnd-observer-context.js';
@@ -12,12 +13,15 @@ export interface UseDroppableSettings extends DroppableOptions {
 }
 
 export function useDroppable(settingsInput?: MaybeAccessor<UseDroppableSettings | undefined>) {
+  if (isServer) return [() => null, () => {}] as const;
+
   const resolvedSettings = createMemo(() => resolveMaybeAccessor(settingsInput));
   const elementAccessor = createMemo(() => resolvedSettings()?.element);
   const overrideObserver = createMemo(() => resolvedSettings()?.dndObserver);
   const idAccessor = createMemo(() => resolvedSettings()?.id);
   const acceptAccessor = createMemo(() => resolvedSettings()?.accept);
   const dataAccessor = createMemo(() => resolvedSettings()?.data);
+  const computeClientRectAccessor = createMemo(() => resolvedSettings()?.computeClientRect);
 
   const observerFromContext = useDndObserverContext<any>();
   const effectiveObserver = createMemo(() => {
@@ -79,7 +83,7 @@ export function useDroppable(settingsInput?: MaybeAccessor<UseDroppableSettings 
     if (!droppable) return;
     const nextId = idAccessor();
     if (appliedId === nextId) return;
-    createDroppableInstance(droppable.element);
+    if (droppable.element) createDroppableInstance(droppable.element);
   });
 
   createEffect(() => {
@@ -98,12 +102,24 @@ export function useDroppable(settingsInput?: MaybeAccessor<UseDroppableSettings 
     if (!droppable) return;
     const nextAccept = acceptAccessor() || (() => true);
     droppable.accept = nextAccept;
+    // Re-run collision detection when accept changes.
+    appliedObserver?.detectCollisions();
   });
 
   createEffect(() => {
     const droppable = droppableRef;
     if (!droppable) return;
     droppable.data = dataAccessor() || {};
+  });
+
+  createEffect(() => {
+    const droppable = droppableRef;
+    if (!droppable) return;
+    const nextComputeClientRect = computeClientRectAccessor();
+    if (nextComputeClientRect) {
+      droppable.computeClientRect = nextComputeClientRect;
+    }
+    appliedObserver?.detectCollisions();
   });
 
   onCleanup(destroyDroppable);

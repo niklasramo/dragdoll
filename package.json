@@ -9,7 +9,8 @@
     "packages/dragdoll-solid",
     "packages/dragdoll-docs",
     "packages/dragdoll-tests",
-    "packages/dragdoll-react-tests"
+    "packages/dragdoll-react-tests",
+    "packages/dragdoll-solid-tests"
   ],
   "scripts": {
     "build": "npm run format && npm run build --workspace=dragdoll --workspace=dragdoll-react --workspace=dragdoll-solid && npm run build:examples --workspace=dragdoll-docs && npm run format",
@@ -27,6 +28,8 @@
     "test:local": "npm run test:local --workspace=dragdoll-tests",
     "test:react:bs": "npm run test:bs --workspace=dragdoll-react-tests",
     "test:react:local": "npm run test:local --workspace=dragdoll-react-tests",
+    "test:solid:bs": "npm run test:bs --workspace=dragdoll-solid-tests",
+    "test:solid:local": "npm run test:local --workspace=dragdoll-solid-tests",
     "ts:check": "tsc && npm run ts:check --workspaces --if-present"
   },
   "devDependencies": {
