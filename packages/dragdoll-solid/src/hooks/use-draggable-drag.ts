@@ -4,7 +4,7 @@ import { createEffect, createMemo, createSignal, onCleanup } from 'solid-js';
 import type { MaybeAccessor } from '../utils/maybe-accessor.js';
 import { resolveMaybeAccessor } from '../utils/maybe-accessor.js';
 
-export function useDraggableDrag<S extends Sensor[] = Sensor[]>(
+export function useDraggableDrag<S extends Sensor = Sensor>(
   draggableInput: MaybeAccessor<Draggable<S> | null>,
   trackMove = false,
 ) {

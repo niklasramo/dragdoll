@@ -1,2 +1,0 @@
-import{t as e}from"./maybe-accessor-BJ4-BRBt.js";import{createEffect as t,createMemo as n,onCleanup as r}from"solid-js";function i(i,a,o){let s=n(()=>e(i)),c=n(()=>e(o));t(()=>{let e=s(),t=c();if(!e||!t)return;let n=e.on(a,((...e)=>t(...e)));r(()=>e.off(a,n))})}export{i as t};
-//# sourceMappingURL=use-draggable-callback-CQSHDD6p.js.map

@@ -60,7 +60,16 @@ body {
   white-space: nowrap;
 }
 
+#drag-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  contain: layout;
+  z-index: 9999;
+}
+
 #sortable-list {
+  position: relative;
   list-style: none;
   margin: 0;
   padding: 20px 0;

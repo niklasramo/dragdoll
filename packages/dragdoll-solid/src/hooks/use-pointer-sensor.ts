@@ -2,6 +2,7 @@ import type { PointerSensorEvents, PointerSensorSettings } from 'dragdoll/sensor
 import { PointerSensor } from 'dragdoll/sensors/pointer';
 import type { Accessor } from 'solid-js';
 import { createEffect, createMemo, createSignal, onCleanup } from 'solid-js';
+import { isServer } from 'solid-js/web';
 import type { MaybeAccessor } from '../utils/maybe-accessor.js';
 import { resolveMaybeAccessor } from '../utils/maybe-accessor.js';
 
@@ -9,6 +10,8 @@ export function usePointerSensor<E extends PointerSensorEvents = PointerSensorEv
   settings: MaybeAccessor<Partial<PointerSensorSettings> | undefined> = {},
   element?: MaybeAccessor<Element | Window | null>,
 ): readonly [Accessor<PointerSensor<E> | null>, (node: Element | null) => void] {
+  if (isServer) return [() => null, () => {}] as const;
+
   const resolvedSettings = createMemo(() => resolveMaybeAccessor(settings, {}) || {});
   const resolvedElement = createMemo(() =>
     element === undefined ? undefined : resolveMaybeAccessor(element),

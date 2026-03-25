@@ -24,3 +24,30 @@
 - Use camelCase for variables, functions, and methods.
 - Use UPPER_SNAKE_CASE for constants.
 - Use kebab-case for file names.
+
+## Comments
+
+- **Full sentences.** Every code comment must be a grammatically correct sentence — capitalized first word, ending with a period.
+- **JS/TS/TSX: always use `//`.** Never use `/* */` block comments. No exceptions — JSDoc-style `/** */` is also not used.
+- **CSS: use `/* */`.** The `//` syntax is not supported in CSS.
+- **80-character line limit.** No comment line may exceed 80 characters, counted from column 0 (including indentation). Exactly 80 is acceptable. Break long comments across multiple lines.
+- **Section headings** use a box pattern with dash lines above and below. The dash count matches the longest text line. Use these to separate logical sections in longer files (e.g. types, helpers, public API). Multi-line headings are supported.
+
+```typescript
+// -------
+// Helpers
+// -------
+
+// -------------------
+// Multi-line headings
+// work like this.
+// -------------------
+```
+
+```css
+/*
+-------
+Helpers
+-------
+*/
+```

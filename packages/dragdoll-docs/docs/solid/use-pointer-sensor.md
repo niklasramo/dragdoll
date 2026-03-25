@@ -1,22 +1,19 @@
 # usePointerSensor
 
-A Solid hook that creates a [`PointerSensor`](/pointer-sensor) for mouse, touch, and pen input.
-It mirrors the core sensor API but exposes Solid-friendly accessors.
+A Solid hook that creates a [`PointerSensor`](/pointer-sensor) instance for handling pointer, touch, and mouse events.
 
 ## Usage
 
 ```tsx
 /** @jsxImportSource solid-js */
-import { render } from 'solid-js/web';
-import { useDraggable, usePointerSensor, useDraggableDrag } from 'dragdoll-solid';
+import { useDraggable, usePointerSensor } from 'dragdoll-solid';
 
-function Card() {
+function DraggableItem() {
   let element: HTMLDivElement | null = null;
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
   const draggable = useDraggable([pointerSensor], () => ({
     elements: () => (element ? [element] : []),
   }));
-  const drag = useDraggableDrag(draggable);
 
   return (
     <div
@@ -24,15 +21,12 @@ function Card() {
         element = node;
         setPointerSensorRef(node);
       }}
-      class={`card draggable ${drag() ? 'dragging' : ''}`}
-      tabIndex={0}
+      style={{ position: 'relative' }}
     >
       Drag me
     </div>
   );
 }
-
-render(() => <Card />, document.getElementById('root')!);
 ```
 
 ## Signature
@@ -44,8 +38,6 @@ function usePointerSensor<E extends PointerSensorEvents = PointerSensorEvents>(
 ): readonly [Accessor<PointerSensor<E> | null>, (node: Element | null) => void];
 ```
 
-`MaybeAccessor<T>` accepts either the literal value or a Solid accessor returning `T`.
-
 ## Parameters
 
 ### settings
@@ -54,10 +46,36 @@ function usePointerSensor<E extends PointerSensorEvents = PointerSensorEvents>(
 type settings = MaybeAccessor<Partial<PointerSensorSettings> | undefined>;
 ```
 
-Sensor configuration forwarded directly to the core [`PointerSensor`](/pointer-sensor).
-You can pass a plain object or an accessor that returns one.
+Configuration settings for the pointer sensor. See core [PointerSensor settings](/pointer-sensor#settings) for all available settings. You can pass a plain object or an accessor function that returns one.
 
-- Optional
+Since Solid components run their setup code only once, there is no need to memoize settings. If you need reactive settings, pass an accessor function (e.g. `() => ({ ...mySignalSettings() })`).
+
+To listen for sensor events (`start`, `move`, `cancel`, `end`, `destroy`), use the [`useSensorCallback`](/solid/use-sensor-callback) hook:
+
+```tsx
+const [pointerSensor, setPointerSensorRef] = usePointerSensor();
+
+useSensorCallback(pointerSensor, 'start', (e) => {
+  console.log('Sensor started at', e.x, e.y);
+});
+useSensorCallback(pointerSensor, 'move', (e) => {
+  console.log('Sensor moved to', e.x, e.y);
+});
+useSensorCallback(pointerSensor, 'cancel', (e) => {
+  console.log('Sensor cancelled at', e.x, e.y);
+});
+useSensorCallback(pointerSensor, 'end', (e) => {
+  console.log('Sensor ended at', e.x, e.y);
+});
+useSensorCallback(pointerSensor, 'destroy', () => {
+  console.log('Sensor destroyed');
+});
+```
+
+> [!IMPORTANT]
+> Callbacks do not need special handling. The hook stores a reference to the latest callback internally.
+
+- Optional.
 - Default: `{}`.
 
 ### element
@@ -66,10 +84,9 @@ You can pass a plain object or an accessor that returns one.
 type element = MaybeAccessor<Element | Window | null>;
 ```
 
-Explicit element (or accessor) to bind the sensor to. When omitted you should use the
-returned ref callback to attach the sensor declaratively.
+The element to attach the sensor to. If you want to attach the sensor to an element that is not managed by Solid, you can provide the element (or an accessor returning it) as the second parameter to the hook. In other cases it's recommended to always use the ref callback which is returned from the hook as the second value in the array.
 
-- Optional
+- Optional.
 - Default: `undefined`.
 
 ## Return Value
@@ -78,14 +95,31 @@ returned ref callback to attach the sensor declaratively.
 type returnValue = readonly [Accessor<PointerSensor<E> | null>, (node: Element | null) => void];
 ```
 
+Returns a read-only array with two elements:
+
 1. **pointerSensor**
-   - An accessor that resolves to the `PointerSensor` instance when mounted (or `null` during setup).
+   - An accessor that resolves to the [`PointerSensor`](/pointer-sensor) instance, or `null` if not yet initialized. Access the value by calling it: `pointerSensor()`.
+
 2. **setPointerSensorRef**
-   - Ref callback for wiring the sensor to an element controlled by Solid.
+   - A ref callback to attach the sensor to an element. This is the recommended way to attach the sensor to an element. You can alternatively provide an explicit element as the second parameter to the hook.
 
 ## Notes
 
-- The sensor instance is destroyed automatically when the component unmounts.
-- Updating `settings` (or the accessor backing it) reconfigures the sensor in place.
-- Changing the element recreates the sensor to keep event targets in sync.
-- Sensors stay `null` until the ref callback receives an element.
+- The sensor instance is automatically destroyed when the component unmounts (via `onCleanup`).
+- Settings can be updated dynamically via an accessor and will be applied to the sensor.
+- If the element changes, the sensor is recreated with the new element.
+- The sensor will be `null` initially until an element is attached.
+
+## Types
+
+### MaybeAccessor
+
+```ts
+// Import
+import type { MaybeAccessor } from 'dragdoll-solid';
+
+// Type
+type MaybeAccessor<T> = T | Accessor<T>;
+```
+
+`MaybeAccessor<T>` accepts either the literal value or a Solid accessor returning `T`. This allows you to pass a plain object for static settings or an accessor function for reactive settings.

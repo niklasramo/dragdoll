@@ -1,7 +1,8 @@
 import type { DndObserverEventCallbacks, DndObserverOptions } from 'dragdoll/dnd-observer';
 import { DndObserver, DndObserverEventType } from 'dragdoll/dnd-observer';
 import type { CollisionData } from 'dragdoll/dnd-observer/collision-detector';
-import { createEffect, createMemo, createSignal, onCleanup } from 'solid-js';
+import { createEffect, createMemo, createSignal, onCleanup, untrack } from 'solid-js';
+import { isServer } from 'solid-js/web';
 import type { MaybeAccessor } from '../utils/maybe-accessor.js';
 import { resolveMaybeAccessor } from '../utils/maybe-accessor.js';
 import { useDndObserverCallback } from './use-dnd-observer-callback.js';
@@ -24,19 +25,33 @@ export interface UseDndObserverSettings<T extends CollisionData = CollisionData>
 export function useDndObserver<T extends CollisionData = CollisionData>(
   settingsInput: MaybeAccessor<UseDndObserverSettings<T> | undefined> = undefined,
 ) {
+  if (isServer) return () => null;
+
   const settings = createMemo(() => resolveMaybeAccessor(settingsInput));
   const collisionDetector = createMemo(() => settings()?.collisionDetector);
-  const [dndObserver, setDndObserver] = createSignal<DndObserver<T> | null>(null);
 
+  // Create the observer synchronously so it's available before children mount.
+  // This is critical — children (draggables, droppables) register with the
+  // observer during their setup, which happens before effects run.
+  let currentInstance = new DndObserver<T>({
+    collisionDetector: untrack(collisionDetector),
+  });
+  const [dndObserver, setDndObserver] = createSignal<DndObserver<T> | null>(currentInstance);
+  let appliedCollisionDetector = untrack(collisionDetector);
+
+  // Recreate the observer when collisionDetector changes.
   createEffect(() => {
-    const dndObserverInstance = new DndObserver<T>({
-      collisionDetector: collisionDetector(),
-    });
-    setDndObserver(dndObserverInstance);
-    onCleanup(() => {
-      dndObserverInstance.destroy();
-      setDndObserver(null);
-    });
+    const cd = collisionDetector();
+    if (cd === appliedCollisionDetector) return;
+    appliedCollisionDetector = cd;
+    currentInstance.destroy();
+    currentInstance = new DndObserver<T>({ collisionDetector: cd });
+    setDndObserver(currentInstance);
+  });
+
+  // Clean up on disposal.
+  onCleanup(() => {
+    currentInstance.destroy();
   });
 
   useDndObserverCallback(

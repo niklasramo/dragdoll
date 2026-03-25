@@ -1,14 +1,11 @@
 import type { Accessor } from 'solid-js';
 
 export type MaybeAccessor<T> = T | Accessor<T>;
-export type MaybeAccessorValue<T> = T extends Accessor<infer V>
-  ? V
-  : T extends () => infer R
-    ? R
-    : T;
+export type MaybeAccessorValue<T> =
+  T extends Accessor<infer V> ? V : T extends () => infer R ? R : T;
 
 const isAccessor = <T>(value: unknown): value is Accessor<T> =>
-  typeof value === 'function' && (value as Function).length === 0;
+  typeof value === 'function' && (value as (...args: unknown[]) => unknown).length === 0;
 
 export function resolveMaybeAccessor<T>(value: MaybeAccessor<T>): T;
 export function resolveMaybeAccessor<T>(value: MaybeAccessor<T> | undefined): T | undefined;
@@ -21,6 +18,5 @@ export function resolveMaybeAccessor<T>(value: MaybeAccessor<T> | undefined, fal
 export function resolveMaybeAccessorArray<A extends MaybeAccessor<any>>(
   list: readonly A[],
 ): MaybeAccessorValue<A>[] {
-  return list.map(item => resolveMaybeAccessor(item)) as MaybeAccessorValue<A>[];
+  return list.map((item) => resolveMaybeAccessor(item)) as MaybeAccessorValue<A>[];
 }
-

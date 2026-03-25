@@ -1,35 +1,52 @@
-# Getting Started (Solid)
+# Getting Started
 
-The Solid wrapper re-exports ergonomic hooks that internally manage the core DragDoll classes.
-Every hook returns Solid accessors so they slot naturally into signals, memos, or resources.
+`dragdoll-solid` is distributed as ES modules via subpath exports. Each module has its own entry point so you can import only what you need. That being said, _everything_ is also exported via the root `dragdoll-solid` module to provide a bit better developer experience.
 
-## 1. Install dependencies
+## Installation
 
 ```bash
-npm install dragdoll dragdoll-solid solid-js
+npm install dragdoll-solid
 ```
 
-## 2. Configure TypeScript/JSX (optional)
+With peer dependencies:
+
+```bash
+npm install dragdoll-solid dragdoll eventti tikki mezr solid-js
+```
+
+## Peer Dependencies
+
+- [`dragdoll`](https://github.com/niklasramo/dragdoll) (~0.12.0)
+  - Core library for drag and drop functionality.
+- [`eventti`](https://github.com/niklasramo/eventti) (^4.0.3)
+  - Used for emitting all the events.
+- [`tikki`](https://github.com/niklasramo/tikki) (^3.0.2)
+  - Used for batching DOM operations when necessary (reads and writes).
+- [`mezr`](https://github.com/niklasramo/mezr) (^v1.1.0)
+  - Used for calculating tricky DOM bits.
+- [`solid-js`](https://github.com/solidjs/solid) (^1.9.0)
+
+## TypeScript / JSX Configuration
 
 If your project relies on a global `tsconfig`, make sure the Solid runtime is enabled:
 
 ```jsonc
 {
   "compilerOptions": {
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "jsxImportSource": "solid-js",
   },
 }
 ```
 
-Alternatively, add `/** @jsxImportSource solid-js */` at the top of individual example files (the
-docs examples use this approach so the `rolldown` bundler knows which runtime to target).
+Alternatively, add `/** @jsxImportSource solid-js */` at the top of individual files.
 
-## 3. Wire sensors and draggables
+## Basic Usage
+
+Here's a simple example of making a draggable element:
 
 ```tsx
 /** @jsxImportSource solid-js */
-import { createSignal } from 'solid-js';
 import { render } from 'solid-js/web';
 import {
   usePointerSensor,
@@ -38,7 +55,7 @@ import {
   useDraggableDrag,
 } from 'dragdoll-solid';
 
-function Demo() {
+function DraggableRedBox() {
   let element: HTMLDivElement | null = null;
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
   const [keyboardSensor, setKeyboardSensorRef] = useKeyboardMotionSensor();
@@ -56,7 +73,13 @@ function Demo() {
         setPointerSensorRef(node);
         setKeyboardSensorRef(node);
       }}
-      class={`card draggable ${drag() ? 'dragging' : ''}`}
+      class={`draggable ${drag() ? 'dragging' : ''}`}
+      style={{
+        position: 'relative',
+        width: '100px',
+        height: '100px',
+        'background-color': 'red',
+      }}
       tabIndex={0}
     >
       Drag me
@@ -64,18 +87,16 @@ function Demo() {
   );
 }
 
-render(() => <Demo />, document.getElementById('root')!);
+render(() => <DraggableRedBox />, document.getElementById('root')!);
 ```
 
-The Solid hooks behave just like their React counterparts:
+## Solid-Specific Notes
 
-- Sensors return `[Accessor<Sensor | null>, (node) => void]`.
-- `useDraggable`, `useDroppable`, and `useDndObserver` return accessors so you can subscribe in
-  memos or other hooks.
-- `useDraggableDrag(draggable)` accepts an optional `trackMove` flag to force updates on `move`
-  events (matching `dragdoll-react`).
+- **No memoization needed.** Solid components run once, so settings objects and callbacks are plain values — no `useMemo` or `useCallback` required.
+- **Ref pattern.** Use `let element: HTMLDivElement | null = null` and set it in a `ref` callback: `ref={(node) => { element = node; setPointerSensorRef(node); }}`.
+- **Accessor returns.** Hooks return `Accessor<T | null>` — access the value with `sensor()`, `draggable()`, etc.
+- **SSR-safe.** All hooks return safe fallback values on the server (`() => null` or `[() => null, () => {}]`).
 
-## 4. Explore examples
+## Explore Examples
 
-The [Solid examples](/solid/examples) section contains runnable demos that mirror the React gallery,
-making it easy to compare usage between frameworks.
+The [Solid examples](/solid/examples) section contains runnable demos that mirror the React gallery, making it easy to compare usage between frameworks.
