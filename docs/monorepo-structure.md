@@ -36,6 +36,10 @@
   - `src/` - Test sources.
   - `dist/` - Bundled tests.
 
+## Versioning
+
+Each package (`dragdoll`, `dragdoll-react`, `dragdoll-solid`) is versioned independently. Wrappers depend on both the core library and their respective framework (React/Solid), so breaking changes in one wrapper (e.g., React 19 compatibility) should not force version bumps in unrelated packages. Peer dependency ranges in wrapper packages express which core versions are compatible.
+
 ## Dependency Management
 
 All `devDependencies` must be declared in the root `package.json` only, never in individual workspace packages. This prevents version drift where different sub-packages end up with different versions of the same dependency.
