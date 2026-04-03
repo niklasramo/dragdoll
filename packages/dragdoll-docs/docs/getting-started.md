@@ -35,7 +35,7 @@ It's possible to use `dragdoll` via CDN by adding an `importmap` to your HTML fi
       "tikki": "https://cdn.jsdelivr.net/npm/tikki@3.0.2/dist/tikki.js",
       "mezr/getDistance": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getDistance.js",
       "mezr/getOffsetContainer": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getOffsetContainer.js",
-      "dragdoll": "https://cdn.jsdelivr.net/npm/dragdoll@0.12.0/dist/index.js"
+      "dragdoll": "https://cdn.jsdelivr.net/npm/dragdoll@1.0.0/dist/index.js"
     }
   }
 </script>

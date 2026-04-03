@@ -1,6 +1,6 @@
 {
   "name": "dragdoll-react",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "React wrapper for DragDoll drag & drop library.",
   "keywords": [
     "drag",
@@ -56,7 +56,7 @@
     "ts:check": "tsc --noEmit"
   },
   "peerDependencies": {
-    "dragdoll": "~0.12.0",
+    "dragdoll": "^1.0.0",
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
   }
