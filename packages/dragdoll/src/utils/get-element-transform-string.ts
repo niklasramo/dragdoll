@@ -23,8 +23,8 @@ export function getElementTransformString(
       y = `${(parseFloat(y) / 100) * getIntrinsicHeight(el)}px`;
     }
 
-    // z can never be a percentage, but if it is defined we need to use
-    // translate3d instead of translate.
+    // Z can never be a percentage, but if it is defined we
+    // need to use translate3d instead of translate.
     if (z) {
       transformString += `translate3d(${x},${y},${z})`;
     } else {

@@ -11,9 +11,9 @@ import { getScrollTopMax } from '../utils/get-scroll-top-max.js';
 import { isIntersecting } from '../utils/is-intersecting.js';
 import { ObjectPool } from '../utils/object-pool.js';
 
-//
-// CONSTANTS
-//
+// ---------
+// Constants
+// ---------
 
 const TEMP_RECT: Rect = {
   width: 0,
@@ -114,9 +114,9 @@ function isScrolledToMax(scrollValue: number, maxScrollValue: number) {
   return Math.ceil(scrollValue) >= Math.floor(maxScrollValue);
 }
 
-//
-// PRIVATE TYPES
-//
+// -------------
+// Private types
+// -------------
 
 type AutoScrollAxis = (typeof AUTO_SCROLL_AXIS)[keyof typeof AUTO_SCROLL_AXIS];
 
@@ -145,9 +145,9 @@ type AutoScrollTargetPadding = {
   bottom?: number;
 };
 
-//
-// PUBLIC TYPES
-//
+// ------------
+// Public types
+// ------------
 
 export interface AutoScrollItem {
   readonly targets: AutoScrollItemTarget[];
@@ -187,9 +187,9 @@ export type AutoScrollItemSpeedCallback = (
   scrollData: AutoScrollSpeedData,
 ) => number;
 
-//
-// PRIVATE UTILS
-//
+// -------------
+// Private utils
+// -------------
 
 function computeThreshold(idealThreshold: number, targetSize: number) {
   return Math.min(targetSize / 2, idealThreshold);
@@ -406,9 +406,9 @@ class AutoScrollRequest {
   }
 }
 
-//
-// PUBLIC UTILS
-//
+// ------------
+// Public utils
+// ------------
 
 export function autoScrollSmoothSpeed(
   // Pixels per second.
@@ -444,9 +444,9 @@ export function autoScrollSmoothSpeed(
   };
 }
 
-//
-// AUTOSCROLL MAIN CLASS
-//
+// ---------------------
+// AutoScroll main class
+// ---------------------
 
 export class AutoScroll {
   readonly items: AutoScrollItem[];

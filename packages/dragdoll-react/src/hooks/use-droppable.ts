@@ -41,8 +41,9 @@ export function useDroppable({
   settingsRef.current.data = data;
   settingsRef.current.computeClientRect = computeClientRect;
 
-  // Keep track of the currently applied id in a ref. We need this to check if
-  // the id has changed since the last time the draggable was created.
+  // Keep track of the currently applied id in a ref. We need this
+  // to check if the id has changed since the last time the
+  // draggable was created.
   const appliedIdRef = useRef<typeof id>(UNAPPLIED_ID);
 
   // Keep track of the current effective dnd observer.
@@ -63,8 +64,8 @@ export function useDroppable({
   const createDroppable = useCallbackStable((node: HTMLElement | SVGSVGElement | null) => {
     let droppable = droppableRef.current;
     if (droppable) {
-      // If the droppable already exists with the same node and the id has not
-      // changed, do not create a new one.
+      // If the droppable already exists with the same node and the
+      // id has not changed, do not create a new one.
       if (droppable.element === node && appliedIdRef.current === settingsRef.current.id) {
         return;
       }
@@ -85,7 +86,8 @@ export function useDroppable({
   // Ref callback when element is not explicitly provided.
   const setRef = useCallbackStable(
     (node: HTMLElement | SVGSVGElement | null) => {
-      // If user provides an explicit element, do not create a new droppable.
+      // If user provides an explicit element, do not create a new
+      // droppable.
       if (element !== undefined) return;
 
       // Destroy the droppable if the node is null.
@@ -107,8 +109,8 @@ export function useDroppable({
     return destroyDroppable;
   }, [element, createDroppable, destroyDroppable]);
 
-  // Handle id change. Any time id is updated while there is a droppable, we
-  // need to recreate the droppable with the new id.
+  // Handle id change. Any time id is updated while there is a
+  // droppable, we need to recreate the droppable with the new id.
   useIsomorphicLayoutEffect(() => {
     if (droppable && appliedIdRef.current !== id) {
       createDroppable(droppable.element);

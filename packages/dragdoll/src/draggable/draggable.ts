@@ -122,21 +122,22 @@ export interface DraggableSettings<S extends Sensor> {
   dndGroups?: Set<DraggableDndGroup>;
   preventClickOnEnd?: boolean;
   preventTextSelection?: boolean;
-  /**
-   * If true (default), captures the pointer on `ownerDocument.body` when a
-   * drag is confirmed. This provides two key benefits:
-   *
-   * 1. **Iframe protection** — pointer events keep firing even when the
-   *    pointer moves over iframes, which would otherwise swallow the events.
-   * 2. **Framework interoperability** — UI frameworks (React, Vue, etc.) may
-   *    remount or move the source element during drag (e.g. list reordering).
-   *    Capturing on `document.body` prevents accidental drag cancellation.
-   *
-   * Only applies when the active sensor is a {@link PointerSensor} (or a
-   * subclass) using pointer events. When capture is active,
-   * `pointerenter`/`pointerleave` events on other elements are suppressed
-   * per the Pointer Events spec.
-   */
+  // If true (default), captures the pointer on
+  // ownerDocument.body when a drag is confirmed. This
+  // provides two key benefits:
+  //
+  // 1. Iframe protection -- pointer events keep firing even
+  //    when the pointer moves over iframes, which would
+  //    otherwise swallow the events.
+  // 2. Framework interoperability -- UI frameworks (React,
+  //    Vue, etc.) may remount or move the source element
+  //    during drag (e.g. list reordering). Capturing on
+  //    document.body prevents accidental drag cancellation.
+  //
+  // Only applies when the active sensor is a PointerSensor
+  // (or a subclass) using pointer events. When capture is
+  // active, pointerenter/pointerleave events on other
+  // elements are suppressed per the Pointer Events spec.
   capturePointer?: boolean;
   onPrepareStart?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
   onStart?: (drag: DraggableDrag<S>, draggable: Draggable<S>) => void;
@@ -310,7 +311,7 @@ export class Draggable<
 
   protected _pointerCaptureTarget: Element | null = null;
 
-  protected _pointerCapturePointerId: number | null = null;
+  protected _pointerCaptureId: number | null = null;
 
   constructor(sensors: readonly S[], options: DraggableOptions<S> = {}) {
     const { id = Symbol(), ...restOptions } = options;
@@ -605,7 +606,7 @@ export class Draggable<
           try {
             body.setPointerCapture(sensor.drag.pointerId);
             this._pointerCaptureTarget = body;
-            this._pointerCapturePointerId = sensor.drag.pointerId;
+            this._pointerCaptureId = sensor.drag.pointerId;
           } catch {
             // Silently ignore if capture fails (e.g., invalid pointer id).
           }
@@ -908,14 +909,14 @@ export class Draggable<
     }
 
     // Release pointer capture if it was set.
-    if (this._pointerCaptureTarget && this._pointerCapturePointerId !== null) {
+    if (this._pointerCaptureTarget && this._pointerCaptureId !== null) {
       try {
-        this._pointerCaptureTarget.releasePointerCapture(this._pointerCapturePointerId);
+        this._pointerCaptureTarget.releasePointerCapture(this._pointerCaptureId);
       } catch {
         // Silently ignore if release fails (e.g., pointer already released).
       }
       this._pointerCaptureTarget = null;
-      this._pointerCapturePointerId = null;
+      this._pointerCaptureId = null;
     }
 
     // Apply modifiers for the end phase.
@@ -1016,17 +1017,18 @@ export class Draggable<
     const prevCapturePointer = this.settings.capturePointer;
     (this as Writeable<this>).settings = this._parseSettings(options, this.settings);
 
-    // If capturePointer was disabled during an active drag, release immediately.
+    // If capturePointer was disabled during an active drag,
+    // release immediately.
     if (prevCapturePointer && !this.settings.capturePointer && this._pointerCaptureTarget) {
-      if (this._pointerCapturePointerId !== null) {
+      if (this._pointerCaptureId !== null) {
         try {
-          this._pointerCaptureTarget.releasePointerCapture(this._pointerCapturePointerId);
+          this._pointerCaptureTarget.releasePointerCapture(this._pointerCaptureId);
         } catch {
           // Silently ignore.
         }
       }
       this._pointerCaptureTarget = null;
-      this._pointerCapturePointerId = null;
+      this._pointerCaptureId = null;
     }
   }
 

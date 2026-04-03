@@ -11,6 +11,7 @@ import { getWorldTransformMatrix } from '../utils/get-world-transform-matrix.js'
 import { isMatrixWarped } from '../utils/is-matrix-warped.js';
 import type { ObjectCache } from '../utils/object-cache.js';
 import { parseTransformOrigin } from '../utils/parse-transform-origin.js';
+import { resetMatrix } from '../utils/reset-matrix.js';
 import type { Draggable } from './draggable.js';
 
 const MEASURE_ELEMENT = IS_BROWSER ? createMeasureElement() : null;
@@ -156,7 +157,7 @@ export class DraggableDragItem<S extends Sensor = Sensor> {
         const matrices = this._matrixCache.get(container) || [new DOMMatrix(), new DOMMatrix()];
         const [matrix, inverseMatrix] = matrices;
         getWorldTransformMatrix(container, matrix);
-        inverseMatrix.setMatrixValue(matrix.toString()).invertSelf();
+        resetMatrix(inverseMatrix).multiplySelf(matrix).invertSelf();
         this._matrixCache.set(container, matrices);
       }
     });

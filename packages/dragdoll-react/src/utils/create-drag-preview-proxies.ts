@@ -22,12 +22,9 @@ function resetTempData() {
   yOffsets.length = 0;
 }
 
-/**
- * Creates a proxy element that visually matches the source element and appends
- * it to the DOM.
- *
- * @param sources The source elements to align to.
- */
+// Creates a proxy element that visually matches the source element
+// and appends it to the DOM. The sources parameter contains the
+// source elements to align to.
 export function createDragPreviewProxies(
   sources: readonly (HTMLElement | SVGSVGElement)[],
 ): HTMLElement[] {
@@ -46,9 +43,7 @@ export function createDragPreviewProxies(
     const transformString = getElementTransformString(source);
     const transformOrigin = transformString ? sourceComputedStyle.transformOrigin : '';
 
-    //
     // Compute the width and height of the proxy element.
-    //
 
     let width: string;
     let height: string;
@@ -106,14 +101,15 @@ export function createDragPreviewProxies(
     widths[i] = width;
     heights[i] = height;
 
-    // Save the world transform matrix for the parent element if it's not
-    // already saved.
+    // Save the world transform matrix for the parent element if
+    // it is not already saved.
     if (!worldMatrixMap.has(parent)) {
       worldMatrixMap.set(parent, getWorldTransformMatrix(parent));
     }
   }
 
-  // Apply dimensions and transform to the proxy, and append it to the parent.
+  // Apply dimensions and transform to the proxy, and append it to
+  // the parent.
   for (let i = 0; i < sources.length; i++) {
     const parent = parents[i];
     const proxy = proxies[i];
@@ -147,23 +143,25 @@ export function createDragPreviewProxies(
     let offsetX = 0;
     let offsetY = 0;
 
-    // Extract the 2x2 linear subpart — this IS the Jacobian that maps
-    // CSS offset deltas to viewport position deltas.
+    // Extract the 2x2 linear subpart. This is the Jacobian that
+    // maps CSS offset deltas to viewport position deltas.
     const m11 = worldMatrix.m11;
     const m12 = worldMatrix.m12;
     const m21 = worldMatrix.m21;
     const m22 = worldMatrix.m22;
 
-    // Invert the 2x2 Jacobian to convert viewport delta to CSS offset delta.
+    // Invert the 2x2 Jacobian to convert viewport delta to CSS
+    // offset delta.
     const det = m11 * m22 - m12 * m21;
 
-    // Measure the element's current viewport position.
+    // Measure the element current viewport position.
     const proxyRect = proxy.getBoundingClientRect();
     const dx = sourceRect.left - proxyRect.left;
     const dy = sourceRect.top - proxyRect.top;
 
     if (Math.abs(det) < 1e-10) {
-      // Degenerate matrix (collapsed container). Fall back to simple delta.
+      // Degenerate matrix (collapsed container). Fall back to
+      // simple delta.
       offsetX = dx;
       offsetY = dy;
     } else {
@@ -177,9 +175,9 @@ export function createDragPreviewProxies(
     yOffsets[i] = offsetY;
   }
 
-  // Position the proxy so its getBoundingClientRect() matches the original's.
-  // Uses the parent's world transform matrix to account for arbitrary ancestor
-  // transforms (scale, skew, rotation).
+  // Position the proxy so its getBoundingClientRect() matches the
+  // original. Uses the parent world transform matrix to account
+  // for arbitrary ancestor transforms (scale, skew, rotation).
   for (let i = 0; i < sources.length; i++) {
     const proxyStyle = proxies[i].style;
     const offsetX = xOffsets[i];

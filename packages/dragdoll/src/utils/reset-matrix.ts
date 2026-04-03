@@ -1,5 +1,5 @@
-const RESET_TRANSFORM = 'scale(1, 1)';
+const IDENTITY_2D = 'scale(1)';
 
 export function resetMatrix(m: DOMMatrix) {
-  return m.setMatrixValue(RESET_TRANSFORM);
+  return m.setMatrixValue(IDENTITY_2D);
 }

@@ -1,8 +1,9 @@
 import { PointerSensor } from 'dragdoll/sensors/pointer';
-import { usePointerSensor } from 'dragdoll-solid';
-import { createRoot } from 'solid-js';
+import { usePointerSensor, useSensorCallback } from 'dragdoll-solid';
+import { type Accessor, createRoot } from 'solid-js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createTestElement } from './utils/create-test-element.js';
+import { flush } from './utils/flush.js';
 
 function emitSensorEvent(sensor: PointerSensor, type: string, data?: Record<string, unknown>) {
   (sensor as any)._emitter.emit(type, { type, x: 0, y: 0, ...data });
@@ -33,7 +34,6 @@ describe('usePointerSensor', () => {
       createRoot((dispose) => {
         const [sensor, setRef] = usePointerSensor();
         setRef(testEl);
-        // Solid effects are synchronous in the same tick
         expect(sensor()).toBeInstanceOf(PointerSensor);
         expect(sensor()!.isDestroyed).toBe(false);
         dispose();
@@ -54,81 +54,173 @@ describe('usePointerSensor', () => {
       });
     });
 
-    it('should destroy sensor on dispose (explicit element)', () => {
-      let sensorInstance: PointerSensor | null = null;
-      const dispose = createRoot((dispose) => {
-        const [sensor] = usePointerSensor(undefined, testEl);
-        sensorInstance = sensor();
-        expect(sensorInstance).toBeInstanceOf(PointerSensor);
-        return dispose;
+    it('should destroy sensor on dispose (explicit element)', async () => {
+      let dispose!: () => void;
+      let sensor!: Accessor<PointerSensor | null>;
+
+      createRoot((d) => {
+        dispose = d;
+        const [s] = usePointerSensor(undefined, testEl);
+        sensor = s;
       });
 
+      await flush();
+      const sensorInstance = sensor();
+      expect(sensorInstance).toBeInstanceOf(PointerSensor);
       dispose();
       expect(sensorInstance!.isDestroyed).toBe(true);
     });
   });
 
   describe('explicit element', () => {
-    it('should create sensor with explicit element', () => {
-      createRoot((dispose) => {
-        const [sensor] = usePointerSensor(undefined, testEl);
-        expect(sensor()).toBeInstanceOf(PointerSensor);
-        expect(sensor()!.element).toBe(testEl);
-        dispose();
+    it('should create sensor with explicit element', async () => {
+      let dispose!: () => void;
+      let sensor!: Accessor<PointerSensor | null>;
+
+      createRoot((d) => {
+        dispose = d;
+        const [s] = usePointerSensor(undefined, testEl);
+        sensor = s;
       });
+
+      await flush();
+      expect(sensor()).toBeInstanceOf(PointerSensor);
+      expect(sensor()!.element).toBe(testEl);
+      dispose();
     });
   });
 
   describe('event callbacks', () => {
-    it('should call onStart callback', () => {
-      createRoot((dispose) => {
-        const onStart = vi.fn();
-        const [sensor] = usePointerSensor({ onStart }, testEl);
+    it('should call onStart callback via useSensorCallback', async () => {
+      let dispose!: () => void;
+      let sensor!: Accessor<PointerSensor | null>;
+      const onStart = vi.fn();
+
+      createRoot((d) => {
+        dispose = d;
+        const [s] = usePointerSensor(undefined, testEl);
+        sensor = s;
+        useSensorCallback(s, 'start', onStart);
+      });
+
+      await flush();
+      emitSensorEvent(sensor()!, 'start');
+      expect(onStart).toHaveBeenCalledTimes(1);
+      dispose();
+    });
+
+    it('should call onMove callback via useSensorCallback', async () => {
+      let dispose!: () => void;
+      let sensor!: Accessor<PointerSensor | null>;
+      const onMove = vi.fn();
+
+      createRoot((d) => {
+        dispose = d;
+        const [s] = usePointerSensor(undefined, testEl);
+        sensor = s;
+        useSensorCallback(s, 'move', onMove);
+      });
+
+      await flush();
+      emitSensorEvent(sensor()!, 'move');
+      expect(onMove).toHaveBeenCalledTimes(1);
+      dispose();
+    });
+
+    it('should call onCancel callback via useSensorCallback', async () => {
+      let dispose!: () => void;
+      let sensor!: Accessor<PointerSensor | null>;
+      const onCancel = vi.fn();
+
+      createRoot((d) => {
+        dispose = d;
+        const [s] = usePointerSensor(undefined, testEl);
+        sensor = s;
+        useSensorCallback(s, 'cancel', onCancel);
+      });
+
+      await flush();
+      emitSensorEvent(sensor()!, 'cancel');
+      expect(onCancel).toHaveBeenCalledTimes(1);
+      dispose();
+    });
+
+    it('should call onEnd callback via useSensorCallback', async () => {
+      let dispose!: () => void;
+      let sensor!: Accessor<PointerSensor | null>;
+      const onEnd = vi.fn();
+
+      createRoot((d) => {
+        dispose = d;
+        const [s] = usePointerSensor(undefined, testEl);
+        sensor = s;
+        useSensorCallback(s, 'end', onEnd);
+      });
+
+      await flush();
+      emitSensorEvent(sensor()!, 'end');
+      expect(onEnd).toHaveBeenCalledTimes(1);
+      dispose();
+    });
+
+    it('should call onDestroy callback via useSensorCallback', async () => {
+      let dispose!: () => void;
+      let sensor!: Accessor<PointerSensor | null>;
+      const onDestroy = vi.fn();
+
+      createRoot((d) => {
+        dispose = d;
+        const [s] = usePointerSensor(undefined, testEl);
+        sensor = s;
+        useSensorCallback(s, 'destroy', onDestroy);
+      });
+
+      await flush();
+      emitSensorEvent(sensor()!, 'destroy');
+      expect(onDestroy).toHaveBeenCalledTimes(1);
+      dispose();
+    });
+
+    it('should handle events without callbacks gracefully', async () => {
+      let dispose!: () => void;
+      let sensor!: Accessor<PointerSensor | null>;
+
+      createRoot((d) => {
+        dispose = d;
+        const [s] = usePointerSensor(undefined, testEl);
+        sensor = s;
+      });
+
+      await flush();
+
+      expect(() => {
         emitSensorEvent(sensor()!, 'start');
-        expect(onStart).toHaveBeenCalledTimes(1);
-        dispose();
-      });
-    });
-
-    it('should call onMove callback', () => {
-      createRoot((dispose) => {
-        const onMove = vi.fn();
-        const [sensor] = usePointerSensor({ onMove }, testEl);
         emitSensorEvent(sensor()!, 'move');
-        expect(onMove).toHaveBeenCalledTimes(1);
-        dispose();
-      });
-    });
-
-    it('should call onEnd callback', () => {
-      createRoot((dispose) => {
-        const onEnd = vi.fn();
-        const [sensor] = usePointerSensor({ onEnd }, testEl);
         emitSensorEvent(sensor()!, 'end');
-        expect(onEnd).toHaveBeenCalledTimes(1);
-        dispose();
-      });
+      }).not.toThrow();
+      dispose();
     });
 
-    it('should handle multiple events fired in rapid sequence', () => {
-      createRoot((dispose) => {
-        const onStart = vi.fn();
-        const onMove = vi.fn();
-        const onEnd = vi.fn();
-        const [sensor] = usePointerSensor({ onStart, onMove, onEnd }, testEl);
+    it('should handle events without a registered callback gracefully', async () => {
+      let dispose!: () => void;
+      let sensor!: Accessor<PointerSensor | null>;
 
-        const s = sensor()!;
+      createRoot((d) => {
+        dispose = d;
+        const [s] = usePointerSensor(undefined, testEl);
+        sensor = s;
+      });
+
+      await flush();
+
+      const s = sensor()!;
+      expect(() => {
         emitSensorEvent(s, 'start');
         emitSensorEvent(s, 'move');
-        emitSensorEvent(s, 'move');
-        emitSensorEvent(s, 'move');
+        emitSensorEvent(s, 'cancel');
         emitSensorEvent(s, 'end');
-
-        expect(onStart).toHaveBeenCalledTimes(1);
-        expect(onMove).toHaveBeenCalledTimes(3);
-        expect(onEnd).toHaveBeenCalledTimes(1);
-        dispose();
-      });
+      }).not.toThrow();
+      dispose();
     });
   });
 });

@@ -1,8 +1,6 @@
 import type { Rect } from '../types.js';
 
-/**
- * Check if two rectangles intersect.
- */
+// Check if two rectangles intersect.
 export function isIntersecting(a: Rect, b: Rect) {
   return !(
     a.x + a.width <= b.x ||

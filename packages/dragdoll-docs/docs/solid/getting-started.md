@@ -96,7 +96,3 @@ render(() => <DraggableRedBox />, document.getElementById('root')!);
 - **Ref pattern.** Use `let element: HTMLDivElement | null = null` and set it in a `ref` callback: `ref={(node) => { element = node; setPointerSensorRef(node); }}`.
 - **Accessor returns.** Hooks return `Accessor<T | null>` — access the value with `sensor()`, `draggable()`, etc.
 - **SSR-safe.** All hooks return safe fallback values on the server (`() => null` or `[() => null, () => {}]`).
-
-## Explore Examples
-
-The [Solid examples](/solid/examples) section contains runnable demos that mirror the React gallery, making it easy to compare usage between frameworks.

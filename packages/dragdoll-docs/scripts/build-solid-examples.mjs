@@ -10,7 +10,7 @@ function createUmdName(exampleName) {
 }
 
 async function buildExampleDirectories() {
-  const examplesDir = path.join(process.cwd(), './solid-examples/');
+  const examplesDir = path.join(process.cwd(), './examples/solid/');
   const directories = await fs.readdir(examplesDir, { withFileTypes: true });
 
   for (const dir of directories) {
@@ -33,7 +33,7 @@ async function buildExampleDirectories() {
       continue;
     }
 
-    const outputDir = path.join(process.cwd(), `./docs/public/solid-examples/${exampleName}`);
+    const outputDir = path.join(process.cwd(), `./docs/public/examples/solid/${exampleName}`);
     await fs.mkdir(outputDir, { recursive: true });
 
     const outfile = path.join(outputDir, 'index.umd.js');
@@ -94,7 +94,7 @@ async function buildExampleDirectories() {
 }
 
 async function buildExamplesMarkdown() {
-  const examplesDir = path.join(process.cwd(), './solid-examples/');
+  const examplesDir = path.join(process.cwd(), './examples/solid/');
   const markdownFilePath = path.join(process.cwd(), './docs/solid/examples.md');
   await fs.mkdir(path.dirname(markdownFilePath), { recursive: true });
 
@@ -138,8 +138,8 @@ async function buildExamplesMarkdown() {
       if (description) {
         markdownContent += `${description}\n\n`;
       }
-      markdownContent += `<div class="example"><iframe src="/dragdoll/solid-examples/${exampleName}/index.html"></iframe>`;
-      markdownContent += `<a class="example-link" target="_blank" href="/dragdoll/solid-examples/${exampleName}/index.html" title="Open in a new tab">`;
+      markdownContent += `<div class="example"><iframe src="/dragdoll/examples/solid/${exampleName}/index.html"></iframe>`;
+      markdownContent += `<a class="example-link" target="_blank" href="/dragdoll/examples/solid/${exampleName}/index.html" title="Open in a new tab">`;
       markdownContent += `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>\n\n`;
       markdownContent += '::: code-group\n\n';
       markdownContent += '```tsx [index.tsx]\n' + indexTsContent + '\n```\n\n';

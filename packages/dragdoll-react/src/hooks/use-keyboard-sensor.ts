@@ -35,8 +35,8 @@ export function useKeyboardSensor<E extends KeyboardSensorEvents = KeyboardSenso
   useSensorCallback(sensor, 'end', onEnd);
   useSensorCallback(sensor, 'destroy', onDestroy);
 
-  // Helper function to create a new keyboard sensor or update the existing
-  // sensor's element if it already exists.
+  // Helper function to create a new keyboard sensor or update the
+  // existing sensor's element if it already exists.
   const createSensor = useCallbackStable((node: Element | null) => {
     const currentSensor = sensorRef.current;
     if (currentSensor) {
@@ -58,8 +58,8 @@ export function useKeyboardSensor<E extends KeyboardSensorEvents = KeyboardSenso
     setSensor(null);
   }, []);
 
-  // Ref callback for the keyboard sensor element IF user does not provide an
-  // explicit element.
+  // Ref callback for the keyboard sensor element if user does not
+  // provide an explicit element.
   const setRef = useCallbackStable(
     (node: Element | null) => {
       // If user provides an explicit element, do not create a new keyboard
@@ -72,8 +72,8 @@ export function useKeyboardSensor<E extends KeyboardSensorEvents = KeyboardSenso
         return;
       }
 
-      // Otherwise, create a new keyboard sensor or update the existing sensor's
-      // element if it already exists.
+      // Otherwise, create a new keyboard sensor or update the
+      // existing sensor's element if it already exists.
       createSensor(node);
     },
     [element, createSensor, destroySensor],

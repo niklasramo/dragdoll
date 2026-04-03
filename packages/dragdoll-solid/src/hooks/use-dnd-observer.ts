@@ -30,16 +30,17 @@ export function useDndObserver<T extends CollisionData = CollisionData>(
   const settings = createMemo(() => resolveMaybeAccessor(settingsInput));
   const collisionDetector = createMemo(() => settings()?.collisionDetector);
 
-  // Create the observer synchronously so it's available before children mount.
-  // This is critical — children (draggables, droppables) register with the
-  // observer during their setup, which happens before effects run.
+  // Create the observer synchronously so it is available before
+  // children mount. This is critical because children (draggables,
+  // droppables) register with the observer during their setup,
+  // which happens before effects run.
   let currentInstance = new DndObserver<T>({
     collisionDetector: untrack(collisionDetector),
   });
   const [dndObserver, setDndObserver] = createSignal<DndObserver<T> | null>(currentInstance);
   let appliedCollisionDetector = untrack(collisionDetector);
 
-  // Recreate the observer when collisionDetector changes.
+  // Recreate the observer when the collision detector changes.
   createEffect(() => {
     const cd = collisionDetector();
     if (cd === appliedCollisionDetector) return;

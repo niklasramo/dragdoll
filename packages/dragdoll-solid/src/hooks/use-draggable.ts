@@ -13,29 +13,27 @@ import { resolveMaybeAccessor, resolveMaybeAccessorArray } from '../utils/maybe-
 import { useDndObserverContext } from './use-dnd-observer-context.js';
 
 export interface UseDraggableSettings<S extends Sensor = Sensor>
-  // Omit container to prevent accidental framework unmount errors when using dragPreview
+  // Omit container to prevent accidental framework unmount errors
+  // when using dragPreview.
   extends Omit<Partial<DraggableOptions<S>>, 'container'> {
   dndObserver?: DndObserver<any> | null;
-  /**
-   * If true, generates a proxy element that receives all drag movements.
-   * Your original element stays in place. Use `<DragPreview>` to render visuals into the proxy.
-   */
+  // If true, generates a proxy element that receives all drag
+  // movements. Your original element stays in place. Use
+  // `<DragPreview>` to render visuals into the proxy.
   dragPreview?: boolean;
-  /**
-   * The container element to reparent drag preview proxy elements into during
-   * drag. Defaults to `document.body`. Useful for iframe, shadow DOM, or
-   * scoped z-index contexts. Only used when `dragPreview` is true.
-   */
+  // The container element to reparent drag preview proxy elements
+  // into during drag. Defaults to `document.body`. Useful for
+  // iframe, shadow DOM, or scoped z-index contexts. Only used
+  // when `dragPreview` is true.
   dragPreviewContainer?: HTMLElement | (() => HTMLElement);
-  /**
-   * If set to a positive number, enables exit animation for drag previews.
-   * On drag end the proxy stays alive in an "exiting" state. The
-   * `DragPreview` render props receive `exiting: true` and a `done()`
-   * callback. Call `done()` when your animation finishes to remove the
-   * proxy. If `done()` is not called within this many milliseconds the
-   * proxy is removed automatically as a safety fallback.
-   * Only used when `dragPreview` is true.
-   */
+  // If set to a positive number, enables exit animation for drag
+  // previews. On drag end the proxy stays alive in an "exiting"
+  // state. The `DragPreview` render props receive `exiting: true`
+  // and a `done()` callback. Call `done()` when your animation
+  // finishes to remove the proxy. If `done()` is not called
+  // within this many milliseconds the proxy is removed
+  // automatically as a safety fallback. Only used when
+  // `dragPreview` is true.
   dragPreviewExitTimeout?: number;
 }
 
@@ -77,7 +75,7 @@ export function useDraggable<S extends Sensor = Sensor>(
 
   const [getDraggable, setDraggable] = createSignal<Draggable<S> | null>(null);
 
-  // Refs (plain variables, not signals — for imperative tracking).
+  // Refs (plain variables, not signals) for imperative tracking.
   let draggableRef: Draggable<S> | null = null;
   let appliedIdRef = getId();
   let appliedSettingsRef = getDraggableOptions();
@@ -110,7 +108,7 @@ export function useDraggable<S extends Sensor = Sensor>(
       const resolvedSensors = untrack(getResolvedSensors);
       if (!resolvedSensors.length) return;
       const options = untrack(getDraggableOptions);
-      const id = getId();
+      const id = untrack(getId);
       const isDragPreview = options?.dragPreview;
 
       const instance = new Draggable<S>(resolvedSensors, {
@@ -238,9 +236,10 @@ export function useDraggable<S extends Sensor = Sensor>(
     if (!current) return;
     const nextSettings = getDraggableOptions();
 
-    // Custom equality check: when dragPreview is enabled on both prev and next,
-    // ignore `elements` because the construction-time closure manages it
-    // internally via draggableSettingsRef.
+    // Custom equality check: when dragPreview is enabled on both
+    // prev and next, ignore `elements` because the
+    // construction-time closure manages it internally via
+    // draggableSettingsRef.
     let hasChanged = false;
 
     if (appliedSettingsRef) {
@@ -276,7 +275,8 @@ export function useDraggable<S extends Sensor = Sensor>(
         : {}),
     } as any);
 
-    // If dndGroups or computeClientRect changed, update observer.
+    // If dndGroups or computeClientRect changed, update the
+    // observer.
     if (appliedSettingsRef) {
       const dndGroupsChanged = nextSettings?.dndGroups !== appliedSettingsRef.dndGroups;
       const computeClientRectChanged =

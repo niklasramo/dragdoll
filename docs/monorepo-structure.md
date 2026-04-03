@@ -36,6 +36,10 @@
   - `src/` - Test sources.
   - `dist/` - Bundled tests.
 
+## Dependency Management
+
+All `devDependencies` must be declared in the root `package.json` only, never in individual workspace packages. This prevents version drift where different sub-packages end up with different versions of the same dependency.
+
 ## Root Commands
 
 - `npm run build` - Runs format, builds `dragdoll` and `dragdoll-react` libraries, builds `dragdoll-docs` examples, then formats again.

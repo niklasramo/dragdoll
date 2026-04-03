@@ -3,9 +3,7 @@ import { isDocument } from './is-document.js';
 
 const VISIBLE_OVERFLOW = 'visible';
 
-/**
- * Compute the element's clip ancestor elements.
- */
+// Compute the element's clip ancestor elements.
 export function getClipAncestors(
   element: Element | Document | null,
   includeElement: boolean,

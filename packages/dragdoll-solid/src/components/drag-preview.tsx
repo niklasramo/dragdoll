@@ -19,18 +19,16 @@ export interface DragPreviewProps {
   children?: ((props: DragPreviewRenderProps) => JSX.Element) | JSX.Element;
 }
 
-/**
- * Renders content directly into drag preview proxy elements.
- *
- * Unlike Solid's <Portal> (which adds a wrapper <div>), this component
- * uses low-level insert() to render directly into each proxy element —
- * matching React's createPortal behavior and preserving proxy sizing
- * set by createDragPreviewProxies.
- */
+// Renders content directly into drag preview proxy elements.
+// Unlike Solid's Portal (which adds a wrapper div), this component
+// uses low-level insert() to render directly into each proxy
+// element, matching React's createPortal behavior and preserving
+// proxy sizing set by createDragPreviewProxies.
 export function DragPreview(props: DragPreviewProps) {
   const result = useDragPreview(props.draggable);
 
-  // Track active render roots so we can dispose them on cleanup.
+  // Track active render roots so we can dispose them on
+  // cleanup.
   let disposeList: (() => void)[] = [];
 
   const cleanupRoots = () => {
@@ -67,7 +65,9 @@ export function DragPreview(props: DragPreviewProps) {
               })
             : props.children;
 
-        // Render directly into the proxy element — no wrapper div.
+        // Clear any previous content (e.g. from the active
+        // phase before exiting) then render into the proxy.
+        proxyEl.textContent = '';
         insert(proxyEl, content as unknown as Accessor<JSX.Element>);
       });
     }
@@ -75,7 +75,8 @@ export function DragPreview(props: DragPreviewProps) {
 
   onCleanup(cleanupRoots);
 
-  // This component renders nothing into its own position in the DOM tree.
-  // All content is inserted directly into proxy elements.
+  // This component renders nothing into its own position in the
+  // DOM tree. All content is inserted directly into proxy
+  // elements.
   return undefined as unknown as JSX.Element;
 }

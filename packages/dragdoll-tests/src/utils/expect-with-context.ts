@@ -1,10 +1,9 @@
-/**
- * Wraps Jest-style expect() with context messages for better failure identification.
- *
- * Usage:
- *   expectWithContext(value, 'drag should be null').toBe(null);
- *   expectWithContext(obj, 'event data matches').toStrictEqual({ x: 1, y: 2 });
- */
+// Wraps expect() with context messages for better
+// failure identification.
+//
+// Usage:
+//   expectWithContext(value, 'drag null').toBe(null);
+//   expectWithContext(obj, 'event data').toStrictEqual(...);
 export function expectWithContext<T>(actual: T, context: string) {
   return {
     toBe(expected: T) {

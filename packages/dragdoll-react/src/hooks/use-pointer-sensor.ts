@@ -33,8 +33,8 @@ export function usePointerSensor<E extends PointerSensorEvents = PointerSensorEv
   useSensorCallback(sensor, 'end', onEnd as ((e: E['end']) => void) | undefined);
   useSensorCallback(sensor, 'destroy', onDestroy as ((e: E['destroy']) => void) | undefined);
 
-  // Helper function to create a new pointer sensor or update the existing
-  // sensor's element if it already exists.
+  // Helper function to create a new pointer sensor or update the
+  // existing sensor's element if it already exists.
   const createSensor = useCallbackStable((node: Element | Window) => {
     const currentSensor = sensorRef.current;
     if (currentSensor) {
@@ -56,8 +56,8 @@ export function usePointerSensor<E extends PointerSensorEvents = PointerSensorEv
     setSensor(null);
   }, []);
 
-  // Ref callback for the pointer sensor element IF user does not provide an
-  // explicit element.
+  // Ref callback for the pointer sensor element if user does not
+  // provide an explicit element.
   const setRef = useCallbackStable(
     (node: Element | null) => {
       // If user provides an explicit element, do not create a new pointer
@@ -70,8 +70,8 @@ export function usePointerSensor<E extends PointerSensorEvents = PointerSensorEv
         return;
       }
 
-      // Otherwise, create a new pointer sensor or update the existing sensor's
-      // element if it already exists.
+      // Otherwise, create a new pointer sensor or update the
+      // existing sensor's element if it already exists.
       createSensor(node);
     },
     [element, createSensor, destroySensor],

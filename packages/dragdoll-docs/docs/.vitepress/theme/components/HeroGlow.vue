@@ -234,7 +234,7 @@ onBeforeUnmount(() => {
   z-index: -1;
 }
 
-/* CSS fallback when WebGL is unavailable */
+/* CSS fallback when WebGL is unavailable. */
 .hero-glow-canvas.fallback {
   background: radial-gradient(ellipse at center, rgba(255, 85, 85, 0.1) 0%, transparent 70%);
 }

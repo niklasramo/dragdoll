@@ -1,10 +1,10 @@
 # Solid Examples
 
-## Solid - Draggable Basic
+## Draggable Basic
 
 A minimal setup showcasing multiple draggables powered by the SolidJS bindings.
 
-<div class="example"><iframe src="/dragdoll/solid-examples/001-draggable-basic/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/solid-examples/001-draggable-basic/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/examples/solid/001-draggable-basic/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/solid/001-draggable-basic/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -80,7 +80,7 @@ render(() => <App />, root);
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Solid - Draggable Basic</title>
+    <title>Draggable Basic</title>
     <meta
       name="description"
       content="A minimal setup showcasing multiple draggables powered by the SolidJS bindings."
@@ -226,11 +226,11 @@ body {
 
 :::
 
-## Solid - Draggable Auto Scroll & Transforms
+## Draggable Auto Scroll & Transforms
 
 Demonstrates auto-scrolling during drag and transparent CSS transform handling. The draggable element is always guaranteed to move in sync with the active sensor, regardless of any CSS transforms or zoom in the document. Auto-scroll kicks in when you drag near the window edges.
 
-<div class="example"><iframe src="/dragdoll/solid-examples/002-draggable-auto-scroll/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/solid-examples/002-draggable-auto-scroll/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/examples/solid/002-draggable-auto-scroll/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/solid/002-draggable-auto-scroll/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -307,7 +307,7 @@ render(() => <App />, root);
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Solid - Draggable Auto Scroll &amp; Transforms</title>
+    <title>Draggable Auto Scroll &amp; Transforms</title>
     <meta
       name="description"
       content="Demonstrates auto-scrolling during drag and transparent CSS transform handling. The draggable element is always guaranteed to move in sync with the active sensor, regardless of any CSS transforms or zoom in the document. Auto-scroll kicks in when you drag near the window edges."
@@ -445,11 +445,11 @@ body {
 
 :::
 
-## Solid - Draggable Locked Axis
+## Draggable Locked Axis
 
 Here we have two elements which can be dragged on one axis only. You can use this example as the basis of building your own custom position modifiers (a powerful feature that allows you to control a dragged element's position at every step of the drag process).
 
-<div class="example"><iframe src="/dragdoll/solid-examples/003-draggable-locked-axis/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/solid-examples/003-draggable-locked-axis/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/examples/solid/003-draggable-locked-axis/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/solid/003-draggable-locked-axis/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -540,7 +540,7 @@ render(() => <App />, root);
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Solid - Draggable Locked Axis</title>
+    <title>Draggable Locked Axis</title>
     <meta
       name="description"
       content="Here we have two elements which can be dragged on one axis only. You can use this example as the basis of building your own custom position modifiers (a powerful feature that allows you to control a dragged element's position at every step of the drag process)."
@@ -684,11 +684,11 @@ body {
 
 :::
 
-## Solid - Draggable Snap To Grid
+## Draggable Snap To Grid
 
 A simple demo on how to use the built-in snap modifier.
 
-<div class="example"><iframe src="/dragdoll/solid-examples/004-draggable-snap-to-grid/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/solid-examples/004-draggable-snap-to-grid/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/examples/solid/004-draggable-snap-to-grid/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/solid/004-draggable-snap-to-grid/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -752,7 +752,7 @@ render(() => <App />, root);
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Solid - Draggable Snap To Grid</title>
+    <title>Draggable Snap To Grid</title>
     <meta name="description" content="A simple demo on how to use the built-in snap modifier." />
     <meta
       name="viewport"
@@ -881,11 +881,11 @@ body {
 
 :::
 
-## Solid - Draggable Containment
+## Draggable Containment
 
 A simple demo on how to use the built-in containment modifier. The first argument of `createContainmentModifier` should be a function that returns the client rect of the containment area. That function is called on every drag 'move' event and also on 'start' and 'end' events. The second argument is a boolean whose value is cached on start event to define if the modifier should track drifting of the sensor when the dragged element hits an edge of the containment area and the sensor keeps on moving away. If the drift is being tracked the draggable element will not be moved to the opposing direction until the sensor is back inside the containment area. By default the drift is tracked only for `PointerSensor`.
 
-<div class="example"><iframe src="/dragdoll/solid-examples/005-draggable-containment/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/solid-examples/005-draggable-containment/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/examples/solid/005-draggable-containment/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/solid/005-draggable-containment/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -953,7 +953,7 @@ render(() => <App />, root);
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Solid - Draggable Containment</title>
+    <title>Draggable Containment</title>
     <meta
       name="description"
       content="A simple demo on how to use the built-in containment modifier. The first argument of `createContainmentModifier` should be a function that returns the client rect of the containment area. That function is called on every drag 'move' event and also on 'start' and 'end' events. The second argument is a boolean whose value is cached on start event to define if the modifier should track drifting of the sensor when the dragged element hits an edge of the containment area and the sensor keeps on moving away. If the drift is being tracked the draggable element will not be moved to the opposing direction until the sensor is back inside the containment area. By default the drift is tracked only for `PointerSensor`."
@@ -1089,11 +1089,11 @@ body {
 
 :::
 
-## Solid - Draggable Combined Modifiers
+## Draggable Combined Modifiers
 
 Demonstrates grid-aware containment. The element has a distance threshold, snaps to a 40px grid, and is contained within the viewport without partial grid cells at the edges.
 
-<div class="example"><iframe src="/dragdoll/solid-examples/006-draggable-combined-modifiers/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/solid-examples/006-draggable-combined-modifiers/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/examples/solid/006-draggable-combined-modifiers/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/solid/006-draggable-combined-modifiers/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -1169,7 +1169,7 @@ render(() => <App />, root);
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Solid - Draggable Combined Modifiers</title>
+    <title>Draggable Combined Modifiers</title>
     <meta
       name="description"
       content="Demonstrates grid-aware containment. The element has a distance threshold, snaps to a 40px grid, and is contained within the viewport without partial grid cells at the edges."
@@ -1295,11 +1295,11 @@ body {
 
 :::
 
-## Solid - Draggable Center To Pointer
+## Draggable Center To Pointer
 
 Here we use a custom position modifier to align the dragged element's center with the pointer sensor's position on drag start.
 
-<div class="example"><iframe src="/dragdoll/solid-examples/007-draggable-center-to-pointer/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/solid-examples/007-draggable-center-to-pointer/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/examples/solid/007-draggable-center-to-pointer/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/solid/007-draggable-center-to-pointer/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -1374,7 +1374,7 @@ render(() => <App />, root);
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Solid - Draggable Center To Pointer</title>
+    <title>Draggable Center To Pointer</title>
     <meta
       name="description"
       content="Here we use a custom position modifier to align the dragged element's center with the pointer sensor's position on drag start."
@@ -1510,11 +1510,11 @@ body {
 
 :::
 
-## Solid - Draggable Drag Handle
+## Draggable Drag Handle
 
 A simple example on how to create a drag handle. There is no built-in 'handle' option, because it would be too limiting. In this example the `PointerSensor` is used for the handle element while the `KeyboardMotionSensor` is used normally for the draggable element. You could also create the `KeyboardMotionSensor` for the handle element if you wished, it's really up to your preferences. Hopefully this showcases how flexible and customizable DragDoll really is with its sensor system.
 
-<div class="example"><iframe src="/dragdoll/solid-examples/008-draggable-drag-handle/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/solid-examples/008-draggable-drag-handle/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/examples/solid/008-draggable-drag-handle/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/solid/008-draggable-drag-handle/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -1587,7 +1587,7 @@ render(() => <App />, root);
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Solid - Draggable Drag Handle</title>
+    <title>Draggable Drag Handle</title>
     <meta
       name="description"
       content="A simple example on how to create a drag handle. There is no built-in 'handle' option, because it would be too limiting. In this example the `PointerSensor` is used for the handle element while the `KeyboardMotionSensor` is used normally for the draggable element. You could also create the `KeyboardMotionSensor` for the handle element if you wished, it's really up to your preferences. Hopefully this showcases how flexible and customizable DragDoll really is with its sensor system."
@@ -1760,11 +1760,11 @@ body {
 
 :::
 
-## Solid - Draggable - Multiple Elements
+## Draggable - Multiple Elements
 
 Sometimes you might want to drag multiple elements at once and DragDoll provides you an easy way to do that. Just return an array of elements in the `elements` callback and you're good to go.
 
-<div class="example"><iframe src="/dragdoll/solid-examples/009-draggable-multiple-elements/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/solid-examples/009-draggable-multiple-elements/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/examples/solid/009-draggable-multiple-elements/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/solid/009-draggable-multiple-elements/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -1843,7 +1843,7 @@ render(() => <App />, root);
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Solid - Draggable - Multiple Elements</title>
+    <title>Draggable - Multiple Elements</title>
     <meta
       name="description"
       content="Sometimes you might want to drag multiple elements at once and DragDoll provides you an easy way to do that. Just return an array of elements in the `elements` callback and you're good to go."
@@ -1988,11 +1988,11 @@ body {
 
 :::
 
-## Solid - Draggable - Start Threshold
+## Draggable - Start Threshold
 
 A draggable link element that requires 5px of movement before the drag starts. Clicking the link works normally. When drag starts, the element position is offset so the pointer stays at the original position relative to the element.
 
-<div class="example"><iframe src="/dragdoll/solid-examples/010-draggable-start-threshold/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/solid-examples/010-draggable-start-threshold/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/examples/solid/010-draggable-start-threshold/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/solid/010-draggable-start-threshold/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -2072,7 +2072,7 @@ render(() => <App />, root);
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Solid - Draggable - Start Threshold</title>
+    <title>Draggable - Start Threshold</title>
     <meta
       name="description"
       content="A draggable link element that requires 5px of movement before the drag starts. Clicking the link works normally. When drag starts, the element position is offset so the pointer stays at the original position relative to the element."
@@ -2232,11 +2232,11 @@ body {
 
 :::
 
-## Solid - Draggable - Touch Delay
+## Draggable - Touch Delay
 
 A draggable element with a 1 second touch delay. On touch devices, you must hold the element for 1 second before dragging starts, allowing normal scrolling. Mouse and pen input start dragging immediately.
 
-<div class="example"><iframe src="/dragdoll/solid-examples/011-draggable-touch-delay/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/solid-examples/011-draggable-touch-delay/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/examples/solid/011-draggable-touch-delay/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/solid/011-draggable-touch-delay/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -2300,7 +2300,7 @@ render(() => <App />, root);
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Solid - Draggable - Touch Delay</title>
+    <title>Draggable - Touch Delay</title>
     <meta
       name="description"
       content="A draggable element with a 1 second touch delay. On touch devices, you must hold the element for 1 second before dragging starts, allowing normal scrolling. Mouse and pen input start dragging immediately."
@@ -2432,11 +2432,11 @@ body {
 
 :::
 
-## Solid - Draggable - Drag Preview
+## Draggable - Drag Preview
 
 A drag preview inside a scrollable container with complex CSS transforms. The proxy element inherits ancestor transforms via the core's transform normalization, preserving the exact visual shape during drag. Auto-scroll keeps working across the transformed container.
 
-<div class="example"><iframe src="/dragdoll/solid-examples/012-draggable-drag-preview/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/solid-examples/012-draggable-drag-preview/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/examples/solid/012-draggable-drag-preview/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/solid/012-draggable-drag-preview/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -2542,7 +2542,7 @@ render(() => <App />, root);
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Solid - Draggable - Drag Preview</title>
+    <title>Draggable - Drag Preview</title>
     <meta
       name="description"
       content="A drag preview inside a scrollable container with complex CSS transforms. The proxy element inherits ancestor transforms via the core's transform normalization, preserving the exact visual shape during drag. Auto-scroll keeps working across the transformed container."
@@ -2706,11 +2706,11 @@ body {
 
 :::
 
-## Solid - Draggable - Multi-Item Drag Preview
+## Draggable - Multi-Item Drag Preview
 
 One draggable moves three items simultaneously via drag previews. Each item sits inside its own overflow-hidden container with different complex CSS transforms (scale, skew, rotation). The core's transform normalization ensures every proxy matches its original's visual shape after reparenting to document.body.
 
-<div class="example"><iframe src="/dragdoll/solid-examples/013-draggable-multi-drag-preview/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/solid-examples/013-draggable-multi-drag-preview/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/examples/solid/013-draggable-multi-drag-preview/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/solid/013-draggable-multi-drag-preview/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -2841,7 +2841,7 @@ render(() => <App />, root);
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Solid - Draggable - Multi-Item Drag Preview</title>
+    <title>Draggable - Multi-Item Drag Preview</title>
     <meta
       name="description"
       content="One draggable moves three items simultaneously via drag previews. Each item sits inside its own overflow-hidden container with different complex CSS transforms (scale, skew, rotation). The core's transform normalization ensures every proxy matches its original's visual shape after reparenting to document.body."
@@ -3032,11 +3032,11 @@ body {
 
 :::
 
-## Solid - DndObserver - Basic
+## DndObserver - Basic
 
 A basic example of using DndObserver with Draggable and Droppable elements. Here we highlight the dropzone element that overlaps most with the dragged element.
 
-<div class="example"><iframe src="/dragdoll/solid-examples/014-dnd-basic/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/solid-examples/014-dnd-basic/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/examples/solid/014-dnd-basic/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/solid/014-dnd-basic/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -3183,7 +3183,7 @@ render(() => <App />, root);
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Solid - DndObserver - Basic</title>
+    <title>DndObserver - Basic</title>
     <meta
       name="description"
       content="A basic example of using DndObserver with Draggable and Droppable elements. Here we highlight the dropzone element that overlaps most with the dragged element."
@@ -3366,11 +3366,11 @@ body {
 
 :::
 
-## Solid - DndObserver - Advanced Collision Detector
+## DndObserver - Advanced Collision Detector
 
 Advanced collision detection with scrollable droppable lists. Here we can see how the advanced collision detector respects the visibility of the droppables. Only the visible parts of the droppables (as seen from the perspective of the draggable) are considered for collisions.
 
-<div class="example"><iframe src="/dragdoll/solid-examples/015-dnd-advanced-collision-detector/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/solid-examples/015-dnd-advanced-collision-detector/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/examples/solid/015-dnd-advanced-collision-detector/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/solid/015-dnd-advanced-collision-detector/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
@@ -3405,6 +3405,8 @@ function getContainerInfo(container: HTMLElement): { listId: ListId; index: numb
   };
 }
 
+const dragContainer = document.getElementById('drag-container') as HTMLElement;
+
 function createDragPreviewElement(element: HTMLElement, draggableId: string): HTMLElement {
   const rect = element.getBoundingClientRect();
   const clone = element.cloneNode(true) as HTMLElement;
@@ -3416,7 +3418,7 @@ function createDragPreviewElement(element: HTMLElement, draggableId: string): HT
   clone.style.transform = '';
   clone.classList.add('drag-preview', 'dragging');
   clone.setAttribute('data-id', draggableId);
-  document.body.appendChild(clone);
+  dragContainer.appendChild(clone);
   return clone;
 }
 
@@ -3483,6 +3485,7 @@ function DraggableCard(props: {
   scrollContainers: HTMLElement[];
   onDragStart: (draggableId: string) => void;
   isHidden: boolean;
+  elementMap: Map<string, HTMLDivElement>;
 }) {
   let element: HTMLDivElement | null = null;
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
@@ -3517,6 +3520,7 @@ function DraggableCard(props: {
     <div
       ref={(node) => {
         element = node;
+        props.elementMap.set(props.draggableId, node);
         setPointerSensorRef(node);
         setKeyboardSensorRef(node);
       }}
@@ -3560,6 +3564,7 @@ function ScrollList(props: {
   hiddenIds: Set<string>;
   onDragStart: (draggableId: string) => void;
   scrollContainers: HTMLElement[];
+  elementMap: Map<string, HTMLDivElement>;
 }) {
   return (
     <div
@@ -3585,6 +3590,7 @@ function ScrollList(props: {
                   scrollContainers={props.scrollContainers}
                   onDragStart={props.onDragStart}
                   isHidden={props.hiddenIds.has(id())}
+                  elementMap={props.elementMap}
                 />
               )}
             </Show>
@@ -3599,6 +3605,8 @@ function App() {
   // Stable mutable refs — Solid components run once.
   const scrollContainers: HTMLElement[] = [];
   const bestMatchMap = new Map<AnyDraggable, Droppable>();
+  // O(1) lookup for original elements by draggable id.
+  const elementMap = new Map<string, HTMLDivElement>();
 
   const [leftSlots, setLeftSlots] = createSignal<Array<string | null>>(
     Array.from({ length: 16 }, (_, i) => (i === 0 ? '1' : null)),
@@ -3663,9 +3671,7 @@ function App() {
       if (!draggableId) return;
 
       const bestMatch = bestMatchMap.get(draggable) || null;
-      const originalElement = document.querySelector(
-        `.card.draggable[data-id="${draggableId}"]`,
-      ) as HTMLElement | null;
+      const originalElement = elementMap.get(draggableId) || null;
       const originalContainer = originalElement?.parentElement as HTMLElement | null;
       const targetContainer =
         !canceled && bestMatch ? (bestMatch.element as HTMLElement) : originalContainer;
@@ -3683,17 +3689,21 @@ function App() {
         return;
       }
 
+      // Compute animation values BEFORE updating Solid state.
+      // Solid re-renders synchronously, so the DOM changes
+      // immediately when we call moveDraggable(). We need the
+      // current positions before that happens.
       const from = getContainerInfo(originalContainer);
       const to = getContainerInfo(targetContainer);
-      moveDraggable(draggableId, from.listId, from.index, to.listId, to.index);
-
-      // Animate preview to final position
       const baseLeft = parseFloat(previewElement.style.left || '0');
       const baseTop = parseFloat(previewElement.style.top || '0');
       const targetPos = getTargetPosition(targetContainer);
       const currentPos = previewElement.getBoundingClientRect();
       const deltaX = targetPos.left - currentPos.left;
       const deltaY = targetPos.top - currentPos.top;
+
+      // Now update Solid state (triggers synchronous re-render).
+      moveDraggable(draggableId, from.listId, from.index, to.listId, to.index);
 
       if (Math.abs(deltaX) < ANIMATION_EPSILON && Math.abs(deltaY) < ANIMATION_EPSILON) {
         cleanupDrag(
@@ -3711,7 +3721,7 @@ function App() {
       const finalTranslateX = targetPos.left - baseLeft;
       const finalTranslateY = targetPos.top - baseTop;
       previewElement.classList.add('animating');
-      previewElement.clientHeight; // Force reflow
+      previewElement.clientHeight;
       previewElement.style.transform = `translate(${finalTranslateX}px, ${finalTranslateY}px)`;
 
       const onTransitionEnd = (e: TransitionEvent) => {
@@ -3742,6 +3752,7 @@ function App() {
           hiddenIds={hiddenIds()}
           onDragStart={onDragStart}
           scrollContainers={scrollContainers}
+          elementMap={elementMap}
         />
         <ScrollList
           listId="right"
@@ -3749,6 +3760,7 @@ function App() {
           hiddenIds={hiddenIds()}
           onDragStart={onDragStart}
           scrollContainers={scrollContainers}
+          elementMap={elementMap}
         />
       </div>
     </DndObserverContext.Provider>
@@ -3768,7 +3780,7 @@ render(() => <App />, root);
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Solid - DndObserver - Advanced Collision Detector</title>
+    <title>DndObserver - Advanced Collision Detector</title>
     <meta
       name="description"
       content="Advanced collision detection with scrollable droppable lists. Here we can see how the advanced collision detector respects the visibility of the droppables. Only the visible parts of the droppables (as seen from the perspective of the draggable) are considered for collisions."
@@ -3782,6 +3794,7 @@ render(() => <App />, root);
   </head>
   <body>
     <div id="root"></div>
+    <div id="drag-container"></div>
     <script type="module" src="index.tsx"></script>
   </body>
 </html>
@@ -3791,6 +3804,14 @@ render(() => <App />, root);
 body {
   width: 100%;
   height: 100%;
+}
+
+#drag-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  contain: layout;
+  z-index: 9999;
 }
 
 #root {
@@ -3976,30 +3997,28 @@ body {
 
 :::
 
-## Solid - Sortable List - Accessible
+## Sortable List - Accessible
 
 A sortable list with two interaction modes. (1) Pointer drag: drag items via mouse or touch -- a DragPreview proxy follows the pointer while the original stays in-flow as a translucent placeholder; DndObserver detects collisions to trigger reorder. (2) Keyboard reorder: focus an item and press Shift+Space or Shift+Enter to pick up, arrow keys to move, Space/Enter to drop, Escape to cancel. During either interaction, items are repositioned visually with CSS transforms while the DOM order stays fixed. The final DOM reorder only happens on drop. A live region announces every position change for screen readers.
 
-<div class="example"><iframe src="/dragdoll/solid-examples/016-sortable-accessible/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/solid-examples/016-sortable-accessible/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
+<div class="example"><iframe src="/dragdoll/examples/solid/016-sortable-accessible/index.html"></iframe><a class="example-link" target="_blank" href="/dragdoll/examples/solid/016-sortable-accessible/index.html" title="Open in a new tab"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l82.7 0L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3l0 82.7c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160c0-17.7-14.3-32-32-32L320 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"></path></svg></a></div>
 
 ::: code-group
 
 ```tsx [index.tsx]
 /** @jsxImportSource solid-js */
 
-// Sortable list with two interaction modes:
+// Sortable list with pointer drag and keyboard reorder.
 //
-// 1. POINTER DRAG — drag items via mouse/touch. A DragPreview proxy follows
-//    the pointer while the original element stays in-flow as a translucent
-//    placeholder. DndObserver detects collisions between the preview and
-//    other items to trigger reorder.
+// Pointer: drag items via mouse/touch. A DragPreview proxy
+// follows the pointer while the original stays in-flow as a
+// placeholder. DndObserver handles collision-based reorder.
 //
-// 2. KEYBOARD REORDER — Shift+Space/Enter to pick up, arrow keys to
-//    move one position at a time, Space/Enter to drop, Escape to cancel.
+// Keyboard: Shift+Space/Enter to pick up, arrows to move,
+// Space/Enter to drop, Escape to cancel.
 //
-// During either interaction, items are repositioned using CSS transforms
-// (DOM order stays fixed). The final DOM reorder + state commit only
-// happens on drop or cancel.
+// Items are visually repositioned with CSS transforms during
+// drag. DOM order only changes on drop.
 
 import {
   AdvancedCollisionData,
@@ -4022,9 +4041,9 @@ import {
 import { createEffect, createSignal, For, onCleanup } from 'solid-js';
 import { render } from 'solid-js/web';
 
-//
+// ---------
 // Constants
-//
+// ---------
 
 const ITEM_COUNT = 100;
 const POINTER_START_THRESHOLD_SQ = 8 * 8;
@@ -4034,13 +4053,14 @@ const CANCEL_ANIM_DURATION = 200;
 const SWAP_OVERLAP_THRESHOLD = 51;
 const DRAG_PREVIEW_EXIT_TIMEOUT = CANCEL_ANIM_DURATION + 50;
 
-//
+// -----
 // Types
-//
+// -----
 
 interface ItemData {
   id: string;
   label: string;
+  domIndex: number;
 }
 
 interface PointerDragState {
@@ -4055,547 +4075,344 @@ interface A11yDragState {
   currentIndex: number;
 }
 
-//
-// Pure helpers
-//
+// ---------
+// Utilities
+// ---------
 
-function isPointerDistanceAboveThreshold(
-  x: number,
-  y: number,
-  startX: number,
-  startY: number,
-  thresholdSq: number,
-): boolean {
-  const dx = x - startX;
-  const dy = y - startY;
-  return dx * dx + dy * dy >= thresholdSq;
+function isAboveThreshold(x: number, y: number, sx: number, sy: number, thSq: number): boolean {
+  const dx = x - sx;
+  const dy = y - sy;
+  return dx * dx + dy * dy >= thSq;
 }
 
-function announce(liveRegion: HTMLElement | null, message: string) {
-  if (liveRegion) liveRegion.textContent = message;
-}
+const detector = (ctx: DndObserver<AdvancedCollisionData>) => new AdvancedCollisionDetector(ctx);
 
-//
-// Virtual layout helpers
-//
-
-function applyVirtualTransforms(
-  itemElements: Map<string, HTMLLIElement>,
-  domOrder: ItemData[],
-  virtualOrder: string[],
-  itemStride: number,
-  affectedIds: string[],
-  animate: boolean,
-) {
-  for (const id of affectedIds) {
-    const el = itemElements.get(id);
-    if (!el) continue;
-
-    const domIdx = domOrder.findIndex((it) => it.id === id);
-    const virtualIdx = virtualOrder.indexOf(id);
-    const newY = (virtualIdx - domIdx) * itemStride;
-
-    const prevY = parseFloat(el.style.transform?.match(/translateY\((.+?)px\)/)?.[1] || '0');
-    if (prevY === newY) continue;
-
-    el.style.transform = newY === 0 ? '' : `translateY(${newY}px)`;
-
-    if (animate) {
-      const anims = el.getAnimations();
-      for (let i = 0; i < anims.length; i++) anims[i].cancel();
-
-      el.animate(
-        [
-          { transform: `translateY(${prevY}px)` },
-          { transform: newY === 0 ? 'translateY(0px)' : `translateY(${newY}px)` },
-        ],
-        { duration: SWAP_ANIM_DURATION, easing: 'ease' },
-      );
-    }
-  }
-}
-
-function clearAllTransforms(itemElements: Map<string, HTMLLIElement>) {
-  for (const el of itemElements.values()) {
-    const anims = el.getAnimations();
-    for (let i = 0; i < anims.length; i++) anims[i].cancel();
-    el.style.transform = '';
-  }
-}
-
-function animateTransformsToZero(itemElements: Map<string, HTMLLIElement>, duration: number) {
-  for (const el of itemElements.values()) {
-    const currentTransform = el.style.transform;
-    if (!currentTransform || currentTransform === 'translateY(0px)') continue;
-
-    const anims = el.getAnimations();
-    for (let i = 0; i < anims.length; i++) anims[i].cancel();
-
-    el.style.transform = '';
-    el.animate([{ transform: currentTransform }, { transform: 'translateY(0px)' }], {
-      duration,
-      easing: 'ease',
-    });
-  }
-}
-
-//
-// Collision detector factory
-//
-
-const collisionDetector = (ctx: DndObserver<AdvancedCollisionData>) =>
-  new AdvancedCollisionDetector(ctx);
-
-//
-// SortableItem component
-//
-
-function SortableItem(props: {
-  item: ItemData;
-  isDragging: boolean;
-  isA11yDragging: boolean;
-  pointerDrag: PointerDragState | null;
-  setPointerDrag: (v: PointerDragState | null) => void;
-  lastSwapFromIdx: { current: number };
-  a11yDrag: A11yDragState | null;
-  listEl: HTMLUListElement | null;
-  itemElements: Map<string, HTMLLIElement>;
-  items: ItemData[];
-  virtualOrder: { current: string[] | null };
-  dndObserver: { current: DndObserver<AdvancedCollisionData> | null };
-  itemStride: { current: number };
-  onPointerDrop: { current: () => void };
-  virtualSwap: (fromIndex: number, toIndex: number) => void;
-}) {
-  let liRef: HTMLLIElement | null = null;
-
-  // Register/unregister element in the shared map.
-  createEffect(() => {
-    const li = liRef;
-    if (li) props.itemElements.set(props.item.id, li);
-    onCleanup(() => {
-      props.itemElements.delete(props.item.id);
-    });
-  });
-
-  // Pointer sensor on the link element.
-  const [pointerSensor, setPointerSensorRef] = usePointerSensor();
-
-  // Droppable — each item is a drop target for collision detection.
-  const [, setDroppableRef] = useDroppable({
-    data: { itemId: props.item.id },
-    computeClientRect: () => {
-      const listEl = props.listEl;
-      const itemStride = props.itemStride.current;
-      if (!listEl || !props.items.length || !itemStride) {
-        return { x: 0, y: 0, width: 0, height: 0 };
-      }
-
-      const order = props.virtualOrder.current;
-      const idx = order
-        ? order.indexOf(props.item.id)
-        : props.items.findIndex((it) => it.id === props.item.id);
-
-      if (idx < 0) return { x: 0, y: 0, width: 0, height: 0 };
-      const listRect = listEl.getBoundingClientRect();
-      const el = props.itemElements.get(props.item.id);
-      const height = el ? el.getBoundingClientRect().height : itemStride;
-      return {
-        x: listRect.left,
-        y: listRect.top + idx * itemStride,
-        width: listRect.width,
-        height,
-      };
-    },
-  });
-
-  function onScrollDuringDrag() {
-    props.dndObserver.current?.updateDroppableClientRects();
-  }
-
-  // Draggable settings — uses DragPreview for the pointer-following proxy.
-  const draggable = useDraggableAutoScroll(
-    useDraggable([pointerSensor], {
-      elements: () => {
-        const li = liRef;
-        return li ? [li] : [];
-      },
-      dragPreview: true,
-      dragPreviewExitTimeout: DRAG_PREVIEW_EXIT_TIMEOUT,
-      startPredicate: ({
-        event,
-      }: {
-        event: { x: number; y: number; startX: number; startY: number };
-      }) => {
-        if (props.a11yDrag) return false;
-        return isPointerDistanceAboveThreshold(
-          event.x,
-          event.y,
-          event.startX,
-          event.startY,
-          POINTER_START_THRESHOLD_SQ,
-        )
-          ? true
-          : undefined;
-      },
-      positionModifiers: [
-        startOffsetModifier as unknown as DraggableModifier<PointerSensor>,
-        (change) => {
-          change.x = 0;
-          return change;
-        },
-      ],
-      computeClientRect: ({
-        drag,
-      }: {
-        drag: { items: { element: HTMLElement | SVGSVGElement }[] };
-      }) => {
-        const el = drag.items[0]?.element;
-        if (!el) return null;
-        const rect = el.getBoundingClientRect();
-        return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
-      },
-      onStart: () => {
-        const li = liRef;
-        if (!li) return;
-
-        props.virtualOrder.current = props.items.map((it) => it.id);
-
-        li.classList.add('placeholder');
-        props.lastSwapFromIdx.current = -1;
-        props.setPointerDrag({
-          itemId: props.item.id,
-          originalIndex: props.items.findIndex((it) => it.id === props.item.id),
-          cancelled: false,
-        });
-        props.listEl?.classList.add('is-dragging');
-        window.addEventListener('scroll', onScrollDuringDrag);
-      },
-      onMove: () => {
-        props.lastSwapFromIdx.current = -1;
-      },
-      onEnd: ({ endEvent }: { endEvent?: { type: string } | null }) => {
-        window.removeEventListener('scroll', onScrollDuringDrag);
-
-        const drag = props.pointerDrag;
-        if (!drag) return;
-
-        const cancelled = endEvent?.type === 'cancel';
-        props.setPointerDrag({ ...drag, cancelled });
-
-        if (cancelled) {
-          animateTransformsToZero(props.itemElements, CANCEL_ANIM_DURATION);
-          props.virtualOrder.current = null;
-        }
-
-        props.listEl?.classList.remove('is-dragging');
-      },
-    }),
-    {
-      targets: [
-        {
-          element: window,
-          axis: 'y' as const,
-          padding: { top: Infinity, bottom: Infinity },
-        },
-      ],
-    },
-  );
-
-  const className = () =>
-    `sortable-item${props.isDragging ? ' placeholder' : ''}${props.isA11yDragging ? ' a11y-dragging' : ''}`;
-
-  return (
-    <>
-      <li
-        ref={(node) => {
-          liRef = node;
-          setDroppableRef(node);
-        }}
-        class={className()}
-      >
-        <a
-          ref={(node) => {
-            setPointerSensorRef(node);
-          }}
-          href="https://muuri.dev"
-          target="_blank"
-          rel="noopener noreferrer"
-          draggable={false}
-          aria-roledescription="sortable item"
-          aria-describedby="dnd-instructions"
-        >
-          {props.item.label}
-        </a>
-      </li>
-      <DragPreview draggable={draggable}>
-        {({ sourceElement, exiting, done }) => {
-          let contentRef: HTMLDivElement | null = null;
-
-          // Handle exit animation.
-          if (exiting && contentRef) {
-            // Use queueMicrotask to run after DOM insertion.
-            queueMicrotask(() => {
-              if (!contentRef) return;
-              const proxy = contentRef.parentElement as HTMLElement;
-              const source = sourceElement as HTMLElement;
-              const drag = props.pointerDrag;
-
-              const anims = source.getAnimations();
-              for (let i = 0; i < anims.length; i++) anims[i].finish();
-
-              const proxyRect = proxy.getBoundingClientRect();
-              const sourceRect = source.getBoundingClientRect();
-              const dx = sourceRect.left - proxyRect.left;
-              const dy = sourceRect.top - proxyRect.top;
-
-              const duration = drag?.cancelled ? CANCEL_ANIM_DURATION : DROP_ANIM_DURATION;
-
-              const cleanup = () => {
-                source.classList.remove('placeholder');
-                if (!drag?.cancelled) {
-                  props.onPointerDrop.current();
-                }
-                props.setPointerDrag(null);
-                done();
-              };
-
-              if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
-                cleanup();
-                return;
-              }
-
-              const anim = proxy.animate(
-                [{ translate: '0px 0px' }, { translate: `${dx}px ${dy}px` }],
-                { duration, easing: 'ease', fill: 'forwards', composite: 'add' },
-              );
-              anim.onfinish = cleanup;
-            });
-          }
-
-          return (
-            <div
-              ref={(el) => (contentRef = el)}
-              class="sortable-item drag-preview"
-              aria-hidden="true"
-            >
-              <a>{props.item.label}</a>
-            </div>
-          );
-        }}
-      </DragPreview>
-    </>
-  );
-}
-
-//
-// App component
-//
+// ---
+// App
+// ---
 
 function App() {
-  // Item order state.
+  // ---------
+  // DOM refs
+  // ---------
+
+  let listEl: HTMLUListElement | null = null;
+  let liveRegion: HTMLDivElement | null = null;
+  const dragContainer = document.getElementById('drag-container') as HTMLElement;
+  const itemElements = new Map<string, HTMLLIElement>();
+  const itemsByElement = new Map<HTMLLIElement, ItemData>();
+
+  // -----
+  // State
+  // -----
+
   const [items, setItems] = createSignal<ItemData[]>(
     Array.from({ length: ITEM_COUNT }, (_, i) => ({
       id: `item-${i}`,
       label: `Item ${i + 1}`,
+      domIndex: i,
     })),
   );
 
-  // Mutable refs — Solid components run once so these are stable.
-  let listEl: HTMLUListElement | null = null;
-  let liveRegion: HTMLDivElement | null = null;
-  const itemElements = new Map<string, HTMLLIElement>();
-  const itemStride = { current: 0 };
-  const virtualOrder: { current: string[] | null } = { current: null };
-  const lastSwapFromIdx = { current: -1 };
-  let swapCooldown = false;
+  let itemHeight = 0;
+  let itemStride = 0;
+  let listOffsetTop = 0;
+  let virtualOrder: number[] | null = null;
+  let virtualIndexOf: number[] | null = null;
+  let cachedListRect: DOMRect | null = null;
+  let lastSwapFromIdx = -1;
 
-  // Pointer drag state (imperative).
   const [pointerDrag, setPointerDrag] = createSignal<PointerDragState | null>(null);
-
-  // Keyboard reorder state.
   const [a11yDrag, setA11yDrag] = createSignal<A11yDragState | null>(null);
-
-  // Track which item is being pointer-dragged.
   const [draggingId, setDraggingId] = createSignal<string | null>(null);
 
-  // Measure item dimensions after first render.
-  createEffect(() => {
-    const _items = items(); // Track items changes.
-    if (itemElements.size < 2) return;
-    const ids = Array.from(itemElements.keys());
-    const el0 = itemElements.get(ids[0]);
-    const el1 = itemElements.get(ids[1]);
-    if (el0 && el1) {
-      itemStride.current = el1.getBoundingClientRect().top - el0.getBoundingClientRect().top;
+  // -----------
+  // Measurement
+  // -----------
+
+  function measure() {
+    const its = items();
+    if (its.length < 2) return;
+    const el0 = itemElements.get(its[0].id);
+    const el1 = itemElements.get(its[1].id);
+    if (!el0 || !el1 || !listEl) return;
+    const r0 = el0.getBoundingClientRect();
+    const r1 = el1.getBoundingClientRect();
+    itemHeight = r0.height;
+    itemStride = r1.top - r0.top;
+    listOffsetTop = r0.top - listEl.getBoundingClientRect().top;
+  }
+
+  function invalidateCache() {
+    cachedListRect = null;
+  }
+
+  function getListRect(): DOMRect {
+    return (cachedListRect ??= listEl!.getBoundingClientRect());
+  }
+
+  // --------------
+  // Virtual layout
+  // --------------
+
+  function initVirtual() {
+    measure();
+    const its = items();
+    virtualOrder = its.map((_, i) => i);
+    virtualIndexOf = its.map((_, i) => i);
+  }
+
+  function vIdx(domIndex: number): number {
+    return virtualIndexOf ? virtualIndexOf[domIndex] : domIndex;
+  }
+
+  function vSwap(from: number, to: number, animate = true) {
+    if (!virtualOrder || !virtualIndexOf || from === to) return;
+
+    const lo = Math.min(from, to);
+    const hi = Math.max(from, to);
+
+    const [moved] = virtualOrder.splice(from, 1);
+    virtualOrder.splice(to, 0, moved);
+
+    for (let i = lo; i <= hi; i++) {
+      virtualIndexOf[virtualOrder[i]] = i;
     }
-  });
 
-  // After a state commit (drop), clear all inline transforms.
+    const its = items();
+    for (let i = lo; i <= hi; i++) {
+      const di = virtualOrder[i];
+      const el = itemElements.get(its[di].id);
+      if (!el) continue;
+
+      const newY = (i - di) * itemStride;
+      const prev = parseFloat(el.style.transform?.match(/translateY\((.+?)px\)/)?.[1] || '0');
+      if (prev === newY) continue;
+
+      el.style.transform = newY === 0 ? '' : `translateY(${newY}px)`;
+
+      if (animate) {
+        const a = el.getAnimations();
+        for (let j = 0; j < a.length; j++) a[j].cancel();
+        el.animate(
+          [
+            { transform: `translateY(${prev}px)` },
+            {
+              transform: newY === 0 ? 'translateY(0px)' : `translateY(${newY}px)`,
+            },
+          ],
+          { duration: SWAP_ANIM_DURATION, easing: 'ease' },
+        );
+      }
+    }
+  }
+
+  function commitOrder() {
+    if (!virtualOrder) return;
+
+    const its = items();
+    const next = virtualOrder.map((di) => ({
+      ...its[di],
+      domIndex: 0,
+    }));
+    for (let i = 0; i < next.length; i++) {
+      next[i].domIndex = i;
+    }
+
+    virtualOrder = null;
+    virtualIndexOf = null;
+    clearTransforms();
+    setItems(next);
+
+    // Rebuild the element→item map after reorder.
+    itemsByElement.clear();
+    for (const it of next) {
+      const el = itemElements.get(it.id);
+      if (el) itemsByElement.set(el, it);
+    }
+  }
+
+  function clearTransforms() {
+    for (const el of itemElements.values()) {
+      const a = el.getAnimations();
+      for (let i = 0; i < a.length; i++) a[i].cancel();
+      el.style.transform = '';
+    }
+  }
+
+  function animToZero(dur: number) {
+    for (const el of itemElements.values()) {
+      const t = el.style.transform;
+      if (!t || t === 'translateY(0px)') continue;
+      const a = el.getAnimations();
+      for (let i = 0; i < a.length; i++) a[i].cancel();
+      el.style.transform = '';
+      el.animate([{ transform: t }, { transform: 'translateY(0px)' }], {
+        duration: dur,
+        easing: 'ease',
+      });
+    }
+  }
+
+  function announce(msg: string) {
+    if (liveRegion) liveRegion.textContent = msg;
+  }
+
+  // Measure after first render.
   createEffect(() => {
-    items(); // Track items changes.
-    clearAllTransforms(itemElements);
+    items();
+    measure();
+    clearTransforms();
   });
 
-  // Swap two items in the virtual order and animate the affected items.
-  const virtualSwap = (fromIndex: number, toIndex: number) => {
-    const order = virtualOrder.current;
-    if (!order || fromIndex === toIndex) return;
+  // -----------
+  // DndObserver
+  // -----------
 
-    const lo = Math.min(fromIndex, toIndex);
-    const hi = Math.max(fromIndex, toIndex);
-    const affectedIds = order.slice(lo, hi + 1);
-
-    const [moved] = order.splice(fromIndex, 1);
-    order.splice(toIndex, 0, moved);
-
-    // Prevent rapid cascading swaps — wait for the animation to settle.
-    swapCooldown = true;
-    setTimeout(() => {
-      swapCooldown = false;
-    }, SWAP_ANIM_DURATION);
-
-    applyVirtualTransforms(itemElements, items(), order, itemStride.current, affectedIds, true);
-  };
-
-  // Commit the virtual order to state (called on drop).
-  const commitOrder = () => {
-    const order = virtualOrder.current;
-    if (!order) return;
-    virtualOrder.current = null;
-    setItems((prev) => order.map((id) => prev.find((it) => it.id === id)!));
-  };
-
-  // Ref for SortableItem to call on pointer drop completion.
-  const onPointerDrop = { current: commitOrder };
-
-  // DndObserver ref for imperative access.
-  const dndObserverRef: { current: DndObserver<AdvancedCollisionData> | null } = { current: null };
-
-  // DndObserver with collision-based reorder.
-  const dndObserver = useDndObserver<AdvancedCollisionData>({
-    collisionDetector,
+  const observer = useDndObserver<AdvancedCollisionData>({
+    collisionDetector: detector,
     onCollide: ({ collisions }) => {
-      const drag = pointerDrag();
-      const order = virtualOrder.current;
-      if (!drag || !order || swapCooldown) return;
+      const d = pointerDrag();
+      if (!d || !virtualOrder || !virtualIndexOf) return;
 
-      const observer = dndObserverRef.current;
+      const obs = obsRef;
+      const its = items();
+      const draggedItem = its.find((it) => it.id === d.itemId);
+      if (!draggedItem) return;
 
-      for (const collision of collisions) {
-        if (collision.intersectionScore < SWAP_OVERLAP_THRESHOLD) break;
-        const targetDroppable = observer?.droppables.get(collision.droppableId);
-        if (!targetDroppable) continue;
-        const targetItemId = (targetDroppable as Droppable).data.itemId as string;
-        if (targetItemId === drag.itemId) continue;
+      for (const c of collisions) {
+        if (c.intersectionScore < SWAP_OVERLAP_THRESHOLD) break;
 
-        const currentIdx = order.indexOf(drag.itemId);
-        const targetIdx = order.indexOf(targetItemId);
-        if (currentIdx === targetIdx || targetIdx === lastSwapFromIdx.current) continue;
+        const drop = obs?.droppables.get(c.droppableId);
+        if (!drop) continue;
 
-        lastSwapFromIdx.current = currentIdx;
-        virtualSwap(currentIdx, targetIdx);
-        observer?.updateDroppableClientRects();
+        const tid = (drop as Droppable).data.itemId as string;
+        if (tid === d.itemId) continue;
+
+        const target = its.find((it) => it.id === tid);
+        if (!target) continue;
+
+        const cur = vIdx(draggedItem.domIndex);
+        const tgt = vIdx(target.domIndex);
+        if (cur === tgt || tgt === lastSwapFromIdx) continue;
+
+        lastSwapFromIdx = cur;
+        vSwap(cur, tgt);
+        invalidateCache();
+        obs?.updateDroppableClientRects();
         break;
       }
     },
   });
 
-  // Keep dndObserverRef in sync.
+  let obsRef: DndObserver<AdvancedCollisionData> | null = null;
   createEffect(() => {
-    dndObserverRef.current = dndObserver();
+    obsRef = observer();
   });
 
-  // Track pointer drag start/end for placeholder styling.
+  // Track drag start/end for placeholder styling.
   createEffect(() => {
-    const obs = dndObserver();
+    const obs = observer();
     if (!obs) return;
-    const startId = obs.on('start', () => {
-      const drag = pointerDrag();
-      if (drag) setDraggingId(drag.itemId);
+    const sId = obs.on('start', () => {
+      const d = pointerDrag();
+      if (d) setDraggingId(d.itemId);
     });
-    const endId = obs.on('end', () => {
-      setDraggingId(null);
-    });
+    const eId = obs.on('end', () => setDraggingId(null));
     onCleanup(() => {
-      obs.off('start', startId);
-      obs.off('end', endId);
+      obs.off('start', sId);
+      obs.off('end', eId);
     });
   });
 
-  //
+  // ----------------
   // Keyboard reorder
-  //
+  // ----------------
 
-  const a11yStart = (itemId: string) => {
-    const currentItems = items();
-    const index = currentItems.findIndex((it) => it.id === itemId);
-    if (index < 0) return;
-    const item = currentItems[index];
+  function a11yStart(itemId: string) {
+    const its = items();
+    const item = its.find((it) => it.id === itemId);
+    if (!item) return;
 
-    virtualOrder.current = currentItems.map((it) => it.id);
+    initVirtual();
 
-    setA11yDrag({ itemId, originalIndex: index, currentIndex: index });
-    announce(
-      liveRegion,
-      `Picked up ${item.label}. Position ${index + 1} of ${currentItems.length}. ` +
-        `Use arrow keys to move, Space or Enter to drop, Escape to cancel.`,
-    );
-  };
-
-  const a11yMove = (direction: -1 | 1) => {
-    const drag = a11yDrag();
-    const order = virtualOrder.current;
-    if (!drag || !order) return;
-
-    const newIndex = drag.currentIndex + direction;
-    if (newIndex < 0 || newIndex >= order.length) return;
-
-    virtualSwap(drag.currentIndex, newIndex);
-
-    const updatedDrag = { ...drag, currentIndex: newIndex };
-    setA11yDrag(updatedDrag);
-
-    requestAnimationFrame(() => {
-      const el = itemElements.get(drag.itemId);
-      if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    setA11yDrag({
+      itemId,
+      originalIndex: item.domIndex,
+      currentIndex: item.domIndex,
     });
 
-    const item = items().find((it) => it.id === drag.itemId);
-    announce(liveRegion, `${item?.label || ''}, position ${newIndex + 1} of ${order.length}.`);
-  };
+    const el = itemElements.get(itemId);
+    if (el) el.scrollIntoView({ block: 'nearest' });
 
-  const a11yEnd = (cancel: boolean) => {
-    const drag = a11yDrag();
-    if (!drag) return;
+    announce(
+      `Picked up ${item.label}. Position ` +
+        `${item.domIndex + 1} of ${its.length}. ` +
+        `Use arrow keys to move, Space or Enter ` +
+        `to drop, Escape to cancel.`,
+    );
+  }
+
+  function a11yMove(dir: -1 | 1) {
+    const d = a11yDrag();
+    if (!d || !virtualOrder) return;
+
+    const ni = d.currentIndex + dir;
+    if (ni < 0 || ni >= virtualOrder.length) return;
+
+    vSwap(d.currentIndex, ni, false);
+    setA11yDrag({ ...d, currentIndex: ni });
+
+    const fr = listEl!.getBoundingClientRect();
+    const gap = itemStride - itemHeight;
+    const top = fr.top + listOffsetTop + ni * itemStride;
+    const bot = top + itemHeight;
+    if (top - gap < 0) {
+      window.scrollBy(0, top - gap);
+    } else if (bot + gap > window.innerHeight) {
+      window.scrollBy(0, bot + gap - window.innerHeight);
+    }
+
+    const its = items();
+    const item = its.find((it) => it.id === d.itemId);
+    announce(`${item?.label || ''}, position ` + `${ni + 1} of ${virtualOrder.length}.`);
+  }
+
+  function a11yEnd(cancel: boolean) {
+    const d = a11yDrag();
+    if (!d) return;
 
     setA11yDrag(null);
 
-    const currentItems = items();
-    const item = currentItems.find((it) => it.id === drag.itemId);
+    const its = items();
+    const item = its.find((it) => it.id === d.itemId);
 
     if (cancel) {
-      animateTransformsToZero(itemElements, CANCEL_ANIM_DURATION);
-      virtualOrder.current = null;
+      animToZero(CANCEL_ANIM_DURATION);
+      virtualOrder = null;
+      virtualIndexOf = null;
     } else {
       commitOrder();
     }
 
     announce(
-      liveRegion,
       cancel
-        ? `${item?.label || ''} reorder cancelled. Returned to position ${drag.originalIndex + 1}.`
-        : `${item?.label || ''} dropped at position ${drag.currentIndex + 1} of ${currentItems.length}.`,
+        ? `${item?.label || ''} reorder cancelled. ` +
+            `Returned to position ` +
+            `${d.originalIndex + 1}.`
+        : `${item?.label || ''} dropped at position ` + `${d.currentIndex + 1} of ${its.length}.`,
     );
 
-    const el = itemElements.get(drag.itemId);
-    const link = el?.querySelector('a');
-    link?.focus({ preventScroll: true });
-  };
+    const el = itemElements.get(d.itemId);
+    el?.querySelector('a')?.focus({ preventScroll: true });
+  }
 
-  // Global keyboard handler for a11y reorder.
+  // ----------------
+  // Keyboard handler
+  // ----------------
+
   createEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
+    const onKey = (e: KeyboardEvent) => {
       if (a11yDrag()) {
         switch (e.key) {
           case 'ArrowUp':
@@ -4617,21 +4434,255 @@ function App() {
 
       if (e.shiftKey && (e.key === ' ' || e.key === 'Enter')) {
         const li = (e.target as Element).closest('.sortable-item') as HTMLLIElement | null;
-        if (!li) return;
-        const itemId = Array.from(itemElements.entries()).find(([, el]) => el === li)?.[0];
-        if (itemId) {
+        const item = li && itemsByElement.get(li);
+        if (item) {
           e.preventDefault();
-          a11yStart(itemId);
+          a11yStart(item.id);
         }
       }
     };
 
-    document.addEventListener('keydown', onKeyDown);
-    onCleanup(() => document.removeEventListener('keydown', onKeyDown));
+    document.addEventListener('keydown', onKey);
+    onCleanup(() => document.removeEventListener('keydown', onKey));
   });
 
+  // ------------
+  // SortableItem
+  // ------------
+
+  function SortableItem(props: { item: ItemData }) {
+    let liRef: HTMLLIElement | null = null;
+
+    // Register element in shared maps.
+    createEffect(() => {
+      const li = liRef;
+      if (li) {
+        itemElements.set(props.item.id, li);
+        itemsByElement.set(li, props.item);
+      }
+      onCleanup(() => {
+        itemElements.delete(props.item.id);
+        if (li) itemsByElement.delete(li);
+      });
+    });
+
+    const [sensor, setSensorRef] = usePointerSensor();
+
+    // Droppable — rect computed arithmetically.
+    const [, setDropRef] = useDroppable({
+      data: { itemId: props.item.id },
+      computeClientRect: () => {
+        if (!listEl || !itemStride) {
+          return { x: 0, y: 0, width: 0, height: 0 };
+        }
+        const idx = vIdx(props.item.domIndex);
+        const r = getListRect();
+        return {
+          x: r.left,
+          y: r.top + listOffsetTop + idx * itemStride,
+          width: r.width,
+          height: itemHeight,
+        };
+      },
+    });
+
+    function onScroll() {
+      invalidateCache();
+      obsRef?.updateDroppableClientRects();
+    }
+
+    // Draggable with drag preview.
+    const draggable = useDraggableAutoScroll(
+      useDraggable([sensor], {
+        elements: () => {
+          const li = liRef;
+          if (!li) return [];
+
+          // Runs before DndObserver reads rects.
+          initVirtual();
+          invalidateCache();
+
+          return [li];
+        },
+        dragPreview: true,
+        dragPreviewContainer: dragContainer,
+        dragPreviewExitTimeout: DRAG_PREVIEW_EXIT_TIMEOUT,
+        startPredicate: ({
+          event,
+        }: {
+          event: {
+            x: number;
+            y: number;
+            startX: number;
+            startY: number;
+          };
+        }) => {
+          if (a11yDrag()) return false;
+          return isAboveThreshold(
+            event.x,
+            event.y,
+            event.startX,
+            event.startY,
+            POINTER_START_THRESHOLD_SQ,
+          )
+            ? true
+            : undefined;
+        },
+        positionModifiers: [
+          startOffsetModifier as unknown as DraggableModifier<PointerSensor>,
+          ((c) => {
+            c.x = 0;
+            return c;
+          }) as DraggableModifier<PointerSensor>,
+        ],
+        frozenStyles: (): ('width' | 'height')[] => ['width', 'height'],
+        onStart: () => {
+          liRef?.classList.add('placeholder');
+          lastSwapFromIdx = -1;
+          setPointerDrag({
+            itemId: props.item.id,
+            originalIndex: props.item.domIndex,
+            cancelled: false,
+          });
+          listEl?.classList.add('is-dragging');
+          window.addEventListener('scroll', onScroll);
+        },
+        onMove: () => {
+          lastSwapFromIdx = -1;
+        },
+        onEnd: ({ endEvent }: { endEvent?: { type: string } | null }) => {
+          window.removeEventListener('scroll', onScroll);
+          const d = pointerDrag();
+          if (!d) return;
+
+          const cancelled = endEvent?.type === 'cancel';
+          setPointerDrag({ ...d, cancelled });
+
+          if (cancelled) {
+            animToZero(CANCEL_ANIM_DURATION);
+            virtualOrder = null;
+            virtualIndexOf = null;
+          }
+
+          listEl?.classList.remove('is-dragging');
+        },
+      }),
+      {
+        targets: [
+          {
+            element: window,
+            axis: 'y' as const,
+            padding: { top: Infinity, bottom: Infinity },
+          },
+        ],
+      },
+    );
+
+    const cn = () =>
+      'sortable-item' +
+      (draggingId() === props.item.id ? ' placeholder' : '') +
+      (a11yDrag()?.itemId === props.item.id ? ' a11y-dragging' : '');
+
+    return (
+      <>
+        <li
+          ref={(n) => {
+            liRef = n;
+            setDropRef(n);
+          }}
+          class={cn()}
+        >
+          <a
+            ref={(n) => setSensorRef(n)}
+            href="https://muuri.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            draggable={false}
+            aria-roledescription="sortable item"
+            aria-describedby="dnd-instructions"
+          >
+            {props.item.label}
+          </a>
+        </li>
+        <DragPreview draggable={draggable}>
+          {({ sourceElement, exiting, done }) => {
+            let contentEl: HTMLDivElement | null = null;
+
+            // Run exit animation after the content div
+            // is inserted into the proxy by DragPreview.
+            if (exiting) {
+              queueMicrotask(() => {
+                if (!contentEl) {
+                  done();
+                  return;
+                }
+
+                // The proxy is the parent of our content
+                // (DragPreview uses insert(), no wrapper).
+                const proxy = contentEl.parentElement as HTMLElement;
+                const source = sourceElement as HTMLElement;
+                const d = pointerDrag();
+                const li = liRef;
+
+                // Finish swap animations on the source.
+                if (li) {
+                  const a = li.getAnimations();
+                  for (let i = 0; i < a.length; i++) a[i].finish();
+                }
+
+                const pR = proxy.getBoundingClientRect();
+                const tR = source.getBoundingClientRect();
+                const dx = tR.left - pR.left;
+                const dy = tR.top - pR.top;
+
+                const dur = d?.cancelled ? CANCEL_ANIM_DURATION : DROP_ANIM_DURATION;
+
+                const cleanup = () => {
+                  if (li) li.classList.remove('placeholder');
+                  if (!d?.cancelled) commitOrder();
+                  setPointerDrag(null);
+                  done();
+                };
+
+                if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
+                  cleanup();
+                  return;
+                }
+
+                const anim = proxy.animate(
+                  [{ translate: '0px 0px' }, { translate: `${dx}px ${dy}px` }],
+                  {
+                    duration: dur,
+                    easing: 'ease',
+                    fill: 'forwards',
+                    composite: 'add',
+                  },
+                );
+                anim.onfinish = cleanup;
+              });
+            }
+
+            return (
+              <div
+                ref={(el) => (contentEl = el)}
+                class="sortable-item drag-preview"
+                aria-hidden="true"
+              >
+                <a>{props.item.label}</a>
+              </div>
+            );
+          }}
+        </DragPreview>
+      </>
+    );
+  }
+
+  // ----------
+  // Render
+  // ----------
+
   return (
-    <DndObserverContext.Provider value={dndObserver}>
+    <DndObserverContext.Provider value={observer}>
       <div id="dnd-instructions" class="sr-only">
         Press Shift plus Space or Shift plus Enter to reorder. Use arrow keys to move. Press Space
         or Enter to drop, or Escape to cancel.
@@ -4644,34 +4695,14 @@ function App() {
         aria-atomic="true"
       />
       <ul id="sortable-list" ref={(el) => (listEl = el)} role="list" aria-label="Sortable items">
-        <For each={items()}>
-          {(item) => (
-            <SortableItem
-              item={item}
-              isDragging={draggingId() === item.id}
-              isA11yDragging={a11yDrag()?.itemId === item.id}
-              pointerDrag={pointerDrag()}
-              setPointerDrag={setPointerDrag}
-              lastSwapFromIdx={lastSwapFromIdx}
-              a11yDrag={a11yDrag()}
-              listEl={listEl}
-              itemElements={itemElements}
-              items={items()}
-              virtualOrder={virtualOrder}
-              dndObserver={dndObserverRef}
-              itemStride={itemStride}
-              onPointerDrop={onPointerDrop}
-              virtualSwap={virtualSwap}
-            />
-          )}
-        </For>
+        <For each={items()}>{(item) => <SortableItem item={item} />}</For>
       </ul>
     </DndObserverContext.Provider>
   );
 }
 
 const root = document.getElementById('root');
-if (!root) throw new Error('Failed to find the root element');
+if (!root) throw new Error('Failed to find root.');
 
 render(() => <App />, root);
 ```
@@ -4681,7 +4712,7 @@ render(() => <App />, root);
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Solid - Sortable List - Accessible</title>
+    <title>Sortable List - Accessible</title>
     <meta
       name="description"
       content="A sortable list with two interaction modes. (1) Pointer drag: drag items via mouse or touch -- a DragPreview proxy follows the pointer while the original stays in-flow as a translucent placeholder; DndObserver detects collisions to trigger reorder. (2) Keyboard reorder: focus an item and press Shift+Space or Shift+Enter to pick up, arrow keys to move, Space/Enter to drop, Escape to cancel. During either interaction, items are repositioned visually with CSS transforms while the DOM order stays fixed. The final DOM reorder only happens on drop. A live region announces every position change for screen readers."
@@ -4692,6 +4723,7 @@ render(() => <App />, root);
   </head>
   <body>
     <div id="root"></div>
+    <div id="drag-container"></div>
     <script type="module" src="index.tsx"></script>
   </body>
 </html>
@@ -4761,7 +4793,16 @@ body {
   white-space: nowrap;
 }
 
+#drag-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  contain: layout;
+  z-index: 9999;
+}
+
 #sortable-list {
+  position: relative;
   list-style: none;
   margin: 0;
   padding: 20px 0;

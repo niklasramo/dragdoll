@@ -42,8 +42,8 @@ export function useKeyboardMotionSensor<
   useSensorCallback(sensor, 'destroy', onDestroy);
   useSensorCallback(sensor, 'tick', onTick);
 
-  // Helper function to create a new keyboard motion sensor or update the existing
-  // sensor's element if it already exists.
+  // Helper function to create a new keyboard motion sensor or
+  // update the existing sensor's element if it already exists.
   const createSensor = useCallbackStable((node: Element | null) => {
     const currentSensor = sensorRef.current;
     if (currentSensor) {
@@ -65,12 +65,12 @@ export function useKeyboardMotionSensor<
     setSensor(null);
   }, []);
 
-  // Ref callback for the keyboard motion sensor element IF user does not provide an
-  // explicit element.
+  // Ref callback for the keyboard motion sensor element if user
+  // does not provide an explicit element.
   const setRef = useCallbackStable(
     (node: Element | null) => {
-      // If user provides an explicit element, do not create a new keyboard motion
-      // sensor.
+      // If user provides an explicit element, do not create a new
+      // keyboard motion sensor.
       if (element !== undefined) return;
 
       // Destroy the keyboard motion sensor if the node is null.
@@ -79,8 +79,8 @@ export function useKeyboardMotionSensor<
         return;
       }
 
-      // Otherwise, create a new keyboard motion sensor or update the existing sensor's
-      // element if it already exists.
+      // Otherwise, create a new keyboard motion sensor or update
+      // the existing sensor's element if it already exists.
       createSensor(node);
     },
     [element, createSensor, destroySensor],

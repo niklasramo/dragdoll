@@ -10,22 +10,16 @@ For complete drag and drop experiences, DragDoll also provides [`DndObserver`](/
 
 ## Features
 
-📡 &nbsp; **Sweet Sensors**: A well-documented and extendable Sensor system that normalizes any input into unified drag events, giving you complete control over user interactions.
+📡 &nbsp; **Sweet Sensors**: Pointer, keyboard, or roll your own. Sensors normalize any input into unified drag events, giving you complete control over interactions.
 
-🤏 &nbsp; **Dynamic Draggables**: A highly customizable and pluggable Draggable system with autoscrolling superpowers, making complex drag-and-drop scenarios effortless.
+🤏 &nbsp; **Dynamic Draggables**: A highly customizable Draggable system with autoscrolling superpowers, drag previews, and position modifiers. Complex scenarios made effortless.
 
-🎯 &nbsp; **Precise Collisions**: Advanced collision detection system that efficiently determines drop targets and provides rich interaction data for creating intuitive drag and drop experiences.
+🎯 &nbsp; **Classy Collisions**: An extendable, cache-optimized collision detection system you can build on. Ships with a visibility-aware detector that handles overflow clipping and scroll containers for you.
 
-🪄 &nbsp; **Magical Transforms**: Finally, transformed (2D) elements can be dragged normally. Rotate, scale, skew, and translate to your heart's content without limitations.
+🔄 &nbsp; **True Transforms**: Finally, transformed elements can be dragged normally. Rotate, scale, skew to your heart's content.
 
-🧘 &nbsp; **Blissful DX**: Experience a seamless developer experience with strong typing, smart defaults, and pre-baked solutions for common use cases.
+😴 &nbsp; **Dreamy DX**: Smart defaults get you moving fast. Rich events and extension points give you full control when you need it.
 
-🍦 &nbsp; **Vanilla Flavour**: No frameworks were abused while writing this library. It's all vanilla framework-free TypeScript down to the core.
+⚡ &nbsp; **Snappy Swipes**: Pooled events, batched DOM reads/writes, cached measurements. Performance is built to the core.
 
-💝 &nbsp; **Free & Open Source**: 100% MIT licensed, spread the love.
-
-## Roadmap
-
-- **Utilizing Native Drag and Drop**: By not using the native HTML Drag and Drop API, DragDoll misses out on crucial features like file drag-and-drop and dragging items between different windows. It's still a bit unclear how to integrate the native API with DragDoll in a clear and ergonomic way, but figuring this out is a high priority for us.
-
-- **Support for More Frameworks**: [React integration](/react/) is now available! Support for other frontend frameworks like Vue, Svelte, etc. is planned for the future.
+💝 &nbsp; **Lovely License**: 100% MIT licensed, spread the love.

@@ -1,9 +1,7 @@
 import { isDocument } from './is-document.js';
 import { isScrollable } from './is-scrollable.js';
 
-/**
- * Compute the element's scrollable ancestor elements.
- */
+// Compute the element's scrollable ancestor elements.
 export function getScrollableAncestors(
   element: Element | Document | null,
   result: (Element | Window)[] = [],

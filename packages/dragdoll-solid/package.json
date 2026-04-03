@@ -26,70 +26,22 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./drag-preview": {
-      "types": "./dist/drag-preview.d.ts",
-      "import": "./dist/drag-preview.js"
-    },
-    "./dnd-observer-context": {
-      "types": "./dist/dnd-observer-context.d.ts",
-      "import": "./dist/dnd-observer-context.js"
-    },
-    "./use-dnd-observer": {
-      "types": "./dist/use-dnd-observer.d.ts",
-      "import": "./dist/use-dnd-observer.js"
-    },
-    "./use-dnd-observer-callback": {
-      "types": "./dist/use-dnd-observer-callback.d.ts",
-      "import": "./dist/use-dnd-observer-callback.js"
-    },
-    "./use-dnd-observer-context": {
-      "types": "./dist/use-dnd-observer-context.d.ts",
-      "import": "./dist/use-dnd-observer-context.js"
-    },
-    "./use-drag-preview": {
-      "types": "./dist/use-drag-preview.d.ts",
-      "import": "./dist/use-drag-preview.js"
-    },
-    "./use-draggable": {
-      "types": "./dist/use-draggable.d.ts",
-      "import": "./dist/use-draggable.js"
-    },
-    "./use-draggable-auto-scroll": {
-      "types": "./dist/use-draggable-auto-scroll.d.ts",
-      "import": "./dist/use-draggable-auto-scroll.js"
-    },
-    "./use-draggable-callback": {
-      "types": "./dist/use-draggable-callback.d.ts",
-      "import": "./dist/use-draggable-callback.js"
-    },
-    "./use-draggable-drag": {
-      "types": "./dist/use-draggable-drag.d.ts",
-      "import": "./dist/use-draggable-drag.js"
-    },
-    "./use-droppable": {
-      "types": "./dist/use-droppable.d.ts",
-      "import": "./dist/use-droppable.js"
-    },
-    "./use-keyboard-motion-sensor": {
-      "types": "./dist/use-keyboard-motion-sensor.d.ts",
-      "import": "./dist/use-keyboard-motion-sensor.js"
-    },
-    "./use-keyboard-sensor": {
-      "types": "./dist/use-keyboard-sensor.d.ts",
-      "import": "./dist/use-keyboard-sensor.js"
-    },
-    "./use-pointer-sensor": {
-      "types": "./dist/use-pointer-sensor.d.ts",
-      "import": "./dist/use-pointer-sensor.js"
-    },
-    "./use-sensor-callback": {
-      "types": "./dist/use-sensor-callback.d.ts",
-      "import": "./dist/use-sensor-callback.js"
-    },
+    ".": "./dist/index.js",
+    "./dnd-observer-context": "./dist/dnd-observer-context.js",
+    "./drag-preview": "./dist/drag-preview.js",
+    "./use-dnd-observer": "./dist/use-dnd-observer.js",
+    "./use-dnd-observer-callback": "./dist/use-dnd-observer-callback.js",
+    "./use-dnd-observer-context": "./dist/use-dnd-observer-context.js",
+    "./use-drag-preview": "./dist/use-drag-preview.js",
+    "./use-draggable": "./dist/use-draggable.js",
+    "./use-draggable-auto-scroll": "./dist/use-draggable-auto-scroll.js",
+    "./use-draggable-callback": "./dist/use-draggable-callback.js",
+    "./use-draggable-drag": "./dist/use-draggable-drag.js",
+    "./use-droppable": "./dist/use-droppable.js",
+    "./use-keyboard-motion-sensor": "./dist/use-keyboard-motion-sensor.js",
+    "./use-keyboard-sensor": "./dist/use-keyboard-sensor.js",
+    "./use-pointer-sensor": "./dist/use-pointer-sensor.js",
+    "./use-sensor-callback": "./dist/use-sensor-callback.js",
     "./package.json": "./package.json"
   },
   "files": [
@@ -107,10 +59,6 @@
   },
   "peerDependencies": {
     "dragdoll": "~0.12.0",
-    "solid-js": "^1.9.0"
-  },
-  "devDependencies": {
-    "dragdoll": "file:../dragdoll",
     "solid-js": "^1.9.0"
   }
 }

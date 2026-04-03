@@ -4,7 +4,7 @@ body {
 }
 
 :root {
-  /* DragDoll theme — solid colors */
+  /* DragDoll theme — solid colors. */
   --dd-c-brand: #ff5555;
   --dd-c-sponsor: #ff3388;
   --dd-c-sponsor-hover: #ff5599;
@@ -16,19 +16,19 @@ body {
   --dd-c-bg-dark: #000;
   --dd-c-bg-light: #222;
 
-  /* DragDoll theme — white alpha scale */
+  /* DragDoll theme — white alpha scale. */
   --dd-c-white-a5: rgba(255, 255, 255, 0.05);
   --dd-c-white-a10: rgba(255, 255, 255, 0.1);
   --dd-c-white-a20: rgba(255, 255, 255, 0.2);
   --dd-c-white-a30: rgba(255, 255, 255, 0.3);
   --dd-c-white-a40: rgba(255, 255, 255, 0.4);
 
-  /* DragDoll theme — brand alpha scale */
+  /* DragDoll theme — brand alpha scale. */
   --dd-c-brand-a8: rgba(255, 85, 85, 0.08);
   --dd-c-brand-a12: rgba(255, 85, 85, 0.12);
   --dd-c-brand-a30: rgba(255, 85, 85, 0.3);
 
-  /* VitePress overrides — fed from DragDoll tokens */
+  /* VitePress overrides — fed from DragDoll tokens. */
   --vp-c-brand-1: var(--dd-c-brand);
   --vp-c-brand-2: var(--dd-c-brand);
   --vp-c-brand-3: var(--dd-c-brand);
@@ -41,7 +41,7 @@ body {
   --vp-nav-logo-height: 40px;
 }
 
-/* Info block */
+/* Info block. */
 .custom-block.info {
   background-color: var(--dd-c-info-bg);
 
@@ -52,7 +52,7 @@ body {
   }
 }
 
-/* Nav bar */
+/* Nav bar. */
 .VPNavBar {
   @media (max-width: 767px) {
     & .wrapper {
@@ -64,12 +64,12 @@ body {
     }
   }
 
-  /* Logo */
+  /* Logo. */
   & .VPNavBarTitle {
     --vp-c-divider: transparent;
   }
 
-  /* Search button */
+  /* Search button. */
   & .VPNavBarSearch {
     @media (max-width: 767px) {
       height: 100% !important;
@@ -100,7 +100,7 @@ body {
     }
   }
 
-  /* Social links — always visible, including mobile */
+  /* Social links — always visible, including mobile. */
   & .VPSocialLinks {
     display: flex !important;
     align-items: center !important;
@@ -184,12 +184,12 @@ body {
   }
 }
 
-/* No hamburger menu needed — social links are always visible and nav is empty */
+/* No hamburger menu needed — social links are always visible and nav is empty. */
 .VPNavBarHamburger {
   display: none !important;
 }
 
-/*  Search modal */
+/* Search modal. */
 .VPLocalSearchBox {
   & .backdrop {
     backdrop-filter: blur(4px) grayscale(1);
@@ -213,7 +213,7 @@ body {
     &.selected {
       background-color: var(--dd-c-bg-light) !important;
 
-      /* Doubled selector to override VitePress specificity */
+      /* Doubled selector to override VitePress specificity. */
       & .titles.titles {
         color: var(--vp-c-text-1) !important;
       }
@@ -221,12 +221,12 @@ body {
   }
 }
 
-/* Dropdown menus */
+/* Dropdown menus. */
 .VPMenu {
   padding: 4px !important;
 }
 
-/* Sidebar */
+/* Sidebar. */
 .VPSidebar {
   --vp-c-divider: transparent;
 
@@ -301,14 +301,14 @@ body {
   }
 }
 
-/* Content area */
+/* Content area. */
 .VPDoc {
-  /* "On this page" menu */
+  /* "On this page" menu. */
   & .aside {
     --vp-c-divider: transparent;
   }
 
-  /* Main content */
+  /* Main content. */
   & .content {
     & h1,
     & h2,
@@ -365,7 +365,7 @@ body {
   }
 }
 
-/* Footer */
+/* Footer. */
 html:has(.VPDoc) .VPFooter {
   padding: 64px 0 !important;
   margin-top: -128px !important;
@@ -384,7 +384,7 @@ html:has(.VPDoc) .VPFooter {
   }
 }
 
-/* Used by SponsorHearts.vue */
+/* Used by SponsorHearts.vue. */
 @keyframes heart-pulse {
   0% {
     transform: scale(1);

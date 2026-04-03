@@ -1,57 +1,19 @@
-# DragDoll Solid
+# What is DragDoll Solid?
 
-DragDoll now ships with a lightweight SolidJS wrapper that mirrors the API offered by `dragdoll-react`.
-It exposes hook-style helpers (`usePointerSensor`, `useDraggable`, `useDroppable`, …) that wrap the
-core classes and keep them in sync with Solid's fine-grained reactivity.
+DragDoll Solid is a thin and performant SolidJS wrapper for the [DragDoll](/) drag and drop library. It provides hook-style helpers that give you access to the full DragDoll API while leveraging Solid's fine-grained reactivity for excellent performance.
 
-- Package: `dragdoll-solid`
-- Peer dependencies: `dragdoll`, `solid-js`
-- Runtime: zero additional abstractions—each hook simply manages the imperative DragDoll instances
-  and hands the objects back as Solid accessors.
+## Features
 
-```bash
-npm install dragdoll dragdoll-solid solid-js
-```
+🎯 &nbsp; **Thin Wrapper**: Minimal overhead, direct access to vanilla DragDoll API.
 
-```tsx
-/** @jsxImportSource solid-js */
-import { createSignal } from 'solid-js';
-import { render } from 'solid-js/web';
-import {
-  usePointerSensor,
-  useKeyboardMotionSensor,
-  useDraggable,
-  useDraggableDrag,
-} from 'dragdoll-solid';
+🚀 &nbsp; **High Performance**: Leverages Solid's fine-grained reactivity with zero additional abstractions.
 
-function Card() {
-  let element: HTMLDivElement | null = null;
-  const [pointerSensor, setPointerSensorRef] = usePointerSensor();
-  const [keyboardSensor, setKeyboardSensorRef] = useKeyboardMotionSensor();
-  const draggable = useDraggable([pointerSensor, keyboardSensor], () => ({
-    elements: () => (element ? [element] : []),
-  }));
-  const drag = useDraggableDrag(draggable);
+💪 &nbsp; **Type Safe**: Full TypeScript support with excellent type inference.
 
-  return (
-    <div
-      ref={(node) => {
-        element = node;
-        setPointerSensorRef(node);
-        setKeyboardSensorRef(node);
-      }}
-      class={`card draggable ${drag() ? 'dragging' : ''}`}
-      tabIndex={0}
-    >
-      Drag me
-    </div>
-  );
-}
+🍦 &nbsp; **Vanilla Underneath**: Full access to the underlying DragDoll API when you need it.
 
-render(() => <Card />, document.getElementById('root')!);
-```
+💝 &nbsp; **Free & Open Source**: 100% MIT licensed.
 
-## Next steps
+## Caveats
 
-- [Getting Started](/solid/getting-started) – Installation details and project wiring.
-- [Examples](/solid/examples) – Live demos built with Solid + DragDoll.
+Being a wrapper over a vanilla JS library often comes with a few caveats, and such is the case with this wrapper also. The [`container`](/draggable#container) option of the [`Draggable`](/draggable) class is only _partially_ supported because it will make the core library move DOM nodes under a different node for the duration of the drag. Solid has it's own API ([`Portal`](https://docs.solidjs.com/concepts/control-flow/portal#portal)) for moving DOM nodes around, which is very tricky to support in a wrapper library. Read more about this in the [`useDraggable`](/solid/use-draggable#container) docs.
