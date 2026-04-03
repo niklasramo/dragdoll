@@ -16,7 +16,7 @@ export interface DragPreviewState {
 export function useDragPreview(
   draggableInput: MaybeAccessor<AnyDraggable | null>,
 ): Accessor<DragPreviewState | null> {
-  // Bridge the external store into Solid's reactivity.
+  // Bridge the external store into Solid reactivity.
   const [snapshot, setSnapshot] = createSignal(dragPreviewStore.getSnapshot());
 
   createEffect(() => {

@@ -1,24 +1,19 @@
 import { getWorldTransformMatrix } from './get-world-transform-matrix.js';
 
-/**
- * Computes the CSS offset delta that, when added to the element's current
- * offset, positions it at (targetX, targetY) in viewport coordinates.
- *
- * Uses the parent's world transform matrix to analytically invert the mapping
- * from CSS offsets to viewport position. This handles arbitrary ancestor
- * transforms (scale, skew, rotation) with only 1 forced reflow (for
- * `getBoundingClientRect`) instead of the 3 reflows a probing approach needs.
- *
- * Works for both `left`/`top` positioning (absolutely positioned elements) and
- * `translate(x, y)` offsets when translate is the outermost (leftmost)
- * transform function.
- *
- * @param element The element to position.
- * @param targetX Desired viewport x (`getBoundingClientRect().left`).
- * @param targetY Desired viewport y (`getBoundingClientRect().top`).
- * @param result Optional object to store the result in.
- * @returns The (x, y) delta to add to the element's current CSS offset.
- */
+// Computes the CSS offset delta that, when added to the
+// element's current offset, positions it at (targetX,
+// targetY) in viewport coordinates.
+//
+// Uses the parent's world transform matrix to analytically
+// invert the mapping from CSS offsets to viewport position.
+// This handles arbitrary ancestor transforms (scale, skew,
+// rotation) with only 1 forced reflow (for
+// getBoundingClientRect) instead of the 3 reflows a probing
+// approach needs.
+//
+// Works for both left/top positioning (absolutely positioned
+// elements) and translate(x, y) offsets when translate is the
+// outermost (leftmost) transform function.
 export function getLocalOffset(
   element: HTMLElement,
   targetX: number,

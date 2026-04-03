@@ -1,8 +1,6 @@
 import type { Rect } from '../types.js';
 
-/**
- * Calculate intersection between two rectangles.
- */
+// Calculate intersection between two rectangles.
 export function getIntersectionRect(
   a: Rect,
   b: Rect,

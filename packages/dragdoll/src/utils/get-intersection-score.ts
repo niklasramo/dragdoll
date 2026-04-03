@@ -3,10 +3,9 @@ import { getIntersectionRect } from './get-intersection-rect.js';
 
 const TEMP_RECT: Rect = { width: 0, height: 0, x: 0, y: 0 };
 
-/**
- * Calculate how many percent the intersection area of two rectangles is from
- * the maximum potential intersection area between the rectangles.
- */
+// Calculate how many percent the intersection area of two
+// rectangles is from the maximum potential intersection area
+// between the rectangles.
 export function getIntersectionScore(a: Rect, b: Rect, intersectionRect?: Rect | undefined | null) {
   if (!intersectionRect) intersectionRect = getIntersectionRect(a, b, TEMP_RECT);
   if (!intersectionRect) return 0;

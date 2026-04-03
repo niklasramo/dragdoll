@@ -489,8 +489,9 @@ export class DndObserver<T extends CollisionData = CollisionData> {
       contacts.add(droppable);
       if (prevContacts.has(droppable)) {
         persistedContacts.add(droppable);
-        // Let's remove the droppable from the previous colliding droppables set,
-        // this way the removed collisions will be the ones that are left in the
+        // Let's remove the droppable from the previous
+        // colliding droppables set, this way the removed
+        // collisions will be the ones that are left in the
         // previous colliding droppables set.
         prevContacts.delete(droppable);
       } else {

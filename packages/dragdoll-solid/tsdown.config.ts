@@ -20,9 +20,11 @@ export default defineConfig({
     'use-sensor-callback': 'src/hooks/use-sensor-callback.ts',
   },
   outDir: './dist',
+  platform: 'browser',
   format: 'esm',
   target: false,
   minify: true,
   sourcemap: true,
   dts: true,
+  exports: true,
 });

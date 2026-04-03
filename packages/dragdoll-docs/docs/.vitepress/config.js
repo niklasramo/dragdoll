@@ -83,19 +83,15 @@ export default {
       prev: 'Previous',
       next: 'Next',
     },
-    /*
-    algolia: {
-      appId: 'xxxxx',
-      apiKey: 'xxxxx',
-      indexName: 'dragdoll',
-    },
-    */
-    /*
-    carbonAds: {
-      code: "xxxxx",
-      placement: "xxxxx",
-    },
-    */
+    // algolia: {
+    //   appId: 'xxxxx',
+    //   apiKey: 'xxxxx',
+    //   indexName: 'dragdoll',
+    // },
+    // carbonAds: {
+    //   code: "xxxxx",
+    //   placement: "xxxxx",
+    // },
   },
 };
 

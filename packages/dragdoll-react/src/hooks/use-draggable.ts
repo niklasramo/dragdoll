@@ -12,29 +12,27 @@ import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';
 import { useMemoStable } from './use-memo-stable.js';
 
 export interface UseDraggableSettings<S extends Sensor = Sensor>
-  // Omit container to prevent accidental React unmount errors when using dragPreview
+  // Omit container to prevent accidental React unmount errors
+  // when using dragPreview.
   extends Omit<Partial<DraggableOptions<S>>, 'container'> {
   dndObserver?: DndObserver<any> | null;
-  /**
-   * If true, generates a proxy element that receives all drag movements.
-   * Your original element stays in place. Use `<DragPreview>` to render visuals into the proxy.
-   */
+  // If true, generates a proxy element that receives all drag
+  // movements. Your original element stays in place. Use
+  // `<DragPreview>` to render visuals into the proxy.
   dragPreview?: boolean;
-  /**
-   * The container element to reparent drag preview proxy elements into during
-   * drag. Defaults to `document.body`. Useful for iframe, shadow DOM, or
-   * scoped z-index contexts. Only used when `dragPreview` is true.
-   */
+  // The container element to reparent drag preview proxy elements
+  // into during drag. Defaults to `document.body`. Useful for
+  // iframe, shadow DOM, or scoped z-index contexts. Only used
+  // when `dragPreview` is true.
   dragPreviewContainer?: HTMLElement | (() => HTMLElement);
-  /**
-   * If set to a positive number, enables exit animation for drag previews.
-   * On drag end the proxy stays alive in an "exiting" state. The
-   * `DragPreview` render props receive `exiting: true` and a `done()`
-   * callback. Call `done()` when your animation finishes to remove the
-   * proxy. If `done()` is not called within this many milliseconds the
-   * proxy is removed automatically as a safety fallback.
-   * Only used when `dragPreview` is true.
-   */
+  // If set to a positive number, enables exit animation for drag
+  // previews. On drag end the proxy stays alive in an "exiting"
+  // state. The `DragPreview` render props receive `exiting: true`
+  // and a `done()` callback. Call `done()` when your animation
+  // finishes to remove the proxy. If `done()` is not called
+  // within this many milliseconds the proxy is removed
+  // automatically as a safety fallback. Only used when
+  // `dragPreview` is true.
   dragPreviewExitTimeout?: number;
 }
 
@@ -48,8 +46,9 @@ export function useDraggable<S extends Sensor = Sensor>(
     return sensors.filter((s) => Boolean(s)) as readonly S[];
   }, [...sensors]);
 
-  // Parse settings. Strip React-only options that shouldn't reach the core
-  // Draggable or be included in the settings equality check.
+  // Parse settings. Strip React-only options that should not reach
+  // the core Draggable or be included in the settings equality
+  // check.
   const { id, dndObserver, dragPreviewContainer, dragPreviewExitTimeout, ...draggableSettings } =
     settings || {};
 
@@ -93,8 +92,8 @@ export function useDraggable<S extends Sensor = Sensor>(
   const destroyDraggable = useCallbackStable(() => {
     const draggable = draggableRef.current;
     if (!draggable) return;
-    // NB: Any DndObserver that has this draggable will automatically remove
-    // it when the draggable is destroyed.
+    // Any DndObserver that has this draggable will automatically
+    // remove it when the draggable is destroyed.
     draggable.destroy();
     draggableRef.current = null;
     appliedSettingsRef.current = undefined;
@@ -112,15 +111,15 @@ export function useDraggable<S extends Sensor = Sensor>(
       const draggable = new Draggable<S>(resolvedSensorsRef.current, {
         id,
         ...draggableSettingsRef.current,
-        // Override the elements method dynamically so it doesn't cause
-        // recreation on settings equality check.
+        // Override the elements method dynamically so it does not
+        // cause recreation on settings equality check.
         elements(data) {
           const settings = draggableSettingsRef.current;
           const getSourceElements = settings.elements || (() => null);
           const sources = getSourceElements(data);
 
-          // If drag preview is not enabled or there are no sources, return the
-          // sources.
+          // If drag preview is not enabled or there are no sources,
+          // return the sources.
           if (!settings.dragPreview || !sources || sources.length === 0) {
             return sources;
           }
@@ -128,17 +127,19 @@ export function useDraggable<S extends Sensor = Sensor>(
           // Create a proxy for each source element.
           const proxies = createDragPreviewProxies(sources);
 
-          // Push to global store so <DragPreview> knows this draggable is
-          // active.
+          // Push to global store so DragPreview knows this
+          // draggable is active.
           dragPreviewStore.add(data.draggable, sources, proxies);
 
-          // Cleanup: remove from store first (triggers React portal unmount),
-          // then defer proxy DOM removal so React can finish unmounting.
+          // Cleanup: remove from store first (triggers React portal
+          // unmount), then defer proxy DOM removal so React can
+          // finish unmounting.
           const onDragEnd = () => {
             const exitTimeout = dragPreviewExitTimeoutRef.current || 0;
 
             if (exitTimeout > 0) {
-              // Set data-exiting attribute on proxies for CSS targeting.
+              // Set data-exiting attribute on proxies for CSS
+              // targeting.
               for (const el of proxies) el.dataset.exiting = 'true';
 
               // Create idempotent cleanup with fallback timer.
@@ -154,7 +155,7 @@ export function useDraggable<S extends Sensor = Sensor>(
               };
               const fallbackTimer = setTimeout(cleanup, exitTimeout);
 
-              // Transition store entry to exiting state.
+              // Transition the store entry to exiting state.
               dragPreviewStore.startExiting(data.draggable, cleanup);
             } else {
               // Instant removal (current behavior).
@@ -172,11 +173,12 @@ export function useDraggable<S extends Sensor = Sensor>(
 
           return proxies;
         },
-        // The container function tells the core where to reparent the proxy
-        // during drag. The proxy starts in the original's parent (set above)
-        // and gets moved to the drag container (default: document.body) by
-        // the core's _applyStart, which also applies full transform
-        // normalization (matrix inversion, alignment correction, etc.).
+        // The container function tells the core where to reparent
+        // the proxy during drag. The proxy starts in the original's
+        // parent (set above) and gets moved to the drag container
+        // (default: document.body) by the core's _applyStart, which
+        // also applies full transform normalization (matrix
+        // inversion, alignment correction, etc.).
         ...(isDragPreview
           ? {
               container: () => {
@@ -226,10 +228,11 @@ export function useDraggable<S extends Sensor = Sensor>(
     // Get the current draggable settings.
     const draggableSettings = draggableSettingsRef.current;
 
-    // Custom equality check. When dragPreview is enabled on both prev and next,
-    // we ignore `elements` because the construction-time closure manages it
-    // internally via draggableSettingsRef (reads the latest user-provided
-    // elements dynamically).
+    // Custom equality check. When dragPreview is enabled on both
+    // prev and next, we ignore `elements` because the
+    // construction-time closure manages it internally via
+    // draggableSettingsRef (reads the latest user-provided elements
+    // dynamically).
     let hasChanged = false;
 
     if (appliedSettingsRef.current) {
@@ -248,13 +251,15 @@ export function useDraggable<S extends Sensor = Sensor>(
 
     if (!hasChanged) return;
 
-    // Here we use the protected method to parse the settings so that we can
-    // use the default settings for the ones that are not provided.
+    // Here we use the protected method to parse the settings so
+    // that we can use the default settings for the ones that are
+    // not provided.
     const parsedSettings = draggable['_parseSettings'](draggableSettings);
 
-    // When dragPreview is enabled, skip passing `elements` to updateSettings
-    // because the construction-time closure already reads the latest settings
-    // via ref. When dragPreview is off, pass the user's elements if provided.
+    // When dragPreview is enabled, skip passing `elements` to
+    // updateSettings because the construction-time closure already
+    // reads the latest settings via ref. When dragPreview is off,
+    // pass the user's elements if provided.
     draggable.updateSettings({
       ...parsedSettings,
       ...(!draggableSettings.dragPreview && draggableSettings.elements
@@ -270,8 +275,9 @@ export function useDraggable<S extends Sensor = Sensor>(
         : {}),
     } as any);
 
-    // If dndGroups or computeClientRect changed we need to update the
-    // effective dnd observer's matches and queue a collision check.
+    // If dndGroups or computeClientRect changed we need to update
+    // the effective dnd observer's matches and queue a collision
+    // check.
     if (appliedSettingsRef.current) {
       const dndGroupsChanged = draggableSettings.dndGroups !== appliedSettingsRef.current.dndGroups;
       const computeClientRectChanged =

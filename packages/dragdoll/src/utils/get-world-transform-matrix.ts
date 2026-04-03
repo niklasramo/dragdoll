@@ -5,6 +5,8 @@ import { parseTransformOrigin } from './parse-transform-origin.js';
 import { resetMatrix } from './reset-matrix.js';
 
 const MATRIX = IS_BROWSER ? new DOMMatrix() : null;
+const ORIGIN_MATRIX = IS_BROWSER ? new DOMMatrix() : null;
+const ORIGIN: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 };
 
 export function getWorldTransformMatrix(
   el: HTMLElement | SVGSVGElement,
@@ -21,16 +23,19 @@ export function getWorldTransformMatrix(
       MATRIX!.setMatrixValue(transformString);
       if (!MATRIX!.isIdentity) {
         const { transformOrigin } = getStyle(currentElement);
-        const { x, y, z } = parseTransformOrigin(transformOrigin);
+        parseTransformOrigin(transformOrigin, ORIGIN);
+        const { x, y, z } = ORIGIN;
+
+        // Apply transform-origin: T(origin) * M * T(-origin)
         if (z === 0) {
-          MATRIX!.setMatrixValue(
-            `translate(${x}px,${y}px) ${MATRIX} translate(${x * -1}px,${y * -1}px)`,
-          );
+          MATRIX!.translateSelf(-x, -y);
+          resetMatrix(ORIGIN_MATRIX!).translateSelf(x, y);
         } else {
-          MATRIX!.setMatrixValue(
-            `translate3d(${x}px,${y}px,${z}px) ${MATRIX} translate3d(${x * -1}px,${y * -1}px,${z * -1}px)`,
-          );
+          MATRIX!.translateSelf(-x, -y, -z);
+          resetMatrix(ORIGIN_MATRIX!).translateSelf(x, y, z);
         }
+        MATRIX!.preMultiplySelf(ORIGIN_MATRIX!);
+
         result.preMultiplySelf(MATRIX!);
       }
     }

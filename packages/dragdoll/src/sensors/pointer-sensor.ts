@@ -119,54 +119,35 @@ export class PointerSensor<
 > implements Sensor<E> {
   declare _events_type: E;
 
-  /**
-   * The observed element or window.
-   */
+  // The observed element or window.
   readonly element: Element | Window;
 
-  /**
-   * Current drag data, null if drag is not active.
-   */
+  // Current drag data, null if drag is not active.
   readonly drag: PointerSensorDragData | null;
 
-  /**
-   * Indicator if the instance is destroyed.
-   */
+  // Indicator if the instance is destroyed.
   readonly isDestroyed: boolean;
 
-  /**
-   * The options object to be used for `addEventListener`.
-   */
+  // The options object to be used for addEventListener.
   protected _startPredicate: (e: PointerSensorSourceEvent) => boolean;
 
-  /**
-   * The options object to be used for `addEventListener`.
-   */
+  // The options object to be used for addEventListener.
   protected _listenerOptions: ListenerOptions;
 
-  /**
-   * Type of tracked source events.
-   */
+  // Type of tracked source events.
   protected _sourceEvents: keyof typeof SOURCE_EVENTS;
 
-  /**
-   * Indicator if window's listener's are bound.
-   */
+  // Indicator if window's listeners are bound.
   protected _areWindowListenersBound: boolean;
 
-  /**
-   * Internal event emitter instance.
-   */
+  // Internal event emitter instance.
   protected _emitter: Emitter<Events>;
 
-  /**
-   * Internal event payload for pooled emitting.
-   */
+  // Internal event payload for pooled emitting.
   protected _eventData: any | null = null;
 
-  /**
-   * Cleanup function for the click blocker, null if not active.
-   */
+  // Cleanup function for the click blocker, null if
+  // not active.
   protected _removeClickBlocker: (() => void) | null = null;
 
   protected _cancelOnVisibilityChange: boolean;
@@ -234,20 +215,17 @@ export class PointerSensor<
     }
   }
 
-  /**
-   * Check if the provided event contains the tracked pointer id or in the case
-   * of touch event if the first changed touch is the tracked touch object and
-   * return the event or touch object. Otherwise return null.
-   */
+  // Check if the provided event contains the tracked
+  // pointer id or in the case of touch event if the first
+  // changed touch is the tracked touch object and return
+  // the event or touch object. Otherwise return null.
   protected _getTrackedPointerEventData(
     e: PointerSensorSourceEvent,
   ): PointerEvent | MouseEvent | Touch | null {
     return this.drag ? getPointerEventData(e, this.drag.pointerId) : null;
   }
 
-  /**
-   * Listener for start event.
-   */
+  // Listener for start event.
   protected _onStart(e: PointerSensorSourceEvent) {
     // Clear any existing click blocker from a previous interaction.
     this._removeClickBlocker?.();
@@ -280,7 +258,8 @@ export class PointerSensor<
     // Set drag data.
     (this as Writeable<this>).drag = dragData;
 
-    // Create a separate event payload object to avoid polluting drag data with extra properties.
+    // Create a separate event payload object to avoid
+    // polluting drag data with extra properties.
     this._eventData = {
       ...dragData,
       type: SensorEventType.Start,
@@ -298,9 +277,7 @@ export class PointerSensor<
     }
   }
 
-  /**
-   * Listener for move event.
-   */
+  // Listener for move event.
   protected _onMove(e: PointerSensorSourceEvent) {
     const drag = this.drag;
     const eventData = this._eventData;
@@ -328,9 +305,7 @@ export class PointerSensor<
     this._emitter.emit(eventData.type, eventData);
   }
 
-  /**
-   * Listener for cancel event.
-   */
+  // Listener for cancel event.
   protected _onCancel(e: PointerEvent | TouchEvent) {
     const drag = this.drag;
     const eventData = this._eventData;
@@ -360,9 +335,7 @@ export class PointerSensor<
     this._resetDrag();
   }
 
-  /**
-   * Listener for end event.
-   */
+  // Listener for end event.
   protected _onEnd(e: PointerSensorSourceEvent) {
     const drag = this.drag;
     const eventData = this._eventData;
@@ -392,9 +365,7 @@ export class PointerSensor<
     this._resetDrag();
   }
 
-  /**
-   * Bind window event listeners for move/end/cancel.
-   */
+  // Bind window event listeners for move/end/cancel.
   protected _bindWindowListeners() {
     if (this._areWindowListenersBound) return;
     const { move, end, cancel } = SOURCE_EVENTS[this._sourceEvents];
@@ -415,9 +386,7 @@ export class PointerSensor<
     this._areWindowListenersBound = true;
   }
 
-  /**
-   * Unbind window event listeners for move/end/cancel.
-   */
+  // Unbind window event listeners for move/end/cancel.
   protected _unbindWindowListeners() {
     if (this._areWindowListenersBound) {
       const { move, end, cancel } = SOURCE_EVENTS[this._sourceEvents];
@@ -439,18 +408,14 @@ export class PointerSensor<
     }
   }
 
-  /**
-   * Reset drag data.
-   */
+  // Reset drag data.
   protected _resetDrag() {
     (this as Writeable<this>).drag = null;
     this._eventData = null;
     this._unbindWindowListeners();
   }
 
-  /**
-   * Forcefully cancel the drag process.
-   */
+  // Forcefully cancel the drag process.
   cancel() {
     if (!this.drag) return;
 
@@ -467,9 +432,7 @@ export class PointerSensor<
     this._resetDrag();
   }
 
-  /**
-   * Update the element to be tracked.
-   */
+  // Update the element to be tracked.
   updateElement(element: Element | Window) {
     if (this.isDestroyed || this.element === element) return;
 
@@ -491,9 +454,7 @@ export class PointerSensor<
     (this as Writeable<this>).element = element;
   }
 
-  /**
-   * Update the instance's settings.
-   */
+  // Update the instance's settings.
   updateSettings(options: Partial<PointerSensorSettings>) {
     if (this.isDestroyed) return;
 
@@ -596,9 +557,7 @@ export class PointerSensor<
     }
   }
 
-  /**
-   * Bind a drag event listener.
-   */
+  // Bind a drag event listener.
   on<T extends keyof E>(
     type: T,
     listener: (e: E[T]) => void,
@@ -607,21 +566,19 @@ export class PointerSensor<
     return this._emitter.on(type, listener, listenerId);
   }
 
-  /**
-   * Unbind a drag event listener.
-   */
+  // Unbind a drag event listener.
   off<T extends keyof E>(type: T, listenerId: SensorEventListenerId): void {
     this._emitter.off(type, listenerId);
   }
 
-  /**
-   * Prevent the next click event from propagating and performing default action.
-   * This is useful for blocking clicks after a drag ends to avoid triggering
-   * click handlers on draggable elements (e.g., links, buttons).
-   *
-   * The blocker automatically removes itself after blocking a click or when
-   * a new pointer interaction starts on this sensor.
-   */
+  // Prevent the next click event from propagating and
+  // performing default action. This is useful for blocking
+  // clicks after a drag ends to avoid triggering click
+  // handlers on draggable elements (e.g., links, buttons).
+  //
+  // The blocker automatically removes itself after blocking
+  // a click or when a new pointer interaction starts on
+  // this sensor.
   preventClickOnEnd(): void {
     // Clean up any existing blocker first.
     this._removeClickBlocker?.();
@@ -644,9 +601,7 @@ export class PointerSensor<
     };
   }
 
-  /**
-   * Destroy the instance and unbind all drag event listeners.
-   */
+  // Destroy the instance and unbind all drag event listeners.
   destroy() {
     if (this.isDestroyed) return;
 

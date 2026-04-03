@@ -6,19 +6,19 @@ const isPlainObject = (v: any): v is Record<string, unknown> => {
   return p === Object.prototype || p === null;
 };
 
-// This is a tailor-made deep equal function for comparing config objects
-// in DragDoll's context. it should cover all the cases of options objects
-// used in DragDoll.
+// This is a tailor-made deep equal function for comparing config
+// objects in DragDoll's context. It should cover all the cases of
+// options objects used in DragDoll.
 export function areConfigsEqual(a: any, b: any): boolean {
-  // Primitives / NaN / ±0.
+  // Handle primitives, NaN, and plus/minus zero.
   if (Object.is(a, b)) return true;
 
-  // Must both be non-null objects from here on.
+  // Both values must be non-null objects from here on.
   if (a === null || b === null) return false;
   if (typeof a !== 'object' || typeof b !== 'object') return false;
 
-  // Handle arrays. There are nested arrays in some DragDoll options so  we
-  // need to handle them deeply.
+  // Handle arrays. There are nested arrays in some DragDoll options
+  // so we need to handle them deeply.
   const aArr = Array.isArray(a);
   const bArr = Array.isArray(b);
   if (aArr || bArr) {
@@ -31,11 +31,12 @@ export function areConfigsEqual(a: any, b: any): boolean {
     return true;
   }
 
-  // Handle Sets. We only do shallow comparison of sets as we have only
-  // primitive values in sets in DragDoll options. Note that the only option
-  // which can be set is the Draggable's dndGroups and Droppable's accept. In
-  // both of those cases it does not matter in which order the values are in the
-  // set so we can use the isSubsetOf method to check for equality.
+  // Handle sets. We only do shallow comparison of sets as we have
+  // only primitive values in sets in DragDoll options. Note that the
+  // only option which can be a set is the Draggable's dndGroups and
+  // Droppable's accept. In both of those cases it does not matter in
+  // which order the values are in the set so we can use the
+  // isSubsetOf method to check for equality.
   const aSet = a instanceof Set;
   const bSet = b instanceof Set;
   if (aSet || bSet) {
@@ -44,7 +45,8 @@ export function areConfigsEqual(a: any, b: any): boolean {
     return a.isSubsetOf(b);
   }
 
-  // Plain objects only from this point on, which we have to also handle deeply.
+  // Plain objects only from this point on, which we also handle
+  // deeply.
   if (!isPlainObject(a) || !isPlainObject(b)) return false;
 
   const keysA = Object.keys(a);

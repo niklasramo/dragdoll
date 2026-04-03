@@ -27,7 +27,8 @@ export function useDraggableAutoScroll<
   // Store applied settings for deep equality check.
   const appliedSettingsRef = useRef(settings);
 
-  // Register plugin when draggable changes (only once per draggable instance)
+  // Register plugin when draggable changes (only once per
+  // draggable instance).
   useIsomorphicLayoutEffect(() => {
     // If the draggable is not ready, return.
     if (!draggable) return;
@@ -47,13 +48,14 @@ export function useDraggableAutoScroll<
     const plugin = (draggable as DraggableWithAutoScroll<S, P>)?.plugins.autoscroll;
     if (!plugin) return;
 
-    // Only update if settings have actually changed (deep equality check).
-    // This prevents unnecessary updates when settings object reference changes
-    // but values remain the same.
+    // Only update if settings have actually changed (deep equality
+    // check). This prevents unnecessary updates when settings
+    // object reference changes but values remain the same.
     if (!areConfigsEqual(appliedSettingsRef.current, settings)) {
-      // Here we use the protected method to parse the settings so that we can
-      // use the default settings for the ones that are not provided. This is the
-      // expected behavior in React's declarative nature.
+      // Here we use the protected method to parse the settings so
+      // that we can use the default settings for the ones that are
+      // not provided. This is the expected behavior in React's
+      // declarative nature.
       plugin.updateSettings(plugin['_parseSettings'](settings));
     }
 
@@ -61,6 +63,6 @@ export function useDraggableAutoScroll<
     appliedSettingsRef.current = settings;
   }, [draggable, settings]);
 
-  // Return typed draggable with plugin
+  // Return typed draggable with plugin.
   return draggable as DraggableWithAutoScroll<S, P>;
 }

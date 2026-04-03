@@ -11,8 +11,5 @@
     "prettier:write": "prettier --write --no-error-on-unmatched-pattern \"./**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,html,css,yml,yaml}\"",
     "serve": "vitepress serve docs",
     "ts:check": "tsc --noEmit"
-  },
-  "devDependencies": {
-    "esbuild-plugin-solid": "^0.6.0"
   }
 }

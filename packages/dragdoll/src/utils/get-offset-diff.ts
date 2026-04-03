@@ -5,9 +5,7 @@ import { isPoint } from './is-point.js';
 const OFFSET_A = { x: 0, y: 0 };
 const OFFSET_B = { x: 0, y: 0 };
 
-/**
- * Calculate the offset difference two elements.
- */
+// Calculate the offset difference between two elements.
 export function getOffsetDiff(
   elemA: HTMLElement | SVGSVGElement | Window | Document | Point,
   elemB: HTMLElement | SVGSVGElement | Window | Document | Point,

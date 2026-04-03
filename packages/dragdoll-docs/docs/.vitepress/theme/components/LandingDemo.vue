@@ -311,7 +311,11 @@ onUnmounted(() => {
   border-radius: 10px;
 }
 
-/* ===== Reveal glow ===== */
+/*
+-----------
+Reveal glow
+-----------
+*/
 
 .reveal-glow {
   position: absolute;
@@ -345,7 +349,11 @@ onUnmounted(() => {
   }
 }
 
-/* ===== Reveal full image ===== */
+/*
+-----------------
+Reveal full image
+-----------------
+*/
 
 .reveal-image {
   position: absolute;
@@ -363,7 +371,11 @@ onUnmounted(() => {
   opacity: 1;
 }
 
-/* ===== Tiles ===== */
+/*
+-----
+Tiles
+-----
+*/
 
 .puzzle-tile {
   position: absolute;
@@ -382,12 +394,12 @@ onUnmounted(() => {
     box-shadow 0.4s ease,
     opacity 0.4s ease;
 
-  /* Mascot image */
+  /* Mascot image. */
   background-image: url('/dragdoll-favicon.svg');
   background-size: v-bind(TILE * GRID + 'px') v-bind(TILE * GRID + 'px');
   background-repeat: no-repeat;
 
-  /* Subtle border */
+  /* Subtle border. */
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.2),
     0 1px 3px rgba(0, 0, 0, 0.4);
@@ -410,14 +422,14 @@ onUnmounted(() => {
     0 0 15px rgba(255, 85, 85, 0.1);
 }
 
-/* Solved: tiles lose borders and merge */
+/* Solved: tiles lose borders and merge. */
 .puzzle-grid.solved .puzzle-tile,
 .puzzle-grid.reveal .puzzle-tile {
   border-radius: 0;
   box-shadow: none;
 }
 
-/* Reveal: tiles fade out to show the full image underneath */
+/* Tiles fade out to show the full image. */
 .puzzle-grid.reveal .puzzle-tile {
   opacity: 0;
 }

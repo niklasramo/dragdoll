@@ -4,16 +4,15 @@ import { isWindow } from './is-window.js';
 
 const SCROLLABLE_OVERFLOWS = new Set(['auto', 'scroll']);
 
-/**
- * Returns the padding-box rect of an element (or window) in **client
- * coordinates** (i.e. relative to the viewport, same as
- * `getBoundingClientRect`).
- *
- * This is a zero-allocation fast-path that replaces
- * `mezr.getRect([element, 'padding'], window)` — the only call pattern used
- * in this codebase. If `result` is provided it is mutated in-place and
- * returned; otherwise a new object is allocated.
- */
+// Returns the padding-box rect of an element (or window) in
+// client coordinates (i.e. relative to the viewport, same as
+// getBoundingClientRect).
+//
+// This is a zero-allocation fast-path that replaces
+// mezr.getRect([element, 'padding'], window) -- the only
+// call pattern used in this codebase. If result is provided
+// it is mutated in-place and returned; otherwise a new object
+// is allocated.
 export function getClientPaddingRect(element: Element | Window, result?: Rect): Rect {
   const r = result || ({ x: 0, y: 0, width: 0, height: 0 } as Rect);
 

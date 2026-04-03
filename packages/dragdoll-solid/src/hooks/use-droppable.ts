@@ -47,6 +47,7 @@ export function useDroppable(settingsInput?: MaybeAccessor<UseDroppableSettings 
       id: idAccessor(),
       accept: acceptAccessor(),
       data: dataAccessor(),
+      computeClientRect: computeClientRectAccessor(),
     };
     const instance = new DroppableCore(node, options);
     droppableRef = instance;
@@ -102,7 +103,9 @@ export function useDroppable(settingsInput?: MaybeAccessor<UseDroppableSettings 
     if (!droppable) return;
     const nextAccept = acceptAccessor() || (() => true);
     droppable.accept = nextAccept;
-    // Re-run collision detection when accept changes.
+    // Clear stale targets and re-run collision detection when
+    // the accept option changes.
+    appliedObserver?.clearTargets();
     appliedObserver?.detectCollisions();
   });
 
@@ -119,6 +122,7 @@ export function useDroppable(settingsInput?: MaybeAccessor<UseDroppableSettings 
     if (nextComputeClientRect) {
       droppable.computeClientRect = nextComputeClientRect;
     }
+    droppable.updateClientRect();
     appliedObserver?.detectCollisions();
   });
 

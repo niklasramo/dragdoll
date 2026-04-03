@@ -6,29 +6,29 @@ DragDoll is a modular and highly extensible drag system written in TypeScript. I
 
 📡 &nbsp; **Sweet Sensors**
 
-A well-documented and extendable Sensor system that normalizes any input into unified drag events, giving you complete control over user interactions.
+Pointer, keyboard, or roll your own. Sensors normalize any input into unified drag events, giving you complete control over interactions.
 
 🤏 &nbsp; **Dynamic Draggables**
 
-A highly customizable and pluggable Draggable system with autoscrolling superpowers, making complex drag-and-drop scenarios effortless.
+A highly customizable Draggable system with autoscrolling superpowers, drag previews, and position modifiers. Complex scenarios made effortless.
 
-🎯 &nbsp; **Precise Collisions**
+🎯 &nbsp; **Classy Collisions**
 
-Advanced collision detection system that efficiently determines drop targets and provides rich interaction data for creating intuitive drag and drop experiences.
+An extendable, cache-optimized collision detection system you can build on. Ships with a visibility-aware detector that handles overflow clipping and scroll containers for you.
 
-🪄 &nbsp; **Magical Transforms**
+🔄 &nbsp; **True Transforms**
 
-Finally, transformed (2D) elements can be dragged normally. Rotate, scale, skew, and translate to your heart's content without limitations.
+Finally, transformed elements can be dragged normally. Rotate, scale, skew to your heart's content.
 
-🧘 &nbsp; **Blissful DX**
+😴 &nbsp; **Dreamy DX**
 
-Experience a seamless developer experience with strong typing, smart defaults, and pre-baked solutions for common use cases.
+Smart defaults get you moving fast. Rich events and extension points give you full control when you need it.
 
-🍦 &nbsp; **Vanilla Flavour**
+⚡ &nbsp; **Snappy Swipes**
 
-No frameworks were abused while writing this library. It's all vanilla framework-free TypeScript down to the core.
+Pooled events, batched DOM reads/writes, cached measurements. Performance is built to the core.
 
-💝 &nbsp; **Free & Open Source**
+💝 &nbsp; **Lovely License**
 
 100% MIT licensed, spread the love.
 

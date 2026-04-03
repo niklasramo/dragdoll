@@ -53,64 +53,70 @@ const base = site.value.base || '/';
         </p>
         <div class="features-grid">
           <div class="feature-card">
-            <div class="feature-icon" style="--accent: #ff5555">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M2 12a10 10 0 0 1 18-6" />
-                <path d="M22 12a10 10 0 0 1-18 6" />
-                <circle cx="12" cy="12" r="2" />
-              </svg>
+            <div class="feature-header">
+              <div class="feature-icon" style="--accent: #ff5555">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M2 12a10 10 0 0 1 18-6" />
+                  <path d="M22 12a10 10 0 0 1-18 6" />
+                  <circle cx="12" cy="12" r="2" />
+                </svg>
+              </div>
+              <h3>Sweet Sensors</h3>
             </div>
-            <h3>Sweet Sensors</h3>
             <p>
               Pointer, keyboard, or roll your own. Sensors normalize any input into unified drag
               events, giving you complete control over interactions.
             </p>
           </div>
           <div class="feature-card">
-            <div class="feature-icon" style="--accent: #55ff9c">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M14 4h4v4" />
-                <path d="M10 20H6v-4" />
-                <path d="m18 4-7 7" />
-                <path d="m6 20 7-7" />
-              </svg>
+            <div class="feature-header">
+              <div class="feature-icon" style="--accent: #55ff9c">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M14 4h4v4" />
+                  <path d="M10 20H6v-4" />
+                  <path d="m18 4-7 7" />
+                  <path d="m6 20 7-7" />
+                </svg>
+              </div>
+              <h3>Dynamic Draggables</h3>
             </div>
-            <h3>Dynamic Draggables</h3>
             <p>
               A highly customizable Draggable system with autoscrolling superpowers, drag previews,
               and position modifiers. Complex scenarios made effortless.
             </p>
           </div>
           <div class="feature-card">
-            <div class="feature-icon" style="--accent: #db55ff">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <circle cx="12" cy="12" r="6" />
-                <circle cx="12" cy="12" r="2" />
-              </svg>
+            <div class="feature-header">
+              <div class="feature-icon" style="--accent: #db55ff">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <circle cx="12" cy="12" r="6" />
+                  <circle cx="12" cy="12" r="2" />
+                </svg>
+              </div>
+              <h3>Classy Collisions</h3>
             </div>
-            <h3>Collision Detection</h3>
             <p>
               An extendable, cache-optimized collision detection system you can build on. Ships with
               a visibility-aware detector that handles overflow clipping and scroll containers for
@@ -118,66 +124,72 @@ const base = site.value.base || '/';
             </p>
           </div>
           <div class="feature-card">
-            <div class="feature-icon" style="--accent: #7cbdff">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-                <path d="M8 9.5c.4-.5 1.2-.5 1.6 0" />
-                <path d="M14.4 9.5c.4-.5 1.2-.5 1.6 0" />
-              </svg>
+            <div class="feature-header">
+              <div class="feature-icon" style="--accent: #7cbdff">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                  <path d="M8 9.5c.4-.5 1.2-.5 1.6 0" />
+                  <path d="M14.4 9.5c.4-.5 1.2-.5 1.6 0" />
+                </svg>
+              </div>
+              <h3>Dreamy DX</h3>
             </div>
-            <h3>Blissful DX</h3>
             <p>
               Smart defaults get you moving fast. Rich events and extension points give you full
               control when you need it.
             </p>
           </div>
           <div class="feature-card">
-            <div class="feature-icon" style="--accent: #f9ff9e">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="m21 21-6-6m6 6v-4.8m0 4.8h-4.8" />
-                <path d="M3 16.2V21m0 0h4.8M3 21l6-6" />
-                <path d="M21 7.8V3m0 0h-4.8M21 3l-6 6" />
-                <path d="M3 7.8V3m0 0h4.8M3 3l6 6" />
-              </svg>
+            <div class="feature-header">
+              <div class="feature-icon" style="--accent: #f9ff9e">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="m21 21-6-6m6 6v-4.8m0 4.8h-4.8" />
+                  <path d="M3 16.2V21m0 0h4.8M3 21l6-6" />
+                  <path d="M21 7.8V3m0 0h-4.8M21 3l-6 6" />
+                  <path d="M3 7.8V3m0 0h4.8M3 3l6 6" />
+                </svg>
+              </div>
+              <h3>True Transforms</h3>
             </div>
-            <h3>Magical Transforms</h3>
             <p>
               Finally, transformed elements can be dragged normally. Rotate, scale, skew to your
               heart's content.
             </p>
           </div>
           <div class="feature-card">
-            <div class="feature-icon" style="--accent: #ff9555">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-              </svg>
+            <div class="feature-header">
+              <div class="feature-icon" style="--accent: #ff9555">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+              </div>
+              <h3>Snappy Swipes</h3>
             </div>
-            <h3>Uncompromising Performance</h3>
             <p>
-              Pooled events, batched DOM reads/writes, cached measurements. Your users won't notice
-              the performance. That's the point.
+              Pooled events, batched DOM reads/writes, cached measurements. Performance is built to
+              the core.
             </p>
           </div>
         </div>
@@ -298,7 +310,11 @@ const base = site.value.base || '/';
   max-width: 100%;
 }
 
-/* ===== Hero ===== */
+/*
+----
+Hero
+----
+*/
 
 .hero {
   position: relative;
@@ -382,7 +398,11 @@ const base = site.value.base || '/';
   flex-wrap: wrap;
 }
 
-/* ===== Buttons ===== */
+/*
+-------
+Buttons
+-------
+*/
 
 .btn {
   display: inline-flex;
@@ -424,7 +444,11 @@ const base = site.value.base || '/';
   height: 18px;
 }
 
-/* ===== Features ===== */
+/*
+--------
+Features
+--------
+*/
 
 .features {
   padding: var(--section-gap) 24px;
@@ -477,16 +501,23 @@ const base = site.value.base || '/';
   border: 1px solid var(--dd-c-white-a10);
 }
 
+.feature-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
 .feature-icon {
   width: 40px;
   height: 40px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   color: var(--accent);
-  margin-bottom: 16px;
 }
 
 .feature-icon svg {
@@ -498,7 +529,7 @@ const base = site.value.base || '/';
   font-size: 16px;
   font-weight: 600;
   color: var(--vp-c-text-1);
-  margin-bottom: 8px;
+  margin: 0;
   text-wrap: balance;
 }
 
@@ -509,7 +540,11 @@ const base = site.value.base || '/';
   text-wrap: pretty;
 }
 
-/* ===== Frameworks ===== */
+/*
+----------
+Frameworks
+----------
+*/
 
 .frameworks {
   padding: 0 24px var(--section-gap);
@@ -603,7 +638,11 @@ const base = site.value.base || '/';
   background: var(--dd-c-white-a5);
 }
 
-/* ===== Bottom CTA ===== */
+/*
+----------
+Bottom CTA
+----------
+*/
 
 .bottom-cta {
   text-align: center;

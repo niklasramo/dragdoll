@@ -1,0 +1,184 @@
+import {
+  AdvancedCollisionData,
+  AdvancedCollisionDetector,
+  AnyDraggable,
+  autoScrollPlugin,
+  DndObserver,
+  DndObserverEventType,
+  Draggable,
+  Droppable,
+  getLocalOffset,
+  KeyboardMotionSensor,
+  PointerSensor,
+} from 'dragdoll';
+
+// Keep track of the best match droppable.
+const bestMatchMap: Map<AnyDraggable, Droppable> = new Map();
+
+// Get elements.
+const scrollContainers = [...document.querySelectorAll('.scroll-list')] as HTMLElement[];
+const draggableElements = [...document.querySelectorAll('.draggable')] as HTMLElement[];
+const droppableElements = [...document.querySelectorAll('.droppable')] as HTMLElement[];
+
+// Initialize DndObserver.
+const dndObserver = new DndObserver<AdvancedCollisionData>({
+  collisionDetector: (ctx) => new AdvancedCollisionDetector(ctx),
+});
+
+// Create droppables.
+const droppables: Droppable[] = [];
+for (const droppableElement of droppableElements) {
+  const droppable = new Droppable(droppableElement);
+  droppables.push(droppable);
+}
+
+// Create draggables.
+const draggables: AnyDraggable[] = [];
+for (const draggableElement of draggableElements) {
+  const draggable = new Draggable(
+    [new PointerSensor(draggableElement), new KeyboardMotionSensor(draggableElement)],
+    {
+      // Only move the draggable element.
+      elements: () => [draggableElement],
+      // Use the drag container (has contain: layout).
+      container: document.getElementById('drag-container') as HTMLElement,
+      // Freeze the width and height of the dragged element since we are using
+      // a custom container and the element has percentage based values for
+      // some of its properties.
+      frozenStyles: () => ['width', 'height'],
+      // Allow the drag to start only if the element is not animating.
+      startPredicate: () => !draggableElement.classList.contains('animate'),
+      // Toggle the dragging class on the draggable element when the drag starts
+      // and ends.
+      onStart: () => {
+        draggableElement.classList.add('dragging');
+      },
+      onEnd: () => {
+        draggableElement.classList.remove('dragging');
+      },
+    },
+  ).use(
+    // Allow the draggable to scroll the scroll containers when the dragged
+    // element is close to its edges.
+    autoScrollPlugin({
+      targets: scrollContainers.map((scrollContainer) => ({
+        element: scrollContainer,
+        axis: 'y',
+        padding: { top: 0, bottom: 0 },
+      })),
+    }),
+  );
+  draggables.push(draggable);
+}
+
+// Add droppables and draggables to the dnd observer.
+dndObserver.addDroppables(droppables);
+dndObserver.addDraggables(draggables);
+
+// On draggable collision with droppables.
+dndObserver.on(DndObserverEventType.Collide, ({ draggable, contacts }) => {
+  // Get the draggable element.
+  const draggableElement = draggable.drag?.items[0].element as HTMLElement | null;
+  if (!draggableElement) return;
+
+  // Get the draggable id.
+  const draggableId = draggableElement.getAttribute('data-id') || '';
+  if (draggableId === '') return;
+
+  // Get the next best match droppable.
+  let nextBestMatch: Droppable | null = null;
+  for (const droppable of contacts) {
+    // Skip if the droppable contains a different draggable.
+    const containedDraggableId = droppable.element?.getAttribute('data-draggable-contained') || '';
+    if (containedDraggableId && containedDraggableId !== draggableId) {
+      continue;
+    }
+
+    // Skip if a different draggable is over the droppable.
+    const overDraggableId = droppable.element?.getAttribute('data-draggable-over') || '';
+    if (overDraggableId && overDraggableId !== draggableId) {
+      continue;
+    }
+
+    // We found the next best match.
+    nextBestMatch = droppable;
+    break;
+  }
+
+  // Update the best match droppable if it's changed.
+  const bestMatch = bestMatchMap.get(draggable);
+  if (nextBestMatch !== null && nextBestMatch !== bestMatch) {
+    bestMatch?.element?.removeAttribute('data-draggable-over');
+    nextBestMatch?.element?.setAttribute('data-draggable-over', draggableId);
+    bestMatchMap.set(draggable, nextBestMatch);
+  }
+});
+
+// On drag end.
+dndObserver.on(DndObserverEventType.End, ({ draggable, canceled }) => {
+  const draggableElement = draggable.drag?.items[0].element as HTMLElement | null;
+  if (!draggableElement) return;
+
+  // Find out the original container and the target container based on the best
+  // match droppable.
+  const bestMatch = bestMatchMap.get(draggable);
+  const originalContainer = draggableElement.parentElement!;
+  const targetContainer =
+    !canceled && bestMatch ? (bestMatch.element as HTMLElement) : originalContainer;
+
+  // Record the element's current viewport position before any DOM changes.
+  const rect = draggableElement.getBoundingClientRect();
+
+  // Clear the drag-applied transform so the element returns to its natural
+  // CSS position within whichever container it ends up in.
+  draggableElement.style.transform = '';
+
+  // If draggable moved into a different container.
+  if (originalContainer !== targetContainer) {
+    targetContainer.appendChild(draggableElement);
+
+    // Move the data-draggable-contained attribute to the target container.
+    originalContainer.removeAttribute('data-draggable-contained');
+    targetContainer.setAttribute(
+      'data-draggable-contained',
+      draggableElement.getAttribute('data-id')!,
+    );
+  }
+
+  // Compute the CSS offset delta that maintains the element's viewport
+  // position. getLocalOffset accounts for any ancestor transforms (scale,
+  // rotation, skew) on the container.
+  const delta = getLocalOffset(draggableElement, rect.x, rect.y);
+
+  // Skip animation if the element is already at its target position.
+  if (Math.abs(delta.x) < 0.5 && Math.abs(delta.y) < 0.5) {
+    bestMatch?.element?.removeAttribute('data-draggable-over');
+    bestMatchMap.delete(draggable);
+    return;
+  }
+
+  // Apply transform to hold the element at its drag-end viewport position.
+  draggableElement.style.transform = `translate(${delta.x}px, ${delta.y}px)`;
+
+  // Force a reflow to commit the starting transform BEFORE adding the
+  // transition. Without this the browser's last committed state for transform
+  // is "none" (from the getLocalOffset reflow), and the transition has no
+  // starting point to animate from.
+  draggableElement.clientHeight;
+
+  // Now enable the transition and animate to identity.
+  draggableElement.classList.add('animate');
+  const onTransitionEnd = (e: TransitionEvent) => {
+    if (e.target === draggableElement && e.propertyName === 'transform') {
+      draggableElement.classList.remove('animate');
+      draggableElement.style.transform = '';
+      document.body.removeEventListener('transitionend', onTransitionEnd);
+    }
+  };
+  document.body.addEventListener('transitionend', onTransitionEnd);
+  draggableElement.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
+
+  // Reset the best match droppable.
+  bestMatch?.element?.removeAttribute('data-draggable-over');
+  bestMatchMap.delete(draggable);
+});

@@ -72,7 +72,7 @@ export class ObjectPool<Item extends NonNullable<any>, ItemArgs extends any[] = 
 
       // Check if we should shrink after adding object.
       if (this._index >= this._shrinkThreshold) {
-        // Only shrink if it wouldn't bring us below the minimum capacity
+        // Only shrink if it wouldn't bring us below the minimum capacity.
         const newCapacity = this._data.length - this._batchSize;
         if (newCapacity >= this._minSize) {
           this._data.length = newCapacity;
