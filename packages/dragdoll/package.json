@@ -1,7 +1,7 @@
 {
   "name": "dragdoll",
   "version": "1.0.0",
-  "description": "Modular and extensible drag & drop system.",
+  "description": "Modular and extensible drag-and-drop system.",
   "keywords": [
     "drag",
     "drop",

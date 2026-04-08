@@ -198,9 +198,9 @@ function sidebarMain() {
         { text: 'Releases', link: 'https://github.com/niklasramo/dragdoll/releases' },
         {
           text: 'Contributing',
-          link: 'https://github.com/niklasramo/dragdoll/blob/master/CONTRIBUTING.md',
+          link: 'https://github.com/niklasramo/dragdoll/blob/main/CONTRIBUTING.md',
         },
-        { text: 'License', link: 'https://github.com/niklasramo/dragdoll/blob/master/LICENSE.md' },
+        { text: 'License', link: 'https://github.com/niklasramo/dragdoll/blob/main/LICENSE.md' },
       ],
     },
   ];

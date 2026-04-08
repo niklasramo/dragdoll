@@ -186,7 +186,11 @@ export function useDraggable<S extends Sensor = Sensor>(
     });
   };
 
-  // Handle sensors change.
+  // Handle sensors change. When the draggable already exists we
+  // assign directly to `draggable.sensors` instead of destroying
+  // and recreating the instance. The core's setter diffs the
+  // arrays and only (un)binds the sensors that actually changed,
+  // which preserves any in-progress drag state.
   createEffect(() => {
     const resolvedSensors = getResolvedSensors();
 
@@ -201,11 +205,8 @@ export function useDraggable<S extends Sensor = Sensor>(
       return;
     }
 
-    if (
-      resolvedSensors.length !== draggable.sensors.length ||
-      resolvedSensors.some((sensor) => !draggable.sensors.includes(sensor))
-    ) {
-      createDraggableInstance();
+    if (draggable.sensors !== resolvedSensors) {
+      draggable.sensors = resolvedSensors;
     }
   });
 

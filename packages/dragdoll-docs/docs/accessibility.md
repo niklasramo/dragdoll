@@ -1,6 +1,6 @@
 # Accessibility
 
-DragDoll is a pointer-based drag-and-drop library. It does **not** provide any accessible patterns, utilities, ARIA helpers, or screen reader modules out of the box. Even the keyboard sensors are purely visual movement tools — they are not accessible by default.
+DragDoll is a pointer-based drag-and-drop system. It does **not** provide any accessible patterns, utilities, ARIA helpers, or screen reader modules out of the box. Even the keyboard sensors are purely visual movement tools — they are not accessible by default.
 
 What DragDoll _does_ provide are building blocks you can use to implement whatever accessibility pattern your application needs.
 

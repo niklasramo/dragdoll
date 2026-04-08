@@ -48,14 +48,14 @@ The KeyboardMotionSensor class is a generic that extends the [`BaseMotionSensor`
 
 1. **E**
    - The type of the events that the sensor will emit.
-   - Default: [`KeyboardMotionSensorEvents`](#keyboardsensormotionevents).
+   - Default: [`KeyboardMotionSensorEvents`](#keyboardmotionsensorevents).
 
 ### Constructor Parameters
 
 1. **element**
    - The element which should be focused to start the drag.
 2. **options**
-   - An optional [`KeyboardMotionSensorSettings`](#keyboardsensorsettings) object, which you can also change later via [`updateSettings`](#updatesettings) method.
+   - An optional [`KeyboardMotionSensorSettings`](#keyboardmotionsensorsettings) object, which you can also change later via [`updateSettings`](#updatesettings) method.
    - You only need to provide the options you want to change, the rest will be left as default.
    - Default: `{}`.
 

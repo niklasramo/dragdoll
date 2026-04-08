@@ -1,7 +1,7 @@
 {
   "name": "dragdoll-react",
   "version": "1.0.0",
-  "description": "React wrapper for DragDoll drag & drop library.",
+  "description": "React wrapper for DragDoll drag-and-drop system.",
   "keywords": [
     "drag",
     "drop",
@@ -28,9 +28,11 @@
   "exports": {
     ".": "./dist/index.js",
     "./dnd-observer-context": "./dist/dnd-observer-context.js",
+    "./drag-preview": "./dist/drag-preview.js",
     "./use-dnd-observer": "./dist/use-dnd-observer.js",
     "./use-dnd-observer-callback": "./dist/use-dnd-observer-callback.js",
     "./use-dnd-observer-context": "./dist/use-dnd-observer-context.js",
+    "./use-drag-preview": "./dist/use-drag-preview.js",
     "./use-draggable": "./dist/use-draggable.js",
     "./use-draggable-auto-scroll": "./dist/use-draggable-auto-scroll.js",
     "./use-draggable-callback": "./dist/use-draggable-callback.js",
@@ -39,6 +41,7 @@
     "./use-keyboard-motion-sensor": "./dist/use-keyboard-motion-sensor.js",
     "./use-keyboard-sensor": "./dist/use-keyboard-sensor.js",
     "./use-pointer-sensor": "./dist/use-pointer-sensor.js",
+    "./use-sensor-callback": "./dist/use-sensor-callback.js",
     "./package.json": "./package.json"
   },
   "files": [

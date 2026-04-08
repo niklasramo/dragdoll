@@ -16,11 +16,11 @@ npm install dragdoll eventti tikki mezr
 
 ## Peer Dependencies
 
-- [`eventti`](https://github.com/niklasramo/eventti) (^4.0.3)
+- [`eventti`](https://github.com/niklasramo/eventti) (^4.0.4)
   - Used for emitting all the events.
 - [`tikki`](https://github.com/niklasramo/tikki) (^3.0.2)
   - Used for batching DOM operations when necessary (reads and writes).
-- [`mezr`](https://github.com/niklasramo/mezr) (^v1.1.0)
+- [`mezr`](https://github.com/niklasramo/mezr) (^1.1.0)
   - Used for calculating tricky DOM bits.
 
 ## CDN Setup
@@ -31,7 +31,7 @@ It's possible to use `dragdoll` via CDN by adding an `importmap` to your HTML fi
 <script type="importmap">
   {
     "imports": {
-      "eventti": "https://cdn.jsdelivr.net/npm/eventti@4.0.3/dist/eventti.js",
+      "eventti": "https://cdn.jsdelivr.net/npm/eventti@4.0.4/dist/eventti.js",
       "tikki": "https://cdn.jsdelivr.net/npm/tikki@3.0.2/dist/tikki.js",
       "mezr/getDistance": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getDistance.js",
       "mezr/getOffsetContainer": "https://cdn.jsdelivr.net/npm/mezr@1.1.0/dist/esm/getOffsetContainer.js",
