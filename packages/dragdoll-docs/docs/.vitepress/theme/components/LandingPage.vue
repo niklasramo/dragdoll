@@ -14,9 +14,9 @@ const base = site.value.base || '/';
       <div class="hero-content">
         <div class="hero-text">
           <h1 class="hero-title">DragDoll</h1>
-          <p class="hero-tagline">The drag and drop library that doesn't hold you back.</p>
+          <p class="hero-tagline">The drag-and-drop library that doesn't hold you back.</p>
           <p class="hero-description">
-            A modular, high-performance drag &amp; drop system built in TypeScript. Sensors,
+            A modular, high-performance drag-and-drop system built in TypeScript. Sensors,
             draggables, droppables, and collision detection &mdash; all modular, all
             framework-agnostic, all fast.
           </p>

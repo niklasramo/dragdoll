@@ -19,13 +19,13 @@ const draggableElement = document.querySelector('.draggable') as HTMLElement;
 const pointerSensor = new PointerSensor(draggableElement);
 const draggable = new Draggable([pointerSensor], {
   elements: () => [draggableElement],
-  dndGroups: ['groupA'],
+  dndGroups: new Set(['groupA']),
 });
 
 // Create a droppable
 const dropZoneElement = document.querySelector('.drop-zone') as HTMLElement;
 const droppable = new Droppable(dropZoneElement, {
-  accept: ['groupA'],
+  accept: new Set(['groupA']),
 });
 
 // Add draggables and droppables to the observer.
@@ -175,8 +175,7 @@ dndObserver.off('end', id);
 ### addDraggables
 
 ```ts
-type addDraggables = (draggables: AnyDraggable[]>[] | Set<AnyDraggable>) => void;
-
+type addDraggables = (draggables: AnyDraggable[] | Set<AnyDraggable>) => void;
 ```
 
 Registers one or more draggable instances with the observer. This adds the draggables to the internal registry, binds to their events, and emits the `addDraggables` event.
@@ -192,7 +191,7 @@ dndObserver.addDraggables([draggable]);
 ### removeDraggables
 
 ```ts
-type removeDraggables = (draggables: AnyDraggable[]>[] | Set<AnyDraggable>) => void;
+type removeDraggables = (draggables: AnyDraggable[] | Set<AnyDraggable>) => void;
 ```
 
 Deregisters one or more draggable instances from the observer. This removes all bound event listeners, cleans up drag data, and emits the appropriate events.

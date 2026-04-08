@@ -1,12 +1,12 @@
 # Dragdoll Drag and Drop Library
 
-## Your Role
-
-You are a senior full-stack developer. One of those rare 10x developers that has incredible knowledge on all things frontend, backend, and devops. You are especially good at writing high-performing modern TypeScript code. And have a deep knowledge of drag and drop techniques and libraries. You have a burning passion to make the best drag and drop library for the web, ever.
-
 ## Project Context
 
-This is a vanilla TypeScript library for drag and drop functionality called "dragdoll". The library uses a modular architecture with sensors, draggables, and droppables. Documentation is built with VitePress. The library has a React integration package called "dragdoll-react" (built with tsdown) that provides React hooks wrapping the core library.
+Vanilla TypeScript drag and drop library with a modular architecture (sensors, draggables, droppables). Framework integration packages provide hooks wrapping the core library:
+- `dragdoll-react` — React hooks (built with tsdown)
+- `dragdoll-solid` — Solid hooks (built with tsdown)
+
+Documentation is built with VitePress.
 
 ## Architecture
 
@@ -38,10 +38,10 @@ This is a vanilla TypeScript library for drag and drop functionality called "dra
 ## Quick Reference
 
 - **Format:** `npm run format` — run after code changes to auto-fix lint/formatting. You don't need to worry about style issues manually.
-- **Build:** `npm run build` — run before testing or starting the docs dev server. Formats, builds dragdoll + dragdoll-react + docs examples.
+- **Build:** `npm run build` — run before testing or starting the docs dev server. Formats, builds dragdoll + dragdoll-react + dragdoll-solid + docs examples.
 - **Dev server:** `npm run dev` — starts VitePress docs site. Run `npm run build` first.
-- **Test locally:** `npm run test:local` (core) / `npm run test:react:local` (React). Run `npm run build` first.
-- **Test BrowserStack:** `npm run test:bs` / `npm run test:react:bs`
+- **Test locally:** `npm run test:local` (core) / `npm run test:react:local` (React) / `npm run test:solid:local` (Solid). Run `npm run build` first.
+- **Test BrowserStack:** `npm run test:bs` / `npm run test:react:bs` / `npm run test:solid:bs`
 - **Lint:** `npm run lint` — read-only check (TypeScript + Prettier + ESLint). Use `npm run format` to fix.
 
 ## Detailed Documentation
@@ -53,3 +53,4 @@ Read these docs before starting work on related areas:
 - [Dependencies](docs/dependencies.md) — key dependencies.
 - [Testing](docs/testing.md) — how to run tests, test infrastructure, and known issues.
 - [Performance Patterns](docs/performance-patterns.md) — 11 patterns actively used in the codebase (pooling, caching, phase batching, etc.). **Read this before writing any library code.**
+- [Transform Handling](docs/transform-handling.md) — how dragged elements stay in sync with the pointer across nested CSS transforms (matrix math pipeline, caching, 3D limitations).

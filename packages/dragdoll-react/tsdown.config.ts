@@ -3,10 +3,12 @@ import { defineConfig } from 'tsdown';
 export default defineConfig({
   entry: {
     index: 'src/index.ts',
+    'drag-preview': 'src/components/drag-preview.tsx',
     'dnd-observer-context': 'src/contexts/dnd-observer-context.ts',
     'use-dnd-observer': 'src/hooks/use-dnd-observer.ts',
     'use-dnd-observer-callback': 'src/hooks/use-dnd-observer-callback.ts',
     'use-dnd-observer-context': 'src/hooks/use-dnd-observer-context.ts',
+    'use-drag-preview': 'src/hooks/use-drag-preview.ts',
     'use-draggable': 'src/hooks/use-draggable.ts',
     'use-draggable-auto-scroll': 'src/hooks/use-draggable-auto-scroll.ts',
     'use-draggable-callback': 'src/hooks/use-draggable-callback.ts',
@@ -15,6 +17,7 @@ export default defineConfig({
     'use-keyboard-motion-sensor': 'src/hooks/use-keyboard-motion-sensor.ts',
     'use-keyboard-sensor': 'src/hooks/use-keyboard-sensor.ts',
     'use-pointer-sensor': 'src/hooks/use-pointer-sensor.ts',
+    'use-sensor-callback': 'src/hooks/use-sensor-callback.ts',
   },
   outDir: './dist',
   platform: 'browser',

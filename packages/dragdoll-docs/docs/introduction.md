@@ -1,6 +1,6 @@
 # What is DragDoll?
 
-DragDoll is a modular and highly extensible drag and drop system written in TypeScript. Originally based on [Muuri](https://muuri.dev/)'s internal drag system, it has been fully redesigned to serve as a general-purpose drag and drop system.
+DragDoll gives you all the primitives for a production-grade drag-and-drop system — sensors, draggables, droppables, and collision detection. Build sortable lists, kanban boards, design canvases, or something entirely new.
 
 At its core, DragDoll is built on the concept of [_sensors_](/sensor), which are responsible for listening to user input events (or any events, for that matter) and emitting drag events based on those inputs. While DragDoll comes with a few built-in sensors, you can also create your own to listen to any kind of input events you desire.
 

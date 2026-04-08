@@ -402,7 +402,3 @@ interface KeyboardSensorEvents {
   destroy: KeyboardSensorDestroyEvent;
 }
 ```
-
-```
-
-```

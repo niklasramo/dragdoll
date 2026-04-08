@@ -117,7 +117,7 @@ The BaseMotionSensor class is a generic that extends the [`BaseSensor`](/base-se
 
 1. **E**
    - The type of the events that the sensor will emit.
-   - Default: [`BaseMotionSensorEvents`](#basesensormotionevents).
+   - Default: [`BaseMotionSensorEvents`](#basemotionsensorevents).
 
 ## Properties
 
@@ -127,7 +127,7 @@ The BaseMotionSensor class is a generic that extends the [`BaseSensor`](/base-se
 type drag = BaseMotionSensorDragData | null;
 ```
 
-Current drag data or `null` when drag is inactive. The drag data follows the [`BaseMotionSensorDragData`](#basesensormotiondragdata) interface. Read-only.
+Current drag data or `null` when drag is inactive. The drag data follows the [`BaseMotionSensorDragData`](#basemotionsensordragdata) interface. Read-only.
 
 ## Protected Properties
 
@@ -227,7 +227,7 @@ Payload follows the [`BaseSensorDestroyEvent`](/base-sensor#basesensordestroyeve
 
 Emitted every frame when the sensor is dragging.
 
-Payload follows the [`BaseMotionSensorTickEvent`](#basesensortickevent) interface.
+Payload follows the [`BaseMotionSensorTickEvent`](#basemotionsensortickevent) interface.
 
 ## Types
 

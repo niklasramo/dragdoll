@@ -21,18 +21,31 @@
   - `src/` - Source code.
     - `hooks/` - React hooks wrapping core library
     - `contexts/` - React context providers
+    - `components/` - React components (e.g., `DragPreview`)
     - `utils/` - React-specific utility functions
+  - `dist/` - Built library files.
+- `packages/dragdoll-solid/` - Solid integration package.
+  - `src/` - Source code.
+    - `hooks/` - Solid hooks wrapping core library
+    - `contexts/` - Solid context providers
+    - `components/` - Solid components (e.g., `DragPreview`)
+    - `utils/` - Solid-specific utility functions
   - `dist/` - Built library files.
 - `packages/dragdoll-docs/` - VitePress documentation site and examples.
   - `docs/` - VitePress docs content.
   - `docs/react/` - VitePress docs React integration content.
+  - `docs/solid/` - VitePress docs Solid integration content.
   - `docs/public/` - VitePress docs public assets.
-  - `examples/` - Core library examples used in the docs.
-  - `react-examples/` - React integration examples used in the docs.
+  - `examples/core/` - Core library examples used in the docs.
+  - `examples/react/` - React integration examples used in the docs.
+  - `examples/solid/` - Solid integration examples used in the docs.
   - `scripts/` - Docs/example build scripts.
 - `packages/dragdoll-tests/` - Internal tests (Vitest browser mode with WebDriverIO provider).
   - `src/` - Test sources.
 - `packages/dragdoll-react-tests/` - React integration tests (Vitest browser mode with WebDriverIO provider).
+  - `src/` - Test sources.
+  - `dist/` - Bundled tests.
+- `packages/dragdoll-solid-tests/` - Solid integration tests (Vitest browser mode with WebDriverIO provider).
   - `src/` - Test sources.
   - `dist/` - Bundled tests.
 
@@ -46,11 +59,13 @@ All `devDependencies` must be declared in the root `package.json` only, never in
 
 ## Root Commands
 
-- `npm run build` - Runs format, builds `dragdoll` and `dragdoll-react` libraries, builds `dragdoll-docs` examples, then formats again.
+- `npm run build` - Runs format, builds `dragdoll`, `dragdoll-react`, and `dragdoll-solid` libraries, builds `dragdoll-docs` examples, then formats again.
 - `npm run test:local` - Runs tests (from `dragdoll-tests`) locally in Chrome and Firefox.
 - `npm run test:bs` - Runs tests (from `dragdoll-tests`) in BrowserStack.
 - `npm run test:react:local` - Runs React integration tests (from `dragdoll-react-tests`) locally.
 - `npm run test:react:bs` - Runs React integration tests (from `dragdoll-react-tests`) in BrowserStack.
+- `npm run test:solid:local` - Runs Solid integration tests (from `dragdoll-solid-tests`) locally.
+- `npm run test:solid:bs` - Runs Solid integration tests (from `dragdoll-solid-tests`) in BrowserStack.
 - `npm run docs:dev` - Runs VitePress docs site in development mode.
 - `npm run docs:build` - Builds VitePress docs site.
 - `npm run docs:serve` - Serves VitePress docs site.

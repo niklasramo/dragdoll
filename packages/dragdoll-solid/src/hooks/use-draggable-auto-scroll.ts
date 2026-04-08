@@ -32,23 +32,26 @@ export function useDraggableAutoScroll<
 
   let appliedSettings = resolvedSettings();
 
+  // Single effect handles both plugin registration (on draggable
+  // change) and settings updates (on settings change). A split-effect
+  // approach is fragile in Solid because both effects would track
+  // resolvedSettings(), causing the registration effect to mutate
+  // appliedSettings and hide real changes from the update effect.
   createEffect(() => {
     const draggable = resolvedDraggable();
     if (!draggable) return;
-    if (draggable.plugins.autoscroll) {
-      appliedSettings = resolvedSettings();
+
+    const nextSettings = resolvedSettings();
+    const plugin = (draggable as DraggableWithAutoScroll<S, P>)?.plugins.autoscroll;
+
+    if (!plugin) {
+      draggable.use(autoScrollPlugin<S, P>(nextSettings));
+      appliedSettings = nextSettings;
       return;
     }
-    draggable.use(autoScrollPlugin<S, P>(resolvedSettings()));
-    appliedSettings = resolvedSettings();
-  });
 
-  createEffect(() => {
-    const draggable = resolvedDraggable() as DraggableWithAutoScroll<S, P>;
-    const plugin = draggable?.plugins.autoscroll;
-    if (!plugin) return;
-    const nextSettings = resolvedSettings();
     if (areConfigsEqual(appliedSettings, nextSettings)) return;
+
     plugin.updateSettings(plugin['_parseSettings'](nextSettings));
     appliedSettings = nextSettings;
   });

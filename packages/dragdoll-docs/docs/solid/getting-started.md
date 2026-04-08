@@ -16,14 +16,8 @@ npm install dragdoll-solid dragdoll eventti tikki mezr solid-js
 
 ## Peer Dependencies
 
-- [`dragdoll`](https://github.com/niklasramo/dragdoll) (~1.0.0)
-  - Core library for drag and drop functionality.
-- [`eventti`](https://github.com/niklasramo/eventti) (^4.0.3)
-  - Used for emitting all the events.
-- [`tikki`](https://github.com/niklasramo/tikki) (^3.0.2)
-  - Used for batching DOM operations when necessary (reads and writes).
-- [`mezr`](https://github.com/niklasramo/mezr) (^v1.1.0)
-  - Used for calculating tricky DOM bits.
+- [`dragdoll`](https://github.com/niklasramo/dragdoll) (^1.0.0)
+  - Core library for drag and drop functionality. Brings its own peer dependencies ([`eventti`](https://github.com/niklasramo/eventti), [`tikki`](https://github.com/niklasramo/tikki), [`mezr`](https://github.com/niklasramo/mezr)) that you will also need to install.
 - [`solid-js`](https://github.com/solidjs/solid) (^1.9.0)
 
 ## TypeScript / JSX Configuration

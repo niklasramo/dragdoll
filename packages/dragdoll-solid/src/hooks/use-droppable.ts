@@ -8,7 +8,7 @@ import { resolveMaybeAccessor } from '../utils/maybe-accessor.js';
 import { useDndObserverContext } from './use-dnd-observer-context.js';
 
 export interface UseDroppableSettings extends DroppableOptions {
-  element?: HTMLElement | SVGSVGElement;
+  element?: HTMLElement | SVGSVGElement | null;
   dndObserver?: DndObserver<any> | null;
 }
 

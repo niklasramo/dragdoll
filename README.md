@@ -2,7 +2,7 @@
   <a id="dragdoll" href="#dragdoll" aria-hidden="true"><img src="https://niklasramo.github.io/dragdoll/dragdoll-logo.svg" alt="DragDoll" height="100" /></a>
 </h1>
 
-DragDoll is a modular and highly extensible drag system written in TypeScript. It's originally based on [Muuri's](https://github.com/haltu/muuri) internal drag system, but fully redesigned to be used as a general purpose drag system.
+DragDoll gives you all the primitives for a production-grade drag-and-drop system — sensors, draggables, droppables, and collision detection. Build sortable lists, kanban boards, design canvases, or something entirely new.
 
 📡 &nbsp; **Sweet Sensors**
 
@@ -41,9 +41,11 @@ https://niklasramo.github.io/dragdoll/
 - [`dragdoll-root`](./) - Root package.
 - [`packages/dragdoll`](./packages/dragdoll) - The core dragdoll package.
 - [`packages/dragdoll-react`](./packages/dragdoll-react) - The React wrapper for the dragdoll package.
+- [`packages/dragdoll-solid`](./packages/dragdoll-solid) - The Solid wrapper for the dragdoll package.
 - [`packages/dragdoll-docs`](./packages/dragdoll-docs) - Docs for the dragdoll package.
 - [`packages/dragdoll-tests`](./packages/dragdoll-tests) - Tests for the dragdoll package.
 - [`packages/dragdoll-react-tests`](./packages/dragdoll-react-tests) - Tests for the dragdoll-react package.
+- [`packages/dragdoll-solid-tests`](./packages/dragdoll-solid-tests) - Tests for the dragdoll-solid package.
 
 ## Copyright
 
