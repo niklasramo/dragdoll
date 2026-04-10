@@ -33,37 +33,40 @@
     "ts:check": "tsc && npm run ts:check --workspaces --if-present"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "5.2.0",
-    "@vitest/browser-webdriverio": "4.1.2",
-    "browserstack-local": "1.5.12",
+    "@vitejs/plugin-react": "6.0.1",
+    "@vitest/browser-webdriverio": "4.1.4",
+    "browserstack-local": "1.5.13",
     "@eslint/js": "10.0.1",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
-    "dotenv": "17.4.0",
+    "dotenv": "17.4.1",
     "esbuild-plugin-solid": "0.6.0",
     "eslint-config-prettier": "10.1.8",
-    "eslint-plugin-simple-import-sort": "12.1.1",
+    "eslint-plugin-simple-import-sort": "13.0.0",
     "eventti": "4.0.4",
     "globals": "17.4.0",
-    "jsdom": "29.0.1",
+    "jsdom": "29.0.2",
     "mezr": "1.1.0",
     "prettier": "3.8.1",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "rolldown": "1.0.0-rc.13",
+    "react": "19.2.5",
+    "react-dom": "19.2.5",
+    "rolldown": "1.0.0-rc.15",
     "solid-js": "1.9.12",
     "tikki": "3.0.2",
     "tsdown": "0.21.7",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.58.0",
+    "typescript-eslint": "8.58.1",
     "vitepress": "1.6.4",
-    "vitest": "4.1.2",
-    "vitest-browser-react": "2.1.0",
+    "vitest": "4.1.4",
+    "vitest-browser-react": "2.2.0",
     "vitest-browser-solid": "1.0.1",
-    "vite-plugin-solid": "2.11.11",
+    "vite-plugin-solid": "2.11.12",
     "vue": "3.5.32"
   },
   "overrides": {
-    "esbuild": "0.27.5"
+    "esbuild": "0.27.5",
+    "vitepress": {
+      "vite": "6.4.2"
+    }
   }
 }

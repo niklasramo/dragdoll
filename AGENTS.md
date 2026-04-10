@@ -3,6 +3,7 @@
 ## Project Context
 
 Vanilla TypeScript drag and drop library with a modular architecture (sensors, draggables, droppables). Framework integration packages provide hooks wrapping the core library:
+
 - `dragdoll-react` — React hooks (built with tsdown)
 - `dragdoll-solid` — Solid hooks (built with tsdown)
 
