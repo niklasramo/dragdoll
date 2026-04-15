@@ -298,7 +298,7 @@ function sidebarSolid() {
       items: [{ text: 'useDroppable', link: '/solid/use-droppable' }],
     },
     {
-      text: 'DnD Observer',
+      text: 'DndObserver',
       collapsible: false,
       items: [
         { text: 'DndObserverContext', link: '/solid/dnd-observer-context' },

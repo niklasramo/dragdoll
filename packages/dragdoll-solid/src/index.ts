@@ -13,3 +13,4 @@ export * from './hooks/use-keyboard-motion-sensor.js';
 export * from './hooks/use-keyboard-sensor.js';
 export * from './hooks/use-pointer-sensor.js';
 export * from './hooks/use-sensor-callback.js';
+export type { MaybeAccessor, MaybeAccessorValue } from './utils/maybe-accessor.js';

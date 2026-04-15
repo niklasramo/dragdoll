@@ -47,17 +47,28 @@ render(() => <Card />, document.getElementById('root')!);
 ## Signature
 
 ```ts
-function useDraggable<S extends Sensor = Sensor>(
-  sensors: MaybeAccessor<(S | null)[]> | MaybeAccessor<S | null>[],
+function useDraggable<
+  E extends readonly (Accessor<Sensor | null> | null)[],
+  S extends Sensor = SensorsOf<E>,
+>(
+  sensors: E,
   settings?: MaybeAccessor<UseDraggableSettings<S> | undefined>,
 ): Accessor<Draggable<S> | null>;
 ```
+
+`S` is inferred from the sensors array, so you typically don't need to pass it explicitly:
+
+- A single sensor type (e.g. `[pointerSensor]`) narrows `S` to that concrete class.
+- Mixed sensor arrays (e.g. `[pointerSensor, keyboardSensor]`) widen `S` to a union of the passed sensor classes.
+- Empty arrays or all-`null` entries fall back to the default `Sensor`.
+
+Callbacks like `startPredicate` and modifiers like `positionModifiers` are typed against the inferred `S`, so `event.startX` (a `PointerSensor`-only field) is available without casts when the array contains only a pointer sensor.
 
 ## Parameters
 
 ### sensors
 
-Array of sensor accessors (e.g. values returned from `usePointerSensor`) or raw sensor instances. Sensors can be `null` while initializing. The hook will instantiate the draggable when sensors are available. When sensors change, the draggable is recreated with the new sensor set.
+Array of sensor accessors (values returned from `usePointerSensor`, `useKeyboardSensor`, or `useKeyboardMotionSensor`). Each entry may also be a bare `null` or an `Accessor` that can resolve to `null` — the hook waits until at least one accessor yields a non-`null` sensor before creating the draggable. When the resolved sensor set changes, the draggable's sensors are updated in place; any in-progress drag is preserved.
 
 ### settings
 
@@ -359,6 +370,20 @@ interface UseDraggableSettings<S extends Sensor = Sensor> extends Omit<
   dragPreviewExitTimeout?: number;
 }
 ```
+
+Extends the core [`DraggableOptions`](/draggable#draggableoptions) with Solid-specific fields. `container` is omitted because reparenting Solid-managed DOM is unsafe — use [`dragPreview`](#dragpreview) if you need a separate render surface. Use this type when you want to extract your settings object into a reusable helper; for one-shot usage, pass the settings inline and let the hook infer `S` for you.
+
+### MaybeAccessor
+
+```ts
+// Import
+import type { MaybeAccessor } from 'dragdoll-solid';
+
+// Type
+type MaybeAccessor<T> = T | Accessor<T>;
+```
+
+A reactive input that may be either a plain value or a Solid [`Accessor`](https://docs.solidjs.com/concepts/signals) returning that value. Every hook in this package accepts its settings as a `MaybeAccessor<T>`, which means you can pass a static object for one-shot configuration or a function to opt into fine-grained reactivity.
 
 ## Notes
 

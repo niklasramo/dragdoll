@@ -1,11 +1,6 @@
 /** @jsxImportSource solid-js */
-import { createContainmentModifier, PointerSensor } from 'dragdoll';
-import {
-  useDraggable,
-  useDraggableDrag,
-  UseDraggableSettings,
-  usePointerSensor,
-} from 'dragdoll-solid';
+import { createContainmentModifier } from 'dragdoll';
+import { useDraggable, useDraggableDrag, usePointerSensor } from 'dragdoll-solid';
 import { render } from 'solid-js/web';
 
 const THRESHOLD = 5;
@@ -15,7 +10,7 @@ function DraggableCard() {
   let element: HTMLDivElement | null = null;
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
 
-  const draggableSettings: UseDraggableSettings<PointerSensor> = {
+  const draggable = useDraggable([pointerSensor], {
     elements: () => (element ? [element] : []),
     startPredicate: ({ event }) => {
       const dx = event.x - event.startX;
@@ -33,9 +28,7 @@ function DraggableCard() {
         { snapX: GRID, snapY: GRID },
       ),
     ],
-  };
-
-  const draggable = useDraggable([pointerSensor], draggableSettings);
+  });
   const drag = useDraggableDrag(draggable);
 
   const setRefs = (node: HTMLDivElement) => {
