@@ -37,8 +37,36 @@ export interface UseDraggableSettings<S extends Sensor = Sensor>
   dragPreviewExitTimeout?: number;
 }
 
-export function useDraggable<S extends Sensor = Sensor>(
-  sensors: MaybeAccessor<(S | null)[]> | MaybeAccessor<S | null>[],
+// Pull the underlying sensor type out of one entry in the sensors
+// array. Strips `Accessor<>` and `| null`, falling back to `never`
+// for plain `null` literals or `() => null` accessors.
+type SensorOf<E> = E extends Accessor<infer V> ? Exclude<V, null> : never;
+
+// Derive the effective sensor type from the full sensors array. With
+// mixed inputs (e.g. `[pointerAccessor, keyboardAccessor]`) it widens
+// to a union of the concrete sensor classes. Empty / all-`null`
+// arrays fall back to the default `Sensor`.
+type SensorsOf<E extends readonly unknown[]> =
+  Extract<SensorOf<E[number]>, Sensor> extends infer R
+    ? [R] extends [never]
+      ? Sensor
+      : R extends Sensor
+        ? R
+        : Sensor
+    : Sensor;
+
+// `S` is derived from `E` (the sensors array) via `SensorsOf<E>`.
+// Splitting inference into two generics — first capture the sensors
+// tuple as `E`, then compute `S` — sidesteps TS's reluctance to
+// widen across multiple `Accessor<...>` candidates in a single
+// inference position. Callers get a draggable typed against the
+// actual sensors they passed without an explicit `<S>` annotation,
+// for both single and mixed sensor arrays.
+export function useDraggable<
+  E extends readonly (Accessor<Sensor | null> | null)[],
+  S extends Sensor = SensorsOf<E>,
+>(
+  sensors: E,
   settings?: MaybeAccessor<UseDraggableSettings<S> | undefined>,
 ): Accessor<Draggable<S> | null> {
   if (isServer) return () => null;

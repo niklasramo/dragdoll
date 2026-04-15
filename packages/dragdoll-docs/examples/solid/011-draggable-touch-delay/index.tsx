@@ -5,25 +5,18 @@ import {
   PointerSensor,
   startOffsetModifier,
 } from 'dragdoll';
-import {
-  useDraggable,
-  useDraggableDrag,
-  UseDraggableSettings,
-  usePointerSensor,
-} from 'dragdoll-solid';
+import { useDraggable, useDraggableDrag, usePointerSensor } from 'dragdoll-solid';
 import { render } from 'solid-js/web';
 
 function DraggableCard() {
   let element: HTMLDivElement | null = null;
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
 
-  const draggableSettings: UseDraggableSettings<PointerSensor> = {
+  const draggable = useDraggable([pointerSensor], {
     elements: () => (element ? [element] : []),
     startPredicate: createTouchDelayPredicate({ touchDelay: 1000 }),
     positionModifiers: [startOffsetModifier as unknown as DraggableModifier<PointerSensor>],
-  };
-
-  const draggable = useDraggable([pointerSensor], draggableSettings);
+  });
   const drag = useDraggableDrag(draggable);
 
   const setRefs = (node: HTMLDivElement) => {

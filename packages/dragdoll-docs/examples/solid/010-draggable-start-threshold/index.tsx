@@ -1,11 +1,6 @@
 /** @jsxImportSource solid-js */
 import { DraggableModifier, PointerSensor, startOffsetModifier } from 'dragdoll';
-import {
-  useDraggable,
-  useDraggableDrag,
-  UseDraggableSettings,
-  usePointerSensor,
-} from 'dragdoll-solid';
+import { useDraggable, useDraggableDrag, usePointerSensor } from 'dragdoll-solid';
 import { createSignal } from 'solid-js';
 import { render } from 'solid-js/web';
 
@@ -17,7 +12,7 @@ function DraggableCard() {
   let zIndexCounter = 1;
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
 
-  const draggableSettings: UseDraggableSettings<PointerSensor> = {
+  const draggable = useDraggable([pointerSensor], {
     elements: () => (element ? [element] : []),
     startPredicate: ({ event }) => {
       const dx = event.x - event.startX;
@@ -28,9 +23,7 @@ function DraggableCard() {
     onStart: () => {
       setZIndex(++zIndexCounter);
     },
-  };
-
-  const draggable = useDraggable([pointerSensor], draggableSettings);
+  });
   const drag = useDraggableDrag(draggable);
 
   const setRefs = (node: HTMLAnchorElement) => {

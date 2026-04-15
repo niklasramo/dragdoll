@@ -1099,13 +1099,8 @@ Demonstrates grid-aware containment. The element has a distance threshold, snaps
 
 ```tsx [index.tsx]
 /** @jsxImportSource solid-js */
-import { createContainmentModifier, PointerSensor } from 'dragdoll';
-import {
-  useDraggable,
-  useDraggableDrag,
-  UseDraggableSettings,
-  usePointerSensor,
-} from 'dragdoll-solid';
+import { createContainmentModifier } from 'dragdoll';
+import { useDraggable, useDraggableDrag, usePointerSensor } from 'dragdoll-solid';
 import { render } from 'solid-js/web';
 
 const THRESHOLD = 5;
@@ -1115,7 +1110,7 @@ function DraggableCard() {
   let element: HTMLDivElement | null = null;
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
 
-  const draggableSettings: UseDraggableSettings<PointerSensor> = {
+  const draggable = useDraggable([pointerSensor], {
     elements: () => (element ? [element] : []),
     startPredicate: ({ event }) => {
       const dx = event.x - event.startX;
@@ -1133,9 +1128,7 @@ function DraggableCard() {
         { snapX: GRID, snapY: GRID },
       ),
     ],
-  };
-
-  const draggable = useDraggable([pointerSensor], draggableSettings);
+  });
   const drag = useDraggableDrag(draggable);
 
   const setRefs = (node: HTMLDivElement) => {
@@ -1999,12 +1992,7 @@ A draggable link element that requires 5px of movement before the drag starts. C
 ```tsx [index.tsx]
 /** @jsxImportSource solid-js */
 import { DraggableModifier, PointerSensor, startOffsetModifier } from 'dragdoll';
-import {
-  useDraggable,
-  useDraggableDrag,
-  UseDraggableSettings,
-  usePointerSensor,
-} from 'dragdoll-solid';
+import { useDraggable, useDraggableDrag, usePointerSensor } from 'dragdoll-solid';
 import { createSignal } from 'solid-js';
 import { render } from 'solid-js/web';
 
@@ -2016,7 +2004,7 @@ function DraggableCard() {
   let zIndexCounter = 1;
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
 
-  const draggableSettings: UseDraggableSettings<PointerSensor> = {
+  const draggable = useDraggable([pointerSensor], {
     elements: () => (element ? [element] : []),
     startPredicate: ({ event }) => {
       const dx = event.x - event.startX;
@@ -2027,9 +2015,7 @@ function DraggableCard() {
     onStart: () => {
       setZIndex(++zIndexCounter);
     },
-  };
-
-  const draggable = useDraggable([pointerSensor], draggableSettings);
+  });
   const drag = useDraggableDrag(draggable);
 
   const setRefs = (node: HTMLAnchorElement) => {
@@ -2248,25 +2234,18 @@ import {
   PointerSensor,
   startOffsetModifier,
 } from 'dragdoll';
-import {
-  useDraggable,
-  useDraggableDrag,
-  UseDraggableSettings,
-  usePointerSensor,
-} from 'dragdoll-solid';
+import { useDraggable, useDraggableDrag, usePointerSensor } from 'dragdoll-solid';
 import { render } from 'solid-js/web';
 
 function DraggableCard() {
   let element: HTMLDivElement | null = null;
   const [pointerSensor, setPointerSensorRef] = usePointerSensor();
 
-  const draggableSettings: UseDraggableSettings<PointerSensor> = {
+  const draggable = useDraggable([pointerSensor], {
     elements: () => (element ? [element] : []),
     startPredicate: createTouchDelayPredicate({ touchDelay: 1000 }),
     positionModifiers: [startOffsetModifier as unknown as DraggableModifier<PointerSensor>],
-  };
-
-  const draggable = useDraggable([pointerSensor], draggableSettings);
+  });
   const drag = useDraggableDrag(draggable);
 
   const setRefs = (node: HTMLDivElement) => {
