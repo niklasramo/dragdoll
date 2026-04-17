@@ -1,0 +1,60 @@
+body {
+  height: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 10px;
+  padding: 10px;
+}
+
+.container {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.container-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container:nth-child(1) .container-inner {
+  transform: scale(0.7) skew(-8deg, -8deg);
+}
+
+.container:nth-child(2) .container-inner {
+  transform: scale(0.6) rotate(12deg);
+}
+
+.container:nth-child(3) .container-inner {
+  transform: scale(0.8) skew(5deg, 5deg) rotate(-6deg);
+}
+
+.card.draggable {
+  position: relative;
+  transform: scale(1.15);
+  transform-origin: 50% 50%;
+}
+
+.container-inner > .card.draggable.dragging {
+  opacity: 0.3;
+}
+
+.container-label {
+  position: absolute;
+  bottom: 6px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 10px;
+  font-family: monospace;
+  color: rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+}

@@ -1,0 +1,35 @@
+.transform-outer {
+  position: fixed;
+  inset: 0;
+  transform: scale(0.85) rotate(-2deg);
+  transform-origin: center center;
+  overflow: hidden;
+}
+
+.transform-inner {
+  position: absolute;
+  inset: 0;
+  transform: skew(-3deg, -3deg);
+  overflow-y: auto;
+}
+
+.scroll-content {
+  position: relative;
+  min-height: 250%;
+  padding: 20px;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  gap: 20px;
+}
+
+.card.draggable {
+  position: relative;
+  flex-shrink: 0;
+  transform: scale(1.1) rotate(3deg);
+  transform-origin: 50% 50%;
+}
+
+.scroll-content > .card.draggable.dragging {
+  opacity: 0.3;
+}

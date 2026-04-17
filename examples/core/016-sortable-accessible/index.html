@@ -1,0 +1,19 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+    <title>Sortable List - Accessible</title>
+    <meta name="description" content="A sortable list with two interaction modes. (1) Pointer drag: drag items via mouse or touch — a fixed-position clone follows the pointer while the original stays in-flow as a translucent placeholder; DndObserver detects collisions to trigger reorder. (2) Keyboard reorder: focus an item and press Shift+Space or Shift+Enter to pick up, arrow keys to move, Space/Enter to drop, Escape to cancel. During either interaction, items are repositioned visually with CSS transforms while the DOM order stays fixed. The final DOM reorder only happens on drop. A live region announces every position change for screen readers.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="index.css">
+  </head>
+  <body>
+    <div id="dnd-instructions" class="sr-only">
+      Press Shift plus Space or Shift plus Enter to reorder. Use arrow keys to move. Press Space or
+      Enter to drop, or Escape to cancel.
+    </div>
+    <div id="dnd-live-region" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
+    <ul id="sortable-list" role="list" aria-label="Sortable items"></ul>
+    <div id="drag-container"></div>
+    <script src="index.umd.js"></script>
+  
+
+</body></html>

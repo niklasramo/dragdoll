@@ -1,0 +1,168 @@
+:root {
+  --color: rgba(255, 255, 245, 0.86);
+  --bg-color: #111;
+
+  --list-gap: 6px;
+
+  --item-border-radius: 6px;
+  --item-height: 40px;
+  --item-padding-inline: 12px;
+
+  --item-color: rgba(255, 255, 245, 0.86);
+  --item-color-hover: rgba(255, 255, 245, 0.9);
+  --item-color-focus: #fff;
+  --item-color-dragging: rgba(255, 255, 245, 1);
+  --item-bg-color: #222;
+  --item-bg-color-hover: #2a2a2a;
+  --item-bg-color-focus: #333;
+  --item-bg-color-dragging: #1a3a1a;
+  --item-border-color: #333;
+  --item-border-color-hover: #444;
+  --item-border-color-focus: #555;
+  --item-border-color-dragging: #55ff9c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  background: var(--bg-color);
+  color: var(--color);
+  background-size: 40px 40px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+}
+
+body {
+  margin: 0;
+  overflow: auto;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(100%);
+  border: 0;
+  white-space: nowrap;
+}
+
+#drag-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  contain: layout;
+  z-index: 9999;
+}
+
+#sortable-list {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 20px 0;
+  width: 100%;
+  max-width: 400px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--list-gap);
+}
+
+[data-drag-preview-proxy] {
+  z-index: 1000;
+}
+
+.sortable-item {
+  list-style: none;
+  overflow-anchor: none;
+  margin: 0;
+  padding: 0;
+  border-radius: var(--item-border-radius);
+
+  &.placeholder {
+    opacity: 0.4;
+  }
+
+  &.a11y-dragging {
+    position: relative;
+    z-index: 1;
+  }
+
+  &.drag-preview {
+    pointer-events: none;
+  }
+
+  & a {
+    display: flex;
+    align-items: center;
+    height: var(--item-height);
+    padding: 0 var(--item-padding-inline);
+    color: var(--item-color);
+    background: var(--item-bg-color);
+    border: 1px solid var(--item-border-color);
+    touch-action: none;
+    border-radius: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0);
+
+    transition:
+      color 150ms ease,
+      background-color 150ms ease,
+      border-color 150ms ease,
+      box-shadow 150ms ease;
+
+    :not(.is-dragging) > .sortable-item > &:hover {
+      color: var(--item-color-hover);
+      background: var(--item-bg-color-hover);
+      border-color: var(--item-border-color-hover);
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      color: var(--item-color-focus);
+      background: var(--item-bg-color-focus);
+      border-color: var(--item-border-color-focus);
+      box-shadow: 0 0 0 2px var(--item-border-color-focus);
+    }
+
+    .sortable-item.drag-preview & {
+      color: var(--item-color-dragging);
+      background: var(--item-bg-color-dragging);
+      border-color: var(--item-border-color-dragging);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      cursor: grabbing;
+    }
+
+    .sortable-item.a11y-dragging & {
+      color: var(--item-color-dragging);
+      background: var(--item-bg-color-dragging);
+      border-color: var(--item-border-color-dragging);
+    }
+  }
+}
