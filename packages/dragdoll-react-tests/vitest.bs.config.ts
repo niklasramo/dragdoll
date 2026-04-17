@@ -41,6 +41,7 @@ export default defineConfig({
     retry: 2,
     browser: {
       enabled: true,
+      headless: false,
       connectTimeout: 180000,
       provider: webdriverio(bsBase),
       instances: [
