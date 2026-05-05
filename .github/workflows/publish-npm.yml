@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   publish:
-    if: ${{ startsWith(github.event.release.tag_name, 'dragdoll@') || startsWith(github.event.release.tag_name, 'dragdoll-react@') }}
+    if: ${{ startsWith(github.event.release.tag_name, 'dragdoll@') || startsWith(github.event.release.tag_name, 'dragdoll-react@') || startsWith(github.event.release.tag_name, 'dragdoll-solid@') }}
     runs-on: ubuntu-latest
     env:
       RELEASE_TAG: ${{ github.event.release.tag_name }}
@@ -28,8 +28,10 @@ jobs:
             echo "TARGET_WORKSPACE=dragdoll" >> "$GITHUB_ENV"
           elif [[ "$RELEASE_TAG" == dragdoll-react@* ]]; then
             echo "TARGET_WORKSPACE=dragdoll-react" >> "$GITHUB_ENV"
+          elif [[ "$RELEASE_TAG" == dragdoll-solid@* ]]; then
+            echo "TARGET_WORKSPACE=dragdoll-solid" >> "$GITHUB_ENV"
           else
-            echo "Release tag must start with dragdoll@ or dragdoll-react@" >&2
+            echo "Release tag must start with dragdoll@, dragdoll-react@ or dragdoll-solid@" >&2
             exit 1
           fi
       - name: Install dependencies
